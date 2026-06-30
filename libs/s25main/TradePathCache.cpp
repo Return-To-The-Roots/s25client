@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -8,7 +8,7 @@
 #include "world/GameWorld.h"
 #include "gameData/GameConsts.h"
 
-bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const unsigned char player)
+bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const PlayerIdx player)
 {
     RTTR_Assert(start != goal);
 
@@ -57,7 +57,7 @@ int TradePathCache::findEntry(const MapPoint start, const MapPoint goal, const P
     return -1;
 }
 
-void TradePathCache::addEntry(TradePath path, const unsigned char player)
+void TradePathCache::addEntry(TradePath path, const PlayerIdx player)
 {
     Entry entry{player, world.GetEvMgr().GetCurrentGF(), std::move(path)};
 

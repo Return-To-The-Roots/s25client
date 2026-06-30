@@ -60,13 +60,13 @@ const std::map<GUI_ID, std::string> persistentWindows = {{CGI_CHAT, "wnd_chat"},
                                                          {CGI_MERCHANDISE_STATISTICS, "wnd_merchandise_statistics"}};
 
 namespace validate {
-boost::optional<uint16_t> checkPort(const std::string& port)
+std::optional<uint16_t> checkPort(const std::string& port)
 {
     int32_t iPort;
     if((helpers::tryFromString(port, iPort) || s25util::tryFromStringClassic(port, iPort)) && checkPort(iPort))
         return static_cast<uint16_t>(iPort);
     else
-        return boost::none;
+        return std::nullopt;
 }
 bool checkPort(int port)
 {
@@ -309,7 +309,7 @@ void Settings::Load()
         // server
         // {
         server.lastIP = iniServer->getValue("last_ip");
-        boost::optional<uint16_t> port = validate::checkPort(iniServer->getValue("local_port"));
+        std::optional<uint16_t> port = validate::checkPort(iniServer->getValue("local_port"));
         server.localPort = port.value_or(3665);
         server.ipv6 = iniServer->getBoolValue("ipv6");
         // }

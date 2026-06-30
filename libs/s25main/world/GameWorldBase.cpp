@@ -22,6 +22,7 @@
 #include "notifications/PlayerNodeNote.h"
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/RoadPathFinder.h"
+#include "pathfinding/ShipPathData.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
@@ -79,6 +80,13 @@ bool GameWorldBase::IsSinglePlayer() const
         }
     }
     return true;
+}
+
+ShipPathData& GameWorldBase::GetShipPathData() const
+{
+    if(!shipPathData)
+        shipPathData = std::make_unique<ShipPathData>(*this);
+    return *shipPathData;
 }
 
 bool GameWorldBase::IsRoadAvailable(const bool boat_road, const MapPoint pt) const

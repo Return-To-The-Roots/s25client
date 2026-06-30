@@ -241,7 +241,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
                 BOOST_TEST_REQUIRE(destPt.isValid());
                 std::vector<Direction> route;
                 BOOST_TEST_REQUIRE((startPt == destPt || world.FindShipPath(startPt, destPt, 10000, &route, nullptr)));
-                BOOST_TEST_REQUIRE(route.size() == world.CalcHarborDistance(startHb, targetHb));
+                BOOST_TEST_REQUIRE(route.size() == world.GetMinHarborDistance(startHb, targetHb));
             }
         }
     }

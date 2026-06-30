@@ -63,13 +63,13 @@ void ctrlComboBox::Resize(const Extent& newSize)
     list->Resize(listSize);
 }
 
-boost::optional<std::string> ctrlComboBox::GetSelectedText() const
+std::optional<std::string> ctrlComboBox::GetSelectedText() const
 {
-    const boost::optional<unsigned>& selection = GetSelection();
+    const std::optional<unsigned>& selection = GetSelection();
     if(selection)
         return GetText(*selection);
     else
-        return boost::none;
+        return std::nullopt;
 }
 
 bool ctrlComboBox::Msg_MouseMove(const MouseCoords& mc)

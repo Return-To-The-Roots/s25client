@@ -310,14 +310,14 @@ helpers::OptionalEnum<Direction> noAnimal::FindDir()
             for(const auto dir2 : helpers::EnumRange<Direction>{})
             {
                 if(world->GetPointRoad(dst, dir2) != PointRoad::None)
-                    return boost::none;
+                    return std::nullopt;
             }
             return dir;
         }
     }
 
     // kein Weg mehr gefunden
-    return boost::none;
+    return std::nullopt;
 }
 
 bool noAnimal::CanBeSkinned() const

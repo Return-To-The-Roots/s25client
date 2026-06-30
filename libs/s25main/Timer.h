@@ -5,7 +5,7 @@
 #pragma once
 
 #include "Clock.h"
-#include <boost/optional.hpp>
+#include <optional>
 
 /// Timer class for measuring time periods
 class Timer
@@ -29,5 +29,5 @@ public:
     bool isRunning() const { return !!startTime; }
 
 private:
-    boost::optional<Clock::time_point> startTime;
+    std::optional<Clock::time_point> startTime;
 };

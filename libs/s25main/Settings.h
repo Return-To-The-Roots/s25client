@@ -9,17 +9,17 @@
 #include "driver/VideoMode.h"
 #include "s25util/ProxySettings.h"
 #include "s25util/Singleton.h"
-#include <boost/optional.hpp>
 #include <array>
 #include <cstdint>
 #include <gameData/const_gui_ids.h>
 #include <map>
+#include <optional>
 #include <string>
 
 #undef interface
 
 namespace validate {
-boost::optional<uint16_t> checkPort(const std::string& port);
+std::optional<uint16_t> checkPort(const std::string& port);
 bool checkPort(int port);
 } // namespace validate
 

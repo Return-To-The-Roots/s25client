@@ -1154,7 +1154,7 @@ void AIPlayerJH::HandleRoadConstructionFailed(const MapPoint pt, Direction)
     if(flag->GetPlayer() != playerId)
         return;
     // if it isnt a useless flag AND it has no current road connection then retry to build a road.
-    if(RemoveUnusedRoad(*flag, boost::none, true, false))
+    if(RemoveUnusedRoad(*flag, std::nullopt, true, false))
         construction->AddConnectFlagJob(flag);
 }
 
@@ -1845,7 +1845,7 @@ void AIPlayerJH::RemoveAllUnusedRoads(const MapPoint pt)
     std::vector<const noFlag*> reconnectflags;
     for(const noFlag* flag : flags)
     {
-        if(RemoveUnusedRoad(*flag, boost::none, true, false))
+        if(RemoveUnusedRoad(*flag, std::nullopt, true, false))
             reconnectflags.push_back(flag);
     }
     UpdateNodesAround(pt, 25);
@@ -1913,7 +1913,7 @@ bool AIPlayerJH::RemoveUnusedRoad(const noFlag& startFlag, helpers::OptionalEnum
     {
         if(allowcircle)
         {
-            if(!IsFlagPartofCircle(startFlag, 10, startFlag, boost::none, {}))
+            if(!IsFlagPartofCircle(startFlag, 10, startFlag, std::nullopt, {}))
                 return false;
             if(!firstflag)
                 return false;

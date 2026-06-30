@@ -194,19 +194,19 @@ void ctrlTab::Msg_Group_Timer(const unsigned /*group_id*/, const unsigned ctrl_i
 }
 
 void ctrlTab::Msg_Group_TableSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id,
-                                        const boost::optional<unsigned>& selection)
+                                        const std::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableSelectItem(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlTab::Msg_Group_TableRightButton(const unsigned /*group_id*/, const unsigned ctrl_id,
-                                         const boost::optional<unsigned>& selection)
+                                         const std::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableRightButton(this->GetID(), ctrl_id, selection);
 }
 
 void ctrlTab::Msg_Group_TableLeftButton(const unsigned /*group_id*/, const unsigned ctrl_id,
-                                        const boost::optional<unsigned>& selection)
+                                        const std::optional<unsigned>& selection)
 {
     GetParent()->Msg_Group_TableLeftButton(this->GetID(), ctrl_id, selection);
 }

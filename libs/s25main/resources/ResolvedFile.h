@@ -24,9 +24,9 @@ public:
     using Parent::end;
     using Parent::push_back;
     using Parent::size;
-    friend bool operator==(const ResolvedFile& lhs, const ResolvedFile& rhs)
+    friend bool operator==(const ResolvedFile& lhs, const ResolvedFile& rhs) noexcept
     {
         return static_cast<const Parent&>(lhs) == static_cast<const Parent&>(rhs);
     }
-    friend bool operator!=(const ResolvedFile& lhs, const ResolvedFile& rhs) { return !(lhs == rhs); }
+    friend bool operator!=(const ResolvedFile& lhs, const ResolvedFile& rhs) noexcept { return !(lhs == rhs); }
 };

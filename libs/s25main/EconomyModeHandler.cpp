@@ -16,8 +16,8 @@
 #include "gameTypes/JobTypes.h"
 #include "gameData/GoodConsts.h"
 #include "gameData/JobConsts.h"
-#include <boost/optional.hpp>
 #include <array>
+#include <optional>
 
 EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), gfLastUpdated(0)
 {
@@ -151,7 +151,7 @@ unsigned EconomyModeHandler::SumUpGood(GoodType good, const Inventory& Inventory
     // Add the tools used by workers to the good totals
     for(const auto j : helpers::enumRange<Job>())
     {
-        boost::optional<GoodType> tool = JOB_CONSTS[j].tool;
+        std::optional<GoodType> tool = JOB_CONSTS[j].tool;
         if(tool == good)
         {
             retVal += Inventory.people[j];

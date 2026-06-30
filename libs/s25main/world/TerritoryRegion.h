@@ -54,7 +54,7 @@ private:
         /// Distance to next military bld
         uint16_t radius;
 
-        TRNode() : owner(0), radius(0) {}
+        TRNode() noexcept : owner(0), radius(0) {}
     };
 
     /// Check whether the point is part of the polygon

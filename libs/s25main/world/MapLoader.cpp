@@ -86,8 +86,6 @@ bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
     if(!PlaceHQs())
         return false;
 
-    world_.CreateTradeGraphs();
-
     return true;
 }
 
@@ -588,24 +586,6 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
 
     // Calculate the neighbors and distances
     CalcHarborPosNeighbors(world);
-
-    // Validate
-    for(const auto startHbId : helpers::idRange<HarborId>(world.harborData.size()))
-    {
-        const HarborPos& startHbPos = world.harborData[startHbId];
-        for(const std::vector<HarborPos::Neighbor>& neighbors : startHbPos.neighbors)
-        {
-            for(const HarborPos::Neighbor& neighbor : neighbors)
-            {
-                if(world.CalcHarborDistance(neighbor.id, startHbId) != neighbor.distance)
-                {
-                    LOG.write("Bug: Harbor distance mismatch for harbors %1%->%2%: %3% != %4%\n") % startHbId
-                      % neighbor.id % world.CalcHarborDistance(neighbor.id, startHbId) % neighbor.distance;
-                    return false;
-                }
-            }
-        }
-    }
     return true;
 }
 
@@ -684,12 +664,12 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         for(const MapPoint& ownCoastPt : ownCoastalPoints)
         {
             // Special case: Get all harbors that share the coast point with us
-            SeaId seaId = world.GetSeaFromCoastalPoint(ownCoastPt);
+            const SeaId seaId = world.GetSeaFromCoastalPoint(ownCoastPt);
             auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(world.GetIdx(ownCoastPt));
             for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
             {
                 ShipDirection shipDir = world.GetShipDir(ownCoastPt, ownCoastPt);
-                world.harborData[startHbId].neighbors[shipDir].push_back(HarborPos::Neighbor(it->second, 0));
+                world.harborData[startHbId].neighbors[shipDir].push_back(HarborPos::Neighbor(it->second, seaId, 0));
                 hbFound[it->second] = true;
             }
             todo_list.push(CalcHarborPosNeighborsNode(ownCoastPt, 0));
@@ -715,8 +695,9 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
 
                 if(ptValue > 0) // found harbor(s)
                 {
-                    ShipDirection shipDir = world.GetShipDir(world.harborData[startHbId].pos, curPt);
-                    SeaId seaId = world.GetSeaFromCoastalPoint(curPt);
+                    const ShipDirection shipDir = world.GetShipDir(world.harborData[startHbId].pos, curPt);
+                    const SeaId seaId = world.GetSeaFromCoastalPoint(curPt);
+                    RTTR_Assert(seaId);
                     auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(idx);
                     for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
                     {
@@ -726,11 +707,10 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
 
                         hbFound[otherHbId] = true;
                         world.harborData[startHbId].neighbors[shipDir].push_back(
-                          HarborPos::Neighbor(otherHbId, curNode.distance + 1));
+                          HarborPos::Neighbor(otherHbId, seaId, curNode.distance + 1));
 
                         // Make this the only coastal point of this harbor for this sea
                         HarborPos& otherHb = world.harborData[otherHbId];
-                        RTTR_Assert(seaId);
                         for(const auto hbDir : helpers::EnumRange<Direction>{})
                         {
                             if(otherHb.seaIds[hbDir] == seaId && world.GetNeighbour(otherHb.pos, hbDir) != curPt)

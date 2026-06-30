@@ -16,7 +16,7 @@ void ctrlOptionGroup::SetSelection(unsigned selection, bool notify)
     // Aktuellen ausgewählten Button wieder normal machen
     if(this->selection_)
     {
-        auto* button = GetCtrl<ctrlButton>(this->selection_.get());
+        auto* button = GetCtrl<ctrlButton>(*this->selection_);
         RTTR_Assert(button);
         switch(select_type)
         {
@@ -46,7 +46,7 @@ unsigned ctrlOptionGroup::GetSelection() const
 {
     if(!selection_)
         throw std::logic_error("No button selected in option group");
-    return selection_.get();
+    return *selection_;
 }
 
 void ctrlOptionGroup::Msg_ButtonClick(const unsigned ctrl_id)

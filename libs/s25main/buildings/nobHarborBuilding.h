@@ -184,7 +184,7 @@ public:
         {
             const nobMilitary* const search;
             CmpBuilding(const nobMilitary* const search) : search(search) {}
-            bool operator()(const SeaAttackerBuilding& other) const { return other.building == search; }
+            bool operator()(const SeaAttackerBuilding& other) const noexcept { return other.building == search; }
         };
         /// Das Gebäude selbst
         nobMilitary* building;
@@ -193,7 +193,7 @@ public:
         /// Entfernung Hafen - anderer Hafen
         unsigned distance;
 
-        bool operator==(const nobMilitary* const building) const { return (this->building == building); };
+        bool operator==(const nobMilitary* const building) const noexcept { return (this->building == building); };
     };
 
     /// Gibt die Angreifer zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
