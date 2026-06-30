@@ -722,34 +722,19 @@ void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
     drawNodeCallbacks.erase(itPos);
 }
 
-// -----------------------------------------------------------------------------
-// Snap a point to the nearest toroidal copy relative to a reference position.
-// Same formula as s25edit's correctMouseBlit():
-//   k = round((reference - vertex) / mapSize)
-//   vertex += k * mapSize
-//
-// Reference: s25edit/external/s25edit/CMap.cpp :: correctMouseBlit() (line 1088)
-// -----------------------------------------------------------------------------
-DrawPoint GameWorldView::SnapToNearestCopy(DrawPoint pt, const DrawPoint& ref, const DrawPoint& mapPxSize)
+// Snap a point to the nearest toroidal copy (map wrapping) relative to a reference.
+// k = round((reference - pt) / mapSize), pt += k * mapSize.
+DrawPoint GameWorldView::SnapToNearestCopy(DrawPoint pt, DrawPoint ref, DrawPoint mapPxSize)
 {
-    if(mapPxSize.x > 0)
-    {
-        int kx = static_cast<int>(std::floor((ref.x - pt.x) / static_cast<double>(mapPxSize.x) + 0.5));
-        pt.x += kx * mapPxSize.x;
-    }
-    if(mapPxSize.y > 0)
-    {
-        int ky = static_cast<int>(std::floor((ref.y - pt.y) / static_cast<double>(mapPxSize.y) + 0.5));
-        pt.y += ky * mapPxSize.y;
-    }
+    const double kx = std::floor(static_cast<double>(ref.x - pt.x) / mapPxSize.x + 0.5);
+    pt.x += static_cast<int>(kx) * mapPxSize.x;
+    const double ky = std::floor(static_cast<double>(ref.y - pt.y) / mapPxSize.y + 0.5);
+    pt.y += static_cast<int>(ky) * mapPxSize.y;
     return pt;
 }
 
 // -----------------------------------------------------------------------------
-// Draw radius overlay using CorrectMouseBlit for toroidal wrapping.
-// Reference: s25edit/external/s25edit/CMap.cpp :: render() (lines 1159, 1230)
-//   - Computes brush blit positions via correctMouseBlit()
-//   - Draws overlay sprites at those positions
+// Draw radius overlay for a building's working range, handling map wrapping.
 // -----------------------------------------------------------------------------
 void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
 {
