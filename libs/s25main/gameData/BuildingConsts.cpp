@@ -456,7 +456,7 @@ unsigned GetBuildingRadius(BuildingType bld)
                 return nofFarmhand::GetWorkRadius(*job);
             return 0;
         }
-        // All other building types have no relevant radius overlay
+        // Remaining building types have no relevant radius
         default: return 0;
     }
 }
