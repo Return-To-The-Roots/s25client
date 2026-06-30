@@ -49,6 +49,8 @@ class GameWorldView
 
     /// Optional radius preview (center position, radius) drawn as outline on the map
     std::optional<std::pair<MapPoint, unsigned>> radiusPreview_;
+    /// Cached addon status: whether building radius overlay is enabled
+    bool isBuildingRadiusEnabled_;
 
     /// Offset from world origin in screen units (not map units): "scroll position"
     DrawPoint offset;
@@ -123,6 +125,10 @@ public:
 
     /// Set/show a radius preview outline on the map (or clear with std::nullopt)
     void SetRadiusPreview(const std::optional<std::pair<MapPoint, unsigned>>& preview) { radiusPreview_ = preview; }
+
+    /// Update radius preview based on which map node is under the mouse cursor
+    /// Called from mouse-move handler, not from draw loop
+    void UpdateRadiusPreviewForMousePos(const Position& mousePos);
 
     /// Gibt selektierten Punkt zurück
     MapPoint GetSelectedPt() const { return selPt; }
