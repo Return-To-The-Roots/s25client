@@ -156,7 +156,7 @@ const GlobalGameSettings::AddonWithState* GlobalGameSettings::getAddon(AddonId i
 bool GlobalGameSettings::isEnabled(AddonId id) const
 {
     const auto* addon = getAddon(id);
-    return addon && addon->status != 0;
+    return addon && addon->status != addon->addon->getDefaultStatus();
 }
 
 unsigned GlobalGameSettings::getSelection(AddonId id) const
