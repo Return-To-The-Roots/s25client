@@ -5,6 +5,9 @@
 #pragma once
 
 #include "ctrlButton.h"
+#include <functional>
+
+struct MouseCoords;
 class Window;
 
 class ctrlBuildingIcon : public ctrlButton
@@ -15,11 +18,18 @@ public:
     /// liefert den GebäudeTyp des Icons.
     BuildingType GetType() const { return type; }
 
+    /// Set callback for hover-state changes (called with true when hovered, false when not)
+    void SetOnHoverChanged(std::function<void(bool)> cb) { onHoverChanged_ = std::move(cb); }
+
 protected:
     /// zeichnet das Fenster.
     void Draw_() override;
     void DrawContent() const override;
+    bool Msg_MouseMove(const MouseCoords& mc) override;
 
     const BuildingType type; /// der GebäudeType des Icons.
     const Nation nation;     /// Volk
+
+private:
+    std::function<void(bool)> onHoverChanged_;
 };
