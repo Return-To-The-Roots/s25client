@@ -11,6 +11,7 @@
 
 class GameInterface;
 class GameWorldView;
+class ctrlBuildingIcon;
 class ctrlGroup;
 
 class iwAction : public IngameWindow
@@ -68,6 +69,9 @@ private:
     unsigned available_soldiers_count_sea;
     /// Die einzelnen Höhen für die einzelnen Tabs im Bautab
     std::array<unsigned short, 4> building_tab_heights;
+
+    /// Track which icon currently owns the radius preview (to ignore stale leaves)
+    const ctrlBuildingIcon* activeHoveredIcon_;
 
 public:
     iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos,
