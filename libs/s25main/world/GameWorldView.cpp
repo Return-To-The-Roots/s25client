@@ -745,19 +745,19 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
     constexpr unsigned BORDER_COLOR = 0xFFFF0000;
     const DrawPoint mapPxSize(mapSize.x * TR_W, mapSize.y * TR_H);
 
-    // Reference: screen position of the center vertex (with seam offset).
-    const auto centerAlt = world.GetNode(center).altitude;
-    const DrawPoint ref = GetNodePos(center) - DrawPoint(0, HEIGHT_FACTOR * centerAlt) + selPtOffset;
+    // Screen position of the center vertex.
+    // selPtOffset accounts for the pixel shift when the map wraps at the seam.
+    const DrawPoint centerScr = GetNodePos(center, world.GetNode(center).altitude) + selPtOffset;
 
-    for(const auto& [basePt, dist] : pts)
+    for(const auto& [mapPt, dist] : pts)
     {
         if(dist != radius)
             continue;
 
-        DrawPoint scr = GetNodePos(basePt, world.GetNode(basePt).altitude);
-        scr = SnapToNearestCopy(scr, ref, mapPxSize) - offset;
+        DrawPoint screenPt = GetNodePos(mapPt, world.GetNode(mapPt).altitude);
+        screenPt = SnapToNearestCopy(screenPt, centerScr, mapPxSize) - offset;
 
-        Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+        Window::DrawRectangle(Rect(screenPt - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
     }
 }
 
