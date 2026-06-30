@@ -6,7 +6,7 @@
 
 #include "Window.h"
 #include "controls/ctrlBaseTooltip.h"
-#include <boost/optional.hpp>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -37,8 +37,8 @@ public:
     void Remove(unsigned index);
 
     unsigned GetNumLines() const { return static_cast<unsigned>(lines.size()); }
-    const boost::optional<unsigned>& GetSelection() const { return selection_; };
-    void SetSelection(const boost::optional<unsigned>& selection);
+    const std::optional<unsigned>& GetSelection() const { return selection_; };
+    void SetSelection(const std::optional<unsigned>& selection);
 
     bool Msg_MouseMove(const MouseCoords& mc) override;
     bool Msg_LeftDown(const MouseCoords& mc) override;
@@ -51,7 +51,7 @@ protected:
     void Draw_() override;
 
 private:
-    boost::optional<unsigned> GetItemFromPos(const Position& pos) const;
+    std::optional<unsigned> GetItemFromPos(const Position& pos) const;
     Rect GetFullDrawArea() const;
     Rect GetListDrawArea() const;
 
@@ -61,7 +61,7 @@ private:
 
     std::vector<std::string> lines;
 
-    boost::optional<unsigned> selection_;
-    boost::optional<unsigned> mouseover_;
+    std::optional<unsigned> selection_;
+    std::optional<unsigned> mouseover_;
     unsigned pagesize;
 };

@@ -253,8 +253,6 @@ public:
     unsigned GetNumShips() const { return ships.size(); }
     /// Gibt liste der Schiffe zurück
     const std::vector<noShip*>& GetShips() const { return ships; }
-    /// Add all unique harbor buildings at the given sea to the given vector
-    void AddHarborsAtSea(std::vector<nobHarborBuilding*>& harborBuildings, SeaId seaId) const;
     /// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
     unsigned GetShipsToHarbor(const nobHarborBuilding& hb) const;
     /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann

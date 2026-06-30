@@ -192,8 +192,11 @@ public:
     /// Return the ID of the harbor point on that node or 0 if there is none
     HarborId GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harborId; }
     const std::vector<HarborPos::Neighbor>& GetHarborNeighbors(HarborId harborId, const ShipDirection& dir) const;
-    /// Berechnet die Entfernung zwischen 2 Hafenpunkten
-    unsigned CalcHarborDistance(HarborId haborId1, HarborId harborId2) const;
+    /// Return the minimum distance between 2 harbors
+    /// Note: Harbors could be at 2 seas, so there might be multiple, different distances
+    unsigned GetMinHarborDistance(HarborId haborId1, HarborId harborId2) const;
+    /// Return distance between harbors at given sea
+    unsigned GetHarborDistance(HarborId haborId1, HarborId harborId2, SeaId sea) const;
     /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
     SeaId GetSeaFromCoastalPoint(MapPoint pt) const;
 

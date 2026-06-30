@@ -77,7 +77,7 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
 void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 {
     // pressed the send button
-    const unsigned short ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection().get();
+    const unsigned ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection().value();
     const bool isJob = this->GetCtrl<ctrlComboBox>(2)->GetSelection() == 1u;
     boost_variant2<GoodType, Job> what;
     if(isJob)

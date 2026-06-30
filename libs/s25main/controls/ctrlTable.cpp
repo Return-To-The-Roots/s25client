@@ -190,7 +190,7 @@ void ctrlTable::DeleteAllItems()
 
     GetCtrl<ctrlScrollBar>(0)->SetRange(0);
 
-    SetSelection(boost::none);
+    SetSelection(std::nullopt);
     sortColumn_ = -1;
     sortDir_ = TableSortDir::Ascending;
 }
@@ -200,10 +200,10 @@ void ctrlTable::DeleteAllItems()
  *
  *  @param[in] selection Der Auswahlindex
  */
-void ctrlTable::SetSelection(const boost::optional<unsigned>& selection)
+void ctrlTable::SetSelection(const std::optional<unsigned>& selection)
 {
     if(!selection)
-        selection_ = boost::none;
+        selection_ = std::nullopt;
     else if(*selection >= rows_.size())
         return;
     else
@@ -391,14 +391,14 @@ bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
         return RelayMouseMessage(&Window::Msg_RightDown, mc);
 }
 
-boost::optional<unsigned> ctrlTable::GetSelectionFromMouse(const MouseCoords& mc) const
+std::optional<unsigned> ctrlTable::GetSelectionFromMouse(const MouseCoords& mc) const
 {
     const int visibleItem = (mc.pos.y - GetContentDrawArea().top) / font->getHeight();
     if(visibleItem < 0)
-        return boost::none;
+        return std::nullopt;
     const unsigned itemIdx = static_cast<unsigned>(visibleItem) + GetCtrl<ctrlScrollBar>(0)->GetScrollPos();
     if(itemIdx >= GetNumRows())
-        return boost::none;
+        return std::nullopt;
     return itemIdx;
 }
 

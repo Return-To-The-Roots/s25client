@@ -188,7 +188,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const MapDescription& map, c
     if(map.lua_path.has_value() && !bfs::is_regular_file(*map.lua_path))
         return false;
 
-    bfs::path luaFilePath = map.lua_path.get_value_or(bfs::path(mapinfo.filepath).replace_extension("lua"));
+    bfs::path luaFilePath = map.lua_path.value_or(bfs::path(mapinfo.filepath).replace_extension("lua"));
     if(bfs::is_regular_file(luaFilePath))
     {
         if(!mapinfo.luaData.CompressFromFile(luaFilePath, &mapinfo.luaChecksum))

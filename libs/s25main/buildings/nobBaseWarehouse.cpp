@@ -1185,7 +1185,7 @@ void nobBaseWarehouse::AddToInventory(const PeopleCounts& people, bool addToPlay
 
 bool nobBaseWarehouse::CanRecruit(const Job job) const
 {
-    if(const GoodType* requiredTool = JOB_CONSTS[job].tool.get_ptr())
+    if(const auto& requiredTool = JOB_CONSTS[job].tool)
     {
         // Do we have a helper and a tool (if required)?
         return inventory[Job::Helper] > 0 && (*requiredTool == GoodType::Nothing || inventory[*requiredTool] > 0);
@@ -1201,7 +1201,7 @@ bool nobBaseWarehouse::TryRecruitJob(const Job job)
 
     auto& owner = world->GetPlayer(player);
 
-    const GoodType requiredTool = JOB_CONSTS[job].tool.get(); // Validity checked in CanRecruit
+    const GoodType requiredTool = *JOB_CONSTS[job].tool; // Validity checked in CanRecruit
     if(requiredTool != GoodType::Nothing)
     {
         inventory.Remove(requiredTool);

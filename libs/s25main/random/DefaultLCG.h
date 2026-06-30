@@ -44,8 +44,8 @@ public:
 private:
     friend std::ostream& operator<<(std::ostream& os, const DefaultLCG& obj);
     friend std::istream& operator>>(std::istream& is, DefaultLCG& obj);
-    friend bool operator==(const DefaultLCG& lhs, const DefaultLCG& rhs) { return lhs.state_ == rhs.state_; }
-    friend bool operator!=(const DefaultLCG& lhs, const DefaultLCG& rhs) { return !(lhs == rhs); }
+    friend bool operator==(const DefaultLCG& lhs, const DefaultLCG& rhs) noexcept { return lhs.state_ == rhs.state_; }
+    friend bool operator!=(const DefaultLCG& lhs, const DefaultLCG& rhs) noexcept { return !(lhs == rhs); }
 
     unsigned state_;
 };

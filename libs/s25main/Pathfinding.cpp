@@ -4,12 +4,14 @@
 
 #include "GamePlayer.h"
 #include "helpers/EnumRange.h"
+#include "helpers/IdRange.h"
 #include "pathfinding/FreePathFinder.h"
 #include "pathfinding/FreePathFinderImpl.h"
 #include "pathfinding/PathConditionHuman.h"
 #include "pathfinding/PathConditionShip.h"
 #include "pathfinding/PathConditionTrade.h"
 #include "pathfinding/RoadPathFinder.h"
+#include "pathfinding/ShipPathData.h"
 #include "world/GameWorld.h"
 #include "gameTypes/ShipDirection.h"
 #include "gameData/GameConsts.h"
@@ -24,7 +26,7 @@ helpers::OptionalEnum<Direction> GameWorldBase::FindHumanPath(const MapPoint sta
                                     PathConditionHuman(*this)))
         return first_dir;
     else
-        return boost::none;
+        return std::nullopt;
 }
 
 /// Wegfindung für Menschen im Straßennetz
@@ -51,11 +53,10 @@ RoadPathDirection GameWorld::FindPathForWareOnRoads(const noRoadNode& start, con
 }
 
 bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, HarborId harborId, SeaId seaId,
-                                         std::vector<Direction>* route, unsigned* length)
+                                         std::vector<Direction>* route, unsigned* length) const
 {
-    // Find the distance to the furthest harbor from the target harbor and take that as maximum
-    unsigned maxDistance = 0;
     const MapPoint coastalPoint = GetCoastalPoint(harborId, seaId);
+    RTTR_Assert(coastalPoint.isValid());
 
     // already arrived?
     if(start == coastalPoint)
@@ -66,23 +67,52 @@ bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, HarborId harborId
             route->clear();
         return true;
     }
-
-    for(const auto dir : helpers::EnumRange<ShipDirection>{})
+    auto& shipPathData = GetShipPathData();
+    // If we start from a harbor we can get the route directly w/o the costly pathfinding
+    for(const auto startHbId : helpers::idRange<HarborId>(GetNumHarborPoints()))
     {
-        const std::vector<HarborPos::Neighbor>& neighbors = GetHarborNeighbors(harborId, dir);
-        for(const HarborPos::Neighbor& neighbor : neighbors)
+        if(GetCoastalPoint(startHbId, seaId) == start)
         {
-            if(IsHarborAtSea(neighbor.id, seaId) && neighbor.distance > maxDistance)
-                maxDistance = neighbor.distance;
+            auto hbRoute = shipPathData.getHarborConnection(startHbId, harborId, seaId);
+            if(length)
+                *length = hbRoute.size();
+            if(route)
+                *route = std::move(hbRoute);
         }
     }
-    // Add a few fields reserve
-    maxDistance += 6;
-    return FindShipPath(start, coastalPoint, maxDistance, route, length);
+
+    // Try cache first
+    bool reversed = false;
+    if(const auto* cachedPath = shipPathData.findCachedPath(start, coastalPoint, reversed))
+    {
+        if(route)
+        {
+            *route = *cachedPath;
+            if(reversed)
+            {
+                std::reverse(route->begin(), route->end());
+                for(auto& d : *route)
+                    d = d + 3u; // reverse direction
+            }
+        }
+        if(length)
+            *length = cachedPath->size();
+        return true;
+    }
+
+    // Not in cache -> compute full path and add
+    std::vector<Direction> newRoute;
+    if(!FindShipPath(start, coastalPoint, std::numeric_limits<unsigned>::max(), &newRoute, length))
+        return false;
+    shipPathData.addToCache(start, coastalPoint, newRoute);
+    if(route)
+        *route = std::move(newRoute);
+
+    return true;
 }
 
 bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, unsigned maxDistance,
-                                 std::vector<Direction>* route, unsigned* length)
+                                 std::vector<Direction>* route, unsigned* length) const
 {
     return GetFreePathFinder().FindPath(start, dest, true, maxDistance, route, length, nullptr,
                                         PathConditionShip(*this));
@@ -90,7 +120,7 @@ bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, unsi
 
 /// Prüft, ob eine Schiffsroute noch Gültigkeit hat
 bool GameWorld::CheckShipRoute(const MapPoint start, const std::vector<Direction>& route, const unsigned pos,
-                               MapPoint* dest)
+                               MapPoint* dest) const
 {
     return GetFreePathFinder().CheckRoute(start, route, pos, PathConditionShip(*this), dest);
 }
@@ -102,19 +132,19 @@ helpers::OptionalEnum<Direction> GameWorld::FindTradePath(const MapPoint start, 
 {
     unsigned char owner = GetNode(dest).owner;
     if(owner != 0 && !GetPlayer(player).IsAlly(owner - 1))
-        return boost::none;
+        return std::nullopt;
 
     RTTR_Assert(GetNO(dest)->GetType() == NodalObjectType::Flag); // Goal should be the flag of a wh
 
     if(!PathConditionHuman(*this).IsNodeOk(dest))
-        return boost::none;
+        return std::nullopt;
 
     Direction first_dir{};
     if(GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir,
                                     PathConditionTrade(*this, player)))
         return first_dir;
     else
-        return boost::none;
+        return std::nullopt;
 }
 
 bool GameWorld::CheckTradeRoute(const MapPoint start, const std::vector<Direction>& route, unsigned pos,

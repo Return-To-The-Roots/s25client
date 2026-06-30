@@ -136,7 +136,12 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
 {
     using utfDecoder = boost::nowide::detail::utf::utf_traits<char>;
     // Use a 1 Byte and a 2 Byte UTF8 "char"
-    const std::array<std::string, 6> chars = {u8"a", u8"b", u8"c", u8"\u0424", u8"\u041A", u8"\u043b"};
+    const auto chars = []() {
+        std::vector<std::string> res;
+        for(const auto* s : {u8"a", u8"b", u8"c", u8"\u0424", u8"\u041A", u8"\u043b"})
+            res.push_back(reinterpret_cast<const char*>(s));
+        return res;
+    }();
     std::vector<char32_t> codepoints(chars.size() + 1);
     std::transform(chars.begin(), chars.end(), codepoints.begin(), [](const auto& c) {
         auto it = c.begin();

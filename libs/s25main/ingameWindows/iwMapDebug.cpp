@@ -206,8 +206,8 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
                 players->AddItem(p.name);
         }
         players->SetSelection(0);
-        printer->showDataIdx = data->GetSelection().get();
-        printer->playerIdx = players->GetSelection().get();
+        printer->showDataIdx = *data->GetSelection();
+        printer->playerIdx = *players->GetSelection();
     } else
     {
         printer->showDataIdx = 0;

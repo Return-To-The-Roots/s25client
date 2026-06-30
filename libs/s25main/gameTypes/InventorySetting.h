@@ -23,7 +23,7 @@ struct InventorySetting
     constexpr InventorySetting Toggle(EInventorySetting setting) noexcept;
     constexpr void MakeValid() noexcept;
     constexpr explicit operator uint8_t() const noexcept { return state; }
-    friend constexpr bool operator==(const InventorySetting& lhs, const InventorySetting& rhs);
+    friend constexpr bool operator==(const InventorySetting& lhs, const InventorySetting& rhs) noexcept;
 
 private:
     static constexpr uint8_t MakeBitField(EInventorySetting setting) noexcept;
@@ -69,12 +69,12 @@ constexpr void InventorySetting::MakeValid() noexcept
     }
 }
 
-constexpr bool operator!=(const InventorySetting& lhs, const InventorySetting& rhs)
+constexpr bool operator!=(const InventorySetting& lhs, const InventorySetting& rhs) noexcept
 {
     return !(lhs == rhs);
 }
 
-constexpr bool operator==(const InventorySetting& lhs, const InventorySetting& rhs)
+constexpr bool operator==(const InventorySetting& lhs, const InventorySetting& rhs) noexcept
 {
     return lhs.state == rhs.state;
 }

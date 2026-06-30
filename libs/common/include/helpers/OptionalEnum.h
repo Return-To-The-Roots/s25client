@@ -5,9 +5,8 @@
 #pragma once
 
 #include "MaxEnumValue.h"
-#include <boost/none.hpp>
-#include <boost/optional/bad_optional_access.hpp>
 #include <limits>
+#include <optional>
 #include <type_traits>
 
 namespace helpers {
@@ -26,7 +25,7 @@ public:
     using value_type = T;
 
     constexpr OptionalEnum() noexcept = default;
-    OptionalEnum(boost::none_t) noexcept {}
+    OptionalEnum(std::nullopt_t) noexcept {}
     constexpr OptionalEnum(const T& value) noexcept : value_(static_cast<underlying_type>(value)) {}
     constexpr OptionalEnum& operator=(const T& value) noexcept
     {
@@ -41,7 +40,7 @@ public:
     constexpr T value() const
     {
         if(!has_value())
-            throw boost::bad_optional_access();
+            throw std::bad_optional_access();
         return **this;
     }
     constexpr T value_or(T default_value) const { return bool(*this) ? **this : default_value; }
@@ -49,23 +48,23 @@ public:
     constexpr void reset() noexcept { value_ = invalidValue; }
 
     // Those comparisons can be simplified to comparing value_ due to the invalid value being a distinct value
-    friend constexpr bool operator==(OptionalEnum lhs, OptionalEnum rhs) { return lhs.value_ == rhs.value_; }
-    friend constexpr bool operator!=(OptionalEnum lhs, OptionalEnum rhs) { return lhs.value_ != rhs.value_; }
+    friend constexpr bool operator==(OptionalEnum lhs, OptionalEnum rhs) noexcept { return lhs.value_ == rhs.value_; }
+    friend constexpr bool operator!=(OptionalEnum lhs, OptionalEnum rhs) noexcept { return lhs.value_ != rhs.value_; }
     // Technically not required as above operators would be used, but included for better debug performance and
     // mirroring the standard
-    friend constexpr bool operator==(OptionalEnum lhs, const T& rhs)
+    friend constexpr bool operator==(OptionalEnum lhs, const T& rhs) noexcept
     {
         return lhs.value_ == static_cast<underlying_type>(rhs);
     }
-    friend constexpr bool operator!=(OptionalEnum lhs, const T& rhs)
+    friend constexpr bool operator!=(OptionalEnum lhs, const T& rhs) noexcept
     {
         return lhs.value_ != static_cast<underlying_type>(rhs);
     }
-    friend constexpr bool operator==(const T& lhs, OptionalEnum rhs)
+    friend constexpr bool operator==(const T& lhs, OptionalEnum rhs) noexcept
     {
         return static_cast<underlying_type>(lhs) == rhs.value_;
     }
-    friend constexpr bool operator!=(const T& lhs, OptionalEnum rhs)
+    friend constexpr bool operator!=(const T& lhs, OptionalEnum rhs) noexcept
     {
         return static_cast<underlying_type>(lhs) != rhs.value_;
     }

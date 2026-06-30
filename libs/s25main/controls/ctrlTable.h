@@ -6,7 +6,7 @@
 
 #include "Window.h"
 #include "gameTypes/TextureColor.h"
-#include <boost/optional.hpp>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -60,8 +60,8 @@ public:
     TableSortDir GetSortDirection() const { return sortDir_; }
     unsigned short GetNumRows() const { return static_cast<unsigned short>(rows_.size()); }
     unsigned short GetNumColumns() const { return static_cast<unsigned short>(columns_.size()); }
-    const boost::optional<unsigned>& GetSelection() const { return selection_; }
-    void SetSelection(const boost::optional<unsigned>& selection);
+    const std::optional<unsigned>& GetSelection() const { return selection_; }
+    void SetSelection(const std::optional<unsigned>& selection);
 
     bool Msg_LeftDown(const MouseCoords& mc) override;
     bool Msg_RightDown(const MouseCoords& mc) override;
@@ -78,7 +78,7 @@ protected:
 
     /// Setzt die Breite und Position der Buttons ohne Scrolleiste
     void ResetButtonWidths();
-    boost::optional<unsigned> GetSelectionFromMouse(const MouseCoords& mc) const;
+    std::optional<unsigned> GetSelectionFromMouse(const MouseCoords& mc) const;
     /// Get the area of the content (table itself w/o header)
     Rect GetContentDrawArea() const;
     /// Get the full area (element less spacing)
@@ -93,7 +93,7 @@ private:
     Columns columns_;
 
     /// Selected row.
-    boost::optional<unsigned> selection_;
+    std::optional<unsigned> selection_;
     /// Column to sort by. -1 for none
     int sortColumn_;
     TableSortDir sortDir_;
