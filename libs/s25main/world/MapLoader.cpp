@@ -94,6 +94,7 @@ bool MapLoader::LoadLuaScript(Game& game, ILocalGameState& localgameState, const
     if(!bfs::exists(luaFilePath))
         return false;
     auto lua = std::make_unique<LuaInterfaceGame>(game, localgameState);
+    lua->SetMapDir(luaFilePath.parent_path());
     if(!lua->loadScript(luaFilePath) || !lua->CheckScriptVersion())
         return false;
     game.SetLua(std::move(lua));
@@ -254,8 +255,8 @@ bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration ex
         // Will be set later
         node.harborId.reset();
 
-        node.t1 = getTerrainFromS2(t1 & 0x3F); // Only lower 6 bits
-        node.t2 = getTerrainFromS2(t2 & 0x3F); // Only lower 6 bits
+        node.t1 = getTerrainFromS2(t1 & ~0x40); // Clear harbour bit (bit 6)
+        node.t2 = getTerrainFromS2(t2 & ~0x40); // Clear harbour bit (bit 6)
         if(!node.t1 || !node.t2)
             return false;
 
