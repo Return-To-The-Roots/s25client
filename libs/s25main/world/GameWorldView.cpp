@@ -44,7 +44,8 @@
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
     : selPt(0, 0), show_bq(SETTINGS.ingame.showBQ), show_names(SETTINGS.ingame.showNames),
       show_productivity(SETTINGS.ingame.showProductivity), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
-      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
+      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f),
+      isBuildingRadiusEnabled_(GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS))
 {
     updateEffectiveZoomFactor();
     MoveBy({0, 0});
@@ -224,36 +225,9 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
 
-    // Draw radius preview outline
+    // Draw radius preview outline (set by icon-hover or map-hover)
     if(radiusPreview_)
         DrawRadiusOutline(radiusPreview_->first, radiusPreview_->second);
-
-    // Auto-detect radius for the building under the cursor.
-    // Do not trigger hover when the mouse is over an ingame window.
-    if(!radiusPreview_ && GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS)
-       && !WINDOWMANAGER.FindWindowAtPos(VIDEODRIVER.GetMousePos()))
-    {
-        std::optional<BuildingType> bldType;
-        const Visibility vis = gwv.GetVisibility(selPt);
-        if(vis == Visibility::Visible)
-        {
-            const auto* bld = GetWorld().GetSpecObj<noBaseBuilding>(selPt);
-            if(bld)
-                bldType = bld->GetBuildingType();
-        } else if(vis == Visibility::FogOfWar)
-        {
-            const FOWObject* fow = gwv.GetYoungestFOWObject(selPt);
-            if(fow && fow->GetType() == FoW_Type::Building)
-                bldType = static_cast<const fowBuilding&>(*fow).GetBuildingType();
-        }
-
-        if(bldType)
-        {
-            const unsigned bldRadius = GetBuildingRadius(*bldType);
-            if(bldRadius > 0)
-                DrawRadiusOutline(selPt, bldRadius);
-        }
-    }
 
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
@@ -800,6 +774,42 @@ void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
 
         Window::DrawRectangle(Rect(scr - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
     }
+}
+
+void GameWorldView::UpdateRadiusPreviewForMousePos(const Position& mousePos)
+{
+    if(!isBuildingRadiusEnabled_ || WINDOWMANAGER.FindWindowAtPos(mousePos))
+        return;
+
+    const auto& world = GetWorld();
+    std::optional<BuildingType> bldType;
+    switch(gwv.GetVisibility(selPt))
+    {
+        case Visibility::Visible:
+        {
+            const auto* bld = world.GetSpecObj<noBaseBuilding>(selPt);
+            if(bld)
+                bldType = bld->GetBuildingType();
+        }
+        break;
+        case Visibility::FogOfWar:
+        {
+            const FOWObject* fow = gwv.GetYoungestFOWObject(selPt);
+            if(fow && fow->GetType() == FoW_Type::Building)
+                bldType = static_cast<const fowBuilding&>(*fow).GetBuildingType();
+        }
+        break;
+    }
+
+    if(bldType)
+    {
+        const unsigned bldRadius = GetBuildingRadius(*bldType);
+        if(bldRadius > 0)
+            radiusPreview_ = std::make_pair(selPt, bldRadius);
+        else
+            radiusPreview_ = std::nullopt;
+    } else
+        radiusPreview_ = std::nullopt;
 }
 
 void GameWorldView::CalcFxLx()
