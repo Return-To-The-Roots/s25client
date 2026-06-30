@@ -163,7 +163,7 @@ private:
     void DrawRadiusOutline(const MapPoint& center, unsigned radius);
 
     /// Snap a point to the nearest toroidal copy relative to a reference position
-    static DrawPoint SnapToNearestCopy(DrawPoint pt, const DrawPoint& ref, const DrawPoint& mapPxSize);
+    static DrawPoint SnapToNearestCopy(DrawPoint pt, DrawPoint ref, DrawPoint mapPxSize);
 
     void SaveIngameSettingsValues() const;
     void updateEffectiveZoomFactor();
