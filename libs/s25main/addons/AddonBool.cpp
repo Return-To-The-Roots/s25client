@@ -7,7 +7,8 @@
 #include "Window.h"
 #include "controls/ctrlCheck.h"
 
-AddonBool::AddonBool(const AddonId id, AddonGroup groups, const std::string& name, const std::string& description, unsigned defaultStatus)
+AddonBool::AddonBool(const AddonId id, AddonGroup groups, const std::string& name, const std::string& description,
+                     unsigned defaultStatus)
     : Addon(id, groups, name, description, defaultStatus)
 {}
 

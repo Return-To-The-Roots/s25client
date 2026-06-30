@@ -196,7 +196,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
 
                 DrawPoint iconPos((k % 5) * 36, (k / 5) * 36 + 45);
                 ctrlBuildingIcon* icon = build_tab->GetGroup(static_cast<int>(bt))
-                  ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
+                                           ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
 
                 // Store hover callback; activeHoveredIcon_ guards against stale leaves from
                 // reversed child iteration order in Msg_MouseMove dispatch
