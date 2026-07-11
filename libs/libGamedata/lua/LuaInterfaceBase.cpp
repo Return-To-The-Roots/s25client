@@ -168,5 +168,5 @@ bool LuaInterfaceBase::validateUTF8(const std::string& scriptTxt)
 
 void LuaInterfaceBase::log(const std::string& msg)
 {
-    logger_.write("%s\n") % msg;
+    logger_.write("%s\n", suppressStdout_ ? LogTarget::File : LogTarget::FileAndStdout) % msg;
 }
