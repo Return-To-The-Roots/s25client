@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -13,6 +13,7 @@
 #include "world/MapLoader.h"
 #include "gameTypes/MapInfo.h"
 #include "gameData/GameConsts.h"
+#include "s25util/colors.h"
 #include <boost/nowide/iostream.hpp>
 #include <chrono>
 #include <cstdio>
@@ -27,6 +28,7 @@ std::string HumanReadableNumber(unsigned num);
 
 namespace bfs = boost::filesystem;
 namespace bnw = boost::nowide;
+
 using bfs::canonical;
 
 #ifdef WIN32
@@ -41,13 +43,24 @@ void printConsole(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 void printConsole(const char* fmt, ...);
 #endif
 
-HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais)
+HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais,
+                           const bfs::path& luaPath)
     : map_(map), game_(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais)), world_(game_.world_),
       em_(*static_cast<EventManager*>(game_.em_.get()))
 {
     MapLoader loader(world_);
     if(!loader.Load(map))
         throw std::runtime_error("Could not load " + map.string());
+    MapLoader::SetupResources(world_);
+
+    if(!luaPath.empty())
+    {
+        if(!loader.LoadLuaScript(game_, localState_, luaPath))
+            throw std::runtime_error("Failed to load Lua script: " + luaPath.string());
+        world_.GetLua().setSuppressStdout(true);
+        luaPath_ = luaPath;
+        bnw::cout << "Lua script loaded: " << luaPath << '\n';
+    }
 
     players_.clear();
     for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
@@ -137,6 +150,12 @@ void HeadlessGame::RecordReplay(const bfs::path& path, unsigned random_init)
     mapInfo.filepath = map_;
     mapInfo.mapData.CompressFromFile(mapInfo.filepath, &mapInfo.mapChecksum);
     mapInfo.type = MapType::OldMap;
+
+    if(!luaPath_.empty() && bfs::exists(luaPath_))
+    {
+        mapInfo.luaFilepath = luaPath_;
+        mapInfo.luaData.CompressFromFile(luaPath_, &mapInfo.luaChecksum);
+    }
 
     for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
         replay_.AddPlayer(world_.GetPlayer(playerId));
@@ -232,6 +251,7 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
         }
         pi.nation = Nation::Romans;
         pi.team = Team::None;
+        pi.color = PLAYER_COLORS[ret.size() % PLAYER_COLORS.size()];
         ret.push_back(pi);
     }
     return ret;
