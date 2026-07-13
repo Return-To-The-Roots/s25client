@@ -4,6 +4,7 @@
 
 #include "ctrlEdit.h"
 #include "CollisionDetection.h"
+#include "RTTR_Assert.h"
 #include "ctrlTextDeepening.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -62,6 +63,8 @@ std::string ctrlEdit::GetText() const
 
 GetFileNameResult ctrlEdit::GetFileName(const std::string& ext) const
 {
+    RTTR_Assert(editType_ == EditType::Filename);
+
     std::string name = GetText();
     boost::algorithm::trim_if(name, [](char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; });
     if(name.empty())
