@@ -4,7 +4,6 @@
 
 #include "ctrlEdit.h"
 #include "CollisionDetection.h"
-#include "s25util/fileFuncs.h"
 #include "ctrlTextDeepening.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -12,7 +11,11 @@
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
+#include "s25util/fileFuncs.h"
+#include <s25util/strAlgos.h>
 #include <s25util/utf8.h>
+#include <boost/algorithm/string/trim.hpp>
+#include <boost/filesystem/path.hpp>
 #include <boost/nowide/detail/utf.hpp>
 #include <numeric>
 
@@ -34,9 +37,9 @@ ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Exte
 void ctrlEdit::SetText(const std::string& text)
 {
     text_ = s25util::utf8to32(text);
-    if(numberOnly_)
+    if(editType_ == EditType::Number)
         helpers::erase_if(text_, [](char32_t c) { return c < '0' || c > '9'; });
-    if(fileNameOnly_)
+    if(editType_ == EditType::Filename)
         helpers::erase_if(text_, [](char32_t c) { return !isValidFileNameChar(c); });
     if(maxLength_ > 0 && text_.size() > maxLength_)
         text_.resize(maxLength_);
@@ -55,6 +58,19 @@ void ctrlEdit::SetText(const unsigned text)
 std::string ctrlEdit::GetText() const
 {
     return s25util::utf32to8(text_);
+}
+
+GetFileNameResult ctrlEdit::GetFileName(const std::string& ext) const
+{
+    std::string name = GetText();
+    boost::algorithm::trim_if(name, [](char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; });
+    if(name.empty())
+        return {FileNameStatus::Empty, {}};
+    if(!ext.empty() && s25util::toLower(boost::filesystem::path(name).extension().string()) != s25util::toLower(ext))
+        name += ext;
+    if(!isValidFileName(name))
+        return {FileNameStatus::Invalid, {}};
+    return {FileNameStatus::Valid, std::move(name)};
 }
 
 void ctrlEdit::SetFocus(bool focus)
@@ -170,11 +186,9 @@ void ctrlEdit::Draw_()
  */
 void ctrlEdit::AddChar(char32_t c)
 {
-    // Number-only text fields accept numbers only ;)
-    if(numberOnly_ && (c < '0' || c > '9'))
+    if(editType_ == EditType::Number && (c < '0' || c > '9'))
         return;
-    // FileName valid chars only
-    if(fileNameOnly_ && !isValidFileNameChar(c))
+    if(editType_ == EditType::Filename && !isValidFileNameChar(c))
         return;
 
     if(maxLength_ > 0 && text_.size() >= maxLength_)

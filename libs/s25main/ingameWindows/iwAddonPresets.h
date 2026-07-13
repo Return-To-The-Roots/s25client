@@ -6,9 +6,9 @@
 
 #include "IngameWindow.h"
 #include <boost/filesystem/path.hpp>
-#include <optional>
 #include <functional>
 #include <map>
+#include <optional>
 #include <string>
 
 /// Base class for the save/load addon preset windows
@@ -38,7 +38,6 @@ public:
 
 private:
     const std::map<unsigned, unsigned> states_;
-    boost::filesystem::path GetSaveFilePath() const;
     void SaveToPath(const boost::filesystem::path& filePath);
     void DoAction() override;
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;

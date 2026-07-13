@@ -5,11 +5,31 @@
 #pragma once
 
 #include "Window.h"
+#include <string>
 
 struct MouseCoords;
 class glFont;
 class ctrlTextDeepening;
 struct KeyEvent;
+
+enum class EditType
+{
+    Text,
+    Number,
+    Filename
+};
+
+enum class FileNameStatus
+{
+    Empty,
+    Invalid,
+    Valid
+};
+struct GetFileNameResult
+{
+    FileNameStatus status;
+    std::string name; // only set when status == Valid
+};
 
 class ctrlEdit : public Window
 {
@@ -21,12 +41,13 @@ public:
     void SetText(unsigned text);
 
     std::string GetText() const;
+    /// Trims text, appends ext if missing, validates; returns Empty/Invalid/Valid with filename.
+    GetFileNameResult GetFileName(const std::string& ext = "") const;
     void SetFocus(bool focus = true);
     bool HasFocus() const { return focus_; }
     void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
     void SetNotify(bool notify = true) { this->notify_ = notify; }
-    void SetNumberOnly(const bool activated) { this->numberOnly_ = activated; }
-    void SetFileNameOnly(const bool activated) { this->fileNameOnly_ = activated; }
+    void SetType(EditType type) { this->editType_ = type; }
 
     void Resize(const Extent& newSize) override;
 
@@ -59,6 +80,5 @@ private:
     unsigned cursorOffsetX_ = 0;
     unsigned viewStart_ = 0;
 
-    bool numberOnly_ = false;
-    bool fileNameOnly_ = false;
+    EditType editType_ = EditType::Text;
 };

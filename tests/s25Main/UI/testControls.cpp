@@ -241,26 +241,80 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
 
 BOOST_FIXTURE_TEST_CASE(EditFileNameOnlyFiltersInvalidChars, uiHelper::Fixture)
 {
-    const auto font = createMockFont({'a', 'b', '1', '2', ' ', '<', '>', ':', '"', '/', '\\', '|', '?', '*'});
+    const auto font = createMockFont(
+      {'a', 'B', 'c', 'D', '1', '2', '3', '4', ' ', '-', '!', '<', '>', ':', '"', '/', '\\', '|', '?', '*'});
     ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get());
-    edt.SetFileNameOnly(true);
+    edt.SetType(EditType::Filename);
 
     MouseCoords mc(edt.GetPos());
     mc.ldown = true;
     edt.Msg_LeftDown(mc); // give focus
 
-    for(char32_t c : {U'a', U'b', U'1', U'2', U' '})
+    for(char32_t c : {U'a', U'B', U'1', U'2', U' '}) // valid chars
         edt.Msg_KeyDown(KeyEvent(c));
-    BOOST_TEST(edt.GetText() == "ab12 ");
+    BOOST_TEST(edt.GetText() == "aB12 "); // all accepted
 
-    for(char32_t c : {U'<', U'>', U':', U'"', U'/', U'\\', U'|', U'?', U'*'})
+    for(char32_t c : {U'c', U'<', U'D', U'>', U'-', U':', U'"', U'3', U'/', U'\\', U'4', U'|', U'?', U'!',
+                      U'*'}) // mixed valid and invalid chars
         edt.Msg_KeyDown(KeyEvent(c));
-    BOOST_TEST(edt.GetText() == "ab12 "); // all rejected, text unchanged
+    BOOST_TEST(edt.GetText() == "aB12 cD-34!"); // only valid accepted
 
-    // SetText() has its own erase_if filter (separate code path from AddChar - doesn't go through
-    // the font's CharExist() gate, so every char in the expected result must be in the mock font)
-    edt.SetText("a/b\\1");
-    BOOST_TEST(edt.GetText() == "ab1");
+    edt.SetText("a/B\\1");
+    BOOST_TEST(edt.GetText() == "aB1");
+}
+
+BOOST_FIXTURE_TEST_CASE(EditGetFileName, uiHelper::Fixture)
+{
+    const auto font = createMockFont({'?', '.', ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
+                                      'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
+                                      'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', static_cast<char32_t>(0xE9)});
+    ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get());
+    edt.SetType(EditType::Filename);
+
+    edt.SetText("");
+    BOOST_TEST((edt.GetFileName(".ini").status == FileNameStatus::Empty));
+
+    edt.SetText("   "); // whitespace only
+    BOOST_TEST((edt.GetFileName(".ini").status == FileNameStatus::Empty));
+
+    // leading/trailing whitespace trimmed, core name preserved
+    edt.SetText("  mypreset  ");
+    auto r = edt.GetFileName(".ini");
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "mypreset.ini");
+
+    // valid name: extension appended
+    edt.SetText("mypreset");
+    r = edt.GetFileName(".ini");
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "mypreset.ini");
+
+    // extension already present: not duplicated
+    edt.SetText("mypreset.ini");
+    r = edt.GetFileName(".ini");
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "mypreset.ini");
+
+    // 125 chars × 2 bytes + ".ini" = 254 bytes - just fits isValidFileName's 255 byte limit
+    const std::string twoByteChar = "\xC3\xA9"; // 2-byte UTF-8 char (U+00E9 'é')
+    std::string justFitsName;
+    for(int i = 0; i < 125; ++i)
+        justFitsName += twoByteChar;
+    edt.SetText(justFitsName);
+    r = edt.GetFileName(".ini");
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == justFitsName + ".ini");
+
+    // With one more character the name is rejected
+    const std::string oneOverName = justFitsName + twoByteChar;
+    edt.SetText(oneOverName);
+    BOOST_TEST((edt.GetFileName(".ini").status == FileNameStatus::Invalid));
+
+    // no ext: name returned as-is without appending
+    edt.SetText("mypreset");
+    r = edt.GetFileName();
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "mypreset");
 }
 
 BOOST_FIXTURE_TEST_CASE(EditSpaceKeyDoesNotDuplicateChar, uiHelper::Fixture)

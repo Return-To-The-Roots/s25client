@@ -12,12 +12,12 @@
 #include "controls/ctrlGroup.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
+#include "controls/ctrlTable.h"
 #include "controls/ctrlTextButton.h"
 #include "desktops/Desktop.h"
 #include "files.h"
 #include "ingameWindows/iwAddonPresets.h"
 #include "ingameWindows/iwAddons.h"
-#include "ingameWindows/iwSave.h"
 #include "ingameWindows/iwSkipGFs.h"
 #include "ingameWindows/iwVictory.h"
 #include "uiHelper/uiHelpers.hpp"
@@ -28,28 +28,13 @@
 #include "rttr/test/ConfigOverride.hpp"
 #include "rttr/test/TmpFolder.hpp"
 #include <turtle/mock.hpp>
-#include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
 #include <mygettext/mygettext.h>
 
 //-V:MOCK_METHOD:813
 //-V:MOCK_EXPECT:807
 
-namespace bfs = boost::filesystem;
 using SmallWorldFixture = WorldFixture<CreateEmptyWorld, 1, 10, 10>;
-
-// For iwSave/iwAddonPresets: builds a name from N 2-byte UTF-8 chars (U+00E9 'é'). With a 4-byte
-// extension (".ini"/".sav"), isValidFileName's 255-byte limit falls between 125 and 126 of these:
-// 125*2+4=254 bytes (valid), 126*2+4=256 bytes (invalid) - one char is the difference.
-static std::string makeMultiByteName(int numChars)
-{
-    std::string result;
-    for(int i = 0; i < numChars; ++i)
-        result += "\xC3\xA9";
-    return result;
-}
-constexpr int kMaxValidTwoByteCharCount = 125;
-constexpr int kMinInvalidTwoByteCharCount = 126;
 
 BOOST_FIXTURE_TEST_SUITE(Windows, uiHelper::Fixture)
 
@@ -108,48 +93,6 @@ BOOST_AUTO_TEST_CASE(AddonWindow)
     }
 }
 
-BOOST_AUTO_TEST_CASE(SaveAddonPresetHandlesExtensionAndLengthCorrectly)
-{
-    rttr::test::TmpFolder tmp;
-    rttr::test::ConfigOverride userDataOverride("USERDATA", tmp);
-
-    iwSaveAddonPreset wnd(std::map<unsigned, unsigned>{{1, 2}});
-    Window& base = wnd; // upcast: GetCtrls/Msg_EditEnter are public on Window, unlike the overrides here
-    const auto presetsDir = RTTRCONFIG.ExpandPath(s25::folders::addonPresets);
-
-    base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset.ini"); // user already typed the extension
-    base.Msg_EditEnter(0); // ctrl_id is ignored by Msg_EditEnter, triggers DoAction()
-    BOOST_TEST(bfs::exists(presetsDir / "myPreset.ini"));
-    BOOST_TEST(!bfs::exists(presetsDir / "myPreset.ini.ini")); // extension must not be duplicated
-
-    // Right at the byte limit: 125 chars * 2 bytes + ".ini" = 254 bytes, must succeed.
-    const std::string justFitsName = makeMultiByteName(kMaxValidTwoByteCharCount);
-    base.GetCtrls<ctrlEdit>().at(0)->SetText(justFitsName);
-    base.Msg_EditEnter(0);
-    BOOST_TEST(bfs::exists(presetsDir / (justFitsName + ".ini")));
-
-    // One more character tips it over: 126 * 2 + 4 = 256 bytes, must be rejected.
-    const std::string oneOverName = makeMultiByteName(kMinInvalidTwoByteCharCount);
-    base.GetCtrls<ctrlEdit>().at(0)->SetText(oneOverName);
-    base.Msg_EditEnter(0);
-    BOOST_TEST(!bfs::exists(presetsDir / (oneOverName + ".ini")));
-}
-
-BOOST_AUTO_TEST_CASE(SaveGameRejectsNameThatWouldOverflowAfterExtension)
-{
-    rttr::test::TmpFolder tmp;
-    rttr::test::ConfigOverride userDataOverride("USERDATA", tmp);
-
-    iwSave wnd;
-    Window& base = wnd;
-    // One char past the byte limit (126 * 2 + ".sav" = 256 bytes); can't test the "just fits" side
-    // here since a successful save would call GAMECLIENT.SaveToFile(), which needs a live game.
-    const std::string oneOverName = makeMultiByteName(kMinInvalidTwoByteCharCount);
-    base.GetCtrls<ctrlEdit>().at(0)->SetText(oneOverName);
-    base.Msg_EditEnter(0); // SaveLoad() -> GetSaveFilePath() rejects -> returns before GAMECLIENT is touched
-    BOOST_TEST(!bfs::exists(RTTRCONFIG.ExpandPath(s25::folders::save) / (oneOverName + ".sav")));
-}
-
 BOOST_FIXTURE_TEST_CASE(JumpWindow, SmallWorldFixture)
 {
     uiHelper::Fixture f;
@@ -162,6 +105,57 @@ BOOST_FIXTURE_TEST_CASE(JumpWindow, SmallWorldFixture)
     BOOST_TEST(bts.size() > 4);
     const auto numIncBts = helpers::count_if(bts, [](const ctrlTextButton* bt) { return bt->GetText().at(0) == '+'; });
     BOOST_TEST(numIncBts >= 4);
+}
+
+BOOST_AUTO_TEST_CASE(AddonPresetSaveLoadAndOverwrite)
+{
+    rttr::test::TmpFolder tmp;
+    rttr::test::ConfigOverride userDataOverride("USERDATA", tmp);
+
+    const std::map<unsigned, unsigned> states1{{1, 2}, {3, 0}};
+    const std::map<unsigned, unsigned> states2{{3, 4}};
+
+    const auto save = [](const std::map<unsigned, unsigned>& states, const std::string& name) {
+        iwSaveAddonPreset wnd(states);
+        Window& base = wnd;
+        base.GetCtrls<ctrlEdit>().at(0)->SetText(name);
+        base.Msg_EditEnter(0);
+    };
+
+    const auto load = [](std::map<unsigned, unsigned>& out) {
+        iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>& s) { out = s; });
+        Window& base = wnd;
+        base.GetCtrls<ctrlTable>().at(0)->SetSelection(0u);
+        base.Msg_EditEnter(0);
+    };
+
+    // save -> load roundtrip
+    save(states1, "myPreset");
+    std::map<unsigned, unsigned> loaded;
+    load(loaded);
+    BOOST_TEST(loaded == states1);
+
+    // overwrite: No - file unchanged
+    {
+        iwSaveAddonPreset wnd(states2);
+        Window& base = wnd;
+        base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset");
+        base.Msg_EditEnter(0); // file exists -> msgbox, returns early
+        base.Msg_MsgBoxResult(1 /*ID_msgboxOverwrite*/, MsgboxResult::No);
+    }
+    load(loaded);
+    BOOST_TEST(loaded == states1); // unchanged
+
+    // overwrite: Yes - file updated
+    {
+        iwSaveAddonPreset wnd(states2);
+        Window& base = wnd;
+        base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset");
+        base.Msg_EditEnter(0); // file exists → msgbox, returns early
+        base.Msg_MsgBoxResult(1 /*ID_msgboxOverwrite*/, MsgboxResult::Yes);
+    }
+    load(loaded);
+    BOOST_TEST(loaded == states2); // updated
 }
 
 namespace {

@@ -18,9 +18,6 @@
 #include "libsiedler2/libsiedler2.h"
 #include "s25util/Log.h"
 #include "s25util/StringConversion.h"
-#include "s25util/fileFuncs.h"
-#include "s25util/strAlgos.h"
-#include <boost/algorithm/string/trim.hpp>
 #include <boost/filesystem.hpp>
 #include <optional>
 
@@ -88,7 +85,7 @@ iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const std::stri
     // maxLength 251 = 255 filename limit - 4 chars for ".ini"; just discourages absurdly long
     // input, isValidFileName() may still reject it since it counts bytes, not codepoints.
     AddEdit(ID_edtName, DrawPoint(20, 254), Extent(400, 22), TextureColor::Green2, NormalFont, 251);
-    GetCtrl<ctrlEdit>(ID_edtName)->SetFileNameOnly(true);
+    GetCtrl<ctrlEdit>(ID_edtName)->SetType(EditType::Filename);
 
     AddTextButton(ID_btAction, DrawPoint(20, 284), Extent(185, 22), TextureColor::Green2, actionLabel, NormalFont);
     AddTextButton(ID_btDelete, DrawPoint(235, 284), Extent(185, 22), TextureColor::Red1, _("Delete"), NormalFont);
@@ -177,26 +174,22 @@ iwSaveAddonPreset::iwSaveAddonPreset(std::map<unsigned, unsigned> states)
     : iwAddonPresetsBase(_("Save Addon Preset"), _("Save")), states_(std::move(states))
 {}
 
-bfs::path iwSaveAddonPreset::GetSaveFilePath() const
-{
-    std::string name = GetCtrl<ctrlEdit>(ID_edtName)->GetText();
-    boost::algorithm::trim_if(name, [](char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; });
-    if(s25util::toLower(bfs::path(name).extension().string()) != ".ini")
-        name += ".ini";
-    if(!isValidFileName(name))
-        return {};
-    return GetPresetsDir() / name;
-}
-
 void iwSaveAddonPreset::DoAction()
 {
-    const bfs::path filePath = GetSaveFilePath();
-    if(filePath.empty())
+    const auto fileNameResult = GetCtrl<ctrlEdit>(ID_edtName)->GetFileName(".ini");
+    if(fileNameResult.status == FileNameStatus::Empty)
+    {
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Name"), _("Please enter a preset name."), this,
+                                                      MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
+        return;
+    }
+    if(fileNameResult.status == FileNameStatus::Invalid)
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Name"), _("Please enter a valid preset name."), this,
                                                       MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
         return;
     }
+    const bfs::path filePath = GetPresetsDir() / fileNameResult.name;
 
     if(bfs::exists(filePath))
     {
@@ -242,9 +235,9 @@ void iwSaveAddonPreset::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxR
     {
         if(mbr == MsgboxResult::Yes)
         {
-            const bfs::path filePath = GetSaveFilePath();
-            if(!filePath.empty())
-                SaveToPath(filePath);
+            const auto fileNameResult = GetCtrl<ctrlEdit>(ID_edtName)->GetFileName(".ini");
+            if(fileNameResult.status == FileNameStatus::Valid)
+                SaveToPath(GetPresetsDir() / fileNameResult.name);
         }
         return;
     }
