@@ -17,6 +17,9 @@ class iwAddonPresetsBase : public IngameWindow
 public:
     explicit iwAddonPresetsBase(const std::string& title, const std::string& actionLabel);
 
+    static constexpr unsigned ID_msgboxDelete = 0;
+    static constexpr unsigned ID_msgboxOverwrite = 1;
+
 protected:
     void RefreshTable();
     boost::filesystem::path GetSelectedFilePath() const;

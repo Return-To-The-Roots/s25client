@@ -32,8 +32,6 @@ enum
     ID_btDelete,
     ID_txtFolder,
 };
-constexpr unsigned ID_msgboxDelete = 0;
-constexpr unsigned ID_msgboxOverwrite = 1;
 } // namespace
 
 static bfs::path GetPresetsDir()
@@ -90,7 +88,10 @@ iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const std::stri
     AddTextButton(ID_btAction, DrawPoint(20, 284), Extent(185, 22), TextureColor::Green2, actionLabel, NormalFont);
     AddTextButton(ID_btDelete, DrawPoint(235, 284), Extent(185, 22), TextureColor::Red1, _("Delete"), NormalFont);
 
-    bfs::create_directories(presetsDir);
+    boost::system::error_code ec;
+    bfs::create_directories(presetsDir, ec);
+    if(ec)
+        LOG.write("Failed to create addon preset folder %1%: %2%\n") % presetsDir % ec.message();
     RefreshTable();
 }
 

@@ -97,6 +97,14 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed p
 
 iwAddons::~iwAddons() = default;
 
+void iwAddons::Close()
+{
+    // Close an open save/load preset window: the load window holds a callback into this window,
+    // so it must not outlive it
+    WINDOWMANAGER.Close(CGI_ADDON_PRESETS);
+    IngameWindow::Close();
+}
+
 void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)

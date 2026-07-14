@@ -140,8 +140,9 @@ BOOST_AUTO_TEST_CASE(AddonPresetSaveLoadAndOverwrite)
         iwSaveAddonPreset wnd(states2);
         Window& base = wnd;
         base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset");
-        base.Msg_EditEnter(0); // file exists -> msgbox, returns early
-        base.Msg_MsgBoxResult(1 /*ID_msgboxOverwrite*/, MsgboxResult::No);
+        base.Msg_EditEnter(0);
+        base.Msg_MsgBoxResult(iwSaveAddonPreset::ID_msgboxOverwrite, MsgboxResult::No);
+        WINDOWMANAGER.CloseNow(WINDOWMANAGER.GetTopMostWindow()); // free the overwrite prompt
     }
     load(loaded);
     BOOST_TEST(loaded == states1); // unchanged
@@ -151,8 +152,9 @@ BOOST_AUTO_TEST_CASE(AddonPresetSaveLoadAndOverwrite)
         iwSaveAddonPreset wnd(states2);
         Window& base = wnd;
         base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset");
-        base.Msg_EditEnter(0); // file exists → msgbox, returns early
-        base.Msg_MsgBoxResult(1 /*ID_msgboxOverwrite*/, MsgboxResult::Yes);
+        base.Msg_EditEnter(0);
+        base.Msg_MsgBoxResult(iwSaveAddonPreset::ID_msgboxOverwrite, MsgboxResult::Yes);
+        WINDOWMANAGER.CloseNow(WINDOWMANAGER.GetTopMostWindow()); // free the overwrite prompt
     }
     load(loaded);
     BOOST_TEST(loaded == states2); // updated

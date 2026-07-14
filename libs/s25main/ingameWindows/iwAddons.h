@@ -30,6 +30,8 @@ public:
              std::vector<AddonId> whitelistedAddons = {});
     ~iwAddons() override;
 
+    void Close() override;
+
 protected:
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;

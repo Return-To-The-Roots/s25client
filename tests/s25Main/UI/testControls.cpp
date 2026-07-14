@@ -333,7 +333,7 @@ BOOST_FIXTURE_TEST_CASE(EditSpaceKeyDoesNotDuplicateChar, uiHelper::Fixture)
 
     // A real space press fires both of these on SDL2 (SDL_KEYDOWN+SDL_TEXTINPUT) and WinAPI
     // (WM_KEYDOWN+WM_CHAR) for one physical key press.
-    edt.Msg_KeyDown(KeyEvent(KeyType::Space)); // OS "key down" event - now a no-op (case removed)
+    edt.Msg_KeyDown(KeyEvent(KeyType::Space)); // OS "key down" event - must not insert anything
     edt.Msg_KeyDown(KeyEvent(U' '));           // OS "char/text-input" event - inserts the space
     BOOST_TEST(edt.GetText() == " ");          // exactly one space, not two
 }
@@ -348,9 +348,9 @@ BOOST_FIXTURE_TEST_CASE(EditMaxLengthTruncatesInput, uiHelper::Fixture)
 
     for(char32_t c : {U'a', U'b', U'c', U'd', U'e'}) // 5 chars typed, cap is 3
         edt.Msg_KeyDown(KeyEvent(c));
-    BOOST_TEST(edt.GetText() == "abc"); // 4th/5th rejected by AddChar's maxLength_ check
+    BOOST_TEST(edt.GetText() == "abc"); // input beyond maxLength is dropped
 
-    edt.SetText("abcde"); // SetText() truncates too, separate code path
+    edt.SetText("abcde"); // input beyond maxLength is dropped
     BOOST_TEST(edt.GetText() == "abc");
 }
 
