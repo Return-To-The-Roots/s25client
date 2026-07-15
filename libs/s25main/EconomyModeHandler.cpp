@@ -16,8 +16,11 @@
 #include "gameTypes/JobTypes.h"
 #include "gameData/GoodConsts.h"
 #include "gameData/JobConsts.h"
+#include <LeatherLoader.h>
+#include <WineLoader.h>
 #include <array>
 #include <optional>
+#include <vector>
 
 EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), gfLastUpdated(0)
 {
@@ -26,17 +29,23 @@ EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), 
                           GoodType::Shovel, GoodType::Crucible, GoodType::RodAndLine, GoodType::Scythe,
                           GoodType::Cleaver, GoodType::Rollingpin, GoodType::Bow);
 
-    constexpr auto commonGoodPool = helpers::make_array(
-      GoodType::Beer, GoodType::Water, GoodType::Boat, GoodType::Sword, GoodType::Iron, GoodType::Flour, GoodType::Fish,
-      GoodType::Bread, GoodType::Wood, GoodType::Boards, GoodType::Stones, GoodType::Grain, GoodType::Coins,
-      GoodType::Gold, GoodType::IronOre, GoodType::Coal, GoodType::Meat, GoodType::Ham);
+    std::vector<GoodType> commonGoodPool = {
+      GoodType::Beer,  GoodType::Water, GoodType::Boat,    GoodType::Sword,  GoodType::Iron,   GoodType::Flour,
+      GoodType::Fish,  GoodType::Bread, GoodType::Wood,    GoodType::Boards, GoodType::Stones, GoodType::Grain,
+      GoodType::Coins, GoodType::Gold,  GoodType::IronOre, GoodType::Coal,   GoodType::Meat,   GoodType::Ham};
+
+    if(leatheraddon::isAddonActive(*world))
+        commonGoodPool.insert(commonGoodPool.end(), {GoodType::Armor, GoodType::Skins, GoodType::Leather});
+
+    if(wineaddon::isAddonActive(*world))
+        commonGoodPool.insert(commonGoodPool.end(), {GoodType::Grapes, GoodType::Wine});
 
     constexpr unsigned numGoodTypesToCollect = 7;
 
     // Randomly determine *numGoodTypesToCollect* many good types, one of which is a special good (=tool)
 
     static_assert(numGoodTypesToCollect > 0, "There have to be goods to be collected");
-    static_assert(commonGoodPool.size() >= numGoodTypesToCollect - 1, "There have to be enough commond goods");
+    RTTR_Assert(commonGoodPool.size() >= numGoodTypesToCollect - 1);
     static_assert(!specialGoodPool.empty(), "There have to be enough special goods");
     goodsToCollect.reserve(numGoodTypesToCollect);
 
