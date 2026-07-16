@@ -210,12 +210,19 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetEditOverridesSelection, AddonPresetFixture)
     std::optional<std::map<unsigned, unsigned>> loaded;
     iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>& s) { loaded = s; });
     Window& base = wnd;
-    auto* edit = wnd.GetCtrls<ctrlEdit>().at(0);
-    // First row is presetA (rows sorted ascending)
-    wnd.GetCtrls<ctrlTable>().at(0)->SetSelection(0u);
-    BOOST_TEST_REQUIRE(edit->GetText() == "presetA");
+    auto& edit = *wnd.GetCtrls<ctrlEdit>().at(0);
+    auto& table = *wnd.GetCtrls<ctrlTable>().at(0);
+    // Selection drives the edit: each selected row's name lands in the edit (rows sorted ascending)
+    table.SetSelection(0u);
+    BOOST_TEST_REQUIRE(edit.GetText() == "presetA");
+    table.SetSelection(1u);
+    BOOST_TEST(edit.GetText() == "presetB"); // correct name for a non-first row
+    table.SetSelection(std::nullopt);        // deselect
+    BOOST_TEST(edit.GetText() == "");
+    table.SetSelection(0u);
+    BOOST_TEST_REQUIRE(edit.GetText() == "presetA");
     // User now retypes a different existing preset
-    edit->SetText("presetB");
+    edit.SetText("presetB");
     base.Msg_EditEnter(0);
     BOOST_TEST_REQUIRE(loaded.has_value());
     BOOST_TEST(*loaded == statesB);
