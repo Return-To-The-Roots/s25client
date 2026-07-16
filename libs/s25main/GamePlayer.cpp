@@ -2093,7 +2093,7 @@ void GamePlayer::CancelWaresForEmergencyProtocol()
 {
     for(auto it = ware_list.begin(); it != ware_list.end();){
         Ware * ware = *it;
-        if(ware->IsWaitingInWarehouse())
+        if(ware->type == GoodType::Boards && ware->IsWaitingInWarehouse())
         {
             auto* goal = ware->GetGoal();
             if(goal != nullptr && goal->GetBuildingType() != BuildingType::Sawmill && goal->GetBuildingType() != BuildingType::Woodcutter)
