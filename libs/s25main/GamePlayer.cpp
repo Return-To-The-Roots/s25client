@@ -2089,6 +2089,25 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, Harb
     return false;
 }
 
+void GamePlayer::CancelWaresForEmergencyProtocol()
+{
+    for(auto it = ware_list.begin(); it != ware_list.end();){
+        Ware * ware = *it;
+        if(ware->IsWaitingInWarehouse())
+        {
+            auto* goal = ware->GetGoal();
+            if(goal != nullptr && goal->GetBuildingType() != BuildingType::Sawmill && goal->GetBuildingType() != BuildingType::Woodcutter)
+            {
+                ware->NotifyGoalAboutLostWare();
+                static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
+                it = ware_list.erase(it);
+                continue;
+            }
+        }
+        it++;
+    }
+}
+
 void GamePlayer::TestForEmergencyProgramm()
 {
     // we are already defeated, do not even think about an emergency program - it's too late :-(
@@ -2119,6 +2138,9 @@ void GamePlayer::TestForEmergencyProgramm()
             SendPostMessage(std::make_unique<PostMsg>(
               world.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
         }
+
+        //remove all existing ware deliveries to buildings not sawmill or woodcutter
+        CancelWaresForEmergencyProtocol();
     } else
     {
         // Sobald Notfall vorbei, Notfallprogramm beenden, evtl. Baustellen wieder mit Kram versorgen
