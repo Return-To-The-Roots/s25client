@@ -889,6 +889,10 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     }
 }
 
+bool GamePlayer::IsWareFineWithEmergencyProtocol(GoodType goodType, const noBaseBuilding& goal){
+    return (goodType != GoodType::Boards && goodType != GoodType::Stones) || goal.GetBuildingType() == BuildingType::Woodcutter || goal.GetBuildingType() == BuildingType::Sawmill;
+}
+
 Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
 {
     /// Gibt es ein Lagerhaus mit dieser Ware?
@@ -902,8 +906,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
         else
         {
             // Wenn Notfallprogramm aktiv nur an Holzfäller und Sägewerke Bretter/Steine liefern
-            if((ware != GoodType::Boards && ware != GoodType::Stones)
-               || goal.GetBuildingType() == BuildingType::Woodcutter || goal.GetBuildingType() == BuildingType::Sawmill)
+            if(IsWareFineWithEmergencyProtocol(ware,goal))
                 return wh->OrderWare(ware, goal);
             else
                 return nullptr;
@@ -2093,16 +2096,13 @@ void GamePlayer::CancelWaresForEmergencyProtocol()
 {
     for(auto it = ware_list.begin(); it != ware_list.end();){
         Ware * ware = *it;
-        if(ware->type == GoodType::Boards && ware->IsWaitingInWarehouse())
+        // checks if this ware is
+        if(ware->IsWaitingInWarehouse() && !IsWareFineWithEmergencyProtocol(ware->type,*ware->GetGoal()))
         {
-            auto* goal = ware->GetGoal();
-            if(goal != nullptr && goal->GetBuildingType() != BuildingType::Sawmill && goal->GetBuildingType() != BuildingType::Woodcutter)
-            {
-                ware->NotifyGoalAboutLostWare();
-                static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
-                it = ware_list.erase(it);
-                continue;
-            }
+            ware->NotifyGoalAboutLostWare();
+            static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
+            it = ware_list.erase(it);
+            continue;
         }
         it++;
     }
@@ -2137,10 +2137,10 @@ void GamePlayer::TestForEmergencyProgramm()
             emergency = true;
             SendPostMessage(std::make_unique<PostMsg>(
               world.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
-        }
 
-        //remove all existing ware deliveries to buildings not sawmill or woodcutter
-        CancelWaresForEmergencyProtocol();
+            //Handle wares already ordered
+            CancelWaresForEmergencyProtocol();
+        }
     } else
     {
         // Sobald Notfall vorbei, Notfallprogramm beenden, evtl. Baustellen wieder mit Kram versorgen
