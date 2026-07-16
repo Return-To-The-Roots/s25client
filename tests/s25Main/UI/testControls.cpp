@@ -289,17 +289,11 @@ BOOST_FIXTURE_TEST_CASE(EditGetFileName, uiHelper::Fixture)
     BOOST_TEST((r.status == FileNameStatus::Valid));
     BOOST_TEST(r.name == "mypreset.ini");
 
-    // extension already present: not duplicated
+    // extension appended even when the input already ends in it
     edt.SetText("mypreset.ini");
     r = edt.GetFileName(".ini");
     BOOST_TEST((r.status == FileNameStatus::Valid));
-    BOOST_TEST(r.name == "mypreset.ini");
-
-    // mixed-case extension already present: not duplicated
-    edt.SetText("mypreset.INi");
-    r = edt.GetFileName(".ini");
-    BOOST_TEST((r.status == FileNameStatus::Valid));
-    BOOST_TEST(r.name == "mypreset.INi");
+    BOOST_TEST(r.name == "mypreset.ini.ini");
 
     // 125 chars × 2 bytes + ".ini" = 254 bytes - just fits isValidFileName's 255 byte limit
     const std::string twoByteChar = "\xC3\xA9"; // 2-byte UTF-8 char (U+00E9 'é')

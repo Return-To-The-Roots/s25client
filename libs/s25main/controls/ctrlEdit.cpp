@@ -13,10 +13,8 @@
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
 #include "s25util/fileFuncs.h"
-#include <s25util/strAlgos.h>
 #include <s25util/utf8.h>
 #include <boost/algorithm/string/trim.hpp>
-#include <boost/filesystem/path.hpp>
 #include <boost/nowide/detail/utf.hpp>
 #include <numeric>
 
@@ -69,7 +67,7 @@ GetFileNameResult ctrlEdit::GetFileName(const std::string& ext) const
     boost::algorithm::trim_if(name, [](char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; });
     if(name.empty())
         return {FileNameStatus::Empty, {}};
-    if(!ext.empty() && s25util::toLower(boost::filesystem::path(name).extension().string()) != s25util::toLower(ext))
+    if(!ext.empty())
         name += ext;
     if(!isValidFileName(name))
         return {FileNameStatus::Invalid, {}};

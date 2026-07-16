@@ -41,7 +41,7 @@ public:
     void SetText(unsigned text);
 
     std::string GetText() const;
-    /// Trims text, appends ext if missing, validates; returns Empty/Invalid/Valid with filename.
+    /// Trims text, always appends a non-empty ext, validates; returns Empty/Invalid/Valid with filename.
     GetFileNameResult GetFileName(const std::string& ext = "") const;
     void SetFocus(bool focus = true);
     bool HasFocus() const { return focus_; }

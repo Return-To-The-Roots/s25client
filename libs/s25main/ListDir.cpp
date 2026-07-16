@@ -15,7 +15,7 @@ std::vector<bfs::path> ListDir(const bfs::path& path, std::string extension, boo
 {
     std::vector<bfs::path> result;
 
-    if(!bfs::exists(path))
+    if(!bfs::is_directory(path))
         return result;
 
     if(!extension.empty())
