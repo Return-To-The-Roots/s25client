@@ -331,7 +331,6 @@ public:
     const Statistic& GetStatistic(StatisticTime time) const { return statistic[time]; };
     unsigned GetStatisticCurrentValue(StatisticType idx) const { return statisticCurrentData[idx]; }
 
-    bool IsWareFineWithEmergencyProtocol(GoodType goodType, const noBaseBuilding& goal);
     // remove all wares that are already scheduled but ignoring emergency protocol
     void CancelWaresForEmergencyProtocol();
     // Testet ob Notfallprogramm aktiviert werden muss und tut dies dann
