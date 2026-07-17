@@ -139,7 +139,7 @@ struct AddonPresetFixture : uiHelper::Fixture
     // Presets currently on disk, read via a fresh Load window.
     unsigned numPresets()
     {
-        iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) {});
+        iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
         return wnd.GetCtrls<ctrlTable>().at(0)->GetNumRows();
     }
 };
@@ -189,7 +189,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetExtensionInNameIsDistinct, AddonPresetFixture
     BOOST_TEST(load("myPreset") == states);
     BOOST_TEST(load("myPreset.ini") == statesDoubled);
 
-    iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) {});
+    iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
     Window& base = wnd;
     base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset.ini");
     base.Msg_MsgBoxResult(iwAddonPresetsBase::ID_mbDelete, MsgboxResult::Yes);
@@ -233,7 +233,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetDelete, AddonPresetFixture)
     save({{1, 2}}, "toDelete");
     BOOST_TEST_REQUIRE(numPresets() == 1u);
 
-    iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) {});
+    iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
     Window& base = wnd;
     base.GetCtrls<ctrlEdit>().at(0)->SetText("toDelete");
     base.Msg_MsgBoxResult(iwAddonPresetsBase::ID_mbDelete, MsgboxResult::Yes);
@@ -246,7 +246,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetDeleteConfirmationNamesPreset, AddonPresetFix
 {
     save({{1, 2}}, "toDelete");
 
-    iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) {});
+    iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
     Window& base = wnd;
     base.GetCtrls<ctrlEdit>().at(0)->SetText("toDelete");
     base.Msg_ButtonClick(iwAddonPresetsBase::ID_btDelete);
@@ -272,7 +272,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetTargetNotFound, AddonPresetFixture)
     // Load a missing name -> callback not invoked, "Preset Not Found" shown
     {
         bool called = false;
-        iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>&) { called = true; });
+        iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>&) noexcept { called = true; });
         Window& base = wnd;
         base.GetCtrls<ctrlEdit>().at(0)->SetText("missing");
         base.Msg_EditEnter(0);
@@ -285,7 +285,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetTargetNotFound, AddonPresetFixture)
 
     // Delete a missing name -> "Preset Not Found" shown (not the delete confirmation)
     {
-        iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) {});
+        iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
         Window& base = wnd;
         base.GetCtrls<ctrlEdit>().at(0)->SetText("missing");
         base.Msg_ButtonClick(iwAddonPresetsBase::ID_btDelete);
@@ -305,7 +305,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetEmptyNameNoOp, AddonPresetFixture)
     // Load with empty edit -> callback not invoked, no message
     {
         bool called = false;
-        iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>&) { called = true; });
+        iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>&) noexcept { called = true; });
         Window& base = wnd;
         base.Msg_EditEnter(0);
         BOOST_TEST(!called);
@@ -313,7 +313,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetEmptyNameNoOp, AddonPresetFixture)
     }
     // Delete with empty edit -> no message
     {
-        iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) {});
+        iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
         Window& base = wnd;
         base.Msg_ButtonClick(iwAddonPresetsBase::ID_btDelete);
         BOOST_TEST(!dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow()));
@@ -334,7 +334,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetFolderUnavailable, AddonPresetFixture)
     BOOST_TEST_REQUIRE(boost::filesystem::exists(presetsDir));
     BOOST_TEST_REQUIRE(!boost::filesystem::is_directory(presetsDir));
 
-    iwSaveAddonPreset wnd({{1, 2}});
+    iwSaveAddonPreset wnd(std::map<unsigned, unsigned>{{1, 2}});
     BOOST_TEST(wnd.ShouldBeClosed());              // window marked itself for closing
     BOOST_TEST(wnd.GetCtrls<ctrlTable>().empty()); // no controls were built
 

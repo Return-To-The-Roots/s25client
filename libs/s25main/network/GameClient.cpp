@@ -920,10 +920,9 @@ bool GameClient::OnGameMessage(const GameMessage_Map_Info& msg)
     // For local savegame loads the filename comes from our own server and is already a valid
     // filesystem name — sanitizing it (spaces -> underscores) would create a renamed duplicate
     // alongside the original save file.
-    const std::string portFilename =
-      (clientconfig.servertyp == ServerType::Local && msg.mt == MapType::Savegame)
-        ? msg.filename
-        : makePortableFileName(msg.filename);
+    const std::string portFilename = (clientconfig.servertyp == ServerType::Local && msg.mt == MapType::Savegame) ?
+                                       msg.filename :
+                                       makePortableFileName(msg.filename);
     if(portFilename.empty())
     {
         LOG.write("Invalid filename received!\n");
