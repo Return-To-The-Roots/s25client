@@ -889,8 +889,10 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     }
 }
 
-static bool IsWareFineWithEmergencyProtocol(GoodType goodType, const noBaseBuilding& goal){
-    return (goodType != GoodType::Boards && goodType != GoodType::Stones) || goal.GetBuildingType() == BuildingType::Woodcutter || goal.GetBuildingType() == BuildingType::Sawmill;
+static bool IsWareFineWithEmergencyProtocol(GoodType goodType, const noBaseBuilding& goal)
+{
+    return (goodType != GoodType::Boards && goodType != GoodType::Stones)
+           || goal.GetBuildingType() == BuildingType::Woodcutter || goal.GetBuildingType() == BuildingType::Sawmill;
 }
 
 Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
@@ -906,7 +908,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
         else
         {
             // Wenn Notfallprogramm aktiv nur an Holzfäller und Sägewerke Bretter/Steine liefern
-            if(IsWareFineWithEmergencyProtocol(ware,goal))
+            if(IsWareFineWithEmergencyProtocol(ware, goal))
                 return wh->OrderWare(ware, goal);
             else
                 return nullptr;
@@ -2094,10 +2096,12 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, Harb
 
 void GamePlayer::CancelWaresForEmergencyProtocol()
 {
-    for(auto it = ware_list.begin(); it != ware_list.end();){
-        Ware * ware = *it;
+    for(auto it = ware_list.begin(); it != ware_list.end();)
+    {
+        Ware* ware = *it;
         // checks if this ware is
-        if(ware->IsWaitingInWarehouse() && ware->GetGoal() && !IsWareFineWithEmergencyProtocol(ware->type,*ware->GetGoal()))
+        if(ware->IsWaitingInWarehouse() && ware->GetGoal()
+           && !IsWareFineWithEmergencyProtocol(ware->type, *ware->GetGoal()))
         {
             ware->NotifyGoalAboutLostWare();
             static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
@@ -2138,7 +2142,7 @@ void GamePlayer::TestForEmergencyProgramm()
             SendPostMessage(std::make_unique<PostMsg>(
               world.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
 
-            //Handle wares already ordered
+            // Handle wares already ordered
             CancelWaresForEmergencyProtocol();
         }
     } else
