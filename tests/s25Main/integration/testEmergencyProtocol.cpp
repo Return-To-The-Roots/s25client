@@ -30,13 +30,11 @@ struct EmergencyFixture : public WorldFixture<CreateEmptyWorld, 1>
         world.SetBuildingSite(BuildingType::Farm, pos, 0);
         world.BuildRoad(0, false, world.GetNeighbour(pos, Direction::SouthEast),
                         std::vector<Direction>(3, Direction::West));
-
-
+        
         pos = world.GetPlayer(0).GetHQPos() + MapPoint(-3, 0);
         world.SetBuildingSite(BuildingType::Farm, pos, 0);
         world.BuildRoad(0, false, world.GetNeighbour(pos, Direction::SouthEast),
                         std::vector<Direction>(3, Direction::East));
-
 
         //wait until emergency protocol should be activated
         RTTR_EXEC_TILL(500,HQ->GetInventory()[GoodType::Boards] == 10);
@@ -66,11 +64,11 @@ BOOST_FIXTURE_TEST_CASE(EmergencyProtoclActiveWoodcutterAndSawmillCanBuild, Emer
                     std::vector<Direction>(2, Direction::NorthEast));
 
     //check if inventory boards are given out
-    RTTR_EXEC_TILL(500,HQ->GetInventory()[GoodType::Boards] < 10);
+    RTTR_EXEC_TILL(200,HQ->GetInventory()[GoodType::Boards] < 10);
 
     //check if building where found
-    RTTR_EXEC_TILL(10000,world.GetNO(posWoodcutter)->GetType() == NodalObjectType::Building);
-    RTTR_EXEC_TILL(10000,world.GetNO(posSawmill)->GetType() == NodalObjectType::Building);
+    RTTR_EXEC_TILL(2000,world.GetNO(posWoodcutter)->GetType() == NodalObjectType::Building);
+    RTTR_EXEC_TILL(2000,world.GetNO(posSawmill)->GetType() == NodalObjectType::Building);
 }
 
 BOOST_FIXTURE_TEST_CASE(EmergencyProtoclActiveOtherBuldingsnotBuild, EmergencyFixture)
@@ -83,7 +81,7 @@ BOOST_FIXTURE_TEST_CASE(EmergencyProtoclActiveOtherBuldingsnotBuild, EmergencyFi
                     std::vector<Direction>(2, Direction::NorthEast));
 
     //wait for some more ticks to give time if not working to deliver more boards
-    RTTR_SKIP_GFS(200);
+    RTTR_SKIP_GFS(500);
     //check boards are still fine and protocol working
     BOOST_TEST_CHECK(world.GetPlayer(0).GetHQ()->GetInventory()[GoodType::Boards] == 10);
 }
