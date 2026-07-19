@@ -81,7 +81,7 @@ constexpr AINodeResource convertToNodeResource(AISubSurfaceResource res)
     return static_cast<AINodeResource>(static_cast<unsigned>(res));
 }
 
-constexpr bool operator==(AINodeResource lhs, AIResource rhs)
+constexpr bool operator==(AINodeResource lhs, AIResource rhs) noexcept
 {
     return lhs == convertToNodeResource(rhs);
 }

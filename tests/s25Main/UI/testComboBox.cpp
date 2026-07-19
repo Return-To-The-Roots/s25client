@@ -8,8 +8,8 @@
 #include "uiHelper/uiHelpers.hpp"
 #include <rttr/test/random.hpp>
 #include <turtle/mock.hpp>
-#include <boost/optional/optional_io.hpp>
 #include <boost/test/unit_test.hpp>
+#include <helpers/optional_io.h>
 
 //-V:MOCK_METHOD:813
 //-V:MOCK_EXPECT:807

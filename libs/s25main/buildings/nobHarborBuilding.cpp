@@ -835,21 +835,29 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
     if(world->GetGOT(pos) != GO_Type::NobHarborbuilding)
         return connections;
 
-    std::vector<nobHarborBuilding*> harborBuildings;
-    for(SeaId seaId : seaIds)
+    const auto getSharedSea = [&seaIds = this->seaIds, world = this->world](const nobHarborBuilding& harbor) {
+        for(SeaId seaId : seaIds)
+        {
+            if(seaId && world->IsHarborAtSea(harbor.GetHarborPosID(), seaId))
+                return seaId;
+        }
+        return SeaId::invalidValue();
+    };
+    for(auto* harbor_building : world->GetPlayer(player).GetBuildingRegister().GetHarbors())
     {
+        if(harbor_building == this)
+            continue;
+        SeaId seaId = getSharedSea(*harbor_building);
         if(seaId)
-            world->GetPlayer(player).AddHarborsAtSea(harborBuildings, seaId);
-    }
-
-    for(auto* harbor_building : harborBuildings)
-    {
-        ShipConnection sc;
-        sc.dest = harbor_building;
-        // Use twice the distance as cost (ship might need to arrive first) and a fixed value to represent
-        // loading&unloading
-        sc.way_costs = 2 * world->CalcHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID()) + 10;
-        connections.push_back(sc);
+        {
+            ShipConnection sc;
+            sc.dest = harbor_building;
+            // Use twice the distance as cost (ship might need to arrive first) and a fixed value to represent
+            // loading&unloading
+            sc.way_costs =
+              2 * world->GetHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID(), seaId) + 10;
+            connections.push_back(sc);
+        }
     }
     return connections;
 }
@@ -1162,10 +1170,10 @@ nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<HarborId>&
             continue;
 
         // Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
-        unsigned min_distance = 0xffffffff;
+        auto min_distance = std::numeric_limits<unsigned>::max();
         for(HarborId defender_harbor : defender_harbors)
         {
-            min_distance = std::min(min_distance, world->CalcHarborDistance(GetHarborPosID(), defender_harbor));
+            min_distance = std::min(min_distance, world->GetMinHarborDistance(GetHarborPosID(), defender_harbor));
         }
 
         // Gebäude suchen, vielleicht schon vorhanden?
@@ -1198,7 +1206,7 @@ void nobHarborBuilding::AddSeaAttacker(std::unique_ptr<nofAttacker> attacker)
       world->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos());
     for(HarborId harbor_point : harbor_points)
     {
-        unsigned tmp_distance = world->CalcHarborDistance(this->GetHarborPosID(), harbor_point);
+        unsigned tmp_distance = world->GetMinHarborDistance(this->GetHarborPosID(), harbor_point);
         if(tmp_distance < best_distance)
         {
             best_distance = tmp_distance;

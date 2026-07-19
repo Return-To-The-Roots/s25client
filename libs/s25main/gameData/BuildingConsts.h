@@ -33,22 +33,22 @@ constexpr helpers::EnumArray<BuildingQuality, BuildingType> SUPPRESS_UNUSED BUIL
 
 const helpers::EnumArray<BldWorkDescription, BuildingType> SUPPRESS_UNUSED BLD_WORK_DESC = {{
   {}, // HQ
-  {Job::Private, boost::none, WaresNeeded(GoodType::Coins), 1},
-  {Job::Private, boost::none, WaresNeeded(GoodType::Coins), 2},
+  {Job::Private, std::nullopt, WaresNeeded(GoodType::Coins), 1},
+  {Job::Private, std::nullopt, WaresNeeded(GoodType::Coins), 2},
   {Job::Skinner, GoodType::Skins, WaresNeeded(GoodType::Ham), 3},
-  {Job::Private, boost::none, WaresNeeded(GoodType::Coins), 4},
+  {Job::Private, std::nullopt, WaresNeeded(GoodType::Coins), 4},
   {Job::Winegrower, GoodType::Grapes, WaresNeeded(GoodType::Wood, GoodType::Water)},
   {Job::Vintner, GoodType::Wine, WaresNeeded(GoodType::Grapes)},
   {Job::TempleServant, GoodType::Gold, WaresNeeded(GoodType::Wine, GoodType::Meat, GoodType::Bread)},
   {Job::Tanner, GoodType::Leather, WaresNeeded(GoodType::Skins, GoodType::Boards)},
-  {Job::Private, boost::none, WaresNeeded(GoodType::Coins), 6},
+  {Job::Private, std::nullopt, WaresNeeded(GoodType::Coins), 6},
   {Job::Miner, GoodType::Stones, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
   {Job::Miner, GoodType::Coal, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
   {Job::Miner, GoodType::IronOre, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
   {Job::Miner, GoodType::Gold, WaresNeeded(GoodType::Fish, GoodType::Meat, GoodType::Bread), 2, false},
   {Job::Scout}, // No production, just existence
   {Job::LeatherWorker, GoodType::Armor, WaresNeeded(GoodType::Leather)},
-  {Job::Helper, boost::none, WaresNeeded(GoodType::Stones), 4},
+  {Job::Helper, std::nullopt, WaresNeeded(GoodType::Stones), 4},
   {Job::Woodcutter, GoodType::Wood},
   {Job::Fisher, GoodType::Fish},
   {Job::Stonemason, GoodType::Stones},

@@ -1332,15 +1332,12 @@ void GamePlayer::RegulateAllTroops()
         milBld->RegulateTroops();
 }
 
-/// Prüft von allen Militärgebäuden die Fahnen neu
 void GamePlayer::RecalcMilitaryFlags()
 {
     for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
         milBld->LookForEnemyBuildings(nullptr);
 }
 
-/// Sucht für Soldaten ein neues Militärgebäude, als Argument wird Referenz auf die
-/// entsprechende Soldatenanzahl im Lagerhaus verlangt
 void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
 {
     RTTR_Assert(soldier_count > 0);
@@ -1436,7 +1433,6 @@ void GamePlayer::ChangeMilitarySettings(const MilitarySettings& military_setting
     RefreshDefenderList();
 }
 
-/// Setzt neue Werkzeugeinstellungen
 void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings,
                                      const helpers::EnumArray<int8_t, Tool>& orderChanges)
 {
@@ -1459,7 +1455,6 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings,
     }
 }
 
-/// Setzt neue Verteilungseinstellungen
 void GamePlayer::ChangeDistribution(const Distributions& distribution_settings)
 {
     unsigned idx = 0;
@@ -1471,7 +1466,6 @@ void GamePlayer::ChangeDistribution(const Distributions& distribution_settings)
     RecalcDistribution();
 }
 
-/// Setzt neue Baureihenfolge-Einstellungen
 void GamePlayer::ChangeBuildOrder(bool useCustomBuildOrder, const BuildOrders& order_data)
 {
     this->useCustomBuildOrder_ = useCustomBuildOrder;
@@ -1570,7 +1564,6 @@ void GamePlayer::IncreaseMerchandiseStatistic(GoodType type)
     }
 }
 
-/// Calculates current statistics
 void GamePlayer::CalcStatistics()
 {
     // Waren aus der Inventur zählen
@@ -1710,7 +1703,6 @@ void GamePlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned
     }
 }
 
-/// Bündnis (real, d.h. spielentscheidend) abschließen
 void GamePlayer::MakePact(const PactType pt, const unsigned char other_player, const unsigned duration)
 {
     pacts[other_player][pt].accepted = true;
@@ -1722,7 +1714,6 @@ void GamePlayer::MakePact(const PactType pt, const unsigned char other_player, c
       std::make_unique<PostMsg>(world.GetEvMgr().GetCurrentGF(), pt, world.GetPlayer(other_player), true));
 }
 
-/// Zeigt an, ob ein Pakt besteht
 PactState GamePlayer::GetPactState(const PactType pt, const unsigned char other_player) const
 {
     // Prüfen, ob Bündnis in Kraft ist
@@ -1739,7 +1730,6 @@ PactState GamePlayer::GetPactState(const PactType pt, const unsigned char other_
     return PactState::None;
 }
 
-/// all allied players get a letter with the location
 void GamePlayer::NotifyAlliesOfLocation(const MapPoint pt)
 {
     for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
@@ -1751,7 +1741,6 @@ void GamePlayer::NotifyAlliesOfLocation(const MapPoint pt)
     }
 }
 
-/// Gibt die verbleibende Dauer zurück, die ein Bündnis noch laufen wird (DURATION_INFINITE = für immer)
 unsigned GamePlayer::GetRemainingPactTime(const PactType pt, const unsigned char other_player) const
 {
     if(pacts[other_player][pt].duration)
@@ -1769,8 +1758,6 @@ unsigned GamePlayer::GetRemainingPactTime(const PactType pt, const unsigned char
     return 0;
 }
 
-/// Gibt Einverständnis, dass dieser Spieler den Pakt auflösen will
-/// Falls dieser Spieler einen Bündnisvorschlag gemacht hat, wird dieser dagegen zurückgenommen
 void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerIdx)
 {
     // Don't try to cancel pact with self
@@ -1888,11 +1875,9 @@ void GamePlayer::DecreaseInventoryWare(const GoodType ware, const unsigned count
     global_inventory.Remove(ConvertShields(ware), count);
 }
 
-/// Registriert ein Schiff beim Einwohnermeldeamt
 void GamePlayer::RegisterShip(noShip& ship)
 {
     ships.push_back(&ship);
-    // Evtl bekommt das Schiffchen gleich was zu tun?
     GetJobForShip(ship);
 }
 
@@ -1909,7 +1894,6 @@ struct ShipForHarbor
     }
 };
 
-/// Schiff für Hafen bestellen
 bool GamePlayer::OrderShip(nobHarborBuilding& hb)
 {
     std::vector<ShipForHarbor> sfh;
@@ -1981,7 +1965,6 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     return false;
 }
 
-/// Meldet das Schiff wieder ab
 void GamePlayer::RemoveShip(noShip* ship)
 {
     auto it = helpers::find(ships, ship);
@@ -1989,10 +1972,8 @@ void GamePlayer::RemoveShip(noShip* ship)
     ships.erase(it);
 }
 
-/// Versucht, für ein untätiges Schiff eine Arbeit zu suchen
 void GamePlayer::GetJobForShip(noShip& ship)
 {
-    // Evtl. steht irgendwo eine Expedition an und das Schiff kann diese übernehmen
     nobHarborBuilding* best = nullptr;
     int best_points = 0;
     std::vector<Direction> best_route;
@@ -2040,7 +2021,6 @@ void GamePlayer::GetJobForShip(noShip& ship)
 
     // Einen Hafen gefunden?
     if(best)
-        // Dann bekommt das gleich der Hafen
         ship.GoToHarbor(*best, best_route);
 }
 
@@ -2049,7 +2029,6 @@ unsigned GamePlayer::GetShipID(const noShip& ship) const
     return static_cast<unsigned>(helpers::indexOf(ships, &ship));
 }
 
-/// Gibt ein Schiff anhand der ID zurück bzw. nullptr, wenn keines mit der ID existiert
 noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
 {
     if(ship_id >= ships.size())
@@ -2058,19 +2037,6 @@ noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
         return ships[ship_id];
 }
 
-void GamePlayer::AddHarborsAtSea(std::vector<nobHarborBuilding*>& harborBuildings, const SeaId seaId) const
-{
-    for(nobHarborBuilding* harbor : buildings.GetHarbors())
-    {
-        if(helpers::contains(harborBuildings, harbor))
-            continue;
-
-        if(world.IsHarborAtSea(harbor->GetHarborPosID(), seaId))
-            harborBuildings.push_back(harbor);
-    }
-}
-
-/// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
 unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
 {
     unsigned count = 0;
@@ -2083,8 +2049,6 @@ unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
     return count;
 }
 
-/// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
-/// gibt true zurück, falls erfolgreich
 bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, HarborId* goalHarborId,
                                         std::vector<Direction>* route, nobHarborBuilding* exception)
 {
@@ -2169,7 +2133,6 @@ void GamePlayer::TestForEmergencyProgramm()
     }
 }
 
-/// Testet die Bündnisse, ob sie nicht schon abgelaufen sind
 void GamePlayer::TestPacts()
 {
     for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
@@ -2224,9 +2187,6 @@ bool GamePlayer::CanBuildCatapult() const
     return bc.buildings[BuildingType::Catapult] + bc.buildingSites[BuildingType::Catapult] < max;
 }
 
-/// A ship has discovered new hostile territory --> determines if this is new
-/// i.e. there is a sufficient distance to older locations
-/// Returns true if yes and false if not
 bool GamePlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
 {
     // Prüfen, ob Abstand zu bisherigen Punkten nicht zu klein
@@ -2242,7 +2202,6 @@ bool GamePlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
     return true;
 }
 
-/// For debug only
 bool GamePlayer::IsDependentFigure(const noFigure& fig)
 {
     for(const nobBaseWarehouse* wh : buildings.GetStorehouses())
@@ -2293,7 +2252,6 @@ struct WarehouseDistanceComparator
     }
 };
 
-/// Send wares to warehouse wh
 void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, Job>& what, unsigned count) const
 {
     if(!world.GetGGS().isEnabled(AddonId::TRADE))

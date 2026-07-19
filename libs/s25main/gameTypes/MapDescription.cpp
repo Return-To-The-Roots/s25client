@@ -5,6 +5,6 @@
 #include "MapDescription.h"
 
 MapDescription::MapDescription(boost::filesystem::path map_path, MapType map_type,
-                               boost::optional<boost::filesystem::path> lua_path)
+                               std::optional<boost::filesystem::path> lua_path)
     : map_path(std::move(map_path)), map_type(map_type), lua_path(std::move(lua_path))
 {}

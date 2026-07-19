@@ -18,7 +18,7 @@
 struct AddonIdWrapper
 {
     AddonId value;
-    constexpr operator AddonId() const { return value; }
+    constexpr operator AddonId() const noexcept { return value; }
 };
 
 LuaInterfaceSettings::LuaInterfaceSettings(IGameLobbyController& lobbyServerController,

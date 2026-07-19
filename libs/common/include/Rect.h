@@ -43,11 +43,11 @@ struct RectBase
     void move(const position_type& offset);
     static RectBase move(RectBase rect, const position_type& offset);
 
-    constexpr bool operator==(const RectBase& rhs) const
+    constexpr bool operator==(const RectBase& rhs) const noexcept
     {
         return left == rhs.left && top == rhs.top && right == rhs.right && bottom == rhs.bottom;
     }
-    constexpr bool operator!=(const RectBase& rhs) const { return !(*this == rhs); }
+    constexpr bool operator!=(const RectBase& rhs) const noexcept { return !(*this == rhs); }
 };
 
 using Rect = RectBase<int>;

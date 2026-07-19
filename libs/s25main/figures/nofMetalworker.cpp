@@ -40,7 +40,7 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
         // GoodType::Nothing is moved because of adding new wares due addons
         // The old GoodType::Nothing is now GoodType::Grapes
         if(iWare == rttr::enum_cast(GoodType::Grapes))
-            nextProducedTool = boost::none;
+            nextProducedTool = std::nullopt;
         else
             nextProducedTool = GoodType(iWare);
     } else
@@ -164,7 +164,7 @@ helpers::OptionalEnum<GoodType> nofMetalworker::GetOrderedTool()
         random_array.insert(random_array.end(), toolPriority, tool);
     }
     if(random_array.empty())
-        return boost::none;
+        return std::nullopt;
 
     const Tool tool = RANDOM_ELEMENT(random_array);
 
@@ -198,7 +198,7 @@ helpers::OptionalEnum<GoodType> nofMetalworker::GetRandomTool()
     {
         // do nothing if addon is enabled, otherwise produce random ware (orig S2 behavior)
         if(world->GetGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
-            return boost::none;
+            return std::nullopt;
         else
             return RANDOM_ELEMENT(TOOL_TO_GOOD);
     }

@@ -51,7 +51,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
             // GoodType::Nothing is moved because of adding new wares due addons
             // The old GoodType::Nothing is now GoodType::Grapes
             if(iWare == rttr::enum_cast(GoodType::Grapes))
-                ware = boost::none;
+                ware = std::nullopt;
             else
                 ware = GoodType(iWare);
         } else
@@ -60,7 +60,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
     } else
     {
         workplace = nullptr;
-        ware = boost::none;
+        ware = std::nullopt;
         was_sounding = false;
     }
 }
@@ -162,7 +162,7 @@ void nofBuildingWorker::WorkingReady()
             // Warenstatistik erhöhen
             world->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware_type);
             // Tragen nun keine Ware mehr
-            ware = boost::none;
+            ware = std::nullopt;
         }
     }
 

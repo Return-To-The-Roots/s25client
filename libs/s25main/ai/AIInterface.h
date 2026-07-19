@@ -48,7 +48,7 @@ public:
     AISurfaceResource GetSurfaceResource(MapPoint pt) const;
     /// Calculate the surface resource value on a given spot (wood/ stones/ farmland)
     /// when given a direction and lastvalue the calculation will be much faster O(n) vs O(n^2)
-    int CalcResourceValue(MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction = boost::none,
+    int CalcResourceValue(MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction = std::nullopt,
                           int lastval = 0xffff) const;
     /// Calculate the resource value for a given point
     int GetResourceRating(MapPoint pt, AIResource res) const;

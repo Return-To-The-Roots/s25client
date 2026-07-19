@@ -117,7 +117,7 @@ void nofFisher::WorkFinished()
     if(successful)
         ware = GoodType::Fish;
     else
-        ware = boost::none;
+        ware = std::nullopt;
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all

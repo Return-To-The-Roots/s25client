@@ -12,8 +12,8 @@ struct VideoMode
 
     constexpr VideoMode() : width(0), height(0) {}
     constexpr VideoMode(unsigned short width, unsigned short height) : width(width), height(height) {}
-    constexpr bool operator==(const VideoMode& o) const { return (width == o.width && height == o.height); }
-    constexpr bool operator!=(const VideoMode& o) const { return !(*this == o); }
+    constexpr bool operator==(const VideoMode& o) const noexcept { return (width == o.width && height == o.height); }
+    constexpr bool operator!=(const VideoMode& o) const noexcept { return !(*this == o); }
     constexpr bool operator<(const VideoMode& o) const
     {
         if(width != o.width)
@@ -36,10 +36,13 @@ struct DisplayMode
     constexpr DisplayMode() = default;
     constexpr DisplayMode(Type t) : type(t) {}
     constexpr explicit DisplayMode(unsigned t) : type(Type(t)) {}
-    constexpr bool operator==(const Type& t) const { return type == t; }
-    constexpr bool operator!=(const Type& t) const { return type != t; }
-    constexpr bool operator==(const DisplayMode& o) const { return o.type == type && o.resizeable == resizeable; }
-    constexpr bool operator!=(const DisplayMode& o) const { return !(o == *this); }
+    constexpr bool operator==(const Type& t) const noexcept { return type == t; }
+    constexpr bool operator!=(const Type& t) const noexcept { return type != t; }
+    constexpr bool operator==(const DisplayMode& o) const noexcept
+    {
+        return o.type == type && o.resizeable == resizeable;
+    }
+    constexpr bool operator!=(const DisplayMode& o) const noexcept { return !(o == *this); }
 };
 
 constexpr auto maxEnumValue(DisplayMode::Type)

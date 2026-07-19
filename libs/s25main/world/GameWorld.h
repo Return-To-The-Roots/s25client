@@ -20,6 +20,7 @@ class nofAttacker;
 struct PlayerInfo;
 class RoadSegment;
 class TerritoryRegion;
+class TradePathCache;
 
 enum class TerritoryChangeReason
 {
@@ -31,6 +32,8 @@ enum class TerritoryChangeReason
 /// "Interface-Klasse" für das Spiel
 class GameWorld : public GameWorldBase
 {
+    std::unique_ptr<TradePathCache> tradePathCache;
+
     /// Destroys player belongings if that pint does not belong to the player anymore
     void DestroyPlayerRests(MapPoint pt, unsigned char newOwner, const noBaseBuilding* exception);
 
@@ -69,7 +72,7 @@ public:
     /// Kann dieser Punkt von auf Straßen laufenden Menschen betreten werden? (Kämpfe!)
     bool IsRoadNodeForFigures(MapPoint pt);
     /// Lässt alle Figuren, die auf diesen Punkt  auf Wegen zulaufen, anhalten auf dem Weg (wegen einem Kampf)
-    void StopOnRoads(MapPoint pt, helpers::OptionalEnum<Direction> dir = boost::none);
+    void StopOnRoads(MapPoint pt, helpers::OptionalEnum<Direction> dir = std::nullopt);
 
     /// Sagt Bescheid, dass der Punkt wieder freigeworden ist und lässt ggf. Figuren drumherum wieder weiterlaufen
     void RoadNodeAvailable(MapPoint pt);
@@ -91,7 +94,7 @@ public:
                                              unsigned* length = nullptr, MapPoint* firstPt = nullptr,
                                              unsigned max = std::numeric_limits<unsigned>::max());
     /// Prüft, ob eine Schiffsroute noch Gültigkeit hat
-    bool CheckShipRoute(MapPoint start, const std::vector<Direction>& route, unsigned pos, MapPoint* dest);
+    bool CheckShipRoute(MapPoint start, const std::vector<Direction>& route, unsigned pos, MapPoint* dest) const;
     /// Find a route for trade caravanes
     helpers::OptionalEnum<Direction> FindTradePath(MapPoint start, MapPoint dest, unsigned char player,
                                                    unsigned max_route = 0xffffffff, bool random_route = false,
@@ -163,9 +166,6 @@ public:
     MapNode& GetNodeWriteable(MapPoint pt);
     /// Recalculates where border stones should be done after a change in the given region
     void RecalcBorderStones(Position startPt, Extent areaSize);
-
-    /// Create Trade graphs
-    void CreateTradeGraphs() final;
 
 protected:
     void VisibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;

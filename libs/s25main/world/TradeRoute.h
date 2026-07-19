@@ -29,7 +29,7 @@ public:
 
     void Serialize(SerializedGameData& sgd) const;
 
-    /// Gets the next direction the caravane has to take, TradeDirection::ReachedGoal or boost::none
+    /// Gets the next direction the caravane has to take, TradeDirection::ReachedGoal or std::nullopt_t
     helpers::OptionalEnum<TradeDirection> GetNextDir();
     /// Returns the current position. This is assumed to be the position currently walking to and reached by the time
     /// GetNextDir should be called

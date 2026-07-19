@@ -26,6 +26,11 @@ unsigned AddonList::getNumOptions() const
     return options.size();
 }
 
+const std::string& AddonList::getOptionName(unsigned status) const
+{
+    return options.at(status);
+}
+
 AddonList::Gui::Gui(const AddonList& addon, Window& window, bool readonly) : AddonGui(addon, window, readonly)
 {
     DrawPoint cbPos(430, 0);
@@ -48,5 +53,5 @@ unsigned AddonList::Gui::getStatus(const Window& window)
 {
     const auto* cb = window.GetCtrl<ctrlComboBox>(2);
     RTTR_Assert(cb);
-    return cb->GetSelection().get();
+    return *cb->GetSelection();
 }
