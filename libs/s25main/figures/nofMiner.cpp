@@ -156,8 +156,8 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
         if(produceNothingThisCycle)
             return GetNoOutputFallbackGood(settings, workplace->GetBuildingType(), GetObjId());
 
-        if(IsMineResourceDepletable(settings, workplace->GetBuildingType()))
-            ReduceS4LikeResource(*world, resourcePts);
+        // S4-like exhaustion always depletes, but only down to the minimum amount
+        ReduceS4LikeResource(*world, resourcePts);
     }
 
     switch(workplace->GetBuildingType())

@@ -234,6 +234,28 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeMigratesToPerMineBehavio
     BOOST_TEST(ggsLoaded.getSelection(AddonId::INEXHAUSTIBLE_MINES) == 0u);
 }
 
+BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeAlsoMigratesLegacyGraniteAddonValue)
+{
+    // Old data always contains a value for 0x00800000 (formerly INEXHAUSTIBLE_GRANITEMINES, now
+    // GRANITEMINE_RESOURCE_BEHAVIOR). A disabled granite addon must not prevent the legacy global setting from
+    // making granite mines inexhaustible, which is what the old code did.
+    Serializer ser;
+    PushSerializedGGSHeader(ser);
+    ser.PushUnsignedInt(2);
+    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
+    ser.PushUnsignedInt(1);
+    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR));
+    ser.PushUnsignedInt(0);
+
+    Serializer loader(ser.GetData(), ser.GetLength());
+    GlobalGameSettings ggsLoaded;
+    ggsLoaded.Deserialize(loader);
+
+    for(const BuildingType mineType :
+        {BuildingType::GraniteMine, BuildingType::CoalMine, BuildingType::IronMine, BuildingType::GoldMine})
+        BOOST_TEST(GetMineResourceBehavior(ggsLoaded, mineType) == MineResourceBehavior::Inexhaustible);
+}
+
 BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeDoesNotOverridePerMineBehavior)
 {
     Serializer ser;

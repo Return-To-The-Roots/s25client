@@ -32,7 +32,7 @@ inline constexpr unsigned NumEnumValues_v = MaxEnumValue_v<T_Enum> + 1u;
 
 /// Check whether a numeric value is a valid enumerator for an enum type
 template<class T_Enum>
-inline constexpr bool isValidEnumValue(unsigned value)
+constexpr bool isValidEnumValue(unsigned value)
 {
     return value <= MaxEnumValue_v<T_Enum>;
 }
