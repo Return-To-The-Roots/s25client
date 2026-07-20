@@ -60,6 +60,7 @@ RTTR_ATTRIBUTE_NO_UBSAN(vptr) void setProductivity(nobUsual* bld, unsigned short
 using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 2 * helpers::MaxEnumValue_v<BuildingType> + 14, 4>;
 using WorldFixtureMineRadius1P = WorldFixture<CreateEmptyWorld, 1, 20, 12>;
 
+namespace {
 MapPoint FindMinePosition(const WorldFixtureMineRadius1P& fixture)
 {
     for(MapCoord y = MINER_RADIUS; y + MINER_RADIUS < fixture.world.GetSize().y; ++y)
@@ -74,6 +75,7 @@ MapPoint FindMinePosition(const WorldFixtureMineRadius1P& fixture)
 
     return MapPoint::Invalid();
 }
+} // namespace
 
 BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
 {

@@ -200,7 +200,8 @@ BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteMineStillNeedsResourceSpot, GraniteM
 
 BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereProducesWithoutCreatingResource, GraniteMineWithoutResourcesFixture)
 {
-    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
+    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR,
+                     static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
     const MapPoint minePos = CreateGraniteMineWithoutResources();
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
@@ -213,7 +214,8 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereProducesWithoutCreatingResource
 
 BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereIgnoresExistingResource, MineProductionFixture)
 {
-    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
+    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR,
+                     static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
     const MapPoint minePos = CreateMine(BuildingType::GraniteMine, Resource(ResourceType::Coal, 4));
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
@@ -373,6 +375,27 @@ BOOST_FIXTURE_TEST_CASE(CoalMineWorkEverywhereBehaviorProducesWithoutCreatingRes
     BOOST_TEST(static_cast<unsigned>(world.GetNode(minePos).resources.getType())
                == static_cast<unsigned>(ResourceType::Nothing));
     BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 0u);
+}
+
+// Regression test: the out-of-resources notification was moved from nofWorkman::FindPointWithResource into its
+// callers, so every caller (not only mines) must still report it.
+BOOST_FIXTURE_TEST_CASE(WellWithoutWaterReportsOutOfResources, WorldWithGCExecution1P)
+{
+    PostBox& postbox = world.GetPostMgr().AddPostBox(curPlayer);
+    GoodsAndPeopleCounts inv;
+    inv[GoodType::Fish] = 40;
+    inv[Job::Helper] = 2;
+    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(inv, true);
+
+    const MapPoint wellPos = hqPos + MapPoint(2, 0);
+    const auto* well = static_cast<nobUsual*>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Well, wellPos, curPlayer, Nation::Romans));
+    BuildRoad(world.GetNeighbour(wellPos, Direction::SouthEast), false, std::vector<Direction>(2, Direction::West));
+    RTTR_EXEC_TILL(500, well->HasWorker());
+
+    // The empty test world has no water resources at all, so the well must report that it dried out
+    RTTR_EXEC_TILL(2000, postbox.GetNumMsgs() > 0u);
+    BOOST_TEST(well->GetProductivity() == 0u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

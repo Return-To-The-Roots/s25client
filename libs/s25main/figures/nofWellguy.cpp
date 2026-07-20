@@ -118,14 +118,20 @@ helpers::OptionalEnum<GoodType> nofWellguy::ProduceWare()
 bool nofWellguy::AreWaresAvailable() const
 {
     // Check for water
-    return FindPointWithResource(ResourceType::Water).isValid();
+    const bool hasWater = FindPointWithResource(ResourceType::Water).isValid();
+    if(!hasWater)
+        workplace->OnOutOfResources();
+    return hasWater;
 }
 
 bool nofWellguy::StartWorking()
 {
     MapPoint resPt = FindPointWithResource(ResourceType::Water);
     if(!resPt.isValid())
+    {
+        workplace->OnOutOfResources();
         return false;
+    }
     if(world->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 2)
         world->ReduceResource(resPt);
     return nofWorkman::StartWorking();

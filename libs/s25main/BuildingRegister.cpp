@@ -17,21 +17,6 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 
-namespace {
-unsigned CalcAverageProductivity(const std::list<nobUsual*>& buildings,
-                                 unsigned short (nobUsual::*getProductivity)() const)
-{
-    const unsigned numBlds = buildings.size();
-    if(numBlds == 0)
-        return 0;
-
-    unsigned productivity = 0;
-    for(const nobUsual* bld : buildings)
-        productivity += (bld->*getProductivity)();
-    return productivity / numBlds;
-}
-} // namespace
-
 void BuildingRegister::Serialize(SerializedGameData& sgd) const
 {
     sgd.PushObjectContainer(warehouses);
@@ -174,7 +159,16 @@ unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
 {
     if(holds_alternative<boost::none_t>(BLD_WORK_DESC[bldType].producedWare))
         return 0;
-    return ::CalcAverageProductivity(GetBuildings(bldType), &nobUsual::GetProductivity);
+    unsigned productivity = 0;
+    const auto& buildings = GetBuildings(bldType);
+    const unsigned numBlds = buildings.size();
+    if(numBlds > 0)
+    {
+        for(const nobUsual* bld : buildings)
+            productivity += bld->GetProductivity();
+        productivity /= numBlds;
+    }
+    return productivity;
 }
 
 unsigned short BuildingRegister::CalcAverageProductivity() const
