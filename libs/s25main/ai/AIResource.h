@@ -97,7 +97,7 @@ inline helpers::OptionalEnum<ResourceType> convertToResourceType(AIResource res)
         case AIResource::Coal: return ResourceType::Coal;
         case AIResource::Granite: return ResourceType::Granite;
         case AIResource::Fish: return ResourceType::Fish;
-        default: return boost::none;
+        default: return {};
     }
 }
 

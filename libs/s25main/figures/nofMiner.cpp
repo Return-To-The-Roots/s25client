@@ -51,7 +51,7 @@ helpers::OptionalEnum<GoodType> GetLowerGradeFallbackGood(const BuildingType bui
         case BuildingType::GoldMine: return GoodType::IronOre;
         case BuildingType::IronMine: return GoodType::Coal;
         case BuildingType::CoalMine: return GoodType::Stones;
-        default: return boost::none;
+        default: return {};
     }
 }
 
@@ -67,13 +67,13 @@ helpers::OptionalEnum<GoodType> GetNoOutputFallbackGood(const GlobalGameSettings
                 < graniteFallbackChance)
             return GoodType::Stones;
 
-        return boost::none;
+        return {};
     }
 
     if(fallback == MineNoOutputFallback::ProduceLowerGradeResource)
         return GetLowerGradeFallbackGood(buildingType);
 
-    return boost::none;
+    return {};
 }
 
 std::vector<MapPoint> GetPointsWithResource(const GameWorld& world, const MapPoint pos, const ResourceType type)
