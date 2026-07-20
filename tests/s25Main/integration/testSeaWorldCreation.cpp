@@ -264,11 +264,11 @@ BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonAddsCoastalHarbors, SeaWorldFixture)
+BOOST_FIXTURE_TEST_CASE(AdditionalHarborSpotsAddonAddsCoastalHarbors, SeaWorldFixture)
 {
     const unsigned initialHarbors = world.GetNumHarborPoints();
 
-    ggs.setSelection(AddonId::FREE_HARBOR_SPOTS, 1);
+    ggs.setSelection(AddonId::ADDITIONAL_HARBOR_SPOTS, 1);
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, std::vector<MapPoint>(), true));
     world.InitAfterLoad();
 
@@ -288,7 +288,7 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonAddsCoastalHarbors, SeaWorldFixture)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonWorksWithoutMapMarkers, MarkerlessIslandFixture)
+BOOST_FIXTURE_TEST_CASE(AdditionalHarborSpotsAddonWorksWithoutMapMarkers, MarkerlessIslandFixture)
 {
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
     world.InitAfterLoad();
@@ -297,7 +297,7 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonWorksWithoutMapMarkers, MarkerlessIs
     const std::vector<MapPoint> candidates = getMarkerlessHarborCandidates(world);
     BOOST_TEST_REQUIRE(candidates.size() > MapLoader::MAX_GENERATED_HARBOR_SPOTS);
 
-    ggs.setSelection(AddonId::FREE_HARBOR_SPOTS, 1);
+    ggs.setSelection(AddonId::ADDITIONAL_HARBOR_SPOTS, 1);
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
     world.InitAfterLoad();
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == 0u);
@@ -316,7 +316,7 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonWorksWithoutMapMarkers, MarkerlessIs
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonStopsWhenRemainingCandidatesAreTooClose, SmallMarkerlessIslandFixture)
+BOOST_FIXTURE_TEST_CASE(AdditionalHarborSpotsAddonStopsWhenRemainingCandidatesAreTooClose, SmallMarkerlessIslandFixture)
 {
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
     const std::vector<MapPoint> candidates = getMarkerlessHarborCandidates(world);
@@ -339,7 +339,7 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonStopsWhenRemainingCandidatesAreTooCl
     testHarborPoint(world, HarborId(1));
 }
 
-BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonIsDeterministic, MarkerlessIslandFixture)
+BOOST_FIXTURE_TEST_CASE(AdditionalHarborSpotsAddonIsDeterministic, MarkerlessIslandFixture)
 {
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, std::vector<MapPoint>(), true));
     world.InitAfterLoad();
@@ -359,7 +359,8 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonIsDeterministic, MarkerlessIslandFix
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonSpreadsGeneratedHarborsBeyondEarlyScanCluster, LargeMarkerlessIslandFixture)
+BOOST_FIXTURE_TEST_CASE(AdditionalHarborSpotsAddonSpreadsGeneratedHarborsBeyondEarlyScanCluster,
+                        LargeMarkerlessIslandFixture)
 {
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, std::vector<MapPoint>(), true));
     world.InitAfterLoad();
@@ -374,7 +375,7 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonSpreadsGeneratedHarborsBeyondEarlySc
       std::any_of(generatedHarbors.begin(), generatedHarbors.end(), [](const MapPoint pt) { return pt.y >= 70; }));
 }
 
-BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonKeepsGeneratedHarborsAwayFromExistingOnes, MarkerlessIslandFixture)
+BOOST_FIXTURE_TEST_CASE(AdditionalHarborSpotsAddonKeepsGeneratedHarborsAwayFromExistingOnes, MarkerlessIslandFixture)
 {
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
     const std::vector<MapPoint> candidates = getMarkerlessHarborCandidates(world);
@@ -394,13 +395,13 @@ BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonKeepsGeneratedHarborsAwayFromExistin
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(FreeHarborSpotsAddonDoesNotAffectRuntimeBQRecalculation, MarkerlessIslandFixture)
+BOOST_FIXTURE_TEST_CASE(AdditionalHarborSpotsAddonDoesNotAffectRuntimeBQRecalculation, MarkerlessIslandFixture)
 {
     BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world));
     const std::vector<MapPoint> candidates = getMarkerlessHarborCandidates(world);
     BOOST_TEST_REQUIRE(!candidates.empty());
 
-    ggs.setSelection(AddonId::FREE_HARBOR_SPOTS, 1);
+    ggs.setSelection(AddonId::ADDITIONAL_HARBOR_SPOTS, 1);
     world.RecalcBQ(candidates.front());
 
     BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == 0u);

@@ -75,7 +75,7 @@ void GlobalGameSettings::registerAllAddons()
         AddonDurableGeologistSigns,
         AddonEconomyModeGameLength,
         AddonExhaustibleWater,
-        AddonFreeHarborSpots,
+        AddonAdditionalHarborSpots,
         AddonFrontierDistanceReachable,
         AddonHalfCostMilEquip,
         AddonInexhaustibleFish,

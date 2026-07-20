@@ -36,7 +36,6 @@
 #include "s25util/Log.h"
 #include <boost/filesystem/operations.hpp>
 #include <algorithm>
-#include <iterator>
 #include <limits>
 #include <map>
 #include <queue>
@@ -60,7 +59,8 @@ bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration explora
         return false;
     PlaceObjects(map);
     PlaceAnimals(map);
-    if(!InitSeasAndHarbors(world_, std::vector<MapPoint>(), world_.GetGGS().isEnabled(AddonId::FREE_HARBOR_SPOTS)))
+    if(!InitSeasAndHarbors(world_, std::vector<MapPoint>(),
+                           world_.GetGGS().isEnabled(AddonId::ADDITIONAL_HARBOR_SPOTS)))
         return false;
 
     /// Schatten
@@ -531,20 +531,11 @@ bool hasEligibleHarborCoast(const World& world, const MapPoint pt)
 {
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
+        // Skip the NW point because a harbor north of an island often has no usable path from that coastal point.
         if(dir != Direction::NorthWest && world.GetSeaFromCoastalPoint(world.GetNeighbour(pt, dir)))
             return true;
     }
     return false;
-}
-
-bool isFarEnoughFromHarbors(const World& world, const MapPoint pt, const std::vector<MapPoint>& harborPositions)
-{
-    for(const MapPoint harborPt : harborPositions)
-    {
-        if(world.CalcDistance(pt, harborPt) < MapLoader::MIN_GENERATED_HARBOR_DISTANCE)
-            return false;
-    }
-    return true;
 }
 
 unsigned getMinimumHarborDistance(const World& world, const MapPoint pt, const std::vector<MapPoint>& harborPositions)
@@ -572,33 +563,34 @@ std::vector<MapPoint> getGeneratedHarbors(const World& world)
             continue;
         if(!hasEligibleHarborCoast(world, pt))
             continue;
-        if(!isFarEnoughFromHarbors(world, pt, harborPositions))
+        if(helpers::contains_if(harborPositions, [&](const MapPoint harborPt) {
+               return world.CalcDistance(pt, harborPt) < MapLoader::MIN_GENERATED_HARBOR_DISTANCE;
+           }))
             continue;
 
         candidates.push_back(pt);
     }
 
     std::vector<MapPoint> generatedHarbors;
-    while(!candidates.empty() && generatedHarbors.size() < MapLoader::MAX_GENERATED_HARBOR_SPOTS)
+    while(generatedHarbors.size() < MapLoader::MAX_GENERATED_HARBOR_SPOTS)
     {
-        auto bestCandidate = candidates.begin();
-        unsigned bestDistance = getMinimumHarborDistance(world, *bestCandidate, harborPositions);
-        for(auto it = std::next(candidates.begin()); it != candidates.end(); ++it)
+        MapPoint bestCandidate = MapPoint::Invalid();
+        unsigned bestDistance = 0;
+        for(const MapPoint candidate : candidates)
         {
-            const unsigned distance = getMinimumHarborDistance(world, *it, harborPositions);
+            const unsigned distance = getMinimumHarborDistance(world, candidate, harborPositions);
             if(distance > bestDistance)
             {
                 bestDistance = distance;
-                bestCandidate = it;
+                bestCandidate = candidate;
             }
         }
 
         if(bestDistance < MapLoader::MIN_GENERATED_HARBOR_DISTANCE)
             break;
 
-        generatedHarbors.push_back(*bestCandidate);
-        harborPositions.push_back(*bestCandidate);
-        candidates.erase(bestCandidate);
+        generatedHarbors.push_back(bestCandidate);
+        harborPositions.push_back(bestCandidate);
     }
     return generatedHarbors;
 }
