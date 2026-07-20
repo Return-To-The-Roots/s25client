@@ -19,7 +19,6 @@
 #include "lua/GameDataLoader.h"
 #include "pathfinding/PathConditionShip.h"
 #include "random/Random.h"
-// Note: BQCalculator.h is not self-contained and must be included after GameWorldBase.h
 #include "world/BQCalculator.h"
 #include "world/World.h"
 #include "nodeObjs/noAnimal.h"
