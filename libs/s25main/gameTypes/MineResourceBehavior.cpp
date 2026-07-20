@@ -49,7 +49,7 @@ helpers::OptionalEnum<BuildingType> GetMineBuildingType(const ResourceType resou
         case ResourceType::Iron: return BuildingType::IronMine;
         case ResourceType::Coal: return BuildingType::CoalMine;
         case ResourceType::Granite: return BuildingType::GraniteMine;
-        default: return boost::none;
+        default: return {};
     }
 }
 
