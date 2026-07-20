@@ -10,9 +10,11 @@
 /**
  *  Deprecated global mine setting.
  *
- *  Not registered anymore. The ID is still decoded when loading old
- * settings/savegames and migrated to the per-mine
+ *  Not registered anymore. The ID is still decoded when loading old settings/savegames and migrated to the per-mine
  *  resource behavior settings.
+ *
+ *  TODO(Replay) TODO(Savegame): Remove this compatibility class when legacy global mine settings no longer need
+ *  migration.
  */
 class AddonInexhaustibleMines : public AddonBool
 {

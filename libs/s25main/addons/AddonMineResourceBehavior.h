@@ -20,6 +20,21 @@ protected:
     {}
 };
 
+/**
+ * Granite mine resource behavior list.
+ *
+ * Reuses the legacy granite-mine addon value 0x00800000: saved value 0 remains the default behavior and saved value 1
+ * selects the inexhaustible behavior.
+ */
+class AddonGraniteMineResourceBehavior : public AddonMineResourceBehaviorBase
+{
+public:
+    AddonGraniteMineResourceBehavior()
+        : AddonMineResourceBehaviorBase(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, _("Granite Mine Resource Behavior"),
+                                        _("Configures how granite mines consume and exhaust stone deposits."))
+    {}
+};
+
 class AddonCoalMineResourceBehavior : public AddonMineResourceBehaviorBase
 {
 public:
