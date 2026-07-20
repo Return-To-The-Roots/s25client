@@ -47,6 +47,9 @@ public:
     bool isEnabled(AddonId id) const;
     unsigned getSelection(AddonId id) const;
     void setSelection(AddonId id, unsigned selection);
+    /// Apply the removed global INEXHAUSTIBLE_MINES addon: make every mine type that is still at its default behavior
+    /// inexhaustible. Used to migrate old settings, savegames and Lua scripts.
+    void applyLegacyInexhaustibleMines();
 
     /// loads the saved addon configuration from the SETTINGS.
     void LoadSettings();
