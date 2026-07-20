@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "world/MapLoader.h"
-#include "BQCalculator.h"
 #include "Game.h"
 #include "GamePlayer.h"
 #include "GameWorldBase.h"
@@ -20,6 +19,8 @@
 #include "lua/GameDataLoader.h"
 #include "pathfinding/PathConditionShip.h"
 #include "random/Random.h"
+// Note: BQCalculator.h is not self-contained and must be included after GameWorldBase.h
+#include "world/BQCalculator.h"
 #include "world/World.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
@@ -546,7 +547,7 @@ unsigned getMinimumHarborDistance(const World& world, const MapPoint pt, const s
     return minDistance;
 }
 
-std::vector<MapPoint> getGeneratedHarbors(const World& world)
+std::vector<MapPoint> selectAdditionalHarborSpots(const World& world)
 {
     std::vector<MapPoint> harborPositions;
     harborPositions.reserve(world.GetNumHarborPoints() + MapLoader::MAX_GENERATED_HARBOR_SPOTS);
@@ -625,7 +626,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
 
     if(generateHarborSpots)
     {
-        for(MapPoint pt : getGeneratedHarbors(world))
+        for(MapPoint pt : selectAdditionalHarborSpots(world))
             world.harborData.push_back(HarborPos(pt));
     }
 

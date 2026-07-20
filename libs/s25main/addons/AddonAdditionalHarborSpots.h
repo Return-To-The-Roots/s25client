@@ -11,8 +11,7 @@ class AddonAdditionalHarborSpots : public AddonBool
 {
 public:
     AddonAdditionalHarborSpots()
-        : AddonBool(AddonId::ADDITIONAL_HARBOR_SPOTS, AddonGroup::GamePlay,
-                    _("Dangerous: Add extra harbor spots"),
+        : AddonBool(AddonId::ADDITIONAL_HARBOR_SPOTS, AddonGroup::GamePlay, _("Dangerous: Add extra harbor spots"),
                     _("Advanced option. Converts a small set of suitable coastal castle sites to harbor spots. "
                       "Caution: May alter intended map seafaring design."))
     {}

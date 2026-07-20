@@ -53,7 +53,6 @@
 
 #include "addons/AddonCoinsCapturedBld.h"
 #include "addons/AddonDemolishBldWORes.h"
-#include "addons/AddonAdditionalHarborSpots.h"
 #include "addons/AddonFrontierDistanceReachable.h"
 
 #include "addons/AddonDurableGeologistSigns.h"
@@ -62,6 +61,7 @@
 
 #include "addons/AddonAutoFlags.h"
 
+#include "addons/AddonAdditionalHarborSpots.h"
 #include "addons/AddonArmorCapturedBld.h"
 #include "addons/AddonForesterFarmFieldAvoidance.h"
 #include "addons/AddonLeather.h"
