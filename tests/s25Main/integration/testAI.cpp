@@ -181,7 +181,7 @@ BOOST_FIXTURE_TEST_CASE(MineWorkEverywhereAffectsMatchingAIResourceOnly, EmptyWo
 BOOST_FIXTURE_TEST_CASE(GraniteWorkEverywhereAffectsGraniteOnly, EmptyWorldFixture1P)
 {
     makeWorldMineable(world);
-    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
+    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
 
     AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
     makeMineNodesUsableForSearch(ai, world, 0);
@@ -194,7 +194,7 @@ BOOST_FIXTURE_TEST_CASE(GraniteWorkEverywhereAffectsGraniteOnly, EmptyWorldFixtu
 BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteDoesNotImplyWorkEverywhereForAI, EmptyWorldFixture1P)
 {
     makeWorldMineable(world);
-    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, 1);
+    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, 1);
 
     AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
     makeMineNodesUsableForSearch(ai, world, 0);

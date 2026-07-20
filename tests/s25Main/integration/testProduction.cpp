@@ -188,7 +188,7 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineWithoutResourcesNeedsAddon, GraniteMineWithou
 
 BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteMineStillNeedsResourceSpot, GraniteMineWithoutResourcesFixture)
 {
-    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, 1);
+    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, 1);
     CreateGraniteMineWithoutResources();
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
@@ -200,7 +200,7 @@ BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteMineStillNeedsResourceSpot, GraniteM
 
 BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereProducesWithoutCreatingResource, GraniteMineWithoutResourcesFixture)
 {
-    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
+    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
     const MapPoint minePos = CreateGraniteMineWithoutResources();
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
@@ -213,7 +213,7 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereProducesWithoutCreatingResource
 
 BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereIgnoresExistingResource, MineProductionFixture)
 {
-    ggs.setSelection(AddonId::INEXHAUSTIBLE_GRANITEMINES, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
+    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
     const MapPoint minePos = CreateMine(BuildingType::GraniteMine, Resource(ResourceType::Coal, 4));
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];

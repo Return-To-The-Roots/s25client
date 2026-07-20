@@ -178,11 +178,10 @@ bool nofMiner::AreWaresAvailable() const
     if(behavior == MineResourceBehavior::WorkEverywhere)
         return true;
 
-    if(FindPointWithResource(GetRequiredResType(), false).isValid())
-        return true;
-
-    workplace->OnOutOfResources();
-    return false;
+    const bool hasResources = FindPointWithResource(GetRequiredResType()).isValid();
+    if(!hasResources)
+        workplace->OnOutOfResources();
+    return hasResources;
 }
 
 bool nofMiner::StartWorking()
@@ -194,7 +193,10 @@ bool nofMiner::StartWorking()
 
     const MapPoint resPt = FindPointWithResource(GetRequiredResType());
     if(!resPt.isValid())
+    {
+        workplace->OnOutOfResources();
         return false;
+    }
 
     if(behavior != MineResourceBehavior::S4LikeExhaustion
        && IsMineResourceDepletable(settings, workplace->GetBuildingType()))

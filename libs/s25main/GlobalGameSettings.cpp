@@ -107,7 +107,7 @@ void GlobalGameSettings::registerAllAddons()
         AddonFrontierDistanceReachable,
         AddonHalfCostMilEquip,
         AddonInexhaustibleFish,
-        AddonInexhaustibleGraniteMines,
+        AddonGraniteMineResourceBehavior,
         AddonCoalMineResourceBehavior,
         AddonIronMineResourceBehavior,
         AddonGoldMineResourceBehavior,

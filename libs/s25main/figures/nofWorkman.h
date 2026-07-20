@@ -37,7 +37,7 @@ protected:
     virtual bool StartWorking();
 
     /// Looks for a point with a given resource on the node
-    MapPoint FindPointWithResource(ResourceType type, bool notify = true) const;
+    MapPoint FindPointWithResource(ResourceType type) const;
 
 public:
     nofWorkman(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);

@@ -26,7 +26,7 @@ AddonId GetMineResourceBehaviorAddonId(const BuildingType buildingType)
         case BuildingType::GoldMine: return AddonId::GOLDMINE_RESOURCE_BEHAVIOR;
         case BuildingType::IronMine: return AddonId::IRONMINE_RESOURCE_BEHAVIOR;
         case BuildingType::CoalMine: return AddonId::COALMINE_RESOURCE_BEHAVIOR;
-        default: return AddonId::INEXHAUSTIBLE_GRANITEMINES;
+        default: return AddonId::GRANITEMINE_RESOURCE_BEHAVIOR;
     }
 }
 
