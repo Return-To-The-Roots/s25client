@@ -44,15 +44,15 @@ constexpr std::array AUTO_SAVE_INTERVALS{1min, 5min, 10min, 15min, 30min, 60min,
 } // namespace
 
 iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const unsigned addHeight)
-    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + addHeight), window_title,
+    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(700, 400 + addHeight), window_title,
                    LOADER.GetImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
-    AddTable(ID_tblSaveGames, DrawPoint(20, 30), Extent(560, 300), TextureColor::Green2, NormalFont,
+    AddTable(ID_tblSaveGames, DrawPoint(20, 30), Extent(660, 300), TextureColor::Green2, NormalFont,
              ctrlTable::Columns{{_("Filename"), 320, SRT::String},
                                 {_("Map"), 250, SRT::String},
-                                {_("Time"), 250, SRT::Date},
-                                {_("Game Time"), 320, SRT::Time},
+                                {_("Time"), 160, SRT::Date},
+                                {_("Game Time"), 115, SRT::Time},
                                 {}});
 
     AddText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
