@@ -30,13 +30,12 @@ public:
 
 protected:
     void RefreshTable();
-    /// Resolves the preset file the name edit points at, or empty if the name is
-    /// empty/invalid or no preset with that name exists.
+    /// Resolves the preset file whose display name matches the currently entered name, or empty if
+    /// the name field is empty or no such preset exists.
     boost::filesystem::path GetTargetFilePath() const;
-    /// Like GetTargetFilePath(), but if a name was entered that doesn't resolve to an existing
-    /// preset (e.g. the user edited the name), informs the user before returning empty.
-    /// An empty name stays a silent no-op.
-    boost::filesystem::path GetTargetFileOrNotify();
+    /// Like GetTargetFilePath(), but if a name was entered that doesn't match any preset, informs the
+    /// user before returning empty. An empty name stays a silent no-op.
+    boost::filesystem::path GetTargetFileOrNotify() const;
 
     void Msg_EditEnter(unsigned ctrl_id) override;
     void Msg_ButtonClick(unsigned ctrl_id) override;

@@ -277,11 +277,17 @@ BOOST_FIXTURE_TEST_CASE(EditGetFileName, uiHelper::Fixture)
     edt.SetText("   "); // whitespace only
     BOOST_TEST((edt.GetFileName(".ini").status == FileNameStatus::Empty));
 
-    // leading/trailing whitespace trimmed, core name preserved
+    // leading whitespace trimmed, trailing kept - not at the end of the filename
     edt.SetText("  mypreset  ");
     auto r = edt.GetFileName(".ini");
     BOOST_TEST((r.status == FileNameStatus::Valid));
-    BOOST_TEST(r.name == "mypreset.ini");
+    BOOST_TEST(r.name == "mypreset  .ini");
+
+    // trailing space right before the extension round-trips
+    edt.SetText("abc ");
+    r = edt.GetFileName(".ini");
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "abc .ini");
 
     // valid name: extension appended
     edt.SetText("mypreset");
@@ -312,6 +318,12 @@ BOOST_FIXTURE_TEST_CASE(EditGetFileName, uiHelper::Fixture)
 
     // no ext: name returned as-is without appending
     edt.SetText("mypreset");
+    r = edt.GetFileName();
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "mypreset");
+
+    // no ext: leading and trailing space trimmed
+    edt.SetText("  mypreset  ");
     r = edt.GetFileName();
     BOOST_TEST((r.status == FileNameStatus::Valid));
     BOOST_TEST(r.name == "mypreset");

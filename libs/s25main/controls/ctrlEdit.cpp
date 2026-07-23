@@ -64,7 +64,10 @@ GetFileNameResult ctrlEdit::GetFileName(const std::string& ext) const
     RTTR_Assert(editType_ == EditType::Filename);
 
     std::string name = GetText();
-    boost::algorithm::trim_if(name, [](char c) { return c == ' ' || c == '\t' || c == '\r' || c == '\n'; });
+    const auto isSpace = [](char c) { return c == ' '; };
+    boost::algorithm::trim_left_if(name, isSpace);
+    if(ext.empty())
+        boost::algorithm::trim_right_if(name, isSpace);
     if(name.empty())
         return {FileNameStatus::Empty, {}};
     if(!ext.empty())

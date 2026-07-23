@@ -125,7 +125,7 @@ struct AddonPresetFixture : uiHelper::Fixture
         base.Msg_EditEnter(0);
     }
 
-    // Returns the states passed to the callback, or empty if it was not invoked (name not found).
+    // Returns the given preset's settings, or empty if the preset is missing or corrupt.
     std::map<unsigned, unsigned> load(const std::string& name)
     {
         std::map<unsigned, unsigned> out;
@@ -160,6 +160,18 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetSaveLoadAndOverwrite, AddonPresetFixture)
         Window& base = wnd;
         base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset");
         base.Msg_EditEnter(0);
+
+        const auto* msgbox = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
+        BOOST_TEST_REQUIRE(msgbox);
+        BOOST_TEST(msgbox->GetTitle() == _("Overwrite Preset"));
+        bool namesPreset = false;
+        for(const auto* ml : msgbox->GetCtrls<ctrlMultiline>())
+        {
+            for(unsigned i = 0; i < ml->GetNumLines(); ++i)
+                namesPreset |= ml->GetLine(i).find("myPreset") != std::string::npos;
+        }
+        BOOST_TEST(namesPreset);
+
         base.Msg_MsgBoxResult(iwSaveAddonPreset::ID_mbOverwrite, MsgboxResult::No);
         WINDOWMANAGER.CloseNow(WINDOWMANAGER.GetTopMostWindow()); // free the overwrite prompt
     }

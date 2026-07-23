@@ -67,7 +67,7 @@ static std::optional<std::map<unsigned, unsigned>> LoadPresetsFromFile(const bfs
 // iwAddonPresetsBase
 iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const std::string& actionLabel)
     : IngameWindow(CGI_ADDON_PRESETS, IngameWindow::posLastOrCenter, Extent(440, 330), title,
-                   LOADER.GetImageN("resource", 41))
+                   LOADER.GetImageN("resource", 41), true)
 {
     const bfs::path presetsDir = GetPresetsDir();
     boost::system::error_code ec;
@@ -115,30 +115,32 @@ void iwAddonPresetsBase::RefreshTable()
 
 bfs::path iwAddonPresetsBase::GetTargetFilePath() const
 {
-    const auto res = GetCtrl<ctrlEdit>(ID_edtName)->GetFileName(".ini");
-    if(res.status != FileNameStatus::Valid)
+    const std::string name = GetCtrl<ctrlEdit>(ID_edtName)->GetText();
+    if(name.empty())
         return {};
-    bfs::path path = GetPresetsDir() / res.name;
-    boost::system::error_code ec;
-    if(!bfs::exists(path, ec) || ec)
-        return {};
-    return path;
+
+    const auto& table = *GetCtrl<ctrlTable>(ID_tblPresets);
+    for(unsigned short i = 0; i < table.GetNumRows(); ++i)
+    {
+        if(table.GetItemText(i, 0) == name)
+            return table.GetItemText(i, 1);
+    }
+    return {};
 }
 
-bfs::path iwAddonPresetsBase::GetTargetFileOrNotify()
+bfs::path iwAddonPresetsBase::GetTargetFileOrNotify() const
 {
     bfs::path path = GetTargetFilePath();
     if(!path.empty())
         return path;
 
-    const auto& edit = *GetCtrl<ctrlEdit>(ID_edtName);
-    const auto res = edit.GetFileName(".ini");
-    if(res.status == FileNameStatus::Empty)
+    const std::string name = GetCtrl<ctrlEdit>(ID_edtName)->GetText();
+    if(name.empty())
         return {};
 
     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Preset Not Found"),
-                                                  helpers::format(_("Preset '%1%' was not found."), edit.GetText()),
-                                                  nullptr, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
+                                                  helpers::format(_("Preset '%1%' was not found."), name), nullptr,
+                                                  MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
     return {};
 }
 
@@ -226,8 +228,10 @@ void iwSaveAddonPreset::DoAction()
     if(bfs::exists(filePath))
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-          _("Overwrite Preset"), _("A preset with this name already exists. Do you want to overwrite it?"), this,
-          MsgboxButton::YesNo, MsgboxIcon::QuestionRed, ID_mbOverwrite));
+          _("Overwrite Preset"),
+          helpers::format(_("A preset named '%1%' already exists. Do you want to overwrite it?"),
+                          filePath.stem().string()),
+          this, MsgboxButton::YesNo, MsgboxIcon::QuestionRed, ID_mbOverwrite));
         return;
     }
 

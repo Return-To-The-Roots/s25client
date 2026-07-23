@@ -37,7 +37,7 @@ constexpr unsigned AddonGuiLineHeight = 30;
 iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed policy,
                    std::vector<AddonId> whitelistedAddons)
     : IngameWindow(CGI_ADDONS, IngameWindow::posLastOrCenter, Extent(700, 530), _("Addon Settings"),
-                   LOADER.GetImageN("resource", 41), false, CloseBehavior::Custom, parent),
+                   LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom, parent),
       ggs(ggs), policy_(policy), whitelistedAddons_(std::move(whitelistedAddons))
 {
     AddText(ID_txtAddFeatures, DrawPoint(20, 30), _("Additional features:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -149,12 +149,12 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
                 const auto& group = *GetCtrl<ctrlGroup>(ID_grpAddonsStart + i);
                 states[static_cast<unsigned>(ggs.getAddon(i)->getId())] = addonGuis_[i]->getStatus(group);
             }
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSaveAddonPreset>(std::move(states)));
+            WINDOWMANAGER.Show(std::make_unique<iwSaveAddonPreset>(std::move(states)));
         }
         break;
 
         case ID_btLoadPreset:
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwLoadAddonPreset>(
+            WINDOWMANAGER.Show(std::make_unique<iwLoadAddonPreset>(
               [this](const std::map<unsigned, unsigned>& states) { applyAddonStates(states); }));
             break;
 

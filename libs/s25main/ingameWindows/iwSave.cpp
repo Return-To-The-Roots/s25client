@@ -122,17 +122,17 @@ void iwSaveLoad::RefreshTable()
 void iwSave::SaveLoad()
 {
     const auto fileNameResult = GetCtrl<ctrlEdit>(ID_edtFilename)->GetFileName(".sav");
-    if(fileNameResult.status == FileNameStatus::Empty)
+    switch(fileNameResult.status)
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a filename."), this,
-                                                      MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
-        return;
-    }
-    if(fileNameResult.status == FileNameStatus::Invalid)
-    {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a valid filename."), this,
-                                                      MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
-        return;
+        case FileNameStatus::Empty:
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a filename."), this,
+                                                          MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
+            return;
+        case FileNameStatus::Invalid:
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a valid filename."),
+                                                          this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
+            return;
+        case FileNameStatus::Valid: break;
     }
     GAMECLIENT.SaveToFile(RTTRCONFIG.ExpandPath(s25::folders::save) / fileNameResult.name);
 
