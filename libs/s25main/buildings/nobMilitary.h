@@ -92,9 +92,6 @@ private:
     /// Beförderungsevent an
     void PrepareUpgrading();
     void PrepareArmorUpgrading();
-    /// Gets the total amount of soldiers (ordered, stationed, on mission)
-    size_t GetTotalSoldiers() const;
-    std::array<unsigned, NUM_SOLDIER_RANKS> GetTotalSoldiersByRank() const;
     /// Looks for the next far-away-capturer waiting around and calls it to the flag
     void CallNextFarAwayCapturer(nofAttacker& attacker);
 
@@ -144,10 +141,13 @@ public:
     unsigned CalcRequiredNumTroops(FrontierDistance assumedFrontierDistance, unsigned settingValue) const;
     /// Reguliert die Besatzung des Gebäudes je nach Grenznähe, bestellt neue Soldaten und schickt überflüssige raus
     void RegulateTroops();
-    /// Gibt aktuelle Besetzung zurück
+    /// Get number of soldiers inside the building
     unsigned GetNumTroops() const { return troops.size(); }
     auto GetTroops() const { return helpers::nonNullPtrSpan(troops); }
     bool IsInTroops(const nofPassiveSoldier& soldier) const;
+    /// Gets the total amount of soldiers (ordered, stationed, on mission)
+    size_t GetTotalSoldiers() const;
+    std::array<unsigned, NUM_SOLDIER_RANKS> GetTotalSoldiersByRank() const;
 
     /// Get/Set the maximum number of soldiers of rank `rank` allowed in this building
     unsigned GetTroopLimit(const unsigned rank) const { return troop_limits[rank]; }
