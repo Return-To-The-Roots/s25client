@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -29,4 +29,11 @@ T& ensureNonNull(T* pointer)
 {
     BOOST_TEST_REQUIRE(pointer);
     return *pointer;
+}
+
+/// Transform a pointer to a reference of the given type, ensuring it is non-NULL and hence the right type
+template<class T, class U>
+T& ensureNonNull(U* pointer)
+{
+    return ensureNonNull(dynamic_cast<T*>(pointer));
 }
