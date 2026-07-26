@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "GameEvent.h"
 #include "PointOutput.h"
 #include "Ware.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -60,39 +59,6 @@ auto calcSum(const T& collection)
 {
     return std::accumulate(std::begin(collection), std::end(collection), 0u);
 }
-
-/// Reschedule the walk event of the obj to be executed in numGFs GFs
-void rescheduleWalkEvent(TestEventManager& em, noMovable& obj, unsigned numGFs)
-{
-    std::vector<const GameEvent*> evts = em.GetObjEvents(obj);
-    for(const GameEvent* ev : evts)
-    {
-        if(ev->id == 0)
-        {
-            em.RescheduleEvent(ev, em.GetCurrentGF() + numGFs);
-            return;
-        }
-    }
-    BOOST_TEST_FAIL("Event not found"); // LCOV_EXCL_LINE
-}
-
-/// Move the object next to the given point. The next walk event will make it reach that point
-// LCOV_EXCL_START
-void moveObjTo(GameWorldBase& world, noFigure& obj, const MapPoint& pos)
-{
-    std::unique_ptr<noFigure> ownedObj;
-    if(world.HasFigureAt(obj.GetPos(), obj))
-        ownedObj = world.RemoveFigure(obj.GetPos(), obj);
-    else
-        ownedObj = world.RemoveFigure(world.GetNeighbour(obj.GetPos(), obj.GetCurMoveDir() + 3u), obj);
-    obj.SetPos(world.GetNeighbour(pos, Direction::West));
-    world.AddFigure(obj.GetPos(), std::move(ownedObj));
-    if(obj.IsMoving())
-        obj.FaceDir(Direction::East);
-    else
-        obj.StartWalking(Direction::East);
-}
-// LCOV_EXCL_STOP
 
 template<unsigned T_numPlayers, unsigned T_width, unsigned T_height>
 struct AttackFixtureBase : public WorldWithGCExecution<T_numPlayers, T_width, T_height>
@@ -706,7 +672,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     auto& attacker = dynamic_cast<nofAttacker&>(milBld0->GetLeavingFigures().front());
     // Let him come out
     RTTR_EXEC_TILL(70, milBld0->GetLeavingFigures().empty()); //-V807
-    moveObjTo(world, attacker, milBld1FlagPos);
+    moveObjTo(attacker, milBld1FlagPos);
     BOOST_TEST_REQUIRE(!milBld1->IsDoorOpen());
     const auto flagFigs = world.GetFigures(milBld1FlagPos);
     RTTR_EXEC_TILL(70, flagFigs.size() == 1u && flagFigs.begin()->GetGOT() == GO_Type::Fighting); //-V807
@@ -749,7 +715,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     BOOST_TEST_REQUIRE(milBld0->GetLeavingFigures().size() == 1u);
     auto& secAttacker = dynamic_cast<nofAttacker&>(milBld0->GetLeavingFigures().front());
     RTTR_EXEC_TILL(70, milBld0->GetLeavingFigures().empty()); //-V807
-    moveObjTo(world, secAttacker, world.MakeMapPoint(milBld1FlagPos - Position(15, 0)));
+    moveObjTo(secAttacker, world.MakeMapPoint(milBld1FlagPos - Position(15, 0)));
     nofAggressiveDefender& aggDefender = ensureNonNull(milBld1->SendAggressiveDefender(secAttacker));
     secAttacker.LetsFight(aggDefender);
     // 3.
@@ -774,13 +740,13 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     // Make sure all other soldiers left their buildings (<=30GFs each + 20 for walking to flag and a bit further)
     RTTR_SKIP_GFS(30 + 20 + 10);
     // And suspend them to inspect them later on
-    rescheduleWalkEvent(em, attackerFromPl0, 10000);
-    rescheduleWalkEvent(em, secAttacker, 10000);
-    rescheduleWalkEvent(em, alliedAttacker, 10000);
-    rescheduleWalkEvent(em, hostileAttacker, 10000);
+    rescheduleWalkEvent(attackerFromPl0, 10000);
+    rescheduleWalkEvent(secAttacker, 10000);
+    rescheduleWalkEvent(alliedAttacker, 10000);
+    rescheduleWalkEvent(hostileAttacker, 10000);
     // We got 2 from milBld1
     RTTR_SKIP_GFS(30);
-    rescheduleWalkEvent(em, aggDefender, 10000);
+    rescheduleWalkEvent(aggDefender, 10000);
     // Let defenders (2!) die
     defender = const_cast<nofDefender*>(milBld1->GetDefender());
     while(defender->GetHitpoints() > 1u)
@@ -813,13 +779,13 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     // 1. Attackers from this building
     // No home -> Wander
     BOOST_TEST_REQUIRE(!attackerFromPl0.GetHomeBld());
-    rescheduleWalkEvent(em, attackerFromPl0, 1);
+    rescheduleWalkEvent(attackerFromPl0, 1);
     RTTR_EXEC_TILL(2, attackerFromPl0.IsWandering());
     // 2. Aggressive defenders from this building
     // No further attack (unless already fighting) and wander
     // The attacker proceeds to the building and occupies it
-    rescheduleWalkEvent(em, secAttacker, 1);
-    rescheduleWalkEvent(em, aggDefender, 2);
+    rescheduleWalkEvent(secAttacker, 1);
+    rescheduleWalkEvent(aggDefender, 2);
     RTTR_SKIP_GFS(2);
     BOOST_TEST_REQUIRE(aggDefender.GetAttacker() == nullptr);
     BOOST_TEST_REQUIRE(secAttacker.GetHuntingDefender() == nullptr);
@@ -827,12 +793,12 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
     RTTR_EXEC_TILL(270, milBld1->GetNumTroops() == 2u);
     // 3. Allied aggressor towards this bld
     // Abort attack and return home
-    rescheduleWalkEvent(em, alliedAttacker, 1);
+    rescheduleWalkEvent(alliedAttacker, 1);
     RTTR_EXEC_TILL(1, alliedAttacker.GetAttackedGoal() == nullptr);
     RTTR_EXEC_TILL(90, alliedBld->GetNumTroops() == 2u);
     // 4. Hostile aggressor towards this bld
     // Continue attack and fight
-    rescheduleWalkEvent(em, hostileAttacker, 1);
+    rescheduleWalkEvent(hostileAttacker, 1);
     BOOST_TEST_REQUIRE(hostileAttacker.GetAttackedGoal() != nullptr);
     RTTR_EXEC_TILL(220, hostileAttacker.GetPos() == milBld1FlagPos);
     RTTR_EXEC_TILL(50, world.GetFigures(milBld1FlagPos).begin()->GetGOT() == GO_Type::Fighting);
@@ -875,16 +841,16 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     // Move carriers to flag
     for(unsigned i = 0; i < 2; i++)
     {
-        rescheduleWalkEvent(em, carrierIn, 1);
-        rescheduleWalkEvent(em, carrierOut, 1);
+        rescheduleWalkEvent(carrierIn, 1);
+        rescheduleWalkEvent(carrierOut, 1);
         RTTR_SKIP_GFS(1);
     }
     // And pause them
-    rescheduleWalkEvent(em, carrierIn, 10000);
+    rescheduleWalkEvent(carrierIn, 10000);
     // After the out-walking was in
-    rescheduleWalkEvent(em, carrierOut, 1);
+    rescheduleWalkEvent(carrierOut, 1);
     RTTR_SKIP_GFS(1);
-    rescheduleWalkEvent(em, carrierOut, 10000);
+    rescheduleWalkEvent(carrierOut, 10000);
     BOOST_TEST_REQUIRE(carrierIn.GetCurMoveDir() == Direction::NorthWest);
     BOOST_TEST_REQUIRE(carrierOut.GetCurMoveDir() == Direction::SouthEast);
 
@@ -908,7 +874,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     // Picked up
     BOOST_TEST_REQUIRE(flagE->GetNumWares() == 0u);
     // And pause him
-    rescheduleWalkEvent(em, carrierInE, 10000);
+    rescheduleWalkEvent(carrierInE, 10000);
 
     curPlayer = 0;
     this->Attack(milBld1Pos, 1, true);
@@ -916,17 +882,17 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     auto& attacker = dynamic_cast<nofAttacker&>(milBld0->GetLeavingFigures().front());
     // Move him directly out
     RTTR_EXEC_TILL(70, milBld0->GetLeavingFigures().empty()); //-V807
-    moveObjTo(world, attacker, milBld1FlagPos);
+    moveObjTo(attacker, milBld1FlagPos);
     RTTR_EXEC_TILL(20, attacker.GetPos() == milBld1FlagPos);
     // Carriers on pos or to pos get send away as soon as soldier arrives
-    rescheduleWalkEvent(em, carrierIn, 1);
-    rescheduleWalkEvent(em, carrierOut, 1);
+    rescheduleWalkEvent(carrierIn, 1);
+    rescheduleWalkEvent(carrierOut, 1);
     RTTR_SKIP_GFS(1);
     BOOST_TEST_REQUIRE(carrierIn.IsWandering());
     BOOST_TEST_REQUIRE(carrierOut.IsWandering());
 
     // Let east carrier walk
-    rescheduleWalkEvent(em, carrierInE, 1);
+    rescheduleWalkEvent(carrierInE, 1);
 
     // Start fight
     const auto flagFigs = world.GetFigures(milBld1FlagPos);
@@ -1039,9 +1005,9 @@ BOOST_FIXTURE_TEST_CASE(FlagBecomesUnreachableForWaitingAttacker, AttackFixture<
     auto& attacker3 = dynamic_cast<nofAttacker&>(*++(++attackerBld->GetLeavingFigures().begin()));
     // Let all exit and move almost to goal
     RTTR_EXEC_TILL(200, attackerBld->GetLeavingFigures().empty());
-    moveObjTo(world, attacker1, world.GetNeighbour(flagPos, Direction::East));
-    moveObjTo(world, attacker2, world.GetNeighbour(roadFlagPos, Direction::East));
-    moveObjTo(world, attacker3, world.GetNeighbour(flagPos, Direction::West));
+    moveObjTo(attacker1, world.GetNeighbour(flagPos, Direction::East));
+    moveObjTo(attacker2, world.GetNeighbour(roadFlagPos, Direction::East));
+    moveObjTo(attacker3, world.GetNeighbour(flagPos, Direction::West));
     RTTR_EXEC_TILL(200, !defenderBld->GetLeavingFigures().empty());
     auto& defender = dynamic_cast<nofDefender&>(defenderBld->GetLeavingFigures().front());
     RTTR_EXEC_TILL(200, defender.IsFightingAtFlag());
@@ -1169,8 +1135,8 @@ void HandleLeavingAggDefendersOnAttack::test(AttackedBldType test_case, bool use
     BOOST_TEST(getTotalSoldiers(attackedPlayer) == totalSoldiersBefore);
     // Move attacker to flag to trigger defender request
     auto& attacker = *attackers.front();
-    moveObjTo(world, attacker, attackedBld.GetFlagPos());
-    rescheduleWalkEvent(em, attacker, 1);
+    moveObjTo(attacker, attackedBld.GetFlagPos());
+    rescheduleWalkEvent(attacker, 1);
     RTTR_SKIP_GFS(1);
     BOOST_TEST_REQUIRE(attacker.GetState() == SoldierState::AttackingWaitingForDefender);
     // All agressive defenders are cancelled
@@ -1227,8 +1193,8 @@ BOOST_FIXTURE_TEST_CASE(LeavingSoldierUsedAsDefender, AttackFixture<2>)
     const auto soldiersNow = getNumSoldiers(attackedHq);
     BOOST_TEST(soldiersNow[visual] == soldiersBefore[visual]);
     BOOST_TEST(calcSum(soldiersNow[real]) == 0u);
-    moveObjTo(world, attacker, attackedHq.GetFlagPos());
-    rescheduleWalkEvent(em, attacker, 1);
+    moveObjTo(attacker, attackedHq.GetFlagPos());
+    rescheduleWalkEvent(attacker, 1);
     RTTR_SKIP_GFS(1);
     BOOST_TEST_REQUIRE(attackedHq.GetLeavingFigures().size() == 1);
     BOOST_TEST(attackedHq.GetLeavingFigures().front().GetGOT() == GO_Type::NofDefender);
@@ -1318,9 +1284,9 @@ struct FreeFightFixture : AttackFixture<2>
         const MapPoint fightSpot = attackedBldPos - MapPoint(3, 0);
         // attacker building is left -> place attacker left of fight spot
         BOOST_TEST_REQUIRE(attackerBld.GetPos().x < attackedBldPos.x);
-        moveObjTo(world, attacker, fightSpot - MapPoint(1, 0));
-        moveObjTo(world, defender, fightSpot + MapPoint(1, 0));
-        rescheduleWalkEvent(em, attacker, 1);
+        moveObjTo(attacker, fightSpot - MapPoint(1, 0));
+        moveObjTo(defender, fightSpot + MapPoint(1, 0));
+        rescheduleWalkEvent(attacker, 1);
         RTTR_SKIP_GFS(1);
         BOOST_TEST_REQUIRE(defender.GetState() == SoldierState::MeetEnemy);
         BOOST_TEST_REQUIRE(attacker.GetState() == SoldierState::MeetEnemy);
@@ -1359,8 +1325,8 @@ BOOST_FIXTURE_TEST_CASE(Attacker_Returns_When_AgressiveDefender_Aborts, FreeFigh
     auto& attacker = ensureNonNull(attacker_);
     auto& defender = ensureNonNull(defender_);
 
-    moveObjTo(world, attacker, fightSpot);
-    rescheduleWalkEvent(em, attacker, 1);
+    moveObjTo(attacker, fightSpot);
+    rescheduleWalkEvent(attacker, 1);
     RTTR_SKIP_GFS(1);
     BOOST_TEST_REQUIRE(defender.GetState() == SoldierState::MeetEnemy);
     BOOST_TEST_REQUIRE(attacker.GetState() == SoldierState::WaitingForFight);
@@ -1372,7 +1338,7 @@ BOOST_FIXTURE_TEST_CASE(Attacker_Returns_When_AgressiveDefender_Aborts, FreeFigh
     // -> defender can't reach attacker
     // -> attacker can't reach attacked building
     // Pending fight should get aborted and both go back home:
-    rescheduleWalkEvent(em, defender, 1);
+    rescheduleWalkEvent(defender, 1);
     RTTR_SKIP_GFS(1);
     BOOST_TEST(defender.IsMoving());
     BOOST_TEST(attacker.IsMoving());
@@ -1395,8 +1361,8 @@ BOOST_FIXTURE_TEST_CASE(AgressiveDefender_Returns_When_Attacker_Aborts, FreeFigh
     auto& attacker = ensureNonNull(attacker_);
     auto& defender = ensureNonNull(defender_);
 
-    moveObjTo(world, defender, fightSpot);
-    rescheduleWalkEvent(em, defender, 1);
+    moveObjTo(defender, fightSpot);
+    rescheduleWalkEvent(defender, 1);
     RTTR_SKIP_GFS(1);
     BOOST_TEST_REQUIRE(defender.GetState() == SoldierState::WaitingForFight);
     BOOST_TEST_REQUIRE(attacker.GetState() == SoldierState::MeetEnemy);
@@ -1407,8 +1373,8 @@ BOOST_FIXTURE_TEST_CASE(AgressiveDefender_Returns_When_Attacker_Aborts, FreeFigh
     blockDefenderBuilding(fightSpot.x - 1);
     // -> attacker can't reach defender or attacked building
     // Pending fight should get aborted and both go back home:
-    moveObjTo(world, attacker, fightSpot - MapPoint(1, 0));
-    rescheduleWalkEvent(em, attacker, 1);
+    moveObjTo(attacker, fightSpot - MapPoint(1, 0));
+    rescheduleWalkEvent(attacker, 1);
     RTTR_SKIP_GFS(1);
     BOOST_TEST(defender.IsMoving());
     BOOST_TEST(attacker.IsMoving());

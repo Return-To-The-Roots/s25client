@@ -3,9 +3,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "worldFixtures/CreateEmptyWorld.h"
+#include "GameEvent.h"
 #include "GamePlayer.h"
 #include "RttrForeachPt.h"
 #include "buildings/nobHQ.h"
+#include "figures/noFigure.h"
 #include "initGameRNG.hpp"
 #include "lua/GameDataLoader.h"
 #include "worldFixtures/WorldFixture.h"
@@ -26,6 +28,39 @@ void WorldFixtureBase::addStartResources(unsigned playerIdx)
 {
     world.GetPlayer(playerIdx).GetHQ()->addStartWares();
 }
+
+/// Reschedule the walk event of the obj to be executed in numGFs GFs
+void WorldFixtureBase::rescheduleWalkEvent(noMovable& obj, unsigned numGFs)
+{
+    std::vector<const GameEvent*> evts = em.GetObjEvents(obj);
+    for(const GameEvent* ev : evts)
+    {
+        if(ev->id == 0)
+        {
+            em.RescheduleEvent(ev, em.GetCurrentGF() + numGFs);
+            return;
+        }
+    }
+    BOOST_TEST_FAIL("Event not found"); // LCOV_EXCL_LINE
+}
+
+/// Move the object next to the given point. The next walk event will make it reach that point
+// LCOV_EXCL_START
+void WorldFixtureBase::moveObjTo(noFigure& obj, const MapPoint pos)
+{
+    std::unique_ptr<noFigure> ownedObj;
+    if(world.HasFigureAt(obj.GetPos(), obj))
+        ownedObj = world.RemoveFigure(obj.GetPos(), obj);
+    else
+        ownedObj = world.RemoveFigure(world.GetNeighbour(obj.GetPos(), obj.GetCurMoveDir() + 3u), obj);
+    obj.SetPos(world.GetNeighbour(pos, Direction::West));
+    world.AddFigure(obj.GetPos(), std::move(ownedObj));
+    if(obj.IsMoving())
+        obj.FaceDir(Direction::East);
+    else
+        obj.StartWalking(Direction::East);
+}
+// LCOV_EXCL_STOP
 
 CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size) : size_(size) {}
 
