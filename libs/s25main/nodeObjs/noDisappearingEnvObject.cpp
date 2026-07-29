@@ -67,6 +67,8 @@ void noDisappearingEnvObject::HandleEvent(const unsigned id)
 {
     if(id)
     {
+        RTTR_Assert(world->GetNode(pos).obj == this);
+        world->SetNO(pos, nullptr);
         // endgültig vernichten
         GetEvMgr().AddToKillList(this);
         dead_event = nullptr;
@@ -85,7 +87,8 @@ void noDisappearingEnvObject::HandleEvent(const unsigned id)
 void noDisappearingEnvObject::Destroy()
 {
     // Feld räumen, wenn ich sterbe
-    world->SetNO(pos, nullptr);
+    if(world->GetNode(pos).obj == this)
+        world->SetNO(pos, nullptr);
 
     // ggf Event abmelden
     if(dead_event)
