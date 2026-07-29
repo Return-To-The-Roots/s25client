@@ -126,7 +126,7 @@ void noBaseBuilding::Destroy()
                 {
                     // Ware erzeugen
                     auto ware = std::make_unique<Ware>(goods[which], nullptr, flag);
-                    ware->WaitAtFlag(flag);
+                    ware->WaitAtFlag(*flag);
                     // Inventur anpassen
                     world->GetPlayer(player).IncreaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden

@@ -59,22 +59,21 @@ void nofWarehouseWorker::Draw(DrawPoint drawPt)
 
 void nofWarehouseWorker::GoalReached()
 {
-    auto* wh = world->GetSpecObj<nobBaseWarehouse>(world->GetNeighbour(pos, Direction::NorthWest));
-    RTTR_Assert(wh); // When worker is still working, the warehouse (and its flag) exists
-    auto* flag = wh->GetFlag();
-    RTTR_Assert(flag);
+    // When worker is still working, the warehouse (and its flag) exists
+    auto& wh = assertNonNull(world->GetSpecObj<nobBaseWarehouse>(world->GetNeighbour(pos, Direction::NorthWest)));
+    auto& flag = assertNonNull(wh.GetFlag());
     if(!shouldBringWareIn)
     {
         // Put ware down at flag if enough space.
         // Might need to take it back in if goal was destroyed or changed to the warehouse
-        if(flag->HasSpaceForWare() && carried_ware->GetGoal() && carried_ware->GetGoal() != wh)
+        if(flag.HasSpaceForWare() && carried_ware->GetGoal() && carried_ware->GetGoal() != &wh)
         {
             // TODO: Remove assert. Was added to verify prior condition
             RTTR_Assert(carried_ware->GetGoal() != carried_ware->GetLocation());
 
             carried_ware->WaitAtFlag(flag);
             carried_ware->RecalcRoute();
-            flag->AddWare(std::move(carried_ware));
+            flag.AddWare(std::move(carried_ware));
         } else
         {
             // Bring back in
@@ -83,14 +82,14 @@ void nofWarehouseWorker::GoalReached()
     } else
     {
         // Take ware if any
-        carried_ware = flag->SelectWare(Direction::NorthWest, false, this);
+        carried_ware = flag.SelectWare(Direction::NorthWest, false, this);
         if(carried_ware)
             carried_ware->Carry(wh);
     }
 
     // Start walking back
     StartWalking(Direction::NorthWest);
-    InitializeRoadWalking(wh->GetRoute(Direction::SouthEast), 0, false);
+    InitializeRoadWalking(wh.GetRoute(Direction::SouthEast), 0, false);
 }
 
 void nofWarehouseWorker::Walked()
