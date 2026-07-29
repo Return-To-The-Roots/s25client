@@ -842,7 +842,7 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
     // Sanity check: Move from harbor1 to wh (over harbor2)
     auto ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
     auto* warePtr = ware.get();
-    ware->Carry(&harbor1);
+    ware->Carry(harbor1);
     auto numVisWaresBefore = harbor1.GetNumVisualWares(goodType);
     auto numRealWaresBefore = harbor1.GetNumRealWares(goodType);
     harbor1.AddWare(std::move(ware));
@@ -861,7 +861,7 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
             DestroyRoad(harbor2.GetFlagPos(), d);
     }
     ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
-    ware->Carry(&harbor1);
+    ware->Carry(harbor1);
     numVisWaresBefore = harbor1.GetNumVisualWares(goodType);
     numRealWaresBefore = harbor1.GetNumRealWares(goodType);
     harbor1.AddWare(std::move(ware));
@@ -872,7 +872,7 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
     // Same but disallow harbor as goal -> Find another storehouse
     SetInventorySetting(harbor1.GetPos(), goodType, EInventorySetting::Stop);
     ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
-    ware->Carry(&harbor1);
+    ware->Carry(harbor1);
     warePtr = ware.get();
     numVisWaresBefore = harbor1.GetNumVisualWares(goodType);
     numRealWaresBefore = harbor1.GetNumRealWares(goodType);
@@ -885,7 +885,7 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
     // If no other storehouse is available take it anyway
     SetInventorySetting(harbor2.GetPos(), goodType, EInventorySetting::Stop);
     ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
-    ware->Carry(&harbor1);
+    ware->Carry(harbor1);
     numVisWaresBefore = harbor1.GetNumVisualWares(goodType);
     numRealWaresBefore = harbor1.GetNumRealWares(goodType);
     harbor1.AddWare(std::move(ware));

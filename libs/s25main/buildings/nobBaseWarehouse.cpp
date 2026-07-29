@@ -653,7 +653,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
             auto ware = std::move(waiting_wares.front());
             waiting_wares.pop_front();
             inventory.visual.Remove(ConvertShields(ware->type));
-            ware->Carry(GetFlag());
+            ware->Carry(*GetFlag());
             world->AddFigure(pos, std::make_unique<nofWarehouseWorker>(pos, player, std::move(ware), false))
               .WalkToGoal();
         } else
@@ -717,7 +717,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding& goal)
 void nobBaseWarehouse::AddWaitingWare(std::unique_ptr<Ware> ware)
 {
     inventory.visual.Add(ConvertShields(ware->type));
-    ware->WaitInWarehouse(this);
+    ware->WaitInWarehouse(*this);
     waiting_wares.push_back(std::move(ware));
     AddLeavingEvent();
 }
