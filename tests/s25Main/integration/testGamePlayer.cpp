@@ -216,7 +216,8 @@ BOOST_FIXTURE_TEST_CASE(MineProductivityUsesAllMatchingResourcesWithinMineRadius
     const MapPoint outOfRangePt = world.GetNeighbour(
       world.GetNeighbour(world.GetNeighbour(minePos, Direction::East), Direction::East), Direction::East);
     const auto inRangePts = world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS);
-    const bool outOfRange = std::find(inRangePts.begin(), inRangePts.end(), outOfRangePt) == inRangePts.end(); BOOST_TEST_REQUIRE(outOfRange);
+    const bool outOfRange = std::find(inRangePts.begin(), inRangePts.end(), outOfRangePt) == inRangePts.end();
+    BOOST_TEST_REQUIRE(outOfRange);
     world.SetResource(outOfRangePt, Resource(ResourceType::Coal, 15));
     BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 0u);
     BOOST_TEST(coalMine->GetProductivity() == 0u);

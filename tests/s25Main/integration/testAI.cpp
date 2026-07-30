@@ -207,8 +207,6 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineResourceBehaviorAffectsAIMineSearch, EmptyWor
     BOOST_TEST(ai.FindBestPosition(searchCenter, AIResource::Granite, BuildingQuality::Mine, 5).isValid());
     BOOST_TEST(!ai.FindBestPosition(searchCenter, AIResource::Coal, BuildingQuality::Mine, 5).isValid());
 
-    // Switching to Inexhaustible does NOT imply "work everywhere": without an actual deposit the AI finds no spot.
-    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
 }
 
 BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteDoesNotImplyWorkEverywhereForAI, EmptyWorldFixture1P)
