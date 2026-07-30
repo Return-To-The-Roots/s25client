@@ -7,6 +7,7 @@
 #include "addons/const_addons.h"
 #include "world/GameWorld.h"
 #include "gameTypes/BuildingType.h"
+#include "gameTypes/GoodTypes.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
 #include "gameData/GameConsts.h"
@@ -38,6 +39,17 @@ ResourceType GetMineResourceType(const BuildingType buildingType)
         case BuildingType::IronMine: return ResourceType::Iron;
         case BuildingType::CoalMine: return ResourceType::Coal;
         default: return ResourceType::Granite;
+    }
+}
+
+GoodType GetMineOutput(const BuildingType buildingType)
+{
+    switch(buildingType)
+    {
+        case BuildingType::GoldMine: return GoodType::Gold;
+        case BuildingType::IronMine: return GoodType::IronOre;
+        case BuildingType::CoalMine: return GoodType::Coal;
+        default: return GoodType::Stones;
     }
 }
 
