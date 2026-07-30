@@ -43,7 +43,7 @@ struct MineProductionFixture : WorldWithGCExecution1P
     // sequence, a near-exhausted mine (1 resource -> ~5% chance) produces nothing within the window, while a full
     // mine (many resources -> high chance) reliably completes a depleting cycle. Only the resource amount differs.
     static constexpr unsigned s4LikeComparisonSeed = 2;
-    static constexpr unsigned s4LikeComparisonGFs = 2000;
+    static constexpr unsigned s4LikeComparisonGFs = 5000;
 
     MineProductionFixture()
     {

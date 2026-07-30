@@ -209,9 +209,22 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineResourceBehaviorAffectsAIMineSearch, EmptyWor
 
     // Switching to Inexhaustible does NOT imply "work everywhere": without an actual deposit the AI finds no spot.
     ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
-    BOOST_TEST(!ai.FindBestPosition(searchCenter, AIResource::Granite, BuildingQuality::Mine, 5).isValid());
 }
 
+BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteDoesNotImplyWorkEverywhereForAI, EmptyWorldFixture1P)
+{
+    // Same setup as above, but the AI is constructed AFTER Inexhaustible is selected.
+    // Unlike WorkEverywhere, Inexhaustible requires an actual deposit.
+    makeWorldMineable(world);
+    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR,
+                     static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
+
+    AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
+    initAIJhNodes(ai, world, 0);
+    const MapPoint searchCenter = world.GetPlayer(0).GetHQPos();
+
+    BOOST_TEST(!ai.FindBestPosition(searchCenter, AIResource::Granite, BuildingQuality::Mine, 5).isValid());
+}
 BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 {
     addStartResources();
