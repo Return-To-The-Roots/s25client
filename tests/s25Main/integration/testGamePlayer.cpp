@@ -61,20 +61,50 @@ using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 2 * helpers::MaxEn
 using WorldFixtureMineRadius1P = WorldFixture<CreateEmptyWorld, 1, 20, 12>;
 
 namespace {
-MapPoint FindMinePosition(const WorldFixtureMineRadius1P& fixture)
+// S4-like mine productivity reaches the mine's base productivity once this many matching resources remain in the
+// mine radius, degrading linearly below it (see GetS4LikeMineProductionChance).
+constexpr unsigned S4LIKE_FULL_PRODUCTIVITY_AMOUNT = 20;
+
+// Places a coal mine and drives its S4-like productivity purely through the resources in its radius.
+// The 20x12 map is larger than 2*MINER_RADIUS in each dimension, so the mine radius never wraps onto itself.
+struct MineProductivityFixture : WorldFixtureMineRadius1P
 {
-    for(MapCoord y = MINER_RADIUS; y + MINER_RADIUS < fixture.world.GetSize().y; ++y)
+    nobUsual* coalMine;
+    MapPoint minePos;
+
+    MineProductivityFixture()
     {
-        for(MapCoord x = MINER_RADIUS; x + MINER_RADIUS < fixture.world.GetSize().x; ++x)
-        {
-            const MapPoint pt(x, y);
-            if(fixture.world.GetNode(pt).bq == BuildingQuality::Castle)
-                return pt;
-        }
+        // BuildingFactory::CreateBuilding ignores the building quality, so any node works; offset from the HQ keeps
+        // the mine radius clear of the HQ. The empty world has no resources, but clear the radius to be explicit.
+        minePos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + Position(4, 0));
+        coalMine = static_cast<nobUsual*>(
+          BuildingFactory::CreateBuilding(world, BuildingType::CoalMine, minePos, 0, Nation::Romans));
+        for(const MapPoint pt : world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS))
+            world.SetResource(pt, Resource());
     }
 
-    return MapPoint::Invalid();
-}
+    // Puts coal on the mine node and its eastern neighbor (0 == none), leaving the rest of the radius empty.
+    void setCoalAmounts(const unsigned atMine, const unsigned atNeighbor)
+    {
+        world.SetResource(minePos, atMine ? Resource(ResourceType::Coal, atMine) : Resource());
+        world.SetResource(world.GetNeighbour(minePos, Direction::East),
+                          atNeighbor ? Resource(ResourceType::Coal, atNeighbor) : Resource());
+    }
+
+    // Spreads the given total coal amount as evenly as possible over every node in the radius (rest set to none).
+    // Only the summed amount in range matters, so the exact distribution is irrelevant.
+    void spreadCoalInRadius(const unsigned total)
+    {
+        const std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS);
+        unsigned remaining = total;
+        for(unsigned i = 0; i < pts.size(); ++i)
+        {
+            const unsigned here = remaining / (static_cast<unsigned>(pts.size()) - i);
+            world.SetResource(pts[i], here ? Resource(ResourceType::Coal, here) : Resource());
+            remaining -= here;
+        }
+    }
+};
 } // namespace
 
 BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
@@ -143,88 +173,60 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
     BOOST_TEST(buildingRegister.CalcAverageProductivity() == avgProd);
 }
 
-BOOST_FIXTURE_TEST_CASE(MineProductivityAccountsForS4LikeResourceChance, WorldFixtureEmpty1P)
+BOOST_FIXTURE_TEST_CASE(MineProductivityAccountsForS4LikeResourceChance, MineProductivityFixture)
 {
-    MapPoint minePos(0, 0);
-    while(world.GetNode(minePos).bq != BuildingQuality::Castle)
-        BOOST_TEST_REQUIRE((++minePos.x) < world.GetSize().x);
-
-    auto* coalMine = static_cast<nobUsual*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::CoalMine, minePos, 0, Nation::Romans));
     setProductivity(coalMine, 100);
 
-    world.SetResource(minePos, Resource(ResourceType::Coal, 1));
+    // Without the S4-like behavior the base productivity is reported unchanged, regardless of the resources left.
+    setCoalAmounts(1, 0);
     BOOST_TEST(coalMine->GetProductivity() == 100u);
 
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
                      static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
-    BOOST_TEST(coalMine->GetProductivity() == 5u);
 
-    world.SetResource(minePos, Resource(ResourceType::Coal, 15));
-    world.SetResource(world.GetNeighbour(minePos, Direction::East), Resource(ResourceType::Coal, 5));
+    // S4-like scales productivity with the resources left, reaching the full base value at 20 (full productivity).
+    setCoalAmounts(15, 5); // == S4LIKE_FULL_PRODUCTIVITY_AMOUNT
     BOOST_TEST(coalMine->GetProductivity() == 100u);
-
+    // Halving the resources halves the reported productivity.
+    setCoalAmounts(5, 5);
+    BOOST_TEST(coalMine->GetProductivity() == 50u);
+    // Lowering the base productivity scales the result by the same factor: 80% of the 50% chance -> 40%.
     setProductivity(coalMine, 80);
-    world.SetResource(minePos, Resource(ResourceType::Coal, 10));
-    world.SetResource(world.GetNeighbour(minePos, Direction::East), Resource());
     BOOST_TEST(coalMine->GetProductivity() == 40u);
     BOOST_TEST(world.GetPlayer(0).GetBuildingRegister().CalcProductivities()[BuildingType::CoalMine] == 40u);
-
+    // No resources left -> no production.
     setProductivity(coalMine, 100);
-    world.SetResource(minePos, Resource(ResourceType::Coal, 15));
-    world.SetResource(world.GetNeighbour(minePos, Direction::East), Resource());
-    BOOST_TEST(coalMine->GetProductivity() == 75u);
-
-    world.SetResource(minePos, Resource());
+    setCoalAmounts(0, 0);
     BOOST_TEST(coalMine->GetProductivity() == 0u);
 
+    // Inexhaustible mines always report their base productivity again, ignoring the resources.
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
     BOOST_TEST(coalMine->GetProductivity() == 100u);
 }
 
-BOOST_FIXTURE_TEST_CASE(MineProductivityUsesAllMatchingResourcesWithinMineRadius, WorldFixtureMineRadius1P)
+BOOST_FIXTURE_TEST_CASE(MineProductivityUsesAllMatchingResourcesWithinMineRadius, MineProductivityFixture)
 {
-    const MapPoint minePos = FindMinePosition(*this);
-    BOOST_TEST_REQUIRE(minePos.isValid());
-
-    auto* coalMine = static_cast<nobUsual*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::CoalMine, minePos, 0, Nation::Romans));
+    // Base productivity 100 so GetProductivity() directly mirrors the resource-based production chance.
     setProductivity(coalMine, 100);
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
                      static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
 
+    // A different resource type in range and matching coal just outside the radius must not count as coal.
+    world.SetResource(world.GetNeighbour(minePos, Direction::NorthWest), Resource(ResourceType::Iron, 15));
+    const MapPoint outOfRangePt = world.GetNeighbour(
+      world.GetNeighbour(world.GetNeighbour(minePos, Direction::East), Direction::East), Direction::East);
     const auto inRangePts = world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS);
-    for(const MapPoint pt : inRangePts)
-        world.SetResource(pt, Resource());
-
+    BOOST_TEST_REQUIRE(std::find(inRangePts.begin(), inRangePts.end(), outOfRangePt) == inRangePts.end());
+    world.SetResource(outOfRangePt, Resource(ResourceType::Coal, 15));
     BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 0u);
     BOOST_TEST(coalMine->GetProductivity() == 0u);
 
-    const MapPoint westPt = world.GetNeighbour(minePos, Direction::West);
-    const MapPoint eastPt = world.GetNeighbour(minePos, Direction::East);
-    world.SetResource(westPt, Resource(ResourceType::Coal, 4));
-    world.SetResource(eastPt, Resource(ResourceType::Coal, 6));
+    // Half of the full amount, but spread across every node of the radius: productivity depends only on the sum in
+    // range, not on how it is distributed. This overwrites the in-range iron, which no longer matters here.
+    spreadCoalInRadius(S4LIKE_FULL_PRODUCTIVITY_AMOUNT / 2);
     BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 10u);
     BOOST_TEST(coalMine->GetProductivity() == 50u);
     BOOST_TEST(world.GetPlayer(0).GetBuildingRegister().CalcProductivities()[BuildingType::CoalMine] == 50u);
-
-    world.SetResource(world.GetNeighbour(minePos, Direction::NorthWest), Resource(ResourceType::Iron, 15));
-    BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 10u);
-    BOOST_TEST(coalMine->GetProductivity() == 50u);
-
-    const MapPoint outOfRangePt = world.GetNeighbour(
-      world.GetNeighbour(world.GetNeighbour(minePos, Direction::East), Direction::East), Direction::East);
-    const bool isOutOfRange = std::find(inRangePts.begin(), inRangePts.end(), outOfRangePt) == inRangePts.end();
-    BOOST_TEST_REQUIRE(isOutOfRange);
-    world.SetResource(outOfRangePt, Resource(ResourceType::Coal, 15));
-    BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 10u);
-    BOOST_TEST(coalMine->GetProductivity() == 50u);
-
-    setProductivity(coalMine, 99);
-    world.SetResource(westPt, Resource(ResourceType::Coal, 5));
-    world.SetResource(eastPt, Resource(ResourceType::Coal, 6));
-    BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 11u);
-    BOOST_TEST(coalMine->GetProductivity() == 54u);
 }
 
 BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsFalse_IfPrimaryHQIsNotTent, WorldFixtureEmpty1P)

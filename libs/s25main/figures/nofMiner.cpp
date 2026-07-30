@@ -160,13 +160,7 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
         ReduceS4LikeResource(*world, resourcePts);
     }
 
-    switch(workplace->GetBuildingType())
-    {
-        case BuildingType::GoldMine: return GoodType::Gold;
-        case BuildingType::IronMine: return GoodType::IronOre;
-        case BuildingType::CoalMine: return GoodType::Coal;
-        default: return GoodType::Stones;
-    }
+    return GetMineOutput(workplace->GetBuildingType());
 }
 
 bool nofMiner::AreWaresAvailable() const

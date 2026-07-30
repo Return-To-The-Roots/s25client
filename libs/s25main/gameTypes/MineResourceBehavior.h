@@ -13,6 +13,7 @@ class GameWorld;
 enum class AddonId;
 enum class BuildingType : unsigned char;
 enum class ResourceType : uint8_t;
+enum class GoodType : uint8_t;
 
 enum class MineResourceBehavior
 {
@@ -28,6 +29,8 @@ constexpr auto maxEnumValue(MineResourceBehavior)
 
 AddonId GetMineResourceBehaviorAddonId(BuildingType buildingType);
 ResourceType GetMineResourceType(BuildingType buildingType);
+/// The ware a mine of the given type produces (granite/stones for any non-mineral mine)
+GoodType GetMineOutput(BuildingType buildingType);
 helpers::OptionalEnum<BuildingType> GetMineBuildingType(ResourceType resourceType);
 unsigned GetRemainingMineResources(const GameWorld& world, MapPoint pos, ResourceType resourceType);
 unsigned GetS4LikeMineProductionChance(unsigned remainingMatchingResources);
