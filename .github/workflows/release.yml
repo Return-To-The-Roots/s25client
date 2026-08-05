@@ -23,12 +23,12 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Extract tag name
         id: get_tag
-        run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
       - name: Set filenames
         id: filenames
         run: |
-          echo "::set-output name=src::s25client_src_${{steps.get_tag.outputs.tag}}.tar.gz"
-          echo "::set-output name=devTools::s25client_dev-tools_${{steps.get_tag.outputs.tag}}.tar.gz"
+          echo src=s25client_src_${{steps.get_tag.outputs.tag}}.tar.gz" >> "$GITHUB_OUTPUT"
+          echo "devTools=s25client_dev-tools_${{steps.get_tag.outputs.tag}}.tar.gz" >> "$GITHUB_OUTPUT"
       - name: Create source distribution
         run: |
             set -x
