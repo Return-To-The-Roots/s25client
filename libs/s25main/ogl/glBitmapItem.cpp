@@ -13,9 +13,9 @@ glBitmapItem::glBitmapItem(libsiedler2::baseArchivItem_Bitmap* b, bool shadow, b
     b->getVisibleArea(pos.x, pos.y, size.x, size.y);
     origin = Position(b->getNx(), b->getNy()) - pos;
 }
-glBitmapItem::glBitmapItem(libsiedler2::ArchivItem_Bitmap_Player* b, bool isOwning)
+glBitmapItem::glBitmapItem(libsiedler2::ArchivItem_Bitmap_Player* b, int16_t nyOffset, bool isOwning)
     : bmp(b), type(glBitmapItemType::PlayerBitmap), isOwning_(isOwning)
 {
     b->getVisibleArea(pos.x, pos.y, size.x, size.y);
-    origin = Position(b->getNx(), b->getNy()) - pos;
+    origin = Position(b->getNx(), b->getNy() - nyOffset) - pos;
 }
