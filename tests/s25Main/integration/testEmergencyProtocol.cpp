@@ -20,7 +20,7 @@
 
 struct EmergencyFixture : public WorldFixture<CreateEmptyWorld, 1>
 {
-    nobHQ* HQ = world.GetPlayer(0).GetHQ();
+    nobHQ* hq = world.GetPlayer(0).GetHQ();
     EmergencyFixture()
     {
         HQ->AddToInventory(HQ->getStartInventory(StartWares::VLow), true);
@@ -42,14 +42,13 @@ struct EmergencyFixture : public WorldFixture<CreateEmptyWorld, 1>
         // activate program (with 10 boards it should trigger)
         world.GetPlayer(0).TestForEmergencyProgramm();
 
-        // wait for some more ticks to give time if not working to deliver more boards
+        // No more boards are carried out to the farms due to emergency protocol
         RTTR_SKIP_GFS(200);
-        // check boards are still fine and protocol working
-        BOOST_TEST_CHECK(world.GetPlayer(0).GetHQ()->GetInventory()[GoodType::Boards] == 10);
+        BOOST_TEST_CHECK(hq->GetInventory()[GoodType::Boards] == 10);
     }
 };
 
-BOOST_FIXTURE_TEST_CASE(EmergencyProtoclActiveWoodcutterAndSawmillCanBuild, EmergencyFixture)
+BOOST_FIXTURE_TEST_CASE(EmergencyProtocolActiveWoodcutterAndSawmillCanBuild, EmergencyFixture)
 {
     initGameRNG();
 
@@ -66,7 +65,7 @@ BOOST_FIXTURE_TEST_CASE(EmergencyProtoclActiveWoodcutterAndSawmillCanBuild, Emer
     // check if inventory boards are given out
     RTTR_EXEC_TILL(200, HQ->GetInventory()[GoodType::Boards] < 10);
 
-    // check if building where found
+    // check that buildings are built
     RTTR_EXEC_TILL(2000, world.GetNO(posWoodcutter)->GetType() == NodalObjectType::Building);
     RTTR_EXEC_TILL(2000, world.GetNO(posSawmill)->GetType() == NodalObjectType::Building);
 }
@@ -80,8 +79,7 @@ BOOST_FIXTURE_TEST_CASE(EmergencyProtoclActiveOtherBuldingsnotBuild, EmergencyFi
     world.BuildRoad(0, false, world.GetNeighbour(pos, Direction::SouthEast),
                     std::vector<Direction>(2, Direction::NorthEast));
 
-    // wait for some more ticks to give time if not working to deliver more boards
+    // No boards are carried out to the farms or watchtower due to emergency protocol
     RTTR_SKIP_GFS(500);
-    // check boards are still fine and protocol working
-    BOOST_TEST_CHECK(world.GetPlayer(0).GetHQ()->GetInventory()[GoodType::Boards] == 10);
+    BOOST_TEST_CHECK(hq->GetInventory()[GoodType::Boards] == 10);
 }

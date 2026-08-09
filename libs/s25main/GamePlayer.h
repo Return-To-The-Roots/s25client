@@ -331,7 +331,7 @@ public:
     const Statistic& GetStatistic(StatisticTime time) const { return statistic[time]; };
     unsigned GetStatisticCurrentValue(StatisticType idx) const { return statisticCurrentData[idx]; }
 
-    // remove all wares that are already scheduled but ignoring emergency protocol
+    // Stop wares restricted in emergency mode that are waiting in warehouse to be transported already
     void CancelWaresForEmergencyProtocol();
     // Testet ob Notfallprogramm aktiviert werden muss und tut dies dann
     void TestForEmergencyProgramm();
