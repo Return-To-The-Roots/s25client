@@ -2099,7 +2099,6 @@ void GamePlayer::CancelWaresForEmergencyProtocol()
     for(auto it = ware_list.begin(); it != ware_list.end();)
     {
         Ware* ware = *it;
-        // checks if this ware is
         if(ware->IsWaitingInWarehouse() && ware->GetGoal()
            && !IsWareFineWithEmergencyProtocol(ware->type, *ware->GetGoal()))
         {
