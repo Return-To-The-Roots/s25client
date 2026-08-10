@@ -20,8 +20,8 @@ void glArchivItem_Bob::Draw(unsigned item, libsiedler2::ImgDir direction, bool f
     auto* glOverlay = dynamic_cast<glArchivItem_Bitmap_Player*>(overlay.first);
     if(glOverlay)
     {
-        DrawPoint overlayDrawPt = DrawPoint(drawPt.x, drawPt.y - overlay.second);
-        glOverlay->DrawFull(overlayDrawPt, COLOR_WHITE, color);
+        drawPt.y -= overlay.second;
+        glOverlay->DrawFull(drawPt, COLOR_WHITE, color);
     }
 }
 

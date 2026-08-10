@@ -51,7 +51,7 @@ Extent glSmartBitmap::getRequiredTexSize() const
     return texSize;
 }
 
-void glSmartBitmap::add(libsiedler2::ArchivItem_Bitmap_Player* bmp, int16_t nyOffset)
+void glSmartBitmap::add(libsiedler2::ArchivItem_Bitmap_Player* bmp, int nyOffset)
 {
     if(!bmp)
         return;
