@@ -28,12 +28,11 @@ struct EmergencyFixture : public WorldWithGCExecution1P
         // wait until emergency protocol should be activated
         RTTR_EXEC_TILL(500, hq->GetInventory()[GoodType::Boards] == 10);
 
-        // activate program (with 10 boards it should trigger)
-        world.GetPlayer(0).TestForEmergencyProgramm();
+        BOOST_TEST_REQUIRE(world.GetPlayer(0).hasEmergency());
 
         // No more boards are carried out to the farms due to emergency protocol
         RTTR_SKIP_GFS(200);
-        BOOST_TEST_CHECK(hq->GetInventory()[GoodType::Boards] == 10);
+        BOOST_TEST(hq->GetInventory()[GoodType::Boards] == 10);
 
         initGameRNG();
     }
@@ -67,7 +66,7 @@ BOOST_FIXTURE_TEST_CASE(CannotBuildOtherBuldings, EmergencyFixture)
 
     // No boards are carried out to the farms or watchtower due to emergency protocol
     RTTR_SKIP_GFS(500);
-    BOOST_TEST_CHECK(hq->GetInventory()[GoodType::Boards] == 10);
+    BOOST_TEST(hq->GetInventory()[GoodType::Boards] == 10);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
