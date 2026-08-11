@@ -83,10 +83,10 @@ struct ArmorTradeFixture : public ArmoredSoldierFixture
 
     void testExpectedFiguresInGlobalInventoryMatchWithHQInventory() const
     {
-        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+        for(const auto& player : world.getPlayers())
         {
-            auto const& playerWh = world.GetSpecObj<nobBaseWarehouse>(players[i]->GetHQPos());
-            auto const& globalInventoryPlayer = world.GetPlayer(i).GetInventory();
+            auto const& playerWh = world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
+            auto const& globalInventoryPlayer = player.GetInventory();
             for(unsigned i = 0; i < NUM_SOLDIER_RANKS; i++)
             {
                 BOOST_TEST(playerWh->GetNumRealArmoredFigures(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]))

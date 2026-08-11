@@ -327,8 +327,8 @@ void GameClient::StartGame(const unsigned random_init)
     {
         RTTR_Assert(mapinfo.type != MapType::Savegame);
         /// Startbündnisse setzen
-        for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
-            gameWorld.GetPlayer(i).MakeStartPacts();
+        for(auto& player : gameWorld.getPlayers())
+            player.MakeStartPacts();
 
         MapLoader loader(gameWorld);
         if(!loader.Load(mapinfo.filepath)
@@ -1580,8 +1580,8 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
             idx++;
         }
 
-        for(unsigned i = 0; i < game->world_.GetNumPlayers(); i++)
-            game->world_.GetPlayer(i).ChangeDistribution(newDistributions);
+        for(auto& player : game->world_.getPlayers())
+            player.ChangeDistribution(newDistributions);
     }
 
     replayinfo->next_gf = replayinfo->replay.ReadGF();
