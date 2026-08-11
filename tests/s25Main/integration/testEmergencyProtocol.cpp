@@ -2,22 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "EconomyModeHandler.h"
-#include "EventManager.h"
-#include "GamePlayer.h"
-#include "Savegame.h"
-#include "SerializedGameData.h"
-#include "addons/AddonEconomyModeGameLength.h"
-#include "factories/BuildingFactory.h"
-#include "worldFixtures/MockLocalGameState.h"
-#include "worldFixtures/WorldFixture.h"
+#include "NodalObjectTypes.h"
+#include "buildings/nobHQ.h"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
-#include "gameTypes/GO_Type.h"
 #include <boost/test/unit_test.hpp>
-#include <buildings/nobHQ.h>
-#include <buildings/nobUsual.h>
 
+/// Start with low wares and build 2 farms to trigger emergency protocol activation
 struct EmergencyFixture : public WorldWithGCExecution1P
 {
     nobHQ* hq = world.GetPlayer(0).GetHQ();
@@ -48,15 +39,14 @@ struct EmergencyFixture : public WorldWithGCExecution1P
     }
 };
 
-BOOST_FIXTURE_TEST_CASE(EmergencyProtocolActiveWoodcutterAndSawmillCanBuild, EmergencyFixture)
+BOOST_FIXTURE_TEST_SUITE(EmergencyProtocol, EmergencyFixture)
+BOOST_AUTO_TEST_CASE(CanBuildWoodcutterAndSawmill)
 {
-    initGameRNG();
-
-    MapPoint posWoodcutter = hqPos + MapPoint(-1, 2);
+    const MapPoint posWoodcutter = hqPos + MapPoint(-1, 2);
     world.SetBuildingSite(BuildingType::Woodcutter, posWoodcutter, 0);
     BuildRoadForBlds(posWoodcutter, hqPos);
 
-    MapPoint posSawmill = hqPos + MapPoint(-2, 4);
+    const MapPoint posSawmill = hqPos + MapPoint(-2, 4);
     world.SetBuildingSite(BuildingType::Sawmill, posSawmill, 0);
     BuildRoadForBlds(posSawmill, hqPos);
 
@@ -68,9 +58,9 @@ BOOST_FIXTURE_TEST_CASE(EmergencyProtocolActiveWoodcutterAndSawmillCanBuild, Eme
     RTTR_EXEC_TILL(2000, world.GetNO(posSawmill)->GetType() == NodalObjectType::Building);
 }
 
-BOOST_FIXTURE_TEST_CASE(EmergencyProtoclActiveOtherBuldingsnotBuild, EmergencyFixture)
+BOOST_FIXTURE_TEST_CASE(CannotBuildOtherBuldings, EmergencyFixture)
 {
-    MapPoint pos = hqPos + MapPoint(-3, 0);
+    const MapPoint pos = hqPos + MapPoint(-3, 0);
     world.SetBuildingSite(BuildingType::Watchtower, pos, 0);
 
     BuildRoadForBlds(pos, hqPos);
@@ -79,3 +69,5 @@ BOOST_FIXTURE_TEST_CASE(EmergencyProtoclActiveOtherBuldingsnotBuild, EmergencyFi
     RTTR_SKIP_GFS(500);
     BOOST_TEST_CHECK(hq->GetInventory()[GoodType::Boards] == 10);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
