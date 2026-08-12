@@ -51,11 +51,11 @@ Extent glSmartBitmap::getRequiredTexSize() const
     return texSize;
 }
 
-void glSmartBitmap::add(libsiedler2::ArchivItem_Bitmap_Player* bmp)
+void glSmartBitmap::add(libsiedler2::ArchivItem_Bitmap_Player* bmp, int nyOffset)
 {
     if(!bmp)
         return;
-    items.push_back(glBitmapItem(bmp));
+    items.push_back(glBitmapItem(bmp, nyOffset));
     calcDimensions();
 }
 
