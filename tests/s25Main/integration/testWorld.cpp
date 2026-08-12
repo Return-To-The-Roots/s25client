@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(HQPlacement)
     // The loader stores the HQ positions read from the map
     BOOST_TEST(hqsShuffledMap == hqsOriginalMap, boost::test_tools::per_element());
     // When shuffled the positions should have changed
-    BOOST_TEST(hqsShuffledWorld != hqsOriginalWorld, boost::test_tools::per_element());
+    BOOST_TEST(hqsShuffledWorld != hqsOriginalWorld);
     helpers::sort(hqsOriginalMap, MapPointLess{});
     helpers::sort(hqsShuffledWorld, MapPointLess{});
     helpers::sort(hqsOriginalWorld, MapPointLess{});

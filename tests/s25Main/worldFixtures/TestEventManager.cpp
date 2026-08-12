@@ -1,11 +1,13 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "TestEventManager.h"
 #include "GameEvent.h"
+#include "GamePlayer.h"
+#include "world/GameWorldBase.h"
 
-unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
+unsigned TestEventManager::doExecuteNextEvent(unsigned maxGF)
 {
     if(GetCurrentGF() >= maxGF)
         return 0;
@@ -26,6 +28,23 @@ unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
     currentGF = itEvents->first;
     ExecuteEvents(itEvents);
     DestroyCurrentObjects();
+    return numGFs;
+}
+
+unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
+{
+    const auto numGFs = doExecuteNextEvent(maxGF);
+    if(numGFs > 0)
+    {
+        for(auto& player : world_->getPlayers())
+        {
+            if(player.isUsed())
+            {
+                player.TestForEmergencyProgramm();
+                player.TestPacts();
+            }
+        }
+    }
     return numGFs;
 }
 

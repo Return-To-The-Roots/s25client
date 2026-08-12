@@ -738,8 +738,8 @@ void InitPactsAndPost(GameWorldBase& world)
 BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
 {
     // At first there are no teams
-    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
-        BOOST_TEST_REQUIRE(world.GetPlayer(i).team == Team::None);
+    for(const auto& player : world.getPlayers())
+        BOOST_TEST_REQUIRE(player.team == Team::None);
     PostManager& postMgr = world.GetPostMgr();
     // Add postbox for each player
     for(unsigned i = 0; i < world.GetNumPlayers(); i++)

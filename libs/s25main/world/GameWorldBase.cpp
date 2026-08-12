@@ -66,6 +66,16 @@ unsigned GameWorldBase::GetNumPlayers() const
     return players.size();
 }
 
+s25util::span<GamePlayer> GameWorldBase::getPlayers()
+{
+    return players;
+}
+
+s25util::span<const GamePlayer> GameWorldBase::getPlayers() const
+{
+    return players;
+}
+
 bool GameWorldBase::IsSinglePlayer() const
 {
     bool foundPlayer = false;
