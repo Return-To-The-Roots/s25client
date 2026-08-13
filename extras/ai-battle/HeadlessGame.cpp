@@ -157,8 +157,8 @@ void HeadlessGame::RecordReplay(const bfs::path& path, unsigned random_init)
         mapInfo.luaData.CompressFromFile(luaPath_, &mapInfo.luaChecksum);
     }
 
-    for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
-        replay_.AddPlayer(world_.GetPlayer(playerId));
+    for(auto& player : world_.getPlayers())
+        replay_.AddPlayer(player);
     replay_.ggs = game_.ggs_;
     if(!replay_.StartRecording(path, mapInfo, random_init))
         throw std::runtime_error("Replayfile could not be opened!");
@@ -170,8 +170,8 @@ void HeadlessGame::SaveGame(const bfs::path& path) const
     bfs::remove(path);
 
     Savegame save;
-    for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
-        save.AddPlayer(world_.GetPlayer(playerId));
+    for(auto& player : world_.getPlayers())
+        save.AddPlayer(player);
     save.ggs = game_.ggs_;
     save.ggs.exploration = Exploration::Disabled; // no FOW
     save.start_gf = em_.GetCurrentGF();
@@ -220,9 +220,8 @@ void HeadlessGame::PrintState()
     printConsole("┌────────────────────────┬─────────────────┬─────────────┬───────────┬───────────┐\n");
     printConsole("│ Player                 │ Country         │ Buildings   │ Military  │ Gold      │\n");
     printConsole("├────────────────────────┼─────────────────┼─────────────┼───────────┼───────────┤\n");
-    for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
+    for(const auto& player : world_.getPlayers())
     {
-        const GamePlayer& player = world_.GetPlayer(playerId);
         printConsole("│ %s%-22s%s │ %15s │ %11s │ %9s │ %9s │\n", player.IsDefeated() ? "\x1b[9m" : "",
                      player.name.c_str(), player.IsDefeated() ? "\x1b[29m" : "",
                      HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Country)).c_str(),

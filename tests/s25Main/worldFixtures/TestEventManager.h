@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -7,8 +7,13 @@
 #include "EventManager.h"
 #include <limits>
 
+class GameWorldBase;
+
 class TestEventManager : public EventManager
 {
+    GameWorldBase* world_ = nullptr;
+    unsigned doExecuteNextEvent(unsigned maxGF);
+
 public:
     TestEventManager(unsigned startGF = 0) : EventManager(startGF) {}
     /// Execute the next event increasing the GF to the events GF
@@ -22,4 +27,5 @@ public:
     /// Remove the event and add a copy that is executed at the given GF
     const GameEvent* RescheduleEvent(const GameEvent* event, unsigned targetGF);
     std::vector<const GameEvent*> GetEvents() const;
+    void setWorld(GameWorldBase& world) { world_ = &world; }
 };

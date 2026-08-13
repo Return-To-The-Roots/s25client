@@ -23,7 +23,7 @@ class glBitmapItem
 {
 public:
     glBitmapItem(libsiedler2::baseArchivItem_Bitmap* b, bool shadow = false, bool isOwning = false);
-    glBitmapItem(libsiedler2::ArchivItem_Bitmap_Player* b, bool isOwning = false);
+    glBitmapItem(libsiedler2::ArchivItem_Bitmap_Player* b, int nyOffset, bool isOwning = false);
 
     libsiedler2::ArchivItem_BitmapBase* bmp;
     glBitmapItemType type;
