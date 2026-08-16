@@ -46,26 +46,32 @@ static void loadAddonsFromIni(GlobalGameSettings& ggs, const bfs::path& iniPath)
     boost::property_tree::ptree tree;
     boost::property_tree::read_ini(iniPath.string(), tree);
 
+    if(tree.empty()) // empty file -> nothing to configure, that's fine
+        return;
+
+    // Anything else is intentional configuration, so surface mistakes as hard errors instead of
+    // silently ignoring them (a mistyped section or key/value would otherwise go unnoticed).
     const auto addons = tree.get_child_optional("addons");
     if(!addons)
-    {
-        bnw::cout << "Note: no [addons] section in " << iniPath << ", using defaults.\n";
-        return;
-    }
+        throw std::runtime_error("No [addons] section in " + iniPath.string());
 
     unsigned loaded = 0;
     for(const auto& entry : *addons)
     {
+        AddonId id{};
+        unsigned value = 0;
         try
         {
-            const auto id = static_cast<AddonId>(s25util::fromStringClassic<unsigned>(entry.first));
-            const auto v = entry.second.get_value<unsigned>();
-            ggs.setSelection(id, v);
-            ++loaded;
+            id = static_cast<AddonId>(s25util::fromStringClassic<unsigned>(entry.first));
+            value = entry.second.get_value<unsigned>();
         } catch(const std::exception&)
         {
-            // Unknown or invalid entry - skip silently
+            throw std::runtime_error("Invalid addon entry '" + entry.first + "' in " + iniPath.string());
         }
+        if(!ggs.getAddon(id)) // unknown/unsupported addon id
+            throw std::runtime_error("Unknown addon id '" + entry.first + "' in " + iniPath.string());
+        ggs.setSelection(id, value);
+        ++loaded;
     }
     bnw::cout << "Loaded " << loaded << " addon settings from " << iniPath << '\n';
 }
