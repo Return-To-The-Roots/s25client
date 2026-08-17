@@ -1451,7 +1451,7 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
     if(job == Job::Helper)
         return (inventory[Job::Helper] - 1) / 2; // need one as leader
     else
-        return std::min(inventory[job], inventory[Job::Helper] - 1);
+        return inventory[job];
 }
 
 void nobBaseWarehouse::StartTradeCaravane(const boost_variant2<GoodType, Job>& what, const unsigned count,
