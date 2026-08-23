@@ -8,6 +8,14 @@ permissions:
 
 on:
   push:
+    branches:
+      - master
+      - main
+      - develop
+      - bugfix/**
+      - feature/**
+      - fix/**
+      - pr/**
   pull_request:
 
 concurrency:

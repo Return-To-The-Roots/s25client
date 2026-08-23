@@ -82,9 +82,9 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     // Count active players
     numPlayingPlayers = 0;
     const GameWorldBase& world = gwv.GetWorld();
-    for(const auto i : helpers::range(world.GetNumPlayers()))
+    for(const auto& player : world.getPlayers())
     {
-        if(world.GetPlayer(i).isUsed())
+        if(player.isUsed())
             numPlayingPlayers++;
     }
 

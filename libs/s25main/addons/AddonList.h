@@ -25,6 +25,7 @@ public:
               std::vector<std::string> options, unsigned defaultStatus = 0);
 
     unsigned getNumOptions() const override;
+    const std::string& getOptionName(unsigned status) const;
 
     std::unique_ptr<AddonGui> createGui(Window& window, bool readonly) const override;
 

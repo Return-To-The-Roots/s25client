@@ -35,6 +35,7 @@ public:
     /// Disable or re-enable throwing an exception on error.
     /// Note: If error throwing is disabled you have to use HasErrorOccurred to detect an error situation
     void setThrowOnError(bool doThrow);
+    void setSuppressStdout(bool suppress) { suppressStdout_ = suppress; }
     bool hasErrorOccurred() const { return errorOccured_; }
     void clearErrorOccured() { errorOccured_ = false; }
 
@@ -60,6 +61,7 @@ protected:
 
 private:
     Log& logger_;
+    bool suppressStdout_ = false;
     /// Sticky flag to signal an occurred error during execution of lua code
     bool errorOccured_;
     std::map<std::string, std::string> translations_;

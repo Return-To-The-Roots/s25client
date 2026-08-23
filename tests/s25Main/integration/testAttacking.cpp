@@ -418,6 +418,28 @@ BOOST_FIXTURE_TEST_CASE(StartAttack, AttackFixture<>)
     TestFailingAttack(gwv, milBld1Pos, attackSrc, 1u);
 }
 
+BOOST_FIXTURE_TEST_CASE(TroopLimitCommandRejectsInvalidSerializedRank, AttackFixture<>)
+{
+    std::array<unsigned, NUM_SOLDIER_RANKS> expectedLimits{};
+    const auto firstLimit = rttr::test::randomValue(1u, 20u);
+    const auto limitStep = rttr::test::randomValue(1u, 5u);
+    // Use unique values to detect overwriting
+    for(unsigned rank = 0; rank < expectedLimits.size(); ++rank)
+    {
+        expectedLimits[rank] = firstLimit + rank * limitStep;
+        this->SetTroopLimit(milBld0Pos, rank, expectedLimits[rank]);
+    }
+
+    for(unsigned rank = 0; rank < expectedLimits.size(); ++rank)
+        BOOST_TEST_REQUIRE(milBld0->GetTroopLimit(rank) == expectedLimits[rank]);
+
+    BOOST_REQUIRE_THROW(this->SetTroopLimit(milBld0Pos, NUM_SOLDIER_RANKS, expectedLimits.back() + limitStep),
+                        std::range_error);
+
+    for(unsigned rank = 0; rank < expectedLimits.size(); ++rank)
+        BOOST_TEST_REQUIRE(milBld0->GetTroopLimit(rank) == expectedLimits[rank]);
+}
+
 BOOST_FIXTURE_TEST_CASE(ConquerBld, AttackFixture<>)
 {
     AddSoldiers(milBld0Pos, 1, 5);
