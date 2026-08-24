@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -12,7 +12,6 @@
 #include "libsiedler2/Archiv.h"
 #include "libsiedler2/ArchivItem.h"
 #include "libsiedler2/libsiedler2.h"
-#include "s25util/warningSuppression.h"
 #include <boost/test/unit_test.hpp>
 
 namespace bfs = boost::filesystem;
@@ -52,9 +51,9 @@ BOOST_FIXTURE_TEST_CASE(SoundHandleGetUnloadedWhenLastGoesOutOfScope, LoadMockup
 
         {
             // Copy handle
-            const SoundHandle handleCopy = handle;
+            // NOLINTNEXTLINE(performance-unnecessary-copy-initialization)
+            [[maybe_unused]] const SoundHandle handleCopy = handle;
             BOOST_TEST_REQUIRE(MockupSoundData::numAlive == 2);
-            RTTR_UNUSED(handleCopy);
             // Copy goes out of scope
         }
         BOOST_TEST_REQUIRE(handle);

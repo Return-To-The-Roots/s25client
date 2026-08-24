@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -13,7 +13,6 @@
 #include "libsiedler2/ArchivItem.h"
 #include "libsiedler2/enumTypes.h"
 #include "rttr/test/MockClock.hpp"
-#include "s25util/warningSuppression.h"
 #include <rttr/test/TmpFolder.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>
@@ -197,9 +196,8 @@ BOOST_FIXTURE_TEST_CASE(BirdSounds, LoadMockupAudioWithSounds)
         manager.playBirdSounds(1);
 
         // for a lot of trees, the bird sound should play at least once per second
-        for(const auto i : helpers::range(100))
+        for([[maybe_unused]] const auto i : helpers::range(100))
         {
-            RTTR_UNUSED(i);
             mockClock.currentTime += 1s;
             MOCK_EXPECT(audioDriverMock->doPlayEffect).once().returns(0);
             manager.playBirdSounds(10000);

@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <s25util/warningSuppression.h>
 #include <RTTR_Assert.h>
 #include <array>
 #include <cstdint>
@@ -57,8 +56,7 @@ constexpr auto maxEnumValue(Job)
 }
 
 /// Job types of soldiers, weak ones first
-constexpr std::array SUPPRESS_UNUSED SOLDIER_JOBS = {Job::Private, Job::PrivateFirstClass, Job::Sergeant, Job::Officer,
-                                                     Job::General};
+constexpr std::array SOLDIER_JOBS = {Job::Private, Job::PrivateFirstClass, Job::Sergeant, Job::Officer, Job::General};
 constexpr bool isSoldier(const Job job)
 {
     return job >= SOLDIER_JOBS.front() && job <= SOLDIER_JOBS.back();
