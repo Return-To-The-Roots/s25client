@@ -250,8 +250,8 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
     Savegame save;
 
-    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
-        save.AddPlayer(world.GetPlayer(i));
+    for(const auto& player : world.getPlayers())
+        save.AddPlayer(player);
 
     save.ggs = ggs;
     save.start_gf = em.GetCurrentGF();
@@ -563,8 +563,8 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     map.filepath = "Map.swd";
     map.luaFilepath = "Map.lua";
     map.savegame = std::make_unique<Savegame>();
-    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
-        map.savegame->AddPlayer(world.GetPlayer(i));
+    for(const auto& player : world.getPlayers())
+        map.savegame->AddPlayer(player);
     // We can change players
     std::vector<BasePlayerInfo> players(4);
     players[0].ps = PlayerState::AI;
