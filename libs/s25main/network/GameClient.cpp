@@ -22,6 +22,7 @@
 #include "SerializedGameData.h"
 #include "Settings.h"
 #include "ai/AIPlayer.h"
+#include "ai/random.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "factories/AIFactory.h"
 #include "files.h"
@@ -288,6 +289,7 @@ void GameClient::StartGame(const unsigned random_init)
 
     // Random-Generator initialisieren
     RANDOM.Init(random_init);
+    AI::getRandomGenerator().seed(random_init);
 
     if(!IsReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, SaveGameDataToLoad::All))
     {
