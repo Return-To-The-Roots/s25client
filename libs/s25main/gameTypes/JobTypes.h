@@ -59,15 +59,15 @@ constexpr auto maxEnumValue(Job)
 /// Job types of soldiers, weak ones first
 constexpr std::array SUPPRESS_UNUSED SOLDIER_JOBS = {Job::Private, Job::PrivateFirstClass, Job::Sergeant, Job::Officer,
                                                      Job::General};
-constexpr bool isSoldierJob(const Job job)
+constexpr bool isSoldier(const Job job)
 {
-    return job >= Job::Private && job <= Job::General;
+    return job >= SOLDIER_JOBS.front() && job <= SOLDIER_JOBS.back();
 }
 
 constexpr unsigned NUM_SOLDIER_RANKS = SOLDIER_JOBS.size();
 constexpr unsigned getSoldierRank(Job soldierJob)
 {
-    return static_cast<uint8_t>(soldierJob) - static_cast<uint8_t>(Job::Private);
+    return static_cast<uint8_t>(soldierJob) - static_cast<uint8_t>(SOLDIER_JOBS.front());
 }
 
 enum class ArmoredSoldier : uint8_t
@@ -82,11 +82,6 @@ enum class ArmoredSoldier : uint8_t
 constexpr auto maxEnumValue(ArmoredSoldier)
 {
     return ArmoredSoldier::General;
-}
-
-constexpr bool isSoldier(const Job job)
-{
-    return job >= Job::Private && job <= Job::General;
 }
 
 inline ArmoredSoldier jobEnumToAmoredSoldierEnum(const Job job)
