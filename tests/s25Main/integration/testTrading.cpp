@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(TradeToMuch)
     testAfterLeaving(20);
 }
 
-BOOST_AUTO_TEST_CASE(NoOverflowWhenTradingLessFiguresThenInStoreHouse)
+BOOST_AUTO_TEST_CASE(TradeLessFiguresThenInStoreHouse)
 {
     initGameRNG();
 
