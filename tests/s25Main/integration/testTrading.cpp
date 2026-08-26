@@ -53,6 +53,7 @@ struct TradeFixture : public WorldWithGCExecution3P
 
         // Enable trading
         this->ggs.setSelection(AddonId::TRADE, 1);
+        initGameRNG();
     }
 
     void testExpectedWares() const
@@ -86,8 +87,6 @@ BOOST_FIXTURE_TEST_SUITE(GameCommandSuite, TradeFixture)
 
 BOOST_AUTO_TEST_CASE(TradeWares)
 {
-    initGameRNG();
-
     // Disable trading
     this->ggs.setSelection(AddonId::TRADE, 0);
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Boards, 2);
@@ -136,8 +135,6 @@ BOOST_AUTO_TEST_CASE(TradeWares)
 
 BOOST_AUTO_TEST_CASE(TradeFigures)
 {
-    initGameRNG();
-
     // Disable trading
     this->ggs.setSelection(AddonId::TRADE, 0);
     this->TradeOverLand(players[0]->GetHQPos(), Job::Woodcutter, 2);
@@ -178,8 +175,6 @@ BOOST_AUTO_TEST_CASE(TradeFigures)
 
 BOOST_AUTO_TEST_CASE(TradeToMuch)
 {
-    initGameRNG();
-
     // Trade more wares than available (not limited by donkeys)
     BOOST_TEST_REQUIRE(numSaws < numDonkeys);
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Saw, numSaws * 2);
@@ -208,8 +203,6 @@ BOOST_AUTO_TEST_CASE(TradeToMuch)
 
 BOOST_AUTO_TEST_CASE(TradeLessFiguresThenInStoreHouse)
 {
-    initGameRNG();
-
     auto* const hqPlayer1 = world.GetSpecObj<nobBaseWarehouse>(players[1]->GetHQPos());
 
     // Add second warehouse
@@ -238,8 +231,6 @@ BOOST_AUTO_TEST_CASE(TradeLessFiguresThenInStoreHouse)
 
 BOOST_AUTO_TEST_CASE(TradeFail)
 {
-    initGameRNG();
-
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Boards, 2);
     // Each donkey carries a ware and we need a leader
     numBoards -= 2;
@@ -285,8 +276,6 @@ BOOST_AUTO_TEST_CASE(TradeFail)
 
 BOOST_AUTO_TEST_CASE(TradeFailDie)
 {
-    initGameRNG();
-
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Boards, 2);
     this->TradeOverLand(players[0]->GetHQPos(), Job::Woodcutter, 2);
     // Each donkey carries a ware and we need 2 leaders
@@ -314,7 +303,6 @@ BOOST_AUTO_TEST_CASE(TradeFailDie)
 
 BOOST_AUTO_TEST_CASE(TradeMessages)
 {
-    initGameRNG();
     const PostBox& postbox = world.GetPostMgr().AddPostBox(0);
 
     this->TradeOverLand(players[0]->GetHQPos(), Job::Woodcutter, 2);
