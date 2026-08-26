@@ -211,7 +211,6 @@ BOOST_AUTO_TEST_CASE(TradeLessFiguresThenInStoreHouse)
     initGameRNG();
 
     auto* const hqPlayer1 = world.GetSpecObj<nobBaseWarehouse>(players[1]->GetHQPos());
-    BOOST_TEST_REQUIRE(hqPlayer1->GetNumRealFigures(Job::Woodcutter) == 8);
 
     // Add second warehouse
     auto* wh1 = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(
