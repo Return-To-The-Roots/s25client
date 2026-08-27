@@ -109,9 +109,9 @@ public:
     const AIPlayer* GetAIPlayer(unsigned id) const;
 
     unsigned GetGFNumber() const;
-    FramesInfo::milliseconds32_t GetGFLength() const { return framesinfo.gf_length; }
+    std::chrono::milliseconds GetGFLength() const { return framesinfo.gf_length; }
     unsigned GetNWFLength() const { return framesinfo.nwf_length; }
-    FramesInfo::milliseconds32_t GetFrameTime() const { return framesinfo.frameTime; }
+    std::chrono::milliseconds GetFrameTime() const { return framesinfo.frameTime; }
     unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator,
                                 unsigned offset);
     unsigned Interpolate(unsigned max_val, const GameEvent* ev);
@@ -130,9 +130,9 @@ public:
 
     void IncreaseSpeed(bool wraparound = false);
     void DecreaseSpeed();
-    void SetNewSpeed(FramesInfo::milliseconds32_t gfLength);
+    void SetNewSpeed(std::chrono::milliseconds gfLength);
     // Used by tests (stinks, but what to do?)
-    FramesInfo::milliseconds32_t GetGFLengthReq() { return framesinfo.gfLengthReq; }
+    std::chrono::milliseconds GetGFLengthReq() { return framesinfo.gfLengthReq; }
 
     /// Lädt ein Replay und startet dementsprechend das Spiel
     bool StartReplay(const boost::filesystem::path& path);

@@ -367,7 +367,8 @@ void GameServer::RunStateLoading()
     // Send cmdDelay NWFDone messages
     // First send the OK for NWF 0 which is also the game ready command
     // Note: Do not store. It already is in NWFInfo
-    SendToAll(GameMessage_Server_NWFDone(serverInfo.gf, serverInfo.newGFLen, serverInfo.nextNWF));
+    SendToAll(
+      GameMessage_Server_NWFDone(serverInfo.gf, static_cast<unsigned>(serverInfo.newGFLen / 1ms), serverInfo.nextNWF));
     RTTR_Assert(framesinfo.nwf_length > 0);
     // Then the remaining OKs for the commands sent above
     for(unsigned i = 1; i < nwfInfo.getCmdDelay(); i++)
@@ -558,7 +559,7 @@ bool GameServer::StartGame()
     framesinfo.gfLengthReq = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs_.speed];
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
-    framesinfo.nwf_length = CalcNWFLenght(FramesInfo::milliseconds32_t(highest_ping));
+    framesinfo.nwf_length = CalcNWFLenght(std::chrono::milliseconds(highest_ping));
 
     LOG.write("SERVER: Using gameframe length of %1%\n") % helpers::withUnit(framesinfo.gf_length);
     LOG.write("SERVER: Using networkframe length of %1% GFs (%2%)\n") % framesinfo.nwf_length
@@ -572,8 +573,7 @@ bool GameServer::StartGame()
 
     // Add server info so nwfInfo can be ready but do NOT send it yet, as we wait for the player commands before sending
     // the done msg
-    nwfInfo.addServerInfo(NWFServerInfo(currentGF, framesinfo.gf_length / FramesInfo::milliseconds32_t(1),
-                                        currentGF + framesinfo.nwf_length));
+    nwfInfo.addServerInfo(NWFServerInfo(currentGF, framesinfo.gf_length, currentGF + framesinfo.nwf_length));
 
     state = ServerState::Loading;
     loadStartTime = SteadyClock::now();
@@ -581,7 +581,7 @@ bool GameServer::StartGame()
     return true;
 }
 
-unsigned GameServer::CalcNWFLenght(FramesInfo::milliseconds32_t minDuration) const
+unsigned GameServer::CalcNWFLenght(std::chrono::milliseconds minDuration) const
 {
     constexpr unsigned maxNumGF = 20;
     for(unsigned i = 1; i < maxNumGF; ++i)
@@ -595,7 +595,7 @@ unsigned GameServer::CalcNWFLenght(FramesInfo::milliseconds32_t minDuration) con
 void GameServer::SendNWFDone(const NWFServerInfo& info)
 {
     nwfInfo.addServerInfo(info);
-    SendToAll(GameMessage_Server_NWFDone(info.gf, info.newGFLen, info.nextNWF));
+    SendToAll(GameMessage_Server_NWFDone(info.gf, static_cast<unsigned>(info.newGFLen / 1ms), info.nextNWF));
 }
 
 void GameServer::SendToAll(const GameMessage& msg)
@@ -675,8 +675,7 @@ void GameServer::ExecuteGameFrame()
     RTTR_Assert(state == ServerState::Game);
 
     FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
-    FramesInfo::milliseconds32_t passedTime =
-      std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
+    auto passedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - framesinfo.lastTime);
 
     // prüfen ob GF vergangen
     if(passedTime >= framesinfo.gf_length || skiptogf > currentGF)
@@ -740,15 +739,14 @@ void GameServer::ExecuteNWF()
     RTTR_Assert(serverInfo.nextNWF > currentGF);
     // First save old values
     unsigned lastNWF = nwfInfo.getLastNWF();
-    FramesInfo::milliseconds32_t oldGFLen = framesinfo.gf_length;
+    const auto oldGFLen = framesinfo.gf_length;
     nwfInfo.execute(framesinfo);
     if(oldGFLen != framesinfo.gf_length)
     {
         LOG.write(_("SERVER: At GF %1%: Speed changed from %2% to %3%. NWF %4%\n")) % currentGF
           % helpers::withUnit(oldGFLen) % helpers::withUnit(framesinfo.gf_length) % framesinfo.nwf_length;
     }
-    NWFServerInfo newInfo(lastNWF, framesinfo.gfLengthReq / FramesInfo::milliseconds32_t(1),
-                          lastNWF + framesinfo.nwf_length);
+    NWFServerInfo newInfo(lastNWF, framesinfo.gfLengthReq, lastNWF + framesinfo.nwf_length);
     if(framesinfo.gfLengthReq != framesinfo.gf_length)
     {
         // Speed will change, adjust nwf length so the time will stay constant
@@ -1253,7 +1251,7 @@ bool GameServer::OnGameMessage(const GameMessage_Speed& msg)
         KickPlayer(msg.senderPlayerID, KickReason::InvalidMsg, __LINE__);
         return true;
     }
-    framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(msg.gf_length);
+    framesinfo.gfLengthReq = msg.gf_length;
     return true;
 }
 

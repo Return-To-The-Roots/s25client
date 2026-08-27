@@ -55,7 +55,7 @@ public:
 private:
     bool StartGame();
 
-    unsigned CalcNWFLenght(FramesInfo::milliseconds32_t minDuration) const;
+    unsigned CalcNWFLenght(std::chrono::milliseconds minDuration) const;
 
     GameServerPlayer* GetNetworkPlayer(unsigned playerId);
     /// Swap players ingame or during config
