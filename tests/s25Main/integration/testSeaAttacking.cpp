@@ -12,6 +12,7 @@
 #include "factories/BuildingFactory.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofPassiveSoldier.h"
+#include "helpers/Range.h"
 #include "helpers/containerUtils.h"
 #include "pathfinding/FindPathForRoad.h"
 #include "worldFixtures/SeaWorldWithGCExecution.h"
@@ -22,7 +23,9 @@
 #include "nodeObjs/noGranite.h"
 #include "nodeObjs/noShip.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameTypes/JobTypes.h"
 #include "gameData/SettingTypeConv.h"
+#include "rttr/test/testHelpers.hpp"
 #include <boost/test/unit_test.hpp>
 
 BOOST_AUTO_TEST_SUITE(SeaAttackSuite)
@@ -114,21 +117,18 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         // Build some military buildings
 
         milBld1NearPos = FindBldPos(world.GetHarborPoint(HarborId(3)) + MapPoint(3, 2), BuildingQuality::House, 1);
-        BOOST_TEST_REQUIRE(milBld1NearPos.isValid());
         BOOST_TEST_REQUIRE(world.GetBQ(milBld1NearPos, 1) >= BuildingQuality::House);
         milBld1Near = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, Nation::Romans));
         BOOST_TEST_REQUIRE(milBld1Near);
 
         milBld1FarPos = FindBldPos(world.GetHarborPoint(HarborId(4)) - MapPoint(1, 4), BuildingQuality::House, 1);
-        BOOST_TEST_REQUIRE(milBld1FarPos.isValid());
         BOOST_TEST_REQUIRE(world.GetBQ(milBld1FarPos, 1) >= BuildingQuality::House);
         milBld1Far = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, Nation::Romans));
         BOOST_TEST_REQUIRE(milBld1Far);
 
         milBld2Pos = FindBldPos(world.GetHarborPoint(HarborId(6)) - MapPoint(2, 2), BuildingQuality::House, 2);
-        BOOST_TEST_REQUIRE(milBld2Pos.isValid());
         BOOST_TEST_REQUIRE(world.GetBQ(milBld2Pos, 2) >= BuildingQuality::House);
         milBld2 = dynamic_cast<nobMilitary*>(
           BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld2Pos, 2, Nation::Babylonians));
@@ -639,6 +639,125 @@ BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
     // Harbor should be destroyed and the ship go back
     RTTR_EXEC_TILL(500, ship.IsMoving());
     BOOST_TEST_REQUIRE(world.GetNO(harborPos[1])->GetGOT() == GO_Type::Fire);
+}
+
+/// Check situation where sea attackers that do not fit in the captured building cannot return home.
+BOOST_FIXTURE_TEST_CASE(SeaAttackReturnToShipNoPath, SeaAttackFixture)
+{
+    initGameRNG();
+
+    // Create a Barracks below player 1's harbor as the target.
+    // Using a Barracks to ensure there are excess attackers.
+    // Note: The harbor of player 1 is at the left side and outer sea
+    const MapPoint barracksPos = FindBldPos(harborPos[1] + MapPoint(0, 7), BuildingQuality::House, 1);
+    auto& barracks = ensureNonNull<nobMilitary>(
+      BuildingFactory::CreateBuilding(world, BuildingType::Barracks, barracksPos, 1, Nation::Romans));
+    BOOST_TEST_MESSAGE("Barracks created at " << barracksPos);
+
+    SetCurPlayer(1);
+    // Ensure buildings don't get (re)filled and no defenders are sent from other buildings
+    ChangeMilitary(MilitarySettings{0});
+    AddSoldiersWithRank(barracksPos, 1, 0);
+
+    // Create non-walkable terrain between the harbor and the barracks.
+    const auto tNonWalkable = world.GetDescription().terrain.find([](const TerrainDesc& t) {
+        return !t.Is(ETerrain::Walkable) && t.Is(ETerrain::Shippable) && t.GetBQ() != TerrainBQ::Danger;
+    });
+    BOOST_TEST_REQUIRE(tNonWalkable);
+
+    const MapPoint barracksFlagPos = barracks.GetFlagPos();
+    const MapPoint hbFlagPos = world.GetNeighbour(harborPos[1], Direction::SouthEast);
+    // Create a strip between the barracks and harbor across the land to block all paths
+    const MapPoint stripCenter = world.MakeMapPoint((barracksFlagPos + hbFlagPos) / 2);
+    for(const int dx : helpers::range(-20, 20))
+    {
+        MapPoint pt = world.MakeMapPoint(stripCenter + Position(dx, 0));
+        auto& node = world.GetNodeWriteable(pt);
+        node.t1 = node.t2 = tNonWalkable;
+    }
+    // A road can be built over 1-node water making it passable.
+    // When it is destroyed after capture, the non-walkable terrain blocks all paths back to the ship.
+    BOOST_TEST_REQUIRE(!world.FindHumanPath(barracksFlagPos, hbFlagPos).has_value());
+    BuildRoadForBlds(barracksPos, harborPos[1]);
+    BOOST_TEST_REQUIRE(world.FindHumanPath(barracksFlagPos, hbFlagPos).has_value());
+
+    // Player 2 (attacker): Build road and issue sea attack
+    SetCurPlayer(2);
+    // Don't let HQ refill the building
+    for(const auto rank : helpers::range(NUM_SOLDIER_RANKS))
+        ChangeReserve(hqPos[2], rank, 50);
+    BuildRoadForBlds(milBld2Pos, harborPos[2]);
+    auto& attackerBld = ensureNonNull(world.GetSpecObj<nobMilitary>(milBld2Pos));
+    const unsigned numSoldiersStart = attackerBld.GetNumTroops();
+    const unsigned numAttackers = gwv.GetNumSoldiersForSeaAttack(barracksPos);
+    // Need some excess soldiers that want to return after conquering
+    BOOST_TEST_REQUIRE(numAttackers > barracks.GetMaxTroopsCt());
+    this->SeaAttack(barracksPos, numAttackers, true);
+    BOOST_TEST_MESSAGE("Sea attack launched with " << numAttackers << " soldiers");
+    BOOST_TEST_REQUIRE(attackerBld.GetTotalSoldiers() == numSoldiersStart); // Attacking soldiers still counted
+    RTTR_EXEC_TILL(1000, attackerBld.GetLeavingFigures().empty());
+    // Move all attackers to the harbor so they take one ship
+    for(auto* attacker : barracks.GetAggressors())
+    {
+        if(attacker->GetState() == nofActiveSoldier::SoldierState::SeaattackingGoToHarbor)
+            moveObjTo(*attacker, harborPos[2]);
+    }
+
+    // Wait for defender, i.e. soldiers arrived, fight in progress
+    RTTR_EXEC_TILL(20000, barracks.GetDefender());
+    // Wait for building to be captured by player 2
+    RTTR_EXEC_TILL(10000, barracks.GetPlayer() == 2u);
+    // Count alive soldiers after the fight
+    auto countPlayerSoldiers = [&inv = world.GetPlayer(2).GetInventory()]() {
+        unsigned sum = 0;
+        for(const auto job : SOLDIER_JOBS)
+            sum += inv.people[job];
+        return sum;
+    };
+    const unsigned soldiersBefore = countPlayerSoldiers();
+
+    // After capture, excess soldiers try to return via ship but the road was destroyed by the territory
+    // change and non-walkable terrain blocks all paths to the ship.
+    // Soldiers not occupying the new building should be wandering and eventually die.
+    BOOST_TEST_REQUIRE(!world.FindHumanPath(barracksFlagPos, hbFlagPos).has_value());
+    BOOST_TEST_REQUIRE(attackerBld.GetNumTroops() <= numSoldiersStart - barracks.GetNumTroops());
+    // Wait for full occupation
+    RTTR_EXEC_TILL(10000, barracks.GetNumTroops() == barracks.GetMaxTroopsCt());
+
+    // Collect all attackers around the barracks
+    auto collectAttackers = [&]() {
+        std::vector<const nofAttacker*> attackers;
+        for(const MapPoint& pt : world.GetPointsInRadiusWithCenter(barracksPos, 6))
+        {
+            for(const noBase& fig : world.GetFigures(pt))
+            {
+                const auto* attacker = dynamic_cast<const nofAttacker*>(&fig);
+                if(attacker && attacker->GetPlayer() == 2u)
+                    attackers.push_back(attacker);
+            }
+        }
+        return attackers;
+    };
+
+    // All excess soldiers should be wandering
+    const auto wanderers = collectAttackers();
+    BOOST_TEST_REQUIRE(!wanderers.empty());
+    for(const auto* w : wanderers)
+    {
+        BOOST_TEST(w->IsWandering());
+        BOOST_TEST(!w->GetHomeBld());
+    }
+
+    // The source building should have lost all attacking soldiers:
+    // They either occupy the captured building, died in the attack, or are wandering
+    BOOST_TEST(attackerBld.GetTotalSoldiers() == numSoldiersStart - numAttackers);
+    BOOST_TEST(attackerBld.GetNumTroops() == numSoldiersStart - numAttackers);
+
+    // Wait until the wandering soldiers died (inventory reduced by at least the wanderer count)
+    RTTR_EXEC_TILL(50000, countPlayerSoldiers() + wanderers.size() <= soldiersBefore);
+
+    // Verify no wandering attackers remain
+    BOOST_TEST(collectAttackers().empty());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

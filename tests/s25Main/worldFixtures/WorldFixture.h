@@ -16,6 +16,9 @@
 #include <memory>
 #include <vector>
 
+class noMovable;
+class noFigure;
+
 //////////////////////////////////////////////////////////////////////////
 // Macros for executing GFs in tests effectively by skipping GFs without any events
 
@@ -108,6 +111,12 @@ struct WorldFixtureBase
     void addStartResources();
     /// Add start resources to HQ of the given player
     void addStartResources(unsigned playerIdx);
+
+    /// Reschedule the walk event of the obj to be executed in numGFs GFs
+    void rescheduleWalkEvent(noMovable& obj, unsigned numGFs);
+
+    /// Move the object next to the given point. The next walk event will make it reach that point
+    void moveObjTo(noFigure& obj, MapPoint pos);
 
     static PlayerInfo GetPlayer()
     {

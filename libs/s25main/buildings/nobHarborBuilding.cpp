@@ -973,7 +973,7 @@ int nobHarborBuilding::GetNeedForShip(unsigned ships_coming) const
 // try to order any ship that might be needed and is not ordered yet
 void nobHarborBuilding::OrderShip()
 {
-    unsigned needed = GetNumNeededShips();
+    const unsigned needed = GetNumNeededShips();
     GamePlayer& owner = world->GetPlayer(player);
 
     // Order (possibly) remaining ships
