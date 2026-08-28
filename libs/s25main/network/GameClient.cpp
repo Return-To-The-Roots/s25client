@@ -1623,14 +1623,12 @@ T GameClient::do_interpolate(const T x1, const T x2, const GameEvent& ev) const
 
 unsigned GameClient::Interpolate(const unsigned maxVal, const GameEvent* ev) const
 {
-    RTTR_Assert(ev);
-    return do_interpolate(0u, maxVal, *ev);
+    return do_interpolate(0u, maxVal, assertNonNull(ev));
 }
 
 int GameClient::Interpolate(const int x1, const int x2, const GameEvent* ev) const
 {
-    RTTR_Assert(ev);
-    return do_interpolate(x1, x2, *ev);
+    return do_interpolate(x1, x2, assertNonNull(ev));
 }
 
 void GameClient::ServerLost()

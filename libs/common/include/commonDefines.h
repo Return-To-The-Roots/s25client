@@ -12,7 +12,7 @@
 
 /// Deletes the ptr and sets it to nullptr
 template<typename T>
-inline void deletePtr(T*& ptr)
+void deletePtr(T*& ptr)
 {
     delete ptr;
     ptr = nullptr;
@@ -28,7 +28,7 @@ inline T absDiff(T a, T b)
 /// Same as static_cast<T> but assert the correct dynamic type (in debug mode)
 /// Use like: checkedCast<Derived*>(basePtr)
 template<typename T, typename T_Src>
-inline T checkedCast(T_Src* src)
+T checkedCast(T_Src* src)
 {
     static_assert(std::is_pointer_v<T>, "T must be a pointer type");
     RTTR_Assert(!src || dynamic_cast<T>(src));
@@ -38,11 +38,19 @@ inline T checkedCast(T_Src* src)
 /// Same as static_cast<T&> but assert the correct dynamic type (in debug mode)
 /// Use like: checkedCast<Derived>(baseRef)
 template<typename T, typename T_Src>
-inline T& checkedCast(T_Src& src)
+T& checkedCast(T_Src& src)
 {
     static_assert(std::is_class_v<T>, "T must be a plain type");
     RTTR_Assert(dynamic_cast<T*>(&src));
     return static_cast<T&>(src);
+}
+
+/// Return a reference to the pointed-to object, checking for NULL in debug mode
+template<typename T>
+T& assertNonNull(T* src)
+{
+    RTTR_Assert(src);
+    return *src;
 }
 
 // Fwd decl
