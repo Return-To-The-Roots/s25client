@@ -114,8 +114,8 @@ public:
     std::chrono::milliseconds GetFrameTime() const { return framesinfo.frameTime; }
     unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator,
                                 unsigned offset);
-    unsigned Interpolate(unsigned max_val, const GameEvent* ev);
-    int Interpolate(int x1, int x2, const GameEvent* ev);
+    unsigned Interpolate(unsigned maxVal, const GameEvent* ev) const;
+    int Interpolate(int x1, int x2, const GameEvent* ev) const;
 
     void Command_Chat(const std::string& text, ChatDestination cd);
     void Command_SetNation(Nation newNation);
@@ -207,6 +207,11 @@ private:
     void NextGF(bool wasNWF);
     /// Checks if its time for autosaving (if enabled) and does it
     void HandleAutosave();
+
+    /// Interpolate implementation for generic types
+    /// Returns x in [x1, x2] according to the current time in the range of the events duration.
+    template<typename T>
+    T do_interpolate(T x1, T x2, const GameEvent& ev) const;
 
     //  Netzwerknachrichten
     RTTR_IGNORE_OVERLOADED_VIRTUAL

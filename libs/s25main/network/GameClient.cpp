@@ -1610,29 +1610,27 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
-unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
+template<typename T>
+T GameClient::do_interpolate(const T x1, const T x2, const GameEvent& ev) const
 {
-    RTTR_Assert(ev);
     // TODO: Move to some animation system that is part of game
-    std::chrono::milliseconds elapsedTime;
+    std::chrono::milliseconds elapsedTime{};
     if(state == ClientState::Game)
-        elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
-    else
-        elapsedTime = 0ms;
-    const auto duration = ev->length * framesinfo.gf_length;
-    return helpers::interpolate(0u, max_val, elapsedTime, duration);
+        elapsedTime = (GetGFNumber() - ev.startGF) * framesinfo.gf_length + framesinfo.frameTime;
+    const auto duration = ev.length * framesinfo.gf_length;
+    return helpers::interpolate(x1, x2, elapsedTime, duration);
 }
 
-int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
+unsigned GameClient::Interpolate(const unsigned maxVal, const GameEvent* ev) const
 {
     RTTR_Assert(ev);
-    std::chrono::milliseconds elapsedTime;
-    if(state == ClientState::Game)
-        elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
-    else
-        elapsedTime = 0ms;
-    const auto duration = ev->length * framesinfo.gf_length;
-    return helpers::interpolate(x1, x2, elapsedTime, duration);
+    return do_interpolate(0u, maxVal, *ev);
+}
+
+int GameClient::Interpolate(const int x1, const int x2, const GameEvent* ev) const
+{
+    RTTR_Assert(ev);
+    return do_interpolate(x1, x2, *ev);
 }
 
 void GameClient::ServerLost()
