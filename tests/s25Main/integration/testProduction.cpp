@@ -59,8 +59,8 @@ struct MineProductionFixture : WorldWithGCExecution1P
     MapPoint CreateMine(const BuildingType mineType, const Resource initialResource = Resource())
     {
         const MapPoint minePos = hqPos + MapPoint(2, 0);
-        const auto* mine = static_cast<nobUsual*>(
-          BuildingFactory::CreateBuilding(world, mineType, minePos, curPlayer, Nation::Romans));
+        const auto* mine =
+          static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, mineType, minePos, curPlayer, Nation::Romans));
         if(initialResource.getType() != ResourceType::Nothing)
             world.GetNodeWriteable(minePos).resources = initialResource;
         BuildRoad(world.GetNeighbour(minePos, Direction::SouthEast), false, std::vector<Direction>(2, Direction::West));
@@ -78,10 +78,10 @@ struct NoOutputFallbackCase
     AddonId mineBehaviorAddon;
     BuildingType mineType;
     ResourceType mineResource;
-    GoodType primaryGood;      // must stay unchanged (deposit too small to actually mine)
+    GoodType primaryGood; // must stay unchanged (deposit too small to actually mine)
     MineNoOutputFallback fallback;
-    GoodType fallbackGood;     // must be produced instead
-    unsigned seed;             // chosen so the (probabilistic) fallback fires within maxProductionGFs
+    GoodType fallbackGood; // must be produced instead
+    unsigned seed;         // chosen so the (probabilistic) fallback fires within maxProductionGFs
     friend std::ostream& operator<<(std::ostream& os, const NoOutputFallbackCase& c)
     {
         return os << "fallback=" << static_cast<unsigned>(c.fallback);
@@ -183,7 +183,8 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineWithoutResourcesNeedsAddon, MineProductionFix
 
 BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteMineStillNeedsResourceSpot, MineProductionFixture)
 {
-    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
+    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR,
+                     static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
     CreateMine(BuildingType::GraniteMine);
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
@@ -229,7 +230,7 @@ BOOST_FIXTURE_TEST_CASE(CoalMineInexhaustibleBehaviorDoesNotDepleteResource, Min
     const Resource initCoal(ResourceType::Coal, 4);
     const MapPoint minePos = CreateMine(BuildingType::CoalMine, initCoal);
     const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
-    const unsigned initialCoal = curInventory[GetMineOutput(BuildingType::CoalMine)];
+    const unsigned initialCoal = curInventory[GoodType::Coal];
 
     RTTR_EXEC_TILL(maxProductionGFs, curInventory[GoodType::Coal] > initialCoal);
 
@@ -258,20 +259,17 @@ BOOST_FIXTURE_TEST_CASE(CoalMineS4LikeExhaustionCanProduceNothing, MineProductio
 // Same scenario for every configured no-output fallback: an S4-like mine sitting on a single-unit deposit keeps
 // working but (almost) never mines it, so the fallback ware appears while the primary ware and the deposit are
 // untouched. The seeds are per-case because the fallback chance is probabilistic (25%/50% need a matching roll).
-BOOST_DATA_TEST_CASE_F(MineProductionFixture, S4LikeNoOutputFallbackProducesFallbackWare,
-                       dataset::make(std::array{
-                         NoOutputFallbackCase{AddonId::COALMINE_RESOURCE_BEHAVIOR, BuildingType::CoalMine,
-                                              ResourceType::Coal, GoodType::Coal,
-                                              MineNoOutputFallback::ProduceGranite25, GoodType::Stones, 2},
-                         NoOutputFallbackCase{AddonId::COALMINE_RESOURCE_BEHAVIOR, BuildingType::CoalMine,
-                                              ResourceType::Coal, GoodType::Coal,
-                                              MineNoOutputFallback::ProduceGranite50, GoodType::Stones, 7},
-                         NoOutputFallbackCase{AddonId::COALMINE_RESOURCE_BEHAVIOR, BuildingType::CoalMine,
-                                              ResourceType::Coal, GoodType::Coal,
-                                              MineNoOutputFallback::ProduceGranite100, GoodType::Stones, 2},
-                         NoOutputFallbackCase{AddonId::GOLDMINE_RESOURCE_BEHAVIOR, BuildingType::GoldMine,
-                                              ResourceType::Gold, GoodType::Gold,
-                                              MineNoOutputFallback::ProduceLowerGradeResource, GoodType::IronOre, 2}}))
+BOOST_DATA_TEST_CASE_F(
+  MineProductionFixture, S4LikeNoOutputFallbackProducesFallbackWare,
+  dataset::make(std::array{
+    NoOutputFallbackCase{AddonId::COALMINE_RESOURCE_BEHAVIOR, BuildingType::CoalMine, ResourceType::Coal,
+                         GoodType::Coal, MineNoOutputFallback::ProduceGranite25, GoodType::Stones, 2},
+    NoOutputFallbackCase{AddonId::COALMINE_RESOURCE_BEHAVIOR, BuildingType::CoalMine, ResourceType::Coal,
+                         GoodType::Coal, MineNoOutputFallback::ProduceGranite50, GoodType::Stones, 7},
+    NoOutputFallbackCase{AddonId::COALMINE_RESOURCE_BEHAVIOR, BuildingType::CoalMine, ResourceType::Coal,
+                         GoodType::Coal, MineNoOutputFallback::ProduceGranite100, GoodType::Stones, 2},
+    NoOutputFallbackCase{AddonId::GOLDMINE_RESOURCE_BEHAVIOR, BuildingType::GoldMine, ResourceType::Gold,
+                         GoodType::Gold, MineNoOutputFallback::ProduceLowerGradeResource, GoodType::IronOre, 2}}))
 {
     ggs.setSelection(sample.mineBehaviorAddon, static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
     ggs.setSelection(AddonId::MINE_NO_OUTPUT_FALLBACK, static_cast<unsigned>(sample.fallback));

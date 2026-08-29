@@ -196,33 +196,22 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineResourceBehaviorAffectsAIMineSearch, EmptyWor
 {
     // Mineable terrain everywhere but no deposits, so only the granite behavior decides what the AI can place.
     makeWorldMineable(world);
-    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR,
-                     static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
-
-    AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
-    initAIJhNodes(ai, world, 0);
     const MapPoint searchCenter = world.GetPlayer(0).GetHQPos();
+    // The AI rates all nodes once during setup, so each behavior needs an AI of its own.
+    const auto findsMineSpotFor = [&](const MineResourceBehavior behavior, const AIResource res) {
+        ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(behavior));
+        AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
+        initAIJhNodes(ai, world, 0);
+        return ai.FindBestPosition(searchCenter, res, BuildingQuality::Mine, 5).isValid();
+    };
 
     // WorkEverywhere lets the AI place a granite mine on any mineable node, but only for granite, not coal.
-    BOOST_TEST(ai.FindBestPosition(searchCenter, AIResource::Granite, BuildingQuality::Mine, 5).isValid());
-    BOOST_TEST(!ai.FindBestPosition(searchCenter, AIResource::Coal, BuildingQuality::Mine, 5).isValid());
-
+    BOOST_TEST(findsMineSpotFor(MineResourceBehavior::WorkEverywhere, AIResource::Granite));
+    BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::WorkEverywhere, AIResource::Coal));
+    // Inexhaustible does not imply "work everywhere": without an actual deposit there is still no spot.
+    BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::Inexhaustible, AIResource::Granite));
 }
 
-BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteDoesNotImplyWorkEverywhereForAI, EmptyWorldFixture1P)
-{
-    // Same setup as above, but the AI is constructed AFTER Inexhaustible is selected.
-    // Unlike WorkEverywhere, Inexhaustible requires an actual deposit.
-    makeWorldMineable(world);
-    ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR,
-                     static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
-
-    AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
-    initAIJhNodes(ai, world, 0);
-    const MapPoint searchCenter = world.GetPlayer(0).GetHQPos();
-
-    BOOST_TEST(!ai.FindBestPosition(searchCenter, AIResource::Granite, BuildingQuality::Mine, 5).isValid());
-}
 BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 {
     addStartResources();
