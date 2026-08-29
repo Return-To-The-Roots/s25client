@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeMigratesToPerMineBehavio
 
 BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeAlsoMigratesLegacyGraniteAddonValue)
 {
-    // Old data always contains an explicit (usually disabled) value for GRANITEMINE_RESOURCE_BEHAVIOR, because that
+    // Old data always contains an explicit value for GRANITEMINE_RESOURCE_BEHAVIOR, because that
     // id reuses the slot of the former INEXHAUSTIBLE_GRANITEMINES addon which was always serialized. Before this
     // refactor the separate INEXHAUSTIBLE_MINES setting turned granite mines inexhaustible on its own, so migration
     // must not let a disabled granite value suppress that: granite still becomes Inexhaustible here.

@@ -58,7 +58,6 @@ RTTR_ATTRIBUTE_NO_UBSAN(vptr) void setProductivity(nobUsual* bld, unsigned short
 } // namespace
 
 using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 2 * helpers::MaxEnumValue_v<BuildingType> + 14, 4>;
-using WorldFixtureMineRadius1P = WorldFixture<CreateEmptyWorld, 1, 20, 12>;
 
 namespace {
 // S4-like mine productivity reaches the mine's base productivity once this many matching resources remain in the
@@ -66,24 +65,24 @@ namespace {
 constexpr unsigned S4LIKE_FULL_PRODUCTIVITY_AMOUNT = 20;
 
 // Places a coal mine and drives its S4-like productivity purely through the resources in its radius.
-// The 20x12 map is larger than 2*MINER_RADIUS in each dimension, so the mine radius never wraps onto itself.
-struct MineProductivityFixture : WorldFixtureMineRadius1P
+// Size chosen such that the mine radius never wraps onto itself.
+struct MineProductivityFixture : WorldFixture<CreateEmptyWorld, 1, 20, 12>
 {
     nobUsual* coalMine;
     MapPoint minePos;
 
     MineProductivityFixture()
     {
-        // BuildingFactory::CreateBuilding ignores the building quality, so any node works; offset from the HQ keeps
-        // the mine radius clear of the HQ. The empty world has no resources, but clear the radius to be explicit.
+        // Offset > MINER_RADIUS so no node of the mine radius is covered by the HQ and each of them can hold coal.
         minePos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + Position(4, 0));
         coalMine = static_cast<nobUsual*>(
           BuildingFactory::CreateBuilding(world, BuildingType::CoalMine, minePos, 0, Nation::Romans));
+        // The empty world has no resources, but clear the radius to be explicit.
         for(const MapPoint pt : world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS))
             world.SetResource(pt, Resource());
     }
 
-    // Puts coal on the mine node and its eastern neighbor (0 == none), leaving the rest of the radius empty.
+    // Puts given amounts of coal on the mine node and its eastern neighbor
     void setCoalAmounts(const unsigned atMine, const unsigned atNeighbor)
     {
         world.SetResource(minePos, atMine ? Resource(ResourceType::Coal, atMine) : Resource());
@@ -213,11 +212,7 @@ BOOST_FIXTURE_TEST_CASE(MineProductivityUsesAllMatchingResourcesWithinMineRadius
 
     // A different resource type in range and matching coal just outside the radius must not count as coal.
     world.SetResource(world.GetNeighbour(minePos, Direction::NorthWest), Resource(ResourceType::Iron, 15));
-    const MapPoint outOfRangePt = world.GetNeighbour(
-      world.GetNeighbour(world.GetNeighbour(minePos, Direction::East), Direction::East), Direction::East);
-    const auto inRangePts = world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS);
-    const bool outOfRange = std::find(inRangePts.begin(), inRangePts.end(), outOfRangePt) == inRangePts.end();
-    BOOST_TEST_REQUIRE(outOfRange);
+    const MapPoint outOfRangePt = world.MakeMapPoint(minePos + Position(MINER_RADIUS + 1, 0));
     world.SetResource(outOfRangePt, Resource(ResourceType::Coal, 15));
     BOOST_TEST(GetRemainingMineResources(world, minePos, ResourceType::Coal) == 0u);
     BOOST_TEST(coalMine->GetProductivity() == 0u);
