@@ -752,7 +752,8 @@ BOOST_AUTO_TEST_CASE(SerializeRNGs)
             helpers::pushRng(ser, rng);
             auto rng2 = helpers::popRng<decltype(rng)>(ser);
             for([[maybe_unused]] const auto i : helpers::range(10))
-                BOOST_TEST(helpers::randomValue<int>(rng) == helpers::randomValue<int>(rng2));
+                BOOST_TEST(rng() == rng2());
+            // BOOST_TEST(helpers::randomValue<int>(rng) == helpers::randomValue<int>(rng2));
 
             BOOST_TEST(helpers::serializeRng(rng) == helpers::serializeRng(rng2));
             BOOST_TEST(helpers::serializeRng(rng) == excpectedLocal.afterUse);
@@ -779,10 +780,10 @@ BOOST_AUTO_TEST_CASE(SerializeRNGs)
             helpers::pushRng(ser, AI::getRandomGenerator());
             std::array<int, 10> nextValues;
             for(int& nextVal : nextValues)
-                nextVal = AI::randomValue<int>();
+                nextVal = static_cast<int>(AI::getRandomGenerator()());
             AI::getRandomGenerator() = helpers::popRng<decltype(AI::getRandomGenerator())>(ser);
             for(const int& nextVal : nextValues)
-                BOOST_TEST(AI::randomValue<int>(), nextVal);
+                BOOST_TEST(static_cast<int>(AI::getRandomGenerator()()), nextVal);
             BOOST_TEST(helpers::serializeRng(AI::getRandomGenerator()) == expectedAI.afterUse);
         }
     }
