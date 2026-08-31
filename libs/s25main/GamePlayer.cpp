@@ -405,8 +405,7 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
     for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         // Lagerhaus geeignet?
-        RTTR_Assert(wh);
-        if(!isWarehouseGood(*wh))
+        if(!isWarehouseGood(assertNonNull(wh)))
             continue;
 
         if(start.GetPos() == wh->GetPos())
@@ -2320,7 +2319,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, 
             tradePathCache.addEntry(tr.GetTradePath(), GetPlayerId());
 
             wh->StartTradeCaravane(what, actualCount, tr, goalWh);
-            count -= available;
+            count -= actualCount;
             if(count == 0)
                 return;
         }

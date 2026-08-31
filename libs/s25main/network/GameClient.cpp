@@ -22,6 +22,7 @@
 #include "SerializedGameData.h"
 #include "Settings.h"
 #include "ai/AIPlayer.h"
+#include "ai/random.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "factories/AIFactory.h"
 #include "files.h"
@@ -288,6 +289,7 @@ void GameClient::StartGame(const unsigned random_init)
 
     // Random-Generator initialisieren
     RANDOM.Init(random_init);
+    AI::getRandomGenerator().seed(random_init);
 
     if(!IsReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, SaveGameDataToLoad::All))
     {
@@ -1201,7 +1203,7 @@ void GameClient::DecreaseSpeed()
         SetNewSpeed(framesinfo.gfLengthReq / SPEED_STEP * SPEED_STEP + SPEED_STEP);
 }
 
-void GameClient::SetNewSpeed(FramesInfo::milliseconds32_t gfLength)
+void GameClient::SetNewSpeed(std::chrono::milliseconds gfLength)
 {
     static_assert(MIN_SPEED >= SPEED_GF_LENGTHS[GameSpeed::VeryFast], "Not all speeds reachable");
     static_assert(MAX_SPEED <= SPEED_GF_LENGTHS[GameSpeed::VerySlow], "Not all speeds reachable");
@@ -1223,7 +1225,7 @@ bool GameClient::OnGameMessage(const GameMessage_Server_NWFDone& msg)
     if(!nwfInfo)
         return true;
 
-    if(!nwfInfo->addServerInfo(NWFServerInfo(msg.gf, msg.gf_length, msg.nextNWF)))
+    if(!nwfInfo->addServerInfo(NWFServerInfo(msg.gf, std::chrono::milliseconds(msg.gf_length), msg.nextNWF)))
     {
         RTTR_Assert(false);
         LOG.write("Failed to add server info. Invalid server?\n");
@@ -1295,7 +1297,7 @@ void GameClient::ExecuteGameFrame()
     if(framesinfo.forcePauseLen.count())
     {
         if(currentTime - framesinfo.forcePauseStart > framesinfo.forcePauseLen)
-            framesinfo.forcePauseLen = FramesInfo::milliseconds32_t::zero();
+            framesinfo.forcePauseLen = framesinfo.forcePauseLen.zero();
         else
             return; // Pause
     }
@@ -1344,7 +1346,7 @@ void GameClient::ExecuteGameFrame()
 
                     ExecuteNWF();
 
-                    FramesInfo::milliseconds32_t oldGFLen = framesinfo.gf_length;
+                    const auto oldGFLen = framesinfo.gf_length;
                     nwfInfo->execute(framesinfo);
                     if(oldGFLen != framesinfo.gf_length)
                     {
@@ -1371,7 +1373,8 @@ void GameClient::ExecuteGameFrame()
         if(skiptogf == GetGFNumber())
             skiptogf = 0;
     }
-    framesinfo.frameTime = std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
+    framesinfo.frameTime =
+      std::chrono::duration_cast<decltype(framesinfo.frameTime)>(currentTime - framesinfo.lastTime);
     // Check remaining time until next GF
     if(framesinfo.frameTime >= framesinfo.gf_length)
     {
@@ -1606,35 +1609,30 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
     // every frame of an 8-part animation anymore.
     // An animation runs fully in (factor_numerator / factor_denumerator) multiples of 630ms
     const unsigned unit = 630 /*ms*/ * factor_numerator / factor_denumerator;
-    const unsigned currenttime = std::chrono::duration_cast<FramesInfo::milliseconds32_t>(
-                                   (framesinfo.lastTime + framesinfo.frameTime).time_since_epoch())
-                                   .count();
+    const auto currenttime =
+      static_cast<unsigned>((framesinfo.lastTime + framesinfo.frameTime).time_since_epoch() / 1ms);
     return ((currenttime % unit) * max / unit + offset) % max;
 }
 
-unsigned GameClient::Interpolate(unsigned max_val, const GameEvent* ev)
+template<typename T>
+T GameClient::do_interpolate(const T x1, const T x2, const GameEvent& ev) const
 {
-    RTTR_Assert(ev);
     // TODO: Move to some animation system that is part of game
-    FramesInfo::milliseconds32_t elapsedTime;
+    std::chrono::milliseconds elapsedTime{};
     if(state == ClientState::Game)
-        elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
-    else
-        elapsedTime = FramesInfo::milliseconds32_t::zero();
-    FramesInfo::milliseconds32_t duration = ev->length * framesinfo.gf_length;
-    return helpers::interpolate(0u, max_val, elapsedTime, duration);
+        elapsedTime = (GetGFNumber() - ev.startGF) * framesinfo.gf_length + framesinfo.frameTime;
+    const auto duration = ev.length * framesinfo.gf_length;
+    return helpers::interpolate(x1, x2, elapsedTime, duration);
 }
 
-int GameClient::Interpolate(int x1, int x2, const GameEvent* ev)
+unsigned GameClient::Interpolate(const unsigned maxVal, const GameEvent* ev) const
 {
-    RTTR_Assert(ev);
-    FramesInfo::milliseconds32_t elapsedTime;
-    if(state == ClientState::Game)
-        elapsedTime = (GetGFNumber() - ev->startGF) * framesinfo.gf_length + framesinfo.frameTime;
-    else
-        elapsedTime = FramesInfo::milliseconds32_t::zero();
-    FramesInfo::milliseconds32_t duration = ev->length * framesinfo.gf_length;
-    return helpers::interpolate(x1, x2, elapsedTime, duration);
+    return do_interpolate(0u, maxVal, assertNonNull(ev));
+}
+
+int GameClient::Interpolate(const int x1, const int x2, const GameEvent* ev) const
+{
+    return do_interpolate(x1, x2, assertNonNull(ev));
 }
 
 void GameClient::ServerLost()
@@ -1761,12 +1759,12 @@ void GameClient::SetPause(bool pause)
         if(!pause)
             return;
         framesinfo.isPaused = true;
-        framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
+        framesinfo.frameTime = 0ms;
     } else if(replayMode)
     {
         // Pause instantly
         framesinfo.isPaused = pause;
-        framesinfo.frameTime = FramesInfo::milliseconds32_t::zero();
+        framesinfo.frameTime = 0ms;
     } else if(IsHost())
     {
         auto* msg = new GameMessage_Pause(pause);

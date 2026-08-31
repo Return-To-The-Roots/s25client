@@ -351,9 +351,8 @@ unsigned Ware::CheckNewGoalForLostWare(const noBaseBuilding& newgoal) const
 
 Ware::RouteParams Ware::CalcPathToGoal(const noBaseBuilding& newgoal) const
 {
-    RTTR_Assert(location);
     unsigned length;
-    RoadPathDirection possibledir = world->FindPathForWareOnRoads(*location, newgoal, &length);
+    RoadPathDirection possibledir = world->FindPathForWareOnRoads(assertNonNull(location), newgoal, &length);
     if(possibledir != RoadPathDirection::None) // there is a valid path to the goal? -> ordered!
     {
         // in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back
