@@ -405,8 +405,7 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
     for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         // Lagerhaus geeignet?
-        RTTR_Assert(wh);
-        if(!isWarehouseGood(*wh))
+        if(!isWarehouseGood(assertNonNull(wh)))
             continue;
 
         if(start.GetPos() == wh->GetPos())
