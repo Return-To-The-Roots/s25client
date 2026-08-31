@@ -559,7 +559,7 @@ bool GameServer::StartGame()
     framesinfo.gfLengthReq = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs_.speed];
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
-    framesinfo.nwf_length = CalcNWFLenght(std::chrono::milliseconds(highest_ping));
+    framesinfo.nwf_length = CalcNWFLength(std::chrono::milliseconds(highest_ping));
 
     LOG.write("SERVER: Using gameframe length of %1%\n") % helpers::withUnit(framesinfo.gf_length);
     LOG.write("SERVER: Using networkframe length of %1% GFs (%2%)\n") % framesinfo.nwf_length
@@ -581,7 +581,7 @@ bool GameServer::StartGame()
     return true;
 }
 
-unsigned GameServer::CalcNWFLenght(std::chrono::milliseconds minDuration) const
+unsigned GameServer::CalcNWFLength(std::chrono::milliseconds minDuration) const
 {
     constexpr unsigned maxNumGF = 20;
     for(unsigned i = 1; i < maxNumGF; ++i)
