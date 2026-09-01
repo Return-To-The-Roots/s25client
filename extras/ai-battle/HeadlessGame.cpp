@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -13,6 +13,7 @@
 #include "world/MapLoader.h"
 #include "gameTypes/MapInfo.h"
 #include "gameData/GameConsts.h"
+#include "s25util/colors.h"
 #include <boost/nowide/iostream.hpp>
 #include <chrono>
 #include <cstdio>
@@ -27,6 +28,7 @@ std::string HumanReadableNumber(unsigned num);
 
 namespace bfs = boost::filesystem;
 namespace bnw = boost::nowide;
+
 using bfs::canonical;
 
 #ifdef WIN32
@@ -41,13 +43,24 @@ void printConsole(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 void printConsole(const char* fmt, ...);
 #endif
 
-HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais)
+HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais,
+                           const bfs::path& luaPath)
     : map_(map), game_(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais)), world_(game_.world_),
       em_(*static_cast<EventManager*>(game_.em_.get()))
 {
     MapLoader loader(world_);
     if(!loader.Load(map))
         throw std::runtime_error("Could not load " + map.string());
+    MapLoader::SetupResources(world_);
+
+    if(!luaPath.empty())
+    {
+        if(!loader.LoadLuaScript(game_, localState_, luaPath))
+            throw std::runtime_error("Failed to load Lua script: " + luaPath.string());
+        world_.GetLua().setSuppressStdout(true);
+        luaPath_ = luaPath;
+        bnw::cout << "Lua script loaded: " << luaPath << '\n';
+    }
 
     players_.clear();
     for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
@@ -138,8 +151,14 @@ void HeadlessGame::RecordReplay(const bfs::path& path, unsigned random_init)
     mapInfo.mapData.CompressFromFile(mapInfo.filepath, &mapInfo.mapChecksum);
     mapInfo.type = MapType::OldMap;
 
-    for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
-        replay_.AddPlayer(world_.GetPlayer(playerId));
+    if(!luaPath_.empty() && bfs::exists(luaPath_))
+    {
+        mapInfo.luaFilepath = luaPath_;
+        mapInfo.luaData.CompressFromFile(luaPath_, &mapInfo.luaChecksum);
+    }
+
+    for(auto& player : world_.getPlayers())
+        replay_.AddPlayer(player);
     replay_.ggs = game_.ggs_;
     if(!replay_.StartRecording(path, mapInfo, random_init))
         throw std::runtime_error("Replayfile could not be opened!");
@@ -151,8 +170,8 @@ void HeadlessGame::SaveGame(const bfs::path& path) const
     bfs::remove(path);
 
     Savegame save;
-    for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
-        save.AddPlayer(world_.GetPlayer(playerId));
+    for(auto& player : world_.getPlayers())
+        save.AddPlayer(player);
     save.ggs = game_.ggs_;
     save.ggs.exploration = Exploration::Disabled; // no FOW
     save.start_gf = em_.GetCurrentGF();
@@ -201,9 +220,8 @@ void HeadlessGame::PrintState()
     printConsole("┌────────────────────────┬─────────────────┬─────────────┬───────────┬───────────┐\n");
     printConsole("│ Player                 │ Country         │ Buildings   │ Military  │ Gold      │\n");
     printConsole("├────────────────────────┼─────────────────┼─────────────┼───────────┼───────────┤\n");
-    for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
+    for(const auto& player : world_.getPlayers())
     {
-        const GamePlayer& player = world_.GetPlayer(playerId);
         printConsole("│ %s%-22s%s │ %15s │ %11s │ %9s │ %9s │\n", player.IsDefeated() ? "\x1b[9m" : "",
                      player.name.c_str(), player.IsDefeated() ? "\x1b[29m" : "",
                      HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Country)).c_str(),
@@ -232,6 +250,7 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais)
         }
         pi.nation = Nation::Romans;
         pi.team = Team::None;
+        pi.color = PLAYER_COLORS[ret.size() % PLAYER_COLORS.size()];
         ret.push_back(pi);
     }
     return ret;

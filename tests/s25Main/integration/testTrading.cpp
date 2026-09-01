@@ -14,6 +14,7 @@
 #include "gameData/JobConsts.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
+#include <factories/BuildingFactory.h>
 #include <variant.h>
 
 struct TradeFixture : public WorldWithGCExecution3P
@@ -52,6 +53,7 @@ struct TradeFixture : public WorldWithGCExecution3P
 
         // Enable trading
         this->ggs.setSelection(AddonId::TRADE, 1);
+        initGameRNG();
     }
 
     void testExpectedWares() const
@@ -85,8 +87,6 @@ BOOST_FIXTURE_TEST_SUITE(GameCommandSuite, TradeFixture)
 
 BOOST_AUTO_TEST_CASE(TradeWares)
 {
-    initGameRNG();
-
     // Disable trading
     this->ggs.setSelection(AddonId::TRADE, 0);
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Boards, 2);
@@ -135,8 +135,6 @@ BOOST_AUTO_TEST_CASE(TradeWares)
 
 BOOST_AUTO_TEST_CASE(TradeFigures)
 {
-    initGameRNG();
-
     // Disable trading
     this->ggs.setSelection(AddonId::TRADE, 0);
     this->TradeOverLand(players[0]->GetHQPos(), Job::Woodcutter, 2);
@@ -177,8 +175,6 @@ BOOST_AUTO_TEST_CASE(TradeFigures)
 
 BOOST_AUTO_TEST_CASE(TradeToMuch)
 {
-    initGameRNG();
-
     // Trade more wares than available (not limited by donkeys)
     BOOST_TEST_REQUIRE(numSaws < numDonkeys);
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Saw, numSaws * 2);
@@ -205,10 +201,36 @@ BOOST_AUTO_TEST_CASE(TradeToMuch)
     testAfterLeaving(20);
 }
 
+BOOST_AUTO_TEST_CASE(TradeLessFiguresThenInStoreHouse)
+{
+    auto* const hqPlayer1 = world.GetSpecObj<nobBaseWarehouse>(players[1]->GetHQPos());
+
+    // Add second warehouse
+    auto* wh1 = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(
+      world, BuildingType::Storehouse, players[1]->GetHQPos() + MapPoint(2, 0), 1, Nation::Romans));
+    world.BuildRoad(0, false, wh1->GetFlagPos(), {2, Direction::East});
+
+    PeopleCounts inv;
+    inv[Job::Woodcutter] = 2;
+    inv[Job::Helper] = 1;
+    wh1->AddToInventory(inv, true);
+
+    BOOST_TEST_REQUIRE(hqPlayer1->GetNumRealFigures(Job::Woodcutter) == 8);
+    BOOST_TEST_REQUIRE(wh1->GetNumRealFigures(Job::Woodcutter) == 2);
+
+    // Trade less figures then in nearest warehouse wh1
+    this->TradeOverLand(players[0]->GetHQPos(), Job::Woodcutter, 1);
+
+    // Trade less figures then in nearest warehouse wh1 should use only figures from that WH
+    // Run enough GFs so all trade caravans are out (~numTradeItems + 1 people need to leave taking 30GFs max each)
+    RTTR_EXEC_TILL(30 * (1 + 1), wh1->GetLeavingFigures().empty() && hqPlayer1->GetLeavingFigures().empty());
+
+    BOOST_TEST_REQUIRE(hqPlayer1->GetNumRealFigures(Job::Woodcutter) == 8);
+    BOOST_TEST_REQUIRE(wh1->GetNumRealFigures(Job::Woodcutter) == 1);
+}
+
 BOOST_AUTO_TEST_CASE(TradeFail)
 {
-    initGameRNG();
-
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Boards, 2);
     // Each donkey carries a ware and we need a leader
     numBoards -= 2;
@@ -254,8 +276,6 @@ BOOST_AUTO_TEST_CASE(TradeFail)
 
 BOOST_AUTO_TEST_CASE(TradeFailDie)
 {
-    initGameRNG();
-
     this->TradeOverLand(players[0]->GetHQPos(), GoodType::Boards, 2);
     this->TradeOverLand(players[0]->GetHQPos(), Job::Woodcutter, 2);
     // Each donkey carries a ware and we need 2 leaders
@@ -283,7 +303,6 @@ BOOST_AUTO_TEST_CASE(TradeFailDie)
 
 BOOST_AUTO_TEST_CASE(TradeMessages)
 {
-    initGameRNG();
     const PostBox& postbox = world.GetPostMgr().AddPostBox(0);
 
     this->TradeOverLand(players[0]->GetHQPos(), Job::Woodcutter, 2);
