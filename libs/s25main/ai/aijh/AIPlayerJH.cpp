@@ -1661,7 +1661,7 @@ void AIPlayerJH::TrySeaAttack()
             // \n",gwb.GetHarborPoint(i).x,gwb.GetHarborPoint(i).y);
         }
     }
-    auto prng = std::mt19937(std::random_device()());
+    auto& prng = AI::getRandomGenerator();
     // any undefendedTargets? -> pick one by random
     if(!undefendedTargets.empty())
     {

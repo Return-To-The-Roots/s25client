@@ -31,13 +31,12 @@ struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1>
         RTTR_EXEC_TILL(7 * 20 + 60, farm->HasWorker());
         farmer = dynamic_cast<const nofFarmhand*>(farm->GetWorker());
         BOOST_TEST_REQUIRE(farmer);
+        initGameRNG();
     }
 };
 
 BOOST_FIXTURE_TEST_CASE(ForesterAvoidsPotentialFarmFieldSpots, FarmerFixture)
 {
-    initGameRNG();
-
     const auto isPointAvailable = [](const nofFarmhand& worker, const MapPoint pt) {
         return worker.GetPointQuality(pt) != nofFarmhand::PointQuality::NotPossible;
     };
@@ -60,7 +59,6 @@ BOOST_FIXTURE_TEST_CASE(ForesterAvoidsPotentialFarmFieldSpots, FarmerFixture)
 
 BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
 {
-    initGameRNG();
     const auto isPointAvailable = [farmer = this->farmer](const MapPoint pt) {
         return farmer->GetPointQuality(pt) != nofFarmhand::PointQuality::NotPossible;
     };

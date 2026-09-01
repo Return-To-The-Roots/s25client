@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -12,6 +12,7 @@
 #include "notifications/NotificationManager.h"
 #include "postSystem/PostManager.h"
 #include "world/World.h"
+#include "s25util/span.hpp"
 #include <memory>
 #include <set>
 #include <vector>
@@ -158,6 +159,8 @@ public:
     GamePlayer& GetPlayer(unsigned id);
     const GamePlayer& GetPlayer(unsigned id) const;
     unsigned GetNumPlayers() const;
+    s25util::span<GamePlayer> getPlayers();
+    s25util::span<const GamePlayer> getPlayers() const;
     bool IsSinglePlayer() const;
     /// Return the game settings
     const GlobalGameSettings& GetGGS() const { return gameSettings; }

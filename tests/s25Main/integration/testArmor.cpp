@@ -79,14 +79,15 @@ struct ArmorTradeFixture : public ArmoredSoldierFixture
 
         // Enable trading
         this->ggs.setSelection(AddonId::TRADE, 1);
+        initGameRNG();
     }
 
     void testExpectedFiguresInGlobalInventoryMatchWithHQInventory() const
     {
-        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+        for(const auto& player : world.getPlayers())
         {
-            auto const& playerWh = world.GetSpecObj<nobBaseWarehouse>(players[i]->GetHQPos());
-            auto const& globalInventoryPlayer = world.GetPlayer(i).GetInventory();
+            auto const& playerWh = world.GetSpecObj<nobBaseWarehouse>(player.GetHQPos());
+            auto const& globalInventoryPlayer = player.GetInventory();
             for(unsigned i = 0; i < NUM_SOLDIER_RANKS; i++)
             {
                 BOOST_TEST(playerWh->GetNumRealArmoredFigures(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]))
@@ -135,8 +136,6 @@ BOOST_FIXTURE_TEST_SUITE(GameCommandSuite, ArmorTradeFixture)
 
 BOOST_AUTO_TEST_CASE(TradeArmoredFigures)
 {
-    initGameRNG();
-
     // Disable trading
     this->ggs.setSelection(AddonId::TRADE, 0);
     this->TradeOverLand(players[0]->GetHQPos(), Job::Officer, 3);
@@ -184,8 +183,6 @@ BOOST_AUTO_TEST_CASE(TradeArmoredFigures)
 
 BOOST_AUTO_TEST_CASE(ArmorTradeFail)
 {
-    initGameRNG();
-
     const unsigned officerSoldiersTraded = 3;
     const unsigned officerSoldiersWithArmor = 2;
 
@@ -221,8 +218,6 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFail)
 
 BOOST_AUTO_TEST_CASE(ArmorTradeFailDie)
 {
-    initGameRNG();
-
     const unsigned officerSoldiersTraded = 3;
     const unsigned officerSoldiersWithArmor = 2;
 

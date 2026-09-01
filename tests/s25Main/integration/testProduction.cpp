@@ -74,7 +74,8 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
 BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
 {
     GoodsAndPeopleCounts inv;
-    inv[GoodType::Boards] = 10;
+    inv[GoodType::Boards] = 20;
+    inv[GoodType::Stones] = 20;
     inv[GoodType::Iron] = 10;
     inv[Job::Metalworker] = 1;
     world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(inv, true);

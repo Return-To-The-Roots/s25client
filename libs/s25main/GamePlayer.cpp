@@ -405,8 +405,7 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
     for(nobBaseWarehouse* wh : buildings.GetStorehouses())
     {
         // Lagerhaus geeignet?
-        RTTR_Assert(wh);
-        if(!isWarehouseGood(*wh))
+        if(!isWarehouseGood(assertNonNull(wh)))
             continue;
 
         if(start.GetPos() == wh->GetPos())
@@ -889,6 +888,12 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
     }
 }
 
+static bool IsWareFineWithEmergencyProtocol(GoodType goodType, const noBaseBuilding& goal)
+{
+    return (goodType != GoodType::Boards && goodType != GoodType::Stones)
+           || goal.GetBuildingType() == BuildingType::Woodcutter || goal.GetBuildingType() == BuildingType::Sawmill;
+}
+
 Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
 {
     /// Gibt es ein Lagerhaus mit dieser Ware?
@@ -902,8 +907,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
         else
         {
             // Wenn Notfallprogramm aktiv nur an Holzfäller und Sägewerke Bretter/Steine liefern
-            if((ware != GoodType::Boards && ware != GoodType::Stones)
-               || goal.GetBuildingType() == BuildingType::Woodcutter || goal.GetBuildingType() == BuildingType::Sawmill)
+            if(IsWareFineWithEmergencyProtocol(ware, goal))
                 return wh->OrderWare(ware, goal);
             else
                 return nullptr;
@@ -2089,6 +2093,23 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, Harb
     return false;
 }
 
+void GamePlayer::CancelWaresForEmergencyProtocol()
+{
+    for(auto it = ware_list.begin(); it != ware_list.end();)
+    {
+        Ware* ware = *it;
+        if(ware->IsWaitingInWarehouse() && ware->GetGoal()
+           && !IsWareFineWithEmergencyProtocol(ware->type, *ware->GetGoal()))
+        {
+            ware->NotifyGoalAboutLostWare();
+            static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
+            it = ware_list.erase(it);
+            continue;
+        }
+        it++;
+    }
+}
+
 void GamePlayer::TestForEmergencyProgramm()
 {
     // we are already defeated, do not even think about an emergency program - it's too late :-(
@@ -2118,6 +2139,9 @@ void GamePlayer::TestForEmergencyProgramm()
             emergency = true;
             SendPostMessage(std::make_unique<PostMsg>(
               world.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
+
+            // Handle wares already ordered
+            CancelWaresForEmergencyProtocol();
         }
     } else
     {
@@ -2295,7 +2319,7 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, 
             tradePathCache.addEntry(tr.GetTradePath(), GetPlayerId());
 
             wh->StartTradeCaravane(what, actualCount, tr, goalWh);
-            count -= available;
+            count -= actualCount;
             if(count == 0)
                 return;
         }

@@ -258,13 +258,13 @@ void SerializedGameData::MakeSnapshot(const Game& game)
         PushObject(gw.getEconHandler(), true);
     }
     // Spieler serialisieren
-    for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
+    for(const auto& player : gw.getPlayers())
     {
         if(debugMode)
-            LOG.write("Start serializing player %1% at %2%\n") % i % GetLength();
-        gw.GetPlayer(i).Serialize(*this);
+            LOG.write("Start serializing player %1% at %2%\n") % player.GetPlayerId() % GetLength();
+        player.Serialize(*this);
         if(debugMode)
-            LOG.write("Done serializing player %1% at %2%\n") % i % GetLength();
+            LOG.write("Done serializing player %1% at %2%\n") % player.GetPlayerId() % GetLength();
     }
 
     if(writtenEventIds.size() != writeEm->GetNumActiveEvents())
@@ -301,8 +301,8 @@ void SerializedGameData::ReadSnapshot(Game& game, ILocalGameState& localGameStat
           std::unique_ptr<EconomyModeHandler>(PopObject<EconomyModeHandler>(GO_Type::Economymodehandler)));
     }
 
-    for(unsigned i = 0; i < gw.GetNumPlayers(); ++i)
-        gw.GetPlayer(i).Deserialize(*this);
+    for(auto& player : gw.getPlayers())
+        player.Deserialize(*this);
 
     // If this check fails, we did not serialize all objects or there was an async
     if(readEvents.size() != em->GetNumActiveEvents())
