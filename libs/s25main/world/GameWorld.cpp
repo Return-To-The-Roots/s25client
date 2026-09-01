@@ -205,7 +205,7 @@ MapPoint GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road
     // See if the road can still be built at all
     PathConditionRoad<GameWorldBase> roadChecker(*this, boat_road);
     MapPoint curPt(start);
-    for(const auto i : helpers::range<unsigned>(0u, route.size() - 2u))
+    for(const auto i : helpers::range(route.size() - 1u))
     {
         bool roadOk = roadChecker.IsEdgeOk(curPt, route[i]);
         curPt = GetNeighbour(curPt, route[i]);
@@ -219,48 +219,44 @@ MapPoint GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road
         }
     }
 
-    curPt = GetNeighbour(curPt, route.back());
+    const auto endPt = GetNeighbour(curPt, route.back());
 
     // Check whether there is a flag at the end or whether one can be built
-    if(GetNO(curPt)->GetGOT() == GO_Type::Flag)
+    if(GetNO(endPt)->GetGOT() == GO_Type::Flag)
     {
         // Wrong player?
-        if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerId)
+        if(GetSpecObj<noFlag>(endPt)->GetPlayer() != playerId)
         {
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
             return {};
         }
-    } else
+    } else if(!SetFlag(endPt, playerId)) // Try placing a flag
     {
-        // Try placing a flag
-        if(SetFlag(curPt, playerId))
-        {
-            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
-            return {};
-        }
+        GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
+        return {};
     }
 
     // Destroy possible decorative objects at start
     if(HasRemovableObjForRoad(start))
         DestroyNO(start);
 
-    MapPoint end(start);
+    curPt = start;
     for(auto i : route)
     {
-        SetPointRoad(end, i, boat_road ? PointRoad::Boat : PointRoad::Normal);
-        RecalcBQForRoad(end);
-        end = GetNeighbour(end, i);
+        SetPointRoad(curPt, i, boat_road ? PointRoad::Boat : PointRoad::Normal);
+        RecalcBQForRoad(curPt);
+        curPt = GetNeighbour(curPt, i);
 
         // Destroy possible decorative objects at end
-        if(HasRemovableObjForRoad(end))
-            DestroyNO(end);
+        if(HasRemovableObjForRoad(curPt))
+            DestroyNO(curPt);
     }
 
     auto* rs = new RoadSegment(boat_road ? RoadType::Water : RoadType::Normal, GetSpecObj<noFlag>(start),
-                               GetSpecObj<noFlag>(end), route);
+                               GetSpecObj<noFlag>(endPt), route);
 
     GetSpecObj<noFlag>(start)->SetRoute(route.front(), rs);
-    GetSpecObj<noFlag>(end)->SetRoute(route.back() + 3u, rs);
+    GetSpecObj<noFlag>(endPt)->SetRoute(route.back() + 3u, rs);
 
     // Tell the economy that a new road has been built
     GetPlayer(playerId).NewRoadConnection(rs);
@@ -277,7 +273,7 @@ MapPoint GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road
                 SetFlag(roadPt, playerId);
         }
     }
-    return end;
+    return endPt;
 }
 
 bool GameWorld::HasRemovableObjForRoad(const MapPoint pt) const
