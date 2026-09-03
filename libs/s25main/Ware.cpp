@@ -240,25 +240,22 @@ void Ware::GoalDestroyed()
     }
 }
 
-void Ware::WaitAtFlag(noFlag* flag)
+void Ware::WaitAtFlag(noFlag& flag)
 {
-    RTTR_Assert(flag);
     state = State::WaitAtFlag;
-    location = flag;
+    location = &flag;
 }
 
-void Ware::WaitInWarehouse(nobBaseWarehouse* wh)
+void Ware::WaitInWarehouse(nobBaseWarehouse& wh)
 {
-    RTTR_Assert(wh);
     state = State::WaitInWarehouse;
-    location = wh;
+    location = &wh;
 }
 
-void Ware::Carry(noRoadNode* nextGoal)
+void Ware::Carry(noRoadNode& nextGoal)
 {
-    RTTR_Assert(nextGoal);
     state = State::Carried;
-    location = nextGoal;
+    location = &nextGoal;
 }
 
 /// Gibt dem Ziel der Ware bekannt, dass diese nicht mehr kommen kann
