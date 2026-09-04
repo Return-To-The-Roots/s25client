@@ -247,7 +247,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupCommon->AddText(ID_txtPort, curPos, _("Local Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* edtPort =
       groupCommon->AddEdit(ID_edtPort, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 15);
-    edtPort->SetNumberOnly(true);
+    edtPort->SetType(EditType::Number);
     edtPort->SetText(SETTINGS.server.localPort);
     curPos.y += rowHeight;
 
@@ -266,7 +266,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     proxy->SetText(SETTINGS.proxy.hostname);
     proxy =
       groupCommon->AddEdit(ID_edtProxyPort, curPos + ctrlOffset2, Extent(50, 22), TextureColor::Grey, NormalFont, 5);
-    proxy->SetNumberOnly(true);
+    proxy->SetType(EditType::Number);
     proxy->SetText(SETTINGS.proxy.port);
     curPos.y += rowHeight;
 

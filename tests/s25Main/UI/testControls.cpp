@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -237,6 +237,127 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     while(static_cast<unsigned>(curCursorPos++) < curChars.size())
         edt.Msg_KeyDown(KeyEvent(KeyType::Right));
     BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
+}
+
+BOOST_FIXTURE_TEST_CASE(EditFileNameOnlyFiltersInvalidChars, uiHelper::Fixture)
+{
+    const auto font = createMockFont(
+      {'a', 'B', 'c', 'D', '1', '2', '3', '4', ' ', '-', '!', '<', '>', ':', '"', '/', '\\', '|', '?', '*'});
+    ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get());
+    edt.SetType(EditType::Filename);
+
+    MouseCoords mc(edt.GetPos());
+    mc.ldown = true;
+    edt.Msg_LeftDown(mc); // give focus
+
+    for(char32_t c : {U'a', U'B', U'1', U'2', U' '}) // valid chars
+        edt.Msg_KeyDown(KeyEvent(c));
+    BOOST_TEST(edt.GetText() == "aB12 "); // all accepted
+
+    for(char32_t c : {U'c', U'<', U'D', U'>', U'-', U':', U'"', U'3', U'/', U'\\', U'4', U'|', U'?', U'!',
+                      U'*'}) // mixed valid and invalid chars
+        edt.Msg_KeyDown(KeyEvent(c));
+    BOOST_TEST(edt.GetText() == "aB12 cD-34!"); // only valid accepted
+
+    edt.SetText("a/B\\1");
+    BOOST_TEST(edt.GetText() == "aB1");
+}
+
+BOOST_FIXTURE_TEST_CASE(EditGetFileName, uiHelper::Fixture)
+{
+    const auto font = createMockFont({'?', '.', ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g',
+                                      'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
+                                      'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', static_cast<char32_t>(0xE9)});
+    ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get());
+    edt.SetType(EditType::Filename);
+
+    edt.SetText("");
+    BOOST_TEST((edt.GetFileName(".ini").status == FileNameStatus::Empty));
+
+    edt.SetText("   "); // whitespace only
+    BOOST_TEST((edt.GetFileName(".ini").status == FileNameStatus::Empty));
+
+    // leading whitespace trimmed, trailing kept - not at the end of the filename
+    edt.SetText("  mypreset  ");
+    auto r = edt.GetFileName(".ini");
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "mypreset  .ini");
+
+    // trailing space right before the extension round-trips
+    edt.SetText("abc ");
+    r = edt.GetFileName(".ini");
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "abc .ini");
+
+    // valid name: extension appended
+    edt.SetText("mypreset");
+    r = edt.GetFileName(".ini");
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "mypreset.ini");
+
+    // extension appended even when the input already ends in it
+    edt.SetText("mypreset.ini");
+    r = edt.GetFileName(".ini");
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "mypreset.ini.ini");
+
+    // 125 chars × 2 bytes + ".ini" = 254 bytes - just fits isValidFileName's 255 byte limit
+    const std::string twoByteChar = "\xC3\xA9"; // 2-byte UTF-8 char (U+00E9 'é')
+    std::string justFitsName;
+    for(int i = 0; i < 125; ++i)
+        justFitsName += twoByteChar;
+    edt.SetText(justFitsName);
+    r = edt.GetFileName(".ini");
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == justFitsName + ".ini");
+
+    // With one more character the name is rejected
+    const std::string oneOverName = justFitsName + twoByteChar;
+    edt.SetText(oneOverName);
+    BOOST_TEST((edt.GetFileName(".ini").status == FileNameStatus::Invalid));
+
+    // no ext: name returned as-is without appending
+    edt.SetText("mypreset");
+    r = edt.GetFileName();
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "mypreset");
+
+    // no ext: leading and trailing space trimmed
+    edt.SetText("  mypreset  ");
+    r = edt.GetFileName();
+    BOOST_TEST((r.status == FileNameStatus::Valid));
+    BOOST_TEST(r.name == "mypreset");
+}
+
+BOOST_FIXTURE_TEST_CASE(EditSpaceKeyDoesNotDuplicateChar, uiHelper::Fixture)
+{
+    const auto font = createMockFont({U' ', '?'}); // '?' is required as glFont's missing-glyph fallback
+    ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get());
+    MouseCoords mc(edt.GetPos());
+    mc.ldown = true;
+    edt.Msg_LeftDown(mc);
+
+    // A real space press fires both of these on SDL2 (SDL_KEYDOWN+SDL_TEXTINPUT) and WinAPI
+    // (WM_KEYDOWN+WM_CHAR) for one physical key press.
+    edt.Msg_KeyDown(KeyEvent(KeyType::Space)); // OS "key down" event - must not insert anything
+    edt.Msg_KeyDown(KeyEvent(U' '));           // OS "char/text-input" event - inserts the space
+    BOOST_TEST(edt.GetText() == " ");          // exactly one space, not two
+}
+
+BOOST_FIXTURE_TEST_CASE(EditMaxLengthTruncatesInput, uiHelper::Fixture)
+{
+    const auto font = createMockFont({'a', 'b', 'c', 'd', 'e', '?'}); // '?' is glFont's missing-glyph fallback
+    ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get(), 3 /*maxlength*/);
+    MouseCoords mc(edt.GetPos());
+    mc.ldown = true;
+    edt.Msg_LeftDown(mc);
+
+    for(char32_t c : {U'a', U'b', U'c', U'd', U'e'}) // 5 chars typed, cap is 3
+        edt.Msg_KeyDown(KeyEvent(c));
+    BOOST_TEST(edt.GetText() == "abc"); // input beyond maxLength is dropped
+
+    edt.SetText("abcde"); // input beyond maxLength is dropped
+    BOOST_TEST(edt.GetText() == "abc");
 }
 
 BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
