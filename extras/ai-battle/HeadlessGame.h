@@ -9,6 +9,7 @@
 #include "Replay.h"
 #include "ai/AIPlayer.h"
 #include "gameTypes/AIInfo.h"
+#include "gameTypes/TeamTypes.h"
 #include <boost/filesystem.hpp>
 #include <chrono>
 #include <limits>
@@ -22,8 +23,10 @@ class EventManager;
 class HeadlessGame
 {
 public:
+    /// teams: optional per-player team assignment (index -> Team). Players sharing a team get start
+    /// pacts (ally + non-aggression), so only opposing teams fight. Defaults to no teams.
     HeadlessGame(const GlobalGameSettings& ggs, const boost::filesystem::path& map, const std::vector<AI::Info>& ais,
-                 const boost::filesystem::path& luaPath = {});
+                 const boost::filesystem::path& luaPath = {}, const std::vector<Team>& teams = {});
     ~HeadlessGame();
 
     void Run(unsigned maxGF = std::numeric_limits<unsigned>::max());
