@@ -9,6 +9,7 @@
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include <boost/signals2.hpp>
+#include <optional>
 #include <vector>
 
 class GameWorldBase;
@@ -45,6 +46,11 @@ class GameWorldView
     bool show_names;
     /// Show productivities
     bool show_productivity;
+
+    /// Optional radius preview (center position, radius) drawn as outline on the map
+    std::optional<std::pair<MapPoint, unsigned>> radiusPreview_;
+    /// Cached addon status: whether building radius overlay is enabled
+    bool isBuildingRadiusEnabled_;
 
     /// Offset from world origin in screen units (not map units): "scroll position"
     DrawPoint offset;
@@ -117,6 +123,13 @@ public:
     void AddDrawNodeCallback(IDrawNodeCallback* newCallback);
     void RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove);
 
+    /// Set/show a radius preview outline on the map (or clear with std::nullopt)
+    void SetRadiusPreview(const std::optional<std::pair<MapPoint, unsigned>>& preview) { radiusPreview_ = preview; }
+
+    /// Update radius preview based on which map node is under the mouse cursor
+    /// Called from mouse-move handler, not from draw loop
+    void UpdateRadiusPreviewForMousePos(const Position& mousePos);
+
     /// Gibt selektierten Punkt zurück
     MapPoint GetSelectedPt() const { return selPt; }
 
@@ -145,6 +158,12 @@ private:
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
     void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt,
                  bool drawMouse);
+
+    /// Draw a radius outline ring around a center point with the given radius
+    void DrawRadiusOutline(const MapPoint& center, unsigned radius);
+
+    /// Snap a point to the nearest toroidal copy relative to a reference position
+    static DrawPoint SnapToNearestCopy(DrawPoint pt, DrawPoint ref, DrawPoint mapPxSize);
 
     void SaveIngameSettingsValues() const;
     void updateEffectiveZoomFactor();

@@ -11,7 +11,10 @@
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "MapGeometry.h"
+#include "ReturnMapPointWithRadius.h"
 #include "Settings.h"
+#include "Window.h"
+#include "WindowManager.h"
 #include "addons/AddonMaxWaterwayLength.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
@@ -36,11 +39,13 @@
 #include <glad/glad.h>
 #include <boost/format.hpp>
 #include <cmath>
+#include <optional>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
     : selPt(0, 0), show_bq(SETTINGS.ingame.showBQ), show_names(SETTINGS.ingame.showNames),
       show_productivity(SETTINGS.ingame.showProductivity), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
-      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
+      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f),
+      isBuildingRadiusEnabled_(GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS))
 {
     updateEffectiveZoomFactor();
     MoveBy({0, 0});
@@ -219,6 +224,10 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
+
+    // Draw radius preview outline (set by icon-hover or map-hover)
+    if(radiusPreview_)
+        DrawRadiusOutline(radiusPreview_->first, radiusPreview_->second);
 
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
@@ -711,6 +720,81 @@ void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
     auto itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
     RTTR_Assert(itPos != drawNodeCallbacks.end());
     drawNodeCallbacks.erase(itPos);
+}
+
+// Snap a point to the nearest toroidal copy (map wrapping) relative to a reference.
+// k = round((reference - pt) / mapSize), pt += k * mapSize.
+DrawPoint GameWorldView::SnapToNearestCopy(DrawPoint pt, DrawPoint ref, DrawPoint mapPxSize)
+{
+    const double kx = std::floor(static_cast<double>(ref.x - pt.x) / mapPxSize.x + 0.5);
+    pt.x += static_cast<int>(kx) * mapPxSize.x;
+    const double ky = std::floor(static_cast<double>(ref.y - pt.y) / mapPxSize.y + 0.5);
+    pt.y += static_cast<int>(ky) * mapPxSize.y;
+    return pt;
+}
+
+// -----------------------------------------------------------------------------
+// Draw radius overlay for a building's working range, handling map wrapping.
+// -----------------------------------------------------------------------------
+void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
+{
+    const auto& world = GetWorld();
+    auto pts = world.GetPointsInRadius(center, radius, ReturnMapPointWithRadius{});
+
+    const MapExtent mapSize = world.GetSize();
+    constexpr unsigned BORDER_COLOR = 0xFFFF0000;
+    const DrawPoint mapPxSize(mapSize.x * TR_W, mapSize.y * TR_H);
+
+    // Screen position of the center vertex.
+    // selPtOffset accounts for the pixel shift when the map wraps at the seam.
+    const DrawPoint centerScr = GetNodePos(center, world.GetNode(center).altitude) + selPtOffset;
+
+    for(const auto& [mapPt, dist] : pts)
+    {
+        if(dist != radius)
+            continue;
+
+        DrawPoint screenPt = GetNodePos(mapPt, world.GetNode(mapPt).altitude);
+        screenPt = SnapToNearestCopy(screenPt, centerScr, mapPxSize) - offset;
+
+        Window::DrawRectangle(Rect(screenPt - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+    }
+}
+
+void GameWorldView::UpdateRadiusPreviewForMousePos(const Position& mousePos)
+{
+    if(!isBuildingRadiusEnabled_ || WINDOWMANAGER.FindWindowAtPos(mousePos))
+        return;
+
+    const auto& world = GetWorld();
+    std::optional<BuildingType> bldType;
+    switch(gwv.GetVisibility(selPt))
+    {
+        case Visibility::Visible:
+        {
+            const auto* bld = world.GetSpecObj<noBaseBuilding>(selPt);
+            if(bld)
+                bldType = bld->GetBuildingType();
+        }
+        break;
+        case Visibility::FogOfWar:
+        {
+            const FOWObject* fow = gwv.GetYoungestFOWObject(selPt);
+            if(fow && fow->GetType() == FoW_Type::Building)
+                bldType = static_cast<const fowBuilding&>(*fow).GetBuildingType();
+        }
+        break;
+    }
+
+    if(bldType)
+    {
+        const unsigned bldRadius = GetBuildingRadius(*bldType);
+        if(bldRadius > 0)
+            radiusPreview_ = std::make_pair(selPt, bldRadius);
+        else
+            radiusPreview_ = std::nullopt;
+    } else
+        radiusPreview_ = std::nullopt;
 }
 
 void GameWorldView::CalcFxLx()

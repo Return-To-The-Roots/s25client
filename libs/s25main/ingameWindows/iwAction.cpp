@@ -28,6 +28,7 @@
 #include "nodeObjs/noFlag.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/const_gui_ids.h"
+#include <boost/format.hpp>
 #include <sstream>
 
 // Tab - Flags
@@ -46,7 +47,7 @@ enum TabID
 iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt,
                    const DrawPoint& mousePos, Params params, bool military_buildings)
     : IngameWindow(CGI_ACTION, mousePos, Extent(200, 254), _("Activity window"), LOADER.GetImageN("io", 1)), gi(gi),
-      gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mousePos)
+      gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mousePos), activeHoveredIcon_(nullptr)
 {
     /*
         TAB_FLAG    1 = Land road
@@ -159,6 +160,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
             building_available[BuildingType::LeatherWorks] = false;
         }
 
+        const bool showBuildingRadius = gwv.GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS);
         constexpr helpers::EnumArray<unsigned, BuildTab> NUM_TABS = {1, 2, 3, 1, 3};
 
         for(unsigned char i = 0; i < NUM_TABS[tabs.build_tabs]; ++i)
@@ -175,6 +177,13 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 std::stringstream tooltip;
                 tooltip << _(BUILDING_NAMES[bld]);
 
+                // Radius anzeigen falls vorhanden
+                unsigned radius = 0;
+                if(showBuildingRadius)
+                    radius = GetBuildingRadius(bld);
+                if(radius > 0)
+                    tooltip << boost::format(_("\nRange: %1% tiles")) % radius;
+
                 tooltip << _("\nCosts: ");
                 if(BUILDING_COSTS[bld].boards > 0)
                     tooltip << (int)BUILDING_COSTS[bld].boards << _(" boards");
@@ -186,8 +195,26 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 }
 
                 DrawPoint iconPos((k % 5) * 36, (k / 5) * 36 + 45);
-                build_tab->GetGroup(static_cast<int>(bt))
-                  ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
+                ctrlBuildingIcon* icon = build_tab->GetGroup(static_cast<int>(bt))
+                                           ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
+
+                // Store hover callback; activeHoveredIcon_ guards against stale leaves from
+                // reversed child iteration order in Msg_MouseMove dispatch
+                if(radius > 0)
+                {
+                    icon->SetOnHoverChanged([this, icon, radius](bool hovered) noexcept {
+                        if(hovered)
+                        {
+                            this->activeHoveredIcon_ = icon;
+                            this->gwv.SetRadiusPreview(std::make_pair(this->selectedPt, radius));
+                        } else if(this->activeHoveredIcon_ == icon)
+                        {
+                            this->activeHoveredIcon_ = nullptr;
+                            this->gwv.SetRadiusPreview(std::nullopt);
+                        }
+                        // else: stale leave from a previously-hovered icon, ignore
+                    });
+                }
 
                 ++k;
             }
@@ -407,6 +434,8 @@ void iwAction::Close()
 {
     if(ShouldBeClosed())
         return;
+    activeHoveredIcon_ = nullptr;
+    gwv.SetRadiusPreview(std::nullopt);
     IngameWindow::Close();
     if(mousePosAtOpen_.isValid())
         VIDEODRIVER.SetMousePos(mousePosAtOpen_);
@@ -526,6 +555,7 @@ void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned c
 void iwAction::Msg_PaintAfter()
 {
     IngameWindow::Msg_PaintAfter();
+
     auto* tab = GetCtrl<ctrlTab>(0);
     if(tab)
     {
