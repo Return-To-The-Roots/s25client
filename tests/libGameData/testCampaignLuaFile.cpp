@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -212,7 +212,8 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
                 longDescription = "long",
                 maxHumanPlayers = 1,
                 difficulty = "easy",
-                maps = { "map.WLD" }
+                maps = { "map.WLD" },
+                image = "myimage.LBM"
             }
             function getRequiredLuaVersion() return 1 end
         )";
@@ -225,6 +226,8 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
         BOOST_TEST_REQUIRE(loader.Load());
         BOOST_TEST(desc.getMapFilePath(0) == tmp / "map.WLD");
         BOOST_TEST(desc.getLuaFilePath(0) == tmp / "map.lua");
+        // Similar for image
+        BOOST_TEST(desc.image == tmp / "myimage.LBM");
     }
 
     // Only folder name is a subdirectory to the campaign
@@ -297,6 +300,28 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
         CampaignDataLoader loader(desc, tmp);
         BOOST_TEST_REQUIRE(!loader.Load());
         RTTR_REQUIRE_LOG_CONTAINS_SOME("Invalid path 'subdir/maps", false);
+    }
+
+    {
+        bnw::ofstream file(tmp / "campaign.lua", std::ios_base::app);
+        file << R"(
+            campaign["mapFolder"] = ""
+            campaign["luaFolder"] = ""
+        )";
+    }
+    // Relative image paths are only allowed to be a single sub folder with alpha-numeric name
+    for(const auto& invValue : {"sub/subsub/img", "../sub/img", "sub/../img", "../img", "Th!s/img", "/abs", "/abs/img"})
+    {
+        BOOST_TEST_INFO_SCOPE("Value: " << invValue);
+        // Similar the image must only be a name if not a <RTTR template
+        {
+            bnw::ofstream file(tmp / "campaign.lua", std::ios_base::app);
+            file << "campaign[\"image\"] = \"" << invValue << '"';
+        }
+        CampaignDescription desc;
+        CampaignDataLoader loader(desc, tmp);
+        BOOST_TEST_REQUIRE(!loader.Load());
+        RTTR_REQUIRE_LOG_CONTAINS_SOME("Invalid path '" + std::string(invValue), false);
     }
 }
 
@@ -474,8 +499,9 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
                 background     = {"<RTTR_GAME>/GFX/PICS/SETUP990.LBM", 0},
                 map            = {"<RTTR_GAME>/GFX/PICS/WORLD.LBM", 0},
                 missionMapMask = {"<RTTR_GAME>/GFX/PICS/WORLDMSK.LBM", 0},
-                marker         = {"<RTTR_GAME>/DATA/IO/IO.DAT", 231},
-                conquered      = {"<RTTR_GAME>/DATA/IO/IO.DAT", 232},
+                -- Can be relative to campaign folder
+                marker         = {"marker.DAT", 231},
+                conquered      = {"imgs/conquered.DAT", 232},
                 backgroundOffset = {64, 70},
                 disabledColor = 0x70000000,
                 missionSelectionInfos = {
@@ -521,9 +547,9 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
     BOOST_TEST(selectionMap->map.index == 0u);
     BOOST_TEST(selectionMap->missionMapMask.filePath == "<RTTR_GAME>/GFX/PICS/WORLDMSK.LBM");
     BOOST_TEST(selectionMap->missionMapMask.index == 0u);
-    BOOST_TEST(selectionMap->marker.filePath == "<RTTR_GAME>/DATA/IO/IO.DAT");
+    BOOST_TEST(selectionMap->marker.filePath == tmp / "marker.DAT");
     BOOST_TEST(selectionMap->marker.index == 231u);
-    BOOST_TEST(selectionMap->conquered.filePath == "<RTTR_GAME>/DATA/IO/IO.DAT");
+    BOOST_TEST(selectionMap->conquered.filePath == tmp / "imgs/conquered.DAT");
     BOOST_TEST(selectionMap->conquered.index == 232u);
     BOOST_TEST(selectionMap->mapOffsetInBackground == Position(64, 70));
     BOOST_TEST(selectionMap->disabledColor == 0x70000000u);
