@@ -28,6 +28,7 @@
 #include "addons/AddonDefenderBehavior.h"
 
 #include "addons/AddonNoCoinsDefault.h"
+#include "addons/AddonSingleSoldierCoinTraining.h"
 
 #include "addons/AddonAdjustMilitaryStrength.h"
 

@@ -36,6 +36,7 @@
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "s25util/Log.h"
+#include <algorithm>
 #include <limits>
 #include <stdexcept>
 
@@ -315,28 +316,40 @@ void nobMilitary::HandleEvent(const unsigned id)
         {
             upgrade_event = nullptr;
 
-            // Soldaten befördern
-            // Von hinten durchgehen
-            // Wenn der nachfolgende (schwächere) Soldat einen niedrigeren Rang hat,
-            // wird dieser ebenfalls befördert usw.!
             std::vector<std::unique_ptr<nofPassiveSoldier>> soldiersToUpgrade;
-            // Rang des letzten beförderten Soldaten, MaxRank am Anfang setzen, damit keiner über den maximalen Rang
-            // befördert wird
-            uint8_t last_rank = world->GetGGS().GetMaxMilitaryRank();
-            for(auto it = troops.rbegin(); it != troops.rend();)
+            const uint8_t maxRank = world->GetGGS().GetMaxMilitaryRank();
+
+            if(world->GetGGS().isEnabled(AddonId::SINGLE_SOLDIER_COIN_TRAINING))
             {
-                auto& soldier = *it;
-                // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
-                // als der letzte haben, damit er auch noch befördert werden kann
-                if(soldier->GetRank() < last_rank)
+                auto it = std::find_if(troops.begin(), troops.end(),
+                                       [maxRank](const auto& soldier) { return soldier->GetRank() < maxRank; });
+                if(it != troops.end())
                 {
-                    // Rang merken
-                    last_rank = soldier->GetRank();
-                    // Remove from sorted container as changing it breaks sorting
-                    soldiersToUpgrade.push_back(std::move(soldier));
-                    it = helpers::erase_reverse(troops, it);
-                } else
-                    ++it;
+                    soldiersToUpgrade.push_back(std::move(*it));
+                    troops.erase(it);
+                }
+            } else
+            {
+                // Soldaten befördern
+                // Von hinten durchgehen
+                // Wenn der nachfolgende (schwächere) Soldat einen niedrigeren Rang hat,
+                // wird dieser ebenfalls befördert usw.!
+                uint8_t last_rank = maxRank;
+                for(auto it = troops.rbegin(); it != troops.rend();)
+                {
+                    auto& soldier = *it;
+                    // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
+                    // als der letzte haben, damit er auch noch befördert werden kann
+                    if(soldier->GetRank() < last_rank)
+                    {
+                        // Rang merken
+                        last_rank = soldier->GetRank();
+                        // Remove from sorted container as changing it breaks sorting
+                        soldiersToUpgrade.push_back(std::move(soldier));
+                        it = helpers::erase_reverse(troops, it);
+                    } else
+                        ++it;
+                }
             }
 
             // Wurde jemand befördert?
