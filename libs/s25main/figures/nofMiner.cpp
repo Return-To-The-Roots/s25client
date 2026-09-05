@@ -10,7 +10,90 @@
 #include "buildings/nobUsual.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "random/Random.h"
 #include "world/GameWorld.h"
+#include "gameTypes/MineNoOutputFallback.h"
+#include "gameTypes/MineResourceBehavior.h"
+#include "gameTypes/Resource.h"
+#include "gameData/GameConsts.h"
+#include <algorithm>
+#include <vector>
+
+namespace {
+constexpr unsigned MAX_PRODUCTION_PERCENT = 100;
+constexpr unsigned GRANITE_FALLBACK_25_PERCENT = 25;
+constexpr unsigned GRANITE_FALLBACK_50_PERCENT = 50;
+constexpr unsigned S4LIKE_MIN_RESOURCE_AMOUNT = 1;
+
+MineNoOutputFallback GetConfiguredNoOutputFallback(const GlobalGameSettings& settings)
+{
+    const unsigned selection = settings.getSelection(AddonId::MINE_NO_OUTPUT_FALLBACK);
+    if(!helpers::isValidEnumValue<MineNoOutputFallback>(selection))
+        return MineNoOutputFallback::ProduceNothing;
+    return static_cast<MineNoOutputFallback>(selection);
+}
+
+unsigned GetGraniteFallbackChance(const MineNoOutputFallback fallback)
+{
+    switch(fallback)
+    {
+        case MineNoOutputFallback::ProduceGranite25: return GRANITE_FALLBACK_25_PERCENT;
+        case MineNoOutputFallback::ProduceGranite50: return GRANITE_FALLBACK_50_PERCENT;
+        case MineNoOutputFallback::ProduceGranite100: return MAX_PRODUCTION_PERCENT;
+        default: return 0;
+    }
+}
+
+helpers::OptionalEnum<GoodType> GetLowerGradeFallbackGood(const BuildingType buildingType)
+{
+    switch(buildingType)
+    {
+        case BuildingType::GoldMine: return GoodType::IronOre;
+        case BuildingType::IronMine: return GoodType::Coal;
+        case BuildingType::CoalMine: return GoodType::Stones;
+        default: return {};
+    }
+}
+
+helpers::OptionalEnum<GoodType> GetNoOutputFallbackGood(const GlobalGameSettings& settings,
+                                                        const BuildingType buildingType, const unsigned objId)
+{
+    const MineNoOutputFallback fallback = GetConfiguredNoOutputFallback(settings);
+    const unsigned graniteFallbackChance = GetGraniteFallbackChance(fallback);
+    if(graniteFallbackChance > 0)
+    {
+        if(graniteFallbackChance == MAX_PRODUCTION_PERCENT
+           || static_cast<unsigned>(RANDOM.Rand(RANDOM_CONTEXT2(objId), MAX_PRODUCTION_PERCENT))
+                < graniteFallbackChance)
+            return GoodType::Stones;
+
+        return {};
+    }
+
+    if(fallback == MineNoOutputFallback::ProduceLowerGradeResource)
+        return GetLowerGradeFallbackGood(buildingType);
+
+    return {};
+}
+
+std::vector<MapPoint> GetPointsWithResource(const GameWorld& world, const MapPoint pos, const ResourceType type)
+{
+    return world.GetMatchingPointsInRadius(
+      pos, MINER_RADIUS, [&world, type](const MapPoint pt) { return world.GetNode(pt).resources.has(type); }, true);
+}
+
+void ReduceS4LikeResource(GameWorld& world, const std::vector<MapPoint>& resourcePts)
+{
+    for(const MapPoint pt : resourcePts)
+    {
+        if(world.GetNode(pt).resources.getAmount() > S4LIKE_MIN_RESOURCE_AMOUNT)
+        {
+            world.ReduceResource(pt);
+            return;
+        }
+    }
+}
+} // namespace
 
 nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* workplace)
     : nofWorkman(Job::Miner, pos, player, workplace)
@@ -60,41 +143,63 @@ unsigned short nofMiner::GetCarryID() const
 
 helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 {
-    switch(workplace->GetBuildingType())
+    const GlobalGameSettings& settings = world->GetGGS();
+    const MineResourceBehavior behavior = GetMineResourceBehavior(settings, workplace->GetBuildingType());
+
+    if(behavior == MineResourceBehavior::S4LikeExhaustion)
     {
-        case BuildingType::GoldMine: return GoodType::Gold;
-        case BuildingType::IronMine: return GoodType::IronOre;
-        case BuildingType::CoalMine: return GoodType::Coal;
-        default: return GoodType::Stones;
+        const std::vector<MapPoint> resourcePts = GetPointsWithResource(*world, pos, GetRequiredResType());
+        const auto productionRoll = static_cast<unsigned>(RANDOM_RAND(MAX_PRODUCTION_PERCENT));
+        const bool produceNothingThisCycle = resourcePts.empty()
+                                             || productionRoll >= GetS4LikeMineProductionChance(
+                                                  GetRemainingMineResources(*world, pos, GetRequiredResType()));
+        if(produceNothingThisCycle)
+            return GetNoOutputFallbackGood(settings, workplace->GetBuildingType(), GetObjId());
+
+        // S4-like exhaustion always depletes, but only down to the minimum amount
+        ReduceS4LikeResource(*world, resourcePts);
     }
+
+    return GetMineOutput(workplace->GetBuildingType());
 }
 
 bool nofMiner::AreWaresAvailable() const
 {
-    return nofWorkman::AreWaresAvailable() && FindPointWithResource(GetRequiredResType()).isValid();
+    if(!nofWorkman::AreWaresAvailable())
+        return false;
+
+    const MineResourceBehavior behavior = GetMineResourceBehavior(world->GetGGS(), workplace->GetBuildingType());
+    if(behavior == MineResourceBehavior::WorkEverywhere)
+        return true;
+
+    const bool hasResources = FindPointWithResource(GetRequiredResType()).isValid();
+    if(!hasResources)
+        workplace->OnOutOfResources();
+    return hasResources;
 }
 
 bool nofMiner::StartWorking()
 {
-    MapPoint resPt = FindPointWithResource(GetRequiredResType());
-    if(!resPt.isValid())
-        return false;
     const GlobalGameSettings& settings = world->GetGGS();
-    bool inexhaustibleRes = settings.isEnabled(AddonId::INEXHAUSTIBLE_MINES)
-                            || (workplace->GetBuildingType() == BuildingType::GraniteMine
-                                && settings.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES));
-    if(!inexhaustibleRes)
+    const MineResourceBehavior behavior = GetMineResourceBehavior(settings, workplace->GetBuildingType());
+    if(behavior == MineResourceBehavior::WorkEverywhere)
+        return nofWorkman::StartWorking();
+
+    const MapPoint resPt = FindPointWithResource(GetRequiredResType());
+    if(!resPt.isValid())
+    {
+        workplace->OnOutOfResources();
+        return false;
+    }
+
+    if(behavior != MineResourceBehavior::S4LikeExhaustion
+       && IsMineResourceDepletable(settings, workplace->GetBuildingType()))
         world->ReduceResource(resPt);
+
     return nofWorkman::StartWorking();
 }
 
 ResourceType nofMiner::GetRequiredResType() const
 {
-    switch(workplace->GetBuildingType())
-    {
-        case BuildingType::GoldMine: return ResourceType::Gold;
-        case BuildingType::IronMine: return ResourceType::Iron;
-        case BuildingType::CoalMine: return ResourceType::Coal;
-        default: return ResourceType::Granite;
-    }
+    return GetMineResourceType(workplace->GetBuildingType());
 }

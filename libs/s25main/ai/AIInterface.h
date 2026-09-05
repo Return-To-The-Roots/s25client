@@ -52,6 +52,8 @@ public:
                           int lastval = 0xffff) const;
     /// Calculate the resource value for a given point
     int GetResourceRating(MapPoint pt, AIResource res) const;
+    /// Check whether the given mine resource can be produced on otherwise empty mineable mountain.
+    bool IsMineResourceWorkEverywhere(AIResource res) const;
     /// Test whether a given point is part of the border or not
     bool IsBorder(const MapPoint pt) const
     {

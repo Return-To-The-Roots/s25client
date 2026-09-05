@@ -102,7 +102,5 @@ MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
     if(!pts.empty())
         return pts.front();
 
-    workplace->OnOutOfResources();
-
     return MapPoint::Invalid();
 }
