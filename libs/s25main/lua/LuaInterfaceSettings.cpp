@@ -247,3 +247,13 @@ bool LuaInterfaceSettings::IsMapPreviewEnabled()
     }
     return true;
 }
+
+unsigned LuaInterfaceSettings::GetNumPlayersFromScript()
+{
+    kaguya::LuaRef func = lua["getNumPlayers"];
+    if(func.type() == LUA_TFUNCTION)
+    {
+        return func.call<unsigned>();
+    }
+    return 0;
+}

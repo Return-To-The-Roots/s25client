@@ -24,3 +24,8 @@ unsigned GameLobby::getNumPlayers() const
 {
     return players_.size();
 }
+
+void GameLobby::setNumPlayers(unsigned num)
+{
+    players_.resize(num);
+}
