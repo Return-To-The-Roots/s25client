@@ -1,11 +1,10 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "helpers/Range.h"
 #include "helpers/containerUtils.h"
 #include "helpers/reverse.h"
-#include "s25util/warningSuppression.h"
 #include <rttr/test/random.hpp>
 #include <boost/test/unit_test.hpp>
 #include <set>
@@ -105,11 +104,8 @@ BOOST_AUTO_TEST_CASE(IndexOf)
 BOOST_AUTO_TEST_CASE(Reverse)
 {
     std::vector<int> vecIn, vecOut;
-    for(int i : helpers::reverse(vecIn))
-    {
-        RTTR_UNUSED(i);                                             // LCOV_EXCL_LINE
+    for([[maybe_unused]] int i : helpers::reverse(vecIn))
         BOOST_TEST_FAIL("Reverse of empty vector should be empty"); // LCOV_EXCL_LINE
-    }
 
     vecIn.resize(rttr::test::randomValue(1, 100));
     for(int& i : vecIn)

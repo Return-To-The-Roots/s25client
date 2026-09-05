@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -32,7 +32,6 @@
 #include "gameData/GuiConsts.h"
 #include "gameData/MapConsts.h"
 #include "s25util/error.h"
-#include "s25util/warningSuppression.h"
 #include <glad/glad.h>
 #include <boost/format.hpp>
 #include <cmath>

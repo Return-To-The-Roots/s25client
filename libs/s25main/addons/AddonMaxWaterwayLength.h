@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,10 +6,9 @@
 
 #include "AddonList.h"
 #include "mygettext/mygettext.h"
-#include "s25util/warningSuppression.h"
 #include <array>
 
-const std::array<unsigned, 6> SUPPRESS_UNUSED waterwayLengths = {{3, 5, 9, 13, 21, 0}};
+inline constexpr std::array waterwayLengths{3u, 5u, 9u, 13u, 21u, 0u};
 
 /**
  *  Addon for changing the maximum length of waterways.
