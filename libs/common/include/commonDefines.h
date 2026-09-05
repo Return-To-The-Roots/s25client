@@ -20,8 +20,9 @@ void deletePtr(T*& ptr)
 
 /// Calculate |a-b| of 2 unsigned values
 template<typename T>
-inline T absDiff(T a, T b)
+T absDiff(T a, T b)
 {
+    static_assert(std::is_unsigned_v<T>);
     return (a > b) ? a - b : b - a;
 }
 
