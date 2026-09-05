@@ -16,6 +16,7 @@
 #include "desktops/dskTextureTest.h"
 #include "dskBenchmark.h"
 #include "files.h"
+#include "ingameWindows/iwMsgbox.h"
 #include "ogl/FontStyle.h"
 #include "s25util/colors.h"
 
@@ -36,7 +37,9 @@ enum
     ID_txtTest,
     ID_cbTxtSize,
     ID_btHideCtrls,
-    ID_btShowBenchmark
+    ID_btShowBenchmark,
+    ID_btPopupWarning,
+    ID_btPopupConfirm
 };
 }
 
@@ -91,6 +94,11 @@ dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
     btPos.y += 11;
     AddText(ID_txtTest, btPos, "Enter something", COLOR_YELLOW, FontStyle::VCENTER, SmallFont);
 
+    AddTextButton(ID_btPopupWarning, DrawPoint(10, 260), Extent(150, 22), TextureColor::Green1, "Warning popup",
+                  NormalFont);
+    AddTextButton(ID_btPopupConfirm, DrawPoint(165, 260), Extent(150, 22), TextureColor::Green1, "Confirm popup",
+                  NormalFont);
+
     AddTextButton(ID_btDisable, DrawPoint(10, 540), Extent(150, 22), TextureColor::Green1, "Enable/Disable buttons",
                   NormalFont);
     AddTextButton(ID_btAnimate, DrawPoint(165, 540), Extent(80, 22), TextureColor::Green1, "Animate", NormalFont);
@@ -131,6 +139,26 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
     {
         case ID_btTextureTest: WINDOWMANAGER.Switch(std::make_unique<dskTextureTest>()); break;
         case ID_btShowBenchmark: WINDOWMANAGER.Switch(std::make_unique<dskBenchmark>()); break;
+        case ID_btPopupWarning:
+            WINDOWMANAGER.Show(
+              std::make_unique<iwMsgbox>("Warning", "This addon may heavily alter intended map design.", this,
+                                         MsgboxConfig{{{"OK", MsgboxResult::Ok, TextureColor::Green2},
+                                                       {"Cancel", MsgboxResult::Cancel, TextureColor::Red1}},
+                                                      0,
+                                                      1,
+                                                      1},
+                                         MsgboxIcon::ExclamationRed, ID_btPopupWarning));
+            break;
+        case ID_btPopupConfirm:
+            WINDOWMANAGER.Show(
+              std::make_unique<iwMsgbox>("Confirm", "Do you want to continue?", this,
+                                         MsgboxConfig{{{"Yes", MsgboxResult::Yes, TextureColor::Green2},
+                                                       {"No", MsgboxResult::No, TextureColor::Red1}},
+                                                      0,
+                                                      1,
+                                                      1},
+                                         MsgboxIcon::QuestionRed, ID_btPopupConfirm));
+            break;
         case ID_btDisable:
             for(unsigned i = ID_grpBtStart; i < ID_grpBtEnd; i++)
             {
