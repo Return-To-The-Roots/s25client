@@ -27,6 +27,8 @@ public:
     boost::filesystem::path ExpandPath(const std::string& path) const;
     /// Overwrite a given path mapping
     void overridePathMapping(const std::string& id, const boost::filesystem::path& path);
+    /// Register a new path mapping (used for dynamic prefixes like <RTTR_MAP>)
+    void addPathMapping(const std::string& id, const boost::filesystem::path& path);
 };
 
 #define RTTRCONFIG RttrConfig::inst()
