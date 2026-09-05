@@ -116,6 +116,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
 
         file << R"(campaign ={
             version = "1",
+            uid = "roman",
             author = "Max Meier",
             name = "My campaign",
             shortDescription = "Very short description",
@@ -125,7 +126,8 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
             difficulty = "easy",
             mapFolder = "<RTTR_GAME>/DATA/MAPS",
             luaFolder = "<RTTR_GAME>/campaigns/roman",
-            maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"}
+            maps = { "dessert0.WLD", "dessert1.WLD", "dessert2.WLD"},
+            chaptersEnabled = {1, 3, 7}
         }
         )";
 
@@ -138,6 +140,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
 
     // campaign description
     BOOST_TEST(desc.version == "1");
+    BOOST_TEST(desc.uid == "roman");
     BOOST_TEST(desc.author == "Max Meier");
     BOOST_TEST(desc.name == "My campaign");
     BOOST_TEST(desc.shortDescription == "Very short description");
@@ -145,6 +148,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
     BOOST_TEST(desc.image == "<RTTR_GAME>/GFX/PICS/WORLD.LBM");
     BOOST_TEST(desc.maxHumanPlayers == 1u);
     BOOST_TEST(desc.difficulty == "easy");
+    BOOST_TEST(desc.chaptersEnabled == (decltype(desc.chaptersEnabled){1, 3, 7}));
 
     // maps
     BOOST_TEST(desc.getNumMaps() == 3u);
