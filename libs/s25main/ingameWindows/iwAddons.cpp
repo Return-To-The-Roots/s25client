@@ -7,6 +7,7 @@
 #include "Loader.h"
 #include "WindowManager.h"
 #include "addons/Addon.h"
+#include "commonDefines.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlScrollBar.h"
 #include "helpers/containerUtils.h"
@@ -85,11 +86,9 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed p
     for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
     {
         const unsigned id = ID_grpAddonsStart + i;
-        const Addon* addon = ggs.getAddon(i);
-        RTTR_Assert(addon);
-        auto& group = *AddGroup(id);
-        addonGuis_.emplace_back(addon->createGui(group, isReadOnly(addon->getId())));
-        addonGuis_.back()->setStatus(group, ggs.getSelection(addon->getId()));
+        const Addon& addon = assertNonNull(ggs.getAddon(i));
+        addonGuis_.emplace_back(addon.createGui(*AddGroup(id), isReadOnly(addon.getId())));
+        addonGuis_.back()->setStatus(ggs.getSelection(addon.getId()));
     }
 
     optiongroup->SetSelection(static_cast<unsigned>(AddonGroup::All), true);
@@ -118,8 +117,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
                 // Einstellungen in ADDONMANAGER übertragen
                 for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
                 {
-                    const auto& group = *GetCtrl<ctrlGroup>(ID_grpAddonsStart + i);
-                    ggs.setSelection(ggs.getAddon(i)->getId(), addonGuis_[i]->getStatus(group));
+                    ggs.setSelection(ggs.getAddon(i)->getId(), addonGuis_[i]->getStatus());
                 }
 
                 switch(policy_)
@@ -146,8 +144,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
             std::map<unsigned, unsigned> states;
             for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
             {
-                const auto& group = *GetCtrl<ctrlGroup>(ID_grpAddonsStart + i);
-                states[static_cast<unsigned>(ggs.getAddon(i)->getId())] = addonGuis_[i]->getStatus(group);
+                states[static_cast<unsigned>(ggs.getAddon(i)->getId())] = addonGuis_[i]->getStatus();
             }
             WINDOWMANAGER.Show(std::make_unique<iwSaveAddonPreset>(std::move(states)));
         }
@@ -164,13 +161,12 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
             {
                 const Addon* addon = ggs.getAddon(i);
                 if(!isReadOnly(addon->getId()))
-                    addonGuis_[i]->setStatus(*GetCtrl<ctrlGroup>(ID_grpAddonsStart + i), addon->getDefaultStatus());
+                    addonGuis_[i]->setStatus(addon->getDefaultStatus());
             }
             break;
     }
 }
 
-/// Aktualisiert die Addons, die angezeigt werden sollen
 void iwAddons::UpdateView(const AddonGroup selection)
 {
     auto* scrollbar = GetCtrl<ctrlScrollBar>(ID_scroll);
@@ -182,16 +178,16 @@ void iwAddons::UpdateView(const AddonGroup selection)
     {
         const Addon* addon = ggs.getAddon(i);
         const bool isVisible = bitset::any(addon->getGroups(), selection);
-        auto* group = GetCtrl<ctrlGroup>(ID_grpAddonsStart + i);
+        Window& group = addonGuis_[i]->getWindow();
 
         // Don't show addon's gui if addon is beyond selected group or is beyond current page scope
         if(isVisible && numAddonsInCurCategory >= scrollPos && numAddonsInCurCategory < scrollPosEnd)
         {
-            group->SetVisible(true);
-            group->SetPos({group->GetPos().x, y});
+            group.SetVisible(true);
+            group.SetPos({group.GetPos().x, y});
             y += AddonGuiLineHeight;
         } else
-            group->SetVisible(false);
+            group.SetVisible(false);
         if(isVisible)
             ++numAddonsInCurCategory;
     }
@@ -208,7 +204,7 @@ void iwAddons::applyAddonStates(const std::map<unsigned, unsigned>& states)
             const auto it = states.find(static_cast<unsigned>(addon->getId()));
             const unsigned rawStatus = (it != states.end()) ? it->second : addon->getDefaultStatus();
             const unsigned status = (rawStatus < addon->getNumOptions()) ? rawStatus : addon->getDefaultStatus();
-            addonGuis_[i]->setStatus(*GetCtrl<ctrlGroup>(ID_grpAddonsStart + i), status);
+            addonGuis_[i]->setStatus(status);
         }
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -7,7 +7,7 @@
 #include "Window.h"
 #include "s25util/colors.h"
 
-AddonGui::AddonGui(const Addon& addon, Window& window, bool /*readonly*/)
+AddonGui::AddonGui(const Addon& addon, Window& window, bool /*readonly*/) : window_(window)
 {
     DrawPoint btPos(20, 0), txtPos(52, 4);
     window.AddText(0, txtPos, addon.getName(), COLOR_YELLOW, FontStyle{}, NormalFont);
