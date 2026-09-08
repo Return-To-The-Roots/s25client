@@ -18,11 +18,13 @@ public:
     virtual ~AddonGui() = default;
     virtual void setStatus(unsigned status) = 0;
     virtual unsigned getStatus() const = 0;
+    const Addon& getAddon() const { return addon_; }
     /// Return the parent-window that contains the controls of this Addon
     Window& getWindow() { return window_; }
     const Window& getWindow() const { return window_; }
 
 private:
+    const Addon& addon_;
     Window& window_;
 };
 
