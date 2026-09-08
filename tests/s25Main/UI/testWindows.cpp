@@ -117,12 +117,27 @@ struct AddonPresetFixture : uiHelper::Fixture
     rttr::test::TmpFolder tmp;
     rttr::test::ConfigOverride userDataOverride{"USERDATA", tmp};
 
+    // Selects the named preset, false if there is no such preset
+    static bool select(Window& wnd, const std::string& name)
+    {
+        auto& table = *wnd.GetCtrls<ctrlTable>().at(0);
+        for(unsigned short i = 0; i < table.GetNumRows(); ++i)
+        {
+            if(table.GetItemText(i, 0) == name)
+            {
+                table.SetSelection(i);
+                return true;
+            }
+        }
+        return false;
+    }
+
     void save(const std::map<unsigned, unsigned>& states, const std::string& name)
     {
         iwSaveAddonPreset wnd(states);
         Window& base = wnd;
         base.GetCtrls<ctrlEdit>().at(0)->SetText(name);
-        base.Msg_EditEnter(0);
+        base.Msg_ButtonClick(iwAddonPresetsBase::ID_btAction);
     }
 
     // Returns the given preset's settings, or empty if the preset is missing or corrupt.
@@ -131,8 +146,8 @@ struct AddonPresetFixture : uiHelper::Fixture
         std::map<unsigned, unsigned> out;
         iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>& s) { out = s; });
         Window& base = wnd;
-        base.GetCtrls<ctrlEdit>().at(0)->SetText(name);
-        base.Msg_EditEnter(0);
+        if(select(base, name))
+            base.Msg_ButtonClick(iwAddonPresetsBase::ID_btAction);
         return out;
     }
 
@@ -189,7 +204,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetSaveLoadAndOverwrite, AddonPresetFixture)
     BOOST_TEST(load("myPreset") == states2); // updated
 }
 
-// A name already ending in the extension is a distinct preset, independently loadable and deletable.
+// Saving a name that already ends in the extension yields a second preset instead of overwriting.
 BOOST_FIXTURE_TEST_CASE(AddonPresetExtensionInNameIsDistinct, AddonPresetFixture)
 {
     const std::map<unsigned, unsigned> states{{1, 2}};
@@ -200,44 +215,52 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetExtensionInNameIsDistinct, AddonPresetFixture
 
     BOOST_TEST(load("myPreset") == states);
     BOOST_TEST(load("myPreset.ini") == statesDoubled);
-
-    iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
-    Window& base = wnd;
-    base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset.ini");
-    base.Msg_MsgBoxResult(iwAddonPresetsBase::ID_mbDelete, MsgboxResult::Yes);
-    BOOST_TEST(numPresets() == 1u);
-    BOOST_TEST(load("myPreset.ini").empty()); // doubled file gone
-    BOOST_TEST(load("myPreset") == states);   // sibling preset untouched
 }
 
-// The edit box is the source of truth: after selecting a preset, editing the name and acting
-// must target the edited name, not the stale table selection.
-BOOST_FIXTURE_TEST_CASE(AddonPresetEditOverridesSelection, AddonPresetFixture)
+BOOST_FIXTURE_TEST_CASE(AddonPresetDoubleClickLoads, AddonPresetFixture)
 {
-    const std::map<unsigned, unsigned> statesA{{1, 2}};
-    const std::map<unsigned, unsigned> statesB{{3, 4}};
-    save(statesA, "presetA");
-    save(statesB, "presetB");
+    const std::map<unsigned, unsigned> states{{1, 2}};
+    save(states, "myPreset");
 
     std::optional<std::map<unsigned, unsigned>> loaded;
     iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>& s) { loaded = s; });
     Window& base = wnd;
+    BOOST_TEST_REQUIRE(select(base, "myPreset"));
+    base.Msg_TableChooseItem(iwAddonPresetsBase::ID_tblPresets, 0u);
+
+    BOOST_TEST_REQUIRE(loaded.has_value());
+    BOOST_TEST(*loaded == states);
+}
+
+// In the save window the selection only prefills the name: saving uses what is in the edit box.
+BOOST_FIXTURE_TEST_CASE(AddonPresetSaveNameFollowsSelection, AddonPresetFixture)
+{
+    const std::map<unsigned, unsigned> statesA{{1, 2}};
+    const std::map<unsigned, unsigned> statesB{{3, 4}};
+    const std::map<unsigned, unsigned> statesNew{{5, 6}};
+    save(statesA, "presetA");
+    save(statesB, "presetB");
+
+    iwSaveAddonPreset wnd(statesNew);
+    Window& base = wnd;
+    BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)); // saving cannot delete
     auto& edit = *wnd.GetCtrls<ctrlEdit>().at(0);
     auto& table = *wnd.GetCtrls<ctrlTable>().at(0);
-    // Selection drives the edit: each selected row's name lands in the edit (rows sorted ascending)
+    // Rows are sorted ascending, so row 0 is presetA
     table.SetSelection(0u);
     BOOST_TEST_REQUIRE(edit.GetText() == "presetA");
     table.SetSelection(1u);
     BOOST_TEST(edit.GetText() == "presetB"); // correct name for a non-first row
-    table.SetSelection(std::nullopt);        // deselect
+    table.SetSelection(std::nullopt);
     BOOST_TEST(edit.GetText() == "");
+    // User now types a new name after having selected a preset
     table.SetSelection(0u);
-    BOOST_TEST_REQUIRE(edit.GetText() == "presetA");
-    // User now retypes a different existing preset
-    edit.SetText("presetB");
+    edit.SetText("presetC");
     base.Msg_EditEnter(0);
-    BOOST_TEST_REQUIRE(loaded.has_value());
-    BOOST_TEST(*loaded == statesB);
+
+    BOOST_TEST(numPresets() == 3u);
+    BOOST_TEST(load("presetC") == statesNew); // saved under the typed name
+    BOOST_TEST(load("presetA") == statesA);   // selected preset untouched
 }
 
 BOOST_FIXTURE_TEST_CASE(AddonPresetDelete, AddonPresetFixture)
@@ -247,11 +270,13 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetDelete, AddonPresetFixture)
 
     iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
     Window& base = wnd;
-    base.GetCtrls<ctrlEdit>().at(0)->SetText("toDelete");
+    BOOST_TEST_REQUIRE(select(base, "toDelete"));
     base.Msg_MsgBoxResult(iwAddonPresetsBase::ID_mbDelete, MsgboxResult::Yes);
 
-    BOOST_TEST(base.GetCtrls<ctrlEdit>().at(0)->GetText() == ""); // edit cleared after delete
-    BOOST_TEST(numPresets() == 0u);                               // file removed
+    BOOST_TEST(numPresets() == 0u); // file removed
+    // Deleting drops the selection, so both actions are unavailable again
+    BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)->GetEnabled());
+    BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)->GetEnabled());
 }
 
 BOOST_FIXTURE_TEST_CASE(AddonPresetDeleteConfirmationNamesPreset, AddonPresetFixture)
@@ -260,7 +285,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetDeleteConfirmationNamesPreset, AddonPresetFix
 
     iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
     Window& base = wnd;
-    base.GetCtrls<ctrlEdit>().at(0)->SetText("toDelete");
+    BOOST_TEST_REQUIRE(select(base, "toDelete"));
     base.Msg_ButtonClick(iwAddonPresetsBase::ID_btDelete);
 
     const auto* msgbox = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
@@ -276,62 +301,20 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetDeleteConfirmationNamesPreset, AddonPresetFix
     WINDOWMANAGER.CloseNow(const_cast<iwMsgbox*>(msgbox));
 }
 
-// Loading/deleting a name that doesn't exist informs the user and changes nothing.
-BOOST_FIXTURE_TEST_CASE(AddonPresetTargetNotFound, AddonPresetFixture)
+// Loading and deleting act on the list selection, so both stay unavailable until one is picked.
+BOOST_FIXTURE_TEST_CASE(AddonPresetActionsRequireSelection, AddonPresetFixture)
 {
     save({{1, 2}}, "exists");
 
-    // Load a missing name -> callback not invoked, "Preset Not Found" shown
-    {
-        bool called = false;
-        iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>&) noexcept { called = true; });
-        Window& base = wnd;
-        base.GetCtrls<ctrlEdit>().at(0)->SetText("missing");
-        base.Msg_EditEnter(0);
-        BOOST_TEST(!called);
-        const auto* msgbox = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
-        BOOST_TEST_REQUIRE(msgbox);
-        BOOST_TEST(msgbox->GetTitle() == _("Preset Not Found"));
-        WINDOWMANAGER.CloseNow(const_cast<iwMsgbox*>(msgbox));
-    }
+    iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
+    Window& base = wnd;
+    BOOST_TEST(wnd.GetCtrls<ctrlEdit>().empty()); // no name field, the list is the only target
+    BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)->GetEnabled());
+    BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)->GetEnabled());
 
-    // Delete a missing name -> "Preset Not Found" shown (not the delete confirmation)
-    {
-        iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
-        Window& base = wnd;
-        base.GetCtrls<ctrlEdit>().at(0)->SetText("missing");
-        base.Msg_ButtonClick(iwAddonPresetsBase::ID_btDelete);
-        const auto* msgbox = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
-        BOOST_TEST_REQUIRE(msgbox);
-        BOOST_TEST(msgbox->GetTitle() == _("Preset Not Found"));
-        WINDOWMANAGER.CloseNow(const_cast<iwMsgbox*>(msgbox));
-    }
-
-    BOOST_TEST(numPresets() == 1u); // "exists" untouched
-}
-
-BOOST_FIXTURE_TEST_CASE(AddonPresetEmptyNameNoOp, AddonPresetFixture)
-{
-    save({{1, 2}}, "exists");
-
-    // Load with empty edit -> callback not invoked, no message
-    {
-        bool called = false;
-        iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>&) noexcept { called = true; });
-        Window& base = wnd;
-        base.Msg_EditEnter(0);
-        BOOST_TEST(!called);
-        BOOST_TEST(!dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow()));
-    }
-    // Delete with empty edit -> no message
-    {
-        iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
-        Window& base = wnd;
-        base.Msg_ButtonClick(iwAddonPresetsBase::ID_btDelete);
-        BOOST_TEST(!dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow()));
-    }
-
-    BOOST_TEST(numPresets() == 1u); // nothing deleted
+    BOOST_TEST_REQUIRE(select(base, "exists"));
+    BOOST_TEST(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)->GetEnabled());
+    BOOST_TEST(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)->GetEnabled());
 }
 
 // When the presets folder can't be created, the window informs the user and closes itself.
@@ -347,8 +330,11 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetFolderUnavailable, AddonPresetFixture)
     BOOST_TEST_REQUIRE(!boost::filesystem::is_directory(presetsDir));
 
     iwSaveAddonPreset wnd(std::map<unsigned, unsigned>{{1, 2}});
-    BOOST_TEST(wnd.ShouldBeClosed());              // window marked itself for closing
-    BOOST_TEST(wnd.GetCtrls<ctrlTable>().empty()); // no controls were built
+    BOOST_TEST(wnd.ShouldBeClosed()); // window marked itself for closing
+    // No controls were built, neither by the base window nor by the save window
+    BOOST_TEST(wnd.GetCtrls<ctrlTable>().empty());
+    BOOST_TEST(wnd.GetCtrls<ctrlEdit>().empty());
+    BOOST_TEST(wnd.GetCtrls<ctrlButton>().empty());
 
     const auto* msgbox = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(msgbox);
