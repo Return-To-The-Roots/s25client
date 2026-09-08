@@ -42,6 +42,7 @@ namespace folders {
     constexpr auto mbob = "<RTTR_GAME>/DATA/MBOB"; // nation graphics
     constexpr auto music = "<RTTR_RTTR>/MUSIC";
     constexpr auto playlists = "<RTTR_USERDATA>/playlists";
+    constexpr auto addonPresets = "<RTTR_USERDATA>/PRESETS";
     constexpr auto replays = "<RTTR_USERDATA>/REPLAYS";
     constexpr auto save = "<RTTR_USERDATA>/SAVE";
     constexpr auto screenshots = "<RTTR_USERDATA>/screenshots";

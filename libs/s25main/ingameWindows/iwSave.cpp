@@ -19,6 +19,7 @@
 #include "helpers/make_array.h"
 #include "helpers/toString.h"
 #include "iwConnecting.h"
+#include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
@@ -57,7 +58,9 @@ iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const u
     AddText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
             FontStyle::TOP, SmallFont)
       ->setMaxWidth(510);
-    AddEdit(ID_edtFilename, DrawPoint(20, 350), Extent(510, 22), TextureColor::Green2, NormalFont);
+    // maxLength 251 = 255 filename limit - 4 chars for ".sav"; just discourages absurdly long
+    // input, isValidFileName() may still reject it since it counts bytes, not codepoints.
+    AddEdit(ID_edtFilename, DrawPoint(20, 350), Extent(510, 22), TextureColor::Green2, NormalFont, 251);
     AddImageButton(ID_btSaveOrLoad, DrawPoint(540, 341), Extent(40, 40), TextureColor::Green2, btImg);
     // Initially fill the table
     RefreshTable();
@@ -118,9 +121,20 @@ void iwSaveLoad::RefreshTable()
 
 void iwSave::SaveLoad()
 {
-    const boost::filesystem::path savePath =
-      RTTRCONFIG.ExpandPath(s25::folders::save) / (GetCtrl<ctrlEdit>(ID_edtFilename)->GetText() + ".sav");
-    GAMECLIENT.SaveToFile(savePath);
+    const auto fileNameResult = GetCtrl<ctrlEdit>(ID_edtFilename)->GetFileName(".sav");
+    switch(fileNameResult.status)
+    {
+        case FileNameStatus::Empty:
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a filename."), this,
+                                                          MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
+            return;
+        case FileNameStatus::Invalid:
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a valid filename."),
+                                                          this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
+            return;
+        case FileNameStatus::Valid: break;
+    }
+    GAMECLIENT.SaveToFile(RTTRCONFIG.ExpandPath(s25::folders::save) / fileNameResult.name);
 
     RefreshTable();
     GetCtrl<ctrlEdit>(ID_edtFilename)->SetText("");
@@ -128,7 +142,8 @@ void iwSave::SaveLoad()
 
 iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
 {
-    const auto* fileNameEdit = GetCtrl<ctrlEdit>(ID_edtFilename);
+    auto* fileNameEdit = GetCtrl<ctrlEdit>(ID_edtFilename);
+    fileNameEdit->SetType(EditType::Filename);
     DrawPoint pos(GetSize().x / 2, fileNameEdit->GetPos().y + fileNameEdit->GetSize().y + 10);
 
     ctrlComboBox* combo =

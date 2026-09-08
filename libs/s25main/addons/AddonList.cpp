@@ -5,6 +5,7 @@
 #include "AddonList.h"
 #include "Loader.h"
 #include "Window.h"
+#include "commonDefines.h"
 #include "controls/ctrlComboBox.h"
 #include <stdexcept>
 
@@ -31,27 +32,23 @@ const std::string& AddonList::getOptionName(unsigned status) const
     return options.at(status);
 }
 
-AddonList::Gui::Gui(const AddonList& addon, Window& window, bool readonly) : AddonGui(addon, window, readonly)
+AddonList::Gui::Gui(const AddonList& addon, Window& window, bool readonly)
+    : AddonGui(addon, window, readonly),
+      cb_(assertNonNull(
+        window.AddComboBox(2, DrawPoint(430, 0), Extent(220, 20), TextureColor::Grey, NormalFont, 100, readonly)))
 {
-    DrawPoint cbPos(430, 0);
-
-    auto* cb = window.AddComboBox(2, cbPos, Extent(220, 20), TextureColor::Grey, NormalFont, 100, readonly);
     for(const auto& option : addon.options)
-        cb->AddItem(option);
+        cb_.AddItem(option);
     if(readonly)
-        window.AddImage(3, cbPos - DrawPoint(1, 0), LOADER.GetImageN("io_new", 14), _("Locked"));
+        window.AddImage(3, cb_.GetPos() - DrawPoint(1, 0), LOADER.GetImageN("io_new", 14), _("Locked"));
 }
 
-void AddonList::Gui::setStatus(Window& window, unsigned status)
+void AddonList::Gui::setStatus(unsigned status)
 {
-    auto* cb = window.GetCtrl<ctrlComboBox>(2);
-    RTTR_Assert(cb);
-    cb->SetSelection(status);
+    cb_.SetSelection(status);
 }
 
-unsigned AddonList::Gui::getStatus(const Window& window)
+unsigned AddonList::Gui::getStatus() const
 {
-    const auto* cb = window.GetCtrl<ctrlComboBox>(2);
-    RTTR_Assert(cb);
-    return *cb->GetSelection();
+    return cb_.GetSelection().value();
 }

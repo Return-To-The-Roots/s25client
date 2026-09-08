@@ -1,10 +1,12 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "Addon.h"
+
+class ctrlCheck;
 
 /**
  *  Addon baseclass for boolean addons
@@ -13,10 +15,12 @@ class AddonBool : public Addon
 {
     class Gui : public AddonGui
     {
+        ctrlCheck& cb_;
+
     public:
         Gui(const Addon& addon, Window& window, bool readonly);
-        void setStatus(Window& window, unsigned status) override;
-        unsigned getStatus(const Window& window) override;
+        void setStatus(unsigned status) override;
+        unsigned getStatus() const override;
     };
 
 public:
