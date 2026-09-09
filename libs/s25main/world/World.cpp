@@ -412,7 +412,23 @@ const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbors(const HarborId
     return harborData[harborId].neighbors[dir];
 }
 
-unsigned World::CalcHarborDistance(HarborId haborId1, HarborId harborId2) const
+unsigned World::GetMinHarborDistance(HarborId haborId1, HarborId harborId2) const
+{
+    if(haborId1 == harborId2) // special case: distance to self
+        return 0;
+    unsigned minDistance = std::numeric_limits<unsigned>::max();
+    for(const auto dir : helpers::EnumRange<ShipDirection>{})
+    {
+        for(const HarborPos::Neighbor& n : harborData[haborId1].neighbors[dir])
+        {
+            if(n.id == harborId2)
+                minDistance = std::min(minDistance, n.distance);
+        }
+    }
+    return minDistance;
+}
+
+unsigned World::GetHarborDistance(HarborId haborId1, HarborId harborId2, SeaId sea) const
 {
     if(haborId1 == harborId2) // special case: distance to self
         return 0;
@@ -420,12 +436,12 @@ unsigned World::CalcHarborDistance(HarborId haborId1, HarborId harborId2) const
     {
         for(const HarborPos::Neighbor& n : harborData[haborId1].neighbors[dir])
         {
-            if(n.id == harborId2)
+            if(n.id == harborId2 && n.sea == sea)
                 return n.distance;
         }
     }
-
-    return 0xffffffff;
+    RTTR_Assert(!"Should only query actual neighbors");
+    return std::numeric_limits<unsigned>::max();
 }
 
 SeaId World::GetSeaFromCoastalPoint(const MapPoint pt) const

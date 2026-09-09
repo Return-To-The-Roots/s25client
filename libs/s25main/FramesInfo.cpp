@@ -11,11 +11,12 @@ FramesInfo::FramesInfo()
 
 void FramesInfo::Clear()
 {
-    // Default GF len of 20
-    gf_length = milliseconds32_t(20);
+    using namespace std::chrono_literals;
+    // Default GF len
+    gf_length = 20ms;
     gfLengthReq = gf_length;
     nwf_length = 0;
-    frameTime = milliseconds32_t::zero();
+    frameTime = frameTime.zero();
     lastTime = UsedClock::time_point();
     isPaused = false;
 }
@@ -29,5 +30,5 @@ void FramesInfoClient::Clear()
 {
     FramesInfo::Clear();
     forcePauseStart = UsedClock::time_point();
-    forcePauseLen = milliseconds32_t::zero();
+    forcePauseLen = forcePauseLen.zero();
 }

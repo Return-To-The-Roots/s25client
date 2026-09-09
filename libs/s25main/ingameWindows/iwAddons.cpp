@@ -5,10 +5,13 @@
 #include "iwAddons.h"
 #include "GlobalGameSettings.h"
 #include "Loader.h"
+#include "WindowManager.h"
 #include "addons/Addon.h"
+#include "commonDefines.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlScrollBar.h"
 #include "helpers/containerUtils.h"
+#include "iwAddonPresets.h"
 #include "gameData/const_gui_ids.h"
 #include "s25util/colors.h"
 #include <utility>
@@ -20,6 +23,8 @@ enum
     ID_btApply,
     ID_btAbort,
     ID_btS2Defaults,
+    ID_btSavePreset,
+    ID_btLoadPreset,
     ID_grpAddonGroup,
     ID_scroll,
     ID_grpAddonsStart
@@ -32,7 +37,7 @@ constexpr unsigned AddonGuiLineHeight = 30;
 
 iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed policy,
                    std::vector<AddonId> whitelistedAddons)
-    : IngameWindow(CGI_ADDONS, IngameWindow::posLastOrCenter, Extent(700, 500), _("Addon Settings"),
+    : IngameWindow(CGI_ADDONS, IngameWindow::posLastOrCenter, Extent(700, 530), _("Addon Settings"),
                    LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom, parent),
       ggs(ggs), policy_(policy), whitelistedAddons_(std::move(whitelistedAddons))
 {
@@ -40,15 +45,19 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed p
 
     Extent btSize(200, 22);
     if(policy != AddonChangeAllowed::None)
+    {
+        AddTextButton(ID_btSavePreset, DrawPoint(20, GetSize().y - 70), btSize, TextureColor::Green2, _("Save"),
+                      NormalFont, _("Save Addon Preset"));
+        AddTextButton(ID_btLoadPreset, DrawPoint(250, GetSize().y - 70), btSize, TextureColor::Green2, _("Load"),
+                      NormalFont, _("Load Addon Preset"));
+        AddTextButton(ID_btS2Defaults, DrawPoint(480, GetSize().y - 70), btSize, TextureColor::Grey, _("Default"),
+                      NormalFont, _("Use S2 Defaults"));
         AddTextButton(ID_btApply, DrawPoint(20, GetSize().y - 40), btSize, TextureColor::Green2, _("Apply"), NormalFont,
                       _("Apply Changes"));
+    }
 
     AddTextButton(ID_btAbort, DrawPoint(250, GetSize().y - 40), btSize, TextureColor::Red1, _("Abort"), NormalFont,
                   _("Close Without Saving"));
-
-    if(policy != AddonChangeAllowed::None)
-        AddTextButton(ID_btS2Defaults, DrawPoint(480, GetSize().y - 40), btSize, TextureColor::Grey, _("Default"),
-                      NormalFont, _("Use S2 Defaults"));
 
     // Kategorien
     ctrlOptionGroup* optiongroup = AddOptionGroup(ID_grpAddonGroup, GroupSelectType::Check);
@@ -71,23 +80,29 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed p
 
     ctrlScrollBar* scrollbar =
       AddScrollBar(ID_scroll, DrawPoint(GetSize().x - SCROLLBAR_WIDTH - 20, 90),
-                   Extent(SCROLLBAR_WIDTH, GetSize().y - 140), SCROLLBAR_WIDTH, TextureColor::Green2, 1);
+                   Extent(SCROLLBAR_WIDTH, GetSize().y - 170), SCROLLBAR_WIDTH, TextureColor::Green2, 1);
     scrollbar->SetPageSize(scrollbar->GetSize().y / AddonGuiLineHeight);
 
     for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
     {
         const unsigned id = ID_grpAddonsStart + i;
-        const Addon* addon = ggs.getAddon(i);
-        RTTR_Assert(addon);
-        auto& group = *AddGroup(id);
-        addonGuis_.emplace_back(addon->createGui(group, isReadOnly(addon->getId())));
-        addonGuis_.back()->setStatus(group, ggs.getSelection(addon->getId()));
+        const Addon& addon = assertNonNull(ggs.getAddon(i));
+        addonGuis_.emplace_back(addon.createGui(*AddGroup(id), isReadOnly(addon.getId())));
+        addonGuis_.back()->setStatus(ggs.getSelection(addon.getId()));
     }
 
     optiongroup->SetSelection(static_cast<unsigned>(AddonGroup::All), true);
 }
 
 iwAddons::~iwAddons() = default;
+
+void iwAddons::Close()
+{
+    // Close an open save/load preset window: the load window holds a callback into this window,
+    // so it must not outlive it
+    WINDOWMANAGER.Close(CGI_ADDON_PRESETS);
+    IngameWindow::Close();
+}
 
 void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
 {
@@ -102,8 +117,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
                 // Einstellungen in ADDONMANAGER übertragen
                 for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
                 {
-                    const auto& group = *GetCtrl<ctrlGroup>(ID_grpAddonsStart + i);
-                    ggs.setSelection(ggs.getAddon(i)->getId(), addonGuis_[i]->getStatus(group));
+                    ggs.setSelection(ggs.getAddon(i)->getId(), addonGuis_[i]->getStatus());
                 }
 
                 switch(policy_)
@@ -125,19 +139,34 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
             Close();
             break;
 
+        case ID_btSavePreset:
+        {
+            std::map<unsigned, unsigned> states;
+            for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
+            {
+                states[static_cast<unsigned>(ggs.getAddon(i)->getId())] = addonGuis_[i]->getStatus();
+            }
+            WINDOWMANAGER.Show(std::make_unique<iwSaveAddonPreset>(std::move(states)));
+        }
+        break;
+
+        case ID_btLoadPreset:
+            WINDOWMANAGER.Show(std::make_unique<iwLoadAddonPreset>(
+              [this](const std::map<unsigned, unsigned>& states) { applyAddonStates(states); }));
+            break;
+
         case ID_btS2Defaults: // Load S2 Defaults
             // Standardeinstellungen aufs Fenster übertragen
             for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
             {
                 const Addon* addon = ggs.getAddon(i);
                 if(!isReadOnly(addon->getId()))
-                    addonGuis_[i]->setStatus(*GetCtrl<ctrlGroup>(ID_grpAddonsStart + i), addon->getDefaultStatus());
+                    addonGuis_[i]->setStatus(addon->getDefaultStatus());
             }
             break;
     }
 }
 
-/// Aktualisiert die Addons, die angezeigt werden sollen
 void iwAddons::UpdateView(const AddonGroup selection)
 {
     auto* scrollbar = GetCtrl<ctrlScrollBar>(ID_scroll);
@@ -149,20 +178,35 @@ void iwAddons::UpdateView(const AddonGroup selection)
     {
         const Addon* addon = ggs.getAddon(i);
         const bool isVisible = bitset::any(addon->getGroups(), selection);
-        auto* group = GetCtrl<ctrlGroup>(ID_grpAddonsStart + i);
+        Window& group = addonGuis_[i]->getWindow();
 
         // Don't show addon's gui if addon is beyond selected group or is beyond current page scope
         if(isVisible && numAddonsInCurCategory >= scrollPos && numAddonsInCurCategory < scrollPosEnd)
         {
-            group->SetVisible(true);
-            group->SetPos({group->GetPos().x, y});
+            group.SetVisible(true);
+            group.SetPos({group.GetPos().x, y});
             y += AddonGuiLineHeight;
         } else
-            group->SetVisible(false);
+            group.SetVisible(false);
         if(isVisible)
             ++numAddonsInCurCategory;
     }
     scrollbar->SetRange(numAddonsInCurCategory);
+}
+
+void iwAddons::applyAddonStates(const std::map<unsigned, unsigned>& states)
+{
+    for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
+    {
+        const Addon* addon = ggs.getAddon(i);
+        if(!isReadOnly(addon->getId()))
+        {
+            const auto it = states.find(static_cast<unsigned>(addon->getId()));
+            const unsigned rawStatus = (it != states.end()) ? it->second : addon->getDefaultStatus();
+            const unsigned status = (rawStatus < addon->getNumOptions()) ? rawStatus : addon->getDefaultStatus();
+            addonGuis_[i]->setStatus(status);
+        }
+    }
 }
 
 bool iwAddons::isReadOnly(AddonId id) const

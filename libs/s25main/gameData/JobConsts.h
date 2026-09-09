@@ -10,8 +10,8 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
 #include "gameTypes/Nation.h"
-#include <boost/optional/optional.hpp>
 #include <array>
+#include <optional>
 
 extern const helpers::EnumArray<std::string, Job> JOB_NAMES;
 
@@ -19,7 +19,7 @@ extern const helpers::EnumArray<std::string, Job> JOB_NAMES;
 struct JobConst
 {
     /// Tool required to recruit this job (helper + tool = new worker). Empty if recruiting is not possible
-    boost::optional<GoodType> tool;
+    std::optional<GoodType> tool;
     /// Duration of working and waiting (before and between work steps) in GFs
     unsigned short work_length, wait1_length, wait2_length;
 };

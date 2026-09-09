@@ -116,7 +116,7 @@ void NWFInfo::execute(FramesInfo& info)
         player.commands.pop();
     }
 
-    info.gf_length = FramesInfo::milliseconds32_t(serverInfo.newGFLen);
+    info.gf_length = serverInfo.newGFLen;
     info.nwf_length = serverInfo.nextNWF - serverInfo.gf;
     nextNWF_ = serverInfo.nextNWF;
 }

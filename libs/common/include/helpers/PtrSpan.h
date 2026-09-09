@@ -45,8 +45,8 @@ class NonNullPtrSpan
         using reference = value_type&;
 
         RTTR_CONSTEXPR_INLINE explicit Iterator(RangeIterator it) : it(std::move(it)) {}
-        RTTR_CONSTEXPR_INLINE bool operator==(const Iterator& other) const { return it == other.it; }
-        RTTR_CONSTEXPR_INLINE bool operator!=(const Iterator& other) const { return it != other.it; }
+        RTTR_CONSTEXPR_INLINE bool operator==(const Iterator& other) const noexcept { return it == other.it; }
+        RTTR_CONSTEXPR_INLINE bool operator!=(const Iterator& other) const noexcept { return it != other.it; }
         RTTR_CONSTEXPR_INLINE reference operator*() const { return **it; }
         RTTR_CONSTEXPR_INLINE pointer operator->() const { return &(**it); }
         RTTR_CONSTEXPR_INLINE Iterator& operator++()

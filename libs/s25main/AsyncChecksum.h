@@ -24,17 +24,17 @@ struct AsyncChecksum
 
     static AsyncChecksum create(const Game& game);
 
-    bool operator==(const AsyncChecksum& rhs) const;
-    bool operator!=(const AsyncChecksum& rhs) const;
+    bool operator==(const AsyncChecksum& rhs) const noexcept;
+    bool operator!=(const AsyncChecksum& rhs) const noexcept;
 };
 
-inline bool AsyncChecksum::operator==(const AsyncChecksum& rhs) const
+inline bool AsyncChecksum::operator==(const AsyncChecksum& rhs) const noexcept
 {
     return randChecksum == rhs.randChecksum && objCt == rhs.objCt && objIdCt == rhs.objIdCt && eventCt == rhs.eventCt
            && evInstanceCt == rhs.evInstanceCt;
 }
 
-inline bool AsyncChecksum::operator!=(const AsyncChecksum& rhs) const
+inline bool AsyncChecksum::operator!=(const AsyncChecksum& rhs) const noexcept
 {
     return !(*this == rhs);
 }

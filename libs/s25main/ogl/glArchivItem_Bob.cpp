@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "glArchivItem_Bob.h"
+#include "DrawPoint.h"
 #include "glArchivItem_Bitmap_Player.h"
 #include "s25util/colors.h"
 
@@ -15,9 +16,13 @@ void glArchivItem_Bob::Draw(unsigned item, libsiedler2::ImgDir direction, bool f
     auto* body = dynamic_cast<glArchivItem_Bitmap_Player*>(getBody(fat, direction, animationstep));
     if(body)
         body->DrawFull(drawPt, COLOR_WHITE, color);
-    auto* overlay = dynamic_cast<glArchivItem_Bitmap_Player*>(getOverlay(item, fat, direction, animationstep));
-    if(overlay)
-        overlay->DrawFull(drawPt, COLOR_WHITE, color);
+    auto overlay = getOverlay(item, fat, direction, animationstep);
+    auto* glOverlay = dynamic_cast<glArchivItem_Bitmap_Player*>(overlay.first);
+    if(glOverlay)
+    {
+        drawPt.y -= overlay.second;
+        glOverlay->DrawFull(drawPt, COLOR_WHITE, color);
+    }
 }
 
 void glArchivItem_Bob::mergeLinks(const std::map<uint16_t, uint16_t>& overrideLinks)
@@ -26,10 +31,10 @@ void glArchivItem_Bob::mergeLinks(const std::map<uint16_t, uint16_t>& overrideLi
         return;
     // Get last key of sorted map
     const auto maxIdx = overrideLinks.rbegin()->first;
-    if(maxIdx >= links.size())
-        links.resize(maxIdx + 1u);
+    if(maxIdx >= spriteOverlayIdx.size())
+        spriteOverlayIdx.resize(maxIdx + 1u);
     for(const auto& newLink : overrideLinks)
     {
-        links[newLink.first] = newLink.second;
+        spriteOverlayIdx[newLink.first] = newLink.second;
     }
 }

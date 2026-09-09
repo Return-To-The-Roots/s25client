@@ -177,7 +177,7 @@ void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned se
     table->SortRows(0, TableSortDir::Ascending);
 
     // und Auswahl zurücksetzen
-    table->SetSelection(boost::none);
+    table->SetSelection(std::nullopt);
 }
 
 /// Load a map, throw on error
@@ -199,7 +199,7 @@ static std::unique_ptr<libsiedler2::ArchivItem_Map> loadAndVerifyMap(const std::
 /**
  *  Occurs when user changes the selection in the table of maps.
  */
-void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const boost::optional<unsigned>& selection)
+void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
     if(ctrl_id != 1)
         return;

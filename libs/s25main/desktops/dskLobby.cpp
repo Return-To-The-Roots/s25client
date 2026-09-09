@@ -141,7 +141,7 @@ void dskLobby::Msg_EditEnter(const unsigned ctrl_id)
     }
 }
 
-void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const boost::optional<unsigned>& selection)
+void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
     if(!selection)
         return;

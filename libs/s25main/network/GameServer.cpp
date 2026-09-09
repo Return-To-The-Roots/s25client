@@ -188,7 +188,7 @@ bool GameServer::Start(const CreateServerInfo& csi, const MapDescription& map, c
     if(map.lua_path.has_value() && !bfs::is_regular_file(*map.lua_path))
         return false;
 
-    bfs::path luaFilePath = map.lua_path.get_value_or(bfs::path(mapinfo.filepath).replace_extension("lua"));
+    bfs::path luaFilePath = map.lua_path.value_or(bfs::path(mapinfo.filepath).replace_extension("lua"));
     if(bfs::is_regular_file(luaFilePath))
     {
         if(!mapinfo.luaData.CompressFromFile(luaFilePath, &mapinfo.luaChecksum))
@@ -367,7 +367,8 @@ void GameServer::RunStateLoading()
     // Send cmdDelay NWFDone messages
     // First send the OK for NWF 0 which is also the game ready command
     // Note: Do not store. It already is in NWFInfo
-    SendToAll(GameMessage_Server_NWFDone(serverInfo.gf, serverInfo.newGFLen, serverInfo.nextNWF));
+    SendToAll(
+      GameMessage_Server_NWFDone(serverInfo.gf, static_cast<unsigned>(serverInfo.newGFLen / 1ms), serverInfo.nextNWF));
     RTTR_Assert(framesinfo.nwf_length > 0);
     // Then the remaining OKs for the commands sent above
     for(unsigned i = 1; i < nwfInfo.getCmdDelay(); i++)
@@ -558,7 +559,7 @@ bool GameServer::StartGame()
     framesinfo.gfLengthReq = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs_.speed];
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
-    framesinfo.nwf_length = CalcNWFLenght(FramesInfo::milliseconds32_t(highest_ping));
+    framesinfo.nwf_length = CalcNWFLength(std::chrono::milliseconds(highest_ping));
 
     LOG.write("SERVER: Using gameframe length of %1%\n") % helpers::withUnit(framesinfo.gf_length);
     LOG.write("SERVER: Using networkframe length of %1% GFs (%2%)\n") % framesinfo.nwf_length
@@ -572,8 +573,7 @@ bool GameServer::StartGame()
 
     // Add server info so nwfInfo can be ready but do NOT send it yet, as we wait for the player commands before sending
     // the done msg
-    nwfInfo.addServerInfo(NWFServerInfo(currentGF, framesinfo.gf_length / FramesInfo::milliseconds32_t(1),
-                                        currentGF + framesinfo.nwf_length));
+    nwfInfo.addServerInfo(NWFServerInfo(currentGF, framesinfo.gf_length, currentGF + framesinfo.nwf_length));
 
     state = ServerState::Loading;
     loadStartTime = SteadyClock::now();
@@ -581,7 +581,7 @@ bool GameServer::StartGame()
     return true;
 }
 
-unsigned GameServer::CalcNWFLenght(FramesInfo::milliseconds32_t minDuration) const
+unsigned GameServer::CalcNWFLength(std::chrono::milliseconds minDuration) const
 {
     constexpr unsigned maxNumGF = 20;
     for(unsigned i = 1; i < maxNumGF; ++i)
@@ -595,7 +595,7 @@ unsigned GameServer::CalcNWFLenght(FramesInfo::milliseconds32_t minDuration) con
 void GameServer::SendNWFDone(const NWFServerInfo& info)
 {
     nwfInfo.addServerInfo(info);
-    SendToAll(GameMessage_Server_NWFDone(info.gf, info.newGFLen, info.nextNWF));
+    SendToAll(GameMessage_Server_NWFDone(info.gf, static_cast<unsigned>(info.newGFLen / 1ms), info.nextNWF));
 }
 
 void GameServer::SendToAll(const GameMessage& msg)
@@ -674,21 +674,20 @@ void GameServer::ExecuteGameFrame()
 {
     RTTR_Assert(state == ServerState::Game);
 
-    FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
-    FramesInfo::milliseconds32_t passedTime =
-      std::chrono::duration_cast<FramesInfo::milliseconds32_t>(currentTime - framesinfo.lastTime);
+    const auto currentTime = FramesInfo::UsedClock::now();
+    const auto passedTime = currentTime - framesinfo.lastTime;
 
-    // prüfen ob GF vergangen
-    if(passedTime >= framesinfo.gf_length || skiptogf > currentGF)
+    const bool isSkipping = skiptogf > currentGF;
+    // Check if GF has passed
+    if(passedTime >= framesinfo.gf_length || isSkipping)
     {
-        // NWF vergangen?
-        if(currentGF == nwfInfo.getNextNWF())
+        if(currentGF == nwfInfo.getNextNWF()) // NWF passed?
         {
             if(CheckForLaggingPlayers())
             {
                 // Check for kicking every second
-                static FramesInfo::UsedClock::time_point lastLagKickTime;
-                if(currentTime - lastLagKickTime >= std::chrono::seconds(1))
+                static std::remove_const_t<decltype(currentTime)> lastLagKickTime;
+                if(currentTime - lastLagKickTime >= 1s)
                 {
                     lastLagKickTime = currentTime;
                     CheckAndKickLaggingPlayers();
@@ -700,15 +699,26 @@ void GameServer::ExecuteGameFrame()
         }
         // Advance GF
         ++currentGF;
-        // Normally we set lastTime = curTime (== lastTime + passedTime) where passedTime is ideally 1 GF
-        // But we might got called late, so we advance the time by 1 GF anyway so in that case we execute the next GF a
-        // bit earlier. Exception: We lag many GFs behind, then we advance by the full passedTime - 1 GF which means we
-        // are now only 1 GF behind and execute that on the next call
-        if(passedTime <= 4 * framesinfo.gf_length)
-            passedTime = framesinfo.gf_length;
-        else
-            passedTime -= framesinfo.gf_length;
-        framesinfo.lastTime += passedTime;
+
+        constexpr auto maxBacklogFrames = 5u;
+        const auto maxBacklogDuration = maxBacklogFrames * framesinfo.gf_length;
+        if(isSkipping)
+        {
+            // Synchronize clock exactly so next non-skipped GF follows the regular pace
+            framesinfo.lastTime = currentTime;
+        } else if(passedTime > framesinfo.gf_length + maxBacklogDuration)
+        {
+            // We are significantly behind and likely cannot catch up.
+            // Discard excess latency while retaining the maximum backlog of maxBacklogFrames GFs.
+            framesinfo.lastTime = currentTime - maxBacklogDuration;
+        } else
+        {
+            // Ideally passedTime exactly equals gf_length (1 GF) but usually is bigger.
+            // Advance clock by exactly one GF rather than setting lastTime = curTime (== lastTime + passedTime).
+            // This compensates small scheduling delays by allowing the next GF to run slightly earlier
+            // and maintains a constant average duration per GF.
+            framesinfo.lastTime += framesinfo.gf_length;
+        }
     }
 }
 
@@ -740,15 +750,14 @@ void GameServer::ExecuteNWF()
     RTTR_Assert(serverInfo.nextNWF > currentGF);
     // First save old values
     unsigned lastNWF = nwfInfo.getLastNWF();
-    FramesInfo::milliseconds32_t oldGFLen = framesinfo.gf_length;
+    const auto oldGFLen = framesinfo.gf_length;
     nwfInfo.execute(framesinfo);
     if(oldGFLen != framesinfo.gf_length)
     {
         LOG.write(_("SERVER: At GF %1%: Speed changed from %2% to %3%. NWF %4%\n")) % currentGF
           % helpers::withUnit(oldGFLen) % helpers::withUnit(framesinfo.gf_length) % framesinfo.nwf_length;
     }
-    NWFServerInfo newInfo(lastNWF, framesinfo.gfLengthReq / FramesInfo::milliseconds32_t(1),
-                          lastNWF + framesinfo.nwf_length);
+    NWFServerInfo newInfo(lastNWF, framesinfo.gfLengthReq, lastNWF + framesinfo.nwf_length);
     if(framesinfo.gfLengthReq != framesinfo.gf_length)
     {
         // Speed will change, adjust nwf length so the time will stay constant
@@ -1253,7 +1262,7 @@ bool GameServer::OnGameMessage(const GameMessage_Speed& msg)
         KickPlayer(msg.senderPlayerID, KickReason::InvalidMsg, __LINE__);
         return true;
     }
-    framesinfo.gfLengthReq = FramesInfo::milliseconds32_t(msg.gf_length);
+    framesinfo.gfLengthReq = msg.gf_length;
     return true;
 }
 

@@ -339,7 +339,7 @@ helpers::OptionalEnum<Direction> nofGeologist::GetNextNode()
     if(!signs)
     {
         node_goal = MapPoint::Invalid();
-        return boost::none;
+        return std::nullopt;
     }
 
     do
@@ -373,7 +373,7 @@ helpers::OptionalEnum<Direction> nofGeologist::GetNextNode()
     } while(!available_nodes.empty());
 
     node_goal = MapPoint::Invalid();
-    return boost::none;
+    return std::nullopt;
 }
 
 void nofGeologist::GoToNextNode()

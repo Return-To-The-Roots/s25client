@@ -37,6 +37,6 @@ struct Info
     Info(Serializer& ser);
     void serialize(Serializer& ser) const;
 
-    bool operator==(const Info& rhs) const { return type == rhs.type && level == rhs.level; }
+    bool operator==(const Info& rhs) const noexcept { return type == rhs.type && level == rhs.level; }
 };
 } // namespace AI

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "GameCommands.h"
 #include "GamePlayer.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
@@ -12,6 +13,8 @@
 #include "enum_cast.hpp"
 #include "factories/BuildingFactory.h"
 #include "figures/nofPassiveSoldier.h"
+#include "helpers/serializeEnums.h"
+#include "helpers/serializePoint.h"
 #include "postSystem/PostBox.h"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "worldFixtures/initGameRNG.hpp"
@@ -53,7 +56,40 @@ static void dummySuppressUnused(std::ostream& out)
 }
 // LCOV_EXCL_STOP
 
+namespace {
+// Expose the protected constructors only to serialize the actual command format in this test,
+// rather than duplicating the production Serialize() implementation.
+class TestSetTroopLimit : public gc::SetTroopLimit
+{
+public:
+    TestSetTroopLimit(const MapPoint pt, const uint8_t rank, const uint32_t count) : gc::SetTroopLimit(pt, rank, count)
+    {}
+};
+
+class TestChangeReserve : public gc::ChangeReserve
+{
+public:
+    TestChangeReserve(const MapPoint pt, const uint8_t rank, const uint32_t count) : gc::ChangeReserve(pt, rank, count)
+    {}
+};
+} // namespace
+
 BOOST_AUTO_TEST_SUITE(GameCommandSuite)
+
+BOOST_AUTO_TEST_CASE(SoldierRankCommandsRejectInvalidSerializedRank)
+{
+    constexpr auto invalidRank = static_cast<uint8_t>(MAX_MILITARY_RANK + 1u);
+    const auto pt = rttr::test::randomPoint<MapPoint>();
+    const auto count = rttr::test::randomValue<unsigned>();
+
+    gc::Deserializer troopLimitCommand;
+    TestSetTroopLimit(pt, invalidRank, count).Serialize(troopLimitCommand);
+    BOOST_REQUIRE_THROW(gc::GameCommand::Deserialize(troopLimitCommand), std::range_error);
+
+    gc::Deserializer reserveCommand;
+    TestChangeReserve(pt, invalidRank, count).Serialize(reserveCommand);
+    BOOST_REQUIRE_THROW(gc::GameCommand::Deserialize(reserveCommand), std::range_error);
+}
 
 BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)
 {
@@ -702,8 +738,8 @@ void InitPactsAndPost(GameWorldBase& world)
 BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
 {
     // At first there are no teams
-    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
-        BOOST_TEST_REQUIRE(world.GetPlayer(i).team == Team::None);
+    for(const auto& player : world.getPlayers())
+        BOOST_TEST_REQUIRE(player.team == Team::None);
     PostManager& postMgr = world.GetPostMgr();
     // Add postbox for each player
     for(unsigned i = 0; i < world.GetNumPlayers(); i++)

@@ -22,6 +22,7 @@
 #include "notifications/ShipNote.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glArchivItem_Bitmap_Player.h"
+#include "pathfinding/ShipPathData.h"
 #include "postSystem/ShipPostMsg.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
@@ -952,7 +953,6 @@ void noShip::AbortSeaAttack()
     }
 }
 
-/// Fängt an zu einem Hafen zu fahren (berechnet Route usw.)
 void noShip::StartDrivingToHarborPlace()
 {
     if(!goalHarbor)
@@ -967,28 +967,28 @@ void noShip::StartDrivingToHarborPlace()
         route_.clear();
     else
     {
-        bool routeFound;
-        // Use upper bound to distance by checking the distance between the harbors if we still have and are at the home
-        // harbor
+        // if we still have and are at the home harbor get route directly
         if(homeHarbor && pos == world->GetCoastalPoint(homeHarbor, seaId_))
         {
-            // Use the maximum distance between the harbors plus 6 fields
-            unsigned maxDistance = world->CalcHarborDistance(homeHarbor, goalHarbor) + 6;
-            routeFound = world->FindShipPath(pos, coastalPos, maxDistance, &route_, nullptr);
+            route_ = world->GetShipPathData().getHarborConnection(homeHarbor, goalHarbor, seaId_);
+            RTTR_Assert(!route_.empty());
         } else
-            routeFound = world->FindShipPathToHarbor(pos, goalHarbor, seaId_, &route_, nullptr);
-        if(!routeFound)
         {
-            // todo
-            RTTR_Assert(false);
-            LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and "
-                      "replay.\nnoShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden!\nplayer %i state %i "
-                      "pos %u,%u goal "
-                      "coastal %u,%u goal-id %i goalpos %u,%u \n")
-              % GetEvMgr().GetCurrentGF() % unsigned(ownerId_) % unsigned(state) % pos.x % pos.y % coastalPos.x
-              % coastalPos.y % goalHarbor % world->GetHarborPoint(goalHarbor).x % world->GetHarborPoint(goalHarbor).y;
-            goalHarbor.reset();
-            return;
+            if(!world->FindShipPathToHarbor(pos, goalHarbor, seaId_, &route_, nullptr))
+            {
+                // todo
+                RTTR_Assert(false);
+                LOG.write(
+                  "WARNING: Bug detected (GF: %u). Please report this with the savegame and "
+                  "replay.\nnoShip::StartDrivingToHarborPlace: Schiff hat keinen Weg gefunden!\nplayer %i state %i "
+                  "pos %u,%u goal "
+                  "coastal %u,%u goal-id %i goalpos %u,%u \n")
+                  % GetEvMgr().GetCurrentGF() % unsigned(ownerId_) % unsigned(state) % pos.x % pos.y % coastalPos.x
+                  % coastalPos.y % goalHarbor % world->GetHarborPoint(goalHarbor).x
+                  % world->GetHarborPoint(goalHarbor).y;
+                goalHarbor.reset();
+                return;
+            }
         }
     }
     curRouteIdx = 0;

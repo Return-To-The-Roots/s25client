@@ -118,8 +118,8 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
     world.getEconHandler()->UpdateAmounts();
 
     Savegame save;
-    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
-        save.AddPlayer(world.GetPlayer(i));
+    for(const auto& player : world.getPlayers())
+        save.AddPlayer(player);
     save.ggs = ggs;
     save.start_gf = game->em_->GetCurrentGF();
     save.sgd.MakeSnapshot(*game);

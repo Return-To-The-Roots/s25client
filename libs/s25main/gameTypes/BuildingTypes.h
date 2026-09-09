@@ -43,9 +43,9 @@ public:
 struct BldWorkDescription
 {
     /// Worker belonging to the building, if any
-    helpers::OptionalEnum<Job> job = boost::none;
+    helpers::OptionalEnum<Job> job = std::nullopt;
     /// Ware produced, if any
-    boost_variant2<GoodType, Job, boost::none_t> producedWare = boost::none;
+    boost_variant2<GoodType, Job, std::nullopt_t> producedWare = std::nullopt;
     // Required for use in aggregate initialization
     // NOLINTBEGIN(readability-redundant-member-init)
     /// Wares the building needs, if any

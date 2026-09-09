@@ -6,14 +6,14 @@
 
 #include "gameTypes/MapType.h"
 #include <boost/filesystem/path.hpp>
-#include <boost/optional.hpp>
+#include <optional>
 
 struct MapDescription
 {
     boost::filesystem::path map_path;
     MapType map_type;
-    boost::optional<boost::filesystem::path> lua_path;
+    std::optional<boost::filesystem::path> lua_path;
 
     MapDescription(boost::filesystem::path map_path, MapType map_type,
-                   boost::optional<boost::filesystem::path> lua_path = boost::none);
+                   std::optional<boost::filesystem::path> lua_path = std::nullopt);
 };

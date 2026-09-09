@@ -653,7 +653,7 @@ void nobBaseWarehouse::HandleLeaveEvent()
             auto ware = std::move(waiting_wares.front());
             waiting_wares.pop_front();
             inventory.visual.Remove(ConvertShields(ware->type));
-            ware->Carry(GetFlag());
+            ware->Carry(*GetFlag());
             world->AddFigure(pos, std::make_unique<nofWarehouseWorker>(pos, player, std::move(ware), false))
               .WalkToGoal();
         } else
@@ -717,7 +717,7 @@ Ware* nobBaseWarehouse::OrderWare(const GoodType good, noBaseBuilding& goal)
 void nobBaseWarehouse::AddWaitingWare(std::unique_ptr<Ware> ware)
 {
     inventory.visual.Add(ConvertShields(ware->type));
-    ware->WaitInWarehouse(this);
+    ware->WaitInWarehouse(*this);
     waiting_wares.push_back(std::move(ware));
     AddLeavingEvent();
 }
@@ -1185,7 +1185,7 @@ void nobBaseWarehouse::AddToInventory(const PeopleCounts& people, bool addToPlay
 
 bool nobBaseWarehouse::CanRecruit(const Job job) const
 {
-    if(const GoodType* requiredTool = JOB_CONSTS[job].tool.get_ptr())
+    if(const auto& requiredTool = JOB_CONSTS[job].tool)
     {
         // Do we have a helper and a tool (if required)?
         return inventory[Job::Helper] > 0 && (*requiredTool == GoodType::Nothing || inventory[*requiredTool] > 0);
@@ -1201,7 +1201,7 @@ bool nobBaseWarehouse::TryRecruitJob(const Job job)
 
     auto& owner = world->GetPlayer(player);
 
-    const GoodType requiredTool = JOB_CONSTS[job].tool.get(); // Validity checked in CanRecruit
+    const GoodType requiredTool = *JOB_CONSTS[job].tool; // Validity checked in CanRecruit
     if(requiredTool != GoodType::Nothing)
     {
         inventory.Remove(requiredTool);
@@ -1451,7 +1451,7 @@ unsigned nobBaseWarehouse::GetAvailableFiguresForTrading(const Job job) const
     if(job == Job::Helper)
         return (inventory[Job::Helper] - 1) / 2; // need one as leader
     else
-        return std::min(inventory[job], inventory[Job::Helper] - 1);
+        return inventory[job];
 }
 
 void nobBaseWarehouse::StartTradeCaravane(const boost_variant2<GoodType, Job>& what, const unsigned count,

@@ -16,8 +16,14 @@ class AddonGui
 public:
     AddonGui(const Addon& addon, Window& window, bool readonly);
     virtual ~AddonGui() = default;
-    virtual void setStatus(Window& window, unsigned status) = 0;
-    virtual unsigned getStatus(const Window& window) = 0;
+    virtual void setStatus(unsigned status) = 0;
+    virtual unsigned getStatus() const = 0;
+    /// Return the parent-window that contains the controls of this Addon
+    Window& getWindow() { return window_; }
+    const Window& getWindow() const { return window_; }
+
+private:
+    Window& window_;
 };
 
 /**
@@ -32,6 +38,7 @@ public:
     {}
     virtual ~Addon() = default;
 
+    /// Create the GUI elements for this addon on the given window
     virtual std::unique_ptr<AddonGui> createGui(Window& window, bool readonly) const = 0;
 
     AddonId getId() const { return id_; }

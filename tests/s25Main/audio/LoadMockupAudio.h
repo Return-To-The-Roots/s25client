@@ -29,7 +29,7 @@ struct LoadMockupAudio
     /// Return a callable to be used with MOCK_EXPECT(...).calls(...) that loads a sound of the given type
     auto makeDoLoad(driver::SoundType type)
     {
-        return [=](auto&&...) { return audioDriverMock->doLoad(type); };
+        return [this, type](auto&&...) { return this->audioDriverMock->doLoad(type); };
     };
     auto makeUnloadHandle(driver::SoundType type)
     {

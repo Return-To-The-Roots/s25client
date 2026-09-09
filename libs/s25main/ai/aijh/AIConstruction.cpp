@@ -436,7 +436,7 @@ helpers::OptionalEnum<BuildingType> AIConstruction::GetSmallestAllowedMilBuildin
         if(aii.CanBuildBuildingtype(bld))
             return bld;
     }
-    return boost::none;
+    return std::nullopt;
 }
 
 helpers::OptionalEnum<BuildingType> AIConstruction::GetBiggestAllowedMilBuilding() const
@@ -446,7 +446,7 @@ helpers::OptionalEnum<BuildingType> AIConstruction::GetBiggestAllowedMilBuilding
         if(aii.CanBuildBuildingtype(bld))
             return bld;
     }
-    return boost::none;
+    return std::nullopt;
 }
 
 helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const MapPoint pt)
@@ -461,7 +461,7 @@ helpers::OptionalEnum<BuildingType> AIConstruction::ChooseMilitaryBuilding(const
     auto bld = GetSmallestAllowedMilBuilding();
     // If we are not allowed to build a military building, return early
     if(!bld)
-        return boost::none;
+        return std::nullopt;
 
     const BuildingType biggestBld = GetBiggestAllowedMilBuilding().value();
 

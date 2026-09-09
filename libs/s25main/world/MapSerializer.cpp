@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -7,10 +7,12 @@
 #include "Game.h"
 #include "SerializedGameData.h"
 #include "buildings/noBuildingSite.h"
+#include "helpers/IdRange.h"
 #include "helpers/Range.h"
 #include "lua/GameDataLoader.h"
 #include "world/GameWorldBase.h"
 #include "s25util/warningSuppression.h"
+#include <boost/container/static_vector.hpp>
 #include <mygettext/mygettext.h>
 
 void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sgd)
@@ -49,6 +51,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
             for(const auto& c : curNeighbors)
             {
                 sgd.PushUnsignedInt(c.id.value());
+                sgd.PushUnsignedInt(c.sea.value());
                 sgd.PushUnsignedInt(c.distance);
             }
         }
@@ -147,8 +150,11 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
             {
                 RTTR_UNUSED(j);
                 const auto id = HarborId(sgd.PopUnsignedInt());
+                SeaId sea;
+                if(sgd.GetGameDataVersion() >= 15)
+                    sea = SeaId(sgd.PopUnsignedInt());
                 const auto distance = sgd.PopUnsignedInt();
-                neighbor.emplace_back(id, distance);
+                neighbor.emplace_back(id, sea, distance);
             }
         }
     }
@@ -157,6 +163,63 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         // Workaround for save games without increased game data version after introducing the change
         if(!world.harborData.front().pos.isValid())
             world.harborData.erase(world.harborData.begin());
+    }
+    if(sgd.GetGameDataVersion() < 15)
+    {
+        const auto getSeas = [&world](const HarborId& hbId) {
+            boost::container::static_vector<SeaId, helpers::NumEnumValues_v<Direction>> seas;
+            for(const auto sea : world.harborData[hbId].seaIds)
+            {
+                if(sea)
+                    seas.push_back(sea);
+            }
+            return seas;
+        };
+        // Determine seas for neighbors
+        for(const auto startHbId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
+        {
+            const auto mySeas = getSeas(startHbId);
+            for(auto& neighborsPerDir : world.harborData[startHbId].neighbors)
+            {
+                for(auto& neighbor : neighborsPerDir)
+                {
+                    // Easy case: Either harbor is only at a single sea, so that must be the one
+                    if(mySeas.size() == 1u)
+                    {
+                        neighbor.sea = mySeas.front();
+                        continue;
+                    }
+                    const auto otherSeas = getSeas(neighbor.id);
+                    if(otherSeas.size() == 1u)
+                    {
+                        neighbor.sea = otherSeas.front();
+                        continue;
+                    }
+                    // Find the sea where this distance matches
+                    for(const auto sea : mySeas)
+                    {
+                        if(!helpers::contains(otherSeas, sea))
+                            continue;
+                        unsigned len = 0;
+                        const auto startPoint = world.GetCoastalPoint(startHbId, sea);
+                        const auto nbPoint = world.GetCoastalPoint(neighbor.id, sea);
+                        if(neighbor.distance == 0 && startPoint == nbPoint)
+                        {
+                            neighbor.sea = sea;
+                            break;
+                        }
+                        if(world.FindShipPath(world.GetCoastalPoint(startHbId, sea),
+                                              world.GetCoastalPoint(neighbor.id, sea), neighbor.distance, nullptr, &len)
+                           && len == neighbor.distance)
+                        {
+                            neighbor.sea = sea;
+                            break;
+                        }
+                    }
+                    RTTR_Assert(neighbor.sea);
+                }
+            }
+        }
     }
 
     sgd.PopObjectContainer(world.harbor_building_sites_from_sea, GO_Type::Buildingsite);
@@ -188,5 +251,4 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         }
         game.SetLua(std::move(lua));
     }
-    world.CreateTradeGraphs();
 }

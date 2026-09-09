@@ -5,6 +5,7 @@
 #pragma once
 
 #include "network/PlayerGameCommands.h"
+#include <chrono>
 #include <queue>
 #include <vector>
 
@@ -14,11 +15,13 @@ struct NWFServerInfo
 {
     /// GF at which this should be executed
     unsigned gf;
-    /// New GF length in ms
-    unsigned newGFLen;
+    /// New GF length
+    std::chrono::milliseconds newGFLen;
     /// GF at which the next NWF is to be executed
     unsigned nextNWF;
-    NWFServerInfo(unsigned gf, unsigned gfLen, unsigned nextNWF) : gf(gf), newGFLen(gfLen), nextNWF(nextNWF) {}
+    NWFServerInfo(unsigned gf, std::chrono::milliseconds gfLen, unsigned nextNWF)
+        : gf(gf), newGFLen(gfLen), nextNWF(nextNWF)
+    {}
 };
 
 struct NWFPlayerInfo

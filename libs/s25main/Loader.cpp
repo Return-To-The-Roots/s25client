@@ -709,8 +709,9 @@ void Loader::fillCaches()
 
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
                       bob_jobs->getBody(spriteData.isFat(), imgDir, ani_step)));
-                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
-                      bob_jobs->getOverlay(spriteData.getBobId(Nation(nation)), spriteData.isFat(), imgDir, ani_step)));
+                    auto overlay =
+                      bob_jobs->getOverlay(spriteData.getBobId(Nation(nation)), spriteData.isFat(), imgDir, ani_step);
+                    bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(overlay.first), overlay.second);
                     bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
@@ -728,7 +729,8 @@ void Loader::fillCaches()
                 const libsiedler2::ImgDir imgDir = toImgDir(dir);
 
                 bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getBody(true, imgDir, ani_step)));
-                bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getOverlay(0, true, imgDir, ani_step)));
+                auto overlay = bob_jobs->getOverlay(0, true, imgDir, ani_step);
+                bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(overlay.first), overlay.second);
                 bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                 stp->add(bmp);
@@ -939,8 +941,8 @@ void Loader::fillCaches()
                     } else
                     {
                         bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_carrier->getBody(fat, imgDir, ani_step)));
-                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(
-                          bob_carrier->getOverlay(id, fat, imgDir, ani_step)));
+                        auto overlay = bob_carrier->getOverlay(id, fat, imgDir, ani_step);
+                        bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(overlay.first), overlay.second);
                     }
                     bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 

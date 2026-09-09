@@ -5,7 +5,7 @@
 #pragma once
 
 #include "FrameCounter.h"
-#include <boost/optional.hpp>
+#include <optional>
 
 class Log;
 class Settings;
@@ -46,7 +46,7 @@ private:
     {
         unsigned time, gf;
     };
-    boost::optional<SkipReport> lastSkipReport;
+    std::optional<SkipReport> lastSkipReport;
 };
 
 GameManager& getGlobalGameManager();

@@ -46,8 +46,8 @@ public:
 private:
     friend std::ostream& operator<<(std::ostream& os, const XorShift& obj);
     friend std::istream& operator>>(std::istream& is, XorShift& obj);
-    friend bool operator==(const XorShift& lhs, const XorShift& rhs) { return lhs.state_ == rhs.state_; }
-    friend bool operator!=(const XorShift& lhs, const XorShift& rhs) { return !(lhs == rhs); }
+    friend bool operator==(const XorShift& lhs, const XorShift& rhs) noexcept { return lhs.state_ == rhs.state_; }
+    friend bool operator!=(const XorShift& lhs, const XorShift& rhs) noexcept { return !(lhs == rhs); }
 
     uint64_t state_; //-V730_NOINIT
 };

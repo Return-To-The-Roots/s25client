@@ -240,25 +240,22 @@ void Ware::GoalDestroyed()
     }
 }
 
-void Ware::WaitAtFlag(noFlag* flag)
+void Ware::WaitAtFlag(noFlag& flag)
 {
-    RTTR_Assert(flag);
     state = State::WaitAtFlag;
-    location = flag;
+    location = &flag;
 }
 
-void Ware::WaitInWarehouse(nobBaseWarehouse* wh)
+void Ware::WaitInWarehouse(nobBaseWarehouse& wh)
 {
-    RTTR_Assert(wh);
     state = State::WaitInWarehouse;
-    location = wh;
+    location = &wh;
 }
 
-void Ware::Carry(noRoadNode* nextGoal)
+void Ware::Carry(noRoadNode& nextGoal)
 {
-    RTTR_Assert(nextGoal);
     state = State::Carried;
-    location = nextGoal;
+    location = &nextGoal;
 }
 
 /// Gibt dem Ziel der Ware bekannt, dass diese nicht mehr kommen kann
@@ -351,9 +348,8 @@ unsigned Ware::CheckNewGoalForLostWare(const noBaseBuilding& newgoal) const
 
 Ware::RouteParams Ware::CalcPathToGoal(const noBaseBuilding& newgoal) const
 {
-    RTTR_Assert(location);
     unsigned length;
-    RoadPathDirection possibledir = world->FindPathForWareOnRoads(*location, newgoal, &length);
+    RoadPathDirection possibledir = world->FindPathForWareOnRoads(assertNonNull(location), newgoal, &length);
     if(possibledir != RoadPathDirection::None) // there is a valid path to the goal? -> ordered!
     {
         // in case the ware is right in front of the goal building the ware has to be moved away 1 flag and then back

@@ -17,6 +17,7 @@
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/SettingsTypes.h"
 #include "gameTypes/TempleProductionMode.h"
+#include "gameData/MilitaryConsts.h"
 #include "s25util/Serializer.h"
 #include <cstdint>
 #include <utility>
@@ -24,6 +25,16 @@
 class GameWorld;
 
 namespace gc {
+
+namespace detail {
+    inline uint8_t popSoldierRank(Serializer& ser)
+    {
+        const auto rank = ser.PopUnsignedChar();
+        if(rank > MAX_MILITARY_RANK)
+            throw helpers::makeOutOfRange(rank, MAX_MILITARY_RANK);
+        return rank;
+    }
+} // namespace detail
 
 /// Basisklasse für sämtliche GameCommands mit Koordinaten
 class Coords : public GameCommand
@@ -220,7 +231,7 @@ protected:
         : Coords(GCType::SetTroopLimit, pt), rank(rank), count(count)
     {}
     SetTroopLimit(Serializer& ser)
-        : Coords(GCType::SetTroopLimit, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt())
+        : Coords(GCType::SetTroopLimit, ser), rank(detail::popSoldierRank(ser)), count(ser.PopUnsignedInt())
     {}
 
 public:
@@ -529,7 +540,7 @@ protected:
         : Coords(GCType::ChangeReserve, pt), rank(rank), count(count)
     {}
     ChangeReserve(Serializer& ser)
-        : Coords(GCType::ChangeReserve, ser), rank(ser.PopUnsignedChar()), count(ser.PopUnsignedInt())
+        : Coords(GCType::ChangeReserve, ser), rank(detail::popSoldierRank(ser)), count(ser.PopUnsignedInt())
     {}
 
 public:

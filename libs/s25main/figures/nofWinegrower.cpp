@@ -116,7 +116,7 @@ void nofWinegrower::WorkFinished()
         }
 
         // We have only planted (take nothing into hand)
-        ware = boost::none;
+        ware = std::nullopt;
     }
 
     // recompute BQ around

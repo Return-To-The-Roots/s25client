@@ -13,7 +13,7 @@
 #include "lua/LuaInterfaceGame.h"
 #include "network/GameClient.h"
 #include "gameData/GameConsts.h"
-#include <boost/optional.hpp>
+#include <optional>
 
 Game::Game(GlobalGameSettings settings, unsigned startGF, const std::vector<PlayerInfo>& players)
     : Game(std::move(settings), std::make_unique<EventManager>(startGF), players)
@@ -61,9 +61,9 @@ namespace {
 unsigned getNumAlivePlayers(const GameWorldBase& world)
 {
     unsigned numPlayersAlive = 0;
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(const auto& player : world.getPlayers())
     {
-        if(!world.GetPlayer(i).IsDefeated())
+        if(!player.IsDefeated())
             ++numPlayersAlive;
     }
     return numPlayersAlive;
@@ -76,9 +76,8 @@ void Game::RunGF()
     //  EventManager Bescheid sagen
     em_->ExecuteNextGF();
     // Notfallprogramm durchlaufen lassen
-    for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
+    for(GamePlayer& player : world_.getPlayers())
     {
-        GamePlayer& player = world_.GetPlayer(i);
         if(player.isUsed())
         {
             // Auf Notfall testen (Wenige Bretter/Steine und keine Holzindustrie)
@@ -100,8 +99,8 @@ void Game::RunGF()
 
 void Game::StatisticStep()
 {
-    for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
-        world_.GetPlayer(i).StatisticStep();
+    for(auto& player : world_.getPlayers())
+        player.StatisticStep();
 
     CheckObjective();
 }
@@ -113,7 +112,7 @@ void Game::CheckObjective()
         return;
 
     unsigned maxPoints = 0, maxTeamPoints = 0, totalPoints = 0, bestPlayer = 0;
-    boost::optional<unsigned> bestTeam;
+    std::optional<unsigned> bestTeam;
 
     const auto getPlayerMask = [](unsigned playerId) { return 1u << playerId; };
 

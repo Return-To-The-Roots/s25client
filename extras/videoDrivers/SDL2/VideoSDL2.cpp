@@ -339,19 +339,15 @@ bool VideoSDL2::MessageLoop()
             case SDL_QUIT: return false;
             case SDL_WINDOWEVENT:
             {
-                switch(ev.window.event)
+                if(ev.window.event == SDL_WINDOWEVENT_RESIZED)
                 {
-                    case SDL_WINDOWEVENT_RESIZED:
+                    UpdateCurrentDisplayMode();
+                    VideoMode newSize(ev.window.data1, ev.window.data2);
+                    if(newSize != GetWindowSize())
                     {
-                        UpdateCurrentDisplayMode();
-                        VideoMode newSize(ev.window.data1, ev.window.data2);
-                        if(newSize != GetWindowSize())
-                        {
-                            UpdateCurrentSizes();
-                            CallBack->WindowResized();
-                        }
+                        UpdateCurrentSizes();
+                        CallBack->WindowResized();
                     }
-                    break;
                 }
             }
             break;

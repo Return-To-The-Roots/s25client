@@ -27,8 +27,8 @@ public:
     SoundType getType() const { return type; }
 
     // Comparison only compares the driver data
-    bool operator==(const RawSoundHandle& rhs) const { return driverData == rhs.driverData; }
-    bool operator!=(const RawSoundHandle& rhs) const { return driverData == rhs.driverData; }
+    bool operator==(const RawSoundHandle& rhs) const noexcept { return driverData == rhs.driverData; }
+    bool operator!=(const RawSoundHandle& rhs) const noexcept { return driverData != rhs.driverData; }
 
 private:
     // Only AudioDriver may create this to enforce registration and only it may reset the driverData

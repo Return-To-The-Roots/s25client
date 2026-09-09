@@ -132,7 +132,7 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
                 edtPw->SetFocus(false);
                 break;
             }
-            boost::optional<uint16_t> port = validate::checkPort(edtPort->GetText());
+            std::optional<uint16_t> port = validate::checkPort(edtPort->GetText());
             if(!port)
             {
                 SetText(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED, false);

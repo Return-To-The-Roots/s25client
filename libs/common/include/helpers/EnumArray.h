@@ -33,7 +33,7 @@ struct EnumArray
     iterator end() noexcept { return elems + size(); }
     constexpr const_iterator end() const noexcept { return elems + size(); }
 
-    constexpr bool operator==(const EnumArray& rhs)
+    constexpr bool operator==(const EnumArray& rhs) noexcept
     {
         for(unsigned i = 0; i < size(); ++i)
         {

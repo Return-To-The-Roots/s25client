@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,21 +9,19 @@
 /// Struct that stores information about the frames, like GF status...
 struct FramesInfo
 {
-    // No need for 64 bit std::millis
-    using milliseconds32_t = std::chrono::duration<uint32_t, std::milli>; //-V:milliseconds32_t:813
     using UsedClock = std::chrono::steady_clock;
 
     FramesInfo();
     void Clear();
 
     /// Length of one GF in ms (~ 1/speed of the game)
-    milliseconds32_t gf_length;
+    std::chrono::milliseconds gf_length;
     /// Requested length of GF (for multiple changes between a NWF)
-    milliseconds32_t gfLengthReq;
+    std::chrono::milliseconds gfLengthReq;
     /// Length of a NWF (network frame) in GFs
     unsigned nwf_length;
     /// Time since last GF in ms (valid range: [0, gfLength) )
-    milliseconds32_t frameTime;
+    std::chrono::milliseconds frameTime;
     /// Timestamp of the last processed GF (--> FrameTime = CurrentTime - LastTime (except for lags) )
     UsedClock::time_point lastTime;
     /// True if the game is paused (no processing of GFs)
@@ -38,5 +36,5 @@ struct FramesInfoClient : public FramesInfo
 
     /// Force pause the game (start TS and length) e.g. to compensate for lags
     UsedClock::time_point forcePauseStart;
-    milliseconds32_t forcePauseLen;
+    std::chrono::milliseconds forcePauseLen;
 };

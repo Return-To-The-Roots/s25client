@@ -103,7 +103,7 @@ void dskCampaignSelection::Msg_TableChooseItem(const unsigned ctrl_id, const uns
         showCampaignMissionSelectionScreen();
 }
 
-void dskCampaignSelection::Msg_TableSelectItem(const unsigned ctrl_id, const boost::optional<unsigned>& selection)
+void dskCampaignSelection::Msg_TableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
     if(ctrl_id != ID_Table)
         return;
@@ -153,7 +153,7 @@ void dskCampaignSelection::showCampaignInfo(const bool show)
 
 void dskCampaignSelection::showCampaignMissionSelectionScreen()
 {
-    const auto& campaign = campaigns_.at(*GetCtrl<ctrlTable>(ID_Table)->GetSelection());
+    const auto& campaign = campaigns_.at(GetCtrl<ctrlTable>(ID_Table)->GetSelection().value());
     WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
 }
 

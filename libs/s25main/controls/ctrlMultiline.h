@@ -57,7 +57,7 @@ private:
     {
         std::string str;
         unsigned color;
-        Line() : color(0) {}
+        Line() noexcept : color(0) {}
         Line(std::string str, unsigned color) : str(std::move(str)), color(color) {}
     };
 

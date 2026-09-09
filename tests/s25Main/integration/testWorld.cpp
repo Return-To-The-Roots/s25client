@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(HQPlacement)
     // The loader stores the HQ positions read from the map
     BOOST_TEST(hqsShuffledMap == hqsOriginalMap, boost::test_tools::per_element());
     // When shuffled the positions should have changed
-    BOOST_TEST(hqsShuffledWorld != hqsOriginalWorld, boost::test_tools::per_element());
+    BOOST_TEST(hqsShuffledWorld != hqsOriginalWorld);
     helpers::sort(hqsOriginalMap, MapPointLess{});
     helpers::sort(hqsShuffledWorld, MapPointLess{});
     helpers::sort(hqsOriginalWorld, MapPointLess{});
@@ -241,7 +241,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
                 BOOST_TEST_REQUIRE(destPt.isValid());
                 std::vector<Direction> route;
                 BOOST_TEST_REQUIRE((startPt == destPt || world.FindShipPath(startPt, destPt, 10000, &route, nullptr)));
-                BOOST_TEST_REQUIRE(route.size() == world.CalcHarborDistance(startHb, targetHb));
+                BOOST_TEST_REQUIRE(route.size() == world.GetMinHarborDistance(startHb, targetHb));
             }
         }
     }

@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "Game.h"
+#include "ILocalGameState.h"
 #include "Replay.h"
 #include "ai/AIPlayer.h"
 #include "gameTypes/AIInfo.h"
@@ -21,7 +22,8 @@ class EventManager;
 class HeadlessGame
 {
 public:
-    HeadlessGame(const GlobalGameSettings& ggs, const boost::filesystem::path& map, const std::vector<AI::Info>& ais);
+    HeadlessGame(const GlobalGameSettings& ggs, const boost::filesystem::path& map, const std::vector<AI::Info>& ais,
+                 const boost::filesystem::path& luaPath = {});
     ~HeadlessGame();
 
     void Run(unsigned maxGF = std::numeric_limits<unsigned>::max());
@@ -33,6 +35,15 @@ public:
 private:
     void PrintState();
 
+    struct LocalState : ILocalGameState
+    {
+        unsigned GetPlayerId() const override { return 0; }
+        bool IsHost() const override { return true; }
+        std::string FormatGFTime(unsigned) const override { return ""; }
+        void SystemChat(const std::string&) override {}
+    };
+
+    LocalState localState_;
     boost::filesystem::path map_;
     Game game_;
     GameWorld& world_;
@@ -41,6 +52,7 @@ private:
 
     Replay replay_;
     boost::filesystem::path replayPath_;
+    boost::filesystem::path luaPath_;
 
     unsigned lastReportGf_ = 0;
     std::chrono::steady_clock::time_point gameStartTime_;

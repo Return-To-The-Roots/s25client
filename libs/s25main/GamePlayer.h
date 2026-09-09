@@ -253,8 +253,6 @@ public:
     unsigned GetNumShips() const { return ships.size(); }
     /// Gibt liste der Schiffe zurück
     const std::vector<noShip*>& GetShips() const { return ships; }
-    /// Add all unique harbor buildings at the given sea to the given vector
-    void AddHarborsAtSea(std::vector<nobHarborBuilding*>& harborBuildings, SeaId seaId) const;
     /// Gibt die Anzahl der Schiffe, die einen bestimmten Hafen ansteuern, zurück
     unsigned GetShipsToHarbor(const nobHarborBuilding& hb) const;
     /// Sucht einen Hafen in der Nähe, wo dieses Schiff seine Waren abladen kann
@@ -333,6 +331,8 @@ public:
     const Statistic& GetStatistic(StatisticTime time) const { return statistic[time]; };
     unsigned GetStatisticCurrentValue(StatisticType idx) const { return statisticCurrentData[idx]; }
 
+    // Stop wares restricted in emergency mode that are waiting in warehouse to be transported already
+    void CancelWaresForEmergencyProtocol();
     // Testet ob Notfallprogramm aktiviert werden muss und tut dies dann
     void TestForEmergencyProgramm();
     bool hasEmergency() const { return emergency; }

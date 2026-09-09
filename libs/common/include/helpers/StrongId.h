@@ -43,8 +43,8 @@ public:
 
     explicit constexpr operator Underlying() const { return value_; }
 
-    friend constexpr bool operator==(const StrongId r, const StrongId l) { return r.value_ == l.value_; };
-    friend constexpr bool operator!=(const StrongId r, const StrongId l) { return r.value_ != l.value_; };
+    friend constexpr bool operator==(const StrongId r, const StrongId l) noexcept { return r.value_ == l.value_; };
+    friend constexpr bool operator!=(const StrongId r, const StrongId l) noexcept { return r.value_ != l.value_; };
 
     friend std::ostream& operator<<(std::ostream& os, const StrongId t) { return os << t.value_; }
 

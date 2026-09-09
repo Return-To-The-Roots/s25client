@@ -15,13 +15,19 @@ struct HarborPos
     struct Neighbor
     {
         HarborId id;
+        SeaId sea;
         unsigned distance;
 
-        Neighbor(HarborId id, unsigned distance) noexcept : id(id), distance(distance) {}
+        Neighbor(HarborId id, SeaId sea, unsigned distance) noexcept : id(id), sea(sea), distance(distance) {}
 
         bool operator<(const Neighbor& two) const noexcept
         {
-            return (distance < two.distance) || (distance == two.distance && id.value() < two.id.value());
+            if(distance == two.distance)
+            {
+                if(sea != two.sea)
+                    return sea.value() < two.sea.value();
+            }
+            return id.value() < two.id.value();
         }
     };
 

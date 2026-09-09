@@ -9,9 +9,9 @@
 #include "resources/ResourceId.h"
 #include "s25util/Log.h"
 #include <boost/filesystem.hpp>
-#include <boost/optional.hpp>
 #include <algorithm>
 #include <iomanip>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 
@@ -19,14 +19,14 @@ namespace fs = boost::filesystem;
 
 ArchiveLocator::ArchiveLocator(Log& logger) : logger_(logger) {}
 
-static boost::optional<ResourceId> makeResourceId(const fs::path& filename)
+static std::optional<ResourceId> makeResourceId(const fs::path& filename)
 {
     try
     {
         return ResourceId::make(filename);
     } catch(const std::invalid_argument&)
     {
-        return boost::none;
+        return std::nullopt;
     }
 }
 

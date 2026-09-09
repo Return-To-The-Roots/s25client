@@ -41,8 +41,8 @@ public:
     constexpr void setAmount(uint8_t newAmount);
     /// True if we have a non-zero amount of the given resource. Always false for Nothing
     constexpr bool has(ResourceType type) const { return getAmount() > 0u && getType() == type; }
-    constexpr bool operator==(Resource rhs) const { return value_ == rhs.value_; }
-    constexpr bool operator!=(Resource rhs) const { return !(*this == rhs); }
+    constexpr bool operator==(Resource rhs) const noexcept { return value_ == rhs.value_; }
+    constexpr bool operator!=(Resource rhs) const noexcept { return !(*this == rhs); }
 };
 
 constexpr Resource::Resource(ResourceType type, uint8_t amount)

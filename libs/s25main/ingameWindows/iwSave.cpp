@@ -19,6 +19,7 @@
 #include "helpers/make_array.h"
 #include "helpers/toString.h"
 #include "iwConnecting.h"
+#include "iwMsgbox.h"
 #include "network/GameClient.h"
 #include "gameData/GameConsts.h"
 #include "gameData/const_gui_ids.h"
@@ -43,21 +44,23 @@ constexpr std::array AUTO_SAVE_INTERVALS{1min, 5min, 10min, 15min, 30min, 60min,
 } // namespace
 
 iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const unsigned addHeight)
-    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(600, 400 + addHeight), window_title,
+    : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(700, 400 + addHeight), window_title,
                    LOADER.GetImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
-    AddTable(ID_tblSaveGames, DrawPoint(20, 30), Extent(560, 300), TextureColor::Green2, NormalFont,
-             ctrlTable::Columns{{_("Filename"), 270, SRT::String},
+    AddTable(ID_tblSaveGames, DrawPoint(20, 30), Extent(660, 300), TextureColor::Green2, NormalFont,
+             ctrlTable::Columns{{_("Filename"), 320, SRT::String},
                                 {_("Map"), 250, SRT::String},
-                                {_("Time"), 250, SRT::Date},
-                                {_("Game Time"), 2026, SRT::Time},
+                                {_("Time"), 160, SRT::Date},
+                                {_("Game Time"), 115, SRT::Time},
                                 {}});
 
     AddText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
             FontStyle::TOP, SmallFont)
       ->setMaxWidth(510);
-    AddEdit(ID_edtFilename, DrawPoint(20, 350), Extent(510, 22), TextureColor::Green2, NormalFont);
+    // maxLength 251 = 255 filename limit - 4 chars for ".sav"; just discourages absurdly long
+    // input, isValidFileName() may still reject it since it counts bytes, not codepoints.
+    AddEdit(ID_edtFilename, DrawPoint(20, 350), Extent(510, 22), TextureColor::Green2, NormalFont, 251);
     AddImageButton(ID_btSaveOrLoad, DrawPoint(540, 341), Extent(40, 40), TextureColor::Green2, btImg);
     // Initially fill the table
     RefreshTable();
@@ -74,7 +77,7 @@ void iwSaveLoad::Msg_ButtonClick(const unsigned ctrl_id)
     SaveLoad();
 }
 
-void iwSaveLoad::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const boost::optional<unsigned>& selection)
+void iwSaveLoad::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& selection)
 {
     // On selecting a table entry put the filename into the edit control
     GetCtrl<ctrlEdit>(ID_edtFilename)
@@ -118,9 +121,20 @@ void iwSaveLoad::RefreshTable()
 
 void iwSave::SaveLoad()
 {
-    const boost::filesystem::path savePath =
-      RTTRCONFIG.ExpandPath(s25::folders::save) / (GetCtrl<ctrlEdit>(ID_edtFilename)->GetText() + ".sav");
-    GAMECLIENT.SaveToFile(savePath);
+    const auto fileNameResult = GetCtrl<ctrlEdit>(ID_edtFilename)->GetFileName(".sav");
+    switch(fileNameResult.status)
+    {
+        case FileNameStatus::Empty:
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a filename."), this,
+                                                          MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
+            return;
+        case FileNameStatus::Invalid:
+            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a valid filename."),
+                                                          this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
+            return;
+        case FileNameStatus::Valid: break;
+    }
+    GAMECLIENT.SaveToFile(RTTRCONFIG.ExpandPath(s25::folders::save) / fileNameResult.name);
 
     RefreshTable();
     GetCtrl<ctrlEdit>(ID_edtFilename)->SetText("");
@@ -128,7 +142,8 @@ void iwSave::SaveLoad()
 
 iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
 {
-    const auto* fileNameEdit = GetCtrl<ctrlEdit>(ID_edtFilename);
+    auto* fileNameEdit = GetCtrl<ctrlEdit>(ID_edtFilename);
+    fileNameEdit->SetType(EditType::Filename);
     DrawPoint pos(GetSize().x / 2, fileNameEdit->GetPos().y + fileNameEdit->GetSize().y + 10);
 
     ctrlComboBox* combo =

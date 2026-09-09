@@ -133,7 +133,7 @@ void nofFarmer::WorkFinished()
         }
 
         // Wir haben nur gesäht (gar nichts in die Hand nehmen)
-        ware = boost::none;
+        ware = std::nullopt;
     }
 
     // BQ drumrum neu berechnen

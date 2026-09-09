@@ -22,7 +22,7 @@ public:
 
     /// Calculates the best path from start to goal
     /// Outputs are only valid if true is returned!
-    /// Direction might additionally be boost::none or SHIP_DIR
+    /// Direction might additionally be std::nullopt_t or SHIP_DIR
     ///
     /// @param wareMode True when path will be used by a ware (Allow boat roads and check for faster roads when road
     /// points have already many wares)

@@ -174,7 +174,7 @@ MapPoint nobBaseMilitary::FindAnAttackerPlace(unsigned short& ret_radius, const 
         // Also check if we can reach this.
         // If not, still consider the other points as the flag could become reachable by then.
         // TODO(Replay) Limit distance by MAX_ATTACKING_RUN_DISTANCE
-        if(soldierPos == flagPos || world->FindHumanPath(soldierPos, flagPos) != boost::none)
+        if(soldierPos == flagPos || world->FindHumanPath(soldierPos, flagPos) != std::nullopt)
         {
             ret_radius = 0;
             return flagPos;

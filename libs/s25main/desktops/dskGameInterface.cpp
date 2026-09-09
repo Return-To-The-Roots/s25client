@@ -392,20 +392,21 @@ void dskGameInterface::Msg_PaintAfter()
     if(SETTINGS.global.showGFInfo)
     {
         std::array<char, 256> nwf_string;
+        const auto gfLenMs = static_cast<unsigned>(GAMECLIENT.GetGFLength() / 1ms);
+        const auto nwfLenMs = static_cast<unsigned>((GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength()) / 1ms);
         if(GAMECLIENT.IsReplayModeOn())
         {
             snprintf(nwf_string.data(), nwf_string.size(),
                      _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
-                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(),
-                     GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1), GAMECLIENT.GetNWFLength(),
-                     GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1));
+                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), gfLenMs, GAMECLIENT.GetNWFLength(),
+                     nwfLenMs);
         } else
+        {
             snprintf(nwf_string.data(), nwf_string.size(),
                      _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
-                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
-                     GAMECLIENT.GetNWFLength(),
-                     GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength() / FramesInfo::milliseconds32_t(1),
+                     world.GetEvMgr().GetCurrentGF(), gfLenMs, GAMECLIENT.GetNWFLength(), nwfLenMs,
                      worldViewer.GetPlayer().ping);
+        }
         NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
     }
 

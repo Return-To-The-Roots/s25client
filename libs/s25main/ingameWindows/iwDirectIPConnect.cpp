@@ -94,7 +94,7 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
             auto* edtHost = GetCtrl<ctrlEdit>(ID_edtIp);
             auto* edtPort = GetCtrl<ctrlEdit>(ID_edtPort);
             auto* edtPw = GetCtrl<ctrlEdit>(ID_edtPw);
-            boost::optional<uint16_t> port = validate::checkPort(edtPort->GetText());
+            std::optional<uint16_t> port = validate::checkPort(edtPort->GetText());
             if(!port)
             {
                 SetStatus(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED);

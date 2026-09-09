@@ -5,6 +5,7 @@
 #pragma once
 
 #include "nofActiveSoldier.h"
+#include <stdexcept>
 
 class nofAttacker;
 class nofPassiveSoldier;

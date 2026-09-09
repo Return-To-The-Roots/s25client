@@ -88,8 +88,8 @@ static void playReplay(const boost::filesystem::path& replayPath, const bool isS
         BOOST_TEST_REQUIRE(replay.GetMinorVersion() < 3u);
         MapLoader::SetupResources(gameWorld, false);
 
-        for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
-            gameWorld.GetPlayer(i).MakeStartPacts();
+        for(auto& player : gameWorld.getPlayers())
+            player.MakeStartPacts();
     }
 
     gameWorld.InitAfterLoad();
