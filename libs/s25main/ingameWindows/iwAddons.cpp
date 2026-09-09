@@ -140,19 +140,23 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
             break;
 
         case ID_btSavePreset:
-        {
-            std::map<unsigned, unsigned> states;
-            for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
+            if(iwAddonPresetsBase::EnsurePresetsFolder())
             {
-                states[static_cast<unsigned>(ggs.getAddon(i)->getId())] = addonGuis_[i]->getStatus();
+                std::map<unsigned, unsigned> states;
+                for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
+                {
+                    states[static_cast<unsigned>(ggs.getAddon(i)->getId())] = addonGuis_[i]->getStatus();
+                }
+                WINDOWMANAGER.Show(std::make_unique<iwSaveAddonPreset>(std::move(states)));
             }
-            WINDOWMANAGER.Show(std::make_unique<iwSaveAddonPreset>(std::move(states)));
-        }
-        break;
+            break;
 
         case ID_btLoadPreset:
-            WINDOWMANAGER.Show(std::make_unique<iwLoadAddonPreset>(
-              [this](const std::map<unsigned, unsigned>& states) { applyAddonStates(states); }));
+            if(iwAddonPresetsBase::EnsurePresetsFolder())
+            {
+                WINDOWMANAGER.Show(std::make_unique<iwLoadAddonPreset>(
+                  [this](const std::map<unsigned, unsigned>& states) { applyAddonStates(states); }));
+            }
             break;
 
         case ID_btS2Defaults: // Load S2 Defaults
