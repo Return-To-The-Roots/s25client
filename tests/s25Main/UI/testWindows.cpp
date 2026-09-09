@@ -112,10 +112,16 @@ BOOST_FIXTURE_TEST_CASE(JumpWindow, SmallWorldFixture)
 }
 
 namespace {
-struct AddonPresetFixture : uiHelper::Fixture
+struct AddonPresetTmpUserData : uiHelper::Fixture
 {
     rttr::test::TmpFolder tmp;
     rttr::test::ConfigOverride userDataOverride{"USERDATA", tmp};
+};
+
+struct AddonPresetFixture : AddonPresetTmpUserData
+{
+    // The windows expect the folder to exist, just like when iwAddons opens them
+    AddonPresetFixture() { BOOST_TEST_REQUIRE(iwAddonPresetsBase::EnsurePresetsFolder()); }
 
     // Selects the named preset, false if there is no such preset
     static bool select(Window& wnd, const std::string& name)
@@ -312,13 +318,14 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetActionsRequireSelection, AddonPresetFixture)
     BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)->GetEnabled());
     BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)->GetEnabled());
 
+    BOOST_TEST(!select(base, "notSaved"));
     BOOST_TEST_REQUIRE(select(base, "exists"));
     BOOST_TEST(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)->GetEnabled());
     BOOST_TEST(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)->GetEnabled());
 }
 
-// When the presets folder can't be created, the window informs the user and closes itself.
-BOOST_FIXTURE_TEST_CASE(AddonPresetFolderUnavailable, AddonPresetFixture)
+// When the presets folder can't be created, the user is told and no preset window is opened.
+BOOST_FIXTURE_TEST_CASE(AddonPresetFolderUnavailable, AddonPresetTmpUserData)
 {
     // Plant a file where the presets folder should be so create_directories() fails
     const auto presetsDir = RTTRCONFIG.ExpandPath(s25::folders::addonPresets);
@@ -329,12 +336,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetFolderUnavailable, AddonPresetFixture)
     BOOST_TEST_REQUIRE(boost::filesystem::exists(presetsDir));
     BOOST_TEST_REQUIRE(!boost::filesystem::is_directory(presetsDir));
 
-    iwSaveAddonPreset wnd(std::map<unsigned, unsigned>{{1, 2}});
-    BOOST_TEST(wnd.ShouldBeClosed()); // window marked itself for closing
-    // No controls were built, neither by the base window nor by the save window
-    BOOST_TEST(wnd.GetCtrls<ctrlTable>().empty());
-    BOOST_TEST(wnd.GetCtrls<ctrlEdit>().empty());
-    BOOST_TEST(wnd.GetCtrls<ctrlButton>().empty());
+    BOOST_TEST(!iwAddonPresetsBase::EnsurePresetsFolder());
 
     const auto* msgbox = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(msgbox);

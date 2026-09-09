@@ -26,6 +26,8 @@ public:
         ID_mbOverwrite,
     };
 
+    static bool EnsurePresetsFolder();
+
 protected:
     iwAddonPresetsBase(const std::string& title, unsigned height);
 

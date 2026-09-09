@@ -66,31 +66,31 @@ static std::optional<std::map<unsigned, unsigned>> LoadPresetsFromFile(const bfs
     return states;
 }
 
-// iwAddonPresetsBase
-iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const unsigned height)
-    : IngameWindow(CGI_ADDON_PRESETS, IngameWindow::posLastOrCenter, Extent(440, height), title,
-                   LOADER.GetImageN("resource", 41), true)
+bool iwAddonPresetsBase::EnsurePresetsFolder()
 {
     const bfs::path presetsDir = GetPresetsDir();
     boost::system::error_code ec;
     bfs::create_directories(presetsDir, ec);
-    if(ec)
-    {
-        LOG.write("Failed to create addon preset folder %1%: %2%\n") % presetsDir % ec.message();
-        // Without the folder, saving/loading/deleting presets can't work.
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-          _("Addon Presets Unavailable"),
-          _("The addon presets folder could not be created. Saving and loading addon presets is unavailable."), nullptr,
-          MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
-        Close();
-        return;
-    }
+    if(!ec)
+        return true;
 
+    LOG.write("Failed to create addon preset folder %1%: %2%\n") % presetsDir % ec.message();
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+      _("Addon Presets Unavailable"),
+      _("The addon presets folder could not be created. Saving and loading addon presets is unavailable."), nullptr,
+      MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
+    return false;
+}
+
+iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const unsigned height)
+    : IngameWindow(CGI_ADDON_PRESETS, IngameWindow::posLastOrCenter, Extent(440, height), title,
+                   LOADER.GetImageN("resource", 41), true)
+{
     using SRT = ctrlTable::SortType;
     AddTable(ID_tblPresets, DrawPoint(20, 30), Extent(400, 200), TextureColor::Green2, NormalFont,
              ctrlTable::Columns{{_("Preset Name"), 400, SRT::String}, {}});
 
-    AddText(ID_txtFolder, DrawPoint(20, 236), presetsDir.string(), COLOR_YELLOW, FontStyle::TOP, SmallFont)
+    AddText(ID_txtFolder, DrawPoint(20, 236), GetPresetsDir().string(), COLOR_YELLOW, FontStyle::TOP, SmallFont)
       ->setMaxWidth(400);
 
     RefreshTable();
@@ -118,13 +118,9 @@ void iwAddonPresetsBase::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const u
     DoAction();
 }
 
-// iwSaveAddonPreset
 iwSaveAddonPreset::iwSaveAddonPreset(std::map<unsigned, unsigned> states)
     : iwAddonPresetsBase(_("Save Addon Preset"), 330), states_(std::move(states))
 {
-    if(ShouldBeClosed())
-        return;
-
     // maxLength 251 = 255 filename limit - 4 chars for ".ini"; just discourages absurdly long
     // input, isValidFileName() may still reject it since it counts bytes, not codepoints.
     AddEdit(ID_edtName, DrawPoint(20, 254), Extent(400, 22), TextureColor::Green2, NormalFont, 251)
@@ -206,13 +202,9 @@ void iwSaveAddonPreset::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxR
         SaveToPath(GetPresetsDir() / fileNameResult.name);
 }
 
-// iwLoadAddonPreset
 iwLoadAddonPreset::iwLoadAddonPreset(std::function<void(const std::map<unsigned, unsigned>&)> onLoad)
     : iwAddonPresetsBase(_("Load Addon Preset"), 300), onLoad_(std::move(onLoad))
 {
-    if(ShouldBeClosed())
-        return;
-
     // Both act on the preset selected in the list, so they stay disabled until one is picked
     AddTextButton(ID_btAction, DrawPoint(20, 254), Extent(185, 22), TextureColor::Green2, _("Load"), NormalFont)
       ->SetEnabled(false);
