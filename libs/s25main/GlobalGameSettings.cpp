@@ -105,6 +105,7 @@ void GlobalGameSettings::registerAllAddons()
         AddonLeather,
         AddonNoArmorDefault,
         AddonArmorCapturedBld,
+        AddonAdditionalHarborSpots,
         AddonForesterFarmFieldAvoidance,
         AddonForesterReachRadius,
         AddonWoodcutterReachRadius,
