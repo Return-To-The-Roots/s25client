@@ -99,9 +99,7 @@ public:
     /// Bestellte Waren
     bool AreThereAnyOrderedWares() const;
 
-    /// Gibt Pointer auf Produktivität zurück
-    const unsigned short* GetProductivityPointer() const { return &productivity; }
-    unsigned short GetProductivity() const { return productivity; }
+    unsigned short GetProductivity() const;
     const nofBuildingWorker* GetWorker() const { return worker; }
 
     /// Stoppt/Erlaubt Produktion (visuell)

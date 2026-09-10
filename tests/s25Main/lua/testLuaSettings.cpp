@@ -10,7 +10,9 @@
 #include "lua/LuaInterfaceSettings.h"
 #include "network/IGameLobbyController.h"
 #include "worldFixtures/MockLocalGameState.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameTypes/MineResourceBehavior.h"
 #include "s25util/colors.h"
 #include <rttr/test/LogAccessor.hpp>
 #include <boost/test/unit_test.hpp>
@@ -263,6 +265,43 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
         BOOST_TEST_REQUIRE(ggs.getSelection(curAddon->getId()) == curAddon->getDefaultStatus());
         BOOST_TEST_REQUIRE(!ggs.isEnabled(curAddon->getId()));
     }
+}
+
+BOOST_AUTO_TEST_CASE(LegacyMineAddons)
+{
+    LogAccessor logAcc;
+    const auto behaviorOf = [this](BuildingType bld) { return ggs.getSelection(GetMineResourceBehaviorAddonId(bld)); };
+    constexpr auto defaultBehavior = static_cast<unsigned>(MineResourceBehavior::Default);
+    constexpr auto inexhaustible = static_cast<unsigned>(MineResourceBehavior::Inexhaustible);
+    constexpr auto s4Like = static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion);
+    constexpr BuildingType allMines[] = {BuildingType::GraniteMine, BuildingType::CoalMine, BuildingType::IronMine,
+                                         BuildingType::GoldMine};
+
+    // Renamed addon: the old Lua name must still resolve to the same addon and value 1 must still mean inexhaustible
+    executeLua("rttr:SetAddon(ADDON_INEXHAUSTIBLE_GRANITEMINES, true)");
+    BOOST_TEST_REQUIRE(behaviorOf(BuildingType::GraniteMine) == inexhaustible);
+    BOOST_TEST_REQUIRE(behaviorOf(BuildingType::CoalMine) == defaultBehavior);
+
+    // Removed global addon: scripts using it must still make all mines inexhaustible
+    executeLua("rttr:ResetAddons()");
+    executeLua("rttr:SetAddon(ADDON_INEXHAUSTIBLE_MINES, true)");
+    for(const BuildingType bld : allMines)
+        BOOST_TEST_REQUIRE(behaviorOf(bld) == inexhaustible);
+
+    // ... but mine types configured explicitly beforehand keep their setting
+    executeLua("rttr:ResetAddons()");
+    executeLua("rttr:SetAddon(ADDON_GOLDMINE_RESOURCE_BEHAVIOR, 2)");
+    executeLua("rttr:SetAddon(ADDON_INEXHAUSTIBLE_MINES, true)");
+    BOOST_TEST_REQUIRE(behaviorOf(BuildingType::GoldMine) == s4Like);
+    BOOST_TEST_REQUIRE(behaviorOf(BuildingType::CoalMine) == inexhaustible);
+
+    // Disabling the legacy addon changes nothing
+    executeLua("rttr:ResetAddons()");
+    executeLua("rttr:SetAddon(ADDON_INEXHAUSTIBLE_MINES, false)");
+    for(const BuildingType bld : allMines)
+        BOOST_TEST_REQUIRE(behaviorOf(bld) == defaultBehavior);
+    // The legacy addon must not be registered, so it cannot show up twice in the addon UI
+    BOOST_TEST_REQUIRE(ggs.getSelection(AddonId::INEXHAUSTIBLE_MINES) == 0u);
 }
 
 BOOST_AUTO_TEST_CASE(PlayerSettings)

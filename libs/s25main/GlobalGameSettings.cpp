@@ -8,14 +8,22 @@
 #include "addons/Addons.h"
 #include "helpers/containerUtils.h"
 #include "helpers/serializeEnums.h"
+#include "gameTypes/BuildingType.h"
+#include "gameTypes/MineResourceBehavior.h"
 #include "gameData/MilitaryConsts.h"
 #include "s25util/Log.h"
 #include "s25util/Serializer.h"
 #include <boost/mp11/algorithm.hpp>
 #include <boost/mp11/list.hpp>
 #include <algorithm>
+#include <array>
 #include <iostream>
 #include <stdexcept>
+
+namespace {
+constexpr std::array<BuildingType, 4> MINE_BUILDING_TYPES = {BuildingType::GraniteMine, BuildingType::CoalMine,
+                                                             BuildingType::IronMine, BuildingType::GoldMine};
+} // namespace
 
 GlobalGameSettings::GlobalGameSettings()
     : speed(GameSpeed::Normal), objective(GameObjective::None), startWares(StartWares::Normal), lockedTeams(false),
@@ -78,8 +86,11 @@ void GlobalGameSettings::registerAllAddons()
         AddonFrontierDistanceReachable,
         AddonHalfCostMilEquip,
         AddonInexhaustibleFish,
-        AddonInexhaustibleGraniteMines,
-        AddonInexhaustibleMines,
+        AddonGraniteMineResourceBehavior,
+        AddonCoalMineResourceBehavior,
+        AddonIronMineResourceBehavior,
+        AddonGoldMineResourceBehavior,
+        AddonMineNoOutputFallback,
         AddonLimitCatapults,
         AddonManualRoadEnlargement,
         AddonMaxRank,
@@ -187,8 +198,21 @@ void GlobalGameSettings::LoadSettings()
 {
     resetAddons();
 
+    bool migrateLegacyInexhaustibleMines = false;
     for(const auto& it : SETTINGS.addons.configuration)
-        setSelection(static_cast<AddonId>(it.first), it.second);
+    {
+        const auto id = static_cast<AddonId>(it.first);
+        const unsigned status = it.second;
+        if(id == AddonId::INEXHAUSTIBLE_MINES)
+        {
+            migrateLegacyInexhaustibleMines = status != 0;
+            continue;
+        }
+
+        setSelection(id, status);
+    }
+    if(migrateLegacyInexhaustibleMines)
+        applyLegacyInexhaustibleMines();
 }
 
 /**
@@ -243,11 +267,33 @@ void GlobalGameSettings::Deserialize(Serializer& ser)
 
     resetAddons();
 
+    bool migrateLegacyInexhaustibleMines = false;
     for(unsigned i = 0; i < count; ++i)
     {
         auto addon = static_cast<AddonId>(ser.PopUnsignedInt());
         unsigned status = ser.PopUnsignedInt();
+        if(addon == AddonId::INEXHAUSTIBLE_MINES)
+        {
+            migrateLegacyInexhaustibleMines = status != 0;
+            continue;
+        }
+
         setSelection(addon, status);
+    }
+    if(migrateLegacyInexhaustibleMines)
+        applyLegacyInexhaustibleMines();
+}
+
+/// Only mine types with an explicitly configured non-default behavior keep their setting. This is required because
+/// GRANITEMINE_RESOURCE_BEHAVIOR reuses the id of the old INEXHAUSTIBLE_GRANITEMINES bool addon, so old data always
+/// contains a value for it (usually 0), while the old global setting made granite mines inexhaustible as well.
+void GlobalGameSettings::applyLegacyInexhaustibleMines()
+{
+    for(const BuildingType mineType : MINE_BUILDING_TYPES)
+    {
+        if(GetMineResourceBehavior(*this, mineType) == MineResourceBehavior::Default)
+            setSelection(GetMineResourceBehaviorAddonId(mineType),
+                         static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
     }
 }
 
