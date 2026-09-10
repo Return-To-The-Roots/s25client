@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -9,7 +9,7 @@
 
 /// Max value for each setting.
 /// Note: We skip the first 2 steppings for the occupation (last 4 values) as they had no effect in S2
-const MilitarySettings SUPPRESS_UNUSED MILITARY_SETTINGS_SCALE = {{10, 5, 5, 5, 8, 8, 8, 8}};
+const MilitarySettings MILITARY_SETTINGS_SCALE = {{10, 5, 5, 5, 8, 8, 8, 8}};
 const TransportPriorities STD_TRANSPORT_PRIO = {{2,  13, 13, 13, 13, 13, 13, 13, 13, 13, 11, 11, 13, 13,
                                                  13, 14, 1,  3,  12, 12, 12, 1,  10, 8,  9,  1,  1,  12,
                                                  0,  4,  5,  6,  12, 12, 1,  12, 12, 7,  7,  1}};

@@ -473,7 +473,7 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
 
     // Order a worker if needed
     const auto& description = BLD_WORK_DESC[bldType];
-    if(description.job && !isSoldierJob(*description.job))
+    if(description.job && !isSoldier(*description.job))
     {
         AddJobWanted(*description.job, bld);
     }

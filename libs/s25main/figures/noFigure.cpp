@@ -126,7 +126,7 @@ noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
 
 bool noFigure::IsSoldier() const
 {
-    return isSoldierJob(job_);
+    return isSoldier(job_);
 }
 
 void noFigure::ActAtFirst()

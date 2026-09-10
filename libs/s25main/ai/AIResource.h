@@ -1,11 +1,10 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "helpers/EnumArray.h"
-#include "s25util/warningSuppression.h"
 
 // Note: This enums are constructed for performance and easy conversion.
 // AIResource must be contiguous and it is assumed that only valid enumerators are used
@@ -86,7 +85,7 @@ constexpr bool operator==(AINodeResource lhs, AIResource rhs) noexcept
     return lhs == convertToNodeResource(rhs);
 }
 
-constexpr helpers::EnumArray<unsigned, AIResource> SUPPRESS_UNUSED RES_RADIUS = {
+constexpr helpers::EnumArray<unsigned, AIResource> RES_RADIUS = {
   2, // Gold
   2, // Ironore
   2, // Coal

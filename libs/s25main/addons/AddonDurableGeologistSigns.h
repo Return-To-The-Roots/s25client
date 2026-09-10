@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -7,7 +7,7 @@
 #include "AddonList.h"
 #include <boost/format.hpp>
 
-const std::array<unsigned, 4> SUPPRESS_UNUSED signDurabilityFactor = {{1, 2, 4, 10}};
+constexpr std::array signDurabilityFactor{1u, 2u, 4u, 10u};
 
 /**
  *  Addon makes resource signs stay visible longer than normal

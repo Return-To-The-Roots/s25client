@@ -789,7 +789,7 @@ void nobBaseWarehouse::CheckJobsForNewFigure(const Job job)
     if(job == Job::Helper)
         TryRecruiting();
 
-    if(isSoldierJob(job))
+    if(isSoldier(job))
     {
         // Reserve prüfen
         RefreshReserve(getSoldierRank(job));

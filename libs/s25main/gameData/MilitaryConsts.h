@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -47,7 +47,7 @@ constexpr helpers::EnumArray<std::array<int, NUM_MILITARY_BLDS>, Nation> NUM_ARM
   {{1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}, {1, 2, 4, 6}}};
 
 /// Radien der Militärgebäude
-constexpr std::array<unsigned, NUM_MILITARY_BLDS> SUPPRESS_UNUSED MILITARY_RADIUS = {{8, 9, 10, 11}};
+inline constexpr std::array MILITARY_RADIUS{8u, 9u, 10u, 11u};
 // Radius für einzelne Hafen(baustellen)
 constexpr unsigned HARBOR_RADIUS = 8;
 constexpr unsigned HQ_RADIUS = 9;
@@ -73,7 +73,8 @@ constexpr helpers::EnumArray<std::array<DrawPoint, NUM_MILITARY_BLDS>, Nation> B
    {{{8, -26}, {13, -36}, {-1, -59}, {-10, -61}}}}};
 
 /// maximale Hitpoints der Soldaten von jedem Volk
-constexpr std::array<uint8_t, NUM_SOLDIER_RANKS> HITPOINTS = {3, 4, 5, 6, 7};
+constexpr std::array HITPOINTS = {3, 4, 5, 6, 7};
+static_assert(HITPOINTS.size() == NUM_SOLDIER_RANKS);
 
 /// Max distance for an attacker to reach a building and join in capturing
 constexpr unsigned MAX_FAR_AWAY_CAPTURING_DISTANCE = 15;
@@ -118,4 +119,5 @@ extern const helpers::EnumArray<helpers::MultiArray<FightAnimation, NUM_SOLDIER_
 extern const helpers::EnumArray<std::array<uint16_t, NUM_SOLDIER_RANKS>, Nation> HIT_SOLDIERS;
 
 /// Bestimmt den Aufblinkframe vom den Opfern der folgenden Angreifer (nach Rängen)
-constexpr std::array<uint16_t, NUM_SOLDIER_RANKS> SUPPRESS_UNUSED HIT_MOMENT = {{4, 4, 4, 4, 6}};
+constexpr std::array HIT_MOMENT{4u, 4u, 4u, 4u, 6u};
+static_assert(HIT_MOMENT.size() == NUM_SOLDIER_RANKS);
