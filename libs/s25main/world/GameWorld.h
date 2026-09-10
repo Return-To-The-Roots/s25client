@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -77,8 +77,8 @@ public:
     /// Sagt Bescheid, dass der Punkt wieder freigeworden ist und lässt ggf. Figuren drumherum wieder weiterlaufen
     void RoadNodeAvailable(MapPoint pt);
 
-    /// Place a flag for the player specific
-    void SetFlag(MapPoint pt, unsigned char player);
+    /// Place a flag for the player
+    bool SetFlag(MapPoint pt, unsigned char player);
     /// Flagge soll zerstrört werden
     void DestroyFlag(MapPoint pt, unsigned char playerId);
     /// Baustelle setzen
@@ -108,8 +108,8 @@ public:
     /// setzt den Straßen-Wert um den Punkt X,Y.
     void SetPointRoad(MapPoint pt, Direction dir, PointRoad type);
 
-    /// Baut eine Straße ( nicht nur visuell, sondern auch wirklich )
-    void BuildRoad(unsigned char playerId, bool boat_road, MapPoint start, const std::vector<Direction>& route);
+    /// Actually build a road. Return the endpoint of the built road on success, else an invalid state.
+    MapPoint BuildRoad(unsigned char playerId, bool boat_road, MapPoint start, const std::vector<Direction>& route);
 
     /// Recalculates the ownership around a military building
     void RecalcTerritory(const noBaseBuilding& building, TerritoryChangeReason reason);
