@@ -121,20 +121,16 @@ helpers::EnumArray<MapPoint, Direction> MapBase::GetNeighbours(const MapPoint pt
 unsigned MapBase::CalcDistance(const Position& p1, const Position& p2) const
 {
     int dx = ((p1.x - p2.x) * 2) + (p1.y & 1) - (p2.y & 1);
-    int dy = absDiff(p1.y, p2.y) * 2;
+    int dy = std::abs(p1.y - p2.y) * 2;
+
+    if(dy > size_.y)
+        dy = (size_.y * 2) - dy;
 
     if(dx < 0)
         dx = -dx;
 
-    if(dy > size_.y)
-    {
-        dy = (size_.y * 2) - dy;
-    }
-
     if(dx > size_.x)
-    {
         dx = (size_.x * 2) - dx;
-    }
 
     dx -= dy / 2;
 
