@@ -11,10 +11,13 @@
 #include "controls/ctrlButton.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
+#include "controls/ctrlImage.h"
 #include "controls/ctrlOptionGroup.h"
 #include "controls/ctrlPercent.h"
 #include "controls/ctrlProgress.h"
+#include "controls/ctrlTextButton.h"
 #include "desktops/dskGameLobby.h"
+#include "driver/KeyEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "helpers/format.hpp"
 #include "ingameWindows/IngameWindow.h"
@@ -450,6 +453,62 @@ void WindowPositioning_testOne(IngameWindow& wnd, const char* context, const std
     }
 }
 } // namespace
+
+namespace {
+class MsgboxResultCatcher : public Window
+{
+public:
+    MsgboxResultCatcher() : Window(nullptr, 1, DrawPoint(0, 0)) {}
+
+    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override
+    {
+        id = msgbox_id;
+        result = mbr;
+    }
+
+    unsigned id = 0;
+    MsgboxResult result = MsgboxResult::Cancel;
+};
+} // namespace
+
+BOOST_AUTO_TEST_CASE(MsgboxCustomButtons)
+{
+    MsgboxResultCatcher handler;
+    {
+        iwMsgbox wnd("Custom", "Choose a custom result", &handler,
+                     MsgboxConfig{{{"Apply", MsgboxResult::Ok, TextureColor::Green2},
+                                   {"Later", MsgboxResult::No, TextureColor::Grey},
+                                   {"Abort", MsgboxResult::Cancel, TextureColor::Red1}},
+                                  0,
+                                  2},
+                     MsgboxIcon::QuestionRed, 42);
+
+        const auto buttons = wnd.GetCtrls<ctrlTextButton>();
+        BOOST_TEST_REQUIRE(buttons.size() == 3u);
+        BOOST_TEST(buttons[0]->GetText() == "Apply");
+        BOOST_TEST(buttons[1]->GetText() == "Later");
+        BOOST_TEST(buttons[2]->GetText() == "Abort");
+
+        static_cast<Window&>(wnd).Msg_KeyDown(KeyEvent(KeyType::Return));
+        BOOST_TEST(handler.id == 42u);
+        BOOST_TEST(static_cast<int>(handler.result) == static_cast<int>(MsgboxResult::Ok));
+        BOOST_TEST(wnd.ShouldBeClosed());
+    }
+    {
+        iwMsgbox wnd(
+          "Custom", "Escape should use the configured cancel button", &handler,
+          MsgboxConfig{
+            {{"Yes", MsgboxResult::Yes, TextureColor::Green2}, {"No", MsgboxResult::No, TextureColor::Red1}}, 0, 1},
+          43);
+
+        BOOST_TEST(wnd.GetCtrls<ctrlImage>().empty());
+
+        static_cast<Window&>(wnd).Msg_KeyDown(KeyEvent(KeyType::Escape));
+        BOOST_TEST(handler.id == 43u);
+        BOOST_TEST(static_cast<int>(handler.result) == static_cast<int>(MsgboxResult::No));
+        BOOST_TEST(wnd.ShouldBeClosed());
+    }
+}
 
 BOOST_AUTO_TEST_CASE(WindowPositioning)
 {
