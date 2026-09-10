@@ -29,7 +29,10 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
        || GetSize() == BuildingQuality::Harbor)
     {
         // Höhe auf dem Punkt, wo die Baustelle steht
-        int altitude = world->GetNode(pos).altitude;
+        int altitude = world->GetNode(this->GetFlagPos()).altitude;
+
+        if(altitude - world->GetNode(pos).altitude != 0)
+	    state = BuildingSiteState::Planing;
 
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
@@ -376,6 +379,8 @@ void noBuildingSite::PlaningFinished()
     /// Normale Baustelle
     state = BuildingSiteState::Building;
     planer = nullptr;
+
+    world->ChangeAltitude(pos, world->GetNode(this->GetFlagPos()).altitude);
 
     // Wir hätten gerne einen Bauarbeiter...
     world->GetPlayer(player).AddJobWanted(Job::Builder, this);
