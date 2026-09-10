@@ -7,6 +7,7 @@
 #include "LuaInterfaceGameBase.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
+#include <boost/filesystem/path.hpp>
 #include <memory>
 #include <string>
 
@@ -45,7 +46,12 @@ public:
     // called if pact was created
     void EventPactCreated(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
                           unsigned duration);
+    /// Set the directory from which relative texture paths in AddTerrain are resolved.
+    /// Registers <RTTR_MAP> so that ExpandPath and validatePath can resolve it.
+    void SetMapDir(const boost::filesystem::path& mapDir);
+
     // Callable from Lua
+    void AddTerrain(const kaguya::LuaTable& data);
     void ClearResources();
     unsigned GetGF() const;
     std::string FormatNumGFs(unsigned numGFs) const;
@@ -63,6 +69,7 @@ private:
     ILocalGameState& localGameState;
     GameWorld& gw;
     Game& game;
+    boost::filesystem::path mapDir_; ///< Base dir for resolving relative texture paths in AddTerrain
     LuaPlayer GetPlayer(int playerIdx);
     LuaWorld GetWorld();
 };

@@ -121,6 +121,11 @@ void RttrConfig::overridePathMapping(const std::string& id, const boost::filesys
     pathMappings[id] = path;
 }
 
+void RttrConfig::addPathMapping(const std::string& id, const boost::filesystem::path& path)
+{
+    pathMappings[id] = path;
+}
+
 bool RttrConfig::Init()
 {
     prefixPath_ = GetPrefixPath();
