@@ -7,6 +7,9 @@
 #include "nofBuildingWorker.h"
 #include "gameTypes/Direction.h"
 
+/// Half-side length of the square the hunter scans for animals (centered on the building)
+constexpr int HUNTER_SEARCH_HALFSIDE = 19;
+
 class noAnimal;
 class SerializedGameData;
 class nobUsual;

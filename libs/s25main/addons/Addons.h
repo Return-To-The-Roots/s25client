@@ -70,3 +70,5 @@
 #include "addons/AddonForesterReachRadius.h"
 #include "addons/AddonStonemasonReachRadius.h"
 #include "addons/AddonWoodcutterReachRadius.h"
+
+#include "addons/AddonBuildingRadius.h"

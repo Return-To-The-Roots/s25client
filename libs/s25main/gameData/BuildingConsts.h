@@ -119,3 +119,6 @@ constexpr std::array<DrawPoint, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
 
 /// Hilfetexte für Gebäude
 extern const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS;
+
+/// Get the radius in tiles for a building type (worker reach, territory influence, attack range, etc.)
+unsigned GetBuildingRadius(BuildingType bld);

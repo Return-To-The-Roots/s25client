@@ -4,6 +4,7 @@
 
 #include "ctrlBuildingIcon.h"
 #include "Loader.h"
+#include "driver/MouseCoords.h"
 #include "files.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameTypes/BuildingType.h"
@@ -28,3 +29,13 @@ void ctrlBuildingIcon::Draw_()
 }
 
 void ctrlBuildingIcon::DrawContent() const {}
+
+bool ctrlBuildingIcon::Msg_MouseMove(const MouseCoords& mc)
+{
+    const bool wasHovered = (state == ButtonState::Hover);
+    const bool result = ctrlButton::Msg_MouseMove(mc);
+    const bool nowHovered = (state == ButtonState::Hover);
+    if(wasHovered != nowHovered && onHoverChanged_)
+        onHoverChanged_(nowHovered);
+    return result;
+}
