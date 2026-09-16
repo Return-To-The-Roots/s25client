@@ -29,14 +29,31 @@ public:
     static bool EnsurePresetsFolder();
 
 protected:
+    static constexpr unsigned contentX = 20;
+    static constexpr unsigned contentWidth = 400;
+    static constexpr unsigned tableY = 30;
+    static constexpr unsigned tableHeight = 200;
+    static constexpr unsigned rowGap = 8;
+    static constexpr unsigned rowHeight = 22;
+    static constexpr unsigned bottomMargin = 24;
+    /// Subclasses add their own controls here; the bottom row is reserved for the buttons
+    static constexpr unsigned contentStartY = tableY + tableHeight + rowGap + rowHeight;
+    static constexpr unsigned halfWidth = (contentWidth - rowGap) / 2;
+    static constexpr unsigned rightColumnX = contentX + halfWidth + rowGap;
+
     iwAddonPresetsBase(const std::string& title, unsigned height);
 
     void RefreshTable();
+    /// Empty if no preset is selected
+    boost::filesystem::path GetSelectedFilePath() const;
 
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 
 private:
+    void ConfirmDelete();
     virtual void DoAction() = 0;
 };
 
@@ -47,9 +64,11 @@ public:
 
 private:
     const std::map<unsigned, unsigned> states_;
+    bool deselectingFromEdit_ = false;
     void SaveToPath(const boost::filesystem::path& filePath);
     void DoAction() override;
     void Msg_EditEnter(unsigned ctrl_id) override;
+    void Msg_EditChange(unsigned ctrl_id) override;
     void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 };
@@ -61,11 +80,6 @@ public:
 
 private:
     std::function<void(const std::map<unsigned, unsigned>&)> onLoad_;
-    /// Empty if no preset is selected
-    boost::filesystem::path GetSelectedFilePath() const;
-    void ConfirmDelete();
     void DoAction() override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 };
