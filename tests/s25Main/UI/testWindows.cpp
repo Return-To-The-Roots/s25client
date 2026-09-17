@@ -112,16 +112,13 @@ BOOST_FIXTURE_TEST_CASE(JumpWindow, SmallWorldFixture)
 }
 
 namespace {
-struct AddonPresetTmpUserData : uiHelper::Fixture
+struct AddonPresetFixture : uiHelper::Fixture
 {
     rttr::test::TmpFolder tmp;
     rttr::test::ConfigOverride userDataOverride{"USERDATA", tmp};
-};
 
-struct AddonPresetFixture : AddonPresetTmpUserData
-{
-    // The windows expect the folder to exist, just like when iwAddons opens them
-    AddonPresetFixture() { BOOST_TEST_REQUIRE(iwAddonPresetsBase::EnsurePresetsFolder()); }
+    // Stand in for the game start, which creates all user folders
+    AddonPresetFixture() { boost::filesystem::create_directories(RTTRCONFIG.ExpandPath(s25::folders::addonPresets)); }
 
     // Selects the named preset, false if there is no such preset
     static bool select(Window& wnd, const std::string& name)
@@ -277,6 +274,28 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetLoadCorrupt, AddonPresetFixture)
     closeTopMsgbox();
 }
 
+// A failed save reports the problem but keeps the window and the name so it can be retried
+BOOST_FIXTURE_TEST_CASE(AddonPresetSaveUnwritable, AddonPresetFixture)
+{
+    // A folder in the file's place stands in for a presets folder we may not write to
+    boost::filesystem::create_directories(RTTRCONFIG.ExpandPath(s25::folders::addonPresets) / "blocked.ini");
+
+    const std::map<unsigned, unsigned> states{{1, 2}};
+    iwSaveAddonPreset wnd(states);
+    Window& base = wnd;
+    base.GetCtrls<ctrlEdit>().at(0)->SetText("blocked");
+    base.Msg_ButtonClick(iwAddonPresetsBase::ID_btAction);
+    base.Msg_MsgBoxResult(iwSaveAddonPreset::ID_mbOverwrite, MsgboxResult::Yes);
+
+    const auto* msgbox = topMsgbox();
+    BOOST_TEST_REQUIRE(msgbox);
+    BOOST_TEST(msgbox->GetTitle() == _("Save Failed"));
+    BOOST_TEST(!wnd.ShouldBeClosed());
+    BOOST_TEST(base.GetCtrls<ctrlEdit>().at(0)->GetText() == "blocked");
+    closeTopMsgbox();
+    closeTopMsgbox();
+}
+
 // In the save window the selection only prefills the name: saving uses what is in the edit box.
 BOOST_FIXTURE_TEST_CASE(AddonPresetSaveNameFollowsSelection, AddonPresetFixture)
 {
@@ -371,26 +390,6 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetActionsRequireSelection, AddonPresetFixture)
     BOOST_TEST_REQUIRE(select(base, "exists"));
     BOOST_TEST(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)->GetEnabled());
     BOOST_TEST(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)->GetEnabled());
-}
-
-// When the presets folder can't be created, the user is told and no preset window is opened.
-BOOST_FIXTURE_TEST_CASE(AddonPresetFolderUnavailable, AddonPresetTmpUserData)
-{
-    // Plant a file where the presets folder should be so create_directories() fails
-    const auto presetsDir = RTTRCONFIG.ExpandPath(s25::folders::addonPresets);
-    {
-        std::ofstream blocker(presetsDir.string());
-        blocker << 'x';
-    }
-    BOOST_TEST_REQUIRE(boost::filesystem::exists(presetsDir));
-    BOOST_TEST_REQUIRE(!boost::filesystem::is_directory(presetsDir));
-
-    BOOST_TEST(!iwAddonPresetsBase::EnsurePresetsFolder());
-
-    const auto* msgbox = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow());
-    BOOST_TEST_REQUIRE(msgbox);
-    BOOST_TEST(msgbox->GetTitle() == _("Addon Presets Unavailable"));
-    WINDOWMANAGER.CloseNow(WINDOWMANAGER.GetTopMostWindow());
 }
 
 namespace {
