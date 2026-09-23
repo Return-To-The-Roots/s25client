@@ -46,7 +46,8 @@ bool isBobOverride(fs::path filePath)
     return s25util::toLower(filePath.extension().string()) == ".bob";
 }
 
-std::map<uint16_t, uint16_t> extractBobMapping(libsiedler2::Archiv& archive, const fs::path& filepath)
+std::map<uint16_t, libsiedler2::ArchivItem_Bob::OverlayData> extractBobMapping(libsiedler2::Archiv& archive,
+                                                                               const fs::path& filepath)
 {
     std::unique_ptr<libsiedler2::ArchivItem_Text> txtItem;
     for(auto& entry : archive)
@@ -161,7 +162,7 @@ libsiedler2::Archiv ArchiveLoader::load(const ResolvedFile& file, const libsiedl
         {
             libsiedler2::Archiv newEntries = loadFileOrDir(curFilepath, palette);
 
-            std::map<uint16_t, uint16_t> bobMapping;
+            std::map<uint16_t, libsiedler2::ArchivItem_Bob::OverlayData> bobMapping;
             if(isBobOverride(curFilepath))
             {
                 bobMapping = extractBobMapping(newEntries, curFilepath);
@@ -173,7 +174,18 @@ libsiedler2::Archiv ArchiveLoader::load(const ResolvedFile& file, const libsiedl
             }
             mergeArchives(archive, newEntries);
             if(!bobMapping.empty() && !archive.empty() && archive[0]->getBobType() == libsiedler2::BobType::Bob)
-                checkedCast<glArchivItem_Bob*>(archive[0])->mergeLinks(bobMapping);
+            {
+                auto& bobs = assertNonNull<glArchivItem_Bob>(archive[0]);
+                for(const auto& [idx, data] : bobMapping)
+                {
+                    if(bobs.getOverlayArchiveIndex(data.idx) >= bobs.size())
+                    {
+                        throw LoadError(_("Overlay override idx %1% is invalid: Overlay %2% does not exist!\n"), idx,
+                                        data.idx.value);
+                    }
+                }
+                bobs.mergeLinks(bobMapping);
+            }
         } catch(const LoadError& e)
         {
             if(e.what() != std::string())

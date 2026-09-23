@@ -25,16 +25,16 @@ void glArchivItem_Bob::Draw(unsigned item, libsiedler2::ImgDir direction, bool f
     }
 }
 
-void glArchivItem_Bob::mergeLinks(const std::map<uint16_t, uint16_t>& overrideLinks)
+void glArchivItem_Bob::mergeLinks(const std::map<uint16_t, OverlayData>& overrideLinks)
 {
     if(overrideLinks.empty())
         return;
     // Get last key of sorted map
     const auto maxIdx = overrideLinks.rbegin()->first;
-    if(maxIdx >= spriteOverlayIdx.size())
-        spriteOverlayIdx.resize(maxIdx + 1u);
+    if(maxIdx >= spriteOverlayData.size())
+        spriteOverlayData.resize(maxIdx + 1u);
     for(const auto& newLink : overrideLinks)
     {
-        spriteOverlayIdx[newLink.first] = newLink.second;
+        spriteOverlayData[newLink.first] = newLink.second;
     }
 }
