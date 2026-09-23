@@ -23,8 +23,14 @@ std::string serializeRng(const RandomT& rng)
 template<typename RandomT>
 bool deserializeRng(RandomT& rng, const std::string& data)
 {
-    s25util::ClassicImbuedStream<std::istringstream> s(data);
-    return (s >> rng) && s.eof();
+    // Boost.Random may try to read extra whitespace at the end which fails at EOF
+    // Add that and consider it success if either all was read or only whitespace remains
+    s25util::ClassicImbuedStream<std::istringstream> s(data + " ");
+    if(s >> rng)
+    {
+        return s.eof() || (s >> std::ws && s.eof());
+    } else
+        return false;
 }
 
 template<typename RandomT>

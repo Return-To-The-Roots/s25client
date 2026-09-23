@@ -6,6 +6,7 @@
 
 #include "RTTR_Assert.h"
 #include "helpers/MaxEnumValue.h"
+#include <boost/random/mersenne_twister.hpp>
 #include <iterator>
 #include <limits>
 #include <random>
@@ -54,7 +55,7 @@ unsigned getRandomIndex(RandomT& rng, unsigned size)
 inline auto getRandomGenerator()
 {
     std::random_device rnd_dev;
-    return std::mt19937(rnd_dev());
+    return boost::random::mt19937(rnd_dev());
 }
 
 /// Return a random element from the container using the rng
