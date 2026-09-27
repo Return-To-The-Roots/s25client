@@ -51,7 +51,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
     : noMovable(NodalObjectType::Figure, pos), fs(FigureState::GotToGoal), job_(job), player(player), cur_rs(nullptr),
       rs_pos(0), rs_dir(false), on_ship(false), goal_(goal), waiting_for_free_node(false), wander_way(0),
       wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF),
-      hasArmor_(false)
+      hasArmor_(false), waiting_for_boat(false)
 {
     // If the goal is a storehouse we won't work there but go to the new home
     if(goal && nobBaseWarehouse::isStorehouseGOT(goal->GetGOT()))
@@ -62,7 +62,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
     : noMovable(NodalObjectType::Figure, pos), fs(FigureState::Job), job_(job), player(player), cur_rs(nullptr),
       rs_pos(0), rs_dir(false), on_ship(false), goal_(nullptr), waiting_for_free_node(false), wander_way(0),
       wander_tryings(0), flagPos_(MapPoint::Invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF),
-      hasArmor_(false)
+      hasArmor_(false), waiting_for_boat(false)
 {}
 
 void noFigure::Destroy()
@@ -86,6 +86,7 @@ void noFigure::Serialize(SerializedGameData& sgd) const
     sgd.PushBool(rs_dir);
     sgd.PushBool(on_ship);
     sgd.PushBool(hasArmor_);
+    sgd.PushBool(waiting_for_boat);
 
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         sgd.PushObject(goal_);
@@ -105,7 +106,8 @@ void noFigure::Serialize(SerializedGameData& sgd) const
 noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), fs(sgd.Pop<FigureState>()), job_(sgd.Pop<Job>()), player(sgd.PopUnsignedChar()),
       cur_rs(sgd.PopObject<RoadSegment>(GO_Type::Roadsegment)), rs_pos(sgd.PopUnsignedShort()), rs_dir(sgd.PopBool()),
-      on_ship(sgd.PopBool()), last_id(0xFFFFFFFF), hasArmor_(sgd.GetGameDataVersion() >= 12 ? sgd.PopBool() : false)
+      on_ship(sgd.PopBool()), last_id(0xFFFFFFFF), hasArmor_(sgd.GetGameDataVersion() >= 12 ? sgd.PopBool() : false),
+      waiting_for_boat(sgd.GetGameDataVersion() >= 16 ? sgd.PopBool() : false)
 {
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         goal_ = sgd.PopObject<noRoadNode>();
@@ -353,10 +355,17 @@ void noFigure::WalkToGoal()
             {
                 // Get next street we are walking on
                 const Direction walkDir = toDirection(route);
-                cur_rs = curRoadNode->GetRoute(walkDir);
-                StartWalking(walkDir);
-                rs_pos = 0;
-                rs_dir = curRoadNode != cur_rs->GetF1();
+                if(curRoadNode->GetRoute(walkDir)->GetRoadType() == RoadType::Water)
+                {
+                    // We can't swim, so wait at the flag for a boat carrier to take us over the waterway
+                    WaitForBoat(checkedCast<noFlag>(*curRoadNode), walkDir);
+                } else
+                {
+                    cur_rs = curRoadNode->GetRoute(walkDir);
+                    StartWalking(walkDir);
+                    rs_pos = 0;
+                    rs_dir = curRoadNode != cur_rs->GetF1();
+                }
             }
         }
 
@@ -415,8 +424,12 @@ void noFigure::GoHome(noRoadNode* goal)
         this->goal_ = nullptr;
         return;
     }
+    // Don't wait for a boat anymore but find the way from the flag: We might not need the boat to reach the new goal
+    const bool wasWaitingForBoat = waiting_for_boat;
+    if(wasWaitingForBoat)
+        StopWaitingForBoat();
     // Nächstes Lagerhaus suchen
-    else if(!goal)
+    if(!goal)
     {
         // Wenn wir cur_rs == 0, dann hängen wir wahrscheinlich noch im Lagerhaus in der Warteschlange
         if(cur_rs == nullptr)
@@ -444,18 +457,24 @@ void noFigure::GoHome(noRoadNode* goal)
             WalkToGoal();
             // anderen Leuten noch ggf Bescheid sagen
             world->RoadNodeAvailable(pos);
-        }
+        } else if(wasWaitingForBoat)
+            WalkToGoal();
     } else
     {
         // Kein Lagerhaus gefunden --> Rumirren
         StartWandering();
         cur_rs = nullptr;
+        if(wasWaitingForBoat)
+            Wander();
     }
 }
 
 void noFigure::StartWandering(const unsigned burned_wh_id)
 {
     RTTR_Assert(!goal_);
+    const bool wasWaitingForBoat = waiting_for_boat;
+    if(wasWaitingForBoat)
+        StopWaitingForBoat();
     fs = FigureState::Wander;
     cur_rs = nullptr;
     rs_pos = 0;
@@ -475,7 +494,8 @@ void noFigure::StartWandering(const unsigned burned_wh_id)
             StartMoving(GetCurMoveDir(), GetPausedEvent().length);
         else
             Wander();
-    }
+    } else if(wasWaitingForBoat)
+        Wander();
 }
 
 namespace {
@@ -723,8 +743,11 @@ void noFigure::CorrectSplitData_Derived() {}
 
 unsigned noFigure::CalcWalkAnimationFrame() const
 {
-    // If we are waiting for a free node use the 2nd frame, else interpolate
-    return waiting_for_free_node ? 2 : GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
+    // If we are waiting for a free node or not walking at all (e.g. waiting for a boat) use the 2nd frame, else
+    // interpolate
+    return (waiting_for_free_node || !current_ev) ?
+             2 :
+             GAMECLIENT.Interpolate(ASCENT_ANIMATION_STEPS[GetAscent()], current_ev) % 8;
 }
 
 /// Calculate the index of the current frame for a figure walking in the given direction
@@ -739,8 +762,8 @@ unsigned noFigure::calcWalkFrameIndex(const unsigned imgSetIndex, const Directio
 DrawPoint noFigure::InterpolateWalkDrawPos(DrawPoint drawPt) const
 {
     // Add an offset relative to the starting point calculated by how far we already walked
-    // Don't if we are waiting on our starting node
-    if(!waiting_for_free_node || IsStoppedBetweenNodes())
+    // Don't if we are waiting on our starting node or not walking at all (e.g. waiting for a boat)
+    if((!waiting_for_free_node && current_ev) || IsStoppedBetweenNodes())
         drawPt += CalcFigurRelative();
     return drawPt;
 }
@@ -987,4 +1010,64 @@ MapPoint noFigure::ExamineRouteBeforeShipping(RoadPathDirection& newDir)
         return next_harbor;
     else
         return MapPoint(0, 0);
+}
+
+void noFigure::WaitForBoat(noFlag& flag, const Direction dir)
+{
+    RTTR_Assert(world->GetGGS().isEnabled(AddonId::BOATS_TRANSPORT_FIGURES));
+    RTTR_Assert(!waiting_for_boat && !current_ev);
+    RTTR_Assert(flag.GetPos() == pos);
+    // We are at the start of the waterway
+    cur_rs = flag.GetRoute(dir);
+    rs_pos = 0;
+    rs_dir = &flag != cur_rs->GetF1();
+    FaceDir(dir);
+    waiting_for_boat = true;
+    flag.AddFigureForBoat(world->RemoveFigure(pos, *this));
+}
+
+void noFigure::StopWaitingForBoat()
+{
+    RTTR_Assert(waiting_for_boat);
+    waiting_for_boat = false;
+    // Get the flag from the waterway as it might already be removed from the world when it is being destroyed
+    auto& flag = checkedCast<noFlag>(*(rs_dir ? cur_rs->GetF2() : cur_rs->GetF1()));
+    RTTR_Assert(flag.GetPos() == pos);
+    world->AddFigure(pos, flag.RemoveFigureForBoat(*this));
+    // Pretend we just arrived via the waterway, so a new way can be found from this flag
+    rs_pos = cur_rs->GetLength();
+    rs_dir = !rs_dir;
+}
+
+void noFigure::StartBoatJourney()
+{
+    RTTR_Assert(waiting_for_boat);
+    waiting_for_boat = false;
+}
+
+void noFigure::ArrivedByBoat()
+{
+    RTTR_Assert(!waiting_for_boat);
+    RTTR_Assert(world->HasFigureAt(pos, *this));
+    // We were not in the world, so we didn't see anything
+    CalcVisibilities(pos);
+    if(fs == FigureState::Wander)
+        Wander(); // Waterway was destroyed while we were in the boat
+    else
+    {
+        // Arrived at the other end of the waterway
+        rs_pos = cur_rs->GetLength();
+        WalkToGoal();
+    }
+}
+
+void noFigure::WaterwayDestroyed()
+{
+    RTTR_Assert(waiting_for_boat);
+    RTTR_Assert(world->HasFigureAt(pos, *this));
+    waiting_for_boat = false;
+    // Same as for all figures on destroyed roads, but we need to start walking as we were waiting
+    Abrogate();
+    StartWandering();
+    Wander();
 }
