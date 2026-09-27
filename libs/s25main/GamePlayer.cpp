@@ -2328,7 +2328,10 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, 
 
 bool GamePlayer::IsBuildingEnabled(BuildingType type) const
 {
-    return building_enabled[type] || (isHuman() && world.GetGameInterface()->GI_GetCheats().areAllBuildingsEnabled());
+    // No game interface without a GUI (headless runs, tests): no cheats either
+    return building_enabled[type]
+           || (isHuman() && world.GetGameInterface()
+               && world.GetGameInterface()->GI_GetCheats().areAllBuildingsEnabled());
 }
 
 void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
