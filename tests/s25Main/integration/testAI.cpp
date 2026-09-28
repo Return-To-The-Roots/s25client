@@ -16,11 +16,15 @@
 #include "network/GameMessage_Chat.h"
 #include "notifications/NodeNote.h"
 #include "worldFixtures/WorldWithGCExecution.h"
+#include "worldFixtures/terrainHelpers.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
 #include "gameTypes/GameTypesOutput.h"
+#include "gameTypes/MineResourceBehavior.h"
+#include "gameTypes/Resource.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/MilitaryConsts.h"
+#include "gameData/WorldDescription.h"
 #include "rttr/test/random.hpp"
 #include <boost/test/unit_test.hpp>
 #include <memory>
@@ -49,6 +53,39 @@ inline bool playerHasBld(const GamePlayer& player, BuildingType type)
     if(BuildingProperties::IsWareHouse(type)) // Includes harbors
         return containsBldType(blds.GetStorehouses(), type);
     return !blds.GetBuildings(type).empty();
+}
+
+DescIdx<TerrainDesc> GetMineableTerrain(const WorldDescription& desc)
+{
+    const auto terrain = desc.terrain.find([](const TerrainDesc& t) { return t.Is(ETerrain::Mineable); });
+    BOOST_TEST_REQUIRE(terrain);
+    return terrain;
+}
+
+void makeWorldMineable(GameWorld& world)
+{
+    const DescIdx<TerrainDesc> mineableTerrain = GetMineableTerrain(world.GetDescription());
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        MapNode& node = world.GetNodeWriteable(pt);
+        node.t1 = node.t2 = mineableTerrain;
+        node.resources = Resource();
+    }
+    world.InitAfterLoad();
+}
+
+// Mark every node as a usable, owned, reachable build spot so the AI's position search only depends on the
+// mine resource behavior under test and not on unrelated terrain/ownership state.
+void initAIJhNodes(AIJH::AIPlayerJH& aijh, const GameWorld& world, const unsigned player)
+{
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        AIJH::Node& node = aijh.GetAINode(pt);
+        node.bq = world.GetBQ(pt, player);
+        node.owned = true;
+        node.reachable = true;
+        node.farmed = false;
+    }
 }
 
 struct MockAI final : public AIPlayer
@@ -107,6 +144,72 @@ BOOST_FIXTURE_TEST_CASE(AIChat, EmptyWorldFixture2P)
         BOOST_TEST(msg->destination == dest);
         BOOST_TEST(msg->text == "Hello again!");
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(MineResourceRatingAccountsForS4LikeExhaustion, EmptyWorldFixture1P)
+{
+    const MapPoint resourcePos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + Position(2, 0));
+    world.GetNodeWriteable(resourcePos).resources = Resource(ResourceType::Coal, 1);
+
+    MockAI ai(0, world, AI::Level::Easy);
+    const auto ratingWith = [&](const MineResourceBehavior behavior) {
+        ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(behavior));
+        return ai.getAIInterface().GetResourceRating(resourcePos, AIResource::Coal);
+    };
+
+    // A spot with a coal deposit gets the full radius rating for all behaviors that mine the deposit as-is...
+    const int defaultRating = ratingWith(MineResourceBehavior::Default);
+    BOOST_TEST(defaultRating == static_cast<int>(RES_RADIUS[AIResource::Coal]));
+    BOOST_TEST(ratingWith(MineResourceBehavior::Inexhaustible) == defaultRating);
+    BOOST_TEST(ratingWith(MineResourceBehavior::WorkEverywhere) == defaultRating);
+
+    // ...only S4-like exhaustion lowers the rating because a nearly depleted deposit produces less over its lifetime.
+    const int s4LikeRating = ratingWith(MineResourceBehavior::S4LikeExhaustion);
+    BOOST_TEST(s4LikeRating > 0);
+    BOOST_TEST(s4LikeRating < defaultRating);
+}
+
+BOOST_FIXTURE_TEST_CASE(MineWorkEverywhereAffectsMatchingResourceOnly, EmptyWorldFixture1P)
+{
+    // Whole world is mineable terrain but has no mineral deposits at all.
+    makeWorldMineable(world);
+    ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
+
+    AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
+    initAIJhNodes(ai, world, 0);
+
+    // The HQ is the only guaranteed reachable/owned starting spot, so searches are centered on it.
+    const MapPoint searchCenter = world.GetPlayer(0).GetHQPos();
+    // The only iron deposit sits well outside the search radius below, so default iron mining has no reachable spot.
+    const MapPoint ironPos = world.MakeMapPoint(searchCenter + Position(8, 0));
+    world.GetNodeWriteable(ironPos).resources = Resource(ResourceType::Iron, 4);
+
+    // WorkEverywhere coal treats any mineable node as a coal spot, even one that actually holds an iron deposit.
+    BOOST_TEST(ai.getAIInterface().GetResourceRating(ironPos, AIResource::Coal)
+               == static_cast<int>(RES_RADIUS[AIResource::Coal]));
+    // So coal finds a spot right around the HQ, while default iron finds none because its only deposit is out of range.
+    BOOST_TEST(ai.FindBestPosition(searchCenter, AIResource::Coal, BuildingQuality::Mine, 5).isValid());
+    BOOST_TEST(!ai.FindBestPosition(searchCenter, AIResource::Ironore, BuildingQuality::Mine, 5).isValid());
+}
+
+BOOST_FIXTURE_TEST_CASE(GraniteMineResourceBehaviorAffectsAIMineSearch, EmptyWorldFixture1P)
+{
+    // Mineable terrain everywhere but no deposits, so only the granite behavior decides what the AI can place.
+    makeWorldMineable(world);
+    const MapPoint searchCenter = world.GetPlayer(0).GetHQPos();
+    // The AI rates all nodes once during setup, so each behavior needs an AI of its own.
+    const auto findsMineSpotFor = [&](const MineResourceBehavior behavior, const AIResource res) {
+        ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(behavior));
+        AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
+        initAIJhNodes(ai, world, 0);
+        return ai.FindBestPosition(searchCenter, res, BuildingQuality::Mine, 5).isValid();
+    };
+
+    // WorkEverywhere lets the AI place a granite mine on any mineable node, but only for granite, not coal.
+    BOOST_TEST(findsMineSpotFor(MineResourceBehavior::WorkEverywhere, AIResource::Granite));
+    BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::WorkEverywhere, AIResource::Coal));
+    // Inexhaustible does not imply "work everywhere": without an actual deposit there is still no spot.
+    BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::Inexhaustible, AIResource::Granite));
 }
 
 BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)

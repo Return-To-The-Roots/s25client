@@ -17,6 +17,7 @@
 #include "pathfinding/RoadPathFinder.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noTree.h"
+#include "gameTypes/MineResourceBehavior.h"
 #include "gameData/TerrainDesc.h"
 #include <limits>
 #include <numeric>
@@ -44,6 +45,14 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
         return false;
     const auto* prp = static_cast<const Param_RoadPath*>(param);
     return prp->boat_road || gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) != BuildingQuality::Nothing;
+}
+
+int GetS4LikeMineResourceRating(const Resource resource, const unsigned defaultRating)
+{
+    if(resource.getAmount() == 0u)
+        return 0;
+
+    return std::max(1u, std::min(static_cast<unsigned>(resource.getAmount()), defaultRating));
 }
 } // namespace
 
@@ -158,12 +167,40 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
         case AIResource::Ironore:
         case AIResource::Coal:
         case AIResource::Granite:
+        {
+            const Resource subres = gwb.GetNode(pt).resources;
+            if(convertToNodeResource(GetSubsurfaceResource(pt)) == res)
+            {
+                const auto mineBuildingType = GetMineBuildingType(subres.getType());
+                if(mineBuildingType
+                   && GetMineResourceBehavior(gwb.GetGGS(), *mineBuildingType)
+                        == MineResourceBehavior::S4LikeExhaustion)
+                    return GetS4LikeMineResourceRating(subres, RES_RADIUS[res]);
+
+                return RES_RADIUS[res];
+            }
+            if(IsMineResourceWorkEverywhere(res)
+               && gwb.IsOfTerrain(pt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Mineable); }))
+                return RES_RADIUS[res];
+            break;
+        }
         case AIResource::Fish:
             if(convertToNodeResource(GetSubsurfaceResource(pt)) == res)
                 return RES_RADIUS[res];
             break;
     }
     return 0;
+}
+
+bool AIInterface::IsMineResourceWorkEverywhere(const AIResource res) const
+{
+    const auto resourceType = convertToResourceType(res);
+    if(!resourceType)
+        return false;
+
+    const auto mineBuildingType = GetMineBuildingType(*resourceType);
+    return mineBuildingType
+           && GetMineResourceBehavior(gwb.GetGGS(), *mineBuildingType) == MineResourceBehavior::WorkEverywhere;
 }
 
 int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction,

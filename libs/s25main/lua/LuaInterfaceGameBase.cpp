@@ -16,7 +16,9 @@ unsigned LuaInterfaceGameBase::GetVersion()
 
 unsigned LuaInterfaceGameBase::GetFeatureLevel()
 {
-    return 6;
+    // 7: Added the per-mine ADDON_*MINE_RESOURCE_BEHAVIOR addons with the legacy ADDON_INEXHAUSTIBLE_GRANITEMINES /
+    //    ADDON_INEXHAUSTIBLE_MINES aliases, plus SetAI resetting the player name (see doc/lua/functions.md).
+    return 7;
 }
 
 LuaInterfaceGameBase::LuaInterfaceGameBase(const ILocalGameState& localGameState) : localGameState(localGameState)

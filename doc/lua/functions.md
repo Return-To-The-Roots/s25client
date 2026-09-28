@@ -113,6 +113,11 @@ rttr:SetAddon(ADDON_FRONTIER_DISTANCE_REACHABLE, true)
 
 For addons which can be enabled / disabled simply use true or false, for addons with different settings, add the number according to your setting.  
 
+Deprecated addon names, kept working for older scripts:
+
+- `ADDON_INEXHAUSTIBLE_GRANITEMINES` is an alias for `ADDON_GRANITEMINE_RESOURCE_BEHAVIOR`. The old `true` still selects the inexhaustible behavior.
+- `ADDON_INEXHAUSTIBLE_MINES` is no longer an addon of its own. Setting it to `true` makes every mine type that is still at its default behavior inexhaustible, setting it to `false` does nothing. Use the per-mine `ADDON_*MINE_RESOURCE_BEHAVIOR` addons instead.
+
 **rttr:ResetAddons()**  
 Set all addons to S2 defaults
 
