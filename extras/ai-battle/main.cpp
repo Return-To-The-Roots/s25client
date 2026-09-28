@@ -14,6 +14,7 @@
 #include "ai/random.h"
 #include "files.h"
 #include "random/Random.h"
+#include "s25util/Log.h"
 #include "s25util/StringConversion.h"
 #include "s25util/System.h"
 
@@ -149,6 +150,11 @@ int main(int argc, char** argv)
         bnw::cout << std::endl;
 
         RTTRCONFIG.Init();
+        // Lua errors and the AI log to file; without this that is ./logs, and a missing folder there turned
+        // every Lua error into "Could not open logs/... for writing"
+        const bfs::path logDir = RTTRCONFIG.ExpandPath(s25::folders::logs);
+        bfs::create_directories(logDir);
+        LOG.setLogFilepath(logDir);
         RANDOM.Init(random_init);
         AI::getRandomGenerator().seed(random_ai_init);
 
