@@ -27,6 +27,23 @@
 
 namespace bfs = boost::filesystem;
 
+namespace {
+constexpr unsigned contentX = 20;
+constexpr unsigned contentWidth = 400;
+constexpr unsigned tableY = 30;
+constexpr unsigned tableHeight = 200;
+/// Height of a single-line control (text, edit, button)
+constexpr unsigned ctrlHeight = 22;
+/// Gaps between neighboring controls
+constexpr unsigned ctrlSpacingX = 8;
+constexpr unsigned ctrlSpacingY = 8;
+constexpr unsigned bottomMargin = 24;
+/// Subclasses add their own controls from here
+constexpr unsigned contentStartY = tableY + tableHeight + ctrlSpacingY + ctrlHeight;
+constexpr unsigned halfWidth = (contentWidth - ctrlSpacingX) / 2;
+constexpr unsigned rightColumnX = contentX + halfWidth + ctrlSpacingX;
+} // namespace
+
 static bfs::path GetPresetsDir()
 {
     return RTTRCONFIG.ExpandPath(s25::folders::addonPresets);
@@ -67,26 +84,29 @@ static std::optional<std::map<unsigned, unsigned>> LoadPresetsFromFile(const bfs
     return states;
 }
 
-iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const std::string& actionLabel, const unsigned height)
-    : IngameWindow(CGI_ADDON_PRESETS, IngameWindow::posLastOrCenter, Extent(440, height), title,
+iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const std::string& actionLabel,
+                                       const unsigned additionalHeight)
+    : IngameWindow(CGI_ADDON_PRESETS, IngameWindow::posLastOrCenter,
+                   Extent(440, contentStartY + additionalHeight + ctrlHeight + bottomMargin), title,
                    LOADER.GetImageN("resource", 41), true)
 {
     using SRT = ctrlTable::SortType;
     AddTable(ID_tblPresets, DrawPoint(contentX, tableY), Extent(contentWidth, tableHeight), TextureColor::Green2,
              NormalFont, ctrlTable::Columns{{_("Preset Name"), contentWidth, SRT::String}, {}});
 
-    AddText(ID_txtFolder, DrawPoint(contentX, tableY + tableHeight + rowGap), GetPresetsDir().string(), COLOR_YELLOW,
-            FontStyle::TOP, SmallFont)
+    AddText(ID_txtFolder, DrawPoint(contentX, tableY + tableHeight + ctrlSpacingY), GetPresetsDir().string(),
+            COLOR_YELLOW, FontStyle::TOP, SmallFont)
       ->setMaxWidth(contentWidth);
 
-    const unsigned buttonY = height - bottomMargin - rowHeight;
-    AddTextButton(ID_btAction, DrawPoint(rightColumnX, buttonY), Extent(halfWidth, rowHeight), TextureColor::Green2,
-                  actionLabel, NormalFont);
-    AddTextButton(ID_btDelete, DrawPoint(contentX, buttonY), Extent(halfWidth, rowHeight), TextureColor::Red1,
+    const unsigned buttonY = contentStartY + additionalHeight;
+    AddTextButton(ID_btAction, DrawPoint(rightColumnX, buttonY), Extent(halfWidth, ctrlHeight), TextureColor::Green2,
+                  actionLabel, NormalFont)
+      ->SetEnabled(false);
+    AddTextButton(ID_btDelete, DrawPoint(contentX, buttonY), Extent(halfWidth, ctrlHeight), TextureColor::Red1,
                   _("Delete"), NormalFont)
       ->SetEnabled(false);
 
-    iwAddonPresetsBase::RefreshTable();
+    RefreshTable();
 }
 
 void iwAddonPresetsBase::RefreshTable()
@@ -109,6 +129,22 @@ bfs::path iwAddonPresetsBase::GetSelectedFilePath() const
     return table.GetItemText(*selection, 1);
 }
 
+bool iwAddonPresetsBase::IsPresetSelected() const
+{
+    return assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets)).GetSelection().has_value();
+}
+
+void iwAddonPresetsBase::UpdateButtons()
+{
+    GetCtrl<ctrlButton>(ID_btDelete)->SetEnabled(IsPresetSelected());
+    GetCtrl<ctrlButton>(ID_btAction)->SetEnabled(CanDoAction());
+}
+
+bool iwAddonPresetsBase::CanDoAction() const
+{
+    return IsPresetSelected();
+}
+
 void iwAddonPresetsBase::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_btDelete)
@@ -120,9 +156,9 @@ void iwAddonPresetsBase::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwAddonPresetsBase::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& selection)
+void iwAddonPresetsBase::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/)
 {
-    GetCtrl<ctrlButton>(ID_btDelete)->SetEnabled(selection.has_value());
+    UpdateButtons();
 }
 
 void iwAddonPresetsBase::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
@@ -163,26 +199,13 @@ void iwAddonPresetsBase::Msg_MsgBoxResult(const unsigned msgbox_id, const Msgbox
 }
 
 iwSaveAddonPreset::iwSaveAddonPreset(std::map<unsigned, unsigned> states)
-    : iwAddonPresetsBase(_("Save Addon Preset"), _("Save"),
-                         contentStartY + rowHeight + rowGap + rowHeight + bottomMargin),
-      states_(std::move(states))
+    : iwAddonPresetsBase(_("Save Addon Preset"), _("Save"), ctrlHeight + ctrlSpacingY), states_(std::move(states))
 {
     // maxLength 251 = 255 filename limit - 4 chars for ".ini"; just discourages absurdly long
     // input, isValidFileName() may still reject it since it counts bytes, not codepoints.
-    AddEdit(ID_edtName, DrawPoint(contentX, contentStartY), Extent(contentWidth, rowHeight), TextureColor::Green2,
+    AddEdit(ID_edtName, DrawPoint(contentX, contentStartY), Extent(contentWidth, ctrlHeight), TextureColor::Green2,
             NormalFont, 251, false, false, true)
       ->SetType(EditType::Filename);
-}
-
-void iwSaveAddonPreset::RefreshTable()
-{
-    // Rebuilding deselects, which would clear the name as if the user had deselected
-    auto& edit = assertNonNull(GetCtrl<ctrlEdit>(ID_edtName));
-    const std::string name = edit.GetText();
-    iwAddonPresetsBase::RefreshTable();
-    edit.SetNotify(false);
-    edit.SetText(name);
-    edit.SetNotify(true);
 }
 
 void iwSaveAddonPreset::Msg_EditEnter(const unsigned /*ctrl_id*/)
@@ -192,27 +215,29 @@ void iwSaveAddonPreset::Msg_EditEnter(const unsigned /*ctrl_id*/)
 
 void iwSaveAddonPreset::Msg_EditChange(const unsigned /*ctrl_id*/)
 {
-    auto& table = assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets));
-    if(!table.GetSelection())
-        return;
-
     // Editing makes the selected preset ambiguous, so drop the selection instead of guessing which one is meant
-    deselectingFromEdit_ = true;
-    table.SetSelection(std::nullopt);
-    deselectingFromEdit_ = false;
+    assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets)).SetSelection(std::nullopt);
 }
 
 void iwSaveAddonPreset::Msg_TableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
+    if(selection)
+    {
+        const auto& table = assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets));
+        auto& edit = assertNonNull(GetCtrl<ctrlEdit>(ID_edtName));
+        // Suppress the change event so Msg_EditChange won't deselect the row just selected
+        edit.SetNotify(false);
+        edit.SetText(table.GetItemText(*selection, 0));
+        edit.SetNotify(true);
+    }
+    // The name must be filled first, as it decides whether saving is possible
     iwAddonPresetsBase::Msg_TableSelectItem(ctrl_id, selection);
-    if(deselectingFromEdit_)
-        return;
-    const auto& table = assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets));
-    auto& edit = assertNonNull(GetCtrl<ctrlEdit>(ID_edtName));
-    // Suppress the change event so Msg_EditChange won't deselect the row just selected
-    edit.SetNotify(false);
-    edit.SetText(selection ? table.GetItemText(*selection, 0) : "");
-    edit.SetNotify(true);
+}
+
+bool iwSaveAddonPreset::CanDoAction() const
+{
+    // An invalid name still allows saving, which then tells the user what is wrong with it
+    return GetCtrl<ctrlEdit>(ID_edtName)->GetFileName(".ini").status != FileNameStatus::Empty;
 }
 
 void iwSaveAddonPreset::DoAction()
@@ -284,17 +309,8 @@ void iwSaveAddonPreset::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxR
 }
 
 iwLoadAddonPreset::iwLoadAddonPreset(std::function<void(const std::map<unsigned, unsigned>&)> onLoad)
-    : iwAddonPresetsBase(_("Load Addon Preset"), _("Load"), contentStartY + rowHeight + bottomMargin),
-      onLoad_(std::move(onLoad))
-{
-    GetCtrl<ctrlButton>(ID_btAction)->SetEnabled(false);
-}
-
-void iwLoadAddonPreset::Msg_TableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
-{
-    iwAddonPresetsBase::Msg_TableSelectItem(ctrl_id, selection);
-    GetCtrl<ctrlButton>(ID_btAction)->SetEnabled(selection.has_value());
-}
+    : iwAddonPresetsBase(_("Load Addon Preset"), _("Load"), 0), onLoad_(std::move(onLoad))
+{}
 
 void iwLoadAddonPreset::DoAction()
 {

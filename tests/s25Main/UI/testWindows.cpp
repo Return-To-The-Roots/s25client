@@ -28,6 +28,7 @@
 #include "world/GameWorldViewer.h"
 #include "rttr/test/ConfigOverride.hpp"
 #include "rttr/test/TmpFolder.hpp"
+#include "rttr/test/testHelpers.hpp"
 #include <turtle/mock.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/test/unit_test.hpp>
@@ -135,7 +136,7 @@ struct AddonPresetFixture : uiHelper::Fixture
         return false;
     }
 
-    static const iwMsgbox* topMsgbox() { return dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow()); }
+    static iwMsgbox* topMsgbox() { return dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow()); }
 
     static bool mentions(const iwMsgbox& msgbox, const std::string& name)
     {
@@ -148,8 +149,16 @@ struct AddonPresetFixture : uiHelper::Fixture
         return found;
     }
 
-    // Answering via Msg_MsgBoxResult does not close the prompt, only its own button would
-    static void closeTopMsgbox() { WINDOWMANAGER.CloseNow(WINDOWMANAGER.GetTopMostWindow()); }
+    static void closeMsgbox(iwMsgbox& msgbox) { WINDOWMANAGER.CloseNow(&msgbox); }
+
+    // Answers the prompt on top and closes it, as its own button would.
+    // Anything the answer opens (e.g. an error) stays open.
+    static void answerMsgbox(Window& wnd, unsigned msgboxId, MsgboxResult result)
+    {
+        auto& prompt = ensureNonNull(topMsgbox());
+        wnd.Msg_MsgBoxResult(msgboxId, result);
+        closeMsgbox(prompt);
+    }
 
     void save(const std::map<unsigned, unsigned>& states, const std::string& name)
     {
@@ -199,13 +208,11 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetOverwrite, AddonPresetFixture)
         base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset");
         base.Msg_EditEnter(0);
 
-        const auto* msgbox = topMsgbox();
-        BOOST_TEST_REQUIRE(msgbox);
-        BOOST_TEST(msgbox->GetTitle() == _("Overwrite Preset"));
-        BOOST_TEST(mentions(*msgbox, "myPreset"));
+        const auto& msgbox = ensureNonNull(topMsgbox());
+        BOOST_TEST(msgbox.GetTitle() == _("Overwrite Preset"));
+        BOOST_TEST(mentions(msgbox, "myPreset"));
 
-        base.Msg_MsgBoxResult(iwSaveAddonPreset::ID_mbOverwrite, MsgboxResult::No);
-        closeTopMsgbox();
+        answerMsgbox(base, iwSaveAddonPreset::ID_mbOverwrite, MsgboxResult::No);
     }
     BOOST_TEST(load("myPreset") == oldStates);
 
@@ -215,8 +222,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetOverwrite, AddonPresetFixture)
         Window& base = wnd;
         base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset");
         base.Msg_EditEnter(0);
-        base.Msg_MsgBoxResult(iwSaveAddonPreset::ID_mbOverwrite, MsgboxResult::Yes);
-        closeTopMsgbox();
+        answerMsgbox(base, iwSaveAddonPreset::ID_mbOverwrite, MsgboxResult::Yes);
     }
     BOOST_TEST(load("myPreset") == newStates);
 }
@@ -268,10 +274,9 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetLoadCorrupt, AddonPresetFixture)
     base.Msg_ButtonClick(iwAddonPresetsBase::ID_btAction);
 
     BOOST_TEST(numLoaded == 1u); // nothing is applied from a corrupt preset
-    const auto* msgbox = topMsgbox();
-    BOOST_TEST_REQUIRE(msgbox);
-    BOOST_TEST(msgbox->GetTitle() == _("Load Failed"));
-    closeTopMsgbox();
+    auto& msgbox = ensureNonNull(topMsgbox());
+    BOOST_TEST(msgbox.GetTitle() == _("Load Failed"));
+    closeMsgbox(msgbox);
 }
 
 // A failed save reports the problem but keeps the window and the name so it can be retried
@@ -285,15 +290,13 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetSaveUnwritable, AddonPresetFixture)
     Window& base = wnd;
     base.GetCtrls<ctrlEdit>().at(0)->SetText("blocked");
     base.Msg_ButtonClick(iwAddonPresetsBase::ID_btAction);
-    base.Msg_MsgBoxResult(iwSaveAddonPreset::ID_mbOverwrite, MsgboxResult::Yes);
+    answerMsgbox(base, iwSaveAddonPreset::ID_mbOverwrite, MsgboxResult::Yes);
 
-    const auto* msgbox = topMsgbox();
-    BOOST_TEST_REQUIRE(msgbox);
-    BOOST_TEST(msgbox->GetTitle() == _("Save Failed"));
+    auto& msgbox = ensureNonNull(topMsgbox());
+    BOOST_TEST(msgbox.GetTitle() == _("Save Failed"));
     BOOST_TEST(!wnd.ShouldBeClosed());
     BOOST_TEST(base.GetCtrls<ctrlEdit>().at(0)->GetText() == "blocked");
-    closeTopMsgbox();
-    closeTopMsgbox();
+    closeMsgbox(msgbox);
 }
 
 // In the save window the selection only prefills the name: saving uses what is in the edit box.
@@ -307,27 +310,26 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetSaveNameFollowsSelection, AddonPresetFixture)
 
     iwSaveAddonPreset wnd(statesNew);
     Window& base = wnd;
-    const auto* deleteBtn = wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete);
-    BOOST_TEST_REQUIRE(deleteBtn);
-    BOOST_TEST(!deleteBtn->GetEnabled());
+    const auto& deleteBtn = ensureNonNull(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete));
+    BOOST_TEST(!deleteBtn.GetEnabled());
     auto& edit = *wnd.GetCtrls<ctrlEdit>().at(0);
     auto& table = *wnd.GetCtrls<ctrlTable>().at(0);
     // Rows are sorted ascending, so row 0 is presetA
     table.SetSelection(0u);
     BOOST_TEST_REQUIRE(edit.GetText() == "presetA");
-    BOOST_TEST(deleteBtn->GetEnabled());
+    BOOST_TEST(deleteBtn.GetEnabled());
     table.SetSelection(1u);
     BOOST_TEST(edit.GetText() == "presetB"); // correct name for a non-first row
     table.SetSelection(std::nullopt);
-    BOOST_TEST(edit.GetText() == "");
-    BOOST_TEST(!deleteBtn->GetEnabled());
+    BOOST_TEST(edit.GetText() == "presetB"); // only picking a preset replaces the name
+    BOOST_TEST(!deleteBtn.GetEnabled());
     // User now types a new name after having selected a preset
     table.SetSelection(0u);
-    BOOST_TEST_REQUIRE(deleteBtn->GetEnabled());
+    BOOST_TEST_REQUIRE(deleteBtn.GetEnabled());
     edit.SetText("presetC");
-    // Deselecting normally clears the name, but not when editing is what caused it
+    // Editing drops the selection, so there is nothing left to delete
     BOOST_TEST(!table.GetSelection().has_value());
-    BOOST_TEST(!deleteBtn->GetEnabled());
+    BOOST_TEST(!deleteBtn.GetEnabled());
     BOOST_TEST(edit.GetText() == "presetC");
     base.Msg_EditEnter(0);
 
@@ -346,18 +348,16 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetDelete, AddonPresetFixture)
     BOOST_TEST_REQUIRE(select(base, "toDelete"));
     base.Msg_ButtonClick(iwAddonPresetsBase::ID_btDelete);
 
-    const auto* msgbox = topMsgbox();
-    BOOST_TEST_REQUIRE(msgbox);
-    BOOST_TEST(msgbox->GetTitle() == _("Delete Preset"));
-    BOOST_TEST(mentions(*msgbox, "toDelete"));
+    const auto& msgbox = ensureNonNull(topMsgbox());
+    BOOST_TEST(msgbox.GetTitle() == _("Delete Preset"));
+    BOOST_TEST(mentions(msgbox, "toDelete"));
 
-    base.Msg_MsgBoxResult(iwAddonPresetsBase::ID_mbDelete, MsgboxResult::Yes);
-    closeTopMsgbox();
+    answerMsgbox(base, iwAddonPresetsBase::ID_mbDelete, MsgboxResult::Yes);
 
     BOOST_TEST(numPresets() == 0u);
     // Deleting drops the selection, so both actions are unavailable again
-    BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)->GetEnabled());
-    BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)->GetEnabled());
+    BOOST_TEST(!ensureNonNull(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)).GetEnabled());
+    BOOST_TEST(!ensureNonNull(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)).GetEnabled());
 }
 
 BOOST_FIXTURE_TEST_CASE(AddonPresetSaveWindowCanDelete, AddonPresetFixture)
@@ -368,11 +368,13 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetSaveWindowCanDelete, AddonPresetFixture)
     Window& base = wnd;
     BOOST_TEST_REQUIRE(select(base, "toDelete"));
     base.Msg_ButtonClick(iwAddonPresetsBase::ID_btDelete);
-    base.Msg_MsgBoxResult(iwAddonPresetsBase::ID_mbDelete, MsgboxResult::Yes);
-    closeTopMsgbox();
+    answerMsgbox(base, iwAddonPresetsBase::ID_mbDelete, MsgboxResult::Yes);
 
     BOOST_TEST(numPresets() == 0u);
-    BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)->GetEnabled());
+    BOOST_TEST(!ensureNonNull(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)).GetEnabled());
+    // The name stays, so the preset can be saved again right away
+    BOOST_TEST(base.GetCtrls<ctrlEdit>().at(0)->GetText() == "toDelete");
+    BOOST_TEST(ensureNonNull(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)).GetEnabled());
 }
 
 // Loading and deleting act on the list selection, so both stay unavailable until one is picked.
@@ -382,14 +384,40 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetActionsRequireSelection, AddonPresetFixture)
 
     iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
     Window& base = wnd;
+    const auto& loadBtn = ensureNonNull(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction));
+    const auto& deleteBtn = ensureNonNull(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete));
     BOOST_TEST(wnd.GetCtrls<ctrlEdit>().empty()); // no name field, the list is the only target
-    BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)->GetEnabled());
-    BOOST_TEST(!wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)->GetEnabled());
+    BOOST_TEST(!loadBtn.GetEnabled());
+    BOOST_TEST(!deleteBtn.GetEnabled());
 
     BOOST_TEST(!select(base, "notSaved"));
     BOOST_TEST_REQUIRE(select(base, "exists"));
-    BOOST_TEST(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction)->GetEnabled());
-    BOOST_TEST(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btDelete)->GetEnabled());
+    BOOST_TEST(loadBtn.GetEnabled());
+    BOOST_TEST(deleteBtn.GetEnabled());
+}
+
+// Saving needs a name, typed or taken from a picked preset
+BOOST_FIXTURE_TEST_CASE(AddonPresetSaveRequiresName, AddonPresetFixture)
+{
+    save({{1, 2}}, "exists");
+
+    iwSaveAddonPreset wnd(std::map<unsigned, unsigned>{{3, 4}});
+    Window& base = wnd;
+    const auto& saveBtn = ensureNonNull(wnd.GetCtrl<ctrlButton>(iwAddonPresetsBase::ID_btAction));
+    auto& edit = *wnd.GetCtrls<ctrlEdit>().at(0);
+    BOOST_TEST(!saveBtn.GetEnabled());
+
+    edit.SetText("   ");
+    BOOST_TEST(!saveBtn.GetEnabled()); // spaces alone are no name
+    edit.SetText("new");
+    BOOST_TEST(saveBtn.GetEnabled());
+    edit.SetText("nul");
+    BOOST_TEST(saveBtn.GetEnabled()); // an invalid name is reported when saving instead
+    edit.SetText("");
+    BOOST_TEST(!saveBtn.GetEnabled());
+
+    BOOST_TEST_REQUIRE(select(base, "exists"));
+    BOOST_TEST(saveBtn.GetEnabled());
 }
 
 namespace {
