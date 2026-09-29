@@ -225,8 +225,7 @@ struct lua_type_traits<ImageResource>
         const LuaStackRef table(l, index);
         if(table.type() != LUA_TTABLE || table.size() != 2)
             throw LuaTypeMismatch();
-        std::string path = table[1];
-        return get_type(boost::filesystem::path(path), table[2]);
+        return get_type(table[1], table[2]);
     }
     static int push(lua_State* l, push_type v) { return util::push_args(l, v.filePath, v.index); }
 };

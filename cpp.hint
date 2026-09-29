@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+// Copyright (C) 2005 - 2026 Settlers Freaks <sf-team at siedler25.org>
 //
 // SPDX-License-Identifier: BSL-1.0
 
@@ -15,5 +15,4 @@
 #define BOOST_REQUIRE_GT(x,y) BOOST_REQUIRE((x) > (y))
 
 #define RTTR_FOREACH_PT(PtType, size) for(PtType pt;;)
-#define SUPPRESS_UNUSED
 #define RTTR_Assert(cond) assert(cond)

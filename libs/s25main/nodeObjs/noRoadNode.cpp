@@ -1,14 +1,12 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "noRoadNode.h"
-
 #include "GamePlayer.h"
 #include "RoadSegment.h"
 #include "SerializedGameData.h"
 #include "world/GameWorld.h"
-#include "s25util/warningSuppression.h"
 
 noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsigned char player)
     : noCoordBase(nop, pos), player(player)
@@ -38,17 +36,12 @@ void noRoadNode::Serialize(SerializedGameData& sgd) const
         // this is a trick:
         // -> initialize routes for flag with nullptr
         // -> RoadSegment will set these later
-        for(const auto i : helpers::EnumRange<Direction>{})
-        {
-            RTTR_UNUSED(i);
+        for([[maybe_unused]] const auto i : helpers::EnumRange<Direction>{})
             sgd.PushObject(static_cast<GameObject*>(nullptr), true);
-        }
     } else
     {
         for(const auto dir : helpers::EnumRange<Direction>{})
-        {
             sgd.PushObject(routes[dir], true);
-        }
     }
 }
 

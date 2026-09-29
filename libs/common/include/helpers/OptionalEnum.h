@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -25,7 +25,7 @@ public:
     using value_type = T;
 
     constexpr OptionalEnum() noexcept = default;
-    OptionalEnum(std::nullopt_t) noexcept {}
+    constexpr OptionalEnum(std::nullopt_t) noexcept {}
     constexpr OptionalEnum(const T& value) noexcept : value_(static_cast<underlying_type>(value)) {}
     constexpr OptionalEnum& operator=(const T& value) noexcept
     {
