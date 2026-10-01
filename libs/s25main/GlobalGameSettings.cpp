@@ -108,7 +108,8 @@ void GlobalGameSettings::registerAllAddons()
         AddonForesterFarmFieldAvoidance,
         AddonForesterReachRadius,
         AddonWoodcutterReachRadius,
-        AddonStonemasonReachRadius
+        AddonStonemasonReachRadius,
+        AddonBuildingRadius
     >;
     // clang-format on
     using namespace boost::mp11;
@@ -155,7 +156,7 @@ const GlobalGameSettings::AddonWithState* GlobalGameSettings::getAddon(AddonId i
 bool GlobalGameSettings::isEnabled(AddonId id) const
 {
     const auto* addon = getAddon(id);
-    return addon && addon->status != addon->addon->getDefaultStatus();
+    return addon && addon->status != 0;
 }
 
 unsigned GlobalGameSettings::getSelection(AddonId id) const

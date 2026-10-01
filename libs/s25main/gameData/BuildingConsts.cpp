@@ -3,7 +3,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "BuildingConsts.h"
+#include "figures/nofCatapultMan.h"
+#include "figures/nofFarmhand.h"
+#include "figures/nofHunter.h"
 #include "mygettext/mygettext.h"
+#include "gameTypes/BuildingTypes.h"
+#include "gameData/GameConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include <type_traits>
 
 const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES = {
@@ -409,3 +415,48 @@ const helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_ARMOR_SI
     babylonians[BuildingType::Fortress] = DrawPoint(20, -34);
     return result;
 }();
+
+unsigned GetBuildingRadius(BuildingType bld)
+{
+    switch(bld)
+    {
+        // Military buildings (territory influence radius) — from MilitaryConsts.h
+        case BuildingType::Barracks: return MILITARY_RADIUS[0];
+        case BuildingType::Guardhouse: return MILITARY_RADIUS[1];
+        case BuildingType::Watchtower: return MILITARY_RADIUS[2];
+        case BuildingType::Fortress: return MILITARY_RADIUS[3];
+        // Headquarters
+        case BuildingType::Headquarters: return HQ_RADIUS;
+        // Harbor building
+        case BuildingType::HarborBuilding: return HARBOR_RADIUS;
+        // Lookout tower — scouting visibility range
+        case BuildingType::LookoutTower: return VISUALRANGE_LOOKOUTTOWER;
+        // Catapult attack range
+        case BuildingType::Catapult: return CATAPULT_MAX_TARGET_RANGE;
+        // Hunter searches for animals in a square of this half-side length
+        case BuildingType::Hunter: return HUNTER_SEARCH_HALFSIDE;
+        // Mines — miner stays inside and extracts from adjacent tiles
+        case BuildingType::GraniteMine:
+        case BuildingType::CoalMine:
+        case BuildingType::IronMine:
+        case BuildingType::GoldMine: return MINER_RADIUS;
+        // Farmhand-based buildings — worker goes out to gather resources from the map.
+        // Map each building type to its job via BLD_WORK_DESC, then query the work
+        // radius from nofFarmhand::GetWorkRadius.
+        case BuildingType::Woodcutter:
+        case BuildingType::Forester:
+        case BuildingType::Fishery:
+        case BuildingType::Quarry:
+        case BuildingType::Farm:
+        case BuildingType::Vineyard:
+        case BuildingType::Charburner:
+        {
+            const auto job = BLD_WORK_DESC[bld].job;
+            if(job)
+                return nofFarmhand::GetWorkRadius(*job);
+            return 0;
+        }
+        // Remaining building types have no relevant radius
+        default: return 0;
+    }
+}

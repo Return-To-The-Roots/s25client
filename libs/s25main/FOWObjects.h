@@ -32,6 +32,7 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
     FoW_Type GetType() const override { return FoW_Type::Building; }
+    BuildingType GetBuildingType() const { return type; }
 };
 
 /// Baustelle
