@@ -3,8 +3,10 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "GamePlayer.h"
+#include "GlobalGameSettings.h"
 #include "PointOutput.h"
 #include "RttrForeachPt.h"
+#include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
 #include "figures/noFigure.h"
@@ -20,6 +22,53 @@
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(FigureTests)
+
+BOOST_AUTO_TEST_CASE(StrandedSoldierReturnSearchDefaultKeepsNormalTryingsAndRadius)
+{
+    GlobalGameSettings ggs;
+    ggs.setSelection(AddonId::STRANDED_SOLDIER_RETURN_SEARCH, 0);
+
+    BOOST_TEST(GetStrandedSoldierReturnSearchTryings(ggs) == 6u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 6) == 15u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 1) == 15u);
+}
+
+BOOST_AUTO_TEST_CASE(StrandedSoldierReturnSearchReducedKeepsNormalTryingsAndFixedHalfRadius)
+{
+    GlobalGameSettings ggs;
+    ggs.setSelection(AddonId::STRANDED_SOLDIER_RETURN_SEARCH, 1);
+
+    BOOST_TEST(GetStrandedSoldierReturnSearchTryings(ggs) == 6u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 12) == 7u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 6) == 7u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 1) == 7u);
+}
+
+BOOST_AUTO_TEST_CASE(StrandedSoldierReturnSearchExtendedEscalatesAfterNormalTryings)
+{
+    GlobalGameSettings ggs;
+    ggs.setSelection(AddonId::STRANDED_SOLDIER_RETURN_SEARCH, 2);
+
+    BOOST_TEST(GetStrandedSoldierReturnSearchTryings(ggs) == 12u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 12) == 15u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 7) == 15u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 6) == 30u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 1) == 30u);
+}
+
+BOOST_AUTO_TEST_CASE(StrandedSoldierReturnSearchVeryLargeEscalatesThroughThreeStages)
+{
+    GlobalGameSettings ggs;
+    ggs.setSelection(AddonId::STRANDED_SOLDIER_RETURN_SEARCH, 3);
+
+    BOOST_TEST(GetStrandedSoldierReturnSearchTryings(ggs) == 18u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 18) == 15u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 13) == 15u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 12) == 30u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 7) == 30u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 6) == 60u);
+    BOOST_TEST(GetStrandedSoldierReturnSearchRadius(ggs, 1) == 60u);
+}
 
 BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
 {
