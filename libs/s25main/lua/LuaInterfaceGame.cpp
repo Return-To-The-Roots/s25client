@@ -5,10 +5,12 @@
 #include "LuaInterfaceGame.h"
 #include "EventManager.h"
 #include "Game.h"
+#include "RttrConfig.h"
 #include "WindowManager.h"
 #include "ai/AIInterface.h"
 #include "ai/AIPlayer.h"
 #include "ingameWindows/iwMissionStatement.h"
+#include "lua/GameDataLoader.h"
 #include "lua/LuaHelpers.h"
 #include "lua/LuaPlayer.h"
 #include "lua/LuaWorld.h"
@@ -206,6 +208,7 @@ KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, SetMis
 void LuaInterfaceGame::Register(kaguya::State& state)
 {
     state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceGameBase>()
+                                 .addFunction("AddTerrain", &LuaInterfaceGame::AddTerrain)
                                  .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
                                  .addFunction("GetGF", &LuaInterfaceGame::GetGF)
                                  .addFunction("FormatNumGFs", &LuaInterfaceGame::FormatNumGFs)
@@ -257,6 +260,42 @@ bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
         return load.call<bool>(kaguya::standard::ref(luaSaveState)) && !hasErrorOccurred();
     } else
         return true;
+}
+
+void LuaInterfaceGame::SetMapDir(const boost::filesystem::path& mapDir)
+{
+    mapDir_ = mapDir;
+    RTTRCONFIG.addPathMapping("MAP", mapDir);
+}
+
+void LuaInterfaceGame::AddTerrain(const kaguya::LuaTable& data)
+{
+    if(!mapDir_.empty())
+    {
+        // Resolve relative texture paths to <RTTR_MAP>/filename
+        kaguya::LuaRef texRef = data["texture"];
+        if(texRef.type() == LUA_TSTRING)
+        {
+            std::string texPath = texRef;
+            if(texPath.find("<RTTR_") != 0 && !texPath.empty())
+            {
+                boost::filesystem::path p(texPath);
+                if(p.is_absolute())
+                {
+                    throw LuaExecutionError("Absolute paths not allowed in AddTerrain texture path: " + texPath);
+                }
+                // Prevent directory traversal
+                if(texPath.find("..") != std::string::npos)
+                {
+                    throw LuaExecutionError("Invalid texture path '" + texPath + "': must not contain '..'");
+                }
+                // Use <RTTR_MAP> prefix so validatePath and ExpandPath handle it naturally
+                kaguya::LuaTable mutableData = data;
+                mutableData["texture"] = std::string("<RTTR_MAP>/") + texPath;
+            }
+        }
+    }
+    addTerrain(gw.GetDescriptionWriteable(), data);
 }
 
 void LuaInterfaceGame::ClearResources()
