@@ -7,6 +7,8 @@
 #include "Loader.h"
 #include "RttrConfig.h"
 #include "WindowManager.h"
+#include "commonDefines.h"
+#include "controls/ctrlButton.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlTable.h"
 #include "controls/ctrlText.h"
@@ -16,6 +18,7 @@
 #include "gameData/const_gui_ids.h"
 #include "libsiedler2/ArchivItem_Ini.h"
 #include "libsiedler2/ArchivItem_Text.h"
+#include "libsiedler2/ErrorCodes.h"
 #include "libsiedler2/libsiedler2.h"
 #include "s25util/Log.h"
 #include "s25util/StringConversion.h"
@@ -23,6 +26,23 @@
 #include <optional>
 
 namespace bfs = boost::filesystem;
+
+namespace {
+constexpr unsigned contentX = 20;
+constexpr unsigned contentWidth = 400;
+constexpr unsigned tableY = 30;
+constexpr unsigned tableHeight = 200;
+/// Height of a single-line control (text, edit, button)
+constexpr unsigned ctrlHeight = 22;
+/// Gaps between neighboring controls
+constexpr unsigned ctrlSpacingX = 8;
+constexpr unsigned ctrlSpacingY = 8;
+constexpr unsigned bottomMargin = 24;
+/// Subclasses add their own controls from here
+constexpr unsigned contentStartY = tableY + tableHeight + ctrlSpacingY + ctrlHeight;
+constexpr unsigned halfWidth = (contentWidth - ctrlSpacingX) / 2;
+constexpr unsigned rightColumnX = contentX + halfWidth + ctrlSpacingX;
+} // namespace
 
 static bfs::path GetPresetsDir()
 {
@@ -64,47 +84,34 @@ static std::optional<std::map<unsigned, unsigned>> LoadPresetsFromFile(const bfs
     return states;
 }
 
-// iwAddonPresetsBase
-iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const std::string& actionLabel)
-    : IngameWindow(CGI_ADDON_PRESETS, IngameWindow::posLastOrCenter, Extent(440, 330), title,
+iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const std::string& actionLabel,
+                                       const unsigned additionalHeight)
+    : IngameWindow(CGI_ADDON_PRESETS, IngameWindow::posLastOrCenter,
+                   Extent(440, contentStartY + additionalHeight + ctrlHeight + bottomMargin), title,
                    LOADER.GetImageN("resource", 41), true)
 {
-    const bfs::path presetsDir = GetPresetsDir();
-    boost::system::error_code ec;
-    bfs::create_directories(presetsDir, ec);
-    if(ec)
-    {
-        LOG.write("Failed to create addon preset folder %1%: %2%\n") % presetsDir % ec.message();
-        // Without the folder, saving/loading/deleting presets can't work.
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-          _("Addon Presets Unavailable"),
-          _("The addon presets folder could not be created. Saving and loading addon presets is unavailable."), nullptr,
-          MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
-        Close();
-        return;
-    }
-
     using SRT = ctrlTable::SortType;
-    AddTable(ID_tblPresets, DrawPoint(20, 30), Extent(400, 200), TextureColor::Green2, NormalFont,
-             ctrlTable::Columns{{_("Preset Name"), 400, SRT::String}, {}});
+    AddTable(ID_tblPresets, DrawPoint(contentX, tableY), Extent(contentWidth, tableHeight), TextureColor::Green2,
+             NormalFont, ctrlTable::Columns{{_("Preset Name"), contentWidth, SRT::String}, {}});
 
-    AddText(ID_txtFolder, DrawPoint(20, 236), presetsDir.string(), COLOR_YELLOW, FontStyle::TOP, SmallFont)
-      ->setMaxWidth(400);
+    AddText(ID_txtFolder, DrawPoint(contentX, tableY + tableHeight + ctrlSpacingY), GetPresetsDir().string(),
+            COLOR_YELLOW, FontStyle::TOP, SmallFont)
+      ->setMaxWidth(contentWidth);
 
-    // maxLength 251 = 255 filename limit - 4 chars for ".ini"; just discourages absurdly long
-    // input, isValidFileName() may still reject it since it counts bytes, not codepoints.
-    AddEdit(ID_edtName, DrawPoint(20, 254), Extent(400, 22), TextureColor::Green2, NormalFont, 251);
-    GetCtrl<ctrlEdit>(ID_edtName)->SetType(EditType::Filename);
-
-    AddTextButton(ID_btAction, DrawPoint(20, 284), Extent(185, 22), TextureColor::Green2, actionLabel, NormalFont);
-    AddTextButton(ID_btDelete, DrawPoint(235, 284), Extent(185, 22), TextureColor::Red1, _("Delete"), NormalFont);
+    const unsigned buttonY = contentStartY + additionalHeight;
+    AddTextButton(ID_btAction, DrawPoint(rightColumnX, buttonY), Extent(halfWidth, ctrlHeight), TextureColor::Green2,
+                  actionLabel, NormalFont)
+      ->SetEnabled(false);
+    AddTextButton(ID_btDelete, DrawPoint(contentX, buttonY), Extent(halfWidth, ctrlHeight), TextureColor::Red1,
+                  _("Delete"), NormalFont)
+      ->SetEnabled(false);
 
     RefreshTable();
 }
 
 void iwAddonPresetsBase::RefreshTable()
 {
-    auto& table = *GetCtrl<ctrlTable>(ID_tblPresets);
+    auto& table = assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets));
     table.DeleteAllItems();
 
     for(const auto& file : ListDir(GetPresetsDir(), "ini"))
@@ -113,56 +120,45 @@ void iwAddonPresetsBase::RefreshTable()
     table.SortRows(0, TableSortDir::Ascending);
 }
 
-bfs::path iwAddonPresetsBase::GetTargetFilePath() const
+bfs::path iwAddonPresetsBase::GetSelectedFilePath() const
 {
-    const std::string name = GetCtrl<ctrlEdit>(ID_edtName)->GetText();
-    if(name.empty())
+    const auto& table = assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets));
+    const auto& selection = table.GetSelection();
+    if(!selection)
         return {};
-
-    const auto& table = *GetCtrl<ctrlTable>(ID_tblPresets);
-    for(unsigned short i = 0; i < table.GetNumRows(); ++i)
-    {
-        if(table.GetItemText(i, 0) == name)
-            return table.GetItemText(i, 1);
-    }
-    return {};
+    return table.GetItemText(*selection, 1);
 }
 
-bfs::path iwAddonPresetsBase::GetTargetFileOrNotify() const
+bool iwAddonPresetsBase::IsPresetSelected() const
 {
-    bfs::path path = GetTargetFilePath();
-    if(!path.empty())
-        return path;
-
-    const std::string name = GetCtrl<ctrlEdit>(ID_edtName)->GetText();
-    if(name.empty())
-        return {};
-
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Preset Not Found"),
-                                                  helpers::format(_("Preset '%1%' was not found."), name), nullptr,
-                                                  MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
-    return {};
+    return assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets)).GetSelection().has_value();
 }
 
-void iwAddonPresetsBase::Msg_EditEnter(const unsigned /*ctrl_id*/)
+void iwAddonPresetsBase::UpdateButtons()
 {
-    DoAction();
+    GetCtrl<ctrlButton>(ID_btDelete)->SetEnabled(IsPresetSelected());
+    GetCtrl<ctrlButton>(ID_btAction)->SetEnabled(CanDoAction());
+}
+
+bool iwAddonPresetsBase::CanDoAction() const
+{
+    return IsPresetSelected();
 }
 
 void iwAddonPresetsBase::Msg_ButtonClick(const unsigned ctrl_id)
 {
-    switch(ctrl_id)
+    if(ctrl_id == ID_btDelete)
+        ConfirmDelete();
+    else
     {
-        case ID_btAction: DoAction(); break;
-        case ID_btDelete: ConfirmDelete(); break;
-        default: break;
+        RTTR_Assert(ctrl_id == ID_btAction);
+        DoAction();
     }
 }
 
-void iwAddonPresetsBase::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& selection)
+void iwAddonPresetsBase::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/)
 {
-    const auto& table = *GetCtrl<ctrlTable>(ID_tblPresets);
-    GetCtrl<ctrlEdit>(ID_edtName)->SetText(selection ? table.GetItemText(*selection, 0) : "");
+    UpdateButtons();
 }
 
 void iwAddonPresetsBase::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
@@ -172,7 +168,7 @@ void iwAddonPresetsBase::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const u
 
 void iwAddonPresetsBase::ConfirmDelete()
 {
-    const bfs::path filePath = GetTargetFileOrNotify();
+    const bfs::path filePath = GetSelectedFilePath();
     if(filePath.empty())
         return;
     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
@@ -185,7 +181,7 @@ void iwAddonPresetsBase::Msg_MsgBoxResult(const unsigned msgbox_id, const Msgbox
     if(msgbox_id != ID_mbDelete || mbr != MsgboxResult::Yes)
         return;
 
-    const bfs::path filePath = GetTargetFilePath();
+    const bfs::path filePath = GetSelectedFilePath();
     if(filePath.empty())
         return;
 
@@ -200,13 +196,49 @@ void iwAddonPresetsBase::Msg_MsgBoxResult(const unsigned msgbox_id, const Msgbox
     // Refresh in both cases so the list reflects the actual filesystem state
     // (e.g. the file became a directory or was removed out from under us).
     RefreshTable();
-    GetCtrl<ctrlEdit>(ID_edtName)->SetText("");
 }
 
-// iwSaveAddonPreset
 iwSaveAddonPreset::iwSaveAddonPreset(std::map<unsigned, unsigned> states)
-    : iwAddonPresetsBase(_("Save Addon Preset"), _("Save")), states_(std::move(states))
-{}
+    : iwAddonPresetsBase(_("Save Addon Preset"), _("Save"), ctrlHeight + ctrlSpacingY), states_(std::move(states))
+{
+    // maxLength 251 = 255 filename limit - 4 chars for ".ini"; just discourages absurdly long
+    // input, isValidFileName() may still reject it since it counts bytes, not codepoints.
+    AddEdit(ID_edtName, DrawPoint(contentX, contentStartY), Extent(contentWidth, ctrlHeight), TextureColor::Green2,
+            NormalFont, 251, false, false, true)
+      ->SetType(EditType::Filename);
+}
+
+void iwSaveAddonPreset::Msg_EditEnter(const unsigned /*ctrl_id*/)
+{
+    DoAction();
+}
+
+void iwSaveAddonPreset::Msg_EditChange(const unsigned /*ctrl_id*/)
+{
+    // Editing makes the selected preset ambiguous, so drop the selection instead of guessing which one is meant
+    assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets)).SetSelection(std::nullopt);
+}
+
+void iwSaveAddonPreset::Msg_TableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
+{
+    if(selection)
+    {
+        const auto& table = assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets));
+        auto& edit = assertNonNull(GetCtrl<ctrlEdit>(ID_edtName));
+        // Suppress the change event so Msg_EditChange won't deselect the row just selected
+        edit.SetNotify(false);
+        edit.SetText(table.GetItemText(*selection, 0));
+        edit.SetNotify(true);
+    }
+    // The name must be filled first, as it decides whether saving is possible
+    iwAddonPresetsBase::Msg_TableSelectItem(ctrl_id, selection);
+}
+
+bool iwSaveAddonPreset::CanDoAction() const
+{
+    // An invalid name still allows saving, which then tells the user what is wrong with it
+    return GetCtrl<ctrlEdit>(ID_edtName)->GetFileName(".ini").status != FileNameStatus::Empty;
+}
 
 void iwSaveAddonPreset::DoAction()
 {
@@ -247,41 +279,42 @@ void iwSaveAddonPreset::SaveToPath(const bfs::path& filePath)
     libsiedler2::Archiv archive;
     archive.push(std::move(iniItem));
 
-    if(libsiedler2::Write(filePath, archive) == 0)
+    const int ec = libsiedler2::Write(filePath, archive);
+    if(ec == libsiedler2::ErrorCode::NONE)
     {
         Close();
         return;
     }
 
-    LOG.write("Failed to save addon preset to %1%\n") % filePath;
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
-      _("Save Failed"), _("Failed to save the preset. Please check the filename and try again."), this,
-      MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
+    LOG.write("Failed to save addon preset to %1%: %2%\n") % filePath % libsiedler2::getErrorString(ec);
+    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Save Failed"),
+                                                  _("Failed to save the preset. Check application logs for details."),
+                                                  this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
     RefreshTable();
 }
 
 void iwSaveAddonPreset::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
-    if(msgbox_id == ID_mbOverwrite)
+    if(msgbox_id != ID_mbOverwrite)
     {
-        if(mbr == MsgboxResult::Yes)
-        {
-            const auto fileNameResult = GetCtrl<ctrlEdit>(ID_edtName)->GetFileName(".ini");
-            if(fileNameResult.status == FileNameStatus::Valid)
-                SaveToPath(GetPresetsDir() / fileNameResult.name);
-        }
-    } else
         iwAddonPresetsBase::Msg_MsgBoxResult(msgbox_id, mbr);
+        return;
+    }
+    if(mbr != MsgboxResult::Yes)
+        return;
+
+    const auto fileNameResult = GetCtrl<ctrlEdit>(ID_edtName)->GetFileName(".ini");
+    if(fileNameResult.status == FileNameStatus::Valid)
+        SaveToPath(GetPresetsDir() / fileNameResult.name);
 }
 
-// iwLoadAddonPreset
 iwLoadAddonPreset::iwLoadAddonPreset(std::function<void(const std::map<unsigned, unsigned>&)> onLoad)
-    : iwAddonPresetsBase(_("Load Addon Preset"), _("Load")), onLoad_(std::move(onLoad))
+    : iwAddonPresetsBase(_("Load Addon Preset"), _("Load"), 0), onLoad_(std::move(onLoad))
 {}
 
 void iwLoadAddonPreset::DoAction()
 {
-    const bfs::path filePath = GetTargetFileOrNotify();
+    const bfs::path filePath = GetSelectedFilePath();
     if(filePath.empty())
         return;
 
