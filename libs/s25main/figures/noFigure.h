@@ -12,6 +12,7 @@
 
 class ResourceId;
 class RoadSegment;
+class noFlag;
 class noRoadNode;
 class glArchivItem_Bob;
 enum class Job : uint8_t;
@@ -103,6 +104,10 @@ protected:
     explicit noFigure(const noFigure&) = default;
 
 private:
+    /// Waiting at the flag at pos to be carried over the waterway cur_rs by a boat carrier?
+    /// The figure is then owned by that flag and not in the world (BOATS_TRANSPORT_FIGURES addon)
+    bool waiting_for_boat;
+
     /// abgeleitete Klassen informieren, wenn ...
     virtual void GoalReached() = 0; // das Ziel erreicht wurde
     virtual void Walked() = 0;      // man gelaufen ist
@@ -120,6 +125,11 @@ private:
 
     /// Sichtbarkeiten berechnen für Figuren mit Sichtradius (Soldaten, Erkunder) vor dem Laufen
     void CalcVisibilities(MapPoint pt);
+
+    /// Wait at the given flag for a boat carrier to carry us over the waterway in the given direction
+    void WaitForBoat(noFlag& flag, Direction dir);
+    /// Stop waiting for a boat: Get back into the world standing at the flag as if we had just walked the waterway
+    void StopWaitingForBoat();
 
 protected:
     /// In aktueller Richtung ein Stück zurcklegen
@@ -252,6 +262,16 @@ public:
     /// and also the new direction it wants to travel which can be the (otherwise invalid) SHIP_DIR if the figure stays
     /// on board
     MapPoint ExamineRouteBeforeShipping(RoadPathDirection& newDir);
+
+    /// Is the figure waiting at a flag to be carried over a waterway (GetCurrentRoad) by a boat carrier?
+    bool IsWaitingForBoat() const { return waiting_for_boat; }
+    /// Called when a boat carrier took this figure from the flag
+    void StartBoatJourney();
+    /// Called when the figure left the boat at its current position and was added to the world again.
+    /// If it is not wandering it just arrived at the end of the waterway (GetCurrentRoad) and continues its way
+    void ArrivedByBoat();
+    /// Called when the waterway this figure waited for got destroyed. The figure must be in the world again.
+    void WaterwayDestroyed();
 
 private:
     /// Calculate the index of the current frame for a figure walking in the given direction

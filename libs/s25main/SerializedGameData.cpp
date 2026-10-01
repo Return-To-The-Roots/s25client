@@ -109,7 +109,8 @@
 /// 13: SeaId & HarborId: World::harborData w/o dummy entry at 0
 /// 14: Remove "age" field in nobBaseMilitary
 /// 15: Add sea to HarborPos::Neighbor
-static const unsigned currentGameDataVersion = 15;
+/// 16: Boats can transport figures: Figures waiting at flags and carried by boat carriers
+static const unsigned currentGameDataVersion = 16;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
