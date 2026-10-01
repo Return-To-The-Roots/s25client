@@ -17,8 +17,8 @@ if(EXISTS ${CMAKE_CURRENT_LIST_DIR}/dev-tools/CMakeLists.txt AND NOT DEFINED RTT
     if(APPLE) # Lua 5.2 required which is not easily available on OSX
       set(includeDevToolsDefault ON)
     else()
-      message(STATUS "Precompiled binaries are available to use for development."
-                     "They are not compatible with all platforms though."
+      message(STATUS "Precompiled binaries are available to use for development. "
+                     "They are not compatible with all platforms though.\n"
                      "Configure with -DRTTR_INCLUDE_DEVTOOLS=ON to make them available to CMake."
               )
     endif()

@@ -149,7 +149,7 @@ void nofBuildingWorker::WorkingReady()
         {
             // Ware erzeugen
             auto real_ware = std::make_unique<Ware>(*ware, nullptr, flag);
-            real_ware->WaitAtFlag(flag);
+            real_ware->WaitAtFlag(*flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
             GoodType ware_type = ConvertShields(real_ware->type);
             world->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);

@@ -41,21 +41,21 @@ BOOST_AUTO_TEST_CASE(MissionStatement)
     BOOST_TEST(wnd->IsActive());
     BOOST_TEST(wnd->GetTitle() == _("Title"));
 
-    // double windows stack
+    // double windows stack, newest modal goes on top
     executeLua("rttr:MissionStatement(1, 'Title2', 'Text')");
     const auto* wnd2 = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
     BOOST_TEST_REQUIRE(wnd2);
-    // Other window still on top
-    BOOST_TEST(wnd2 == wnd);
-    // Close first wnd
-    WINDOWMANAGER.CloseNow(const_cast<iwMissionStatement*>(wnd));
-    // 2nd shows
-    wnd2 = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
-    BOOST_TEST_REQUIRE(wnd2);
     BOOST_TEST(wnd2 != wnd);
     BOOST_TEST(wnd2->GetTitle() == "Title2");
-    // Close wnd
+    // Close 2nd (topmost) wnd
     WINDOWMANAGER.CloseNow(const_cast<iwMissionStatement*>(wnd2));
+    // 1st shows again
+    wnd2 = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.GetTopMostWindow());
+    BOOST_TEST_REQUIRE(wnd2);
+    BOOST_TEST(wnd2 == wnd);
+    BOOST_TEST(wnd2->GetTitle() == _("Title"));
+    // Close wnd
+    WINDOWMANAGER.CloseNow(const_cast<iwMissionStatement*>(wnd));
     BOOST_TEST_REQUIRE(!WINDOWMANAGER.GetTopMostWindow());
 
     // No image

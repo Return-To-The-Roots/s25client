@@ -16,5 +16,5 @@ public:
               unsigned color);
     RTTR_CLONEABLE(glArchivItem_Bob)
 
-    void mergeLinks(const std::map<uint16_t, uint16_t>& overrideLinks);
+    void mergeLinks(const std::map<uint16_t, OverlayData>& overrideLinks);
 };

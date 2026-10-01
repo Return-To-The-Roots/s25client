@@ -1,9 +1,10 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "ctrlEdit.h"
 #include "CollisionDetection.h"
+#include "RTTR_Assert.h"
 #include "ctrlTextDeepening.h"
 #include "driver/MouseCoords.h"
 #include "drivers/VideoDriverWrapper.h"
@@ -11,7 +12,9 @@
 #include "ogl/FontStyle.h"
 #include "ogl/glFont.h"
 #include "s25util/StringConversion.h"
+#include "s25util/fileFuncs.h"
 #include <s25util/utf8.h>
+#include <boost/algorithm/string/trim.hpp>
 #include <boost/nowide/detail/utf.hpp>
 #include <numeric>
 
@@ -33,8 +36,10 @@ ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Exte
 void ctrlEdit::SetText(const std::string& text)
 {
     text_ = s25util::utf8to32(text);
-    if(numberOnly_)
+    if(editType_ == EditType::Number)
         helpers::erase_if(text_, [](char32_t c) { return c < '0' || c > '9'; });
+    if(editType_ == EditType::Filename)
+        helpers::erase_if(text_, [](char32_t c) { return !isValidFileNameChar(c); });
     if(maxLength_ > 0 && text_.size() > maxLength_)
         text_.resize(maxLength_);
 
@@ -52,6 +57,24 @@ void ctrlEdit::SetText(const unsigned text)
 std::string ctrlEdit::GetText() const
 {
     return s25util::utf32to8(text_);
+}
+
+GetFileNameResult ctrlEdit::GetFileName(const std::string& ext) const
+{
+    RTTR_Assert(editType_ == EditType::Filename);
+
+    std::string name = GetText();
+    const auto isSpace = [](char c) { return c == ' '; };
+    boost::algorithm::trim_left_if(name, isSpace);
+    if(ext.empty())
+        boost::algorithm::trim_right_if(name, isSpace);
+    if(name.empty())
+        return {FileNameStatus::Empty, {}};
+    if(!ext.empty())
+        name += ext;
+    if(!isValidFileName(name))
+        return {FileNameStatus::Invalid, {}};
+    return {FileNameStatus::Valid, std::move(name)};
 }
 
 void ctrlEdit::SetFocus(bool focus)
@@ -167,8 +190,9 @@ void ctrlEdit::Draw_()
  */
 void ctrlEdit::AddChar(char32_t c)
 {
-    // Number-only text fields accept numbers only ;)
-    if(numberOnly_ && (c < '0' || c > '9'))
+    if(editType_ == EditType::Number && (c < '0' || c > '9'))
+        return;
+    if(editType_ == EditType::Filename && !isValidFileNameChar(c))
         return;
 
     if(maxLength_ > 0 && text_.size() >= maxLength_)
@@ -244,10 +268,6 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
     switch(ke.kt)
     {
         default: return false;
-        // Wird bereits über Char geliefert !!
-        case KeyType::Space: // Leertaste
-            AddChar(0x20);
-            break;
 
         case KeyType::Left: // Cursor nach Links
             // Blockweise nach links, falls Strg gedrückt

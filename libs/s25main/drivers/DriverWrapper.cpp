@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -13,7 +13,6 @@
 #include "mygettext/mygettext.h"
 #include "s25util/Log.h"
 #include "s25util/error.h"
-#include "s25util/warningSuppression.h"
 #include <array>
 
 namespace dll = boost::dll;

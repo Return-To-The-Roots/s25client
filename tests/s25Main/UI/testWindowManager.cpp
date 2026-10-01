@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -238,6 +238,8 @@ MOCK_BASE_CLASS(TestIngameWnd, IngameWindow)
     ~TestIngameWnd() override { closed.push_back(this); }
     MOCK_METHOD(DrawContent, 0, void())
     MOCK_METHOD(Msg_KeyDown, 1)
+    MOCK_METHOD(Msg_LeftDown, 1)
+    MOCK_METHOD(Msg_MiddleDown, 1)
     static std::vector<TestIngameWnd*> closed;
 };
 std::vector<TestIngameWnd*> TestIngameWnd::closed;
@@ -382,15 +384,15 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
     wnd->Close();
     wnd2->Close();
 
-    // Modal windows are not replaced but placed behind existing ones
+    // Modal windows are not replaced but placed on top of existing ones
     wnd = &WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS, true));
     wnd2 = &WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS, true));
     BOOST_TEST_REQUIRE((wnd && wnd2));
     MOCK_EXPECT(wnd->DrawContent).once();
     MOCK_EXPECT(wnd2->DrawContent).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(wnd);
-    REQUIRE_WINDOW_ALIVE(wnd2);
+    REQUIRE_WINDOW_ACTIVE(wnd2);
+    REQUIRE_WINDOW_ALIVE(wnd);
     wnd->Close();
     wnd2->Close();
     mock::verify();
@@ -398,29 +400,33 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
 
 BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
 {
-    // new modal windows get placed before older ones
+    // new modal windows get placed on top of older ones, non-modal ones behind all modal ones
     auto& wnd = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX, true));
     MOCK_EXPECT(wnd.DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(&wnd);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd);
     auto& wnd2 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX, true));
     MOCK_EXPECT(wnd.DrawContent).once();
     MOCK_EXPECT(wnd2.DrawContent).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(&wnd);
+    REQUIRE_WINDOW_ACTIVE(&wnd2);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd2);
     auto& wnd3 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MISSION_STATEMENT, true));
     MOCK_EXPECT(wnd.DrawContent).once();
     MOCK_EXPECT(wnd2.DrawContent).once();
     MOCK_EXPECT(wnd3.DrawContent).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(&wnd);
+    REQUIRE_WINDOW_ACTIVE(&wnd3);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd3);
     auto& wnd4 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX));
     MOCK_EXPECT(wnd.DrawContent).once();
     MOCK_EXPECT(wnd2.DrawContent).once();
     MOCK_EXPECT(wnd3.DrawContent).once();
     MOCK_EXPECT(wnd4.DrawContent).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(&wnd);
+    REQUIRE_WINDOW_ACTIVE(&wnd3);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd3);
     auto& wnd5 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_HELP, true));
     MOCK_EXPECT(wnd.DrawContent).once();
     MOCK_EXPECT(wnd2.DrawContent).once();
@@ -428,7 +434,8 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     MOCK_EXPECT(wnd4.DrawContent).once();
     MOCK_EXPECT(wnd5.DrawContent).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(&wnd);
+    REQUIRE_WINDOW_ACTIVE(&wnd5);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd5);
     auto& wnd6 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS));
     MOCK_EXPECT(wnd.DrawContent).once();
     MOCK_EXPECT(wnd2.DrawContent).once();
@@ -437,9 +444,10 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     MOCK_EXPECT(wnd5.DrawContent).once();
     MOCK_EXPECT(wnd6.DrawContent).once();
     WINDOWMANAGER.Draw();
-    REQUIRE_WINDOW_ACTIVE(&wnd);
+    REQUIRE_WINDOW_ACTIVE(&wnd5);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd5);
     // Now we have the following order
-    std::vector<TestIngameWnd*> expectedOrder = {&wnd, &wnd2, &wnd3, &wnd5, &wnd6, &wnd4};
+    std::vector<TestIngameWnd*> expectedOrder = {&wnd5, &wnd3, &wnd2, &wnd, &wnd6, &wnd4};
     // Only way to check the order is to simulate a key event, expect the top most one to handle it and close it, then
     // proceed
     mock::sequence s;
@@ -457,6 +465,106 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
         curWnd->Close();
         WINDOWMANAGER.Draw();
     }
+    mock::verify();
+}
+
+BOOST_FIXTURE_TEST_CASE(ModalBlocksMouseActivation, uiHelper::Fixture)
+{
+    auto* wndA = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+    auto* wndB = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_SETTINGS, true));
+    wndB->SetPos(DrawPoint(200, 200));
+    MOCK_EXPECT(wndA->DrawContent).once();
+    MOCK_EXPECT(wndB->DrawContent).once();
+    WINDOWMANAGER.Draw();
+    REQUIRE_WINDOW_ACTIVE(wndB);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+
+    // Click is over non-modal A, not modal B; B must still receive it instead of the window under the cursor.
+    const Position posInA = wndA->GetDrawPos() + Position(10, 10);
+
+    MOCK_EXPECT(wndB->Msg_LeftDown).once().returns(true);
+    MouseCoords mcDown(posInA);
+    mcDown.ldown = true;
+    WINDOWMANAGER.Msg_LeftDown(mcDown);
+    WINDOWMANAGER.Msg_LeftUp(MouseCoords(posInA));
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    REQUIRE_WINDOW_ACTIVE(wndB);
+    BOOST_TEST(!wndA->IsActive());
+    mock::verify();
+
+    MOCK_EXPECT(wndB->Msg_MiddleDown).once().returns(true);
+    MouseCoords mcMiddle(posInA);
+    mcMiddle.mdown = true;
+    WINDOWMANAGER.Msg_MiddleDown(mcMiddle);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    BOOST_TEST(!wndA->IsActive());
+    mock::verify();
+
+    // Wheel events must respect modal blocking too; the stack/active state must stay unchanged regardless.
+    WINDOWMANAGER.Msg_WheelUp(MouseCoords(posInA));
+    WINDOWMANAGER.Msg_WheelDown(MouseCoords(posInA));
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    REQUIRE_WINDOW_ACTIVE(wndB);
+    BOOST_TEST(!wndA->IsActive());
+}
+
+BOOST_FIXTURE_TEST_CASE(BuriedModalClosedByGame, uiHelper::Fixture)
+{
+    auto* wndA = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, true));
+    auto* wndB = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_SETTINGS, true));
+    auto* wndC = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_MISSION_STATEMENT, true));
+    MOCK_EXPECT(wndA->DrawContent).once();
+    MOCK_EXPECT(wndB->DrawContent).once();
+    MOCK_EXPECT(wndC->DrawContent).once();
+    WINDOWMANAGER.Draw();
+    REQUIRE_WINDOW_ACTIVE(wndC);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndC);
+
+    // Topmost C must remain topmost after non-topmost B is closed
+    WINDOWMANAGER.Close(wndB->GetID());
+    MOCK_EXPECT(wndA->DrawContent).once();
+    MOCK_EXPECT(wndC->DrawContent).once();
+    WINDOWMANAGER.Draw();
+
+    REQUIRE_WINDOW_DESTROYED(wndB);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndC);
+    REQUIRE_WINDOW_ACTIVE(wndC);
+    REQUIRE_WINDOW_ALIVE(wndA);
+    mock::verify();
+}
+
+BOOST_FIXTURE_TEST_CASE(ClickActivatesBackgroundNonModal, uiHelper::Fixture)
+{
+    auto* wndA = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
+    auto* wndB = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_SETTINGS));
+    wndB->SetPos(DrawPoint(200, 200));
+    MOCK_EXPECT(wndA->DrawContent).once();
+    MOCK_EXPECT(wndB->DrawContent).once();
+    WINDOWMANAGER.Draw();
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    REQUIRE_WINDOW_ACTIVE(wndB);
+    BOOST_TEST(!wndA->IsActive());
+
+    // B is topmost, click is over A which must become topmost/active
+    MOCK_EXPECT(wndA->Msg_LeftDown).once().returns(true);
+    MouseCoords mcDownA(wndA->GetDrawPos() + Position(10, 10));
+    mcDownA.ldown = true;
+    WINDOWMANAGER.Msg_LeftDown(mcDownA);
+    WINDOWMANAGER.Msg_LeftUp(MouseCoords(mcDownA.pos));
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndA);
+    REQUIRE_WINDOW_ACTIVE(wndA);
+    BOOST_TEST(!wndB->IsActive());
+    mock::verify();
+
+    // A is topmost, click is over B which must become topmost/active again
+    MOCK_EXPECT(wndB->Msg_LeftDown).once().returns(true);
+    MouseCoords mcDownB(wndB->GetDrawPos() + Position(10, 10));
+    mcDownB.ldown = true;
+    WINDOWMANAGER.Msg_LeftDown(mcDownB);
+    WINDOWMANAGER.Msg_LeftUp(MouseCoords(mcDownB.pos));
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    REQUIRE_WINDOW_ACTIVE(wndB);
+    BOOST_TEST(!wndA->IsActive());
     mock::verify();
 }
 

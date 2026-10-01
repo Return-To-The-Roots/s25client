@@ -696,7 +696,7 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithMultipleWalkingIn, AttackFixture4P)
 
     AddSoldiers(milBld0Pos, 0, 6);
     AddSoldiers(milBld1Pos, 1, Job::Private);
-    MapPoint milBld1FlagPos = world.GetNeighbour(milBld1Pos, Direction::SouthEast);
+    const MapPoint milBld1FlagPos = milBld1->GetFlagPos();
 
     // Scenario 1: Attack with one soldier.
     // Once enemy is defeated we walk in with another soldier of the enemy who wants to occupy its building.
@@ -844,34 +844,33 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     // 2. Carrier with coin walking out of the building
     AddSoldiers(milBld0Pos, 0, 6);
     AddSoldiers(milBld1Pos, 1, Job::Private);
-    MapPoint milBld1FlagPos = world.GetNeighbour(milBld1Pos, Direction::SouthEast);
+    const MapPoint milBld1FlagPos = milBld1->GetFlagPos();
 
     curPlayer = 1;
-    MapPoint flagPos = world.MakeMapPoint(milBld1FlagPos - Position(2, 0));
+    const MapPoint flagPos = world.MakeMapPoint(milBld1FlagPos - Position(2, 0));
     this->BuildRoad(milBld1FlagPos, false, std::vector<Direction>(2, Direction::West));
-    auto* flag = world.GetSpecObj<noFlag>(flagPos);
-    BOOST_TEST_REQUIRE(flag);
-    RoadSegment* rs = flag->GetRoute(Direction::East);
+    auto& flag = ensureNonNull(world.GetSpecObj<noFlag>(flagPos));
+    RoadSegment* rs = flag.GetRoute(Direction::East);
     BOOST_TEST_REQUIRE(rs);
     auto& carrierIn =
-      world.AddFigure(flagPos, std::make_unique<nofCarrier>(CarrierType::Normal, flagPos, curPlayer, rs, flag));
+      world.AddFigure(flagPos, std::make_unique<nofCarrier>(CarrierType::Normal, flagPos, curPlayer, rs, &flag));
     auto& carrierOut =
-      world.AddFigure(flagPos, std::make_unique<nofCarrier>(CarrierType::Donkey, flagPos, curPlayer, rs, flag));
+      world.AddFigure(flagPos, std::make_unique<nofCarrier>(CarrierType::Donkey, flagPos, curPlayer, rs, &flag));
     rs->setCarrier(0, &carrierIn);
     rs->setCarrier(1, &carrierOut);
     // Add 2 coins for the bld
     for(unsigned i = 0; i < 2; i++)
     {
-        auto coin = std::make_unique<Ware>(GoodType::Coins, milBld1, flag);
+        auto coin = std::make_unique<Ware>(GoodType::Coins, milBld1, &flag);
         coin->WaitAtFlag(flag);
         coin->RecalcRoute();
-        flag->AddWare(std::move(coin));
+        flag.AddWare(std::move(coin));
     }
     world.GetPlayer(1).IncreaseInventoryWare(GoodType::Coins, 2);
     carrierIn.ActAtFirst();
     carrierOut.ActAtFirst();
     // Both picked up
-    BOOST_TEST_REQUIRE(flag->GetNumWares() == 0u);
+    BOOST_TEST_REQUIRE(flag.GetNumWares() == 0u);
     // Move carriers to flag
     for(unsigned i = 0; i < 2; i++)
     {
@@ -891,22 +890,20 @@ BOOST_FIXTURE_TEST_CASE(ConquerWithCarriersWalkingIn, AttackFixture<2>)
     // Add another for later
     MapPoint flagPosE = world.MakeMapPoint(milBld1FlagPos + Position(2, 0));
     this->BuildRoad(milBld1FlagPos, false, std::vector<Direction>(2, Direction::East));
-    auto* flagE = world.GetSpecObj<noFlag>(flagPosE);
-    BOOST_TEST_REQUIRE(flagE);
-    RoadSegment* rsE = flagE->GetRoute(Direction::West);
-    BOOST_TEST_REQUIRE(rsE);
+    auto& flagE = ensureNonNull(world.GetSpecObj<noFlag>(flagPosE));
+    RoadSegment& rsE = ensureNonNull(flagE.GetRoute(Direction::West));
     auto& carrierInE =
-      world.AddFigure(flagPosE, std::make_unique<nofCarrier>(CarrierType::Normal, flagPosE, curPlayer, rsE, flagE));
-    rsE->setCarrier(0, &carrierInE);
+      world.AddFigure(flagPosE, std::make_unique<nofCarrier>(CarrierType::Normal, flagPosE, curPlayer, &rsE, &flagE));
+    rsE.setCarrier(0, &carrierInE);
     // He also gets 1 coin
-    auto coin = std::make_unique<Ware>(GoodType::Coins, milBld1, flagE);
+    auto coin = std::make_unique<Ware>(GoodType::Coins, milBld1, &flagE);
     coin->WaitAtFlag(flagE);
     coin->RecalcRoute();
-    flagE->AddWare(std::move(coin));
+    flagE.AddWare(std::move(coin));
     world.GetPlayer(1).IncreaseInventoryWare(GoodType::Coins, 1);
     carrierInE.ActAtFirst();
     // Picked up
-    BOOST_TEST_REQUIRE(flagE->GetNumWares() == 0u);
+    BOOST_TEST_REQUIRE(flagE.GetNumWares() == 0u);
     // And pause him
     rescheduleWalkEvent(em, carrierInE, 10000);
 

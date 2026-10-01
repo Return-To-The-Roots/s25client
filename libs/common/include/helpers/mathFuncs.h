@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2025 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "RTTR_Assert.h"
+#include <algorithm>
 #include <cmath>
 #include <type_traits>
 
@@ -22,26 +23,15 @@ constexpr unsigned divCeil(unsigned dividend, unsigned divisor) noexcept
     return (dividend + divisor - 1) / divisor;
 }
 /// Clamp the value into [min, max]
-template<typename T>
-constexpr T clamp(T val, T min, T max) noexcept
-{
-    if(val <= min)
-        return min;
-    else if(val >= max)
-        return max;
-    else
-        return val;
-}
 template<typename T, typename U>
 constexpr U clamp(T val, U min, U max) noexcept
 {
-    using Common = std::common_type_t<T, U>;
-    if(std::is_signed_v<T> && !std::is_signed_v<U>)
+    if constexpr(std::is_signed_v<T> && !std::is_signed_v<U>)
     {
         // min/max is unsigned -> No negative values possible
         if(val < 0)
             return min;
-    } else if(!std::is_signed_v<T> && std::is_signed_v<U>)
+    } else if constexpr(!std::is_signed_v<T> && std::is_signed_v<U>)
     {
         // min/max is signed
         if(max < 0)
@@ -50,7 +40,8 @@ constexpr U clamp(T val, U min, U max) noexcept
             min = 0;
     }
     // Here all values are positive or have the same signedness
-    return static_cast<U>(clamp(static_cast<Common>(val), static_cast<Common>(min), static_cast<Common>(max)));
+    using Common = std::common_type_t<T, U>;
+    return static_cast<U>(std::clamp(static_cast<Common>(val), static_cast<Common>(min), static_cast<Common>(max)));
 }
 /// Linear interpolation between [startVal, endVal]. Difference between those 2 and elapsedTime should be smallish
 template<typename T, typename U, typename V>

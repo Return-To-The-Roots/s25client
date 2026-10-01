@@ -72,9 +72,9 @@ public:
     /// Wird aufgerufen, wenn es das Ziel der Ware nicht mehr gibt und sie wieder "nach Hause" getragen werden muss
     void GoalDestroyed();
     /// Changes the state of the ware
-    void WaitAtFlag(noFlag* flag);
-    void WaitInWarehouse(nobBaseWarehouse* wh);
-    void Carry(noRoadNode* nextGoal);
+    void WaitAtFlag(noFlag& flag);
+    void WaitInWarehouse(nobBaseWarehouse& wh);
+    void Carry(noRoadNode& nextGoal);
     /// Gibt dem Ziel der Ware bekannt, dass diese nicht mehr kommen kann
     void NotifyGoalAboutLostWare();
     /// Wenn die Ware vernichtet werden muss

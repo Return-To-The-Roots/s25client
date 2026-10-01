@@ -262,8 +262,7 @@ void EventManager::RemoveEventFromQueue(const GameEvent& event)
 
 void EventManager::AddToKillList(GameObject* obj)
 {
-    RTTR_Assert(obj);
-    RTTR_Assert(!IsObjectInKillList(*obj));
+    RTTR_Assert(!IsObjectInKillList(assertNonNull(obj)));
     killList.emplace_back(obj);
 }
 

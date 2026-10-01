@@ -30,6 +30,7 @@
 #include <boost/test/unit_test.hpp>
 
 namespace bfs = boost::filesystem;
+namespace dataset = boost::unit_test::data;
 
 // LCOV_EXCL_START
 namespace boost::test_tools::tt_detail {
@@ -272,6 +273,47 @@ BOOST_AUTO_TEST_CASE(ClientStoresReceivedSavegamesInSaveFolder)
     BOOST_TEST(!msg->requestInfo);
     BOOST_TEST(client.GetMapType() == MapType::Savegame);
     BOOST_TEST(client.GetMapPath() == expectedSavePath);
+}
+
+static constexpr std::array allServerTypes{ServerType::Local, ServerType::LAN, ServerType::Direct, ServerType::Lobby};
+static constexpr std::array allMapTypes{MapType::Savegame, MapType::OldMap};
+#ifndef __INTELLISENSE__
+BOOST_DATA_TEST_CASE(ClientTreatsLocalSavegameFilenameVerbatim,
+                     dataset::make(allServerTypes) * dataset::make(allMapTypes), serverType, mapType)
+#else
+void ClientTreatsLocalSavegameFilenameVerbatim(ServerType serverType, MapType mapType)
+#endif
+{
+    rttr::test::TmpFolder testUserData;
+    rttr::test::ConfigOverride userDataOverride("USERDATA", testUserData);
+
+    GameClient client;
+    GameMessageInterface& clientMsgInterface = client;
+    TestServer server;
+    const auto serverPort = server.tryListen();
+    BOOST_TEST_REQUIRE(serverPort >= 0);
+
+    BOOST_TEST_REQUIRE(client.Connect("localhost", rttr::test::randString(10), serverType, serverPort, false, false));
+    clientMsgInterface.OnGameMessage(GameMessage_Player_Id(1));
+    client.GetMainPlayer().sendQueue.clear();
+    clientMsgInterface.OnGameMessage(GameMessage_Server_TypeOK(GameMessage_Server_TypeOK::StatusCode::Ok, ""));
+    client.GetMainPlayer().sendQueue.clear();
+    clientMsgInterface.OnGameMessage(GameMessage_Server_Password("true"));
+    client.GetMainPlayer().sendQueue.clear();
+
+    // Only local games (client and server are the same process via loopback) read the savegame
+    // straight off disk, so the filename is already a valid name for the local filesystem and must
+    // not be re-sanitized - doing so anyway would create a renamed duplicate next to the original.
+    // The bypass requires *both* ServerType::Local and MapType::Savegame - any other combination
+    // (e.g. a normal map, which is always copied into a separate "played maps" cache folder) must
+    // still go through the usual sanitization.
+    const std::string rawName = (mapType == MapType::Savegame) ? "my save.sav" : "my map.swd";
+    clientMsgInterface.OnGameMessage(GameMessage_Map_Info(rawName, mapType, 1, 1, 0, 0));
+
+    const bool expectVerbatim = (serverType == ServerType::Local && mapType == MapType::Savegame);
+    const std::string sanitizedName = (mapType == MapType::Savegame) ? "my_save.sav" : "my_map.swd";
+    const auto targetFolder = (mapType == MapType::Savegame) ? s25::folders::save : s25::folders::mapsPlayed;
+    BOOST_TEST(client.GetMapPath() == RTTRCONFIG.ExpandPath(targetFolder) / (expectVerbatim ? rawName : sanitizedName));
 }
 
 BOOST_AUTO_TEST_CASE(ClientDetectsMapBufferOverflow)
