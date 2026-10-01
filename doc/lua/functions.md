@@ -1,5 +1,5 @@
 <!--
-Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+Copyright (C) 2005 - 2026 Settlers Freaks <sf-team at siedler25.org>
 
 SPDX-License-Identifier: GPL-2.0-or-later
 -->
@@ -24,7 +24,8 @@ Reference: [libs/libGamedata/lua/LuaInterfaceBase.cpp](../../libs/libGamedata/lu
 **rttr:GetFeatureLevel()**  
 Get the current feature level of the LUA interface.
 Increases here indicate new features.
-The current version is **6**.
+The current version is **7**.  
+See [list of changes](main.md#versioning).
 
 **rttr:Log(message)**  
 Log the message to console.

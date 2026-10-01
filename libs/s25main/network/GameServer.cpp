@@ -674,20 +674,20 @@ void GameServer::ExecuteGameFrame()
 {
     RTTR_Assert(state == ServerState::Game);
 
-    FramesInfo::UsedClock::time_point currentTime = FramesInfo::UsedClock::now();
-    auto passedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - framesinfo.lastTime);
+    const auto currentTime = FramesInfo::UsedClock::now();
+    const auto passedTime = currentTime - framesinfo.lastTime;
 
-    // prüfen ob GF vergangen
-    if(passedTime >= framesinfo.gf_length || skiptogf > currentGF)
+    const bool isSkipping = skiptogf > currentGF;
+    // Check if GF has passed
+    if(passedTime >= framesinfo.gf_length || isSkipping)
     {
-        // NWF vergangen?
-        if(currentGF == nwfInfo.getNextNWF())
+        if(currentGF == nwfInfo.getNextNWF()) // NWF passed?
         {
             if(CheckForLaggingPlayers())
             {
                 // Check for kicking every second
-                static FramesInfo::UsedClock::time_point lastLagKickTime;
-                if(currentTime - lastLagKickTime >= std::chrono::seconds(1))
+                static std::remove_const_t<decltype(currentTime)> lastLagKickTime;
+                if(currentTime - lastLagKickTime >= 1s)
                 {
                     lastLagKickTime = currentTime;
                     CheckAndKickLaggingPlayers();
@@ -699,15 +699,26 @@ void GameServer::ExecuteGameFrame()
         }
         // Advance GF
         ++currentGF;
-        // Normally we set lastTime = curTime (== lastTime + passedTime) where passedTime is ideally 1 GF
-        // But we might got called late, so we advance the time by 1 GF anyway so in that case we execute the next GF a
-        // bit earlier. Exception: We lag many GFs behind, then we advance by the full passedTime - 1 GF which means we
-        // are now only 1 GF behind and execute that on the next call
-        if(passedTime <= 4 * framesinfo.gf_length)
-            passedTime = framesinfo.gf_length;
-        else
-            passedTime -= framesinfo.gf_length;
-        framesinfo.lastTime += passedTime;
+
+        constexpr auto maxBacklogFrames = 5u;
+        const auto maxBacklogDuration = maxBacklogFrames * framesinfo.gf_length;
+        if(isSkipping)
+        {
+            // Synchronize clock exactly so next non-skipped GF follows the regular pace
+            framesinfo.lastTime = currentTime;
+        } else if(passedTime > framesinfo.gf_length + maxBacklogDuration)
+        {
+            // We are significantly behind and likely cannot catch up.
+            // Discard excess latency while retaining the maximum backlog of maxBacklogFrames GFs.
+            framesinfo.lastTime = currentTime - maxBacklogDuration;
+        } else
+        {
+            // Ideally passedTime exactly equals gf_length (1 GF) but usually is bigger.
+            // Advance clock by exactly one GF rather than setting lastTime = curTime (== lastTime + passedTime).
+            // This compensates small scheduling delays by allowing the next GF to run slightly earlier
+            // and maintains a constant average duration per GF.
+            framesinfo.lastTime += framesinfo.gf_length;
+        }
     }
 }
 

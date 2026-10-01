@@ -11,7 +11,6 @@
 #include "helpers/Range.h"
 #include "lua/GameDataLoader.h"
 #include "world/GameWorldBase.h"
-#include "s25util/warningSuppression.h"
 #include <boost/container/static_vector.hpp>
 #include <mygettext/mygettext.h>
 
@@ -136,9 +135,8 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
     const unsigned numHarborPositions = sgd.PopUnsignedInt();
     world.harborData.clear();
     world.harborData.reserve(numHarborPositions);
-    for(const auto i : helpers::range<unsigned>(numHarborPositions))
+    for([[maybe_unused]] const auto i : helpers::range(numHarborPositions))
     {
-        RTTR_UNUSED(i);
         world.harborData.emplace_back(sgd.PopMapPoint());
         auto& curHarborPos = world.harborData.back();
         helpers::popContainer(sgd, curHarborPos.seaIds);
@@ -146,9 +144,8 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         {
             const unsigned numNeighbors = sgd.PopUnsignedInt();
             neighbor.reserve(numNeighbors);
-            for(const auto j : helpers::range<unsigned>(numNeighbors))
+            for([[maybe_unused]] const auto j : helpers::range(numNeighbors))
             {
-                RTTR_UNUSED(j);
                 const auto id = HarborId(sgd.PopUnsignedInt());
                 SeaId sea;
                 if(sgd.GetGameDataVersion() >= 15)

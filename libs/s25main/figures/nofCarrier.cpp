@@ -379,7 +379,7 @@ void nofCarrier::Walked()
             if(rs_pos == cur_rs->GetLength())
             {
                 // Flag just reached
-                auto* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
+                auto& this_flag = assertNonNull<noFlag>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
 
                 bool calculated = false;
 
@@ -389,14 +389,15 @@ void nofCarrier::Walked()
                     // Walk to building or building site
                     state = CarrierState::CarryWareToBuilding;
                     StartWalking(Direction::NorthWest);
-                    cur_rs = this_flag->GetRoute(Direction::NorthWest);
+                    cur_rs = this_flag.GetRoute(Direction::NorthWest);
                     // Set location to next road node, i.e. building
-                    carried_ware->Carry((cur_rs->GetF1() == this_flag) ? cur_rs->GetF2() : cur_rs->GetF1());
+                    carried_ware->Carry(
+                      assertNonNull((cur_rs->GetF1() == &this_flag) ? cur_rs->GetF2() : cur_rs->GetF1()));
                 } else
                 {
                     // Put ware at flag if there is space.
                     // If not try swapping it with another ware at that flag
-                    if(this_flag->HasSpaceForWare())
+                    if(this_flag.HasSpaceForWare())
                     {
                         carried_ware->WaitAtFlag(this_flag);
 
@@ -405,7 +406,7 @@ void nofCarrier::Walked()
                             carried_ware->RecalcRoute();
 
                         // Put down ware
-                        this_flag->AddWare(std::move(carried_ware));
+                        this_flag.AddWare(std::move(carried_ware));
                         RTTR_Assert(carried_ware == nullptr);
                         // Check if we can pick up another ware at this flag, else go back to middle of road
                         LookForWares();
@@ -421,7 +422,7 @@ void nofCarrier::Walked()
                         tmp_ware->WaitAtFlag(this_flag);
                         if(!calculated)
                             tmp_ware->RecalcRoute();
-                        this_flag->AddWare(std::move(tmp_ware));
+                        this_flag.AddWare(std::move(tmp_ware));
                     } else
                     {
                         // No space at flag, go back and try again later
@@ -540,7 +541,7 @@ void nofCarrier::GoalReached()
 
                 if(carried_ware)
                 {
-                    carried_ware->Carry((rs_dir ? workplace->GetF1() : workplace->GetF2()));
+                    carried_ware->Carry(assertNonNull(rs_dir ? workplace->GetF1() : workplace->GetF2()));
                     state = CarrierState::CarryWare;
                 }
             }
@@ -829,7 +830,7 @@ void nofCarrier::FetchWare(const bool swap_wares)
 
     if(carried_ware)
     {
-        carried_ware->Carry((rs_dir) ? workplace->GetF2() : workplace->GetF1());
+        carried_ware->Carry(assertNonNull(rs_dir ? workplace->GetF2() : workplace->GetF1()));
         // Und zum anderen Ende laufen
         state = CarrierState::CarryWare;
         rs_dir = !rs_dir;
@@ -899,9 +900,9 @@ void nofCarrier::CorrectSplitData_Derived()
     {
         // Dann die Location von der Ware aktualisieren
         if(!rs_dir)
-            carried_ware->Carry(cur_rs->GetF2());
+            carried_ware->Carry(assertNonNull(cur_rs->GetF2()));
         else
-            carried_ware->Carry(cur_rs->GetF1());
+            carried_ware->Carry(assertNonNull(cur_rs->GetF1()));
     }
 }
 

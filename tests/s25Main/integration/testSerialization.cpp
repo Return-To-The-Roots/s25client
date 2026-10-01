@@ -217,13 +217,13 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     }
 
     const MapPoint hqPos = world.GetPlayer(0).GetHQPos();
-    auto* hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
-    auto* hqFlag = hq->GetFlag();
+    auto& hq = ensureNonNull(world.GetSpecObj<nobBaseWarehouse>(hqPos));
+    auto& hqFlag = ensureNonNull(hq.GetFlag());
     const MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
     auto* usualBld = static_cast<nobUsual*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Bakery, usualBldPos, 0, Nation::Vikings));
     world.RecalcBQAroundPointBig(usualBldPos);
-    world.BuildRoad(0, false, hqFlag->GetPos(), std::vector<Direction>(3, Direction::East));
+    world.BuildRoad(0, false, hqFlag.GetPos(), std::vector<Direction>(3, Direction::East));
     usualBld->is_working = true;
 
     // Add 3 fires with first between the others to have a mixed event order in the same GF
@@ -240,13 +240,13 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
     // Do this after running GFs to keep the state
     // Add ware to flag
-    auto ware = std::make_unique<Ware>(GoodType::Flour, usualBld, hqFlag);
+    auto ware = std::make_unique<Ware>(GoodType::Flour, usualBld, &hqFlag);
     ware->WaitAtFlag(hqFlag);
     ware->RecalcRoute();
-    hqFlag->AddWare(std::move(ware));
+    hqFlag.AddWare(std::move(ware));
     // Add a ware waiting in a warehouse. See https://github.com/Return-To-The-Roots/s25client/issues/1293
-    ware = std::make_unique<Ware>(GoodType::Flour, usualBld, hq);
-    hq->AddWaitingWare(std::move(ware));
+    ware = std::make_unique<Ware>(GoodType::Flour, usualBld, &hq);
+    hq.AddWaitingWare(std::move(ware));
 
     Savegame save;
 
@@ -353,11 +353,11 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             BOOST_TEST(newUsual->HasWorker() == usualBld->HasWorker());
             BOOST_TEST(newUsual->GetProductivity() == usualBld->GetProductivity());
 
-            hq = world.GetSpecObj<nobBaseWarehouse>(hqPos);
-            BOOST_TEST_REQUIRE(hq);
-            hqFlag = hq->GetFlag();
-            BOOST_TEST_REQUIRE(hqFlag);
-            BOOST_TEST(hqFlag->GetNumWares() == 1u);
+            auto* hqLoaded = world.GetSpecObj<nobBaseWarehouse>(hqPos);
+            BOOST_TEST_REQUIRE(hqLoaded);
+            auto* hqFlagLoaded = hqLoaded->GetFlag();
+            BOOST_TEST_REQUIRE(hqFlagLoaded);
+            BOOST_TEST(hqFlagLoaded->GetNumWares() == 1u);
 
             BOOST_TEST_REQUIRE(world.HasLua());
             BOOST_TEST(world.GetLua().getScript() == luaScript);

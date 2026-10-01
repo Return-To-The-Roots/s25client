@@ -20,8 +20,9 @@ void deletePtr(T*& ptr)
 
 /// Calculate |a-b| of 2 unsigned values
 template<typename T>
-inline T absDiff(T a, T b)
+T absDiff(T a, T b)
 {
+    static_assert(std::is_unsigned_v<T>);
     return (a > b) ? a - b : b - a;
 }
 
@@ -46,11 +47,17 @@ T& checkedCast(T_Src& src)
 }
 
 /// Return a reference to the pointed-to object, checking for NULL in debug mode
-template<typename T>
-T& assertNonNull(T* src)
+template<class T>
+T& assertNonNull(T* pointer)
 {
-    RTTR_Assert(src);
-    return *src;
+    RTTR_Assert(pointer);
+    return *pointer;
+}
+/// Additionally assert dynamic type (if T & U are different)
+template<class T, class U>
+T& assertNonNull(U* pointer)
+{
+    return assertNonNull(checkedCast<T*>(pointer));
 }
 
 // Fwd decl
