@@ -52,6 +52,8 @@ public:
     /// Assign players that do not have a fixed team, return true if any player was assigned.
     static bool assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerInfos);
 
+    void SetNumPlayers(unsigned num);
+
 private:
     bool StartGame();
 
