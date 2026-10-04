@@ -224,7 +224,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
 
-    // Draw radius preview outline (set by icon-hover or map-hover)
+    // Draw radius preview outline if enabled
     if(radiusPreview_)
         DrawRadiusOutline(radiusPreview_->first, radiusPreview_->second);
 

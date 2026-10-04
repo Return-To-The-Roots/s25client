@@ -751,7 +751,7 @@ bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
 
 bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
 {
-    // Update radius preview for buildings under the cursor (event-driven, not in draw loop)
+    // Update radius preview for buildings under the cursor
     gwv.UpdateRadiusPreviewForMousePos(mc.pos);
 
     if(!isScrolling)
