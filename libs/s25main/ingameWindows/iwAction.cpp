@@ -202,11 +202,11 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                         if(hovered)
                         {
                             this->activeHoveredIcon_ = icon;
-                            this->gwv.SetRadiusPreview(std::make_pair(this->selectedPt, radius));
+                            this->gwv.ShowRadiusPreview(this->selectedPt, radius);
                         } else if(this->activeHoveredIcon_ == icon)
                         {
                             this->activeHoveredIcon_ = nullptr;
-                            this->gwv.SetRadiusPreview(std::nullopt);
+                            this->gwv.HideRadiusPreview();
                         }
                         // else: stale leave from a previously-hovered icon, ignore
                     });
@@ -431,7 +431,7 @@ void iwAction::Close()
     if(ShouldBeClosed())
         return;
     activeHoveredIcon_ = nullptr;
-    gwv.SetRadiusPreview(std::nullopt);
+    gwv.HideRadiusPreview();
     IngameWindow::Close();
     if(mousePosAtOpen_.isValid())
         VIDEODRIVER.SetMousePos(mousePosAtOpen_);
