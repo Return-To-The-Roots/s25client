@@ -15,7 +15,6 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noRoadNode.h"
 #include "gameData/BuildingProperties.h"
-#include "gameData/GameConsts.h"
 #include "gameData/GoodConsts.h"
 #include "gameData/ShieldConsts.h"
 #include "s25util/Log.h"

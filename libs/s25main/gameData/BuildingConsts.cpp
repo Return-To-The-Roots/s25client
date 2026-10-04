@@ -8,7 +8,6 @@
 #include "figures/nofHunter.h"
 #include "mygettext/mygettext.h"
 #include "gameTypes/BuildingTypes.h"
-#include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include <type_traits>
 

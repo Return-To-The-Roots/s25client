@@ -25,8 +25,8 @@
 #include "pathfinding/ShipPathData.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/BuildingProperties.h"
-#include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
+#include <limits>
 #include <utility>
 
 GameWorldBase::GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em)

@@ -15,7 +15,7 @@
 #include "gameTypes/MineNoOutputFallback.h"
 #include "gameTypes/MineResourceBehavior.h"
 #include "gameTypes/Resource.h"
-#include "gameData/GameConsts.h"
+#include "gameData/JobConsts.h"
 #include <algorithm>
 #include <vector>
 
