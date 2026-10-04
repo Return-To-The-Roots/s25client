@@ -28,6 +28,7 @@
 // 010 aztimh
 // 011 DevOpsOfChaos
 // 012 MichalLabuda
+// 013 Morgan
 
 // Do not forget to add your Addon to GlobalGameSettings::registerAllAddons @ GlobalGameSettings.cpp!
 // Never use a number twice!
@@ -88,7 +89,9 @@ ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x
                  STRANDED_SOLDIER_RETURN_SEARCH = 0x01100001,
 
                  FORESTER_REACH_RADIUS = 0x01200000, WOODCUTTER_REACH_RADIUS = 0x01200001,
-                 STONEMASON_REACH_RADIUS = 0x01200002)
+                 STONEMASON_REACH_RADIUS = 0x01200002,
+
+                 BUILDING_RADIUS = 0x01300000)
 //-V:AddonId:801
 
 enum class AddonGroup : unsigned

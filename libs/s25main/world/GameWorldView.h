@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,9 +6,11 @@
 
 #include "Cheats.h"
 #include "DrawPoint.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include <boost/signals2.hpp>
+#include <optional>
 #include <vector>
 
 class GameWorldBase;
@@ -31,6 +33,20 @@ struct ObjectBetweenLines;
 
 class GameWorldView
 {
+    struct RadiusPreview
+    {
+        MapPoint center;
+        unsigned radius;
+        std::vector<Position> outline;
+    };
+
+    const GameWorldViewer& gwv;
+
+    /// Top-Left position of the view (window)
+    Position origin_;
+    /// Size of the view
+    Extent size_;
+
     /// Currently selected point (where the mouse points to)
     MapPoint selPt;
     /// Offset to selected point
@@ -46,6 +62,11 @@ class GameWorldView
     /// Show productivities
     bool show_productivity;
 
+    /// Optional radius preview (center position, radius) drawn as outline on the map
+    std::optional<RadiusPreview> radiusPreview_;
+    /// Cached addon status: whether building radius overlay is enabled
+    bool isBuildingRadiusEnabled_;
+
     /// Offset from world origin in screen units (not map units): "scroll position"
     DrawPoint offset;
     /// Last scroll position (before jump)
@@ -54,13 +75,6 @@ class GameWorldView
     DrawPoint firstPt;
     /// Last drawn map point
     DrawPoint lastPt;
-
-    const GameWorldViewer& gwv;
-
-    /// Top-Left position of the view (window)
-    Position origin_;
-    /// Size of the view
-    Extent size_;
 
     /// How much the view is scaled (1=normal, >1=bigger, >0 && <1=smaller)
     float zoomFactor_;
@@ -113,9 +127,19 @@ public:
 
     DrawPoint GetOffset() const { return offset; }
 
+    /// Get the radius in tiles for a building type (worker reach, territory influence, attack range, etc.)
+    unsigned GetBuildingRadius(BuildingType bld) const;
+
     /// Add a debug node printer
     void AddDrawNodeCallback(IDrawNodeCallback* newCallback);
     void RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove);
+
+    /// Show a radius preview outline on the map
+    void ShowRadiusPreview(MapPoint center, unsigned radius);
+    void HideRadiusPreview() { radiusPreview_ = std::nullopt; }
+
+    /// Update radius preview based on which map node is selected
+    void UpdateRadiusPreviewForMousePos();
 
     /// Gibt selektierten Punkt zurück
     MapPoint GetSelectedPt() const { return selPt; }
@@ -145,6 +169,12 @@ private:
     void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
     void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt,
                  bool drawMouse);
+
+    /// Draw a radius outline ring
+    void DrawRadiusOutline();
+
+    /// Snap a point to the nearest toroidal copy relative to a reference position, given the map size in pixels
+    static DrawPoint SnapToNearestCopy(DrawPoint pt, DrawPoint ref, Extent mapSize);
 
     void SaveIngameSettingsValues() const;
     void updateEffectiveZoomFactor();

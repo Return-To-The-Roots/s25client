@@ -1,10 +1,11 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #pragma once
 
 #include "nofBuildingWorker.h"
+class GlobalGameSettings;
 class SerializedGameData;
 class nobUsual;
 
@@ -54,7 +55,8 @@ public:
     nofFarmhand(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFarmhand(SerializedGameData& sgd, unsigned obj_id);
 
-    static unsigned GetWorkRadius(Job job);
+    static unsigned GetWorkRadius(const GlobalGameSettings& ggs, Job job);
+    unsigned GetWorkRadius(Job job);
 
     void Serialize(SerializedGameData& sgd) const override;
 

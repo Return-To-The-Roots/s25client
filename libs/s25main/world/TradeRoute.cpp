@@ -5,7 +5,7 @@
 #include "world/TradeRoute.h"
 #include "SerializedGameData.h"
 #include "world/GameWorld.h"
-#include "gameData/GameConsts.h"
+#include <limits>
 
 TradeRoute::TradeRoute(const GameWorld& world, unsigned char player, const MapPoint& start, const MapPoint& goal)
     : world(world), player(player)

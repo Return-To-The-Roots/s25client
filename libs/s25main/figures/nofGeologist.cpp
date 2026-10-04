@@ -22,7 +22,6 @@
 #include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noSign.h"
-#include "gameData/GameConsts.h"
 
 nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoadNode* goal)
     : nofFlagWorker(Job::Geologist, pos, player, goal), signs(0), node_goal(0, 0)

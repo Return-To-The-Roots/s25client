@@ -11,12 +11,16 @@
 #include "GlobalGameSettings.h"
 #include "Loader.h"
 #include "MapGeometry.h"
+#include "ReturnMapPointWithRadius.h"
 #include "Settings.h"
+#include "Window.h"
+#include "WindowManager.h"
 #include "addons/AddonMaxWaterwayLength.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "figures/nofFarmhand.h"
 #include "helpers/EnumArray.h"
 #include "helpers/Range.h"
 #include "helpers/containerUtils.h"
@@ -30,16 +34,20 @@
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/GuiConsts.h"
+#include "gameData/JobConsts.h"
 #include "gameData/MapConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include "s25util/error.h"
 #include <glad/glad.h>
 #include <boost/format.hpp>
 #include <cmath>
+#include <optional>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
-    : selPt(0, 0), show_bq(SETTINGS.ingame.showBQ), show_names(SETTINGS.ingame.showNames),
-      show_productivity(SETTINGS.ingame.showProductivity), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
-      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
+    : gwv(gwv), origin_(pos), size_(size), selPt(0, 0), show_bq(SETTINGS.ingame.showBQ),
+      show_names(SETTINGS.ingame.showNames), show_productivity(SETTINGS.ingame.showProductivity),
+      isBuildingRadiusEnabled_(GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS)), offset(0, 0), lastOffset(0, 0),
+      zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
     updateEffectiveZoomFactor();
     MoveBy({0, 0});
@@ -218,6 +226,13 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
+
+    if(isBuildingRadiusEnabled_)
+    {
+        if(drawMouse)
+            UpdateRadiusPreviewForMousePos();
+        DrawRadiusOutline();
+    }
 
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
@@ -699,6 +714,49 @@ void GameWorldView::MoveToLastPosition()
     lastOffset = newLastOffset;
 }
 
+unsigned GameWorldView::GetBuildingRadius(BuildingType bld) const
+{
+    switch(bld)
+    {
+        // Military buildings (territory influence radius)
+        case BuildingType::Barracks: return MILITARY_RADIUS[0];
+        case BuildingType::Guardhouse: return MILITARY_RADIUS[1];
+        case BuildingType::Watchtower: return MILITARY_RADIUS[2];
+        case BuildingType::Fortress: return MILITARY_RADIUS[3];
+        case BuildingType::Headquarters: return HQ_RADIUS;
+        case BuildingType::HarborBuilding: return HARBOR_RADIUS;
+
+        // Scouting visibility range
+        case BuildingType::LookoutTower: return VISUALRANGE_LOOKOUTTOWER;
+        // Catapult attack range
+        case BuildingType::Catapult: return CATAPULT_MAX_TARGET_RANGE;
+        // Hunter searches for animals in a square of this half-side length
+        case BuildingType::Hunter: return HUNTER_SEARCH_HALFSIDE;
+        // Mines — miner stays inside and extracts from adjacent tiles
+        case BuildingType::GraniteMine:
+        case BuildingType::CoalMine:
+        case BuildingType::IronMine:
+        case BuildingType::GoldMine:
+        case BuildingType::Well: // Well uses the same radius
+            return MINER_RADIUS;
+        // Farmhand-based buildings — worker goes out to gather resources from the map.
+        case BuildingType::Woodcutter:
+        case BuildingType::Forester:
+        case BuildingType::Fishery:
+        case BuildingType::Quarry:
+        case BuildingType::Farm:
+        case BuildingType::Vineyard:
+        case BuildingType::Charburner:
+        {
+            if(const auto job = BLD_WORK_DESC[bld].job)
+                return nofFarmhand::GetWorkRadius(GetWorld().GetGGS(), *job);
+            return 0;
+        }
+        // Remaining building types have no relevant radius
+        default: return 0;
+    }
+}
+
 void GameWorldView::AddDrawNodeCallback(IDrawNodeCallback* newCallback)
 {
     RTTR_Assert(newCallback);
@@ -710,6 +768,85 @@ void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
     auto itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
     RTTR_Assert(itPos != drawNodeCallbacks.end());
     drawNodeCallbacks.erase(itPos);
+}
+
+void GameWorldView::ShowRadiusPreview(MapPoint center, unsigned radius)
+{
+    if(radiusPreview_ && radiusPreview_->center == center && radiusPreview_->radius == radius)
+        return;
+    std::vector<Position> pts;
+    for(const auto& [mapPt, dist] : GetWorld().GetPointsInRadius(center, radius, ReturnMapPointWithRadius{}))
+    {
+        if(dist == radius)
+            pts.push_back(GetWorld().GetNodePos(mapPt));
+    }
+    radiusPreview_ = RadiusPreview{center, radius, std::move(pts)};
+}
+
+DrawPoint GameWorldView::SnapToNearestCopy(const DrawPoint pt, const DrawPoint ref, const Extent mapSize)
+{
+    // Find how many map sizes separate `pt` from `ref`, round to the nearest integer number of wraps.
+    const auto k = PointF(ref - pt) / mapSize;
+    const auto kRounded = PointF(std::round(k.x), std::round(k.y));
+    // Shift `pt` by that many map sizes to get the nearest toroidal copy.
+    return pt + DrawPoint(kRounded) * mapSize;
+}
+
+void GameWorldView::DrawRadiusOutline()
+{
+    if(!radiusPreview_)
+        return;
+
+    const auto& world = GetWorld();
+
+    const MapExtent mapSize = world.GetSize();
+    constexpr unsigned BORDER_COLOR = 0xFFFF0000;
+    constexpr auto BORDER_SIZE = Extent::all(5);
+    const Extent mapPxSize = mapSize * Extent(TR_W, TR_H);
+
+    // Screen position of the center vertex.
+    // selPtOffset accounts for the pixel shift when the map wraps at the seam.
+    const DrawPoint centerScr = world.GetNodePos(radiusPreview_->center) + selPtOffset;
+
+    for(auto screenPt : radiusPreview_->outline)
+    {
+        screenPt = SnapToNearestCopy(screenPt, centerScr, mapPxSize) - offset;
+        Window::DrawRectangle(Rect(screenPt - BORDER_SIZE / 2, BORDER_SIZE), BORDER_COLOR);
+    }
+}
+
+void GameWorldView::UpdateRadiusPreviewForMousePos()
+{
+    const auto& world = GetWorld();
+    std::optional<BuildingType> bldType;
+    switch(gwv.GetVisibility(selPt))
+    {
+        case Visibility::Visible:
+        {
+            const auto* bld = world.GetSpecObj<noBaseBuilding>(selPt);
+            if(bld)
+                bldType = bld->GetBuildingType();
+        }
+        break;
+        case Visibility::FogOfWar:
+        {
+            const FOWObject* fow = gwv.GetYoungestFOWObject(selPt);
+            if(fow && fow->GetType() == FoW_Type::Building)
+                bldType = static_cast<const fowBuilding&>(*fow).GetBuildingType();
+        }
+        break;
+        case Visibility::Invisible: break;
+    }
+
+    if(bldType)
+    {
+        const unsigned bldRadius = GetBuildingRadius(*bldType);
+        if(bldRadius > 0)
+            ShowRadiusPreview(selPt, bldRadius);
+        else
+            HideRadiusPreview();
+    } else
+        HideRadiusPreview();
 }
 
 void GameWorldView::CalcFxLx()

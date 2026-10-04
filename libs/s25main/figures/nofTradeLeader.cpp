@@ -14,7 +14,6 @@
 #include "postSystem/PostMsgWithBuilding.h"
 #include "world/GameWorld.h"
 #include "gameData/BuildingProperties.h"
-#include "gameData/GameConsts.h"
 #include "gameData/GoodConsts.h"
 #include "gameData/JobConsts.h"
 #include "gameData/NationConsts.h"

@@ -45,8 +45,15 @@ public:
 extern const helpers::EnumArray<JobConst, Job> JOB_CONSTS;
 extern const helpers::EnumArray<JobSpriteData, Job> JOB_SPRITE_CONSTS;
 
-/// Katapultmann-Wartezeit
-const unsigned CATAPULT_WAIT1_LENGTH = 1300; // eigenlich 310 - aber hochgestellt wegen zu schneller Warenverteilung
+/// Distance in which miners use resources, also other "digging" jobs like wells
+constexpr unsigned MINER_RADIUS = 2;
+/// Maximum distance to a target the catapult can attack
+constexpr unsigned CATAPULT_MAX_TARGET_RANGE = 13;
+/// Half-side length of the square the hunter scans for animals (centered on the building)
+constexpr int HUNTER_SEARCH_HALFSIDE = 19;
+
+/// Time in GFs the catapult needs to wait before shooting (after aiming)
+const unsigned CATAPULT_WAIT1_LENGTH = 1300; // actually 310 - but increased due to too fast goods distribution
 
 /// Position of the ware on a donkey per direction and animation step
 const helpers::EnumArray<std::array<DrawPoint, 8>, Direction> WARE_POS_DONKEY = {{
