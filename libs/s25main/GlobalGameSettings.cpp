@@ -102,6 +102,7 @@ void GlobalGameSettings::registerAllAddons()
         AddonMoreAnimals,
         AddonNoAlliedPush,
         AddonNoCoinsDefault,
+        AddonSingleSoldierCoinTraining,
         AddonStrandedSoldierReturnSearch,
         AddonNumScoutsExploration,
         AddonPeacefulMode,
