@@ -138,9 +138,8 @@ public:
     void ShowRadiusPreview(MapPoint center, unsigned radius);
     void HideRadiusPreview() { radiusPreview_ = std::nullopt; }
 
-    /// Update radius preview based on which map node is under the mouse cursor
-    /// Called from mouse-move handler, not from draw loop
-    void UpdateRadiusPreviewForMousePos(const Position& mousePos);
+    /// Update radius preview based on which map node is selected
+    void UpdateRadiusPreviewForMousePos();
 
     /// Gibt selektierten Punkt zurück
     MapPoint GetSelectedPt() const { return selPt; }
