@@ -244,7 +244,7 @@ int main(int argc, char** argv)
                 {
                     if(idx.empty())
                         continue;
-                    const unsigned p = static_cast<unsigned>(std::stoul(idx));
+                    const auto p = static_cast<unsigned>(std::stoul(idx));
                     if(p >= teams.size())
                         teams.resize(p + 1, Team::None);
                     teams[p] = team;
