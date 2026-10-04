@@ -38,6 +38,8 @@ public:
     unsigned getNumAddons() const { return addons.size(); }
     const Addon* getAddon(unsigned idx, unsigned& status) const;
     const Addon* getAddon(unsigned idx) const;
+    const Addon* getAddon(AddonId id, unsigned& status) const;
+    const Addon* getAddon(AddonId id) const;
 
     void registerAllAddons();
 
@@ -69,8 +71,8 @@ private:
     };
 
     void registerAddon(std::unique_ptr<Addon> addon);
-    const AddonWithState* getAddon(AddonId id) const;
-    AddonWithState* getAddon(AddonId id);
+    AddonWithState* findAddon(AddonId id);
+    const AddonWithState* findAddon(AddonId id) const;
 
     std::vector<AddonWithState> addons;
 };
