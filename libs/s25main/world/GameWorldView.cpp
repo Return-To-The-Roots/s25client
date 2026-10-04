@@ -20,6 +20,7 @@
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
 #include "drivers/VideoDriverWrapper.h"
+#include "figures/nofFarmhand.h"
 #include "helpers/EnumArray.h"
 #include "helpers/Range.h"
 #include "helpers/containerUtils.h"
@@ -33,7 +34,9 @@
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/GuiConsts.h"
+#include "gameData/JobConsts.h"
 #include "gameData/MapConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include "s25util/error.h"
 #include <glad/glad.h>
 #include <boost/format.hpp>
@@ -706,6 +709,47 @@ void GameWorldView::MoveToLastPosition()
     MoveTo(lastOffset);
 
     lastOffset = newLastOffset;
+}
+
+unsigned GameWorldView::GetBuildingRadius(BuildingType bld) const
+{
+    switch(bld)
+    {
+        // Military buildings (territory influence radius)
+        case BuildingType::Barracks: return MILITARY_RADIUS[0];
+        case BuildingType::Guardhouse: return MILITARY_RADIUS[1];
+        case BuildingType::Watchtower: return MILITARY_RADIUS[2];
+        case BuildingType::Fortress: return MILITARY_RADIUS[3];
+        case BuildingType::Headquarters: return HQ_RADIUS;
+        case BuildingType::HarborBuilding: return HARBOR_RADIUS;
+
+        // Scouting visibility range
+        case BuildingType::LookoutTower: return VISUALRANGE_LOOKOUTTOWER;
+        // Catapult attack range
+        case BuildingType::Catapult: return CATAPULT_MAX_TARGET_RANGE;
+        // Hunter searches for animals in a square of this half-side length
+        case BuildingType::Hunter: return HUNTER_SEARCH_HALFSIDE;
+        // Mines — miner stays inside and extracts from adjacent tiles
+        case BuildingType::GraniteMine:
+        case BuildingType::CoalMine:
+        case BuildingType::IronMine:
+        case BuildingType::GoldMine: return MINER_RADIUS;
+        // Farmhand-based buildings — worker goes out to gather resources from the map.
+        case BuildingType::Woodcutter:
+        case BuildingType::Forester:
+        case BuildingType::Fishery:
+        case BuildingType::Quarry:
+        case BuildingType::Farm:
+        case BuildingType::Vineyard:
+        case BuildingType::Charburner:
+        {
+            if(const auto job = BLD_WORK_DESC[bld].job)
+                return nofFarmhand::GetWorkRadius(GetWorld().GetGGS(), *job);
+            return 0;
+        }
+        // Remaining building types have no relevant radius
+        default: return 0;
+    }
 }
 
 void GameWorldView::AddDrawNodeCallback(IDrawNodeCallback* newCallback)
