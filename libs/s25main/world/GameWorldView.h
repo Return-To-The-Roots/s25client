@@ -33,6 +33,13 @@ struct ObjectBetweenLines;
 
 class GameWorldView
 {
+    struct RadiusPreview
+    {
+        MapPoint center;
+        unsigned radius;
+        std::vector<Position> outline;
+    };
+
     const GameWorldViewer& gwv;
 
     /// Top-Left position of the view (window)
@@ -56,7 +63,7 @@ class GameWorldView
     bool show_productivity;
 
     /// Optional radius preview (center position, radius) drawn as outline on the map
-    std::optional<std::pair<MapPoint, unsigned>> radiusPreview_;
+    std::optional<RadiusPreview> radiusPreview_;
     /// Cached addon status: whether building radius overlay is enabled
     bool isBuildingRadiusEnabled_;
 
@@ -164,8 +171,8 @@ private:
     void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt,
                  bool drawMouse);
 
-    /// Draw a radius outline ring around a center point with the given radius
-    void DrawRadiusOutline(const MapPoint& center, unsigned radius);
+    /// Draw a radius outline ring
+    void DrawRadiusOutline();
 
     /// Snap a point to the nearest toroidal copy relative to a reference position, given the map size in pixels
     static DrawPoint SnapToNearestCopy(DrawPoint pt, DrawPoint ref, Extent mapSize);
