@@ -32,7 +32,6 @@
 #include "nodeObjs/noFlag.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
-#include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "s25util/Log.h"

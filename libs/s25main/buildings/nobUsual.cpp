@@ -12,6 +12,7 @@
 #include "addons/const_addons.h"
 #include "figures/nofBuildingWorker.h"
 #include "figures/nofPigbreeder.h"
+#include "helpers/EnumArray.h"
 #include "helpers/containerUtils.h"
 #include "network/GameClient.h"
 #include "notifications/BuildingNote.h"
@@ -23,7 +24,6 @@
 #include "gameTypes/Resource.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
-#include "gameData/GameConsts.h"
 #include <numeric>
 
 /// Number of GFs after which the productivity is recalculated, i.e. productivity is averaged over intervals of this

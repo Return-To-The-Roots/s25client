@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,9 +6,6 @@
 
 #include "nofBuildingWorker.h"
 #include "gameTypes/Direction.h"
-
-/// Half-side length of the square the hunter scans for animals (centered on the building)
-constexpr int HUNTER_SEARCH_HALFSIDE = 19;
 
 class noAnimal;
 class SerializedGameData;

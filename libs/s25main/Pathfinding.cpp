@@ -14,7 +14,7 @@
 #include "pathfinding/ShipPathData.h"
 #include "world/GameWorld.h"
 #include "gameTypes/ShipDirection.h"
-#include "gameData/GameConsts.h"
+#include <limits>
 
 /// Findet einen Weg für Figuren
 helpers::OptionalEnum<Direction> GameWorldBase::FindHumanPath(const MapPoint start, const MapPoint dest,

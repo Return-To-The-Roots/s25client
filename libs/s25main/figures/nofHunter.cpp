@@ -19,7 +19,6 @@
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
-#include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include <stdexcept>
 
