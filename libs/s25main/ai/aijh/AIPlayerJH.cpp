@@ -1968,7 +1968,7 @@ bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
         return false;
     constexpr unsigned maxrange = 25;
 
-    if(gwb.GetReplayMinorVersion() >= 4)
+    if(gwb.GetReplayCompatVersion() >= 4)
     {
         const auto available_animals =
           nofHunter::GetAnimalsInRange(gwb, pt, ANIMAL_RADIUS, maxrange, [](const noAnimal* a) { return a->CanHunted(); });

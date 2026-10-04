@@ -13,6 +13,7 @@
 #include "postSystem/PostManager.h"
 #include "world/World.h"
 #include "s25util/span.hpp"
+#include <limits>
 #include <memory>
 #include <set>
 #include <vector>
@@ -68,8 +69,8 @@ protected:
     /// Interface zum GUI
     GameInterface* gi;
     std::unique_ptr<EconomyModeHandler> econHandler;
-    /// Replay minor version when replaying. Set to current minor version for live games.
-    uint8_t replayMinorVersion_ = 255;
+    /// Replay minor version for backwards compatibility. Default is highest possible, i.e. current behavior.
+    uint8_t replayCompatVersion_ = std::numeric_limits<uint8_t>::max();
 
 public:
     GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSettings& gameSettings, EventManager& em);
@@ -166,10 +167,10 @@ public:
     bool IsSinglePlayer() const;
     /// Return the game settings
     const GlobalGameSettings& GetGGS() const { return gameSettings; }
-    /// Get the replay minor version (used for backward compatibility)
-    uint8_t GetReplayMinorVersion() const { return replayMinorVersion_; }
-    /// Set the replay minor version (called when loading a replay)
-    void SetReplayMinorVersion(uint8_t version) { replayMinorVersion_ = version; }
+    /// Get the replay (minor) version with which (backward) compatibility is enabled.
+    uint8_t GetReplayCompatVersion() const { return replayCompatVersion_; }
+    /// Set the replay minor version to change the behavior of the game for backward compatibility.
+    void SetReplayCompatVersion(uint8_t version) { replayCompatVersion_ = version; }
 
     EventManager& GetEvMgr() { return em; }
     const EventManager& GetEvMgr() const { return em; }

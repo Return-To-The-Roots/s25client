@@ -153,7 +153,7 @@ void nofHunter::TryStartHunting()
 {
     std::vector<noAnimal*> available_animals;
 
-    if(world->GetReplayMinorVersion() >= 4)
+    if(world->GetReplayCompatVersion() >= 4)
     {
         available_animals = GetAnimalsInRange(*world, pos, ANIMAL_RADIUS, MAX_HUNTING_DISTANCE,
                                               [](const noAnimal* a) { return a->CanHunted(); });
