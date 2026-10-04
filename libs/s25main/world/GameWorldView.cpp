@@ -770,15 +770,13 @@ void GameWorldView::ShowRadiusPreview(MapPoint center, unsigned radius)
     radiusPreview_ = std::make_pair(center, radius);
 }
 
-// Snap a point to the nearest toroidal copy (map wrapping) relative to a reference.
-// k = round((reference - pt) / mapSize), pt += k * mapSize.
-DrawPoint GameWorldView::SnapToNearestCopy(DrawPoint pt, DrawPoint ref, DrawPoint mapPxSize)
+DrawPoint GameWorldView::SnapToNearestCopy(const DrawPoint pt, const DrawPoint ref, const Extent mapSize)
 {
-    const double kx = std::floor(static_cast<double>(ref.x - pt.x) / mapPxSize.x + 0.5);
-    pt.x += static_cast<int>(kx) * mapPxSize.x;
-    const double ky = std::floor(static_cast<double>(ref.y - pt.y) / mapPxSize.y + 0.5);
-    pt.y += static_cast<int>(ky) * mapPxSize.y;
-    return pt;
+    // Find how many map sizes separate `pt` from `ref`, round to the nearest integer number of wraps.
+    const auto k = PointF(ref - pt) / mapSize;
+    const auto kRounded = PointF(std::round(k.x), std::round(k.y));
+    // Shift `pt` by that many map sizes to get the nearest toroidal copy.
+    return pt + DrawPoint(kRounded) * mapSize;
 }
 
 // -----------------------------------------------------------------------------
