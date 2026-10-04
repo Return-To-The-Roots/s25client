@@ -765,6 +765,11 @@ void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
     drawNodeCallbacks.erase(itPos);
 }
 
+void GameWorldView::ShowRadiusPreview(MapPoint center, unsigned radius)
+{
+    radiusPreview_ = std::make_pair(center, radius);
+}
+
 // Snap a point to the nearest toroidal copy (map wrapping) relative to a reference.
 // k = round((reference - pt) / mapSize), pt += k * mapSize.
 DrawPoint GameWorldView::SnapToNearestCopy(DrawPoint pt, DrawPoint ref, DrawPoint mapPxSize)
@@ -834,11 +839,11 @@ void GameWorldView::UpdateRadiusPreviewForMousePos(const Position& mousePos)
     {
         const unsigned bldRadius = GetBuildingRadius(*bldType);
         if(bldRadius > 0)
-            radiusPreview_ = std::make_pair(selPt, bldRadius);
+            ShowRadiusPreview(selPt, bldRadius);
         else
-            radiusPreview_ = std::nullopt;
+            HideRadiusPreview();
     } else
-        radiusPreview_ = std::nullopt;
+        HideRadiusPreview();
 }
 
 void GameWorldView::CalcFxLx()

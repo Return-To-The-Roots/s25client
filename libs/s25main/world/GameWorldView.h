@@ -127,8 +127,9 @@ public:
     void AddDrawNodeCallback(IDrawNodeCallback* newCallback);
     void RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove);
 
-    /// Set/show a radius preview outline on the map (or clear with std::nullopt)
-    void SetRadiusPreview(const std::optional<std::pair<MapPoint, unsigned>>& preview) { radiusPreview_ = preview; }
+    /// Show a radius preview outline on the map
+    void ShowRadiusPreview(MapPoint center, unsigned radius);
+    void HideRadiusPreview() { radiusPreview_ = std::nullopt; }
 
     /// Update radius preview based on which map node is under the mouse cursor
     /// Called from mouse-move handler, not from draw loop
