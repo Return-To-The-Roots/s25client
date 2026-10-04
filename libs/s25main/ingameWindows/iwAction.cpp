@@ -177,10 +177,8 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 std::stringstream tooltip;
                 tooltip << _(BUILDING_NAMES[bld]);
 
-                // Radius anzeigen falls vorhanden
-                unsigned radius = 0;
-                if(showBuildingRadius)
-                    radius = GetBuildingRadius(bld);
+                // Show radius if any
+                const unsigned radius = showBuildingRadius ? GetBuildingRadius(bld) : 0;
                 if(radius > 0)
                     tooltip << boost::format(_("\nRange: %1% tiles")) % radius;
 
@@ -198,8 +196,6 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 ctrlBuildingIcon* icon = build_tab->GetGroup(static_cast<int>(bt))
                                            ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
 
-                // Store hover callback; activeHoveredIcon_ guards against stale leaves from
-                // reversed child iteration order in Msg_MouseMove dispatch
                 if(radius > 0)
                 {
                     icon->SetOnHoverChanged([this, icon, radius](bool hovered) noexcept {
