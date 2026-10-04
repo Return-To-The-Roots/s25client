@@ -731,7 +731,9 @@ unsigned GameWorldView::GetBuildingRadius(BuildingType bld) const
         case BuildingType::GraniteMine:
         case BuildingType::CoalMine:
         case BuildingType::IronMine:
-        case BuildingType::GoldMine: return MINER_RADIUS;
+        case BuildingType::GoldMine:
+        case BuildingType::Well: // Well uses the same radius
+            return MINER_RADIUS;
         // Farmhand-based buildings — worker goes out to gather resources from the map.
         case BuildingType::Woodcutter:
         case BuildingType::Forester:
