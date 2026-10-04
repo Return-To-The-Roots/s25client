@@ -12,6 +12,7 @@
 #include "buildings/nobMilitary.h"
 #include "factories/AIFactory.h"
 #include "factories/BuildingFactory.h"
+#include "helpers/EnumRange.h"
 #include "helpers/containerUtils.h"
 #include "network/GameMessage_Chat.h"
 #include "notifications/NodeNote.h"
@@ -205,11 +206,26 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineResourceBehaviorAffectsAIMineSearch, EmptyWor
         return ai.FindBestPosition(searchCenter, res, BuildingQuality::Mine, 5).isValid();
     };
 
+    // Default: No resources, no spot.
+    BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::Default, AIResource::Granite));
+    BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::Default, AIResource::Coal));
+    // Same for S4-like exhaustion
+    BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::S4LikeExhaustion, AIResource::Granite));
+    BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::S4LikeExhaustion, AIResource::Coal));
     // WorkEverywhere lets the AI place a granite mine on any mineable node, but only for granite, not coal.
     BOOST_TEST(findsMineSpotFor(MineResourceBehavior::WorkEverywhere, AIResource::Granite));
     BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::WorkEverywhere, AIResource::Coal));
     // Inexhaustible does not imply "work everywhere": without an actual deposit there is still no spot.
     BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::Inexhaustible, AIResource::Granite));
+    BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::Inexhaustible, AIResource::Coal));
+    // But if we place a granite deposit, the AI can find it
+    world.GetNodeWriteable(searchCenter).resources = Resource(ResourceType::Granite, 1);
+    for(const auto behavior : helpers::EnumRange<MineResourceBehavior>{})
+        BOOST_TEST_CONTEXT("Behavior: " << rttr::enum_cast(behavior))
+        {
+            BOOST_TEST(findsMineSpotFor(behavior, AIResource::Granite));
+            BOOST_TEST(!findsMineSpotFor(behavior, AIResource::Coal));
+        }
 }
 
 BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)

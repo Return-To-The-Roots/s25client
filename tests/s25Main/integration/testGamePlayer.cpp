@@ -66,18 +66,18 @@ constexpr unsigned S4LIKE_FULL_PRODUCTIVITY_AMOUNT = 20;
 
 // Places a coal mine and drives its S4-like productivity purely through the resources in its radius.
 // Size chosen such that the mine radius never wraps onto itself.
-struct MineProductivityFixture : WorldFixture<CreateEmptyWorld, 1, 20, 12>
+constexpr auto MINE_MAP_SIZE = MINER_RADIUS * 2 + 6;
+struct MineProductivityFixture : WorldFixture<CreateEmptyWorld, 1, MINE_MAP_SIZE, MINE_MAP_SIZE>
 {
     nobUsual* coalMine;
     MapPoint minePos;
 
     MineProductivityFixture()
     {
-        // Offset > MINER_RADIUS so no node of the mine radius is covered by the HQ and each of them can hold coal.
         minePos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + Position(4, 0));
         coalMine = static_cast<nobUsual*>(
           BuildingFactory::CreateBuilding(world, BuildingType::CoalMine, minePos, 0, Nation::Romans));
-        // The empty world has no resources, but clear the radius to be explicit.
+        // Clear resources in the radius explicitly.
         for(const MapPoint pt : world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS))
             world.SetResource(pt, Resource());
     }
@@ -85,9 +85,8 @@ struct MineProductivityFixture : WorldFixture<CreateEmptyWorld, 1, 20, 12>
     // Puts given amounts of coal on the mine node and its eastern neighbor
     void setCoalAmounts(const unsigned atMine, const unsigned atNeighbor)
     {
-        world.SetResource(minePos, atMine ? Resource(ResourceType::Coal, atMine) : Resource());
-        world.SetResource(world.GetNeighbour(minePos, Direction::East),
-                          atNeighbor ? Resource(ResourceType::Coal, atNeighbor) : Resource());
+        world.SetResource(minePos, Resource(ResourceType::Coal, atMine));
+        world.SetResource(world.GetNeighbour(minePos, Direction::East), Resource(ResourceType::Coal, atNeighbor));
     }
 
     // Spreads the given total coal amount as evenly as possible over every node in the radius (rest set to none).
