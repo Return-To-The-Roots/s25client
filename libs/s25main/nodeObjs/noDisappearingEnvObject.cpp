@@ -11,14 +11,6 @@
 #include "world/GameWorld.h"
 #include "s25util/colors.h"
 
-/**
- *  Konstruktor von @p noBase.
- *
- *  @param[in] x        X-Position
- *  @param[in] y        Y-Position
- *  @param[in] type     Typ der Ressource
- *  @param[in] quantity Menge der Ressource
- */
 noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos, const unsigned living_time,
                                                  const unsigned add_var_living_time)
     : noCoordBase(NodalObjectType::Environment, pos), disappearing(false)
@@ -38,7 +30,6 @@ noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData& sgd, const 
     : noCoordBase(sgd, obj_id), disappearing(sgd.PopBool()), dead_event(sgd.PopEvent())
 {}
 
-/// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll
 unsigned noDisappearingEnvObject::GetDrawColor() const
 {
     if(disappearing)
@@ -49,7 +40,6 @@ unsigned noDisappearingEnvObject::GetDrawColor() const
         return 0xFFFFFFFF;
 }
 
-/// Gibt Farbe zurück, mit der der Schatten des Objekts gezeichnet werden soll
 unsigned noDisappearingEnvObject::GetDrawShadowColor() const
 {
     if(disappearing)
@@ -60,39 +50,29 @@ unsigned noDisappearingEnvObject::GetDrawShadowColor() const
         return COLOR_SHADOW;
 }
 
-/**
- *  Benachrichtigen, wenn neuer GF erreicht wurde.
- */
 void noDisappearingEnvObject::HandleEvent(const unsigned id)
 {
     if(id)
     {
         RTTR_Assert(world->GetNode(pos).obj == this);
         world->SetNO(pos, nullptr);
-        // endgültig vernichten
         GetEvMgr().AddToKillList(this);
         dead_event = nullptr;
     } else
     {
-        // Jetzt verschwinden
         disappearing = true;
-        // In ner bestimmten Zeit dann endgültig vernichten
+        // Remove after some time fading out
         dead_event = GetEvMgr().AddEvent(this, 30, 1);
     }
 }
 
-/**
- *  Räumt das Objekt auf.
- */
 void noDisappearingEnvObject::Destroy()
 {
-    // Feld räumen, wenn ich sterbe
+    // Remove from map if still present
     if(world->GetNode(pos).obj == this)
         world->SetNO(pos, nullptr);
 
-    // ggf Event abmelden
-    if(dead_event)
-        GetEvMgr().RemoveEvent(dead_event);
+    GetEvMgr().RemoveEvent(dead_event);
 
     noCoordBase::Destroy();
 }

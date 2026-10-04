@@ -13,13 +13,6 @@
 #include "world/GameWorld.h"
 #include <algorithm>
 
-/**
- *  Konstruktor von @p noSign.
- *
- *  @param[in] x        X-Position
- *  @param[in] y        Y-Position
- *  @param[in] resource Typ der Ressource
- */
 noSign::noSign(const MapPoint pos, Resource resource)
     : noDisappearingEnvObject(
       pos, 8500 * (signDurabilityFactor[world->GetGGS().getSelection(AddonId::DURABLE_GEOLOGIST_SIGNS)]), 500),
@@ -41,9 +34,6 @@ noSign::noSign(SerializedGameData& sgd, const unsigned obj_id)
     : noDisappearingEnvObject(sgd, obj_id), resource(sgd.PopUnsignedChar())
 {}
 
-/**
- *  An x,y zeichnen.
- */
 void noSign::Draw(DrawPoint drawPt)
 {
     // Schild selbst

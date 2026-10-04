@@ -19,11 +19,11 @@ noSkeleton::~noSkeleton() = default;
 
 void noSkeleton::Destroy()
 {
-    world->SetNO(pos, nullptr);
+    // Remove from map if still present
+    if(world->GetNode(pos).obj == this)
+        world->SetNO(pos, nullptr);
 
-    // ggf Event abmelden
-    if(current_event)
-        GetEvMgr().RemoveEvent(current_event);
+    GetEvMgr().RemoveEvent(current_event);
 
     noCoordBase::Destroy();
 }
@@ -54,8 +54,10 @@ void noSkeleton::HandleEvent(const unsigned /*id*/)
         current_event = GetEvMgr().AddEvent(this, 10000 + RANDOM_RAND(10000));
     } else
     {
-        // ganz weg damit
-        current_event = nullptr;
+        // Remove from map and destroy
+        RTTR_Assert(world->GetNode(pos).obj == this);
+        world->SetNO(pos, nullptr);
         GetEvMgr().AddToKillList(this);
+        current_event = nullptr;
     }
 }
