@@ -167,8 +167,8 @@ private:
     /// Draw a radius outline ring around a center point with the given radius
     void DrawRadiusOutline(const MapPoint& center, unsigned radius);
 
-    /// Snap a point to the nearest toroidal copy relative to a reference position
-    static DrawPoint SnapToNearestCopy(DrawPoint pt, DrawPoint ref, DrawPoint mapPxSize);
+    /// Snap a point to the nearest toroidal copy relative to a reference position, given the map size in pixels
+    static DrawPoint SnapToNearestCopy(DrawPoint pt, DrawPoint ref, Extent mapSize);
 
     void SaveIngameSettingsValues() const;
     void updateEffectiveZoomFactor();
