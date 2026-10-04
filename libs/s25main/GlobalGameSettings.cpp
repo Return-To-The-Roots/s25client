@@ -152,13 +152,29 @@ const Addon* GlobalGameSettings::getAddon(unsigned idx) const
         return addons[idx].addon.get();
 }
 
-GlobalGameSettings::AddonWithState* GlobalGameSettings::getAddon(AddonId id)
+const Addon* GlobalGameSettings::getAddon(AddonId idx, unsigned& status) const
 {
-    auto it = helpers::find_if(addons, [id](const AddonWithState& cur) { return cur.addon->getId() == id; });
-    return it != addons.end() ? &*it : nullptr;
+    const AddonWithState* addon = findAddon(idx);
+    if(addon)
+    {
+        status = addon->status;
+        return addon->addon.get();
+    }
+    return nullptr;
 }
 
-const GlobalGameSettings::AddonWithState* GlobalGameSettings::getAddon(AddonId id) const
+const Addon* GlobalGameSettings::getAddon(AddonId idx) const
+{
+    unsigned status;
+    return getAddon(idx, status);
+}
+
+GlobalGameSettings::AddonWithState* GlobalGameSettings::findAddon(AddonId id)
+{
+    return const_cast<AddonWithState*>(static_cast<const GlobalGameSettings&>(*this).findAddon(id));
+}
+
+const GlobalGameSettings::AddonWithState* GlobalGameSettings::findAddon(AddonId id) const
 {
     auto it = helpers::find_if(addons, [id](const AddonWithState& cur) { return cur.addon->getId() == id; });
     return it != addons.end() ? &*it : nullptr;
@@ -166,13 +182,13 @@ const GlobalGameSettings::AddonWithState* GlobalGameSettings::getAddon(AddonId i
 
 bool GlobalGameSettings::isEnabled(AddonId id) const
 {
-    const auto* addon = getAddon(id);
+    const auto* addon = findAddon(id);
     return addon && addon->status != addon->addon->getDefaultStatus();
 }
 
 unsigned GlobalGameSettings::getSelection(AddonId id) const
 {
-    const auto* addon = getAddon(id);
+    const auto* addon = findAddon(id);
     return addon ? addon->status : 0;
 }
 
@@ -300,9 +316,9 @@ void GlobalGameSettings::applyLegacyInexhaustibleMines()
 
 void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
 {
-    auto* addon = getAddon(id);
+    auto* addon = findAddon(id);
     if(!addon)
-        LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % static_cast<unsigned>(id);
+        LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % rttr::enum_cast(id);
     else
         addon->status = selection;
 }
