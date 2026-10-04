@@ -51,6 +51,10 @@ See also `rttr:GetFeatureLevel()`.
 
 - Allow relative paths for images referenced by campaign files.
 
+### Feature level 8
+
+- Added the per-mine `ADDON_*MINE_RESOURCE_BEHAVIOR` addons
+
 ## Example
 
 ```lua
