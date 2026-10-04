@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -6,6 +6,7 @@
 
 #include "Cheats.h"
 #include "DrawPoint.h"
+#include "gameTypes/BuildingType.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/MapTypes.h"
 #include <boost/signals2.hpp>
@@ -118,6 +119,9 @@ public:
     void MoveToLastPosition();
 
     DrawPoint GetOffset() const { return offset; }
+
+    /// Get the radius in tiles for a building type (worker reach, territory influence, attack range, etc.)
+    unsigned GetBuildingRadius(BuildingType bld) const;
 
     /// Add a debug node printer
     void AddDrawNodeCallback(IDrawNodeCallback* newCallback);

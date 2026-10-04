@@ -178,7 +178,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 tooltip << _(BUILDING_NAMES[bld]);
 
                 // Show radius if any
-                const unsigned radius = showBuildingRadius ? GetBuildingRadius(bld) : 0;
+                const unsigned radius = showBuildingRadius ? gwv.GetBuildingRadius(bld) : 0;
                 if(radius > 0)
                     tooltip << boost::format(_("\nRange: %1% tiles")) % radius;
 
