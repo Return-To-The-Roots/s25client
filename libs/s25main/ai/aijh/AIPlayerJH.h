@@ -201,7 +201,7 @@ public:
     // check if there are free soldiers (in hq/storehouses)
     unsigned SoldierAvailable(int rank = -1);
 
-    bool HuntablesinRange(MapPoint pt, unsigned min);
+    bool HuntablesInRange(MapPoint pt, unsigned min);
 
     bool ValidTreeinRange(MapPoint pt);
 
