@@ -10,11 +10,21 @@
 #include "buildings/nobMilitary.h"
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
+#include "gameTypes/MineResourceBehavior.h"
 #include "gameData/BuildingProperties.h"
 #include <algorithm>
 #include <cmath>
 
 namespace AIJH {
+namespace {
+    bool HasAnyInexhaustibleOreMine(const GlobalGameSettings& ggs)
+    {
+        return !IsMineResourceDepletable(ggs, BuildingType::CoalMine)
+               || !IsMineResourceDepletable(ggs, BuildingType::IronMine)
+               || !IsMineResourceDepletable(ggs, BuildingType::GoldMine);
+    }
+} // namespace
+
 BuildingPlanner::BuildingPlanner(const AIPlayerJH& aijh) : buildingsWanted(), expansionRequired(false)
 {
     RefreshBuildingNums(aijh);
@@ -224,7 +234,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
         // brewery count = 1+(armory/5) if there is at least 1 armory or armory /6 for exhaustible mines
         if(GetNumBuildings(BuildingType::Armory) > 0 && GetNumBuildings(BuildingType::Farm) > 0)
         {
-            if(aijh.ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES))
+            if(HasAnyInexhaustibleOreMine(aijh.ggs))
                 buildingsWanted[BuildingType::Brewery] = 1 + GetNumBuildings(BuildingType::Armory) / 5;
             else
                 buildingsWanted[BuildingType::Brewery] = 1 + GetNumBuildings(BuildingType::Armory) / 6;
@@ -292,8 +302,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
                   (GetNumBuildings(BuildingType::Farm) + GetNumBuildings(BuildingType::Fishery)) / 2 + 2;
             if(GetNumBuildings(BuildingType::Farm) > 7) // quite the empire just scale mines with farms
             {
-                if(aijh.ggs.isEnabled(
-                     AddonId::INEXHAUSTIBLE_MINES)) // inexhaustible mines? -> more farms required for each mine
+                if(HasAnyInexhaustibleOreMine(aijh.ggs)) // inexhaustible mines? -> more farms required for each mine
                     buildingsWanted[BuildingType::IronMine] = std::min(GetNumBuildings(BuildingType::Ironsmelter) + 1,
                                                                        GetNumBuildings(BuildingType::Farm) * 2 / 5);
                 else
