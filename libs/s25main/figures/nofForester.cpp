@@ -26,7 +26,7 @@ bool IsPotentialNewFieldForOwnFarm(GameWorld& world, const MapPoint pt, const un
         return false;
 
     return world.CheckPointsInRadius(
-      pt, nofFarmhand::GetWorkRadius(Job::Farmer),
+      pt, nofFarmhand::GetWorkRadius(world.GetGGS(), Job::Farmer),
       [&world, player](const MapPoint farmPt, unsigned) {
           if(world.GetNO(farmPt)->GetType() != NodalObjectType::Building)
               return false;
