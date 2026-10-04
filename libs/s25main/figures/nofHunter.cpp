@@ -149,15 +149,19 @@ std::vector<noAnimal*> nofHunter::GetAnimalsInRange(const GameWorldBase& world, 
     return world.GetPointsInRadius(pos, radius, pointToAnimal, canAnimalBeUsed, true);
 }
 
+std::vector<noAnimal*> nofHunter::GetHuntableAnimalsInRange(const GameWorldBase& world, MapPoint pos)
+{
+    return GetAnimalsInRange(world, pos, ANIMAL_RADIUS, MAX_HUNTING_DISTANCE,
+                             [](const noAnimal* a) { return a->CanHunted(); });
+}
+
 void nofHunter::TryStartHunting()
 {
     std::vector<noAnimal*> available_animals;
 
     if(world->GetReplayCompatVersion() >= 4)
-    {
-        available_animals = GetAnimalsInRange(*world, pos, ANIMAL_RADIUS, MAX_HUNTING_DISTANCE,
-                                              [](const noAnimal* a) { return a->CanHunted(); });
-    } else
+        available_animals = GetHuntableAnimalsInRange(*world, pos);
+    else
     {
         // Legacy square search for replays recorded with old code
         const int SQUARE_SIZE = 19;
