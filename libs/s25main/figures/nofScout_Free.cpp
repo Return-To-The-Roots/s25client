@@ -9,7 +9,6 @@
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
-#include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include <algorithm>
 class noRoadNode;
