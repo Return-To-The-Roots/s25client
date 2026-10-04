@@ -227,9 +227,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
 
-    // Draw radius preview outline if enabled
-    if(radiusPreview_)
-        DrawRadiusOutline(radiusPreview_->first, radiusPreview_->second);
+    DrawRadiusOutline();
 
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
@@ -767,7 +765,15 @@ void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
 
 void GameWorldView::ShowRadiusPreview(MapPoint center, unsigned radius)
 {
-    radiusPreview_ = std::make_pair(center, radius);
+    if(radiusPreview_ && radiusPreview_->center == center && radiusPreview_->radius == radius)
+        return;
+    std::vector<Position> pts;
+    for(const auto& [mapPt, dist] : GetWorld().GetPointsInRadius(center, radius, ReturnMapPointWithRadius{}))
+    {
+        if(dist == radius)
+            pts.push_back(GetWorld().GetNodePos(mapPt));
+    }
+    radiusPreview_ = RadiusPreview{center, radius, std::move(pts)};
 }
 
 DrawPoint GameWorldView::SnapToNearestCopy(const DrawPoint pt, const DrawPoint ref, const Extent mapSize)
@@ -779,31 +785,26 @@ DrawPoint GameWorldView::SnapToNearestCopy(const DrawPoint pt, const DrawPoint r
     return pt + DrawPoint(kRounded) * mapSize;
 }
 
-// -----------------------------------------------------------------------------
-// Draw radius overlay for a building's working range, handling map wrapping.
-// -----------------------------------------------------------------------------
-void GameWorldView::DrawRadiusOutline(const MapPoint& center, unsigned radius)
+void GameWorldView::DrawRadiusOutline()
 {
+    if(!radiusPreview_)
+        return;
+
     const auto& world = GetWorld();
-    auto pts = world.GetPointsInRadius(center, radius, ReturnMapPointWithRadius{});
 
     const MapExtent mapSize = world.GetSize();
     constexpr unsigned BORDER_COLOR = 0xFFFF0000;
-    const DrawPoint mapPxSize(mapSize.x * TR_W, mapSize.y * TR_H);
+    constexpr auto BORDER_SIZE = Extent::all(5);
+    const Extent mapPxSize = mapSize * Extent(TR_W, TR_H);
 
     // Screen position of the center vertex.
     // selPtOffset accounts for the pixel shift when the map wraps at the seam.
-    const DrawPoint centerScr = GetNodePos(center, world.GetNode(center).altitude) + selPtOffset;
+    const DrawPoint centerScr = world.GetNodePos(radiusPreview_->center) + selPtOffset;
 
-    for(const auto& [mapPt, dist] : pts)
+    for(auto screenPt : radiusPreview_->outline)
     {
-        if(dist != radius)
-            continue;
-
-        DrawPoint screenPt = GetNodePos(mapPt, world.GetNode(mapPt).altitude);
         screenPt = SnapToNearestCopy(screenPt, centerScr, mapPxSize) - offset;
-
-        Window::DrawRectangle(Rect(screenPt - DrawPoint(2, 2), Extent(5, 5)), BORDER_COLOR);
+        Window::DrawRectangle(Rect(screenPt - BORDER_SIZE / 2, BORDER_SIZE), BORDER_COLOR);
     }
 }
 
