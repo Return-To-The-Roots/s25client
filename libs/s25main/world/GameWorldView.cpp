@@ -227,7 +227,12 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     if(show_names || show_productivity)
         DrawNameProductivityOverlay(terrainRenderer);
 
-    DrawRadiusOutline();
+    if(isBuildingRadiusEnabled_)
+    {
+        if(drawMouse)
+            UpdateRadiusPreviewForMousePos();
+        DrawRadiusOutline();
+    }
 
     DrawGUI(rb, terrainRenderer, selected, drawMouse);
 
@@ -810,11 +815,8 @@ void GameWorldView::DrawRadiusOutline()
     }
 }
 
-void GameWorldView::UpdateRadiusPreviewForMousePos(const Position& mousePos)
+void GameWorldView::UpdateRadiusPreviewForMousePos()
 {
-    if(!isBuildingRadiusEnabled_ || WINDOWMANAGER.FindWindowAtPos(mousePos))
-        return;
-
     const auto& world = GetWorld();
     std::optional<BuildingType> bldType;
     switch(gwv.GetVisibility(selPt))
