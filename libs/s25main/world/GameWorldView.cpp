@@ -41,10 +41,10 @@
 #include <optional>
 
 GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size)
-    : selPt(0, 0), show_bq(SETTINGS.ingame.showBQ), show_names(SETTINGS.ingame.showNames),
-      show_productivity(SETTINGS.ingame.showProductivity), offset(0, 0), lastOffset(0, 0), gwv(gwv), origin_(pos),
-      size_(size), zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f),
-      isBuildingRadiusEnabled_(GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS))
+    : gwv(gwv), origin_(pos), size_(size), selPt(0, 0), show_bq(SETTINGS.ingame.showBQ),
+      show_names(SETTINGS.ingame.showNames), show_productivity(SETTINGS.ingame.showProductivity),
+      isBuildingRadiusEnabled_(GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS)), offset(0, 0), lastOffset(0, 0),
+      zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
     updateEffectiveZoomFactor();
     MoveBy({0, 0});
@@ -783,6 +783,7 @@ void GameWorldView::UpdateRadiusPreviewForMousePos(const Position& mousePos)
                 bldType = static_cast<const fowBuilding&>(*fow).GetBuildingType();
         }
         break;
+        case Visibility::Invisible: break;
     }
 
     if(bldType)

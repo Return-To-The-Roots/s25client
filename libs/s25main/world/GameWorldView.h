@@ -32,6 +32,13 @@ struct ObjectBetweenLines;
 
 class GameWorldView
 {
+    const GameWorldViewer& gwv;
+
+    /// Top-Left position of the view (window)
+    Position origin_;
+    /// Size of the view
+    Extent size_;
+
     /// Currently selected point (where the mouse points to)
     MapPoint selPt;
     /// Offset to selected point
@@ -60,13 +67,6 @@ class GameWorldView
     DrawPoint firstPt;
     /// Last drawn map point
     DrawPoint lastPt;
-
-    const GameWorldViewer& gwv;
-
-    /// Top-Left position of the view (window)
-    Position origin_;
-    /// Size of the view
-    Extent size_;
 
     /// How much the view is scaled (1=normal, >1=bigger, >0 && <1=smaller)
     float zoomFactor_;
