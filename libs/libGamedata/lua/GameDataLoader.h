@@ -35,4 +35,12 @@ private:
     int curIncludeDepth_;
 };
 
+/// @name Shared helpers for adding world description items from Lua tables
+/// These can be used by both GameDataLoader (game data init) and LuaInterfaceGame (companion scripts).
+/// \{
+void addTerrain(WorldDescription& worldDesc, const kaguya::LuaTable& data);
+void addLandscape(WorldDescription& worldDesc, const kaguya::LuaTable& data);
+void addTerrainEdge(WorldDescription& worldDesc, const kaguya::LuaTable& data);
+/// \}
+
 void loadGameData(WorldDescription& worldDesc);
