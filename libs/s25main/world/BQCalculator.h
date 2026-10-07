@@ -5,7 +5,9 @@
 #pragma once
 
 #include "World.h"
+#include "commonDefines.h" // absDiff
 #include "helpers/containerUtils.h"
+#include "nodeObjs/noBase.h" // noBase (used via World::GetNO) and BlockingManner
 #include "gameData/TerrainDesc.h"
 
 struct BQCalculator
