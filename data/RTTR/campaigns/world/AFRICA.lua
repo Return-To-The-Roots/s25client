@@ -72,3 +72,9 @@ function getAllowedChanges()
         ["aiPortrait"]  = false
     }
 end
+
+-------------------------------- mission events -------------------------------
+function onHumanWinner()
+    rttr:SetCampaignChapterCompleted("world", 2)
+    rttr:EnableCampaignChapter("world", 8) -- sasia
+end

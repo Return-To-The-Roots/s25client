@@ -72,3 +72,10 @@ function getAllowedChanges()
         ["aiPortrait"]  = false
     }
 end
+
+-------------------------------- mission events -------------------------------
+function onHumanWinner()
+    rttr:SetCampaignChapterCompleted("world", 7)
+    rttr:EnableCampaignChapter("world", 8) -- sasia
+    rttr:EnableCampaignChapter("world", 9) -- japan
+end
