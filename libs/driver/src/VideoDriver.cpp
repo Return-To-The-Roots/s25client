@@ -27,7 +27,7 @@ VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
 
 Position VideoDriver::GetMousePos() const
 {
-    return mouse_xy.pos;
+    return mouse_xy.pos * (int)dpiScale_;
 }
 
 /**
