@@ -11,6 +11,7 @@
 
 class RoadSegment;
 class Ware;
+class noFlag;
 class noRoadNode;
 class SerializedGameData;
 
@@ -68,6 +69,8 @@ private:
     unsigned next_animation;
     /// For boat carriers: path to the shore
     std::vector<Direction> shore_path;
+    /// For boat carriers: Figure carried over the waterway (BOATS_TRANSPORT_FIGURES addon)
+    std::unique_ptr<noFigure> carried_figure;
 
     void GoalReached() override;
     void Walked() override;
@@ -98,6 +101,15 @@ private:
     /// Boat carrier paddles to the coast after his road was destroyed
     void WanderOnWater();
 
+    /// Take a figure waiting at the given flag for this waterway into the boat, if there is one
+    bool TakeFigure(noFlag& flag);
+    /// Keep the position on the waterway and the direction of the carried figure in sync with ours
+    void UpdateCarriedFigure();
+    /// Let the carried figure leave the boat at the current position
+    void DropFigure();
+    /// Make the carrier loose the figure he carries: It leaves the boat at the current position and wanders around
+    void LooseFigure();
+
 public:
     nofCarrier(CarrierType ct, MapPoint pos, unsigned char player, RoadSegment* workplace, noRoadNode* goal);
     nofCarrier(SerializedGameData& sgd, unsigned obj_id);
@@ -117,6 +129,8 @@ public:
     CarrierState GetCarrierState() const { return state; }
     /// Gibt Träger-Produktivität in % zurück
     unsigned GetProductivity() const { return productivity; }
+    /// Return the figure carried over the waterway by this boat carrier, if any
+    const noFigure* GetCarriedFigure() const { return carried_figure.get(); }
 
     void Draw(DrawPoint drawPt) override;
 

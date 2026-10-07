@@ -61,6 +61,13 @@ void RoadSegment::Destroy()
     if(carriers_[1])
         carriers_[1]->LostWork();
 
+    // Figures waiting for a boat can't be carried over this waterway anymore
+    if(rt == RoadType::Water)
+    {
+        static_cast<noFlag*>(f1)->WaterwayDestroyed(*this);
+        static_cast<noFlag*>(f2)->WaterwayDestroyed(*this);
+    }
+
     if(!route.empty())
     {
         // Tell all characters on this road they lost their jobs
@@ -151,6 +158,10 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     splitflag->SetRoute(second->route.front(), second);
     second->f2->SetRoute(second->route.back() + 3u, second);
 
+    // Figures waiting for a boat at F2 need to take the 2nd section now
+    if(rt == RoadType::Water)
+        static_cast<noFlag*>(second->f2)->WaterwaySplitted(*this, *second);
+
     // Notify all characters on the road
     t = f1->GetPos();
 
@@ -183,6 +194,15 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
             // (1st is already included)
             world->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(*second);
     }
+
+    // Tell the carriers about figures waiting at the flags as they might have missed them
+    if(rt == RoadType::Water)
+    {
+        if(static_cast<noFlag*>(f1)->GetNumFiguresForRoad(*this))
+            AddWareJob(f1);
+        if(static_cast<noFlag*>(second->f2)->GetNumFiguresForRoad(*second))
+            second->AddWareJob(second->f2);
+    }
 }
 
 /**
@@ -198,6 +218,9 @@ bool RoadSegment::AreWareJobs(const bool flag, CarrierType ct, const bool take_w
         jobs_count = static_cast<noFlag*>(f2)->GetNumWaresForRoad((route.back() + 3u));
     else
         jobs_count = static_cast<noFlag*>(f1)->GetNumWaresForRoad(route.front());
+    // Figures waiting to be carried over the waterway
+    if(rt == RoadType::Water)
+        jobs_count += static_cast<noFlag*>(flag ? f2 : f1)->GetNumFiguresForRoad(*this);
 
     // Nur eine Ware da --> evtl läuft schon ein anderer Träger/Esel hin, nur wo Esel und Träger da sind
     // Wenn der Träger nun natürlich schon da ist, kann er die mitnehmen
