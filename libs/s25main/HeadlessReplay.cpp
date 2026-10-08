@@ -14,6 +14,7 @@
 #include "variant.h"
 #include "world/GameWorld.h"
 #include <stdexcept>
+#include <string>
 
 HeadlessReplay::HeadlessReplay(const boost::filesystem::path& replayPath)
 {
@@ -64,6 +65,11 @@ bool HeadlessReplay::RunGF()
     const unsigned curGF = getCurrentGF();
     if(desync_ || curGF > replay_.GetLastGF())
         return false;
+    if(nextGF_ && *nextGF_ < curGF)
+    {
+        throw std::runtime_error("Corrupt replay: next command is for GF " + std::to_string(*nextGF_)
+                                 + " but the game is already at GF " + std::to_string(curGF));
+    }
 
     AsyncChecksum checksum;
     if(nextGF_ && *nextGF_ == curGF)

@@ -45,6 +45,7 @@ public:
     /// Returns false after the frame of the replay's last GF, where the recording ended, and at a desync.
     /// The game then stays at the desynced GF: every following frame would desync too, so there is
     /// nothing left to learn from continuing.
+    /// Throws std::runtime_error if the replay is corrupt, i.e. holds a command for a GF that already passed.
     bool RunGF();
     /// Play back the whole replay, calling onGameFrame after each frame.
     /// Returns false if a desync was found.
