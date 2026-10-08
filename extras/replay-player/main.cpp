@@ -2,27 +2,17 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-#include "AsyncChecksum.h"
-#include "EventManager.h"
-#include "Game.h"
-#include "GamePlayer.h"
+#include "HeadlessConsole.h"
 #include "HeadlessReplay.h"
-#include "ILocalGameState.h"
-#include "PlayerInfo.h"
 #include "RTTR_Version.h"
 #include "Replay.h"
+#include "ReplayOutput.h"
 #include "RttrConfig.h"
-#include "Savegame.h"
 #include "ogl/glAllocator.h"
-#include "random/Random.h"
-#include "random/randomIO.h"
-#include "variant.h"
 #include "world/GameWorld.h"
-#include "world/MapLoader.h"
-#include "gameTypes/MapInfo.h"
+#include "gameData/GameConsts.h"
 #include "libsiedler2/libsiedler2.h"
 #include "s25util/System.h"
-#include "s25util/tmpFile.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/nowide/args.hpp>
@@ -46,7 +36,7 @@ int main(int argc, char** argv)
         ("help,h", "Show help")
         ("replay,r", po::value<std::string>()->required(), "Replay file (.rpl) to play back\n"
                         "Supports <RTTR_USERDATA> placeholder (user data dir)")
-        ("verbose,V", "Print the async-log entries when the first desync is detected")
+        ("verbose,V", "Print the async-log entries when a desync is detected")
         ("version,v", "Show version information and exit")
     ;
     // clang-format on
@@ -97,165 +87,51 @@ int main(int argc, char** argv)
 
         bnw::cout << "Loading: " << replayPath << "\n";
 
-        Replay replay;
-        if(!replay.LoadHeader(replayPath))
-        {
-            bnw::cerr << "Failed to load replay header: " << replay.GetLastErrorMsg() << "\n";
-            return 1;
-        }
-        MapInfo mapInfo;
-        if(!replay.LoadGameData(mapInfo))
-        {
-            bnw::cerr << "Failed to load replay game data: " << replay.GetLastErrorMsg() << "\n";
-            return 1;
-        }
+        HeadlessReplay replay(replayPath);
+        printInitialInfo(replay);
 
-        std::vector<PlayerInfo> players;
-        for(unsigned i = 0; i < replay.GetNumPlayers(); i++)
-            players.emplace_back(replay.GetPlayer(i));
+        const auto startTime = std::chrono::steady_clock::now();
+        auto nextReport = startTime + std::chrono::seconds(1);
+        unsigned lastReportGF = replay.getStartGF();
+        StatsTablePrinter statsPrinter;
 
-        Game game(replay.ggs, /*startGF*/ 0, players);
-        RANDOM.Init(replay.getSeed());
-        GameWorld& gameWorld = game.world_;
+        const auto printStats = [&] {
+            HeadlessStats stats;
+            stats.currentGF = replay.getCurrentGF();
+            stats.totalGFs = replay.getReplay().GetLastGF();
+            stats.gameTime = std::chrono::duration_cast<std::chrono::milliseconds>(SPEED_GF_LENGTHS[GameSpeed::Normal]
+                                                                                   * stats.currentGF);
+            stats.wallTime =
+              std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - startTime);
+            stats.gfPerSecond = stats.currentGF - lastReportGF;
+            statsPrinter.print(stats, replay.getWorld());
+            lastReportGF = stats.currentGF;
+        };
 
-        const bool isSavegame = (mapInfo.savegame != nullptr);
-        if(isSavegame)
-        {
-            NullLocalGameState gs;
-            mapInfo.savegame->sgd.ReadSnapshot(game, gs);
-        } else
-        {
-            TmpFile mapfile;
-            mapfile.close();
-            if(!mapInfo.mapData.DecompressToFile(mapfile.filePath))
-            {
-                bnw::cerr << "Failed to decompress embedded map data\n";
-                return 1;
-            }
-            MapLoader loader(gameWorld);
-            if(!loader.Load(mapfile.filePath))
-            {
-                bnw::cerr << "Failed to load map\n";
-                return 1;
-            }
-            if(mapInfo.luaData.uncompressedLength > 0)
-            {
-                TmpFile luaFile(".lua");
-                luaFile.close();
-                if(!mapInfo.luaData.DecompressToFile(luaFile.filePath))
-                {
-                    bnw::cerr << "Failed to decompress embedded Lua script\n";
-                    return 1;
-                }
-                NullLocalGameState gs;
-                if(!loader.LoadLuaScript(game, gs, luaFile.filePath))
-                {
-                    bnw::cerr << "Failed to load embedded Lua script\n";
-                    return 1;
-                }
-                gameWorld.GetLua().setSuppressStdout(true);
-                bnw::cout << "Lua script loaded from replay.\n";
-            }
-            const bool fixFish = !(replay.GetMajorVersion() == 8 && replay.GetMinorVersion() < 3);
-            MapLoader::SetupResources(gameWorld, fixFish);
-            if(!fixFish)
-                bnw::cout << "Note: fish fix skipped (replay version "
-                          << static_cast<unsigned>(replay.GetMajorVersion()) << "."
-                          << static_cast<unsigned>(replay.GetMinorVersion()) << " predates 8.3)\n";
-
-            for(unsigned i = 0; i < gameWorld.GetNumPlayers(); ++i)
-                gameWorld.GetPlayer(i).MakeStartPacts();
-        }
-
-        gameWorld.InitAfterLoad();
-
-        const unsigned startGF = game.em_->GetCurrentGF();
-        printInitialInfo(replay, gameWorld, isSavegame, startGF);
-
-        auto nextGF = replay.ReadGF();
-        if(!nextGF)
-        {
-            bnw::cerr << "Empty replay: no commands found\n";
-            return 1;
-        }
-
-        ReplayStatus status{game, gameWorld, replay.GetLastGF(), std::chrono::steady_clock::now(), startGF};
-        auto nextReport = status.startTime + std::chrono::seconds(1);
-
-        bool endOfReplay = false;
-        unsigned asyncCount = 0;
-
-        do
-        {
-            const unsigned curGF = game.em_->GetCurrentGF();
-
-            AsyncChecksum checksum;
-            if(*nextGF == curGF)
-                checksum = AsyncChecksum::create(game);
-
-            while(*nextGF == curGF)
-            {
-                const auto cmd = replay.ReadCommand();
-                visit(composeVisitor([](const Replay::ChatCommand&) {},
-                                     [&](const Replay::GameCommand& gcmd) {
-                                         for(const gc::GameCommandPtr& gc : gcmd.cmds.gcs)
-                                             gc->Execute(game.world_, gcmd.player);
-
-                                         const AsyncChecksum& stored = gcmd.cmds.checksum;
-                                         if(stored.randChecksum != 0 && stored != checksum)
-                                         {
-                                             ++asyncCount;
-                                             if(asyncCount == 1)
-                                             {
-                                                 bnw::cerr << "\nFirst desync at GF " << curGF << ":\n"
-                                                           << "  actual:  " << checksum << "\n"
-                                                           << "  stored:  " << stored << "\n";
-                                                 if(verbose)
-                                                 {
-                                                     for(const auto& entry : RANDOM.GetAsyncLog())
-                                                         bnw::cerr << "  " << entry << "\n";
-                                                 }
-                                             }
-                                         }
-                                     }),
-                      cmd);
-
-                nextGF = replay.ReadGF();
-                if(!nextGF)
-                {
-                    endOfReplay = true;
-                    break;
-                }
-            }
-
-            game.RunGF();
-
+        replay.Run([&](const HeadlessReplay&) {
             const auto now = std::chrono::steady_clock::now();
             if(now >= nextReport)
             {
                 nextReport += std::chrono::seconds(1);
-                printTable(status);
-                status.lastReportGF = game.em_->GetCurrentGF();
+                printStats();
             }
-        } while(!endOfReplay);
-
-        // final table
-        printTable(status);
+        });
+        printStats();
         printConsole("\n");
 
-        const unsigned finalGF = game.em_->GetCurrentGF();
-        const float elapsed =
-          std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now() - status.startTime)
+        const auto elapsed =
+          std::chrono::duration_cast<std::chrono::duration<float>>(std::chrono::steady_clock::now() - startTime)
             .count();
-        bnw::cout << "Finished " << finalGF << " GFs in " << elapsed << "s ("
-                  << static_cast<unsigned>(finalGF / elapsed) << " GF/s)\n";
+        const unsigned playedGFs = replay.getCurrentGF() - replay.getStartGF();
+        bnw::cout << "Finished " << playedGFs << " GFs in " << elapsed << "s ("
+                  << static_cast<unsigned>(playedGFs / elapsed) << " GF/s)\n";
 
-        if(asyncCount > 0)
+        if(const auto desync = replay.getDesync())
         {
-            bnw::cerr << "FAIL: " << asyncCount << " async frame(s) detected.\n";
+            printDesync(*desync, verbose);
             return 1;
         }
-        bnw::cout << "OK: no desync detected.\n";
+        bnw::cout << "OK: No desync detected.\n";
         return 0;
 
     } catch(const std::exception& e)
