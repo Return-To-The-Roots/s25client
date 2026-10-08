@@ -10,8 +10,8 @@
 #include "GameLobby.h"
 #include "GameManager.h"
 #include "GameMessage_GameCommand.h"
+#include "GameSetup.h"
 #include "JoinPlayerInfo.h"
-#include "LeatherLoader.h"
 #include "Loader.h"
 #include "NWFInfo.h"
 #include "PlayerGameCommands.h"
@@ -40,7 +40,6 @@
 #include "random/randomIO.h"
 #include "world/GameWorld.h"
 #include "world/GameWorldView.h"
-#include "world/MapLoader.h"
 #include "gameTypes/RoadBuildState.h"
 #include "gameData/GameConsts.h"
 #include "gameData/PortraitConsts.h"
@@ -322,30 +321,15 @@ void GameClient::StartGame(const unsigned random_init)
     // Get standard settings before they get overwritten
     GetPlayer(GetPlayerId()).FillVisualSettings(default_settings);
 
-    GameWorld& gameWorld = game->world_;
-    if(mapinfo.savegame)
-        mapinfo.savegame->sgd.ReadSnapshot(*game, *this);
-    else
+    try
     {
-        RTTR_Assert(mapinfo.type != MapType::Savegame);
-        /// Startbündnisse setzen
-        for(auto& player : gameWorld.getPlayers())
-            player.MakeStartPacts();
-
-        MapLoader loader(gameWorld);
-        if(!loader.Load(mapinfo.filepath)
-           || (!mapinfo.luaFilepath.empty() && !loader.LoadLuaScript(*game, *this, mapinfo.luaFilepath)))
-        {
-            OnError(ClientError::InvalidMap);
-            return;
-        }
-        // TODO (Replay): Always use true
-        const bool fixFish = !GetReplay() || GetReplay()->GetMinorVersion() >= 3;
-        MapLoader::SetupResources(gameWorld, fixFish);
+        SetupGameWorld(*game, mapinfo, *this, GetReplay());
+    } catch(const GameSetupError& error)
+    {
+        LOG.write("%1%\n") % error.what();
+        OnError(ClientError::InvalidMap);
+        return;
     }
-    if(replayMode && replayinfo)
-        gameWorld.SetReplayCompatVersion(replayinfo->replay.GetMinorVersion());
-    gameWorld.InitAfterLoad();
 
     // Update visual settings
     ResetVisualSettings();
@@ -1567,30 +1551,6 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
         LOG.write(_("Error when loading game from replay: %s\n")) % error.what();
         OnError(ClientError::InvalidMap);
         return false;
-    }
-
-    /*
-      We have to to this if we have a old replay starting from scratch not containing a savegame. If a savegame is
-      contained in the replay the compatibility code in GamePlayer deserialization function takes care of handling this.
-      If we have a replay starting from scratch in the constructor of the gameplayer the standard distributions are
-      loaded. These contain also the new leather addon buildings. When the distribution is recomputed these buildings
-      are added to the possible goals for wares. This leads to the problem that we have more buildings then before in
-      the list. So it happens for example for wood that the ware is deliverd to a different goal and then the replay
-      gets out of sync.
-    */
-    if(!mapinfo.savegame && replayinfo->replay.GetMinorVersion() < 2)
-    {
-        auto newDistributions = default_settings.distribution;
-        unsigned idx = 0;
-        for(const DistributionMapping& mapping : distributionMap)
-        {
-            if(leatheraddon::isLeatherAddonBuildingType(std::get<1>(mapping)))
-                newDistributions[idx] = 0;
-            idx++;
-        }
-
-        for(auto& player : game->world_.getPlayers())
-            player.ChangeDistribution(newDistributions);
     }
 
     replayinfo->next_gf = replayinfo->replay.ReadGF();
