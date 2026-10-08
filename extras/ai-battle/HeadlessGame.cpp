@@ -5,6 +5,7 @@
 #include "HeadlessGame.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "GameSetup.h"
 #include "GlobalGameSettings.h"
 #include "HeadlessConsole.h"
 #include "PlayerInfo.h"
@@ -12,7 +13,6 @@
 #include "factories/AIFactory.h"
 #include "network/PlayerGameCommands.h"
 #include "world/GameWorld.h"
-#include "world/MapLoader.h"
 #include "gameTypes/MapInfo.h"
 #include "gameData/GameConsts.h"
 #include "s25util/colors.h"
@@ -31,33 +31,21 @@ HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, 
     : map_(map), game_(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais, teams)), world_(game_.world_),
       em_(*static_cast<EventManager*>(game_.em_.get()))
 {
-    MapLoader loader(world_);
-    if(!loader.Load(map))
-        throw std::runtime_error("Could not load " + map.string());
-    MapLoader::SetupResources(world_);
+    MapInfo mapInfo;
+    mapInfo.type = MapType::OldMap;
+    mapInfo.filepath = map;
+    mapInfo.luaFilepath = luaPath;
+    SetupGameWorld(game_, mapInfo, localState_, nullptr);
 
-    // Establish the team alliances (ally + non-aggression pacts) exactly like GameClient::StartGame does
-    // for a fresh map. Without this, teammates have no pacts and are mutually attackable, so the AIs attack
-    // their own team; on replay GameClient *does* set up the pacts, so those recorded attack commands are
-    // handled differently and the replay desyncs (object-count divergence). MakeStartPacts is a no-op for
-    // teamless players, so this is safe regardless of whether --teams was given.
-    for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
-        world_.GetPlayer(i).MakeStartPacts();
-
-    if(!luaPath.empty())
+    if(world_.HasLua())
     {
-        if(!loader.LoadLuaScript(game_, localState_, luaPath))
-            throw std::runtime_error("Failed to load Lua script: " + luaPath.string());
         world_.GetLua().setSuppressStdout(true);
         luaPath_ = luaPath;
         bnw::cout << "Lua script loaded: " << luaPath << '\n';
     }
 
-    players_.clear();
     for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
         players_.push_back(AIFactory::Create(world_.GetPlayer(playerId).aiInfo, playerId, world_));
-
-    world_.InitAfterLoad();
 }
 
 HeadlessGame::~HeadlessGame()
