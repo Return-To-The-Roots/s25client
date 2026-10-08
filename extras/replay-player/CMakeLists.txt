@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-add_executable(replay-player main.cpp HeadlessReplay.cpp HeadlessReplay.h)
-target_link_libraries(replay-player PRIVATE s25Main Boost::program_options Boost::nowide)
+add_executable(replay-player main.cpp ReplayOutput.cpp ReplayOutput.h)
+target_link_libraries(replay-player PRIVATE s25Main headlessConsole Boost::program_options Boost::nowide)
 
 if(WIN32)
     include(GatherDll)
