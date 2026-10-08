@@ -7,6 +7,7 @@
 #include "Game.h"
 #include "GamePlayer.h"
 #include "HeadlessReplay.h"
+#include "ILocalGameState.h"
 #include "PlayerInfo.h"
 #include "RTTR_Version.h"
 #include "Replay.h"
@@ -120,7 +121,7 @@ int main(int argc, char** argv)
         const bool isSavegame = (mapInfo.savegame != nullptr);
         if(isSavegame)
         {
-            HeadlessGameState gs;
+            NullLocalGameState gs;
             mapInfo.savegame->sgd.ReadSnapshot(game, gs);
         } else
         {
@@ -146,7 +147,7 @@ int main(int argc, char** argv)
                     bnw::cerr << "Failed to decompress embedded Lua script\n";
                     return 1;
                 }
-                HeadlessGameState gs;
+                NullLocalGameState gs;
                 if(!loader.LoadLuaScript(game, gs, luaFile.filePath))
                 {
                     bnw::cerr << "Failed to load embedded Lua script\n";

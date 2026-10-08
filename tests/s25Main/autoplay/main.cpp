@@ -6,6 +6,7 @@
 #include "EventManager.h"
 #include "Game.h"
 #include "GamePlayer.h"
+#include "ILocalGameState.h"
 #include "Replay.h"
 #include "Savegame.h"
 #include "Timer.h"
@@ -32,14 +33,6 @@
 struct Fixture : rttr::test::Fixture
 {
     Fixture() { libsiedler2::setAllocator(new GlAllocator); }
-};
-struct MockGameState : ILocalGameState
-{
-public:
-    unsigned GetPlayerId() const override { return 0; }
-    bool IsHost() const override { return true; }
-    std::string FormatGFTime(unsigned) const override { return ""; }
-    void SystemChat(const std::string&) override {}
 };
 BOOST_GLOBAL_FIXTURE(Fixture);
 
@@ -73,7 +66,7 @@ static void playReplay(const boost::filesystem::path& replayPath, const bool isS
     if(isSavegame)
     {
         BOOST_TEST_REQUIRE(mapInfo.savegame);
-        MockGameState gs;
+        NullLocalGameState gs;
         mapInfo.savegame->sgd.ReadSnapshot(game, gs);
     } else
     {

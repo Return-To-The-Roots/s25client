@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "ILocalGameState.h"
-
 #include <chrono>
 #include <string>
 
@@ -20,14 +18,6 @@ void printConsole(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
 #else
 void printConsole(const char* fmt, ...);
 #endif
-
-struct HeadlessGameState : ILocalGameState
-{
-    unsigned GetPlayerId() const override { return 0; }
-    bool IsHost() const override { return true; }
-    std::string FormatGFTime(unsigned) const override { return ""; }
-    void SystemChat(const std::string&) override {}
-};
 
 struct ReplayStatus
 {
