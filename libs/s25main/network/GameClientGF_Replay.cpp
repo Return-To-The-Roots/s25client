@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -24,24 +24,23 @@ void GameClient::ExecuteGameFrame_Replay()
     while(replayinfo->next_gf && replayinfo->next_gf == curGF)
     {
         const auto cmd = replay.ReadCommand();
-        visit(
-          composeVisitor(
-            [this](const Replay::ChatCommand& cmd) {
-                if(ci)
-                    ci->CI_Chat(cmd.player, cmd.dest, cmd.msg);
-            },
-            [this, &cmdsExecuted, &checksum, curGF](const Replay::GameCommand& cmd) {
-                cmdsExecuted = true;
+        visit(composeVisitor(
+                [this](const Replay::ChatCommand& cmd) {
+                    if(ci)
+                        ci->CI_Chat(cmd.player, cmd.dest, cmd.msg);
+                },
+                [this, &cmdsExecuted, &checksum, curGF](const Replay::GameCommand& cmd) {
+                    cmdsExecuted = true;
 
-                ExecuteAllGCs(cmd.player, cmd.cmds);
-                const AsyncChecksum& msgChecksum = cmd.cmds.checksum;
+                    ExecuteAllGCs(cmd.player, cmd.cmds);
+                    const AsyncChecksum& msgChecksum = cmd.cmds.checksum;
 
-                // Check for async if checksum data is valid
-                if(msgChecksum.randChecksum != 0 && msgChecksum != checksum)
-                {
-                    // Show message if this is the first async GF
-                    if(replayinfo->async == 0)
+                    // Check for async if checksum data is valid.
+                    // Only the first one is worth reporting: every NWF after it is async too.
+                    if(msgChecksum.randChecksum != 0 && msgChecksum != checksum && !replayinfo->desyncGF)
                     {
+                        replayinfo->desyncGF = curGF;
+
                         if(ci)
                         {
                             ci->CI_ReplayAsync(helpers::format(
@@ -57,11 +56,8 @@ void GameClient::ExecuteGameFrame_Replay()
                         if(skiptogf)
                             skiptogf = 0;
                     }
-
-                    replayinfo->async++;
-                }
-            }),
-          cmd);
+                }),
+              cmd);
         // Read GF of next command
         replayinfo->next_gf = replayinfo->replay.ReadGF();
     }
@@ -88,14 +84,11 @@ void GameClient::ExecuteGameFrame_Replay()
             ci->CI_ReplayEndReached(text);
         }
 
-        if(replayinfo->async != 0)
+        if(replayinfo->desyncGF && ci)
         {
             // in-game messenger
-            if(ci)
-            {
-                ci->CI_ReplayEndReached(
-                  helpers::format(_("Notice: Overall asynchronous frame count: %u"), replayinfo->async));
-            }
+            ci->CI_ReplayEndReached(
+              helpers::format(_("Notice: The replay was out of sync from GF %u on."), *replayinfo->desyncGF));
         }
         replayinfo->next_gf.reset();
         framesinfo.isPaused = true;
