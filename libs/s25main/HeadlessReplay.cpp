@@ -61,12 +61,12 @@ unsigned HeadlessReplay::getCurrentGF() const
 
 bool HeadlessReplay::RunGF()
 {
-    if(!nextGF_ || desync_)
+    const unsigned curGF = getCurrentGF();
+    if(desync_ || curGF > replay_.GetLastGF())
         return false;
 
-    const unsigned curGF = getCurrentGF();
     AsyncChecksum checksum;
-    if(*nextGF_ == curGF)
+    if(nextGF_ && *nextGF_ == curGF)
         checksum = AsyncChecksum::create(*game_);
 
     while(nextGF_ && *nextGF_ == curGF)
@@ -90,7 +90,7 @@ bool HeadlessReplay::RunGF()
     if(desync_)
         return false;
     game_->RunGF();
-    return nextGF_.has_value();
+    return getCurrentGF() <= replay_.GetLastGF();
 }
 
 bool HeadlessReplay::Run(const std::function<void(const HeadlessReplay&)>& onGameFrame)

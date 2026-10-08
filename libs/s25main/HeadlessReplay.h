@@ -42,8 +42,9 @@ public:
     const std::optional<ReplayDesync>& getDesync() const { return desync_; }
 
     /// Execute the commands recorded for the current GF and advance the game by one frame.
-    /// Returns false at the end of the replay and at a desync. The game then stays at the desynced GF:
-    /// every following frame would desync too, so there is nothing left to learn from continuing.
+    /// Returns false after the frame of the replay's last GF, where the recording ended, and at a desync.
+    /// The game then stays at the desynced GF: every following frame would desync too, so there is
+    /// nothing left to learn from continuing.
     bool RunGF();
     /// Play back the whole replay, calling onGameFrame after each frame.
     /// Returns false if a desync was found.

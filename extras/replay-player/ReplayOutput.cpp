@@ -44,7 +44,7 @@ void printInitialInfo(const HeadlessReplay& replay)
     bnw::cout << "Map size: " << mapSize.x << " x " << mapSize.y << "\n";
     bnw::cout << "Seed:     " << file.getSeed() << "\n";
     bnw::cout << "GF range: " << replay.getStartGF() << " - " << file.GetLastGF() << "  ("
-              << (file.GetLastGF() - replay.getStartGF()) << " GFs)\n";
+              << (file.GetLastGF() + 1 - replay.getStartGF()) << " GFs)\n";
     if(world.HasLua())
         bnw::cout << "Lua:      script loaded from replay\n";
     if(!replay.isFromSavegame() && !file.usesFishFix())
