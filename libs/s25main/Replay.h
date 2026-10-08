@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2024 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -84,6 +84,8 @@ public:
 
     unsigned getSeed() const { return randomSeed_; }
     unsigned GetLastGF() const { return lastGF_; }
+    /// TODO(Replay): Remove, always true. Replays before 8.3 were recorded without the fish fix.
+    bool usesFishFix() const { return GetMinorVersion() >= 3; }
 
 protected:
     BinaryFile file_;
