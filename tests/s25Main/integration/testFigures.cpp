@@ -168,9 +168,11 @@ BOOST_FIXTURE_TEST_CASE(GeologistPlacesSigns, EmptyWorldFixture1P)
     world.GetNodeWriteable(granitePos).resources = Resource(ResourceType::Granite, rttr::test::randomValue(1u, 15u));
     // Add some geologists
     for(unsigned i = 0; i < 10; i++)
+    {
         world
           .AddFigure(hqFlagPos, std::make_unique<nofGeologist>(hqFlagPos, 0, world.GetSpecObj<noRoadNode>(hqFlagPos)))
           .ActAtFirst();
+    }
 
     std::vector<ResourceNote> notes;
     const auto sub =
