@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Game.h"
+#include "HeadlessConsole.h"
 #include "ILocalGameState.h"
 #include "Replay.h"
 #include "ai/AIPlayer.h"
@@ -51,4 +52,5 @@ private:
 
     unsigned lastReportGf_ = 0;
     std::chrono::steady_clock::time_point gameStartTime_;
+    StatsTablePrinter statsPrinter_;
 };
