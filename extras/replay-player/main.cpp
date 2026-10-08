@@ -104,7 +104,7 @@ int main(int argc, char** argv)
         const auto printStats = [&] {
             HeadlessStats stats;
             stats.currentGF = replay.getCurrentGF();
-            stats.totalGFs = replay.getReplay().GetLastGF();
+            stats.totalGFs = replay.getReplay().GetLastGF() + 1;
             stats.gameTime = std::chrono::duration_cast<std::chrono::milliseconds>(SPEED_GF_LENGTHS[GameSpeed::Normal]
                                                                                    * stats.currentGF);
             stats.wallTime =
