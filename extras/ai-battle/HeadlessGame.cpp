@@ -179,7 +179,7 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais, con
     for(const AI::Info& ai : ais)
     {
         PlayerInfo pi;
-        pi.ps = PlayerState::Occupied;
+        pi.ps = PlayerState::AI;
         pi.aiInfo = ai;
         switch(ai.type)
         {
