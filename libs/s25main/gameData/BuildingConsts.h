@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -13,13 +13,13 @@
 
 extern const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES;
 
-constexpr helpers::EnumArray<BuildingCost, BuildingType> SUPPRESS_UNUSED BUILDING_COSTS = {
+constexpr helpers::EnumArray<BuildingCost, BuildingType> BUILDING_COSTS = {
   {{0, 0}, {2, 0}, {2, 3}, {2, 0}, {3, 5}, {4, 4}, {2, 3}, {4, 7}, {2, 2}, {4, 7}, {4, 0}, {4, 0}, {4, 0}, {4, 0},
    {4, 0}, {2, 2}, {4, 2}, {2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3},
    {3, 3}, {4, 3}, {0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}}};
 
 // Bauqualitäten der Gebäude
-constexpr helpers::EnumArray<BuildingQuality, BuildingType> SUPPRESS_UNUSED BUILDING_SIZE = {
+constexpr helpers::EnumArray<BuildingQuality, BuildingType> BUILDING_SIZE = {
   {BuildingQuality::Castle, BuildingQuality::Hut,    BuildingQuality::Hut,     BuildingQuality::Hut,
    BuildingQuality::House,  BuildingQuality::Castle, BuildingQuality::House,   BuildingQuality::Castle,
    BuildingQuality::House,  BuildingQuality::Castle, BuildingQuality::Mine,    BuildingQuality::Mine,
@@ -31,7 +31,7 @@ constexpr helpers::EnumArray<BuildingQuality, BuildingType> SUPPRESS_UNUSED BUIL
    BuildingQuality::House,  BuildingQuality::House,  BuildingQuality::House,   BuildingQuality::Hut,
    BuildingQuality::House,  BuildingQuality::Castle, BuildingQuality::Castle,  BuildingQuality::Harbor}};
 
-const helpers::EnumArray<BldWorkDescription, BuildingType> SUPPRESS_UNUSED BLD_WORK_DESC = {{
+constexpr helpers::EnumArray<BldWorkDescription, BuildingType> BLD_WORK_DESC = {{
   {}, // HQ
   {Job::Private, std::nullopt, WaresNeeded(GoodType::Coins), 1},
   {Job::Private, std::nullopt, WaresNeeded(GoodType::Coins), 2},
@@ -78,7 +78,7 @@ const helpers::EnumArray<BldWorkDescription, BuildingType> SUPPRESS_UNUSED BLD_W
 extern const helpers::MultiEnumArray<SmokeConst, Nation, BuildingType> BUILDING_SMOKE_CONSTS;
 
 /// Offset of the production-/gold- stop signs per building
-constexpr helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> SUPPRESS_UNUSED BUILDING_SIGN_CONSTS = {
+constexpr helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_SIGN_CONSTS = {
   {// Nubier
    {{{0, 0},    {19, -4},  {19, -3},  {-14, -1}, {23, -19}, {22, -7},  {-8, -10}, {9, -24},   {-16, -10}, {29, -23},
      {-2, -15}, {2, -13},  {-5, -16}, {-5, -15}, {0, 0},    {22, -6},  {0, 0},    {4, -16},   {9, -12},   {7, -10},
@@ -110,7 +110,7 @@ extern const helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_A
 
 /// Position der nubischen Feuer für alle 4 Bergwerke
 /// (Granit, Kohle, Eisen, Gold)
-constexpr std::array<DrawPoint, 4> SUPPRESS_UNUSED NUBIAN_MINE_FIRE = {{
+constexpr std::array<DrawPoint, 4> NUBIAN_MINE_FIRE = {{
   {31, -18},
   {34, -10},
   {30, -11},

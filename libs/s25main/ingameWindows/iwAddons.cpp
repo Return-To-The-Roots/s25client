@@ -114,11 +114,8 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
         {
             if(policy_ != AddonChangeAllowed::None)
             {
-                // Einstellungen in ADDONMANAGER übertragen
-                for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
-                {
-                    ggs.setSelection(ggs.getAddon(i)->getId(), addonGuis_[i]->getStatus());
-                }
+                for(const auto& gui : addonGuis_)
+                    ggs.setSelection(gui->getAddon().getId(), gui->getStatus());
 
                 switch(policy_)
                 {
@@ -142,10 +139,8 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
         case ID_btSavePreset:
         {
             std::map<unsigned, unsigned> states;
-            for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
-            {
-                states[static_cast<unsigned>(ggs.getAddon(i)->getId())] = addonGuis_[i]->getStatus();
-            }
+            for(const auto& gui : addonGuis_)
+                states[static_cast<unsigned>(gui->getAddon().getId())] = gui->getStatus();
             WINDOWMANAGER.Show(std::make_unique<iwSaveAddonPreset>(std::move(states)));
         }
         break;
@@ -156,12 +151,11 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
             break;
 
         case ID_btS2Defaults: // Load S2 Defaults
-            // Standardeinstellungen aufs Fenster übertragen
-            for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
+            for(const auto& gui : addonGuis_)
             {
-                const Addon* addon = ggs.getAddon(i);
-                if(!isReadOnly(addon->getId()))
-                    addonGuis_[i]->setStatus(addon->getDefaultStatus());
+                const Addon& addon = gui->getAddon();
+                if(!isReadOnly(addon.getId()))
+                    gui->setStatus(addon.getDefaultStatus());
             }
             break;
     }
@@ -174,11 +168,10 @@ void iwAddons::UpdateView(const AddonGroup selection)
     const unsigned scrollPosEnd = scrollPos + scrollbar->GetPageSize();
     unsigned short y = 90;
     unsigned short numAddonsInCurCategory = 0;
-    for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
+    for(const auto& gui : addonGuis_)
     {
-        const Addon* addon = ggs.getAddon(i);
-        const bool isVisible = bitset::any(addon->getGroups(), selection);
-        Window& group = addonGuis_[i]->getWindow();
+        const bool isVisible = bitset::any(gui->getAddon().getGroups(), selection);
+        Window& group = gui->getWindow();
 
         // Don't show addon's gui if addon is beyond selected group or is beyond current page scope
         if(isVisible && numAddonsInCurCategory >= scrollPos && numAddonsInCurCategory < scrollPosEnd)
@@ -196,15 +189,15 @@ void iwAddons::UpdateView(const AddonGroup selection)
 
 void iwAddons::applyAddonStates(const std::map<unsigned, unsigned>& states)
 {
-    for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
+    for(const auto& gui : addonGuis_)
     {
-        const Addon* addon = ggs.getAddon(i);
-        if(!isReadOnly(addon->getId()))
+        const Addon& addon = gui->getAddon();
+        if(!isReadOnly(addon.getId()))
         {
-            const auto it = states.find(static_cast<unsigned>(addon->getId()));
-            const unsigned rawStatus = (it != states.end()) ? it->second : addon->getDefaultStatus();
-            const unsigned status = (rawStatus < addon->getNumOptions()) ? rawStatus : addon->getDefaultStatus();
-            addonGuis_[i]->setStatus(status);
+            const auto it = states.find(static_cast<unsigned>(addon.getId()));
+            const unsigned rawStatus = (it != states.end()) ? it->second : addon.getDefaultStatus();
+            const unsigned status = (rawStatus < addon.getNumOptions()) ? rawStatus : addon.getDefaultStatus();
+            gui->setStatus(status);
         }
     }
 }

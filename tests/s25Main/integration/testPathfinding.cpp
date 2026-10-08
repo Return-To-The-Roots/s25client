@@ -1,7 +1,8 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "PointOutput.h"
 #include "RttrForeachPt.h"
 #include "helpers/OptionalIO.h"
 #include "worldFixtures/CreateEmptyWorld.h"
@@ -162,7 +163,7 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
             // But road must be constructible
             world.SetFlag(startPt, 0);
             std::vector<Direction> roadRoute(3, dir);
-            world.BuildRoad(0, false, startPt, roadRoute);
+            BOOST_TEST(world.BuildRoad(0, false, startPt, roadRoute) == endPt);
             Direction revDir(dir + 3u);
             BOOST_TEST_REQUIRE(world.GetPointRoad(startPt, dir) == PointRoad::Normal);
             BOOST_TEST_REQUIRE(world.GetPointRoad(endPt, revDir) == PointRoad::Normal);
@@ -170,7 +171,7 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
             // Reverse direction
             std::vector<Direction> roadRouteRev(3, revDir);
             world.SetFlag(endPt, 0);
-            world.BuildRoad(0, false, endPt, roadRouteRev);
+            BOOST_TEST(world.BuildRoad(0, false, endPt, roadRouteRev) == startPt);
             BOOST_TEST_REQUIRE(world.GetPointRoad(startPt, dir) == PointRoad::Normal);
             BOOST_TEST_REQUIRE(world.GetPointRoad(endPt, revDir) == PointRoad::Normal);
             world.DestroyFlag(startPt, 0);
@@ -217,7 +218,7 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
                 // No road must be constructible
                 world.SetFlag(startPt, 0);
                 std::vector<Direction> roadRoute(3, dir);
-                world.BuildRoad(0, false, startPt, roadRoute);
+                BOOST_TEST(!world.BuildRoad(0, false, startPt, roadRoute).isValid());
                 Direction revDir(dir + 3u);
                 BOOST_TEST_REQUIRE(world.GetPointRoad(startPt, dir) == PointRoad::None);
                 BOOST_TEST_REQUIRE(world.GetPointRoad(endPt, revDir) == PointRoad::None);
@@ -225,7 +226,7 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
                 // Reverse direction
                 std::vector<Direction> roadRouteRev(3, revDir);
                 world.SetFlag(endPt, 0);
-                world.BuildRoad(0, false, endPt, roadRouteRev);
+                BOOST_TEST(!world.BuildRoad(0, false, endPt, roadRouteRev).isValid());
                 BOOST_TEST_REQUIRE(world.GetPointRoad(startPt, revDir) == PointRoad::None);
                 BOOST_TEST_REQUIRE(world.GetPointRoad(endPt, dir) == PointRoad::None);
                 world.DestroyFlag(endPt, 0);

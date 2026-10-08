@@ -15,8 +15,6 @@
 class iwAddonPresetsBase : public IngameWindow
 {
 public:
-    explicit iwAddonPresetsBase(const std::string& title, const std::string& actionLabel);
-
     enum
     {
         ID_tblPresets,
@@ -29,21 +27,22 @@ public:
     };
 
 protected:
-    void RefreshTable();
-    /// Resolves the preset file whose display name matches the currently entered name, or empty if
-    /// the name field is empty or no such preset exists.
-    boost::filesystem::path GetTargetFilePath() const;
-    /// Like GetTargetFilePath(), but if a name was entered that doesn't match any preset, informs the
-    /// user before returning empty. An empty name stays a silent no-op.
-    boost::filesystem::path GetTargetFileOrNotify() const;
+    /// additionalHeight is the room the subclass needs for its own controls above the buttons
+    iwAddonPresetsBase(const std::string& title, const std::string& actionLabel, unsigned additionalHeight);
 
-    void Msg_EditEnter(unsigned ctrl_id) override;
+    void RefreshTable();
+    /// Empty if no preset is selected
+    boost::filesystem::path GetSelectedFilePath() const;
+
     void Msg_ButtonClick(unsigned ctrl_id) override;
     void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
     void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 
 private:
+    bool IsPresetSelected() const;
+    void UpdateButtons();
+    virtual bool CanDoAction() const;
     virtual void DoAction() = 0;
     void ConfirmDelete();
 };
@@ -56,7 +55,11 @@ public:
 private:
     const std::map<unsigned, unsigned> states_;
     void SaveToPath(const boost::filesystem::path& filePath);
+    bool CanDoAction() const override;
     void DoAction() override;
+    void Msg_EditEnter(unsigned ctrl_id) override;
+    void Msg_EditChange(unsigned ctrl_id) override;
+    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
     void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 };
 

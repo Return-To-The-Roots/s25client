@@ -7,7 +7,7 @@
 #include "Window.h"
 #include "s25util/colors.h"
 
-AddonGui::AddonGui(const Addon& addon, Window& window, bool /*readonly*/) : window_(window)
+AddonGui::AddonGui(const Addon& addon, Window& window, bool /*readonly*/) : addon_(addon), window_(window)
 {
     DrawPoint btPos(20, 0), txtPos(52, 4);
     window.AddText(0, txtPos, addon.getName(), COLOR_YELLOW, FontStyle{}, NormalFont);

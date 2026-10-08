@@ -92,6 +92,7 @@ static void playReplay(const boost::filesystem::path& replayPath, const bool isS
             player.MakeStartPacts();
     }
 
+    gameWorld.SetReplayCompatVersion(replay.GetMinorVersion());
     gameWorld.InitAfterLoad();
 
     bool endOfReplay = false;

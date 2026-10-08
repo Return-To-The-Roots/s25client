@@ -30,6 +30,13 @@ constexpr auto maxEnumValue(FigureState)
 }
 
 class SerializedGameData;
+class GlobalGameSettings;
+
+/// Number of flag-search attempts for stranded soldiers looking for a return path to an own warehouse.
+unsigned short GetStrandedSoldierReturnSearchTryings(const GlobalGameSettings& ggs);
+/// Radius used only for stranded soldiers looking for a return path to an own warehouse.
+/// Normal worker wandering keeps using WANDER_RADIUS and is not affected by this addon.
+unsigned short GetStrandedSoldierReturnSearchRadius(const GlobalGameSettings& ggs, unsigned short wanderTriesLeft);
 
 // Stellt einen Menschen dar
 class noFigure : public noMovable

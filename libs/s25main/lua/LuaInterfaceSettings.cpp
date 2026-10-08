@@ -51,6 +51,9 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
     {
         state[std::string("ADDON_") + rttrEnum::toString(id)] = AddonIdWrapper{id};
     }
+    // Legacy alias: the bool addon was replaced by a list addon reusing the same id, where the old value 1 still means
+    // "inexhaustible". Keeps existing map scripts working; may be removed once INEXHAUSTIBLE_MINES is dropped too.
+    state["ADDON_INEXHAUSTIBLE_GRANITEMINES"] = AddonIdWrapper{AddonId::GRANITEMINE_RESOURCE_BEHAVIOR};
 
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) state["GS_" + s25util::toUpper(#name)] = GameSpeed::name
@@ -98,7 +101,14 @@ LuaServerPlayer LuaInterfaceSettings::GetPlayer(int idx)
 void LuaInterfaceSettings::SetAddon(AddonIdWrapper id, unsigned value)
 {
     GlobalGameSettings ggs = lobbyServerController_.GetGGS();
-    ggs.setSelection(id, value);
+    // The global "inexhaustible mines" addon was replaced by per-mine-type settings and is no longer registered.
+    // Apply the same migration used for old settings and savegames instead of reporting an unknown addon.
+    if(static_cast<AddonId>(id) == AddonId::INEXHAUSTIBLE_MINES)
+    {
+        if(value != 0)
+            ggs.applyLegacyInexhaustibleMines();
+    } else
+        ggs.setSelection(id, value);
     lobbyServerController_.ChangeGlobalGameSettings(ggs);
 }
 

@@ -17,6 +17,7 @@
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofScout_Free.h"
 #include "helpers/IdRange.h"
+#include "helpers/Range.h"
 #include "helpers/containerUtils.h"
 #include "helpers/mathFuncs.h"
 #include "helpers/reverse.h"
@@ -68,13 +69,13 @@ MilitarySquares& GameWorld::GetMilitarySquares()
     return militarySquares;
 }
 
-void GameWorld::SetFlag(const MapPoint pt, const unsigned char player)
+bool GameWorld::SetFlag(const MapPoint pt, const unsigned char player)
 {
     if(GetBQ(pt, player) == BuildingQuality::Nothing)
-        return;
+        return false;
     // There must be no other flag around that point
     if(IsFlagAround(pt))
-        return;
+        return false;
 
     // Gucken, nicht, dass schon eine Flagge dasteht
     if(GetNO(pt)->GetType() != NodalObjectType::Flag)
@@ -84,6 +85,7 @@ void GameWorld::SetFlag(const MapPoint pt, const unsigned char player)
 
         RecalcBQAroundPointBig(pt);
     }
+    return true;
 }
 
 void GameWorld::DestroyFlag(const MapPoint pt, unsigned char playerId)
@@ -184,26 +186,26 @@ void GameWorld::DestroyBuilding(const MapPoint pt, const unsigned char player)
     }
 }
 
-void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start,
-                          const std::vector<Direction>& route)
+MapPoint GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, const MapPoint start,
+                              const std::vector<Direction>& route)
 {
     // No routes with less than 2 parts. Actually invalid!
     if(route.size() < 2)
     {
         RTTR_Assert(false);
-        return;
+        return {};
     }
 
     if(!GetSpecObj<noFlag>(start) || GetSpecObj<noFlag>(start)->GetPlayer() != playerId)
     {
         GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
-        return;
+        return {};
     }
 
     // See if the road can still be built at all
     PathConditionRoad<GameWorldBase> roadChecker(*this, boat_road);
     MapPoint curPt(start);
-    for(unsigned i = 0; i + 1 < route.size(); ++i)
+    for(const auto i : helpers::range(route.size() - 1u))
     {
         bool roadOk = roadChecker.IsEdgeOk(curPt, route[i]);
         curPt = GetNeighbour(curPt, route[i]);
@@ -213,54 +215,48 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
             // No? Then check whether the desired road is already there
             if(!RoadAlreadyBuilt(boat_road, start, route))
                 GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
-            return;
+            return {};
         }
     }
 
-    curPt = GetNeighbour(curPt, route.back());
+    const auto endPt = GetNeighbour(curPt, route.back());
 
     // Check whether there is a flag at the end or whether one can be built
-    if(GetNO(curPt)->GetGOT() == GO_Type::Flag)
+    if(GetNO(endPt)->GetGOT() == GO_Type::Flag)
     {
         // Wrong player?
-        if(GetSpecObj<noFlag>(curPt)->GetPlayer() != playerId)
+        if(GetSpecObj<noFlag>(endPt)->GetPlayer() != playerId)
         {
             GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
-            return;
+            return {};
         }
-    } else
+    } else if(!SetFlag(endPt, playerId)) // Try placing a flag
     {
-        // Check if we can build a flag there
-        if(GetBQ(curPt, playerId) == BuildingQuality::Nothing || IsFlagAround(curPt))
-        {
-            GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
-            return;
-        }
-        // no flag so far, but possible to place one -> Do it
-        SetFlag(curPt, playerId);
+        GetNotifications().publish(RoadNote(RoadNote::ConstructionFailed, playerId, start, route));
+        return {};
     }
 
     // Destroy possible decorative objects at start
     if(HasRemovableObjForRoad(start))
         DestroyNO(start);
 
-    MapPoint end(start);
+    curPt = start;
     for(auto i : route)
     {
-        SetPointRoad(end, i, boat_road ? PointRoad::Boat : PointRoad::Normal);
-        RecalcBQForRoad(end);
-        end = GetNeighbour(end, i);
+        SetPointRoad(curPt, i, boat_road ? PointRoad::Boat : PointRoad::Normal);
+        RecalcBQForRoad(curPt);
+        curPt = GetNeighbour(curPt, i);
 
         // Destroy possible decorative objects at end
-        if(HasRemovableObjForRoad(end))
-            DestroyNO(end);
+        if(HasRemovableObjForRoad(curPt))
+            DestroyNO(curPt);
     }
 
     auto* rs = new RoadSegment(boat_road ? RoadType::Water : RoadType::Normal, GetSpecObj<noFlag>(start),
-                               GetSpecObj<noFlag>(end), route);
+                               GetSpecObj<noFlag>(endPt), route);
 
     GetSpecObj<noFlag>(start)->SetRoute(route.front(), rs);
-    GetSpecObj<noFlag>(end)->SetRoute(route.back() + 3u, rs);
+    GetSpecObj<noFlag>(endPt)->SetRoute(route.back() + 3u, rs);
 
     // Tell the economy that a new road has been built
     GetPlayer(playerId).NewRoadConnection(rs);
@@ -277,6 +273,7 @@ void GameWorld::BuildRoad(const unsigned char playerId, const bool boat_road, co
                 SetFlag(roadPt, playerId);
         }
     }
+    return endPt;
 }
 
 bool GameWorld::HasRemovableObjForRoad(const MapPoint pt) const

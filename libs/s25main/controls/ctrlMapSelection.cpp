@@ -21,7 +21,7 @@
 ctrlMapSelection::MapImages::MapImages(const SelectionMapInputData& data)
 {
     auto getImage = [](const ImageResource& res) {
-        auto* img = LOADER.GetImageN(ResourceId::make(res.filePath), res.index);
+        auto* img = LOADER.GetImageN(ResourceId::fromPath(res.filePath), res.index);
         if(!img)
             throw std::runtime_error(
               helpers::format(_("Loading of images %s for map selection failed."), res.filePath));
@@ -31,7 +31,7 @@ ctrlMapSelection::MapImages::MapImages(const SelectionMapInputData& data)
     {
         std::vector<std::string> pathsToLoad;
         for(const auto& res : {data.background, data.map, data.missionMapMask, data.marker, data.conquered})
-            pathsToLoad.push_back(res.filePath.string());
+            pathsToLoad.push_back(res.filePath);
         LOADER.LoadFiles(pathsToLoad);
     }
 

@@ -17,6 +17,7 @@
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobUsual.h"
+#include "figures/nofHunter.h"
 #include "helpers/IdRange.h"
 #include "helpers/MaxEnumValue.h"
 #include "helpers/containerUtils.h"
@@ -32,6 +33,7 @@
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noShip.h"
 #include "nodeObjs/noTree.h"
+#include "gameTypes/MineResourceBehavior.h"
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 #include "gameData/GameConsts.h"
@@ -139,11 +141,10 @@ static bool isUnlimitedResource(const AIResource res, const GlobalGameSettings& 
 {
     switch(res)
     {
-        case AIResource::Gold:
-        case AIResource::Ironore:
-        case AIResource::Coal: return ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES);
-        case AIResource::Granite:
-            return ggs.isEnabled(AddonId::INEXHAUSTIBLE_MINES) || ggs.isEnabled(AddonId::INEXHAUSTIBLE_GRANITEMINES);
+        case AIResource::Gold: return !IsMineResourceDepletable(ggs, BuildingType::GoldMine);
+        case AIResource::Ironore: return !IsMineResourceDepletable(ggs, BuildingType::IronMine);
+        case AIResource::Coal: return !IsMineResourceDepletable(ggs, BuildingType::CoalMine);
+        case AIResource::Granite: return !IsMineResourceDepletable(ggs, BuildingType::GraniteMine);
         case AIResource::Fish: return ggs.isEnabled(AddonId::INEXHAUSTIBLE_FISH);
         default: return false;
     }
@@ -153,8 +154,8 @@ static bool isUnlimitedResource(const AIResource res, const GlobalGameSettings& 
 template<size_t... I>
 static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap, std::index_sequence<I...>)
 {
-    return helpers::EnumArray<AIResourceMap, AIResource>{
-      AIResourceMap(AIResource(I), isUnlimitedResource(AIResource(I), aii.gwb.GetGGS()), aii, aiMap)...};
+    return helpers::EnumArray<AIResourceMap, AIResource>{AIResourceMap(
+      static_cast<AIResource>(I), isUnlimitedResource(static_cast<AIResource>(I), aii.gwb.GetGGS()), aii, aiMap)...};
 }
 static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 {
@@ -938,7 +939,7 @@ MapPoint AIPlayerJH::FindPositionForBuildingAround(BuildingType type, const MapP
         case BuildingType::Hunter:
         {
             // check if there are any animals in range
-            if(HuntablesinRange(around, (2 << GetBldPlanner().GetNumBuildings(BuildingType::Hunter))))
+            if(HuntablesInRange(around, (2 << GetBldPlanner().GetNumBuildings(BuildingType::Hunter))))
                 foundPos = SimpleFindPosition(around, BUILDING_SIZE[type], searchRadius);
             break;
         }
@@ -1960,56 +1961,12 @@ unsigned AIPlayerJH::SoldierAvailable(int rank)
     return freeSoldiers;
 }
 
-bool AIPlayerJH::HuntablesinRange(const MapPoint pt, unsigned min)
+bool AIPlayerJH::HuntablesInRange(const MapPoint pt, unsigned min)
 {
-    // check first if no other hunter(or hunter buildingsite) is nearby
+    // check first if no other hunter (or hunter buildingsite) is nearby
     if(aii.isBuildingNearby(BuildingType::Hunter, pt, 14))
         return false;
-    unsigned maxrange = 25;
-    unsigned short fx, fy, lx, ly;
-    const unsigned short SQUARE_SIZE = 19;
-    unsigned huntablecount = 0;
-    if(pt.x > SQUARE_SIZE)
-        fx = pt.x - SQUARE_SIZE;
-    else
-        fx = 0;
-    if(pt.y > SQUARE_SIZE)
-        fy = pt.y - SQUARE_SIZE;
-    else
-        fy = 0;
-    if(pt.x + SQUARE_SIZE < gwb.GetWidth())
-        lx = pt.x + SQUARE_SIZE;
-    else
-        lx = gwb.GetWidth() - 1;
-    if(pt.y + SQUARE_SIZE < gwb.GetHeight())
-        ly = pt.y + SQUARE_SIZE;
-    else
-        ly = gwb.GetHeight() - 1;
-    // Durchgehen und nach Tieren suchen
-    for(MapPoint p2(0, fy); p2.y <= ly; ++p2.y)
-    {
-        for(p2.x = fx; p2.x <= lx; ++p2.x)
-        {
-            // Search for animals
-            for(const noBase& fig : gwb.GetFigures(p2))
-            {
-                if(fig.GetType() == NodalObjectType::Animal)
-                {
-                    // Ist das Tier überhaupt zum Jagen geeignet?
-                    if(!static_cast<const noAnimal&>(fig).CanHunted())
-                        continue;
-                    // Und komme ich hin?
-                    if(gwb.FindHumanPath(pt, static_cast<const noAnimal&>(fig).GetPos(), maxrange))
-                    // Dann nehmen wir es
-                    {
-                        if(++huntablecount >= min)
-                            return true;
-                    }
-                }
-            }
-        }
-    }
-    return false;
+    return nofHunter::GetHuntableAnimalsInRange(gwb, pt).size() >= min;
 }
 
 void AIPlayerJH::InitStoreAndMilitarylists()

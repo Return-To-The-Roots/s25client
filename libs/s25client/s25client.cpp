@@ -347,9 +347,10 @@ bool InitDirectories()
         return false;
 
     // Create all required/useful folders
-    const std::array<std::string, 10> dirs = {
-      {s25::folders::config, s25::folders::logs, s25::folders::mapsOwn, s25::folders::mapsPlayed, s25::folders::replays,
-       s25::folders::save, s25::folders::assetsUserOverrides, s25::folders::screenshots, s25::folders::playlists}};
+    const std::array<std::string, 10> dirs = {{s25::folders::config, s25::folders::logs, s25::folders::mapsOwn,
+                                               s25::folders::mapsPlayed, s25::folders::replays, s25::folders::save,
+                                               s25::folders::assetsUserOverrides, s25::folders::screenshots,
+                                               s25::folders::playlists, s25::folders::addonPresets}};
 
     for(const std::string& rawDir : dirs)
     {
