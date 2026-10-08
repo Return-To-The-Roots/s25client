@@ -8,10 +8,12 @@
 #include "Replay.h"
 #include "ReplayOutput.h"
 #include "RttrConfig.h"
+#include "files.h"
 #include "ogl/glAllocator.h"
 #include "world/GameWorld.h"
 #include "gameData/GameConsts.h"
 #include "libsiedler2/libsiedler2.h"
+#include "s25util/Log.h"
 #include "s25util/System.h"
 
 #include <boost/filesystem.hpp>
@@ -80,6 +82,10 @@ int main(int argc, char** argv)
     try
     {
         RTTRCONFIG.Init();
+        // Lua output goes to the log file, and writing it throws if the log directory does not exist
+        const bfs::path logDir = RTTRCONFIG.ExpandPath(s25::folders::logs);
+        bfs::create_directories(logDir);
+        LOG.setLogFilepath(logDir);
         libsiedler2::setAllocator(new GlAllocator);
 
         const bfs::path replayPath = RTTRCONFIG.ExpandPath(options["replay"].as<std::string>());
