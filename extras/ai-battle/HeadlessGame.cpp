@@ -5,77 +5,47 @@
 #include "HeadlessGame.h"
 #include "EventManager.h"
 #include "GamePlayer.h"
+#include "GameSetup.h"
 #include "GlobalGameSettings.h"
+#include "HeadlessConsole.h"
 #include "PlayerInfo.h"
 #include "Savegame.h"
 #include "factories/AIFactory.h"
 #include "network/PlayerGameCommands.h"
 #include "world/GameWorld.h"
-#include "world/MapLoader.h"
 #include "gameTypes/MapInfo.h"
 #include "gameData/GameConsts.h"
 #include "s25util/colors.h"
 #include <boost/nowide/iostream.hpp>
 #include <chrono>
-#include <cstdio>
-#include <sstream>
-#ifdef WIN32
-#    include "Windows.h"
-#endif
 
 std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams);
-std::string ToString(const std::chrono::milliseconds& time);
-std::string HumanReadableNumber(unsigned num);
 
 namespace bfs = boost::filesystem;
 namespace bnw = boost::nowide;
 
 using bfs::canonical;
 
-#ifdef WIN32
-HANDLE setupStdOut();
-#endif
-
-#if defined(__MINGW32__) && !defined(__clang__)
-void printConsole(const char* fmt, ...) __attribute__((format(gnu_printf, 1, 2)));
-#elif defined __GNUC__
-void printConsole(const char* fmt, ...) __attribute__((format(printf, 1, 2)));
-#else
-void printConsole(const char* fmt, ...);
-#endif
-
 HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais,
                            const bfs::path& luaPath, const std::vector<Team>& teams)
     : map_(map), game_(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais, teams)), world_(game_.world_),
       em_(*static_cast<EventManager*>(game_.em_.get()))
 {
-    MapLoader loader(world_);
-    if(!loader.Load(map))
-        throw std::runtime_error("Could not load " + map.string());
-    MapLoader::SetupResources(world_);
+    MapInfo mapInfo;
+    mapInfo.type = MapType::OldMap;
+    mapInfo.filepath = map;
+    mapInfo.luaFilepath = luaPath;
+    SetupGameWorld(game_, mapInfo, localState_, nullptr);
 
-    // Establish the team alliances (ally + non-aggression pacts) exactly like GameClient::StartGame does
-    // for a fresh map. Without this, teammates have no pacts and are mutually attackable, so the AIs attack
-    // their own team; on replay GameClient *does* set up the pacts, so those recorded attack commands are
-    // handled differently and the replay desyncs (object-count divergence). MakeStartPacts is a no-op for
-    // teamless players, so this is safe regardless of whether --teams was given.
-    for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
-        world_.GetPlayer(i).MakeStartPacts();
-
-    if(!luaPath.empty())
+    if(world_.HasLua())
     {
-        if(!loader.LoadLuaScript(game_, localState_, luaPath))
-            throw std::runtime_error("Failed to load Lua script: " + luaPath.string());
         world_.GetLua().setSuppressStdout(true);
         luaPath_ = luaPath;
         bnw::cout << "Lua script loaded: " << luaPath << '\n';
     }
 
-    players_.clear();
     for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
         players_.push_back(AIFactory::Create(world_.GetPlayer(playerId).aiInfo, playerId, world_));
-
-    world_.InitAfterLoad();
 }
 
 HeadlessGame::~HeadlessGame()
@@ -190,56 +160,16 @@ void HeadlessGame::SaveGame(const bfs::path& path) const
     bnw::cout << "Savegame written to " << canonical(path) << '\n';
 }
 
-std::string ToString(const std::chrono::milliseconds& time)
-{
-    char buffer[90];
-    const auto hours = std::chrono::duration_cast<std::chrono::hours>(time);
-    const auto minutes = std::chrono::duration_cast<std::chrono::minutes>(time % std::chrono::hours(1));
-    const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(time % std::chrono::minutes(1));
-    snprintf(buffer, std::size(buffer), "%03ld:%02ld:%02ld", static_cast<long int>(hours.count()),
-             static_cast<long int>(minutes.count()), static_cast<long int>(seconds.count()));
-    return std::string(buffer);
-}
-
-std::string HumanReadableNumber(unsigned num)
-{
-    std::stringstream ss;
-    ss.imbue(std::locale(""));
-    ss << std::fixed << num;
-    return ss.str();
-}
-
 void HeadlessGame::PrintState()
 {
-    static bool first_run = true;
-    if(first_run)
-        first_run = false;
-    else
-        printConsole("\x1b[%dA", 8 + world_.GetNumPlayers()); // Move cursor back up
-
-    printConsole("┌───────────────┬───────────────────────┬───────────────────────┬────────────────┐\n");
-    printConsole(
-      "│ GF %10s │ Game Clock  %s │ Wall Clock  %s │ %7s GF/sec │\n", HumanReadableNumber(em_.GetCurrentGF()).c_str(),
-      ToString(SPEED_GF_LENGTHS[GameSpeed::Normal] * em_.GetCurrentGF()).c_str(), // elapsed time
-      ToString(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - gameStartTime_))
-        .c_str(),                                                       // wall clock
-      HumanReadableNumber(em_.GetCurrentGF() - lastReportGf_).c_str()); // GF per second
-    printConsole("└───────────────┴───────────────────────┴───────────────────────┴────────────────┘\n");
-    printConsole("\n");
-    printConsole("┌────────────────────────┬─────────────────┬─────────────┬───────────┬───────────┐\n");
-    printConsole("│ Player                 │ Country         │ Buildings   │ Military  │ Gold      │\n");
-    printConsole("├────────────────────────┼─────────────────┼─────────────┼───────────┼───────────┤\n");
-    for(const auto& player : world_.getPlayers())
-    {
-        printConsole("│ %s%-22s%s │ %15s │ %11s │ %9s │ %9s │\n", player.IsDefeated() ? "\x1b[9m" : "",
-                     player.name.c_str(), player.IsDefeated() ? "\x1b[29m" : "",
-                     HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Country)).c_str(),
-                     HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Buildings)).c_str(),
-                     HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Military)).c_str(),
-                     HumanReadableNumber(player.GetStatisticCurrentValue(StatisticType::Gold)).c_str());
-    }
-    printConsole("└────────────────────────┴─────────────────┴─────────────┴───────────┴───────────┘\n");
-
+    HeadlessStats stats;
+    stats.currentGF = em_.GetCurrentGF();
+    stats.gameTime =
+      std::chrono::duration_cast<std::chrono::milliseconds>(SPEED_GF_LENGTHS[GameSpeed::Normal] * em_.GetCurrentGF());
+    stats.wallTime =
+      std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - gameStartTime_);
+    stats.gfPerSecond = em_.GetCurrentGF() - lastReportGf_;
+    statsPrinter_.print(stats, world_);
     lastReportGf_ = em_.GetCurrentGF();
 }
 
@@ -249,7 +179,7 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais, con
     for(const AI::Info& ai : ais)
     {
         PlayerInfo pi;
-        pi.ps = PlayerState::Occupied;
+        pi.ps = PlayerState::AI;
         pi.aiInfo = ai;
         switch(ai.type)
         {
@@ -263,32 +193,4 @@ std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais, con
         ret.push_back(pi);
     }
     return ret;
-}
-
-#ifdef WIN32
-HANDLE setupStdOut()
-{
-    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleMode(h, ENABLE_PROCESSED_OUTPUT | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
-    SetConsoleOutputCP(65001);
-    return h;
-}
-#endif
-
-void printConsole(const char* fmt, ...)
-{
-    char buffer[512];
-    va_list args;
-    va_start(args, fmt);
-    const int len = vsnprintf(buffer, sizeof(buffer), fmt, args);
-    va_end(args);
-    if(len > 0 && (size_t)len < sizeof(buffer))
-    {
-#ifdef WIN32
-        static auto h = setupStdOut();
-        WriteConsoleA(h, buffer, len, 0, 0);
-#else
-        bnw::cout << buffer;
-#endif
-    }
 }
