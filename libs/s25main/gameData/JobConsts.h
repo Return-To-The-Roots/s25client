@@ -49,7 +49,7 @@ extern const helpers::EnumArray<JobSpriteData, Job> JOB_SPRITE_CONSTS;
 constexpr unsigned MINER_RADIUS = 2;
 /// Maximum distance to a target the catapult can attack
 constexpr unsigned CATAPULT_MAX_TARGET_RANGE = 13;
-/// Search radius for animals (hunter, skinner, AI)
+/// Search radius for animals (hunter, skinner)
 constexpr unsigned ANIMAL_RADIUS = 19;
 /// Time in GFs the catapult needs to wait before shooting (after aiming)
 const unsigned CATAPULT_WAIT1_LENGTH = 1300; // actually 310 - but increased due to too fast goods distribution
