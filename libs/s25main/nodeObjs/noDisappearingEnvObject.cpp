@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -34,8 +34,8 @@ unsigned noDisappearingEnvObject::GetDrawColor() const
 {
     if(disappearing)
     {
-        unsigned transparency = 0xFF - GAMECLIENT.Interpolate(0xFF, dead_event);
-        return transparency | (transparency << 8) | (transparency << 16) | (transparency << 24);
+        const unsigned opacity = GAMECLIENT.Interpolate(0xFF, 0, dead_event);
+        return opacity | (opacity << 8) | (opacity << 16) | (opacity << 24);
     } else
         return 0xFFFFFFFF;
 }
@@ -44,15 +44,15 @@ unsigned noDisappearingEnvObject::GetDrawShadowColor() const
 {
     if(disappearing)
     {
-        unsigned transparency = 0x40 - GAMECLIENT.Interpolate(0x40, dead_event);
-        return (transparency << 24);
+        const unsigned opacity = GAMECLIENT.Interpolate(0x40, 0, dead_event);
+        return (opacity << 24);
     } else
         return COLOR_SHADOW;
 }
 
-void noDisappearingEnvObject::HandleEvent(const unsigned id)
+void noDisappearingEnvObject::HandleEvent(const unsigned /*id*/)
 {
-    if(id)
+    if(disappearing)
     {
         RTTR_Assert(world->GetNode(pos).obj == this);
         world->SetNO(pos, nullptr);
