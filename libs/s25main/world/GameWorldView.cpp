@@ -748,8 +748,26 @@ unsigned GameWorldView::GetBuildingRadius(BuildingType bld) const
             return 0;
         }
         // Remaining building types have no relevant radius
-        default: return 0;
+        case BuildingType::Armory:
+        case BuildingType::Bakery:
+        case BuildingType::Brewery:
+        case BuildingType::DonkeyBreeder:
+        case BuildingType::Ironsmelter:
+        case BuildingType::LeatherWorks:
+        case BuildingType::Metalworks:
+        case BuildingType::Mill:
+        case BuildingType::Mint:
+        case BuildingType::Nothing9:
+        case BuildingType::PigFarm:
+        case BuildingType::Sawmill:
+        case BuildingType::Shipyard:
+        case BuildingType::Slaughterhouse:
+        case BuildingType::Storehouse:
+        case BuildingType::Tannery:
+        case BuildingType::Temple:
+        case BuildingType::Winery: return 0;
     }
+    BOOST_UNREACHABLE_RETURN(0); // LCOV_EXCL_LINE
 }
 
 void GameWorldView::AddDrawNodeCallback(IDrawNodeCallback* newCallback)
