@@ -725,7 +725,8 @@ unsigned GameWorldView::GetBuildingRadius(BuildingType bld) const
         case BuildingType::LookoutTower: return VISUALRANGE_LOOKOUTTOWER;
         // Catapult attack range
         case BuildingType::Catapult: return CATAPULT_MAX_TARGET_RANGE;
-        case BuildingType::Hunter: return ANIMAL_RADIUS;
+        case BuildingType::Hunter:
+        case BuildingType::Skinner: return ANIMAL_RADIUS;
         // Mines — miner stays inside and extracts from adjacent tiles
         case BuildingType::GraniteMine:
         case BuildingType::CoalMine:
