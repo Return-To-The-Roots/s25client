@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(KillList)
     evMgr.ExecuteNextGF();
     BOOST_TEST_REQUIRE(TestLogKill::killNum == 0u);
     BOOST_TEST_REQUIRE(TestLogKill::destroyNum == 0u);
-    // And not it should be killed (destroy and delete)
+    // And now it should be killed (destroy and delete)
     evMgr.ExecuteNextGF();
     BOOST_TEST_REQUIRE(TestLogKill::killNum == 1u);
     BOOST_TEST_REQUIRE(TestLogKill::destroyNum == 1u);

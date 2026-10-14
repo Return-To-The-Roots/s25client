@@ -22,7 +22,8 @@ noShipBuildingSite::~noShipBuildingSite() = default;
 
 void noShipBuildingSite::Destroy()
 {
-    world->SetNO(pos, nullptr);
+    if(world->GetNode(pos).obj == this)
+        world->SetNO(pos, nullptr);
 
     noCoordBase::Destroy();
 }
@@ -40,9 +41,7 @@ noShipBuildingSite::noShipBuildingSite(SerializedGameData& sgd, const unsigned o
 {}
 
 /// Progress-Anteile für die 3 Baustufen
-const std::array<unsigned, 3> PROGRESS_PARTS = {4, 2, 3};
-
-// const unsigned TOTAL_PROGRESS = PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2];
+constexpr std::array<unsigned, 3> PROGRESS_PARTS = {4, 2, 3};
 
 void noShipBuildingSite::Draw(DrawPoint drawPt)
 {
@@ -82,8 +81,8 @@ void noShipBuildingSite::MakeBuildStep()
     if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2])
     {
         // Replace me by ship
-        GetEvMgr().AddToKillList(this);
         world->SetNO(pos, nullptr);
+        GetEvMgr().AddToKillList(this);
         auto& ship = world->AddFigure(pos, std::make_unique<noShip>(pos, player));
 
         // Schiff registrieren lassen

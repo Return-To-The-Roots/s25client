@@ -18,7 +18,6 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    /// Benachrichtigen, wenn neuer GF erreicht wurde.
     void HandleEvent(unsigned id) override;
 
 protected:
