@@ -11,7 +11,7 @@ dockerImages = [
     "apple.x86_64"    : "rttr/cross-compiler/apple/apple-docker:master"
 ]
 
-def transformIntoStep(architecture, dockerImage, buildScript) {
+def transformIntoStep(architecture, dockerImage, versionsScript, buildScript) {
     return {
         timeout(120) {
             def wspwd = pwd()
@@ -20,6 +20,12 @@ def transformIntoStep(architecture, dockerImage, buildScript) {
                 sh 'touch .git-keep'
                 sh "mkdir -p '$ccache_dir_host'"
                 withDockerRegistry( registry: [credentialsId: dockerCredentials, url: 'https://'+dockerRegistry ] ) {
+                    sh """
+                        mkdir -p '$wspwd/result/sbom'
+                        docker pull -q '${dockerRegistry}${dockerImage}'
+                        echo '${dockerRegistry}${dockerImage}' > '$wspwd/result/sbom/image-$architecture.txt'
+                        docker image inspect --format '{{.Id}}{{"\\n"}}{{join .RepoDigests "\\n"}}' '${dockerRegistry}${dockerImage}' >> '$wspwd/result/sbom/image-$architecture.txt'
+                    """
                     withDockerContainer(
                         image: dockerRegistry+dockerImage,
                         args: " \
@@ -28,6 +34,7 @@ def transformIntoStep(architecture, dockerImage, buildScript) {
                             -v $wspwd/source:/source:ro \
                             -v $wspwd/result:/result \
                         ") {
+                        sh versionsScript.replace("%architecture%", architecture)
                         def script = buildScript.replace("%architecture%", architecture)
                         sh script
                     }
@@ -102,13 +109,14 @@ pipeline {
             steps {
                 script {
                     def parallel_map = [:]
+                    def versionsScript = readTrusted("tools/ci/jenkins/versions.sh")
                     def buildScript = readTrusted("tools/ci/jenkins/build.sh")
                     buildScript = buildScript.replace("%deploy_to%", params.DEPLOY_TO)
                     buildScript = buildScript.replace("%force_deploy%", params.FORCE_DEPLOY.toString())
 
                     dockerImages.each { architecture, image ->
                         echo "Adding Job ${architecture} (${image})"
-                        parallel_map["${architecture}"] = transformIntoStep(architecture, image, buildScript)
+                        parallel_map["${architecture}"] = transformIntoStep(architecture, image, versionsScript, buildScript)
                     }
 
                     // todo: mirror launchpad
@@ -139,6 +147,11 @@ pipeline {
         }
     }
     post {
+        always {
+            dir('result') {
+                archiveArtifacts artifacts: 'sbom/*.txt', allowEmptyArchive: true
+            }
+        }
         success {
             dir('result') {
                 archiveArtifacts artifacts: '*.tar.bz2,*.zip,*.txt', fingerprint: true
