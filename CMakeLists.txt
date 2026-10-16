@@ -300,10 +300,6 @@ if(BUILD_TESTING)
     list(APPEND BoostPackages unit_test_framework)
 endif()
 
-# The CMake config of a static Boost.Locale can reference Iconv::Iconv without looking it up itself
-# (seen with Boost 1.92 on Debian), so make sure the target exists before Boost is searched
-find_package(Iconv QUIET)
-
 find_package(Boost 1.71 COMPONENTS ${BoostPackages})
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "You have to install boost (>=1.71) into contrib/boost or set (as CMake or environment variable) "
