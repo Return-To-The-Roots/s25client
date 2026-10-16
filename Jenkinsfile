@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-dockerRegistry = "registry.mytrap.de/"
-dockerCredentials = "gitlab-Flow86"
-dockerImages = [
+def dockerRegistry = "registry.mytrap.de/"
+def dockerCredentials = "gitlab-Flow86"
+def dockerImages = [
     "windows.i686"    : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
     "windows.x86_64"  : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
     "linux.x86_64"    : "rttr/cross-compiler/linux/linux-amd64-docker:master",
@@ -34,7 +34,8 @@ def transformIntoStep(architecture, dockerImage, versionsScript, buildScript) {
                             -v $wspwd/source:/source:ro \
                             -v $wspwd/result:/result \
                         ") {
-                        sh versionsScript.replace("%architecture%", architecture)
+                        def sbom = versionsScript.replace("%architecture%", architecture)
+                        sh sbom
                         def script = buildScript.replace("%architecture%", architecture)
                         sh script
                     }
