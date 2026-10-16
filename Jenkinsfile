@@ -2,9 +2,11 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
-dockerRegistry = "registry.mytrap.de/"
-dockerCredentials = "gitlab-Flow86"
-dockerImages = [
+import groovy.transform.Field
+
+@Field def dockerRegistry = "registry.mytrap.de/"
+@Field def dockerCredentials = "gitlab-Flow86"
+@Field def dockerImages = [
     "windows.i686"    : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
     "windows.x86_64"  : "rttr/cross-compiler/mingw/mingw-w64-docker:master",
     "linux.x86_64"    : "rttr/cross-compiler/linux/linux-amd64-docker:master",
@@ -21,10 +23,10 @@ def transformIntoStep(architecture, dockerImage, versionsScript, buildScript) {
                 sh "mkdir -p '$ccache_dir_host'"
                 withDockerRegistry( registry: [credentialsId: dockerCredentials, url: 'https://'+dockerRegistry ] ) {
                     sh """
-                        mkdir -p '$wspwd/result/sbom'
+                        mkdir -p '${wspwd}/result/sbom'
                         docker pull -q '${dockerRegistry}${dockerImage}'
-                        echo '${dockerRegistry}${dockerImage}' > '$wspwd/result/sbom/image-$architecture.txt'
-                        docker image inspect --format '{{.Id}}{{"\\n"}}{{join .RepoDigests "\\n"}}' '${dockerRegistry}${dockerImage}' >> '$wspwd/result/sbom/image-$architecture.txt'
+                        echo '${dockerRegistry}${dockerImage}' > '${wspwd}/result/sbom/image-${architecture}.txt'
+                        docker image inspect --format '{{.Id}}{{"\\n"}}{{join .RepoDigests "\\n"}}' '${dockerRegistry}${dockerImage}' >> '${wspwd}/result/sbom/image-${architecture}.txt'
                     """
                     withDockerContainer(
                         image: dockerRegistry+dockerImage,
