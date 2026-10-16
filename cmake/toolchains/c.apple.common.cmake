@@ -9,7 +9,7 @@ endif()
 
 # specify the cross compiler
 set(usedToolchain)
-foreach(COMPILER_PREFIX x86_64-apple-darwin22.2 i386-apple-darwin15 i686-apple-darwin10)
+foreach(COMPILER_PREFIX x86_64-apple-darwin25.1 x86_64-apple-darwin24.5 x86_64-apple-darwin23.5 x86_64-apple-darwin22.2 i386-apple-darwin15 i686-apple-darwin10)
     foreach(var CMAKE_C_COMPILER CMAKE_CXX_COMPILER)
         unset(${var} CACHE)
         unset(${var})
@@ -27,6 +27,9 @@ find_program(CMAKE_RANLIB NAMES ${usedToolchain}-ranlib)
 find_program(CMAKE_INSTALL_NAME_TOOL NAMES ${usedToolchain}-install_name_tool)
 
 set(OSX_SDKS
+    "/usr/lib/apple/SDKs/MacOSX26.1.sdk"
+    "/usr/lib/apple/SDKs/MacOSX15.5.sdk"
+    "/usr/lib/apple/SDKs/MacOSX14.5.sdk"
     "/usr/lib/apple/SDKs/MacOSX13.1.sdk"
     "/usr/lib/apple/SDKs/MacOSX12.3.sdk"
     "/usr/lib/apple/SDKs/MacOSX12.1.sdk"
@@ -70,18 +73,18 @@ if(NOT CMAKE_SYSTEM_VERSION)
       OUTPUT_STRIP_TRAILING_WHITESPACE
     )
 
-    if(osx_version MATCHES "^(1[0-9]+)\\.([0-9]+)")
-        #  10.x == Mac OSX 10.6 (Snow Leopard)
-        #  11.x == Mac OSX 10.7 (Lion)
-        #  12.x == Mac OSX 10.8 (Mountain Lion)
-        #  ...
-		#  22.x == Mac OSX 13.X
-        #  etc.
-		if("${CMAKE_MATCH_1}" STREQUAL "10")
-			math(EXPR majorVersion "4 + ${CMAKE_MATCH_2}")
-		else()
-			math(EXPR majorVersion "9 + ${CMAKE_MATCH_1}")
-		endif()
+    if(osx_version MATCHES "^([0-9]+)\\.([0-9]+)")
+        # Darwin kernel version for the macOS version:
+        #  10.x == Darwin (4 + x), i.e. 10.6 (Snow Leopard) == Darwin 10
+        #  11 - 15 == Darwin (9 + major), i.e. 13.x == Darwin 22
+        #  26+ == Darwin (major - 1), i.e. 26.x == Darwin 25 (Apple skipped macOS 16 - 25)
+        if("${CMAKE_MATCH_1}" STREQUAL "10")
+            math(EXPR majorVersion "4 + ${CMAKE_MATCH_2}")
+        elseif(CMAKE_MATCH_1 GREATER_EQUAL 26)
+            math(EXPR majorVersion "${CMAKE_MATCH_1} - 1")
+        else()
+            math(EXPR majorVersion "9 + ${CMAKE_MATCH_1}")
+        endif()
 
         set(CMAKE_SYSTEM_VERSION "${majorVersion}.0.0")
     else()
