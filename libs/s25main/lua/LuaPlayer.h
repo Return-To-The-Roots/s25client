@@ -10,6 +10,7 @@
 #include "gameTypes/BuildingType.h"
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/JobTypes.h"
+#include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
 #include "gameTypes/StatisticTypes.h"
 #include <map>
@@ -50,6 +51,7 @@ public:
     unsigned GetNumPeople(lua::SafeEnum<Job> job) const;
     unsigned GetStatisticsValue(lua::SafeEnum<StatisticType> stat) const;
     bool AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld);
+    void PlaceHQ(MapCoord x, MapCoord y);
     void ModifyHQ(bool isTent);
     bool IsDefeated() const;
     void Surrender(bool destroyBlds);
