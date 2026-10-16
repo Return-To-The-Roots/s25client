@@ -23,6 +23,7 @@ def transformIntoStep(architecture, dockerImage, buildScript) {
                     withDockerContainer(
                         image: dockerRegistry+dockerImage,
                         args: " \
+                            --pull=always \
                             -v $ccache_dir_host:/.ccache \
                             -v $wspwd/source:/source:ro \
                             -v $wspwd/result:/result \
