@@ -32,6 +32,7 @@ fi
 export CCACHE_DIR=/.ccache
 
 ccache --zero-stats
+ccache -M 10G
 trap 'echo "ccache statistics:"; ccache --show-stats --verbose || ccache --show-stats || true' EXIT
 
 deploy_to="%deploy_to%"
