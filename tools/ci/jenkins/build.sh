@@ -30,7 +30,9 @@ fi
 ###############################################################################
 
 export CCACHE_DIR=/.ccache
+export CCACHE_BASEDIR=$(pwd)
 
+echo "Using $CCACHE_BASEDIR as base directory for ccache" >&2
 ccache --zero-stats
 ccache -M 10G
 trap 'echo "ccache statistics:"; ccache --show-stats --verbose || ccache --show-stats || true' EXIT
@@ -65,7 +67,8 @@ if [ "$deploy_to" == "stable" ] ; then
     echo "Using RTTR_VERSION from GIT_TAG: $RTTR_VERSION" >&2
 fi
 
-cmake \
+# disable ccache for configuration step
+CCACHE_DISABLE=1 cmake \
     -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
     -DCMAKE_TOOLCHAIN_FILE=$TOOLCHAIN_FILE \
     -DRTTR_ENABLE_WERROR=ON \
