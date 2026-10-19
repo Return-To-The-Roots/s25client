@@ -13,7 +13,7 @@ import groovy.transform.Field
     "apple.x86_64"    : "rttr/cross-compiler/apple/apple-docker:master"
 ]
 
-def transformIntoStep(architecture, dockerImage, versionsScript, buildScript) {
+def transformIntoStep(architecture, dockerImage, sbomScript, buildScript) {
     return {
         timeout(120) {
             def wspwd = pwd()
@@ -22,21 +22,25 @@ def transformIntoStep(architecture, dockerImage, versionsScript, buildScript) {
                 sh 'touch .git-keep'
                 sh "mkdir -p '$ccache_dir_host'"
                 withDockerRegistry( registry: [credentialsId: dockerCredentials, url: 'https://'+dockerRegistry ] ) {
+                    def imageRef = dockerRegistry + dockerImage
                     sh """
                         mkdir -p '${wspwd}/result/sbom'
-                        docker pull -q '${dockerRegistry}${dockerImage}'
-                        echo '${dockerRegistry}${dockerImage}' > '${wspwd}/result/sbom/image-${architecture}.txt'
-                        docker image inspect --format '{{.Id}}{{"\\n"}}{{join .RepoDigests "\\n"}}' '${dockerRegistry}${dockerImage}' >> '${wspwd}/result/sbom/image-${architecture}.txt'
+                        docker pull -q '${imageRef}'
                     """
+                    def imageId = sh(returnStdout: true, script: "docker image inspect --format '{{.Id}}' '${imageRef}'").trim()
+                    def imageRepoDigest = sh(returnStdout: true, script: "docker image inspect --format '{{if .RepoDigests}}{{index .RepoDigests 0}}{{end}}' '${imageRef}'").trim()
+
                     withDockerContainer(
-                        image: dockerRegistry+dockerImage,
+                        image: imageId,
                         args: " \
-                            --pull=always \
+                            -e RTTR_IMAGE_REF='${imageRef}' \
+                            -e RTTR_IMAGE_ID='${imageId}' \
+                            -e RTTR_IMAGE_REPO_DIGEST='${imageRepoDigest}' \
                             -v $ccache_dir_host:/.ccache \
                             -v $wspwd/source:/source:ro \
                             -v $wspwd/result:/result \
                         ") {
-                        def sbom = versionsScript.replace("%architecture%", architecture)
+                        def sbom = sbomScript.replace("%architecture%", architecture)
                         sh sbom
                         def script = buildScript.replace("%architecture%", architecture)
                         sh script
@@ -112,20 +116,41 @@ pipeline {
             steps {
                 script {
                     def parallel_map = [:]
-                    def versionsScript = readTrusted("tools/ci/jenkins/versions.sh")
+                    def sbomScript = readTrusted("tools/ci/jenkins/sbom.sh")
                     def buildScript = readTrusted("tools/ci/jenkins/build.sh")
                     buildScript = buildScript.replace("%deploy_to%", params.DEPLOY_TO)
                     buildScript = buildScript.replace("%force_deploy%", params.FORCE_DEPLOY.toString())
 
                     dockerImages.each { architecture, image ->
                         echo "Adding Job ${architecture} (${image})"
-                        parallel_map["${architecture}"] = transformIntoStep(architecture, image, versionsScript, buildScript)
+                        parallel_map["${architecture}"] = transformIntoStep(architecture, image, sbomScript, buildScript)
                     }
 
                     // todo: mirror launchpad
 
                     parallel_map.failFast = true
                     parallel parallel_map
+                }
+            }
+        }
+
+        stage('sbom') {
+            steps {
+                script {
+                    // Merge the SBOMs of all build environments and the submodules into result/sbom/rttr.cdx.json
+                    def sbomMergeScript = readTrusted("tools/ci/jenkins/sbom-merge.sh")
+                    def image = dockerRegistry + dockerImages["linux.x86_64"]
+                    def wspwd = pwd()
+                    withDockerRegistry( registry: [credentialsId: dockerCredentials, url: 'https://'+dockerRegistry ] ) {
+                        withDockerContainer(
+                            image: image,
+                            args: " \
+                                -v $wspwd/source:/source:ro \
+                                -v $wspwd/result:/result \
+                            ") {
+                            sh sbomMergeScript
+                        }
+                    }
                 }
             }
         }
@@ -152,7 +177,7 @@ pipeline {
     post {
         always {
             dir('result') {
-                archiveArtifacts artifacts: 'sbom/*.txt', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'sbom/*.json', allowEmptyArchive: true
             }
         }
         success {
