@@ -28,7 +28,7 @@ class AddonEconomyModeGameLength : public AddonList
         for(const auto duration : AddonEconomyModeGameLengthList)
         {
             if(duration.count() == 0)
-                result.push_back("unlimited");
+                result.push_back(_("Unlimited"));
             else
                 result.push_back(helpers::format("%1%", helpers::withUnit(duration)));
         }
