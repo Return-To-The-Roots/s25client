@@ -62,10 +62,10 @@ public:
 class GameMessage_Server_Type : public GameMessage
 {
 public:
-    ServerType type;
+    ServerType type = ServerType::Local;
     std::string revision;
 
-    GameMessage_Server_Type() : GameMessage_Server_Type(ServerType::Local, "") {}
+    GameMessage_Server_Type() : GameMessage(NMS_SERVER_TYPE) {}
     GameMessage_Server_Type(const ServerType type, const std::string& revision)
         : GameMessage(NMS_SERVER_TYPE), type(type), revision(revision)
     {
@@ -105,10 +105,10 @@ public:
     friend constexpr auto maxEnumValue(StatusCode) { return StatusCode::WrongVersion; }
 
     /// Vom Server akzeptiert?
-    StatusCode err_code;
+    StatusCode err_code = StatusCode::Ok;
     std::string version;
 
-    GameMessage_Server_TypeOK() : GameMessage(NMS_SERVER_TYPEOK) {} //-V730
+    GameMessage_Server_TypeOK() : GameMessage(NMS_SERVER_TYPEOK) {}
     GameMessage_Server_TypeOK(const StatusCode err_code, std::string version)
         : GameMessage(NMS_SERVER_TYPEOK), err_code(err_code), version(std::move(version))
     {}
@@ -125,7 +125,7 @@ class GameMessage_Server_Password : public GameMessage
 public:
     std::string password;
 
-    GameMessage_Server_Password() : GameMessage(NMS_SERVER_PASSWORD), password() {}
+    GameMessage_Server_Password() : GameMessage(NMS_SERVER_PASSWORD) {}
     GameMessage_Server_Password(std::string password) : GameMessage(NMS_SERVER_PASSWORD), password(std::move(password))
     {}
 
@@ -181,9 +181,9 @@ public:
 class GameMessage_Server_Start : public GameMessage
 {
 public:
-    uint32_t random_init, firstNwf, cmdDelay;
+    uint32_t random_init = 0, firstNwf = 0, cmdDelay = 0;
 
-    GameMessage_Server_Start() : GameMessage(NMS_SERVER_START) {} //-V730
+    GameMessage_Server_Start() : GameMessage(NMS_SERVER_START) {}
     GameMessage_Server_Start(unsigned random_init, unsigned firstNwf, unsigned cmdDelay)
         : GameMessage(NMS_SERVER_START), random_init(random_init), firstNwf(firstNwf), cmdDelay(cmdDelay)
     {}
@@ -217,9 +217,9 @@ public:
 class GameMessage_Countdown : public GameMessage
 {
 public:
-    uint32_t countdown;
+    uint32_t countdown = 0;
 
-    GameMessage_Countdown() : GameMessage(NMS_COUNTDOWN) {} //-V730
+    GameMessage_Countdown() : GameMessage(NMS_COUNTDOWN) {}
     GameMessage_Countdown(uint32_t countdown) : GameMessage(NMS_COUNTDOWN), countdown(countdown) {}
 
     void Serialize(Serializer& ser) const override
@@ -291,7 +291,7 @@ public:
 class GameMessage_Player_Id : public GameMessageWithPlayer
 {
 public:
-    GameMessage_Player_Id() : GameMessageWithPlayer(NMS_PLAYER_ID) {} //-V730
+    GameMessage_Player_Id() : GameMessageWithPlayer(NMS_PLAYER_ID) {}
     GameMessage_Player_Id(const uint8_t playerId) : GameMessageWithPlayer(NMS_PLAYER_ID, playerId)
     {
         LOG.writeToFile(">>> NMS_PLAYER_ID(%d)\n") % unsigned(playerId);
@@ -385,10 +385,10 @@ public:
 class GameMessage_Player_State : public GameMessageWithPlayer
 {
 public:
-    PlayerState ps;
+    PlayerState ps = PlayerState::Free;
     AI::Info aiInfo;
 
-    GameMessage_Player_State() : GameMessageWithPlayer(NMS_PLAYER_STATE) {} //-V730
+    GameMessage_Player_State() : GameMessageWithPlayer(NMS_PLAYER_STATE) {}
     GameMessage_Player_State(uint8_t player, PlayerState ps, AI::Info aiInfo)
         : GameMessageWithPlayer(NMS_PLAYER_STATE, player), ps(ps), aiInfo(aiInfo)
     {
@@ -423,9 +423,9 @@ class GameMessage_Player_Nation : public GameMessageWithPlayer
 {
 public:
     /// Das zu setzende Volk
-    Nation nation;
+    Nation nation = Nation::Africans;
 
-    GameMessage_Player_Nation() : GameMessageWithPlayer(NMS_PLAYER_NATION) {} //-V730
+    GameMessage_Player_Nation() : GameMessageWithPlayer(NMS_PLAYER_NATION) {}
     GameMessage_Player_Nation(uint8_t player, const Nation nation)
         : GameMessageWithPlayer(NMS_PLAYER_NATION, player), nation(nation)
     {
@@ -455,9 +455,9 @@ class GameMessage_Player_Team : public GameMessageWithPlayer
 {
 public:
     /// Das zu setzende Team
-    Team team;
+    Team team = Team::None;
 
-    GameMessage_Player_Team() : GameMessageWithPlayer(NMS_PLAYER_TEAM) {} //-V730
+    GameMessage_Player_Team() : GameMessageWithPlayer(NMS_PLAYER_TEAM) {}
     GameMessage_Player_Team(uint8_t player, const Team team)
         : GameMessageWithPlayer(NMS_PLAYER_TEAM, player), team(team)
     {
@@ -486,9 +486,9 @@ public:
 class GameMessage_Player_Color : public GameMessageWithPlayer
 {
 public:
-    uint32_t color;
+    uint32_t color = 0;
 
-    GameMessage_Player_Color() : GameMessageWithPlayer(NMS_PLAYER_COLOR) {} //-V730
+    GameMessage_Player_Color() : GameMessageWithPlayer(NMS_PLAYER_COLOR) {}
     GameMessage_Player_Color(uint8_t player, const uint32_t color)
         : GameMessageWithPlayer(NMS_PLAYER_COLOR, player), color(color)
     {
@@ -517,11 +517,11 @@ public:
 class GameMessage_Player_Kicked : public GameMessageWithPlayer
 {
 public:
-    KickReason cause;
+    KickReason cause = KickReason::NoCause;
     /// Meta param to determine the origin of the kick
-    uint32_t param;
+    uint32_t param = 0;
 
-    GameMessage_Player_Kicked() : GameMessageWithPlayer(NMS_PLAYER_KICKED) {} //-V730
+    GameMessage_Player_Kicked() : GameMessageWithPlayer(NMS_PLAYER_KICKED) {}
     GameMessage_Player_Kicked(uint8_t player, KickReason cause, uint32_t param)
         : GameMessageWithPlayer(NMS_PLAYER_KICKED, player), cause(cause), param(param)
     {}
@@ -547,9 +547,9 @@ public:
 class GameMessage_Player_Ping : public GameMessageWithPlayer
 {
 public:
-    uint16_t ping;
+    uint16_t ping = 0;
 
-    GameMessage_Player_Ping() : GameMessageWithPlayer(NMS_PLAYER_PING) {} //-V730
+    GameMessage_Player_Ping() : GameMessageWithPlayer(NMS_PLAYER_PING) {}
     GameMessage_Player_Ping(uint8_t player, uint16_t ping) : GameMessageWithPlayer(NMS_PLAYER_PING, player), ping(ping)
     {}
 
@@ -610,9 +610,9 @@ class GameMessage_Player_Ready : public GameMessageWithPlayer
 {
 public:
     /// Ist der Spieler bereit?
-    bool ready;
+    bool ready = false;
 
-    GameMessage_Player_Ready() : GameMessageWithPlayer(NMS_PLAYER_READY) {} //-V730
+    GameMessage_Player_Ready() : GameMessageWithPlayer(NMS_PLAYER_READY) {}
     GameMessage_Player_Ready(uint8_t player, bool ready) : GameMessageWithPlayer(NMS_PLAYER_READY, player), ready(ready)
     {
         LOG.writeToFile(">>> NMS_PLAYER_READY\n");
@@ -642,8 +642,8 @@ class GameMessage_Player_Swap : public GameMessageWithPlayer
 {
 public:
     /// Die beiden Spieler-IDs, die miteinander vertauscht werden sollen
-    uint8_t player2;
-    GameMessage_Player_Swap() : GameMessageWithPlayer(NMS_PLAYER_SWAP) {} //-V730
+    uint8_t player2 = 0;
+    GameMessage_Player_Swap() : GameMessageWithPlayer(NMS_PLAYER_SWAP) {}
     GameMessage_Player_Swap(uint8_t player, uint8_t player2)
         : GameMessageWithPlayer(NMS_PLAYER_SWAP, player), player2(player2)
     {
@@ -674,8 +674,8 @@ class GameMessage_Player_SwapConfirm : public GameMessageWithPlayer
 {
 public:
     /// Die beiden Spieler-IDs, die miteinander vertauscht werden sollen
-    uint8_t player2;
-    GameMessage_Player_SwapConfirm() : GameMessageWithPlayer(NMS_PLAYER_SWAP_CONFIRM) {} //-V730
+    uint8_t player2 = 0;
+    GameMessage_Player_SwapConfirm() : GameMessageWithPlayer(NMS_PLAYER_SWAP_CONFIRM) {}
     GameMessage_Player_SwapConfirm(uint8_t player, uint8_t player2)
         : GameMessageWithPlayer(NMS_PLAYER_SWAP_CONFIRM, player), player2(player2)
     {}
@@ -701,11 +701,11 @@ public:
     /// Name of the map file
     std::string filename;
     /// Kartentyp (alte Karte neue Karte, Savegame usw.)
-    MapType mt;
-    uint32_t mapLen, mapCompressedLen;
-    uint32_t luaLen, luaCompressedLen;
+    MapType mt = MapType::OldMap;
+    uint32_t mapLen = 0, mapCompressedLen = 0;
+    uint32_t luaLen = 0, luaCompressedLen = 0;
 
-    GameMessage_Map_Info() : GameMessage(NMS_MAP_INFO) {} //-V730
+    GameMessage_Map_Info() : GameMessage(NMS_MAP_INFO) {}
     GameMessage_Map_Info(std::string filename, const MapType mt, unsigned mapLen, unsigned mapCompressedLen,
                          const unsigned luaLen, unsigned luaCompressedLen)
         : GameMessage(NMS_MAP_INFO), filename(std::move(filename)), mt(mt), mapLen(mapLen),
@@ -769,14 +769,14 @@ public:
 class GameMessage_Map_Data : public GameMessage
 {
 public:
-    bool isMapData;
+    bool isMapData = false;
     /// Offset into map buffer
-    uint32_t offset;
+    uint32_t offset = 0;
     /// Kartendaten
     std::vector<char> data;
     /// True for map data, false for luaData
 
-    GameMessage_Map_Data() : GameMessage(NMS_MAP_DATA) {} //-V730
+    GameMessage_Map_Data() : GameMessage(NMS_MAP_DATA) {}
     GameMessage_Map_Data(bool isMapData, const uint32_t offset, const char* const data, unsigned length)
         : GameMessage(NMS_MAP_DATA), isMapData(isMapData), offset(offset), data(data, data + length)
     {
@@ -812,9 +812,9 @@ class GameMessage_Map_Checksum : public GameMessage
 {
 public:
     /// Checksumme, die vom Client berechnet wurde
-    uint32_t mapChecksum, luaChecksum;
+    uint32_t mapChecksum = 0, luaChecksum = 0;
 
-    GameMessage_Map_Checksum() : GameMessage(NMS_MAP_CHECKSUM) {} //-V730
+    GameMessage_Map_Checksum() : GameMessage(NMS_MAP_CHECKSUM) {}
     GameMessage_Map_Checksum(uint32_t mapChecksum, uint32_t luaChecksum)
         : GameMessage(NMS_MAP_CHECKSUM), mapChecksum(mapChecksum), luaChecksum(luaChecksum)
     {
@@ -847,9 +847,9 @@ class GameMessage_Map_ChecksumOK : public GameMessage
 {
 public:
     /// Vom Server akzeptiert?
-    bool correct, retryAllowed;
+    bool correct = false, retryAllowed = false;
 
-    GameMessage_Map_ChecksumOK() : GameMessage(NMS_MAP_CHECKSUMOK) {} //-V730
+    GameMessage_Map_ChecksumOK() : GameMessage(NMS_MAP_CHECKSUMOK) {}
     GameMessage_Map_ChecksumOK(bool correct, bool retryAllowed)
         : GameMessage(NMS_MAP_CHECKSUMOK), correct(correct), retryAllowed(retryAllowed)
     {}
@@ -913,9 +913,9 @@ public:
 class GameMessage_Speed : public GameMessage
 {
 public:
-    std::chrono::milliseconds gf_length; // new speed
+    std::chrono::milliseconds gf_length{0}; // new speed
 
-    GameMessage_Speed() : GameMessage(NMS_SERVER_SPEED) {} //-V730
+    GameMessage_Speed() : GameMessage(NMS_SERVER_SPEED) {}
     GameMessage_Speed(const std::chrono::milliseconds gf_length) : GameMessage(NMS_SERVER_SPEED), gf_length(gf_length)
     {
         LOG.writeToFile(">>> NMS_SERVER_SPEED(%d)\n") % gf_length.count();
@@ -943,9 +943,9 @@ public:
 class GameMessage_Server_NWFDone : public GameMessage
 {
 public:
-    uint32_t gf, gf_length, nextNWF;
+    uint32_t gf = 0, gf_length = 0, nextNWF = 0;
 
-    GameMessage_Server_NWFDone() : GameMessage(NMS_SERVER_NWF_DONE) {} //-V730
+    GameMessage_Server_NWFDone() : GameMessage(NMS_SERVER_NWF_DONE) {}
     GameMessage_Server_NWFDone(unsigned gf, unsigned gf_length, unsigned nextNWF)
         : GameMessage(NMS_SERVER_NWF_DONE), gf(gf), gf_length(gf_length), nextNWF(nextNWF)
     {
@@ -979,9 +979,9 @@ class GameMessage_Pause : public GameMessage
 {
 public:
     /// Pausiert?
-    bool paused;
+    bool paused = false;
 
-    GameMessage_Pause() : GameMessage(NMS_PAUSE) {} //-V730
+    GameMessage_Pause() : GameMessage(NMS_PAUSE) {}
     GameMessage_Pause(const bool paused) : GameMessage(NMS_PAUSE), paused(paused)
     {
         LOG.writeToFile(">>> NMS_PAUSE(%d)\n") % (paused ? 1 : 0);
@@ -1009,9 +1009,9 @@ public:
 class GameMessage_SkipToGF : public GameMessage
 {
 public:
-    uint32_t targetGF;
+    uint32_t targetGF = 0;
 
-    GameMessage_SkipToGF() : GameMessage(NMS_SKIP_TO_GF) {} //-V730
+    GameMessage_SkipToGF() : GameMessage(NMS_SKIP_TO_GF) {}
     GameMessage_SkipToGF(uint32_t targetGF) : GameMessage(NMS_SKIP_TO_GF), targetGF(targetGF) {}
 
     void Serialize(Serializer& ser) const override
@@ -1043,9 +1043,9 @@ class GameMessage_AsyncLog : public GameMessage
 public:
     std::string addData;
     std::vector<RandomEntry> entries;
-    bool last;
+    bool last = false;
 
-    GameMessage_AsyncLog() : GameMessage(NMS_ASYNC_LOG) {} //-V730
+    GameMessage_AsyncLog() : GameMessage(NMS_ASYNC_LOG) {}
 
     GameMessage_AsyncLog(std::string addData) : GameMessage(NMS_ASYNC_LOG), addData(std::move(addData)), last(false)
     {
