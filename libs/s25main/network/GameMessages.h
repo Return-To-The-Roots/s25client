@@ -65,7 +65,7 @@ public:
     ServerType type;
     std::string revision;
 
-    GameMessage_Server_Type() : GameMessage(NMS_SERVER_TYPE) {}
+    GameMessage_Server_Type() : GameMessage_Server_Type(ServerType::Local, "") {}
     GameMessage_Server_Type(const ServerType type, const std::string& revision)
         : GameMessage(NMS_SERVER_TYPE), type(type), revision(revision)
     {
@@ -125,7 +125,7 @@ class GameMessage_Server_Password : public GameMessage
 public:
     std::string password;
 
-    GameMessage_Server_Password() : GameMessage(NMS_SERVER_PASSWORD) {}
+    GameMessage_Server_Password() : GameMessage(NMS_SERVER_PASSWORD), password() {}
     GameMessage_Server_Password(std::string password) : GameMessage(NMS_SERVER_PASSWORD), password(std::move(password))
     {}
 
@@ -311,7 +311,7 @@ public:
     /// Name des neuen Spielers
     std::string playername;
 
-    GameMessage_Player_Name() : GameMessageWithPlayer(NMS_PLAYER_NAME) {}
+    GameMessage_Player_Name() : GameMessage_Player_Name(0, "") {}
     GameMessage_Player_Name(uint8_t player, const std::string& playername)
         : GameMessageWithPlayer(NMS_PLAYER_NAME, player), playername(playername)
     {
@@ -342,7 +342,7 @@ class GameMessage_Player_Portrait : public GameMessageWithPlayer
 public:
     unsigned int playerPortraitIndex;
 
-    GameMessage_Player_Portrait() : GameMessageWithPlayer(NMS_PLAYER_PORTRAIT) {}
+    GameMessage_Player_Portrait() : GameMessage_Player_Portrait(0, 0) {}
     GameMessage_Player_Portrait(uint8_t player, unsigned int portraitIndex)
         : GameMessageWithPlayer(NMS_PLAYER_PORTRAIT, player), playerPortraitIndex(portraitIndex)
     {}
@@ -748,7 +748,7 @@ class GameMessage_MapRequest : public GameMessage
 public:
     bool requestInfo;
 
-    GameMessage_MapRequest() : GameMessage(NMS_MAP_REQUEST) {} //-V730
+    GameMessage_MapRequest() : GameMessage_MapRequest(false) {}
     GameMessage_MapRequest(bool requestInfo) : GameMessage(NMS_MAP_REQUEST), requestInfo(requestInfo) {}
 
     void Serialize(Serializer& ser) const override
