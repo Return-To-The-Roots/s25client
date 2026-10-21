@@ -38,8 +38,8 @@ int main(int argc, char** argv)
         ("help,h", "Show help")
         ("replay,r", po::value<std::string>()->required(), "Replay file (.rpl) to play back\n"
                         "Supports <RTTR_USERDATA> placeholder (user data dir)")
-        ("verbose,V", "Print the async-log entries when a desync is detected")
-        ("version,v", "Show version information and exit")
+        ("verbose,v", "Print the async-log entries when a desync is detected")
+        ("version", "Show version information and exit")
     ;
     // clang-format on
     po::positional_options_description pos;
