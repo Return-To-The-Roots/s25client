@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <locale>
 #include <sstream>
+#include <vector>
 
 #ifdef _WIN32
 #    include <windows.h>
@@ -27,22 +28,35 @@ static HANDLE setupStdOut()
 }
 #endif
 
+static void writeConsole(const char* text, unsigned len)
+{
+#ifdef _WIN32
+    static HANDLE h = setupStdOut();
+    WriteConsoleA(h, text, len, nullptr, nullptr);
+#else
+    bnw::cout.write(text, len);
+#endif
+}
+
 void printConsole(const char* fmt, ...)
 {
     char buffer[512];
-    va_list args;
+    va_list args, argsCopy;
     va_start(args, fmt);
+    va_copy(argsCopy, args);
     const int len = vsnprintf(buffer, sizeof(buffer), fmt, args);
     va_end(args);
-    if(len > 0 && static_cast<size_t>(len) < sizeof(buffer))
+    if(len < 0)
+        bnw::cerr << "Could not format console output: " << fmt << '\n';
+    else if(static_cast<size_t>(len) < sizeof(buffer))
+        writeConsole(buffer, len);
+    else
     {
-#ifdef _WIN32
-        static HANDLE h = setupStdOut();
-        WriteConsoleA(h, buffer, len, nullptr, nullptr);
-#else
-        bnw::cout << buffer;
-#endif
+        std::vector<char> longBuffer(len + 1);
+        vsnprintf(longBuffer.data(), longBuffer.size(), fmt, argsCopy);
+        writeConsole(longBuffer.data(), len);
     }
+    va_end(argsCopy);
 }
 
 std::string formatClock(std::chrono::milliseconds time)

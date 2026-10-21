@@ -62,23 +62,26 @@ void SetupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGa
 
         // Kept until the loader has read them
         std::optional<TmpFile> tmpMap, tmpLua;
-        boost::filesystem::path mapFilePath = mapInfo.filepath;
-        if(mapFilePath.empty())
+        boost::filesystem::path mapFilePath, luaFilePath;
+        if(!replay)
+        {
+            mapFilePath = mapInfo.filepath;
+            luaFilePath = mapInfo.luaFilepath;
+        } else
         {
             tmpMap.emplace();
             tmpMap->close();
             if(!mapInfo.mapData.DecompressToFile(tmpMap->filePath))
                 throw GameSetupError("Could not decompress the map data");
             mapFilePath = tmpMap->filePath;
-        }
-        boost::filesystem::path luaFilePath = mapInfo.luaFilepath;
-        if(luaFilePath.empty() && mapInfo.luaData.uncompressedLength > 0)
-        {
-            tmpLua.emplace(".lua");
-            tmpLua->close();
-            if(!mapInfo.luaData.DecompressToFile(tmpLua->filePath))
-                throw GameSetupError("Could not decompress the Lua script");
-            luaFilePath = tmpLua->filePath;
+            if(mapInfo.luaData.uncompressedLength > 0)
+            {
+                tmpLua.emplace(".lua");
+                tmpLua->close();
+                if(!mapInfo.luaData.DecompressToFile(tmpLua->filePath))
+                    throw GameSetupError("Could not decompress the Lua script");
+                luaFilePath = tmpLua->filePath;
+            }
         }
 
         MapLoader loader(gameWorld);

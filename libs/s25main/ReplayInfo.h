@@ -17,7 +17,7 @@ struct ReplayInfo
     /// GF the first desync was detected at, if any
     std::optional<unsigned> desyncGF;
     // GF for the next replay command if any
-    std::optional<unsigned> next_gf;
+    std::optional<unsigned> nextGF;
     /// FoW deactivated?
-    bool all_visible = false;
+    bool allVisible = false;
 };
