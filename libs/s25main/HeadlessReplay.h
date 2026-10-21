@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include "AsyncChecksum.h"
 #include "ILocalGameState.h"
 #include "Replay.h"
+#include "ReplayPlayback.h"
 #include "gameTypes/MapInfo.h"
 #include <boost/filesystem/path.hpp>
 #include <functional>
@@ -15,14 +15,6 @@
 
 class Game;
 class GameWorld;
-
-/// The game state recorded in the replay did not match the one the playback produced.
-struct ReplayDesync
-{
-    unsigned gf;
-    AsyncChecksum expected;
-    AsyncChecksum actual;
-};
 
 class HeadlessReplay
 {

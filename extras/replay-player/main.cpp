@@ -32,7 +32,8 @@ int main(int argc, char** argv)
     bnw::nowide_filesystem();
     bnw::args _(argc, argv);
 
-    po::options_description desc("Allowed options");
+    po::options_description desc("Plays back a replay without graphics and checks that it stays in sync with the "
+                                 "recorded game.\n\nAllowed options");
     // clang-format off
     desc.add_options()
         ("help,h", "Show help")

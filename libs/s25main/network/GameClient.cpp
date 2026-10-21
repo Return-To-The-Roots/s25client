@@ -1553,7 +1553,7 @@ bool GameClient::StartReplay(const boost::filesystem::path& path)
         return false;
     }
 
-    replayinfo->next_gf = replayinfo->replay.ReadGF();
+    replayinfo->nextGF = replayinfo->replay.ReadGF();
 
     return true;
 }
@@ -1739,12 +1739,12 @@ void GameClient::SetPause(bool pause)
 void GameClient::SetReplayFOW(const bool hideFOW)
 {
     if(replayinfo)
-        replayinfo->all_visible = hideFOW;
+        replayinfo->allVisible = hideFOW;
 }
 
 bool GameClient::IsReplayFOWDisabled() const
 {
-    return replayMode && replayinfo->all_visible;
+    return replayMode && replayinfo->allVisible;
 }
 
 unsigned GameClient::GetLastReplayGF() const

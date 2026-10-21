@@ -18,11 +18,9 @@ struct GameSetupError : std::runtime_error
 };
 
 /// Fill the world of a freshly created game from the savegame or map in mapInfo.
-/// The map and Lua script are taken from mapInfo.filepath/luaFilepath when set, otherwise they are
-/// decompressed from the data embedded in mapInfo. A path that came out of a replay names a file on
-/// the machine that recorded it, so clear it to use the embedded data instead.
-/// Pass the replay a game is loaded from, if any: older replays need the world set up the way the
-/// version they were recorded with did it.
+/// Pass the replay a game is loaded from, if any: its map and Lua script are then taken from the data
+/// embedded in mapInfo instead of mapInfo.filepath/luaFilepath, and older replays need the world set up
+/// the way the version they were recorded with did it.
 /// Throws GameSetupError if the map or Lua script could not be read, SerializedGameData::Error if the savegame is
 /// corrupt.
 void SetupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGameState, const Replay* replay);

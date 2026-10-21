@@ -3,67 +3,48 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "GameManager.h"
-#include "PlayerGameCommands.h"
 #include "ReplayInfo.h"
+#include "ReplayPlayback.h"
 #include "helpers/format.hpp"
 #include "network/ClientInterface.h"
 #include "network/GameClient.h"
-#include "variant.h"
 #include "s25util/Log.h"
 
 void GameClient::ExecuteGameFrame_Replay()
 {
-    AsyncChecksum checksum = AsyncChecksum::create(*game);
-
     const unsigned curGF = GetGFNumber();
-    RTTR_Assert(replayinfo->next_gf.value_or(curGF) >= curGF || curGF > replayinfo->replay.GetLastGF()); //-V807
+    RTTR_Assert(replayinfo->nextGF.value_or(curGF) >= curGF || curGF > replayinfo->replay.GetLastGF()); //-V807
 
-    bool cmdsExecuted = false;
-    auto& replay = replayinfo->replay;
-    // Execute all commands from the replay for the current GF
-    while(replayinfo->next_gf && replayinfo->next_gf == curGF)
+    const ReplayCommandsResult result =
+      ExecuteReplayCommands(replayinfo->replay, replayinfo->nextGF, *game, [this](const Replay::ChatCommand& cmd) {
+          if(ci)
+              ci->CI_Chat(cmd.player, cmd.dest, cmd.msg);
+      });
+
+    // Only the first one is worth reporting: every NWF after it is async too.
+    if(result.desync && !replayinfo->desyncGF)
     {
-        const auto cmd = replay.ReadCommand();
-        visit(composeVisitor(
-                [this](const Replay::ChatCommand& cmd) {
-                    if(ci)
-                        ci->CI_Chat(cmd.player, cmd.dest, cmd.msg);
-                },
-                [this, &cmdsExecuted, &checksum, curGF](const Replay::GameCommand& cmd) {
-                    cmdsExecuted = true;
+        const ReplayDesync& desync = *result.desync;
+        replayinfo->desyncGF = curGF;
 
-                    ExecuteAllGCs(cmd.player, cmd.cmds);
-                    const AsyncChecksum& msgChecksum = cmd.cmds.checksum;
+        if(ci)
+        {
+            ci->CI_ReplayAsync(
+              helpers::format(_("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF));
+        }
 
-                    // Check for async if checksum data is valid.
-                    // Only the first one is worth reporting: every NWF after it is async too.
-                    if(msgChecksum.randChecksum != 0 && msgChecksum != checksum && !replayinfo->desyncGF)
-                    {
-                        replayinfo->desyncGF = curGF;
+        LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF % desync.expected.randChecksum
+          % desync.actual.randChecksum % desync.expected.objCt % desync.actual.objCt % desync.expected.objIdCt
+          % desync.actual.objIdCt;
 
-                        if(ci)
-                        {
-                            ci->CI_ReplayAsync(helpers::format(
-                              _("Warning: The played replay is not in sync with the original match. (GF: %u)"), curGF));
-                        }
-
-                        LOG.write("Async at GF %u: Checksum %i:%i ObjCt %u:%u ObjIdCt %u:%u\n") % curGF
-                          % msgChecksum.randChecksum % checksum.randChecksum % msgChecksum.objCt % checksum.objCt
-                          % msgChecksum.objIdCt % checksum.objIdCt;
-
-                        // and pause the game for further investigation
-                        framesinfo.isPaused = true;
-                        if(skiptogf)
-                            skiptogf = 0;
-                    }
-                }),
-              cmd);
-        // Read GF of next command
-        replayinfo->next_gf = replayinfo->replay.ReadGF();
+        // and pause the game for further investigation
+        framesinfo.isPaused = true;
+        if(skiptogf)
+            skiptogf = 0;
     }
 
     // Run game simulation
-    NextGF(cmdsExecuted);
+    NextGF(result.executedGameCommands);
 
     // Check for game end
     if(curGF == replayinfo->replay.GetLastGF())
@@ -90,7 +71,7 @@ void GameClient::ExecuteGameFrame_Replay()
             ci->CI_ReplayEndReached(
               helpers::format(_("Notice: The replay was out of sync from GF %u on."), *replayinfo->desyncGF));
         }
-        replayinfo->next_gf.reset();
+        replayinfo->nextGF.reset();
         framesinfo.isPaused = true;
         if(skiptogf)
             skiptogf = GetGFNumber();

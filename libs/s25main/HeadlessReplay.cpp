@@ -9,9 +9,7 @@
 #include "PlayerInfo.h"
 #include "Savegame.h"
 #include "ai/random.h"
-#include "network/PlayerGameCommands.h"
 #include "random/Random.h"
-#include "variant.h"
 #include "world/GameWorld.h"
 #include <stdexcept>
 #include <string>
@@ -24,9 +22,6 @@ HeadlessReplay::HeadlessReplay(const boost::filesystem::path& replayPath)
           replay_.GetLastErrorMsg().empty() ? std::string("Unknown error") : replay_.GetLastErrorMsg();
         throw std::runtime_error("Could not load replay " + replayPath.string() + ": " + reason);
     }
-
-    // Recorded on another machine, so use the map data embedded in the replay instead
-    mapInfo_.filepath.clear();
 
     std::vector<PlayerInfo> players;
     players.reserve(replay_.GetNumPlayers());
@@ -71,26 +66,7 @@ bool HeadlessReplay::RunGF()
                                  + " but the game is already at GF " + std::to_string(curGF));
     }
 
-    AsyncChecksum checksum;
-    if(nextGF_ && *nextGF_ == curGF)
-        checksum = AsyncChecksum::create(*game_);
-
-    while(nextGF_ && *nextGF_ == curGF)
-    {
-        const auto cmd = replay_.ReadCommand();
-        visit(composeVisitor([](const Replay::ChatCommand&) {},
-                             [&](const Replay::GameCommand& gcmd) {
-                                 for(const gc::GameCommandPtr& gc : gcmd.cmds.gcs)
-                                     gc->Execute(game_->world_, gcmd.player);
-
-                                 const AsyncChecksum& expected = gcmd.cmds.checksum;
-                                 // A zero checksum means the recording did not store one
-                                 if(!desync_ && expected.randChecksum != 0 && expected != checksum)
-                                     desync_ = ReplayDesync{curGF, expected, checksum};
-                             }),
-              cmd);
-        nextGF_ = replay_.ReadGF();
-    }
+    desync_ = ExecuteReplayCommands(replay_, nextGF_, *game_).desync;
 
     // Stop at a desync so the world and the RNG log still show the state that produced it
     if(desync_)

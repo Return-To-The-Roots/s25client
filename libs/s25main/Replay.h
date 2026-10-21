@@ -84,7 +84,7 @@ public:
 
     unsigned getSeed() const { return randomSeed_; }
     unsigned GetLastGF() const { return lastGF_; }
-    /// TODO(Replay): Remove, always true. Replays before 8.3 were recorded without the fish fix.
+    /// TODO(Replay): Fish fix introduced in 8.3.
     bool usesFishFix() const { return GetMinorVersion() >= 3; }
 
 protected:
