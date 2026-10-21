@@ -101,11 +101,12 @@ bool HeadlessReplay::RunGF()
 
 bool HeadlessReplay::Run(const std::function<void(const HeadlessReplay&)>& onGameFrame)
 {
-    for(bool hasMoreFrames = true; hasMoreFrames;)
+    bool hasMoreFrames;
+    do
     {
         hasMoreFrames = RunGF();
         if(onGameFrame)
             onGameFrame(*this);
-    }
+    } while(hasMoreFrames);
     return !desync_;
 }
