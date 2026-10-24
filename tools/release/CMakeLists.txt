@@ -53,6 +53,12 @@ elseif(APPLE)
             fixup_bundle(\"${APP}\" \"\${LIBS}\" \"${DIRS}\")"
         )
     endif()
+
+    # Must be the last install step (after strip and bundling), as modifying the binaries invalidates the signature
+    install(CODE "
+        set(APP_DIR \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}\")
+        include(\"${CMAKE_CURRENT_SOURCE_DIR}/signAppleBundle.cmake\")
+    ")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
     configure_executable("bin/rttr.sh.cmake" ${CMAKE_CURRENT_BINARY_DIR} rttr.sh)
     install(PROGRAMS "${CMAKE_CURRENT_BINARY_DIR}/rttr.sh" DESTINATION "${RTTR_BINDIR}")
