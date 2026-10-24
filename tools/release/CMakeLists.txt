@@ -57,6 +57,7 @@ elseif(APPLE)
     # Must be the last install step (after strip and bundling), as modifying the binaries invalidates the signature
     install(CODE "
         set(APP_DIR \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}\")
+        set(OTOOL_BIN \"${CMAKE_OTOOL}\")
         include(\"${CMAKE_CURRENT_SOURCE_DIR}/signAppleBundle.cmake\")
     ")
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" OR CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" OR CYGWIN)
