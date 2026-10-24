@@ -49,3 +49,8 @@ endif()
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fexceptions")
 set(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -fexceptions")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fexceptions")
+
+# Strip at link time: stripping afterwards invalidates the ad-hoc signature required on arm64
+string(APPEND CMAKE_EXE_LINKER_FLAGS_RELEASE " -Wl,-x -Wl,-S")
+string(APPEND CMAKE_MODULE_LINKER_FLAGS_RELEASE " -Wl,-x -Wl,-S")
+string(APPEND CMAKE_SHARED_LINKER_FLAGS_RELEASE " -Wl,-x -Wl,-S")
