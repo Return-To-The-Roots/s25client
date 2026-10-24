@@ -19,8 +19,7 @@ endif()
 find_program(RCODESIGN_BIN rcodesign)
 find_program(LDID_BIN ldid)
 if(NOT CODESIGN_BIN AND NOT RCODESIGN_BIN AND NOT LDID_BIN)
-    message(WARNING "None of codesign, rcodesign or ldid found: Binaries in the bundle are NOT signed")
-    return()
+    message(FATAL_ERROR "None of codesign, rcodesign or ldid found: Unable to sign the bundle")
 endif()
 
 # Collect all Mach-O files (thin and fat), ignoring data files
