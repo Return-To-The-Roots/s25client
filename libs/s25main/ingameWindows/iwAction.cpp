@@ -199,7 +199,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 if(radius > 0)
                 {
                     icon->SetOnHoverChanged([this, icon, radius](bool hovered) noexcept {
-                        if(hovered)
+                        if(hovered && !ShouldBeClosed())
                         {
                             this->activeHoveredIcon_ = icon;
                             this->gwv.ShowRadiusPreview(this->selectedPt, radius);
