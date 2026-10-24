@@ -118,7 +118,6 @@ void VideoSDL2::CleanUp()
     if(window)
         SDL_DestroyWindow(window);
     SDL_QuitSubSystem(SDL_INIT_VIDEO);
-    SDL_Quit();
     initialized = false;
 }
 
