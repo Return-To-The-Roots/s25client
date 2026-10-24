@@ -76,10 +76,10 @@ jobs:
       matrix:
         include:
           # MacOSX:
-          #  Use system clang (15)
+          #  Use system clang
           #   Use system cmake (version gets ignored below)
           #   Use boost installed via brew
-          - { compiler: clang,    os: macos-14,     type: Debug }
+          - { compiler: clang,    os: macos-latest,     type: Debug }
 
           # Linux:
           #  Oldest Compilers 
