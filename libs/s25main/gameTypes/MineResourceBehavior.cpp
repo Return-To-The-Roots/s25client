@@ -10,7 +10,7 @@
 #include "gameTypes/GoodTypes.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/Resource.h"
-#include "gameData/GameConsts.h"
+#include "gameData/JobConsts.h"
 #include <algorithm>
 
 namespace {
