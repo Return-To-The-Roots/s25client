@@ -158,7 +158,7 @@ void nofPlaner::HandleDerivedEvent(const unsigned id)
     {
         // Planieren (falls Baustelle noch existiert)
         if(building_site)
-            world->ChangeAltitude(pos, world->GetNode(building_site->GetPos()).altitude);
+            world->ChangeAltitude(pos, world->GetNode(building_site->GetFlagPos()).altitude);
         /// Sounds abmelden
         world->GetSoundMgr().stopSounds(*this);
 
