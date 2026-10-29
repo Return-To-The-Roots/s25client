@@ -156,7 +156,9 @@ void checkShadowDrawnFirst(const size_t numFigureImages)
 
 BOOST_FIXTURE_TEST_CASE(WalkingBobDrawsShadowUnderFigure, WalkingFigureFixture)
 {
-    // Bob with slim bodies only, no overlay for item 0
+    // A bob sprite is a body image plus an optional overlay image (e.g. the job specific head/tool) on top.
+    // Create the slim body images and link all sprites of item 0 to overlay 0 (default link data).
+    // The overlay image itself is not set yet, so only the body is drawn.
     constexpr unsigned numBodyImages = 2 * 6 * 8;
     constexpr unsigned numLinksPerItem = 8 * 2 * 6;
     glArchivItem_Bob bob;
@@ -169,7 +171,7 @@ BOOST_FIXTURE_TEST_CASE(WalkingBobDrawsShadowUnderFigure, WalkingFigureFixture)
     figure->DrawWalking(DrawPoint(0, 0), &bob, 0, false);
     checkShadowDrawnFirst(1);
 
-    // Same with the overlay (carried ware) used for all sprites of item 0
+    // Now add the image for overlay 0 (stored after the body images): Body and overlay must both be above the shadow
     bob.alloc_inc(1);
     bob.set(numBodyImages, createPlayerBmp());
     rttrOglMock3::drawColors.clear();

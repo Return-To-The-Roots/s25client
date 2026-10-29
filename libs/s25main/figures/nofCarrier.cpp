@@ -139,7 +139,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
             if(state == CarrierState::WaitForWare
                || (waiting_for_free_node && !IsStoppedBetweenNodes() && !carried_ware))
             {
-                bool animation = false;
+                // Set if an idle animation should be drawn instead of the regular wait image
                 glArchivItem_Bitmap_Player* animationBmp = nullptr;
                 DrawPoint animationDrawPt = drawPt;
 
@@ -173,8 +173,6 @@ void nofCarrier::Draw(DrawPoint drawPt)
                         SetNewAnimationMoment();
                     } else
                     {
-                        animation = true;
-
                         if(!useNewyearsEgg)
                         {
                             // Nein, dann Animation abspielen
@@ -187,23 +185,20 @@ void nofCarrier::Draw(DrawPoint drawPt)
                             animationDrawPt -= DrawPoint(26, 104);
 
                             if(!animationBmp)
-                            {
                                 SetNewAnimationMoment();
-                                animation = false;
-                            }
                         }
                     }
                 }
 
-                if(!animation)
+                if(animationBmp)
                 {
-                    LOADER.getCarrierBobSprite(world->GetPlayer(player).nation, fat, GetCurMoveDir(), 2)
-                      .draw(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
+                    DrawShadow(drawPt, 0, GetCurMoveDir());
+                    animationBmp->DrawFull(animationDrawPt, COLOR_WHITE, world->GetPlayer(player).color);
                 } else
                 {
                     // Steht und wartet (ohne Ware)
-                    DrawShadow(drawPt, 0, GetCurMoveDir());
-                    animationBmp->DrawFull(animationDrawPt, COLOR_WHITE, world->GetPlayer(player).color);
+                    LOADER.getCarrierBobSprite(world->GetPlayer(player).nation, fat, GetCurMoveDir(), 2)
+                      .draw(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
                 }
             } else if(state == CarrierState::WaitForWareSpace
                       || (waiting_for_free_node && !IsStoppedBetweenNodes() && carried_ware))

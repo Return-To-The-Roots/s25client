@@ -809,7 +809,7 @@ void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id
     const unsigned ani_step = CalcWalkAnimationFrame();
     drawPt = InterpolateWalkDrawPos(drawPt);
 
-    // Shadow first so it only darkens the ground, not the figure (same as the cached sprites)
+    // Shadow first so it only darkens the ground, not the figure
     DrawShadow(drawPt, ani_step, GetCurMoveDir());
     if(file)
         file->Draw(id, toImgDir(GetCurMoveDir()), fat, ani_step, drawPt, world->GetPlayer(player).color);
