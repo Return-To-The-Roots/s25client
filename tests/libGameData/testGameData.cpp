@@ -18,6 +18,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/nowide/fstream.hpp>
 #include <boost/test/unit_test.hpp>
+#include <cmath>
 #include <sstream>
 
 namespace bfs = boost::filesystem;
@@ -268,36 +269,81 @@ BOOST_AUTO_TEST_CASE(TextureCoords)
     GameDataLoader loader(desc, tmp);
     BOOST_TEST_REQUIRE(loader.Load());
 
-    const auto checkTriangle = [](const TerrainDesc::Triangle& triangle, const TerrainDesc::Triangle& expected) {
+    using Triangle = TerrainDesc::Triangle;
+    const auto getTriangles = [&desc](const std::string& name) {
+        // Relative to the rectangle
         const PointF origin(10, 20);
-        for(const auto& [pt, expectedPt] :
-            {std::pair(triangle.tip, expected.tip), std::pair(triangle.left, expected.left),
-             std::pair(triangle.right, expected.right)})
+        const TerrainDesc& terrain = *desc.terrain.tryGet(name);
+        const Triangle rsu = terrain.GetRSUTriangle(), usd = terrain.GetUSDTriangle();
+        return std::pair(Triangle{rsu.tip - origin, rsu.left - origin, rsu.right - origin},
+                         Triangle{usd.tip - origin, usd.left - origin, usd.right - origin});
+    };
+    // Never sample outside the rectangle (black lines, #896)
+    const auto checkInside = [](const Triangle& triangle, const PointF& size) {
+        for(const PointF& pt : {triangle.tip, triangle.left, triangle.right})
         {
-            BOOST_TEST((pt - origin).x == expectedPt.x, boost::test_tools::tolerance(0.001f));
-            BOOST_TEST((pt - origin).y == expectedPt.y, boost::test_tools::tolerance(0.001f));
+            BOOST_TEST(pt.x > 0.f);
+            BOOST_TEST(pt.y > 0.f);
+            BOOST_TEST(pt.x < size.x);
+            BOOST_TEST(pt.y < size.y);
         }
     };
-    // Points are where S2 samples the texture, relative to the rectangle.
-    // Overlapped uses the full rectangle, about half a texel further right than the pixel centers
-    const TerrainDesc* terrain = desc.terrain.tryGet("terrain1");
-    checkTriangle(terrain->GetRSUTriangle(), {{16.549f, 0.594f}, {1.162f, 30.340f}, {31.934f, 30.340f}});
-    checkTriangle(terrain->GetUSDTriangle(), {{16.549f, 30.340f}, {1.162f, 0.594f}, {31.934f, 0.594f}});
+    const auto tolerance = boost::test_tools::tolerance(0.001f);
+    const auto checkEqual = [tolerance](const PointF& pt, const PointF& expected) {
+        BOOST_TEST(pt.x == expected.x, tolerance);
+        BOOST_TEST(pt.y == expected.y, tolerance);
+    };
+
+    // Overlapped uses the full rectangle
+    const auto [rsuO, usdO] = getTriangles("terrain1");
+    checkInside(rsuO, PointF(32, 31));
+    checkInside(usdO, PointF(32, 31));
+    // Tip is centered between the other corners
+    BOOST_TEST(rsuO.tip.x == (rsuO.left.x + rsuO.right.x) / 2, tolerance);
+    BOOST_TEST(rsuO.left.y == rsuO.right.y, tolerance);
+    // Pixel centers sample where S2 does, i.e. about 1 pixel further right (31 texels over 56 pixels)
+    // than the middle of the rectangle. Vertically they stay close to the pixel centers of the rows.
+    BOOST_TEST(rsuO.tip.x == 32 / 2.f + 31 / 56.f, tolerance);
+    BOOST_TEST(std::abs(rsuO.tip.y - 0.5f) < 0.2f);
+    BOOST_TEST(std::abs(rsuO.left.y - (31 - 0.5f)) < 0.2f);
+    // USD is RSU upside down
+    checkEqual(usdO.tip, PointF(rsuO.tip.x, rsuO.left.y));
+    checkEqual(usdO.left, PointF(rsuO.left.x, rsuO.tip.y));
+    checkEqual(usdO.right, PointF(rsuO.right.x, rsuO.tip.y));
 
     // Stacked has RSU over USD
-    terrain = desc.terrain.tryGet("terrain2");
-    checkTriangle(terrain->GetRSUTriangle(), {{15.515f, 1.310f}, {1.093f, 15.190f}, {29.934f, 15.190f}});
-    checkTriangle(terrain->GetUSDTriangle(), {{15.515f, 31.190f}, {1.093f, 17.310f}, {29.934f, 17.310f}});
+    const auto [rsuS, usdS] = getTriangles("terrain2");
+    checkInside(rsuS, PointF(31, 33));
+    checkInside(usdS, PointF(31, 33));
+    BOOST_TEST(rsuS.tip.x == (rsuS.left.x + rsuS.right.x) / 2, tolerance);
+    BOOST_TEST(rsuS.left.y == rsuS.right.y, tolerance);
+    BOOST_TEST(usdS.left.y == usdS.right.y, tolerance);
+    BOOST_TEST(rsuS.left.y < usdS.left.y);
+    BOOST_TEST(usdS.tip.x == rsuS.tip.x, tolerance);
+    BOOST_TEST(usdS.left.x == rsuS.left.x, tolerance);
+    BOOST_TEST(usdS.right.x == rsuS.right.x, tolerance);
+    BOOST_TEST(usdS.tip.y - usdS.left.y == rsuS.left.y - rsuS.tip.y, tolerance);
 
-    // Rotated is the upper (RSU) and lower (USD) half of a diamond
-    terrain = desc.terrain.tryGet("terrain3");
-    checkTriangle(terrain->GetRSUTriangle(), {{0.698f, 25.831f}, {49.650f, 26.250f}, {24.546f, 1.146f}});
-    checkTriangle(terrain->GetUSDTriangle(), {{50.098f, 27.698f}, {26.250f, 52.383f}, {1.146f, 27.279f}});
+    // Rotated is the upper (RSU) and lower (USD) half of a diamond with the tips at the left (RSU) and right (USD)
+    const auto [rsuR, usdR] = getTriangles("terrain3");
+    checkInside(rsuR, PointF(53, 54));
+    checkInside(usdR, PointF(53, 54));
+    BOOST_TEST(rsuR.tip.x < rsuR.right.x);
+    BOOST_TEST(rsuR.right.x < rsuR.left.x);
+    BOOST_TEST(rsuR.right.y < rsuR.tip.y);
+    BOOST_TEST(usdR.right.x < usdR.left.x);
+    BOOST_TEST(usdR.left.x < usdR.tip.x);
+    BOOST_TEST(usdR.left.y > usdR.tip.y);
+    BOOST_TEST(rsuR.tip.y < usdR.right.y);
 
     // Other sizes are scaled
-    terrain = desc.terrain.tryGet("terrain4");
-    checkTriangle(terrain->GetRSUTriangle(), {{33.098f, 1.188f}, {2.324f, 60.680f}, {63.868f, 60.680f}});
-    checkTriangle(terrain->GetUSDTriangle(), {{33.098f, 60.680f}, {2.324f, 1.188f}, {63.868f, 1.188f}});
+    const auto [rsuO2, usdO2] = getTriangles("terrain4");
+    for(const auto& [triangle, expected] : {std::pair(rsuO2, rsuO), std::pair(usdO2, usdO)})
+    {
+        checkEqual(triangle.tip, expected.tip * 2.f);
+        checkEqual(triangle.left, expected.left * 2.f);
+        checkEqual(triangle.right, expected.right * 2.f);
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

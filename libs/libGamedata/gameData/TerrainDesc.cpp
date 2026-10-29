@@ -62,28 +62,51 @@ uint8_t getDefaultHumidity(TerrainKind kind)
     }
     throw GameDataError("Invalid terrain kind: " + helpers::toString(kind));
 }
-/// Texture coordinates of the triangles in a texture rectangle of the size the original uses for this type
+
+using Triangle = TerrainDesc::Triangle;
+
+// Size of a triangle on the screen (TR_W, TR_H)
+constexpr float triWidth = 56;
+constexpr float triHeight = 28;
+// Corners of the triangles on the screen on flat terrain. OpenGL draws exactly these triangles.
+const Triangle rsuOnScreen{{0, 0}, {-triWidth / 2, triHeight}, {triWidth / 2, triHeight}};
+const Triangle usdOnScreen{{triWidth / 2, triHeight}, {0, 0}, {triWidth, 0}};
+// S2 maps its texture coordinates to the corners moved 1 pixel outwards, so its triangles are 58x30 pixels
+// and overlap the neighboring triangles by 1 pixel.
+const Triangle rsuS2{{0, -1}, {-triWidth / 2 - 1, triHeight + 1}, {triWidth / 2 + 1, triHeight + 1}};
+const Triangle usdS2{{triWidth / 2, triHeight + 1}, {-1, -1}, {triWidth + 1, -1}};
+// S2 samples pixel (x, y) at (x + 1.5, y) on average, while OpenGL samples at the pixel center (x + 0.5, y + 0.5)
+const PointF s2SampleOffset(1, -0.5f);
+
+// The corners of the texture areas S2 uses are slightly inside the outer texels:
+// 1/16 texel after the start and 17/256 texel before the end of an area.
+// The corners of the rotated textures are (almost) at the texel centers.
+constexpr float s2Start = 1 / 16.f;
+constexpr float s2End = -17 / 256.f;
+constexpr float s2Center = 127 / 256.f;
+
+/// Texture coordinates S2 uses for the corners of its (larger) triangles,
+/// relative to a texture rectangle of the size RTTR uses for this texture type
 struct S2TexCoords
 {
     PointF size;
-    TerrainDesc::Triangle rsu, usd;
+    Triangle rsu, usd;
 };
 
-// S2 draws each triangle 1 pixel larger with the texture coordinates from its own table and samples pixel (x, y)
-// on average at (x + 1.5, y), while OpenGL samples at the pixel center (x + 0.5, y + 0.5).
-// So the corners get the texture coordinates the original has at corner + (1, -0.5) on flat terrain.
-// This samples the same texels as S2 does. Using the rectangle corners inset by half a pixel instead
-// would draw the textures about 1 pixel further right than S2.
-// All values are inside the rectangle, so we never sample from outside the texture (black lines, #896).
+// RSU and USD use the full 32x32 texels
 const S2TexCoords overlappedCoords{{32, 31},
-                                   {{16.549f, 0.594f}, {1.162f, 30.340f}, {31.934f, 30.340f}},
-                                   {{16.549f, 30.340f}, {1.162f, 0.594f}, {31.934f, 0.594f}}};
+                                   {{16, s2Start}, {s2Start, 32 + s2End}, {32 + s2End, 32 + s2End}},
+                                   {{16, 32 + s2End}, {s2Start, s2Start}, {32 + s2End, s2Start}}};
+// 30 texels wide, RSU in rows 1-16, USD in rows 17-32
 const S2TexCoords stackedCoords{{31, 33},
-                                {{15.515f, 1.310f}, {1.093f, 15.190f}, {29.934f, 15.190f}},
-                                {{15.515f, 31.190f}, {1.093f, 17.310f}, {29.934f, 17.310f}}};
-const S2TexCoords rotatedCoords{{53, 54},
-                                {{0.698f, 25.831f}, {49.650f, 26.250f}, {24.546f, 1.146f}},
-                                {{50.098f, 27.698f}, {26.250f, 52.383f}, {1.146f, 27.279f}}};
+                                {{15, 1 + s2Start}, {s2Start, 16 + s2End}, {30 + s2End, 16 + s2End}},
+                                {{15, 32 + s2End}, {s2Start, 17 + s2Start}, {30 + s2End, 17 + s2Start}}};
+// RSU is the upper half of a diamond 52 texels wide with the middle at row 26, USD the lower half with the middle
+// at 27. The tip of RSU is at the left corner of the diamond, the tip of USD at the right corner.
+const S2TexCoords rotatedCoords{
+  {53, 54},
+  {{s2Center, 26 + s2Center}, {52 + s2Center, 26 + s2Center}, {26 + s2Center, s2Center}},
+  {{52 + s2Center, 27 + s2Center}, {26 + s2Center, 53 + s2Center}, {s2Center, 27 + s2Center}}};
 
 const S2TexCoords& getS2TexCoords(ETexType texType)
 {
@@ -96,12 +119,30 @@ const S2TexCoords& getS2TexCoords(ETexType texType)
     }
 }
 
-/// Scale the triangle from a rectangle of the given size to the rectangle in the texture
-TerrainDesc::Triangle scaleToRect(const TerrainDesc::Triangle& triangle, const PointF& size, const Rect& rect)
+/// Map pt with the affine mapping that maps the corners of from to the corners of to
+PointF mapAffine(const Triangle& from, const Triangle& to, const PointF& pt)
+{
+    const PointF a = from.left - from.tip;
+    const PointF b = from.right - from.tip;
+    const PointF d = pt - from.tip;
+    const float det = a.x * b.y - b.x * a.y;
+    const float s = (d.x * b.y - b.x * d.y) / det;
+    const float t = (a.x * d.y - d.x * a.y) / det;
+    return to.tip + (to.left - to.tip) * s + (to.right - to.tip) * t;
+}
+
+/// Get the texture coordinates for the corners of the triangle on the screen,
+/// so that OpenGL samples the same texels S2 does.
+/// Scaled from the S2 size to the size of the rectangle and offset by its origin.
+Triangle getTexTriangle(const Triangle& onScreen, const Triangle& s2Screen, const Triangle& s2Tex, const PointF& size,
+                        const Rect& rect)
 {
     const PointF origin(rect.getOrigin());
     const PointF scale = PointF(rect.getSize()) / size;
-    return {origin + triangle.tip * scale, origin + triangle.left * scale, origin + triangle.right * scale};
+    const auto getTexCoord = [&](const PointF& corner) {
+        return origin + mapAffine(s2Screen, s2Tex, corner + s2SampleOffset) * scale;
+    };
+    return {getTexCoord(onScreen.tip), getTexCoord(onScreen.left), getTexCoord(onScreen.right)};
 }
 } // namespace
 
@@ -177,11 +218,11 @@ bool TerrainDesc::IsVital() const
 TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
 {
     const S2TexCoords& coords = getS2TexCoords(texType);
-    return scaleToRect(coords.usd, coords.size, posInTexture);
+    return getTexTriangle(usdOnScreen, usdS2, coords.usd, coords.size, posInTexture);
 }
 
 TerrainDesc::Triangle TerrainDesc::GetRSUTriangle() const
 {
     const S2TexCoords& coords = getS2TexCoords(texType);
-    return scaleToRect(coords.rsu, coords.size, posInTexture);
+    return getTexTriangle(rsuOnScreen, rsuS2, coords.rsu, coords.size, posInTexture);
 }
