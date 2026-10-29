@@ -62,6 +62,47 @@ uint8_t getDefaultHumidity(TerrainKind kind)
     }
     throw GameDataError("Invalid terrain kind: " + helpers::toString(kind));
 }
+/// Texture coordinates of the triangles in a texture rectangle of the size the original uses for this type
+struct S2TexCoords
+{
+    PointF size;
+    TerrainDesc::Triangle rsu, usd;
+};
+
+// S2 draws each triangle 1 pixel larger with the texture coordinates from its own table and samples pixel (x, y)
+// on average at (x + 1.5, y), while OpenGL samples at the pixel center (x + 0.5, y + 0.5).
+// So the corners get the texture coordinates the original has at corner + (1, -0.5) on flat terrain.
+// This samples the same texels as S2 does. Using the rectangle corners inset by half a pixel instead
+// would draw the textures about 1 pixel further right than S2.
+// All values are inside the rectangle, so we never sample from outside the texture (black lines, #896).
+const S2TexCoords overlappedCoords{{32, 31},
+                                   {{16.549f, 0.594f}, {1.162f, 30.340f}, {31.934f, 30.340f}},
+                                   {{16.549f, 30.340f}, {1.162f, 0.594f}, {31.934f, 0.594f}}};
+const S2TexCoords stackedCoords{{31, 33},
+                                {{15.515f, 1.310f}, {1.093f, 15.190f}, {29.934f, 15.190f}},
+                                {{15.515f, 31.190f}, {1.093f, 17.310f}, {29.934f, 17.310f}}};
+const S2TexCoords rotatedCoords{{53, 54},
+                                {{0.698f, 25.831f}, {49.650f, 26.250f}, {24.546f, 1.146f}},
+                                {{50.098f, 27.698f}, {26.250f, 52.383f}, {1.146f, 27.279f}}};
+
+const S2TexCoords& getS2TexCoords(ETexType texType)
+{
+    switch(texType)
+    {
+        case ETexType::Overlapped:
+        default: return overlappedCoords;
+        case ETexType::Stacked: return stackedCoords;
+        case ETexType::Rotated: return rotatedCoords;
+    }
+}
+
+/// Scale the triangle from a rectangle of the given size to the rectangle in the texture
+TerrainDesc::Triangle scaleToRect(const TerrainDesc::Triangle& triangle, const PointF& size, const Rect& rect)
+{
+    const PointF origin(rect.getOrigin());
+    const PointF scale = PointF(rect.getSize()) / size;
+    return {origin + triangle.tip * scale, origin + triangle.left * scale, origin + triangle.right * scale};
+}
 } // namespace
 
 TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc)
@@ -135,58 +176,12 @@ bool TerrainDesc::IsVital() const
 
 TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
 {
-    // Inset by 0.5 on all sites to sample middle of pixel in OGL
-    RectBase<float> oglRect(posInTexture.getOrigin() + PointF::all(.5f), posInTexture.getSize() - PointF::all(1));
-    const PointF middlePt = oglRect.getOrigin() + oglRect.getSize() / 2.f;
-    const PointF middleBottom(middlePt.x, oglRect.bottom);
-    Triangle result;
-    switch(texType)
-    {
-        case ETexType::Overlapped:
-        default:
-            result.tip = middleBottom;
-            result.left = oglRect.getOrigin();
-            result.right = PointF(oglRect.right, oglRect.top);
-            break;
-        case ETexType::Stacked:
-            result.tip = middleBottom;
-            result.left = PointF(oglRect.left, middlePt.y);
-            result.right = PointF(oglRect.right, middlePt.y);
-            break;
-        case ETexType::Rotated:
-            result.tip = PointF(oglRect.right, middlePt.y);
-            result.left = middleBottom;
-            result.right = PointF(oglRect.left, middlePt.y);
-            break;
-    }
-    return result;
+    const S2TexCoords& coords = getS2TexCoords(texType);
+    return scaleToRect(coords.usd, coords.size, posInTexture);
 }
 
 TerrainDesc::Triangle TerrainDesc::GetRSUTriangle() const
 {
-    // Inset by 0.5 on all sites to sample middle of pixel in OGL
-    RectBase<float> oglRect(posInTexture.getOrigin() + PointF::all(.5f), posInTexture.getSize() - PointF::all(1));
-    const PointF middlePt = oglRect.getOrigin() + oglRect.getSize() / 2.f;
-    const PointF middleTop(middlePt.x, oglRect.top);
-    Triangle result;
-    switch(texType)
-    {
-        case ETexType::Overlapped:
-        default:
-            result.tip = middleTop;
-            result.left = PointF(oglRect.left, oglRect.bottom);
-            result.right = PointF(oglRect.right, oglRect.bottom);
-            break;
-        case ETexType::Stacked:
-            result.tip = middleTop;
-            result.left = PointF(oglRect.left, middlePt.y);
-            result.right = PointF(oglRect.right, middlePt.y);
-            break;
-        case ETexType::Rotated:
-            result.tip = PointF(oglRect.left, middlePt.y);
-            result.left = PointF(oglRect.right, middlePt.y);
-            result.right = middleTop;
-            break;
-    }
-    return result;
+    const S2TexCoords& coords = getS2TexCoords(texType);
+    return scaleToRect(coords.rsu, coords.size, posInTexture);
 }

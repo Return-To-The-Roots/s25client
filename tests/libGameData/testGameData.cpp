@@ -254,45 +254,50 @@ BOOST_AUTO_TEST_CASE(TextureCoords)
         file << "rttr:AddTerrain{\
             name = \"terrain2\",\
             landscape = \"testland\", edgeType = \"edge\", texture = \"<RTTR_GAME>/foo\", color = 0, \
-            pos = { 10, 20, 32, 31 }, texType = \"stacked\" }";
+            pos = { 10, 20, 31, 33 }, texType = \"stacked\" }";
         file << "rttr:AddTerrain{\
             name = \"terrain3\",\
             landscape = \"testland\", edgeType = \"edge\", texture = \"<RTTR_GAME>/foo\", color = 0, \
-            pos = { 10, 20, 32, 31 }, texType = \"rotated\" }";
+            pos = { 10, 20, 53, 54 }, texType = \"rotated\" }";
+        file << "rttr:AddTerrain{\
+            name = \"terrain4\",\
+            landscape = \"testland\", edgeType = \"edge\", texture = \"<RTTR_GAME>/foo\", color = 0, \
+            pos = { 10, 20, 64, 62 }, texType = \"overlapped\" }";
     }
     WorldDescription desc;
     GameDataLoader loader(desc, tmp);
     BOOST_TEST_REQUIRE(loader.Load());
-    // Border points are inset by half a pixel for OpenGL (sample middle of pixel!)
-    // Overlapped uses the full rectangle
-    const TerrainDesc::Triangle rsuO = desc.terrain.tryGet("terrain1")->GetRSUTriangle();
-    BOOST_TEST(rsuO.tip == PointF(10 + 32 / 2.f, 20 + 0.5f));
-    BOOST_TEST(rsuO.left == PointF(10 + 0.5f, 20 + 31 - 0.5f));
-    BOOST_TEST(rsuO.right == PointF(10 + 32 - 0.5f, 20 + 31 - 0.5f));
-    const TerrainDesc::Triangle usdO = desc.terrain.tryGet("terrain1")->GetUSDTriangle();
-    BOOST_TEST(usdO.tip == PointF(10 + 32 / 2.f, 20 + 31 - 0.5f));
-    BOOST_TEST(usdO.left == PointF(10 + 0.5f, 20 + 0.5f));
-    BOOST_TEST(usdO.right == PointF(10 + 32 - 0.5f, 20 + 0.5f));
+
+    const auto checkTriangle = [](const TerrainDesc::Triangle& triangle, const TerrainDesc::Triangle& expected) {
+        const PointF origin(10, 20);
+        for(const auto& [pt, expectedPt] :
+            {std::pair(triangle.tip, expected.tip), std::pair(triangle.left, expected.left),
+             std::pair(triangle.right, expected.right)})
+        {
+            BOOST_TEST((pt - origin).x == expectedPt.x, boost::test_tools::tolerance(0.001f));
+            BOOST_TEST((pt - origin).y == expectedPt.y, boost::test_tools::tolerance(0.001f));
+        }
+    };
+    // Points are where S2 samples the texture, relative to the rectangle.
+    // Overlapped uses the full rectangle, about half a texel further right than the pixel centers
+    const TerrainDesc* terrain = desc.terrain.tryGet("terrain1");
+    checkTriangle(terrain->GetRSUTriangle(), {{16.549f, 0.594f}, {1.162f, 30.340f}, {31.934f, 30.340f}});
+    checkTriangle(terrain->GetUSDTriangle(), {{16.549f, 30.340f}, {1.162f, 0.594f}, {31.934f, 0.594f}});
 
     // Stacked has RSU over USD
-    const TerrainDesc::Triangle rsuS = desc.terrain.tryGet("terrain2")->GetRSUTriangle();
-    BOOST_TEST(rsuS.tip == rsuO.tip);
-    BOOST_TEST(rsuS.left == PointF(10 + 0.5f, 20 + 31 / 2.f));
-    BOOST_TEST(rsuS.right == PointF(10 + 32 - 0.5f, 20 + 31 / 2.f));
-    const TerrainDesc::Triangle usdS = desc.terrain.tryGet("terrain2")->GetUSDTriangle();
-    BOOST_TEST(usdS.tip == usdO.tip);
-    BOOST_TEST(usdS.left == PointF(10 + 0.5f, 20 + 31 / 2.f));
-    BOOST_TEST(usdS.right == PointF(10 + 32 - 0.5f, 20 + 31 / 2.f));
+    terrain = desc.terrain.tryGet("terrain2");
+    checkTriangle(terrain->GetRSUTriangle(), {{15.515f, 1.310f}, {1.093f, 15.190f}, {29.934f, 15.190f}});
+    checkTriangle(terrain->GetUSDTriangle(), {{15.515f, 31.190f}, {1.093f, 17.310f}, {29.934f, 17.310f}});
 
-    // Rotated is stacked sideways (note that order stays the same)
-    const TerrainDesc::Triangle rsuR = desc.terrain.tryGet("terrain3")->GetRSUTriangle();
-    BOOST_TEST(rsuR.tip == rsuS.left);
-    BOOST_TEST(rsuR.left == rsuS.right);
-    BOOST_TEST(rsuR.right == rsuS.tip);
-    const TerrainDesc::Triangle usdR = desc.terrain.tryGet("terrain3")->GetUSDTriangle();
-    BOOST_TEST(usdR.tip == usdS.right);
-    BOOST_TEST(usdR.left == usdS.tip);
-    BOOST_TEST(usdR.right == usdS.left);
+    // Rotated is the upper (RSU) and lower (USD) half of a diamond
+    terrain = desc.terrain.tryGet("terrain3");
+    checkTriangle(terrain->GetRSUTriangle(), {{0.698f, 25.831f}, {49.650f, 26.250f}, {24.546f, 1.146f}});
+    checkTriangle(terrain->GetUSDTriangle(), {{50.098f, 27.698f}, {26.250f, 52.383f}, {1.146f, 27.279f}});
+
+    // Other sizes are scaled
+    terrain = desc.terrain.tryGet("terrain4");
+    checkTriangle(terrain->GetRSUTriangle(), {{33.098f, 1.188f}, {2.324f, 60.680f}, {63.868f, 60.680f}});
+    checkTriangle(terrain->GetUSDTriangle(), {{33.098f, 60.680f}, {2.324f, 1.188f}, {63.868f, 1.188f}});
 }
 
 BOOST_AUTO_TEST_SUITE_END()
