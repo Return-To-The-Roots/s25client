@@ -36,6 +36,7 @@ public:
     /// Get addons that are allowed to be changed
     std::vector<AddonId> GetAllowedAddons();
     bool IsMapPreviewEnabled();
+    unsigned GetNumPlayersFromScript();
 
 private:
     IGameLobbyController& lobbyServerController_;
