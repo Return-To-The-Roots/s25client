@@ -41,6 +41,33 @@ const unsigned NEXT_ANIMATION_RANDOM = 200; // was noch dazu zufälliges addiert
 /// Dauer in GF eines Frames
 const unsigned FRAME_GF = 3;
 
+/// Positionen einer Figur im Boot für jede Richtung
+const helpers::EnumArray<DrawPoint, Direction> FIGURE_POS_BOAT = {
+  {{8, 0}, {9, 4}, {-9, 4}, {-7, 0}, {-7, -3}, {8, -3}}};
+/// Höhe für jede Richtung, ab der die vordere Bordwand die Beine einer Figur im Boot verdeckt
+const helpers::EnumArray<int, Direction> BOAT_FRONT_Y = {{-5, 0, 1, -5, -7, -7}};
+
+namespace {
+/// Draw a figure standing in the boat drawn at drawPt: Draw the front of the boat again, so it hides the legs of the
+/// figure. Only needed around the legs and without player colors as that part doesn't have any
+void drawFigureInBoat(noFigure& figure, glSmartBitmap& boat, const DrawPoint drawPt, const Direction dir)
+{
+    const DrawPoint figurePos = FIGURE_POS_BOAT[dir];
+    figure.Draw(drawPt + figurePos);
+
+    constexpr int halfFigureWidth = 8;
+    const Position topLeft =
+      elMax(boat.GetOrigin() + Position(figurePos.x - halfFigureWidth, BOAT_FRONT_Y[dir]), Position(0, 0));
+    const Position bottomRight =
+      elMin(boat.GetOrigin() + figurePos + Position(halfFigureWidth, 2), Position(boat.GetSize()));
+    if(topLeft.x < bottomRight.x && topLeft.y < bottomRight.y)
+    {
+        const Rect srcArea(topLeft, Extent(bottomRight - topLeft));
+        boat.drawRect(Rect(drawPt + topLeft, srcArea.getSize()), srcArea);
+    }
+}
+} // namespace
+
 /// Animation indices, 1st Dim: small or big, 2nd Dim: Animation, 3rd Dim: Index in map.lst of the frame
 static const std::array<std::vector<std::vector<unsigned short>>, 2> ANIMATIONS = {
   {// Small ones
@@ -94,6 +121,9 @@ nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
         } else
             helpers::popContainer(sgd, shore_path);
     }
+
+    if(sgd.GetGameDataVersion() >= 16)
+        carried_figure.reset(sgd.PopObject<noFigure>());
 }
 
 void nofCarrier::Serialize(SerializedGameData& sgd) const
@@ -114,6 +144,8 @@ void nofCarrier::Serialize(SerializedGameData& sgd) const
     {
         helpers::pushContainer(sgd, shore_path);
     }
+
+    sgd.PushObject(carried_figure);
 }
 
 nofCarrier::~nofCarrier() = default;
@@ -124,6 +156,8 @@ void nofCarrier::Destroy()
     // Ware vernichten (abmelden)
     RTTR_Assert(!carried_ware); // TODO: Check if this is ok so keep the LooseWare call below
     LooseWare();
+    RTTR_Assert(!carried_figure); // Should have left the boat already
+    LooseFigure();
     GetEvMgr().RemoveEvent(productivity_ev);
 
     noFigure::Destroy();
@@ -243,7 +277,7 @@ void nofCarrier::Draw(DrawPoint drawPt)
             {
                 const unsigned ani_step = CalcWalkAnimationFrame();
 
-                drawPt += CalcFigurRelative();
+                drawPt = InterpolateWalkDrawPos(drawPt);
 
                 // Läuft normal mit oder ohne Ware
 
@@ -268,8 +302,12 @@ void nofCarrier::Draw(DrawPoint drawPt)
             } else if(state == CarrierState::WaitForWare
                       || (waiting_for_free_node && !IsStoppedBetweenNodes() && !carried_ware))
             {
-                LOADER.getBoatCarrierSprite(GetCurMoveDir(), 0)
-                  .draw(drawPt, 0xFFFFFFFF, world->GetPlayer(player).color);
+                glSmartBitmap& boat = LOADER.getBoatCarrierSprite(GetCurMoveDir(), 0);
+                boat.draw(drawPt, 0xFFFFFFFF, world->GetPlayer(player).color);
+
+                // Figur im Boot zeichnen
+                if(carried_figure)
+                    drawFigureInBoat(*carried_figure, boat, drawPt, GetCurMoveDir());
             } else if(state == CarrierState::WaitForWareSpace
                       || (waiting_for_free_node && !IsStoppedBetweenNodes() && carried_ware))
             {
@@ -282,16 +320,19 @@ void nofCarrier::Draw(DrawPoint drawPt)
             {
                 const unsigned ani_step = CalcWalkAnimationFrame();
 
-                drawPt += CalcFigurRelative();
+                drawPt = InterpolateWalkDrawPos(drawPt);
 
                 // ruderndes Boot zeichnen
-                LOADER.getBoatCarrierSprite(GetCurMoveDir(), ani_step)
-                  .draw(drawPt, 0xFFFFFFFF, world->GetPlayer(player).color);
+                glSmartBitmap& boat = LOADER.getBoatCarrierSprite(GetCurMoveDir(), ani_step);
+                boat.draw(drawPt, 0xFFFFFFFF, world->GetPlayer(player).color);
 
                 // Läuft normal mit oder ohne Ware
                 if(carried_ware)
                     // Ware im Boot zeichnen
                     LOADER.GetWareDonkeyTex(carried_ware->type)->DrawFull(drawPt + WARE_POS_BOAT[GetCurMoveDir()]);
+                else if(carried_figure)
+                    // Figur im Boot zeichnen
+                    drawFigureInBoat(*carried_figure, boat, drawPt, GetCurMoveDir());
 
                 // Sound ggf. abspielen
                 if(ani_step == 2)
@@ -383,8 +424,15 @@ void nofCarrier::Walked()
 
                 bool calculated = false;
 
+                if(carried_figure)
+                {
+                    // Let the figure go ashore, it walks on by itself
+                    DropFigure();
+                    // Check if we can pick up something at this flag, else go back to middle of road
+                    LookForWares();
+                }
                 // Check if the ware should go into the building connected to the flag
-                if(WantInBuilding(&calculated))
+                else if(WantInBuilding(&calculated))
                 {
                     // Walk to building or building site
                     state = CarrierState::CarryWareToBuilding;
@@ -436,9 +484,10 @@ void nofCarrier::Walked()
             {
                 // If we are one step before the flag, check if we have to wait for space
                 auto* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->GetF1() : workplace->GetF2()));
-                // If there is space at the flag, or we can carry it directly to the building or swap it with another
-                // ware continue to the flag
-                if(this_flag->HasSpaceForWare() || WantInBuilding(nullptr) || cur_rs->AreWareJobs(!rs_dir, ct, true))
+                // If we carry a figure (needs no space), there is space at the flag, or we can carry it directly to the
+                // building or swap it with another ware continue to the flag
+                if(carried_figure || this_flag->HasSpaceForWare() || WantInBuilding(nullptr)
+                   || cur_rs->AreWareJobs(!rs_dir, ct, true))
                 {
                     StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
                 } else
@@ -486,6 +535,8 @@ void nofCarrier::Walked()
         }
         break;
     }
+
+    UpdateCarriedFigure();
 }
 
 void nofCarrier::LookForWares()
@@ -536,13 +587,21 @@ void nofCarrier::GoalReached()
             // Wenn hier schon Waren liegen, diese gleich transportieren
             if(workplace->AreWareJobs(rs_dir, ct, true))
             {
-                // Ware aufnehmen
-                carried_ware = static_cast<noFlag*>(rn)->SelectWare(GetCurMoveDir(), false, this);
-
-                if(carried_ware)
+                // Figures first, then wares
+                if(TakeFigure(*static_cast<noFlag*>(rn)))
                 {
-                    carried_ware->Carry(assertNonNull(rs_dir ? workplace->GetF1() : workplace->GetF2()));
                     state = CarrierState::CarryWare;
+                    UpdateCarriedFigure();
+                } else
+                {
+                    // Ware aufnehmen
+                    carried_ware = static_cast<noFlag*>(rn)->SelectWare(GetCurMoveDir(), false, this);
+
+                    if(carried_ware)
+                    {
+                        carried_ware->Carry(assertNonNull(rs_dir ? workplace->GetF1() : workplace->GetF2()));
+                        state = CarrierState::CarryWare;
+                    }
                 }
             }
             // wenn was an der gegenüberliegenden Flaggge liegt, ebenfalls holen
@@ -578,6 +637,7 @@ void nofCarrier::AbrogateWorkplace()
         workplace->CarrierAbrogated(this);
         workplace = nullptr;
         LooseWare();
+        LooseFigure();
 
         state = CarrierState::FigureWork;
     }
@@ -591,6 +651,46 @@ void nofCarrier::LooseWare()
         carried_ware->WareLost(player);
         destroyAndDelete(carried_ware);
     }
+}
+
+void nofCarrier::LooseFigure()
+{
+    if(!carried_figure)
+        return;
+    // It can't get to its goal over this waterway anymore, same as for all figures on destroyed roads
+    carried_figure->Abrogate();
+    carried_figure->StartWandering();
+    DropFigure();
+}
+
+bool nofCarrier::TakeFigure(noFlag& flag)
+{
+    // Only boat carriers can take figures with them
+    if(ct != CarrierType::Boat)
+        return false;
+    RTTR_Assert(!carried_ware && !carried_figure);
+    carried_figure = flag.SelectFigure(*workplace);
+    if(!carried_figure)
+        return false;
+    carried_figure->StartBoatJourney();
+    return true;
+}
+
+void nofCarrier::UpdateCarriedFigure()
+{
+    if(!carried_figure)
+        return;
+    // Wandering figures (waterway was destroyed) don't walk on roads anymore
+    if(!carried_figure->IsWandering())
+        carried_figure->InitializeRoadWalking(cur_rs, rs_pos, rs_dir);
+    carried_figure->FaceDir(GetCurMoveDir());
+}
+
+void nofCarrier::DropFigure()
+{
+    RTTR_Assert(carried_figure);
+    carried_figure->SetPos(pos);
+    world->AddFigure(pos, std::move(carried_figure)).ArrivedByBoat();
 }
 
 namespace {
@@ -617,6 +717,13 @@ void nofCarrier::LostWork()
     {
         // Wenn ich noch ne Ware in der Hand habe, muss die gelöscht werden
         LooseWare();
+        // A carried figure can't get to its goal over this waterway anymore.
+        // It stays in the boat till we reach the shore
+        if(carried_figure)
+        {
+            carried_figure->Abrogate();
+            carried_figure->StartWandering();
+        }
 
         // Is this a boat carrier (i.e. he is on the water)
         if(ct == CarrierType::Boat)
@@ -652,6 +759,9 @@ void nofCarrier::LostWork()
             }
         }
 
+        // No shore in reach, so the figure has to get out here
+        if(carried_figure)
+            DropFigure();
         StartWandering();
         if(state == CarrierState::WaitForWare || state == CarrierState::WaitForWareSpace)
             Wander();
@@ -825,18 +935,25 @@ void nofCarrier::RemoveWareJob()
 
 void nofCarrier::FetchWare(const bool swap_wares)
 {
-    // Ware aufnehmnen
-    carried_ware = world->GetSpecObj<noFlag>(pos)->SelectWare(GetCurMoveDir() + 3u, swap_wares, this);
-
-    if(carried_ware)
+    auto& flag = assertNonNull(world->GetSpecObj<noFlag>(pos));
+    // Figures first, then wares. But not when swapping, as a ware must be taken from the (full) flag then
+    if(swap_wares || !TakeFigure(flag))
     {
-        carried_ware->Carry(assertNonNull(rs_dir ? workplace->GetF2() : workplace->GetF1()));
+        // Ware aufnehmnen
+        carried_ware = flag.SelectWare(GetCurMoveDir() + 3u, swap_wares, this);
+        if(carried_ware)
+            carried_ware->Carry(assertNonNull(rs_dir ? workplace->GetF2() : workplace->GetF1()));
+    }
+
+    if(carried_ware || carried_figure)
+    {
         // Und zum anderen Ende laufen
         state = CarrierState::CarryWare;
         rs_dir = !rs_dir;
         rs_pos = 0;
 
         StartWalking(cur_rs->GetDir(rs_dir, rs_pos));
+        UpdateCarriedFigure();
     } else // zurücklaufen lassen
         state = CarrierState::GotoMiddleOfRoad;
 }
@@ -898,11 +1015,16 @@ void nofCarrier::CorrectSplitData_Derived()
     // Tragen wir eine Ware?
     if(state == CarrierState::CarryWare)
     {
-        // Dann die Location von der Ware aktualisieren
-        if(!rs_dir)
-            carried_ware->Carry(assertNonNull(cur_rs->GetF2()));
-        else
-            carried_ware->Carry(assertNonNull(cur_rs->GetF1()));
+        if(carried_ware)
+        {
+            // Dann die Location von der Ware aktualisieren
+            if(!rs_dir)
+                carried_ware->Carry(assertNonNull(cur_rs->GetF2()));
+            else
+                carried_ware->Carry(assertNonNull(cur_rs->GetF1()));
+        }
+        // Or a figure which needs to know the waterway it is on
+        UpdateCarriedFigure();
     }
 }
 
@@ -921,6 +1043,9 @@ void nofCarrier::WanderOnWater()
     // Are we already there?
     if(rs_pos == shore_path.size())
     {
+        // The figure we carried goes ashore too
+        if(carried_figure)
+            DropFigure();
         // Start normal wandering at the land
         state = CarrierState::FigureWork;
         StartWandering();
