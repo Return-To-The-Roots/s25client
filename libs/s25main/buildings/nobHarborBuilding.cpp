@@ -12,6 +12,7 @@
 #include "figures/noFigure.h"
 #include "figures/nofAttacker.h"
 #include "figures/nofDefender.h"
+#include "helpers/EnumArray.h"
 #include "helpers/containerUtils.h"
 #include "helpers/pointerContainerUtils.h"
 #include "network/GameClient.h"
@@ -25,9 +26,9 @@
 #include "world/GameWorld.h"
 #include "nodeObjs/noShip.h"
 #include "gameData/BuildingConsts.h"
-#include "gameData/GameConsts.h"
 #include "gameData/MilitaryConsts.h"
 #include "gameData/ShieldConsts.h"
+#include <limits>
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd)
     : boards(sgd.PopUnsignedInt()), stones(sgd.PopUnsignedInt()), active(sgd.PopBool()), builder(sgd.PopBool())

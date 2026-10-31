@@ -17,7 +17,6 @@
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "gameData/BuildingProperties.h"
-#include "gameData/GameConsts.h"
 #include <boost/pointer_cast.hpp>
 #include <limits>
 

@@ -15,7 +15,6 @@
 #include "world/GameWorld.h"
 #include "nodeObjs/noShipBuildingSite.h"
 #include "gameTypes/Direction.h"
-#include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include "s25util/colors.h"
 
