@@ -72,6 +72,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
             break;
         case State::HunterShooting:
         {
+            DrawShadow(drawPt, 0, shooting_dir);
             if(shooting_dir == Direction::East)
             {
                 // die Animation in dieser Richtung ist etwas anders als die in den restlichen
@@ -95,8 +96,6 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
                     was_sounding = true;
                 }
             }
-
-            DrawShadow(drawPt, 0, shooting_dir);
         }
         break;
         case State::HunterEviscerating:

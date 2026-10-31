@@ -809,9 +809,10 @@ void noFigure::DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id
     const unsigned ani_step = CalcWalkAnimationFrame();
     drawPt = InterpolateWalkDrawPos(drawPt);
 
+    // Shadow first so it only darkens the ground, not the figure
+    DrawShadow(drawPt, ani_step, GetCurMoveDir());
     if(file)
         file->Draw(id, toImgDir(GetCurMoveDir()), fat, ani_step, drawPt, world->GetPlayer(player).color);
-    DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
 
 void noFigure::DrawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id)
@@ -819,9 +820,9 @@ void noFigure::DrawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id
     const unsigned ani_step = CalcWalkAnimationFrame();
     drawPt = InterpolateWalkDrawPos(drawPt);
 
+    DrawShadow(drawPt, ani_step, GetCurMoveDir());
     LOADER.GetPlayerImage(file, calcWalkFrameIndex(id, GetCurMoveDir(), ani_step))
       ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
-    DrawShadow(drawPt, ani_step, GetCurMoveDir());
 }
 
 void noFigure::DrawWalking(DrawPoint drawPt)
@@ -833,9 +834,9 @@ void noFigure::DrawWalking(DrawPoint drawPt)
             const unsigned ani_step = CalcWalkAnimationFrame();
             drawPt = InterpolateWalkDrawPos(drawPt);
 
-            LOADER.GetMapTexture(calcWalkFrameIndex(2000, GetCurMoveDir(), ani_step))->DrawFull(drawPt);
             // donkey shadow
             LOADER.GetMapTexture(2048 + rttr::enum_cast(GetCurMoveDir()) % 3)->DrawFull(drawPt, COLOR_SHADOW);
+            LOADER.GetMapTexture(calcWalkFrameIndex(2000, GetCurMoveDir(), ani_step))->DrawFull(drawPt);
         }
         break;
         case Job::CharBurner: DrawWalking(drawPt, "charburner_bobs", 53); break;
