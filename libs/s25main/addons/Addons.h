@@ -75,3 +75,5 @@
 #include "addons/AddonWoodcutterReachRadius.h"
 
 #include "addons/AddonBuildingRadius.h"
+
+#include "addons/AddonForesterHarborAvoidance.h"
