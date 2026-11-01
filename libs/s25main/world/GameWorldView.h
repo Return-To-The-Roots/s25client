@@ -141,6 +141,12 @@ public:
     /// Update radius preview based on which map node is selected
     void UpdateRadiusPreviewForMousePos();
 
+    /// Get radius preview currently shown
+    [[nodiscard]] const std::optional<RadiusPreview>& getRadiusPreview() const noexcept { return radiusPreview_; }
+
+    /// Snap a point to the nearest toroidal copy relative to a reference position, given the map size in pixels
+    static DrawPoint SnapToNearestCopy(DrawPoint pt, DrawPoint ref, Extent mapSize);
+
     /// Gibt selektierten Punkt zurück
     MapPoint GetSelectedPt() const { return selPt; }
 
@@ -172,9 +178,6 @@ private:
 
     /// Draw a radius outline ring
     void DrawRadiusOutline();
-
-    /// Snap a point to the nearest toroidal copy relative to a reference position, given the map size in pixels
-    static DrawPoint SnapToNearestCopy(DrawPoint pt, DrawPoint ref, Extent mapSize);
 
     void SaveIngameSettingsValues() const;
     void updateEffectiveZoomFactor();
