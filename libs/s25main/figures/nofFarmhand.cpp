@@ -41,26 +41,24 @@ unsigned nofFarmhand::GetWorkRadius(const GlobalGameSettings& ggs, const Job job
 {
     switch(job)
     {
-        case Job::Carpenter: return 0;
-        case Job::Hunter:
+        case Job::CharBurner: return 3;
         case Job::Farmer:
         case Job::Winegrower: return 2;
-        case Job::CharBurner: return 3;
-        case Job::Woodcutter:
-        {
-            const unsigned sel = ggs.getSelection(AddonId::WOODCUTTER_REACH_RADIUS);
-            return woodcutterRadiusValues[sel];
-        }
+        case Job::Fisher: return 7;
         case Job::Forester:
         {
             const unsigned sel = ggs.getSelection(AddonId::FORESTER_REACH_RADIUS);
             return foresterRadiusValues[sel];
         }
-        case Job::Fisher: return 7;
         case Job::Stonemason:
         {
             const unsigned sel = ggs.getSelection(AddonId::STONEMASON_REACH_RADIUS);
             return stonemasonRadiusValues[sel];
+        }
+        case Job::Woodcutter:
+        {
+            const unsigned sel = ggs.getSelection(AddonId::WOODCUTTER_REACH_RADIUS);
+            return woodcutterRadiusValues[sel];
         }
         default: throw std::logic_error("Invalid job");
     }
