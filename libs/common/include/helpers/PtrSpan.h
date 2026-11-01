@@ -66,12 +66,12 @@ class NonNullPtrSpan
 public:
     constexpr NonNullPtrSpan(const TRange& range) : range(range) {}
     NonNullPtrSpan(TRange&&) = delete; // Avoid accidentally using temporary ranges
-    RTTR_CONSTEXPR_INLINE Iterator begin() const { return Iterator(range.begin()); }
-    RTTR_CONSTEXPR_INLINE Iterator end() const { return Iterator(range.end()); }
-    RTTR_CONSTEXPR_INLINE typename Iterator::reference front() const { return **range.begin(); }
-    RTTR_CONSTEXPR_INLINE typename Iterator::reference back() const { return **range.rbegin(); }
-    RTTR_CONSTEXPR_INLINE bool empty() const { return range.empty(); }
-    RTTR_CONSTEXPR_INLINE auto size() const { return range.size(); }
+    RTTR_CONSTEXPR_INLINE Iterator begin() const noexcept { return Iterator(range.begin()); }
+    RTTR_CONSTEXPR_INLINE Iterator end() const noexcept { return Iterator(range.end()); }
+    RTTR_CONSTEXPR_INLINE typename Iterator::reference front() const noexcept { return **range.begin(); }
+    RTTR_CONSTEXPR_INLINE typename Iterator::reference back() const noexcept { return **range.rbegin(); }
+    RTTR_CONSTEXPR_INLINE bool empty() const noexcept { return range.empty(); }
+    RTTR_CONSTEXPR_INLINE auto size() const noexcept { return range.size(); }
 };
 
 template<class TRange>

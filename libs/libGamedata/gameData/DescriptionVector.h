@@ -25,11 +25,11 @@ public:
     DescriptionVector() = default;
     DescriptionVector(size_t count) : storage(count) {}
 
-    auto size() const { return storage.size(); }
-    auto begin() { return storage.begin(); }
-    auto begin() const { return storage.begin(); }
-    auto end() { return storage.end(); }
-    auto end() const { return storage.end(); }
+    auto size() const noexcept { return storage.size(); }
+    auto begin() noexcept { return storage.begin(); }
+    auto begin() const noexcept { return storage.begin(); }
+    auto end() noexcept { return storage.end(); }
+    auto end() const noexcept { return storage.end(); }
     T_Element& operator[](const index_type idx) { return storage[idx.value]; }
     const T_Element& operator[](const index_type idx) const { return storage[idx.value]; }
 
