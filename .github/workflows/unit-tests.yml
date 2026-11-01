@@ -189,7 +189,11 @@ jobs:
               tools/ci/add-apt-repositories.sh "${{matrix.apt_repo}}"
             fi
             sudo apt-get -o Acquire::Retries=5 update
-            sudo apt-get -o Acquire::Retries=5 -y -q --no-install-suggests --no-install-recommends install gettext libsdl2-dev libsdl2-mixer-dev libcurl4-openssl-dev libbz2-dev libminiupnpc-dev liblua5.2-dev $compiler
+            sudo apt-get -o Acquire::Retries=5 -y -q --no-install-suggests --no-install-recommends install \
+              gettext libsdl2-dev libsdl2-mixer-dev \
+              libcurl4-openssl-dev libbz2-dev libminiupnpc-dev \
+              liblua5.2-dev libicu-dev \
+              $compiler
           fi
 
       - name: Setup CCache
