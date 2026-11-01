@@ -740,17 +740,15 @@ unsigned GameWorldView::GetBuildingRadius(BuildingType bld) const
         case BuildingType::Well: // Well uses the same radius
             return MINER_RADIUS;
         // Farmhand-based buildings — worker goes out to gather resources from the map.
-        case BuildingType::Woodcutter:
-        case BuildingType::Forester:
-        case BuildingType::Fishery:
-        case BuildingType::Quarry:
-        case BuildingType::Farm:
-        case BuildingType::Vineyard:
         case BuildingType::Charburner:
+        case BuildingType::Farm:
+        case BuildingType::Fishery:
+        case BuildingType::Forester:
+        case BuildingType::Quarry:
+        case BuildingType::Vineyard:
+        case BuildingType::Woodcutter:
         {
-            if(const auto job = BLD_WORK_DESC[bld].job)
-                return nofFarmhand::GetWorkRadius(GetWorld().GetGGS(), *job);
-            return 0;
+            return nofFarmhand::GetWorkRadius(GetWorld().GetGGS(), BLD_WORK_DESC[bld].job.value());
         }
         // Remaining building types have no relevant radius
         case BuildingType::Armory:
