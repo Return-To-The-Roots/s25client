@@ -280,7 +280,6 @@ public:
                                            const std::optional<unsigned>& /*selection*/)
     {}
 
-protected:
     enum class ButtonState
     {
         Up,
@@ -288,6 +287,8 @@ protected:
         Pressed
     };
     friend constexpr auto maxEnumValue(ButtonState) { return ButtonState::Pressed; }
+
+protected:
     using ControlMap = std::map<unsigned, std::unique_ptr<Window>>;
 
     /// Scale the value from the reference coordinates to current render size
