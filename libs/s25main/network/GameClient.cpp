@@ -1369,7 +1369,7 @@ void GameClient::ExecuteGameFrame()
 
         } catch(const LuaExecutionError& e)
         {
-            SystemChat((boost::format(_("Error during execution of lua script: %1\nGame stopped!")) % e.what()).str());
+            SystemChat((boost::format(_("Error during execution of lua script: %1%\nGame stopped!")) % e.what()).str());
             OnError(ClientError::InvalidMap);
         }
         if(skiptogf == GetGFNumber())
