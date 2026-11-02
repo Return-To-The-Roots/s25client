@@ -11,6 +11,7 @@
 #include <turtle/mock.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/test/unit_test.hpp>
+#include <chrono>
 #include <memory>
 
 struct TestLobbySever : public TestServer, public LobbyMessageInterface
@@ -49,8 +50,8 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
 struct LobbyFixture
 {
     TestLobbySever lobbyServer;
-    uint16_t lobbyPort;
-    LobbyFixture() : lobbyPort(5664) { BOOST_TEST_REQUIRE(lobbyServer.listen(lobbyPort)); }
+    int lobbyPort;
+    LobbyFixture() : lobbyPort(lobbyServer.tryListen()) { BOOST_TEST_REQUIRE(lobbyPort > 0); }
     ~LobbyFixture() { LOBBYCLIENT.Stop(); } // To avoid error msg due to missing server
     void run()
     {
@@ -84,7 +85,9 @@ BOOST_AUTO_TEST_CASE(LobbyConnectAndChat)
     BOOST_TEST_REQUIRE(LOBBYCLIENT.Login("localhost", lobbyPort, lobbyServer.testUser, lobbyServer.testPw, false));
     RTTR_REQUIRE_LOG_CONTAINS("Connect", true);
     lobbyServer.run(true);
-    for(unsigned i = 0; i < 50; i++)
+    // Wait for login with a timeout instead of a fixed iteration count
+    const auto loginDeadline = std::chrono::steady_clock::now() + std::chrono::seconds(10);
+    while(std::chrono::steady_clock::now() < loginDeadline)
     {
         run();
         if(LOBBYCLIENT.IsLoggedIn())
