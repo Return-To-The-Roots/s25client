@@ -42,7 +42,15 @@ uint8_t Replay::GetLatestMinorVersion() const
     //      StartReplay function for detailed description)
     // 8.3  Remove invalid fish for replays started from start (i.e. map instead of savegame)
     // 8.4  Hunter/skinner/AI search for animals in a circle instead of a square (radius-based)
-    return 4;
+    // 8.5  Per-player start wares
+    return 5;
+}
+
+int Replay::GetPlayerInfoVersion() const
+{
+    // Player info version 1 (portraits) since 8.1, version 2 (start wares) since 8.5
+    const uint8_t minor = GetMinorVersion();
+    return minor >= 5 ? 2 : (minor >= 1 ? 1 : 0);
 }
 
 uint8_t Replay::GetLatestMajorVersion() const

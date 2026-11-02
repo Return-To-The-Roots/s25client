@@ -156,7 +156,7 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
     for(unsigned i = 0; i < playerCt; i++)
     {
         // TODO(Replay) TODO(Savegame) minor versions will change their meaning when major is bumped
-        BasePlayerInfo player(ser, GetMinorVersion() >= 1 ? 1 : 0, true);
+        BasePlayerInfo player(ser, GetPlayerInfoVersion(), true);
         // Temporary workaround: The random team was stored in the file but should not anymore, see PR #1331
         if(player.team > Team::Team4)
             player.team = Team(rttr::enum_cast(player.team) - 3); // Was random team 2-4

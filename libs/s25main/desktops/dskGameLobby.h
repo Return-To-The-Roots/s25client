@@ -39,6 +39,7 @@ private:
 
     /// Füllt die Felder einer Reihe aus
     void ChangeTeam(unsigned player, Team);
+    void ChangeStartWares(unsigned player);
     void ChangeReady(unsigned player, bool ready);
     void ChangeNation(unsigned player, Nation);
     void ChangePortrait(unsigned player, unsigned portraitIndex);
