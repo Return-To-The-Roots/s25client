@@ -35,5 +35,7 @@ SPDX-License-Identifier: CC0-1.0
 	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>@MACOSX_BUNDLE_COPYRIGHT@</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Return to the Roots uses the local network to find and join LAN multiplayer games.</string>
 </dict>
 </plist>
