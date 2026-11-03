@@ -36,6 +36,11 @@ bool IsPotentialNewFieldForOwnFarm(GameWorld& world, const MapPoint pt, const un
       },
       false);
 }
+
+bool IsPotentialHarborField(GameWorld& world, const MapPoint pt)
+{
+    return world.CalcDistanceToNearestHarbor(pt) <= 1;
+}
 } // namespace
 
 nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsual* workplace)
@@ -135,6 +140,9 @@ nofFarmhand::PointQuality nofForester::GetPointQuality(const MapPoint pt, bool /
 
     if(world->GetGGS().isEnabled(AddonId::FORESTER_FARM_FIELD_AVOIDANCE)
        && IsPotentialNewFieldForOwnFarm(*world, pt, player))
+        return PointQuality::NotPossible;
+
+    if(world->GetGGS().isEnabled(AddonId::FORESTER_HARBOR_AVOIDANCE) && IsPotentialHarborField(*world, pt))
         return PointQuality::NotPossible;
 
     // Terrain untersuchen
