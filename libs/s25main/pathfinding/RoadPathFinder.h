@@ -25,7 +25,7 @@ public:
     /// Direction might additionally be std::nullopt_t or SHIP_DIR
     ///
     /// @param wareMode True when path will be used by a ware (Allow boat roads and check for faster roads when road
-    /// points have already many wares)
+    /// points have already many wares). Figures may only use boat roads with the BOATS_TRANSPORT_FIGURES addon
     /// @param max Maximum costs allowed (Usually makes pathfinding faster)
     /// @param forbidden RoadSegment that will be ignored
     /// @param length If != nullptr will receive the final costs
@@ -37,7 +37,8 @@ public:
 
     /// Checks if there is ANY path from start to goal
     ///
-    /// @param allowWaterRoads True to allow boat roads (mostly: Ware=true, Person=false)
+    /// @param allowWaterRoads True to allow boat roads (mostly: Ware=true, Person=false).
+    ///                        Always allowed with the BOATS_TRANSPORT_FIGURES addon
     /// @param max Maximum costs allowed (Usually makes pathfinding faster)
     /// @param forbidden RoadSegment that will be ignored
     bool PathExists(const noRoadNode& start, const noRoadNode& goal, bool allowWaterRoads,

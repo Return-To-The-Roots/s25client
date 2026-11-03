@@ -4,7 +4,9 @@
 
 #include "RoadPathFinder.h"
 #include "EventManager.h"
+#include "GlobalGameSettings.h"
 #include "RttrForeachPt.h"
+#include "addons/const_addons.h"
 #include "buildings/nobHarborBuilding.h"
 #include "pathfinding/OpenListPrioQueue.h"
 #include "pathfinding/OpenListVector.h"
@@ -45,6 +47,21 @@ struct Carrier
     {
         // Add costs for busy carriers to allow alternative routes
         return curNode.GetPunishmentPoints(nextDir);
+    }
+};
+
+/// For figures which may be carried over waterways by boat carriers
+struct BoatCarrier
+{
+    unsigned operator()(const noRoadNode& curNode, const Direction nextDir) const
+    {
+        // Same penalty as for wares on roads without a carrier:
+        // Prefer other routes as nobody can carry us over a waterway without a boat carrier
+        constexpr unsigned PATHFINDING_PENALTY_NO_BOAT_CARRIER = 500;
+        const RoadSegment& route = *curNode.GetRoute(nextDir);
+        if(route.GetRoadType() == RoadType::Water && !route.hasCarrier(0))
+            return PATHFINDING_PENALTY_NO_BOAT_CARRIER;
+        return 0;
     }
 };
 } // namespace AdditonalCosts
@@ -306,6 +323,15 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, c
         else
             return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(), SegmentConstraints::None(), length,
                                 firstDir, firstNodePos);
+    } else if(gwb_.GetGGS().isEnabled(AddonId::BOATS_TRANSPORT_FIGURES))
+    {
+        // Figures may use waterways as they can be carried by the boat carriers
+        if(forbidden)
+            return FindPathImpl(start, goal, max, AdditonalCosts::BoatCarrier(),
+                                SegmentConstraints::AvoidSegment(forbidden), length, firstDir, firstNodePos);
+        else
+            return FindPathImpl(start, goal, max, AdditonalCosts::BoatCarrier(), SegmentConstraints::None(), length,
+                                firstDir, firstNodePos);
     } else
     {
         if(forbidden)
@@ -322,7 +348,7 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, c
 bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal, const bool allowWaterRoads,
                                 const unsigned max, const RoadSegment* const forbidden)
 {
-    if(allowWaterRoads)
+    if(allowWaterRoads || gwb_.GetGGS().isEnabled(AddonId::BOATS_TRANSPORT_FIGURES))
     {
         // TODO(Replay): Change to target flag instead of its attached building.
         // Likely combine with RoadPathFinder::FindPath

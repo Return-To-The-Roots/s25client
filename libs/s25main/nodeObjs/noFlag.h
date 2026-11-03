@@ -10,11 +10,13 @@
 #include <boost/container/static_vector.hpp>
 #include <array>
 #include <memory>
+#include <vector>
 
 class FOWObject;
 class SerializedGameData;
 class Ware;
 class noFigure;
+class RoadSegment;
 
 class noFlag : public noRoadNode
 {
@@ -48,6 +50,21 @@ public:
     unsigned GetNumWaresForRoad(Direction dir) const;
     /// Penalty for transporting a ware in a specific direction
     unsigned GetPunishmentPoints(Direction dir) const override;
+
+    /// Add a figure waiting here to be carried over the waterway it is about to walk on (its current road)
+    void AddFigureForBoat(std::unique_ptr<noFigure> figure);
+    /// Remove a figure waiting at this flag and return it
+    std::unique_ptr<noFigure> RemoveFigureForBoat(const noFigure& figure);
+    /// Remove and return the first figure waiting to be carried over the given waterway or nullptr if there is none
+    std::unique_ptr<noFigure> SelectFigure(const RoadSegment& waterway);
+    /// Return the number of figures waiting to be carried over the given waterway
+    unsigned GetNumFiguresForRoad(const RoadSegment& waterway) const;
+    /// Return all figures waiting for a boat at this flag
+    const std::vector<std::unique_ptr<noFigure>>& GetFiguresForBoats() const { return figures_for_boats; }
+    /// The given waterway was destroyed: Put all figures waiting for it back into the world
+    void WaterwayDestroyed(const RoadSegment& waterway);
+    /// The given waterway was split: Figures waiting for it here, will use the new part instead
+    void WaterwaySplitted(const RoadSegment& oldWaterway, const RoadSegment& newWaterway);
     /// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
     void DestroyAttachedBuilding();
     /// Baut normale Flaggen zu "gloriösen" aus bei Eselstraßen.
@@ -65,6 +82,8 @@ private:
 
     /// Die Waren, die an dieser Flagge liegen
     boost::container::static_vector<std::unique_ptr<Ware>, 8> wares;
+    /// Figures waiting here to be carried over a waterway, in order of arrival (BOATS_TRANSPORT_FIGURES addon)
+    std::vector<std::unique_ptr<noFigure>> figures_for_boats;
 
     /// Wieviele BWU-Teile es maximal geben soll, also wieviele abgebrannte Lagerhausgruppen
     /// gleichzeitig die Flagge als nicht begehbar deklarieren können.

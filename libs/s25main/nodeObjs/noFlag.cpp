@@ -13,6 +13,8 @@
 #include "enum_cast.hpp"
 #include "figures/nofCarrier.h"
 #include "helpers/EnumRange.h"
+#include "helpers/containerUtils.h"
+#include "helpers/pointerContainerUtils.h"
 #include "network/GameClient.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "ogl/glSmartBitmap.h"
@@ -64,6 +66,9 @@ noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
         bwu.id = sgd.PopUnsignedInt();
         bwu.last_gf = sgd.PopUnsignedInt();
     }
+
+    if(sgd.GetGameDataVersion() >= 16)
+        sgd.PopObjectContainer(figures_for_boats);
 }
 
 noFlag::~noFlag() = default;
@@ -86,6 +91,8 @@ void noFlag::Destroy()
     world->GetPlayer(player).FlagDestroyed(this);
 
     noRoadNode::Destroy();
+    // Destroying the waterways released all waiting figures
+    RTTR_Assert(figures_for_boats.empty());
 }
 
 void noFlag::Serialize(SerializedGameData& sgd) const
@@ -101,6 +108,8 @@ void noFlag::Serialize(SerializedGameData& sgd) const
         sgd.PushUnsignedInt(bwu.id);
         sgd.PushUnsignedInt(bwu.last_gf);
     }
+
+    sgd.PushObjectContainer(figures_for_boats);
 }
 
 void noFlag::Draw(DrawPoint drawPt)
@@ -108,6 +117,12 @@ void noFlag::Draw(DrawPoint drawPt)
     // Positionen der Waren an der Flagge relativ zur Flagge
     static constexpr std::array<DrawPoint, 8> WARES_POS = {
       {{0, 0}, {-4, 0}, {3, -1}, {-7, -1}, {6, -2}, {-10, -2}, {9, -5}, {-13, -5}}};
+    // Positions of the first figures waiting for a boat, they stand behind the flag
+    static constexpr std::array<DrawPoint, 4> FIGURES_POS = {{{10, -3}, {-10, -3}, {16, -7}, {-16, -7}}};
+
+    // Draw waiting figures first (from back to front) as they stand behind the flag
+    for(unsigned i = std::min<unsigned>(figures_for_boats.size(), FIGURES_POS.size()); i > 0; --i)
+        figures_for_boats[i - 1]->Draw(drawPt + FIGURES_POS[i - 1]);
 
     unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8, 2, 1, ani_offset);
 
@@ -260,6 +275,76 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
     }
 
     return points;
+}
+
+namespace {
+/// Return the given road if it (still) starts at the flag, else nullptr
+RoadSegment* findRoute(const noFlag& flag, const RoadSegment& road)
+{
+    for(RoadSegment* route : flag.getRoutes())
+    {
+        if(route == &road)
+            return route;
+    }
+    return nullptr;
+}
+} // namespace
+
+void noFlag::AddFigureForBoat(std::unique_ptr<noFigure> figure)
+{
+    RTTR_Assert(figure->IsWaitingForBoat());
+    RoadSegment* waterway = findRoute(*this, *figure->GetCurrentRoad());
+    RTTR_Assert(waterway && waterway->GetRoadType() == RoadType::Water);
+    figures_for_boats.push_back(std::move(figure));
+    // Call the boat carrier just like for a ware
+    if(waterway)
+        waterway->AddWareJob(this);
+}
+
+std::unique_ptr<noFigure> noFlag::RemoveFigureForBoat(const noFigure& figure)
+{
+    auto result = helpers::extractPtr(figures_for_boats, &figure);
+    // The boat carrier doesn't need to come for this one anymore (unless the waterway is currently being destroyed)
+    if(RoadSegment* waterway = findRoute(*this, *result->GetCurrentRoad()))
+        waterway->WareJobRemoved(nullptr);
+    return result;
+}
+
+std::unique_ptr<noFigure> noFlag::SelectFigure(const RoadSegment& waterway)
+{
+    const auto it = helpers::find_if(figures_for_boats,
+                                     [&waterway](const auto& figure) { return figure->GetCurrentRoad() == &waterway; });
+    if(it == figures_for_boats.end())
+        return nullptr;
+    auto result = std::move(*it);
+    figures_for_boats.erase(it);
+    return result;
+}
+
+unsigned noFlag::GetNumFiguresForRoad(const RoadSegment& waterway) const
+{
+    return helpers::count_if(figures_for_boats,
+                             [&waterway](const auto& figure) { return figure->GetCurrentRoad() == &waterway; });
+}
+
+void noFlag::WaterwayDestroyed(const RoadSegment& waterway)
+{
+    // Take them out first, so the list isn't modified while we notify them
+    std::vector<std::unique_ptr<noFigure>> figures;
+    while(auto figure = SelectFigure(waterway))
+        figures.push_back(std::move(figure));
+    for(auto& figure : figures)
+        world->AddFigure(pos, std::move(figure)).WaterwayDestroyed();
+}
+
+void noFlag::WaterwaySplitted(const RoadSegment& oldWaterway, const RoadSegment& newWaterway)
+{
+    RTTR_Assert(newWaterway.GetF1() == this || newWaterway.GetF2() == this);
+    for(auto& figure : figures_for_boats)
+    {
+        if(figure->GetCurrentRoad() == &oldWaterway)
+            figure->InitializeRoadWalking(&newWaterway, 0, newWaterway.GetNodeID(*this));
+    }
 }
 
 /**
