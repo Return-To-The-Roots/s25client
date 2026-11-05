@@ -19,7 +19,6 @@
 #include "random/Random.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noAnimal.h"
-#include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include <stdexcept>
 
@@ -164,7 +163,7 @@ void nofHunter::TryStartHunting()
     else
     {
         // Legacy square search for replays recorded with old code
-        const int SQUARE_SIZE = 19;
+        constexpr int SQUARE_SIZE = 19;
         Position curPos;
         for(curPos.y = pos.y - SQUARE_SIZE; curPos.y <= pos.y + SQUARE_SIZE; ++curPos.y)
         {

@@ -11,7 +11,6 @@
 #include "ogl/glArchivItem_Bitmap.h"
 #include "world/GameWorld.h"
 #include "gameData/BuildingProperties.h"
-#include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 
 nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,

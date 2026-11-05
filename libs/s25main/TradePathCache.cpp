@@ -6,7 +6,7 @@
 #include "EventManager.h"
 #include "GamePlayer.h"
 #include "world/GameWorld.h"
-#include "gameData/GameConsts.h"
+#include <limits>
 
 bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const PlayerIdx player)
 {

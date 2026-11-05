@@ -7,7 +7,6 @@
 #include "SoundManager.h"
 #include "buildings/nobUsual.h"
 #include "world/GameWorld.h"
-#include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 
 nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char player, nobUsual* workplace)

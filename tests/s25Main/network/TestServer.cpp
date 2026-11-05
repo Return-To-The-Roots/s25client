@@ -7,6 +7,7 @@
 #include "rttr/test/random.hpp"
 #include "s25util/Message.h"
 #include "s25util/SocketSet.h"
+#include <iostream>
 
 bool TestServer::run(bool waitForConnection)
 {
@@ -58,7 +59,15 @@ bool TestServer::run(bool waitForConnection)
     handleMessages();
 
     for(Connection& con : connections)
-        con.sendQueue.send(con.so, 10);
+    {
+        if(!con.sendQueue.send(con.so, 10))
+        {
+            // LCOV_EXCL_START
+            std::cerr << "TestServer: Failed to send messages to connection " << (&con - connections.data())
+                      << std::endl;
+            // LCOV_EXCL_STOP
+        }
+    }
     return true;
 }
 

@@ -10,7 +10,6 @@
 #include "worldFixtures/terrainHelpers.h"
 #include "nodeObjs/noGranite.h"
 #include "gameTypes/GameTypesOutput.h"
-#include "gameData/GameConsts.h"
 #include <rttr/test/testHelpers.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/test/unit_test.hpp>

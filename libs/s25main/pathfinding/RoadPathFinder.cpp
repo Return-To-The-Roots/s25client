@@ -6,12 +6,13 @@
 #include "EventManager.h"
 #include "RttrForeachPt.h"
 #include "buildings/nobHarborBuilding.h"
+#include "helpers/EnumArray.h"
 #include "pathfinding/OpenListPrioQueue.h"
 #include "pathfinding/OpenListVector.h"
 #include "world/GameWorldBase.h"
 #include "nodeObjs/noRoadNode.h"
-#include "gameData/GameConsts.h"
 #include "s25util/Log.h"
+#include <limits>
 
 /// Comparison operator for road nodes that returns true if lhs > rhs (descending order)
 struct RoadNodeComperatorGreater

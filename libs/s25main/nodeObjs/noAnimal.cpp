@@ -17,7 +17,6 @@
 #include "ogl/glSmartBitmap.h"
 #include "random/Random.h"
 #include "world/GameWorld.h"
-#include "gameData/GameConsts.h"
 #include "gameData/TerrainDesc.h"
 #include "s25util/colors.h"
 

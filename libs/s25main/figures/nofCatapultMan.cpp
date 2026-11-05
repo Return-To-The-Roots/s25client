@@ -121,7 +121,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                         unsigned distance = world->CalcDistance(pos, building->GetPos());
 
                         // Entfernung nicht zu hoch?
-                        if(distance < 14)
+                        if(distance <= CATAPULT_MAX_TARGET_RANGE)
                         {
                             // Mit in die Liste aufnehmen
                             possibleTargets.push_back(PossibleTarget(building->GetPos(), distance));

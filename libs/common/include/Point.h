@@ -64,8 +64,10 @@ private:
     static constexpr T getInvalidValue() noexcept;
 };
 
-/// Type for describing a position/offset etc. (signed type)
+/// Type for describing a position (signed type)
 using Position = Point<int>;
+/// Type for describing an offset (signed type)
+using Offset = Point<int>;
 /// Type for describing an extent/size etc. (unsigned type)
 using Extent = Point<unsigned>;
 using PointF = Point<float>;

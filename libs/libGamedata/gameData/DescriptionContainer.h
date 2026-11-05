@@ -37,8 +37,8 @@ struct DescriptionContainer
     template<class Predicate>
     std::vector<DescIdx<T>> findAll(Predicate&& predicate) const;
 
-    auto begin() const { return items.begin(); }
-    auto end() const { return items.end(); }
+    auto begin() const noexcept { return items.begin(); }
+    auto end() const noexcept { return items.end(); }
 
 private:
     DescriptionVector<T, T> items;
