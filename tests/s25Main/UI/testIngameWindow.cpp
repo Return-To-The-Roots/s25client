@@ -81,6 +81,7 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     const auto expectedGraniteRatio = rttr::test::randomValue(0u, 100u);
     const auto expectedRivers = rttr::test::randomValue(0u, 100u);
     const auto expectedTrees = rttr::test::randomValue(0u, 100u);
+    const auto expectedMountains = rttr::test::randomValue(0u, 100u);
     const auto expectedStonePiles = rttr::test::randomValue(0u, 100u);
 
     rttr::mapGenerator::MapSettings settings;
@@ -116,6 +117,8 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgRivers)->SetPosition(expectedRivers);
     BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->GetPosition() == settings.trees);
     wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->SetPosition(expectedTrees);
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgMountains)->GetPosition() == settings.mountains);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgMountains)->SetPosition(expectedMountains);
     BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->GetPosition() == settings.stonePiles);
     wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->SetPosition(expectedStonePiles);
     wnd.Msg_ButtonClick(iwMapGenerator::ID_btApply);
@@ -133,6 +136,7 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     BOOST_TEST(settings.ratioGranite == expectedGraniteRatio);
     BOOST_TEST(settings.rivers == expectedRivers);
     BOOST_TEST(settings.trees == expectedTrees);
+    BOOST_TEST(settings.mountains == expectedMountains);
     BOOST_TEST(settings.stonePiles == expectedStonePiles);
 }
 

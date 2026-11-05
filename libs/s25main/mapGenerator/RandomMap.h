@@ -18,6 +18,18 @@ unsigned GetCoastline(const MapExtent& size);
 unsigned GetIslandRadius(const MapExtent& size);
 unsigned GetIslandSize(const MapExtent& size);
 unsigned GetMaxMountainSize(const MapExtent& size);
+
+/**
+ * Computes the amount of free land to keep around water and mountains.
+ *
+ * @param mountainDistance desired distance of headquarters to mountains
+ * @param mountains desired amount of mountains in percentage (between 0 and 100) - the default of 50 keeps the desired
+ * distance available while higher values reduce the free land down to the space required by headquarters
+ *
+ * @returns the distance to water and mountains up to which land stays free.
+ */
+unsigned GetMinFreeLand(unsigned mountainDistance, unsigned mountains);
+
 unsigned GetSmoothRadius(const MapExtent& size);
 unsigned GetSmoothIterations(const MapExtent& size);
 
