@@ -5,7 +5,9 @@
 #include "PointOutput.h"
 #include "commonDefines.h"
 #include "lua/GameDataLoader.h"
+#include "mapGenerator/Algorithms.h"
 #include "mapGenerator/RandomMap.h"
+#include "mapGenerator/TextureHelper.h"
 #include "gameData/MaxPlayers.h"
 #include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
@@ -142,6 +144,64 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
 
     Map map = GenerateRandomMap(rnd, worldDesc, settings);
     ValidateMap(map, settings.size, settings.numPlayers);
+}
+
+BOOST_AUTO_TEST_CASE(GetMaxMountainSize_grows_with_map_size)
+{
+    BOOST_TEST(GetMaxMountainSize(MapExtent(64, 64)) < GetMaxMountainSize(MapExtent(128, 128)));
+    BOOST_TEST(GetMaxMountainSize(MapExtent(128, 128)) < GetMaxMountainSize(MapExtent(256, 256)));
+    BOOST_TEST(GetMaxMountainSize(MapExtent(256, 256)) < GetMaxMountainSize(MapExtent(512, 512)));
+    BOOST_TEST(GetMaxMountainSize(MapExtent(512, 512)) < GetMaxMountainSize(MapExtent(1024, 1024)));
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_leaves_no_large_free_land)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    // Smaller maps do not contain enough free land to require additional mountains
+    settings.size = MapExtent(256, 256);
+    settings.mountainDistance = MountainDistance::Close;
+
+    // Maximum of the randomized free land to keep plus the transition textures added at the foot of mountains
+    const unsigned maxFreeLand = static_cast<unsigned>(settings.mountainDistance) + 5 + 3;
+
+    for(const MapStyle style : {MapStyle::Land, MapStyle::Mixed})
+    {
+        settings.style = style;
+        RandomUtility rnd(0);
+
+        const Map map = GenerateRandomMap(rnd, worldDesc, settings);
+        const auto distances = DistancesTo(map.size, [&map](const MapPoint& pt) {
+            return map.textureMap.Any(pt, [](const TerrainDesc& t) { return IsWater(t) || IsMountainOrSnowOrLava(t); });
+        });
+
+        BOOST_TEST(*std::max_element(distances.begin(), distances.end()) <= maxFreeLand);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_maps_for_all_styles_and_mountain_distances)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(96, 96);
+    settings.numPlayers = 4;
+
+    for(const MapStyle style : {MapStyle::Land, MapStyle::Mixed, MapStyle::Water})
+    {
+        for(const MountainDistance distance : {MountainDistance::Close, MountainDistance::VeryFar})
+        {
+            settings.style = style;
+            settings.mountainDistance = distance;
+            RandomUtility rnd(1);
+
+            Map map = GenerateRandomMap(rnd, worldDesc, settings);
+            ValidateMap(map, settings.size, settings.numPlayers);
+        }
+    }
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mapfile_with_max_players)
