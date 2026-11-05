@@ -6,6 +6,7 @@
 #include "mapGenerator/Harbors.h"
 #include "mapGenerator/HeadQuarters.h"
 #include "mapGenerator/Islands.h"
+#include "mapGenerator/Mountains.h"
 #include "mapGenerator/Resources.h"
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
@@ -76,6 +77,21 @@ unsigned GetIslandSize(const MapExtent& size)
         return 900;
     else
         return 1200;
+}
+
+unsigned GetMaxMountainSize(const MapExtent& size)
+{
+    const unsigned combinedSize = size.x * size.y;
+    if(combinedSize <= 64 * 64)
+        return 150;
+    else if(combinedSize <= 128 * 128)
+        return 300;
+    else if(combinedSize <= 256 * 256)
+        return 600;
+    else if(combinedSize <= 512 * 512)
+        return 1000;
+    else
+        return 1500;
 }
 
 unsigned GetSmoothRadius(const MapExtent& size)
@@ -179,6 +195,17 @@ void RandomMap::CreateFreeIslands(unsigned waterNodes)
     }
 }
 
+void RandomMap::AddMountains(unsigned mountainLevel)
+{
+    // The distance players want to keep to mountains must remain available for their headquarters
+    const auto mountainDistance = static_cast<unsigned>(settings_.mountainDistance);
+    const auto minFreeLand = rnd_.RandomValue(mountainDistance, mountainDistance + 5u);
+    const auto maxMountainSize = GetMaxMountainSize(map_.size);
+    const auto maxSize = rnd_.RandomValue(maxMountainSize / 2, maxMountainSize);
+
+    CreateMountains(map_, rnd_, mountainLevel, MountainSettings{minFreeLand, maxSize, maxMountainSize / 4});
+}
+
 void RandomMap::CreateMixedMap()
 {
     const auto center = rnd_.Point(map_.size);
@@ -202,6 +229,8 @@ void RandomMap::CreateMixedMap()
     const unsigned waterNodes = helpers::count(map_.z, map_.height.minimum);
 
     CreateFreeIslands(waterNodes);
+
+    AddMountains(mountainLevel);
 
     texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 
@@ -247,6 +276,8 @@ void RandomMap::CreateWaterMap()
 
     const auto rivers = CreateRivers(center);
 
+    AddMountains(mountainLevel);
+
     texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 
     PlaceHarbors(map_, rivers);
@@ -270,6 +301,8 @@ void RandomMap::CreateLandMap()
 
     const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
     CreateRivers();
+
+    AddMountains(mountainLevel);
 
     texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
 
