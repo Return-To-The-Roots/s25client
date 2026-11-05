@@ -62,8 +62,10 @@ bool TestServer::run(bool waitForConnection)
     {
         if(!con.sendQueue.send(con.so, 10))
         {
-            std::cerr << "TestServer: Failed to send messages to connection " << (&con - connections.data()) // LCOV_EXCL_LINE
-                      << std::endl; // LCOV_EXCL_LINE
+            // LCOV_EXCL_START
+            std::cerr << "TestServer: Failed to send messages to connection " << (&con - connections.data())
+                      << std::endl;
+            // LCOV_EXCL_STOP
         }
     }
     return true;
