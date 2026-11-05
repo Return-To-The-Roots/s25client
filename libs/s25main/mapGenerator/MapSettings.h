@@ -50,6 +50,7 @@ struct MapSettings
     unsigned short ratioGranite = 15;
     unsigned short rivers = 15;
     unsigned short trees = 40;
+    unsigned short mountains = 50;
     unsigned short stonePiles = 5;
     IslandAmount islands = IslandAmount::Few;
     MountainDistance mountainDistance = MountainDistance::Normal;

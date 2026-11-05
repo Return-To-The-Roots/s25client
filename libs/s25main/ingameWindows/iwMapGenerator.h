@@ -23,6 +23,7 @@ public:
         ID_txtRivers,
         ID_txtMountainDist,
         ID_txtTrees,
+        ID_txtMountains,
         ID_txtStonePiles,
         ID_txtIslands,
         ID_cbNumPlayers,
@@ -40,6 +41,7 @@ public:
         ID_pgRivers,
         ID_cbMountainDist,
         ID_pgTrees,
+        ID_pgMountains,
         ID_pgStonePiles,
         ID_cbIslands
     };

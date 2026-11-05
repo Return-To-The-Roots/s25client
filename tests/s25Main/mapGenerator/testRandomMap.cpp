@@ -154,6 +154,74 @@ BOOST_AUTO_TEST_CASE(GetMaxMountainSize_grows_with_map_size)
     BOOST_TEST(GetMaxMountainSize(MapExtent(512, 512)) < GetMaxMountainSize(MapExtent(1024, 1024)));
 }
 
+BOOST_AUTO_TEST_CASE(GetMinFreeLand_keeps_mountain_distance_for_default_amount)
+{
+    const MapSettings settings;
+
+    BOOST_TEST(GetMinFreeLand(15, settings.mountains) == 15u);
+}
+
+BOOST_AUTO_TEST_CASE(GetMinFreeLand_decreases_with_amount_of_mountains)
+{
+    BOOST_TEST(GetMinFreeLand(30, 25) > GetMinFreeLand(30, 50));
+    BOOST_TEST(GetMinFreeLand(30, 50) > GetMinFreeLand(30, 75));
+}
+
+BOOST_AUTO_TEST_CASE(GetMinFreeLand_keeps_space_for_headquarters)
+{
+    BOOST_TEST(GetMinFreeLand(30, 100) == 4u);
+    BOOST_TEST(GetMinFreeLand(5, 90) == 4u);
+    BOOST_TEST(GetMinFreeLand(30, 1000) == 4u);
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_more_mountains_for_higher_amount)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(256, 256);
+    settings.style = MapStyle::Mixed;
+
+    const auto countMountainNodes = [&worldDesc, &settings](const unsigned short mountains) {
+        settings.mountains = mountains;
+        RandomUtility rnd(0);
+        const Map map = GenerateRandomMap(rnd, worldDesc, settings);
+        return SelectPoints([&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); }, map.size)
+          .size();
+    };
+
+    const auto noMountains = countMountainNodes(0);
+    const auto defaultMountains = countMountainNodes(50);
+    const auto maxMountains = countMountainNodes(100);
+
+    BOOST_TEST(noMountains < defaultMountains);
+    BOOST_TEST(defaultMountains < maxMountains);
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_maps_for_maximum_amount_of_mountains)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(128, 128);
+    settings.mountains = 100;
+
+    for(const unsigned numPlayers : {2u, MAX_PLAYERS})
+    {
+        for(const MapStyle style : {MapStyle::Land, MapStyle::Mixed, MapStyle::Water})
+        {
+            settings.numPlayers = numPlayers;
+            settings.style = style;
+            RandomUtility rnd(1);
+
+            Map map = GenerateRandomMap(rnd, worldDesc, settings);
+            ValidateMap(map, settings.size, settings.numPlayers);
+        }
+    }
+}
+
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_leaves_no_large_free_land)
 {
     WorldDescription worldDesc;

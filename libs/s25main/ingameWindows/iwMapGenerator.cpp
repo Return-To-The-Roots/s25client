@@ -19,7 +19,7 @@
 using namespace rttr::mapGenerator;
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
-    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 520), _("Map Generator"),
+    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 550), _("Map Generator"),
                    LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom),
       mapSettings(settings)
 {
@@ -109,6 +109,9 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     AddText(ID_txtTrees, curPos, _("Trees:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(ID_pgTrees, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
+    AddText(ID_txtMountains, curPos, _("Mountains:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    AddProgress(ID_pgMountains, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    curPos.y += 30;
     AddText(ID_txtStonePiles, curPos, _("Stone piles:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     AddProgress(ID_pgStonePiles, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
 
@@ -140,6 +143,7 @@ void iwMapGenerator::Apply()
     mapSettings.ratioGranite = GetCtrl<ctrlProgress>(ID_pgGraniteRatio)->GetPosition();
     mapSettings.rivers = GetCtrl<ctrlProgress>(ID_pgRivers)->GetPosition();
     mapSettings.trees = GetCtrl<ctrlProgress>(ID_pgTrees)->GetPosition();
+    mapSettings.mountains = GetCtrl<ctrlProgress>(ID_pgMountains)->GetPosition();
     mapSettings.stonePiles = GetCtrl<ctrlProgress>(ID_pgStonePiles)->GetPosition();
 
     switch(GetCtrl<ctrlComboBox>(ID_cbMountainDist)->GetSelection().value())
@@ -181,6 +185,7 @@ void iwMapGenerator::Reset()
     GetCtrl<ctrlProgress>(ID_pgGraniteRatio)->SetPosition(mapSettings.ratioGranite);
     GetCtrl<ctrlProgress>(ID_pgRivers)->SetPosition(mapSettings.rivers);
     GetCtrl<ctrlProgress>(ID_pgTrees)->SetPosition(mapSettings.trees);
+    GetCtrl<ctrlProgress>(ID_pgMountains)->SetPosition(mapSettings.mountains);
     GetCtrl<ctrlProgress>(ID_pgStonePiles)->SetPosition(mapSettings.stonePiles);
 
     auto* combo = GetCtrl<ctrlComboBox>(ID_cbMountainDist);

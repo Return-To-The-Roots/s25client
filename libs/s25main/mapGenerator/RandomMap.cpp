@@ -15,6 +15,7 @@
 #include "lua/GameDataLoader.h"
 #include "libsiedler2/libsiedler2.h"
 
+#include <algorithm>
 #include <stdexcept>
 
 namespace rttr::mapGenerator {
@@ -92,6 +93,13 @@ unsigned GetMaxMountainSize(const MapExtent& size)
         return 1000;
     else
         return 1500;
+}
+
+unsigned GetMinFreeLand(unsigned mountainDistance, unsigned mountains)
+{
+    constexpr unsigned minFreeLand = 4; // Headquarters and the transition textures around mountains need space
+    const unsigned freeLandPercentage = 2 * (100 - std::min(mountains, 100u));
+    return std::max(minFreeLand, mountainDistance * freeLandPercentage / 100);
 }
 
 unsigned GetSmoothRadius(const MapExtent& size)
@@ -197,9 +205,11 @@ void RandomMap::CreateFreeIslands(unsigned waterNodes)
 
 void RandomMap::AddMountains(unsigned mountainLevel)
 {
-    // The distance players want to keep to mountains must remain available for their headquarters
-    const auto mountainDistance = static_cast<unsigned>(settings_.mountainDistance);
-    const auto minFreeLand = rnd_.RandomValue(mountainDistance, mountainDistance + 5u);
+    if(settings_.mountains == 0)
+        return;
+
+    const auto freeLand = GetMinFreeLand(static_cast<unsigned>(settings_.mountainDistance), settings_.mountains);
+    const auto minFreeLand = rnd_.RandomValue(freeLand, freeLand + 5u);
     const auto maxMountainSize = GetMaxMountainSize(map_.size);
     const auto maxSize = rnd_.RandomValue(maxMountainSize / 2, maxMountainSize);
 
