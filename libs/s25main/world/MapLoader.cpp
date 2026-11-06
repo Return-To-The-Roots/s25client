@@ -19,6 +19,7 @@
 #include "lua/GameDataLoader.h"
 #include "pathfinding/PathConditionShip.h"
 #include "random/Random.h"
+#include "world/BQCalculator.h"
 #include "world/World.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noEnvObject.h"
@@ -35,6 +36,7 @@
 #include "s25util/Log.h"
 #include <boost/filesystem/operations.hpp>
 #include <algorithm>
+#include <limits>
 #include <map>
 #include <queue>
 
@@ -57,7 +59,8 @@ bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration explora
         return false;
     PlaceObjects(map);
     PlaceAnimals(map);
-    if(!InitSeasAndHarbors(world_))
+    if(!InitSeasAndHarbors(world_, std::vector<MapPoint>(),
+                           world_.GetGGS().isEnabled(AddonId::ADDITIONAL_HARBOR_SPOTS)))
         return false;
 
     /// Schatten
@@ -521,7 +524,78 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPo
     return true;
 }
 
-bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors)
+namespace {
+bool hasEligibleHarborCoast(const World& world, const MapPoint pt)
+{
+    for(const auto dir : helpers::EnumRange<Direction>{})
+    {
+        // Skip the NW point because a harbor north of an island often has no usable path from that coastal point.
+        if(dir != Direction::NorthWest && world.GetSeaFromCoastalPoint(world.GetNeighbour(pt, dir)))
+            return true;
+    }
+    return false;
+}
+
+unsigned getMinimumHarborDistance(const World& world, const MapPoint pt, const std::vector<MapPoint>& harborPositions)
+{
+    unsigned minDistance = std::numeric_limits<unsigned>::max();
+    for(const MapPoint harborPt : harborPositions)
+        minDistance = std::min(minDistance, world.CalcDistance(pt, harborPt));
+    return minDistance;
+}
+
+std::vector<MapPoint> selectAdditionalHarborSpots(const World& world)
+{
+    std::vector<MapPoint> harborPositions;
+    harborPositions.reserve(world.GetNumHarborPoints() + MapLoader::MAX_GENERATED_HARBOR_SPOTS);
+    for(const auto harborId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
+        harborPositions.push_back(world.GetHarborPoint(harborId));
+
+    std::vector<MapPoint> candidates;
+    BQCalculator calcBQ(world);
+    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    {
+        if(helpers::contains(harborPositions, pt))
+            continue;
+        if(calcBQ(pt, [](const MapPoint&) { return false; }) != BuildingQuality::Castle)
+            continue;
+        if(!hasEligibleHarborCoast(world, pt))
+            continue;
+        if(helpers::contains_if(harborPositions, [&](const MapPoint harborPt) {
+               return world.CalcDistance(pt, harborPt) < MapLoader::MIN_GENERATED_HARBOR_DISTANCE;
+           }))
+            continue;
+
+        candidates.push_back(pt);
+    }
+
+    std::vector<MapPoint> generatedHarbors;
+    while(generatedHarbors.size() < MapLoader::MAX_GENERATED_HARBOR_SPOTS)
+    {
+        MapPoint bestCandidate = MapPoint::Invalid();
+        unsigned bestDistance = 0;
+        for(const MapPoint candidate : candidates)
+        {
+            const unsigned distance = getMinimumHarborDistance(world, candidate, harborPositions);
+            if(distance > bestDistance)
+            {
+                bestDistance = distance;
+                bestCandidate = candidate;
+            }
+        }
+
+        if(bestDistance < MapLoader::MIN_GENERATED_HARBOR_DISTANCE)
+            break;
+
+        generatedHarbors.push_back(bestCandidate);
+        harborPositions.push_back(bestCandidate);
+    }
+    return generatedHarbors;
+}
+} // namespace
+
+bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors,
+                                   const bool generateHarborSpots)
 {
     for(MapPoint pt : additionalHarbors)
         world.harborData.push_back(HarborPos(pt));
@@ -545,6 +619,12 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
             world.seas.push_back(World::Sea(seaSize));
             curSeaId = curSeaId.next();
         }
+    }
+
+    if(generateHarborSpots)
+    {
+        for(MapPoint pt : selectAdditionalHarborSpots(world))
+            world.harborData.push_back(HarborPos(pt));
     }
 
     /// Determine seas adjacent to the harbor places

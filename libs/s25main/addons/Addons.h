@@ -64,6 +64,7 @@
 
 #include "addons/AddonAutoFlags.h"
 
+#include "addons/AddonAdditionalHarborSpots.h"
 #include "addons/AddonArmorCapturedBld.h"
 #include "addons/AddonForesterFarmFieldAvoidance.h"
 #include "addons/AddonLeather.h"
