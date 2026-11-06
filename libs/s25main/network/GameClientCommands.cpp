@@ -39,6 +39,11 @@ void GameClient::Command_SetTeam(Team newTeam)
     mainPlayer.sendMsgAsync(new GameMessage_Player_Team(0xff, newTeam));
 }
 
+void GameClient::Command_SetStartWares(std::optional<StartWares> startWares)
+{
+    mainPlayer.sendMsgAsync(new GameMessage_Player_StartWares(0xff, startWares));
+}
+
 /**
  *  sendet den "Bereit"-Status.
  */

@@ -31,6 +31,7 @@ public:
     void SetPortrait(unsigned playerIdx, unsigned portraitIndex) override;
     void SetColor(unsigned playerIdx, unsigned newColor) override;
     void SetTeam(unsigned playerIdx, Team newTeam) override;
+    void SetStartWares(unsigned playerIdx, std::optional<StartWares> startWares) override;
     void SetNation(unsigned playerIdx, Nation newNation) override;
     const GlobalGameSettings& GetGGS() const override;
     void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) override;

@@ -25,6 +25,7 @@ void LuaServerPlayer::Register(kaguya::State& state)
     state["Player"].setClass(kaguya::UserdataMetatable<LuaServerPlayer, LuaPlayerBase>()
                                .addFunction("SetNation", &LuaServerPlayer::SetNation)
                                .addFunction("SetTeam", &LuaServerPlayer::SetTeam)
+                               .addFunction("SetStartWares", &LuaServerPlayer::SetStartWares)
                                .addFunction("SetColor", &LuaServerPlayer::SetColor)
                                .addFunction("Close", &LuaServerPlayer::Close)
                                .addFunction("SetAI", &LuaServerPlayer::SetAI)
@@ -42,6 +43,12 @@ void LuaServerPlayer::SetTeam(lua::SafeEnum<Team> team)
 {
     player.team = team;
     lobbyServerController_.SetTeam(playerId, team);
+}
+
+void LuaServerPlayer::SetStartWares(lua::SafeEnum<StartWares> startWares)
+{
+    player.startWares = startWares;
+    lobbyServerController_.SetStartWares(playerId, startWares);
 }
 
 void LuaServerPlayer::SetColor(unsigned colorOrIdx)

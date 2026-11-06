@@ -5,9 +5,11 @@
 #pragma once
 
 #include "gameTypes/AIInfo.h"
+#include "gameTypes/GameSettingTypes.h"
 #include "gameTypes/Nation.h"
 #include "gameTypes/PlayerState.h"
 #include "gameTypes/TeamTypes.h"
+#include <optional>
 #include <string>
 
 class GameMessage;
@@ -27,6 +29,7 @@ public:
     virtual void SetPortrait(unsigned playerIdx, unsigned portraitIndex) = 0;
     virtual void SetColor(unsigned playerIdx, unsigned newColor) = 0;
     virtual void SetTeam(unsigned playerIdx, Team newTeam) = 0;
+    virtual void SetStartWares(unsigned playerIdx, std::optional<StartWares> startWares) = 0;
     virtual void SetNation(unsigned playerIdx, Nation newNation) = 0;
     virtual const GlobalGameSettings& GetGGS() const = 0;
     virtual void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) = 0;
