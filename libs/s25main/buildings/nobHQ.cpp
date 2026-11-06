@@ -313,6 +313,35 @@ GoodsAndPeopleCounts nobHQ::getStartInventory(StartWares setting)
             inventory[Job::Scout] = 4;
             inventory[Job::PackDonkey] = 16;
             break;
+
+        // A bare start: a little building material, one tool each for a metalworker, builder, woodcutter and
+        // carpenter, some iron, ore and coal, 2 generals and a donkey. No helpers at all: every settler has to come
+        // from the warehouse's own recruiting. There is no shovel, so nothing can be levelled until the
+        // metalworks made one.
+        case StartWares::Minimal:
+        case StartWares::MinimalPlus:
+            inventory[GoodType::Wood] = 2;
+            inventory[GoodType::Boards] = 2;
+            inventory[GoodType::Stones] = 4;
+            inventory[GoodType::Tongs] = 1;
+            inventory[GoodType::Hammer] = 1;
+            inventory[GoodType::Axe] = 1;
+            inventory[GoodType::Saw] = 1;
+            inventory[GoodType::Iron] = 2;
+            inventory[GoodType::IronOre] = 3;
+            inventory[GoodType::Coal] = 3;
+            inventory[Job::General] = 2;
+            inventory[Job::PackDonkey] = 1;
+            // Almost as bare, but with a shovel, a few soldiers and enough material to get going
+            if(setting == StartWares::MinimalPlus)
+            {
+                inventory[GoodType::Boards] += 8;
+                inventory[GoodType::Stones] += 6;
+                inventory[GoodType::Shovel] += 1;
+                inventory[GoodType::Iron] += 8;
+                inventory[Job::Private] += 5;
+            }
+            break;
     }
     return inventory;
 }

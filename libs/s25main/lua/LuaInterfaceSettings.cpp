@@ -75,6 +75,8 @@ void LuaInterfaceSettings::Register(kaguya::State& state)
     ADD_LUA_CONST(Low);
     ADD_LUA_CONST(Normal);
     ADD_LUA_CONST(ALot);
+    ADD_LUA_CONST(Minimal);
+    ADD_LUA_CONST(MinimalPlus);
 #undef ADD_LUA_CONST
 
 #define ADD_LUA_CONST(name) state["EXP_" + s25util::toUpper(#name)] = Exploration::name
