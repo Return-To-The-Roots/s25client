@@ -96,19 +96,60 @@ void GameDataLoader::Include(const std::string& filepath)
     }
 }
 
+void addLandscape(WorldDescription& worldDesc, const kaguya::LuaTable& data)
+{
+    worldDesc.landscapes.add(LandscapeDesc(CheckedLuaTable(data), worldDesc));
+}
+
+void addTerrainEdge(WorldDescription& worldDesc, const kaguya::LuaTable& data)
+{
+    worldDesc.edges.add(EdgeDesc(CheckedLuaTable(data), worldDesc));
+}
+
+void addTerrain(WorldDescription& worldDesc, const kaguya::LuaTable& data)
+{
+    TerrainDesc terrain(CheckedLuaTable(data), worldDesc);
+
+    // Validate s2Id
+    if(terrain.s2Id != 0xFF)
+    {
+        // Bit 6 (0x40) is the harbour flag (libsiedler2::HARBOR_MASK) in the S2 map format.
+        // It is a per-node flag in the map file, not part of the terrain identity.
+        if(terrain.s2Id & 0x40)
+        {
+            throw GameDataLoadError(
+              helpers::format("Terrain '%1%' has s2Id 0x%2$x with the harbour bit (0x40) set. "
+                              "This bit is reserved for per-node map data (libsiedler2::HARBOR_MASK) "
+                              "and must not be used as part of the terrain ID.",
+                              terrain.name, terrain.s2Id));
+        }
+        // Check that no other terrain with the same s2Id + landscape combination exists.
+        if(worldDesc.terrain.find([s2Id = terrain.s2Id, landscape = terrain.landscape](const TerrainDesc& t) {
+               return t.s2Id == s2Id && t.landscape == landscape;
+           }))
+        {
+            throw GameDataLoadError(helpers::format("Duplicate s2Id 0x%1$x for landscape '%2%' in terrain '%3%'",
+                                                    terrain.s2Id, worldDesc.landscapes.get(terrain.landscape).name,
+                                                    terrain.name));
+        }
+    }
+
+    worldDesc.terrain.add(std::move(terrain));
+}
+
 void GameDataLoader::AddLandscape(const kaguya::LuaTable& data)
 {
-    worldDesc_.landscapes.add(LandscapeDesc(data, worldDesc_));
+    addLandscape(worldDesc_, data);
 }
 
 void GameDataLoader::AddTerrainEdge(const kaguya::LuaTable& data)
 {
-    worldDesc_.edges.add(EdgeDesc(data, worldDesc_));
+    addTerrainEdge(worldDesc_, data);
 }
 
 void GameDataLoader::AddTerrain(const kaguya::LuaTable& data)
 {
-    worldDesc_.terrain.add(TerrainDesc(data, worldDesc_));
+    addTerrain(worldDesc_, data);
 }
 
 void loadGameData(WorldDescription& worldDesc)
