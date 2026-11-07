@@ -29,7 +29,6 @@
 #include "nodeObjs/noRoadNode.h"
 #include "nodeObjs/noSkeleton.h"
 #include "gameTypes/DirectionToImgDir.h"
-#include "gameData/GameConsts.h"
 #include "gameData/JobConsts.h"
 #include "s25util/Log.h"
 #include "s25util/colors.h"

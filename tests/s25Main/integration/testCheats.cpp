@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "Cheats.h"
-#include "GameInterface.h"
 #include "GamePlayer.h"
+#include "MockGameInterface.h"
 #include "buildings/nobHQ.h"
 #include "desktops/dskGameInterface.h"
 #include "factories/GameCommandFactory.h"
@@ -109,27 +109,6 @@ BOOST_FIXTURE_TEST_CASE(TurningCheatModeOffDisablesAllCheats, CheatsFixture)
     // testing toggleHumanAIPlayer would require GameClient::state==Loaded, which is guaranteed in code (because Cheats
     // only exist after the game is loaded) but is not the case in tests - skipping
 }
-
-namespace {
-MOCK_BASE_CLASS(MockGameInterface, GameInterface)
-{
-    // LCOV_EXCL_START
-    MOCK_METHOD(GI_PlayerDefeated, 1)
-    MOCK_METHOD(GI_UpdateMinimap, 1)
-    MOCK_METHOD(GI_FlagDestroyed, 1)
-    MOCK_METHOD(GI_TreatyOfAllianceChanged, 1)
-    MOCK_METHOD(GI_UpdateMapVisibility, 0)
-    MOCK_METHOD(GI_Winner, 1)
-    MOCK_METHOD(GI_TeamWinner, 1)
-    MOCK_METHOD(GI_StartRoadBuilding, 2)
-    MOCK_METHOD(GI_CancelRoadBuilding, 0)
-    MOCK_METHOD(GI_BuildRoad, 0)
-    // clang-format off
-    MOCK_METHOD(GI_GetCheats, 0, Cheats&(void))
-    // clang-format on
-    // LCOV_EXCL_STOP
-};
-} // namespace
 
 BOOST_FIXTURE_TEST_CASE(CanToggleAllVisible_IfCheatModeIsOn, CheatsFixture)
 {

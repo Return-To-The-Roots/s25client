@@ -36,6 +36,8 @@ public:
     bool Msg_LeftDown(const MouseCoords& mc) override;
     bool Msg_LeftUp(const MouseCoords& mc) override;
 
+    ButtonState getState() const { return state; }
+
 protected:
     /// Zeichnet Grundstruktur des Buttons
     void Draw_() override;
