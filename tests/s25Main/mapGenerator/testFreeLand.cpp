@@ -11,6 +11,7 @@
 #include "libsiedler2/enumTypes.h"
 #include <boost/test/unit_test.hpp>
 #include <algorithm>
+#include <cstdlib>
 
 using namespace rttr::mapGenerator;
 

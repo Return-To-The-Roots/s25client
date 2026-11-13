@@ -163,6 +163,9 @@ namespace {
         NodeMapBase<Overlay> overlay_;
         /// Nodes which have to stay free from objects
         std::set<MapPoint, MapPointLess> blocked_;
+        /// Nodes of the scene which may be changed: buildable land without objects. Only the middle of a scene is
+        /// known to be free. Water, mountains and other landscapes further out are left untouched and cut the scene.
+        std::set<MapPoint, MapPointLess> free_;
 
         static unsigned Mod6(int dir) { return static_cast<unsigned>((dir % 6 + 6) % 6); }
 
@@ -210,6 +213,12 @@ namespace {
               otherTree_(rnd.RandomItem(CreateTrees(map.textureMap)))
         {
             const auto area = map.z.GetPointsInRadiusWithCenter(center, sceneRadius);
+            for(const MapPoint& pt : area)
+            {
+                if(map.textureMap.All(pt, IsBuildableLand) && map.objectTypes[pt] == libsiedler2::OT_Empty
+                   && !helpers::contains(map.barren, pt))
+                    free_.insert(pt);
+            }
             map.reserved.insert(area.begin(), area.end());
             overlay_.Resize(map.size, Overlay::None);
 
@@ -221,7 +230,7 @@ namespace {
 
             // Level the middle of the scene and reduce the slopes towards the surrounding land
             const int level = map.z[center];
-            for(const MapPoint& pt : area)
+            for(const MapPoint& pt : free_)
             {
                 const int tolerance = std::max(0, static_cast<int>(Distance(pt)) - static_cast<int>(levelRadius));
                 map.z[pt] =
@@ -237,6 +246,7 @@ namespace {
         unsigned Distance(const MapPoint& pt) const { return map_.z.CalcDistance(center_, pt); }
         unsigned Distance(const MapPoint& from, const MapPoint& to) const { return map_.z.CalcDistance(from, to); }
         bool IsWater(const MapPoint& pt) const { return overlay_[pt] == Overlay::Water; }
+        bool IsFree(const MapPoint& pt) const { return helpers::contains(free_, pt); }
 
         /// Moves from the node into the direction which is counted clockwise starting in the west
         MapPoint Step(MapPoint pt, int dir, unsigned steps = 1) const
@@ -265,7 +275,7 @@ namespace {
         std::vector<MapPoint> Area(const MapPoint& pt, unsigned radius) const
         {
             auto area = map_.z.GetPointsInRadiusWithCenter(pt, radius);
-            helpers::erase_if(area, [this](const MapPoint& p) { return Distance(p) > sceneRadius; });
+            helpers::erase_if(area, [this](const MapPoint& p) { return !IsFree(p); });
             return area;
         }
 
@@ -330,7 +340,7 @@ namespace {
 
         void SetOverlay(const MapPoint& pt, Overlay overlay)
         {
-            if(Distance(pt) < sceneRadius - 1 && overlay > overlay_[pt])
+            if(IsFree(pt) && Distance(pt) < sceneRadius - 1 && overlay > overlay_[pt])
                 overlay_[pt] = overlay;
         }
 
@@ -351,8 +361,8 @@ namespace {
 
         bool CanPlace(const MapPoint& pt) const
         {
-            return Distance(pt) <= sceneRadius && map_.objectTypes[pt] == libsiedler2::OT_Empty
-                   && !helpers::contains(blocked_, pt) && !IsWater(pt);
+            return IsFree(pt) && map_.objectTypes[pt] == libsiedler2::OT_Empty && !helpers::contains(blocked_, pt)
+                   && !IsWater(pt);
         }
 
         bool Chance(unsigned chance) { return chance >= 100 || rnd_.ByChance(chance); }
@@ -564,13 +574,13 @@ namespace {
             }
             for(auto it = ground_.rbegin(); it != ground_.rend(); ++it)
             {
-                if(Distance(it->first) <= sceneRadius)
+                if(IsFree(it->first))
                     addAnchor(it->first, it->second, true);
             }
             // All other nodes keep their texture unless a transition is required
             for(const MapPoint& pt : area)
             {
-                if(visited.count(pt))
+                if(visited.count(pt) || !IsFree(pt))
                     continue;
                 const int index = limit(pt, RampIndex(pt));
                 if(index != RampIndex(pt))
@@ -823,10 +833,11 @@ std::vector<MapPoint> FindSceneSites(const Map& map, RandomUtility& rnd, unsigne
         players.push_back(harbor.position);
     const auto playerDistance = DistancesTo(players, map.size);
 
-    // One node more than required leaves a gap between the scene and its surroundings
+    // Only the middle of a scene requires free land - one node more leaves a gap to the surroundings. Obstacles
+    // further out cut the scene which allows scenes on maps with little free land.
     auto candidates = SelectPoints(
       [&](const MapPoint& pt) {
-          return obstacleDistance[pt] > sceneRadius + 1 && playerDistance[pt] >= minPlayerDistance;
+          return obstacleDistance[pt] > sceneCoreRadius + 1 && playerDistance[pt] >= minPlayerDistance;
       },
       map.size);
 

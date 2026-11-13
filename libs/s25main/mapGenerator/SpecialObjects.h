@@ -55,6 +55,8 @@ struct Scene
 
 /// Radius around the center of a scene which is covered by the scene
 constexpr unsigned sceneRadius = 7;
+/// Radius around the center of a scene which has to be buildable land without any objects
+constexpr unsigned sceneCoreRadius = 4;
 
 /// Indices of special objects (object type OT_Decoration)
 constexpr uint8_t OI_Gate = 0x16;
@@ -79,8 +81,8 @@ bool IsSpecialObject(uint8_t objectType, uint8_t objectInfo);
 unsigned GetNumSpecialScenes(const MapExtent& size);
 
 /**
- * Searches for places for special scenes. A scene requires buildable land without any objects and keeps a distance to
- * headquarters, harbors and other scenes.
+ * Searches for places for special scenes. The middle of a scene requires buildable land without any objects and keeps
+ * a distance to headquarters, harbors and other scenes.
  *
  * @param map map to search for places (is not modified)
  * @param rnd random number generator
@@ -93,8 +95,9 @@ std::vector<MapPoint> FindSceneSites(const Map& map, RandomUtility& rnd, unsigne
 /**
  * Creates a scene around the specified center. The theme defines the special object, the objects around it and the
  * ground while the style defines how they are arranged. The ground blends into the surrounding land using intermediate
- * textures and hills rise smoothly. The nodes of the scene are reserved to keep them free from random trees and stone
- * piles.
+ * textures and hills rise smoothly. Only buildable land without objects is changed: water, mountains and other
+ * landscapes in the outer part of a scene are left untouched. The nodes of the scene are reserved to keep them free
+ * from random trees and stone piles.
  *
  * @param map reference to the map to place the scene on (manipulates textures, objects and z-values of the map)
  * @param rnd random number generator

@@ -13,6 +13,7 @@
 #include "libsiedler2/enumTypes.h"
 #include <boost/test/unit_test.hpp>
 #include <algorithm>
+#include <cstdlib>
 #include <set>
 
 using namespace rttr::mapGenerator;
@@ -110,8 +111,8 @@ BOOST_AUTO_TEST_CASE(FindSceneSites_keeps_distance_to_obstacles_and_players)
             // Objects around headquarters and harbors are removed within a radius of 5
             BOOST_TEST_REQUIRE(map.z.CalcDistance(site, hq) > sceneRadius + 5, "At point " << site);
             BOOST_TEST_REQUIRE(map.z.CalcDistance(site, MapPoint(50, 12)) > sceneRadius + 5, "At point " << site);
-            BOOST_TEST_REQUIRE(map.z.CalcDistance(site, tree) > sceneRadius, "At point " << site);
-            BOOST_TEST_REQUIRE(map.z.CalcDistance(site, swamp) > sceneRadius + 1, "At point " << site);
+            BOOST_TEST_REQUIRE(map.z.CalcDistance(site, tree) > sceneCoreRadius + 1, "At point " << site);
+            BOOST_TEST_REQUIRE(map.z.CalcDistance(site, swamp) > sceneCoreRadius + 1, "At point " << site);
         }
     }
 }
@@ -207,12 +208,9 @@ BOOST_AUTO_TEST_CASE(CreateScene_blends_ground_into_surrounding_land)
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
         textures.insert(map.textureMap.GetTextureId(map.getTextures()[pt].rsu));
+        // Flowers never touch the meadow of the surrounding land directly
         if(map.textureMap.Any(pt, isFlowers))
-        {
-            // Flowers never touch the untouched meadow directly
-            for(const MapPoint& neighbor : map.z.GetPointsInRadius(pt, 2))
-                BOOST_TEST_REQUIRE(map.z.CalcDistance(center, neighbor) <= sceneRadius, "At point " << pt);
-        }
+            BOOST_TEST_REQUIRE(!map.textureMap.Any(pt, isMeadow), "At point " << pt);
     }
     BOOST_TEST(textures.count(0x09) == 1u);
     BOOST_TEST(textures.count(0x0A) == 1u);
@@ -320,6 +318,65 @@ BOOST_AUTO_TEST_CASE(CreateScene_adds_transitions_within_lush_meadow)
                         }
                         if(map.textureMap.Any(pt, isSteppe))
                             BOOST_TEST_REQUIRE(!map.textureMap.Any(pt, isGreen), "At point " << pt);
+                    }
+                }
+            }
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(CreateScene_leaves_other_landscapes_untouched)
+{
+    for(const SceneType type : helpers::EnumRange<SceneType>())
+    {
+        for(const SceneStyle style : helpers::EnumRange<SceneStyle>())
+        {
+            for(unsigned seed = 0; seed < 5; seed++)
+            {
+                // Water, a mountain and a tree are located in the outer part of the scene
+                Map map = createLandMap(MapExtent(40, 40));
+                const MapPoint center(20, 20);
+                const auto water = map.textureMap.Find(IsWater);
+                RTTR_FOREACH_PT(MapPoint, map.size)
+                {
+                    if(pt.x >= 26)
+                    {
+                        map.textureMap.Set(pt, water);
+                        map.z[pt] = map.height.minimum;
+                    }
+                }
+                const MapPoint mountain(15, 15);
+                const MapPoint tree(17, 26);
+                map.textureMap.Set(mountain, map.textureMap.Find(IsMinableMountain));
+                map.z[mountain] = landHeight + 8;
+                map.objectTypes[tree] = libsiedler2::OT_TreeOrPalm;
+                map.objectInfos[tree] = libsiedler2::OI_TreeOrPalm_Begin;
+                const Map original = map;
+                RandomUtility rnd(seed);
+
+                CreateScene(map, rnd, center, type, style);
+
+                BOOST_TEST_CONTEXT("Scene " << static_cast<unsigned>(type) << " style " << static_cast<unsigned>(style)
+                                            << " seed " << seed)
+                {
+                    BOOST_TEST(IsSpecialObject(map.objectTypes[center], map.objectInfos[center]));
+                    BOOST_TEST(map.objectTypes[tree] == original.objectTypes[tree]);
+                    BOOST_TEST(map.objectInfos[tree] == original.objectInfos[tree]);
+                    const auto isLand = [this](DescIdx<TerrainDesc> texture) {
+                        return IsBuildableLand(worldDesc.get(texture));
+                    };
+                    RTTR_FOREACH_PT(MapPoint, map.size)
+                    {
+                        // Only triangles of buildable land are painted
+                        const TexturePair& before = original.getTextures()[pt];
+                        const TexturePair& after = map.getTextures()[pt];
+                        BOOST_TEST_REQUIRE((isLand(before.rsu) || after.rsu == before.rsu), "At point " << pt);
+                        BOOST_TEST_REQUIRE((isLand(before.lsd) || after.lsd == before.lsd), "At point " << pt);
+                        // Nodes which are part of other landscapes keep their height and get no objects
+                        if(original.textureMap.All(pt, IsBuildableLand))
+                            continue;
+                        BOOST_TEST_REQUIRE(map.z[pt] == original.z[pt], "At point " << pt);
+                        BOOST_TEST_REQUIRE(map.objectTypes[pt] == original.objectTypes[pt], "At point " << pt);
                     }
                 }
             }
