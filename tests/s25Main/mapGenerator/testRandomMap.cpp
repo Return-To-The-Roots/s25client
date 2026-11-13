@@ -58,10 +58,7 @@ static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
     for(unsigned index = 0; index < players; index++)
     {
         BOOST_TEST_REQUIRE(map.hqPositions[index].isValid());
-        BOOST_TEST_CONTEXT("Player " << index)
-        {
-            validateHqPos(map.hqPositions[index]);
-        }
+        BOOST_TEST_CONTEXT("Player " << index) { validateHqPos(map.hqPositions[index]); }
     }
 }
 
