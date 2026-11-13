@@ -3,11 +3,13 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "mapGenerator/RandomMap.h"
+#include "mapGenerator/FreeLand.h"
 #include "mapGenerator/Harbors.h"
 #include "mapGenerator/HeadQuarters.h"
 #include "mapGenerator/Islands.h"
 #include "mapGenerator/Mountains.h"
 #include "mapGenerator/Resources.h"
+#include "mapGenerator/SpecialObjects.h"
 #include "mapGenerator/Terrain.h"
 #include "mapGenerator/TextureHelper.h"
 #include "mapGenerator/Textures.h"
@@ -163,6 +165,9 @@ void RandomMap::Create(const MapSettings& settings)
         case MapStyle::Land: CreateLandMap(); break;
     }
 
+    if(settings_.specialObjects)
+        AddSpecialScenes(map_, rnd_);
+
     AddObjects(map_, rnd_, settings_);
     AddResources(map_, rnd_, settings_);
     AddAnimals(map_, rnd_);
@@ -203,17 +208,38 @@ void RandomMap::CreateFreeIslands(unsigned waterNodes)
     }
 }
 
-void RandomMap::AddMountains(unsigned mountainLevel)
+void RandomMap::FillFreeLand(unsigned mountainLevel)
 {
-    if(settings_.mountains == 0)
+    const LandFillAmounts amounts{settings_.mountains, settings_.desert, settings_.swamp};
+    const unsigned totalAmount = settings_.mountains + settings_.desert + settings_.swamp;
+    if(totalAmount == 0)
         return;
 
-    const auto freeLand = GetMinFreeLand(static_cast<unsigned>(settings_.mountainDistance), settings_.mountains);
+    const auto freeLand = GetMinFreeLand(static_cast<unsigned>(settings_.mountainDistance), totalAmount);
     const auto minFreeLand = rnd_.RandomValue(freeLand, freeLand + 5u);
     const auto maxMountainSize = GetMaxMountainSize(map_.size);
     const auto maxSize = rnd_.RandomValue(maxMountainSize / 2, maxMountainSize);
 
-    CreateMountains(map_, rnd_, mountainLevel, MountainSettings{minFreeLand, maxSize, maxMountainSize / 4});
+    rttr::mapGenerator::FillFreeLand(map_, rnd_, mountainLevel,
+                                     MountainSettings{minFreeLand, maxSize, maxMountainSize / 4}, amounts);
+}
+
+void RandomMap::AddTextures(unsigned mountainLevel)
+{
+    const NodeMapBase<TexturePair> textures = map_.getTextures();
+
+    texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
+
+    for(const MapPoint& pt : map_.barren)
+    {
+        for(const Triangle& triangle : GetTriangles(pt, map_.size))
+        {
+            const TexturePair& pair = textures[triangle.position];
+            map_.textureMap.Set(triangle, triangle.rsu ? pair.rsu : pair.lsd);
+        }
+    }
+
+    SmoothDesertTransitions(map_);
 }
 
 void RandomMap::CreateMixedMap()
@@ -240,9 +266,9 @@ void RandomMap::CreateMixedMap()
 
     CreateFreeIslands(waterNodes);
 
-    AddMountains(mountainLevel);
+    FillFreeLand(mountainLevel);
 
-    texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
+    AddTextures(mountainLevel);
 
     PlaceHarbors(map_, rivers);
     PlaceHeadquarters(map_, rnd_, map_.players, settings_.mountainDistance);
@@ -286,9 +312,9 @@ void RandomMap::CreateWaterMap()
 
     const auto rivers = CreateRivers(center);
 
-    AddMountains(mountainLevel);
+    FillFreeLand(mountainLevel);
 
-    texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
+    AddTextures(mountainLevel);
 
     PlaceHarbors(map_, rivers);
 
@@ -312,9 +338,9 @@ void RandomMap::CreateLandMap()
     const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
     CreateRivers();
 
-    AddMountains(mountainLevel);
+    FillFreeLand(mountainLevel);
 
-    texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
+    AddTextures(mountainLevel);
 
     PlaceHeadquarters(map_, rnd_, map_.players, settings_.mountainDistance);
 }

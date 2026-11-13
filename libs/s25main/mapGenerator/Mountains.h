@@ -6,6 +6,7 @@
 
 #include "mapGenerator/Map.h"
 #include "mapGenerator/RandomUtility.h"
+#include <functional>
 #include <set>
 #include <vector>
 
@@ -73,6 +74,32 @@ Mountain GrowMountain(const NodeMapBase<unsigned>& freeLand, RandomUtility& rnd,
  */
 std::vector<Mountain> FindMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel,
                                     const MountainSettings& settings);
+
+/**
+ * Selects the nodes of new mountains just like the overload above but asks for the size of each mountain right before
+ * growing it. This allows callers to vary the size, e.g. depending on what the nodes are going to be used for.
+ *
+ * @param map map to search for free land (is not modified)
+ * @param rnd random number generator
+ * @param mountainLevel minimum z-value of mountains
+ * @param minFreeLand land up to this distance to water or mountains stays free
+ * @param getSize returns the desired number of nodes for the mountain with the specified index
+ *
+ * @returns the nodes of each new mountain. All mountains are disjoint.
+ */
+std::vector<Mountain> FindMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel, unsigned minFreeLand,
+                                    const std::function<unsigned(unsigned)>& getSize);
+
+/**
+ * Computes the distance of each node of the mountain to the foot of the mountain. The foot consists of all nodes of the
+ * mountain with at least one neighbor which isn't part of the mountain.
+ *
+ * @param size size of the map
+ * @param mountain nodes of the mountain
+ *
+ * @returns the distance to the foot for each node of the mountain and zero for all other nodes.
+ */
+NodeMapBase<unsigned> GetFootDistances(const MapExtent& size, const Mountain& mountain);
 
 /**
  * Elevates the nodes of the mountain relative to the surrounding land and applies mountain textures to them.

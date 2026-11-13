@@ -99,19 +99,26 @@ Mountain GrowMountain(const NodeMapBase<unsigned>& freeLand, RandomUtility& rnd,
 std::vector<Mountain> FindMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel,
                                     const MountainSettings& settings)
 {
+    return FindMountains(map, rnd, mountainLevel, settings.minFreeLand,
+                         [&settings](unsigned index) { return GetMountainSize(settings, index); });
+}
+
+std::vector<Mountain> FindMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel, unsigned minFreeLand,
+                                    const std::function<unsigned(unsigned)>& getSize)
+{
     std::vector<Mountain> mountains;
     auto freeLand = GetFreeLandDistances(map, mountainLevel);
     const auto maxDistance = [&freeLand] { return *std::max_element(freeLand.begin(), freeLand.end()); };
 
-    for(unsigned distance = maxDistance(); distance > settings.minFreeLand; distance = maxDistance())
+    for(unsigned distance = maxDistance(); distance > minFreeLand; distance = maxDistance())
     {
         const auto isFreest = [&freeLand, distance](const MapPoint& pt) { return freeLand[pt] == distance; };
         const MapPoint center = rnd.RandomItem(SelectPoints(isFreest, map.size));
 
         // A larger margin than required varies the gaps. It must stay below the distance to include the center.
-        const unsigned maxMargin = std::min(settings.minFreeLand + settings.minFreeLand / 2, distance - 1);
-        const unsigned margin = rnd.RandomValue(settings.minFreeLand, maxMargin);
-        const unsigned size = GetMountainSize(settings, static_cast<unsigned>(mountains.size()));
+        const unsigned maxMargin = std::min(minFreeLand + minFreeLand / 2, distance - 1);
+        const unsigned margin = rnd.RandomValue(minFreeLand, maxMargin);
+        const unsigned size = getSize(static_cast<unsigned>(mountains.size()));
 
         mountains.push_back(GrowMountain(freeLand, rnd, center, size, margin));
         MarkAsOccupied(freeLand, mountains.back());
@@ -120,13 +127,21 @@ std::vector<Mountain> FindMountains(const Map& map, RandomUtility& rnd, unsigned
     return mountains;
 }
 
-void RaiseMountain(Map& map, RandomUtility& rnd, const Mountain& mountain)
+NodeMapBase<unsigned> GetFootDistances(const MapExtent& size, const Mountain& mountain)
 {
-    const auto isFoot = [&map, &mountain](const MapPoint& pt) {
-        return helpers::contains_if(map.z.GetNeighbours(pt),
+    NodeMapBase<unsigned> neighbors;
+    neighbors.Resize(size);
+
+    const auto isFoot = [&neighbors, &mountain](const MapPoint& pt) {
+        return helpers::contains_if(neighbors.GetNeighbours(pt),
                                     [&mountain](const MapPoint& pt) { return !helpers::contains(mountain, pt); });
     };
-    const auto footDistance = Distances(map.size, mountain, 0, isFoot);
+    return Distances(size, mountain, 0, isFoot);
+}
+
+void RaiseMountain(Map& map, RandomUtility& rnd, const Mountain& mountain)
+{
+    const auto footDistance = GetFootDistances(map.size, mountain);
     const ValueRange<unsigned> range(0u, GetMaximum(footDistance, mountain));
     const auto textures = map.textureMap.FindAll(IsMinableMountain);
 

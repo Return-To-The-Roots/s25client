@@ -24,6 +24,8 @@ public:
         ID_txtMountainDist,
         ID_txtTrees,
         ID_txtMountains,
+        ID_txtDesert,
+        ID_txtSwamp,
         ID_txtStonePiles,
         ID_txtIslands,
         ID_cbNumPlayers,
@@ -42,8 +44,11 @@ public:
         ID_cbMountainDist,
         ID_pgTrees,
         ID_pgMountains,
+        ID_pgDesert,
+        ID_pgSwamp,
         ID_pgStonePiles,
-        ID_cbIslands
+        ID_cbIslands,
+        ID_cbSpecialObjects
     };
 
     /**

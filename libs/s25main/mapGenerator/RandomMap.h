@@ -23,8 +23,9 @@ unsigned GetMaxMountainSize(const MapExtent& size);
  * Computes the amount of free land to keep around water and mountains.
  *
  * @param mountainDistance desired distance of headquarters to mountains
- * @param mountains desired amount of mountains in percentage (between 0 and 100) - the default of 50 keeps the desired
- * distance available while higher values reduce the free land down to the space required by headquarters
+ * @param mountains desired amount of mountains, deserts and swamps in percentage (between 0 and 100) - an amount of
+ * 50 keeps the desired distance available while higher values reduce the free land down to the space required by
+ * headquarters
  *
  * @returns the distance to water and mountains up to which land stays free.
  */
@@ -45,7 +46,8 @@ private:
 
     std::vector<River> CreateRivers(MapPoint source = MapPoint::Invalid());
     void CreateFreeIslands(unsigned waterNodes);
-    void AddMountains(unsigned mountainLevel);
+    void FillFreeLand(unsigned mountainLevel);
+    void AddTextures(unsigned mountainLevel);
     void CreateMixedMap();
     void CreateLandMap();
     void CreateWaterMap();

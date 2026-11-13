@@ -12,6 +12,7 @@
 #include "libsiedler2/archives.h"
 
 #include <cmath>
+#include <set>
 #include <string>
 
 namespace rttr::mapGenerator {
@@ -29,6 +30,10 @@ public:
     NodeMapBase<libsiedler2::Animal> animals;
     std::vector<Triangle> harbors;
     std::vector<MapPoint> hqPositions;
+    /// Nodes of deserts and swamps which get neither trees, stone piles, animals nor fish
+    std::set<MapPoint, MapPointLess> barren;
+    /// Nodes of special scenes which get neither trees nor stone piles
+    std::set<MapPoint, MapPointLess> reserved;
     TextureMap textureMap;
 
     const std::string name;
