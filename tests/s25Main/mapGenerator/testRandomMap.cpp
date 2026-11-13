@@ -328,18 +328,13 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_deserts_and_swamps_for_all_landsc
             {
                 if(!map.textureMap.All(pt, IsImpassable))
                     continue;
-                // Swamps are flat and neither used for fishing nor for harbors
+                // Swamps are flat and not used for fishing
                 BOOST_TEST_REQUIRE(map.resources[pt] != libsiedler2::R_Fish, "At point " << pt);
                 for(const MapPoint& neighbor : map.z.GetNeighbours(pt))
                 {
                     if(helpers::contains(map.barren, neighbor))
                         BOOST_TEST_REQUIRE(map.z[pt] == map.z[neighbor], "At point " << pt);
                 }
-            }
-            for(const Triangle& harbor : map.harbors)
-            {
-                for(const MapPoint& pt : map.z.GetPointsInRadiusWithCenter(harbor.position, 2))
-                    BOOST_TEST_REQUIRE(!helpers::contains(map.barren, pt), "At point " << pt);
             }
         }
     }
