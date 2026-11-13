@@ -14,6 +14,10 @@ bool IsWater(const TerrainDesc& terrain);
 
 bool IsSwamp(const TerrainDesc& terrain);
 
+/// Terrain which can neither be entered by settlers nor by ships. The first match of each landscape is the swamp or its
+/// equivalent (stony lava, ice floes).
+bool IsImpassable(const TerrainDesc& terrain);
+
 bool IsLand(const TerrainDesc& terrain);
 
 bool IsShipableWater(const TerrainDesc& terrain);

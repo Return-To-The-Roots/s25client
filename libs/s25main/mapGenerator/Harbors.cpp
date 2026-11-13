@@ -41,7 +41,10 @@ std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vec
     std::set<MapPoint, MapPointLess> visited;
 
     const auto isCoast = [&map](const MapPoint& pt) {
-        const auto allWater = [&map](const MapPoint& p) { return map.textureMap.All(p, IsWater); };
+        // Swamps may consist of water textures but can't be used by ships
+        const auto allWater = [&map](const MapPoint& p) {
+            return map.textureMap.All(p, IsWater) && !helpers::contains(map.barren, p);
+        };
         return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater)
                && helpers::contains_if(map.getTextures().GetNeighbours(pt), allWater);
     };

@@ -9,6 +9,7 @@
 #include "Settings.h"
 #include "WindowManager.h"
 #include "controls/ctrlButton.h"
+#include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlEdit.h"
 #include "controls/ctrlOptionGroup.h"
@@ -81,7 +82,11 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     const auto expectedGraniteRatio = rttr::test::randomValue(0u, 100u);
     const auto expectedRivers = rttr::test::randomValue(0u, 100u);
     const auto expectedTrees = rttr::test::randomValue(0u, 100u);
+    const auto expectedMountains = rttr::test::randomValue(0u, 100u);
+    const auto expectedDesert = rttr::test::randomValue(0u, 100u);
+    const auto expectedSwamp = rttr::test::randomValue(0u, 100u);
     const auto expectedStonePiles = rttr::test::randomValue(0u, 100u);
+    const bool expectedSpecialObjects = rttr::test::randomValue(0u, 1u) == 1u;
 
     rttr::mapGenerator::MapSettings settings;
     iwMapGenerator wnd(settings);
@@ -116,8 +121,16 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgRivers)->SetPosition(expectedRivers);
     BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->GetPosition() == settings.trees);
     wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->SetPosition(expectedTrees);
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgMountains)->GetPosition() == settings.mountains);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgMountains)->SetPosition(expectedMountains);
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgDesert)->GetPosition() == settings.desert);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgDesert)->SetPosition(expectedDesert);
+    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgSwamp)->GetPosition() == settings.swamp);
+    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgSwamp)->SetPosition(expectedSwamp);
     BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->GetPosition() == settings.stonePiles);
     wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->SetPosition(expectedStonePiles);
+    BOOST_TEST(wnd.GetCtrl<ctrlCheck>(iwMapGenerator::ID_cbSpecialObjects)->isChecked() == settings.specialObjects);
+    wnd.GetCtrl<ctrlCheck>(iwMapGenerator::ID_cbSpecialObjects)->setChecked(expectedSpecialObjects);
     wnd.Msg_ButtonClick(iwMapGenerator::ID_btApply);
     BOOST_TEST(wnd.ShouldBeClosed());
 
@@ -133,7 +146,11 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     BOOST_TEST(settings.ratioGranite == expectedGraniteRatio);
     BOOST_TEST(settings.rivers == expectedRivers);
     BOOST_TEST(settings.trees == expectedTrees);
+    BOOST_TEST(settings.mountains == expectedMountains);
+    BOOST_TEST(settings.desert == expectedDesert);
+    BOOST_TEST(settings.swamp == expectedSwamp);
     BOOST_TEST(settings.stonePiles == expectedStonePiles);
+    BOOST_TEST(settings.specialObjects == expectedSpecialObjects);
 }
 
 BOOST_AUTO_TEST_CASE(ConnectWindow)

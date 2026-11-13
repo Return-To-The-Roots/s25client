@@ -21,6 +21,11 @@ bool IsSwamp(const TerrainDesc& terrain)
     return !terrain.Is(ETerrain::Walkable) && terrain.humidity > 0;
 }
 
+bool IsImpassable(const TerrainDesc& terrain)
+{
+    return terrain.flags == ETerrain::Unwalkable;
+}
+
 bool IsLand(const TerrainDesc& terrain)
 {
     return terrain.kind == TerrainKind::Land;

@@ -66,11 +66,21 @@ void AddObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
         {
             auto suroundingArea = map.getTextures().GetPointsInRadiusWithCenter(pt, 5);
             excludedArea.insert(suroundingArea.begin(), suroundingArea.end());
+            // Remove the decoration of deserts and swamps as well
+            for(const MapPoint& excluded : suroundingArea)
+            {
+                map.objectTypes[excluded] = libsiedler2::OT_Empty;
+                map.objectInfos[excluded] = libsiedler2::OI_Empty;
+            }
         } else if(map.textureMap.Any(pt, IsSnowOrLava))
         {
             excludedArea.insert(pt);
         }
     }
+
+    // Deserts and swamps come with their own objects
+    excludedArea.insert(map.barren.begin(), map.barren.end());
+    excludedArea.insert(map.reserved.begin(), map.reserved.end());
 
     const auto distanceToExcludedArea = DistancesTo(excludedArea, map.size);
 
@@ -140,6 +150,10 @@ void AddObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
+        // Keep objects which are already part of the landscape
+        if(map.objectTypes[pt] != libsiedler2::OT_Empty)
+            continue;
+
         const bool canPlaceStonePile = waterDistance[pt] > 0 && distanceToExcludedArea[pt] > 0;
         if(canPlaceStonePile && rnd.ByChance(settings.stonePiles))
         {
@@ -233,7 +247,7 @@ void AddResources(Map& map, RandomUtility& rnd, const MapSettings& settings)
                     }
                 }
             }
-        } else if(textures.All(pt, IsWater))
+        } else if(textures.All(pt, IsWater) && !helpers::contains(map.barren, pt))
         {
             resources[pt] = libsiedler2::R_Fish;
         } else
@@ -251,7 +265,7 @@ void AddAnimals(Map& map, RandomUtility& rnd)
     const auto& textures = map.textureMap;
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
-        if(rnd.ByChance(3))
+        if(rnd.ByChance(3) && !helpers::contains(map.barren, pt))
         {
             if(textures.All(pt, IsWater))
             {
