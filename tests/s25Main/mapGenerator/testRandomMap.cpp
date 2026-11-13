@@ -233,6 +233,11 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_leaves_no_large_free_land)
     // Smaller maps do not contain enough free land to require additional mountains
     settings.size = MapExtent(256, 256);
     settings.mountainDistance = MountainDistance::Close;
+    // The foot of desert hills is buildable and therefore counts as free land
+    settings.mountains = 50;
+    settings.desert = 0;
+    settings.swamp = 0;
+    settings.specialObjects = false;
 
     // Maximum of the randomized free land to keep plus the transition textures added at the foot of mountains and
     // desert hills
