@@ -48,10 +48,13 @@ struct MapSettings
     unsigned short ratioIron = 36;
     unsigned short ratioCoal = 40;
     unsigned short ratioGranite = 15;
-    unsigned short rivers = 15;
+    unsigned short rivers = 21;
     unsigned short trees = 40;
-    unsigned short mountains = 50;
+    unsigned short mountains = 25;
+    unsigned short desert = 22;
+    unsigned short swamp = 18;
     unsigned short stonePiles = 5;
+    bool specialObjects = true;
     IslandAmount islands = IslandAmount::Few;
     MountainDistance mountainDistance = MountainDistance::Normal;
     DescIdx<LandscapeDesc> type = DescIdx<LandscapeDesc>(0);
