@@ -589,15 +589,13 @@ namespace {
 
             // Neighboring nodes share triangles: the texture which differs most from the land is painted last. Thus
             // patches keep their size and each transition gets a row of triangles.
-            std::vector<std::pair<int, Anchor>> order;
+            const auto change = [this](const Anchor& anchor) { return std::abs(anchor.index - RampIndex(anchor.pt)); };
+            std::stable_sort(painted.begin(), painted.end(),
+                             [&change](const Anchor& lhs, const Anchor& rhs) { return change(lhs) < change(rhs); });
             for(const Anchor& anchor : painted)
-                order.emplace_back(std::abs(anchor.index - RampIndex(anchor.pt)), anchor);
-            std::stable_sort(order.begin(), order.end(),
-                             [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
-            for(const auto& entry : order)
             {
-                const int index = std::clamp<int>(entry.second.index, 0, static_cast<int>(ramp_.size()) - 1);
-                map_.textureMap.Set(entry.second.pt, ramp_[index]);
+                const int index = std::clamp<int>(anchor.index, 0, static_cast<int>(ramp_.size()) - 1);
+                map_.textureMap.Set(anchor.pt, ramp_[index]);
             }
         }
     };
