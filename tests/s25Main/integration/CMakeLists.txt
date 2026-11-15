@@ -6,6 +6,6 @@
 # e.g. creating a whole world
 # Lua related tests are extra
 add_testcase(NAME integration
-    LIBS s25Main testHelpers testWorldFixtures testUIHelper rttr::vld
+    LIBS s25Main testConfig testHelpers testWorldFixtures testUIHelper rttr::vld
     COST 50
 )

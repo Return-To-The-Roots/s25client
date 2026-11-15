@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -17,4 +17,13 @@ public:
     virtual std::string FormatGFTime(unsigned numGFs) const = 0;
     /// Send a chat message to the local player
     virtual void SystemChat(const std::string& text) = 0;
+};
+
+/// For headless contexts: acts as the host playing as player 0 and discards all output.
+struct NullLocalGameState : ILocalGameState
+{
+    unsigned GetPlayerId() const override { return 0; }
+    bool IsHost() const override { return true; }
+    std::string FormatGFTime(unsigned) const override { return ""; }
+    void SystemChat(const std::string&) override {}
 };
