@@ -63,6 +63,8 @@ void SetupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGa
         // Kept until the loader has read them
         std::optional<TmpFile> tmpMap, tmpLua;
         boost::filesystem::path mapFilePath, luaFilePath;
+        // Replays carry the map and Lua script they were recorded with; their paths refer to the recording machine.
+        // Otherwise the paths are local files (on clients, the copy received from the host).
         if(!replay)
         {
             mapFilePath = mapInfo.filepath;
