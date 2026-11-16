@@ -23,7 +23,7 @@ nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char p
 
     /// Set the road to building flag (1-piece)
     cur_rs = static_cast<noFlag*>(getGoal())->getRoute(Direction::NorthWest);
-    RTTR_Assert(cur_rs->GetLength() == 1);
+    RTTR_Assert(cur_rs->getLength() == 1);
     rs_dir = true;
 }
 

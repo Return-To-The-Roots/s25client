@@ -19,7 +19,7 @@ struct ResourceTestFixture : MapGenFixture
     ResourceTestFixture() : map(createMap(size))
     {
         auto mountain = map.textureMap.Find(isMinableMountain);
-        auto water = map.textureMap.Find(IsWater);
+        auto water = map.textureMap.Find(isWater);
         auto land = map.textureMap.Find(isBuildableCoast);
 
         /*
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(AddResources_updates_resources_according_to_textures)
                 numMountainWithoutRes++; // LCOV_EXCL_LINE
             else
                 numMountainWithRes++;
-        } else if(map.textureMap.all(pt, IsWater))
+        } else if(map.textureMap.all(pt, isWater))
             BOOST_TEST_REQUIRE(map.resources[pt] == R_Fish);
         else
             BOOST_TEST_REQUIRE(map.resources[pt] == R_Water);
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(AddAnimals_updates_animals_according_to_textures)
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
-        if(map.textureMap.all(pt, IsWater))
+        if(map.textureMap.all(pt, isWater))
         {
             BOOST_TEST_REQUIRE(
               (map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck || map.animals[pt] == Animal::Duck2));

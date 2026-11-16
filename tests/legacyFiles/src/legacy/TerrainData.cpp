@@ -105,7 +105,7 @@ Rect TerrainData::getPosInTexture(TerrainType t)
 
 bool TerrainData::isAnimated(TerrainType t)
 {
-    return IsWater(t) || isLava(t);
+    return isWater(t) || isLava(t);
 }
 
 unsigned TerrainData::getNumFrames(TerrainType t)
@@ -518,7 +518,7 @@ bool TerrainData::isVital(TerrainType t)
     }
 }
 
-bool TerrainData::IsWater(TerrainType t)
+bool TerrainData::isWater(TerrainType t)
 {
     switch(t)
     {

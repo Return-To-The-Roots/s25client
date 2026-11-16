@@ -305,7 +305,7 @@ void iwMusicPlayer::msgButtonClick(const unsigned ctrl_id)
             const auto& selection = getCtrl<ctrlList>(ID_lstSongs)->getSelection();
 
             if(selection && *selection > 0u)
-                getCtrl<ctrlList>(ID_lstSongs)->Swap(*selection - 1u, *selection);
+                getCtrl<ctrlList>(ID_lstSongs)->swap(*selection - 1u, *selection);
         }
         break;
         case ID_btDown:
@@ -313,7 +313,7 @@ void iwMusicPlayer::msgButtonClick(const unsigned ctrl_id)
             const auto& selection = getCtrl<ctrlList>(ID_lstSongs)->getSelection();
 
             if(selection && *selection < getCtrl<ctrlList>(ID_lstSongs)->getNumLines() - 1u)
-                getCtrl<ctrlList>(ID_lstSongs)->Swap(*selection + 1u, *selection);
+                getCtrl<ctrlList>(ID_lstSongs)->swap(*selection + 1u, *selection);
         }
         break;
         case ID_btDecRepeat:

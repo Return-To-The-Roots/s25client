@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbors_on_coast_below_minimum_size)
     Map map = createMap(MapExtent(6, 8));
     MapPoint island(3, 3);
 
-    auto water = TexturePair(map.textureMap.Find(IsWater));
+    auto water = TexturePair(map.textureMap.Find(isWater));
 
     map.getTextures().resize(map.size, water);
 
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_harbor_on_suitable_island)
     Map map = createMap(MapExtent(6, 8));
     MapPoint island(3, 3);
 
-    auto water = TexturePair(map.textureMap.Find(IsWater));
+    auto water = TexturePair(map.textureMap.Find(isWater));
 
     map.getTextures().resize(map.size, water);
 
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbor_near_river)
     Map map = createMap(MapExtent(6, 8));
     MapPoint island(3, 3);
 
-    auto water = TexturePair(map.textureMap.Find(IsWater));
+    auto water = TexturePair(map.textureMap.Find(isWater));
 
     map.getTextures().resize(map.size, water);
 

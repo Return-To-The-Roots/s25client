@@ -191,7 +191,7 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     if(!isSinglePlayer())
     {
         // Enable lobby chat when we are logged in
-        if(lobbyClient_ && lobbyClient_->IsLoggedIn())
+        if(lobbyClient_ && lobbyClient_->isLoggedIn())
         {
             ctrlOptionGroup* chatTab = addOptionGroup(ID_optChatTab, GroupSelectType::Check);
             chatTab->addTextButton(ID_btChatGame, DrawPoint(20, 320), Extent(178, 22), TextureColor::Green2,
@@ -255,7 +255,7 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     combo->addItem(_("Economy mode"));
 
     // Lobby game?
-    if(lobbyClient_ && lobbyClient_->IsLoggedIn())
+    if(lobbyClient_ && lobbyClient_->isLoggedIn())
     {
         // Then add tournament modes as possible "objectives"
         for(const auto duration : TOURNAMENT_MODES_DURATION)
@@ -348,7 +348,7 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     }
     CI_GGSChanged(gameLobby_->getSettings());
 
-    if(serverType == ServerType::Lobby && lobbyClient_ && lobbyClient_->IsLoggedIn())
+    if(serverType == ServerType::Lobby && lobbyClient_ && lobbyClient_->isLoggedIn())
     {
         lobbyClient_->addListener(this);
         lobbyClient_->sendServerJoinRequest();
@@ -694,7 +694,7 @@ void dskGameLobby::goBack()
         WINDOWMANAGER.switchTo(std::make_unique<dskSinglePlayer>());
     else if(serverType == ServerType::LAN)
         WINDOWMANAGER.switchTo(std::make_unique<dskLAN>());
-    else if(serverType == ServerType::Lobby && lobbyClient_ && lobbyClient_->IsLoggedIn())
+    else if(serverType == ServerType::Lobby && lobbyClient_ && lobbyClient_->isLoggedIn())
         WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
     else
         WINDOWMANAGER.switchTo(std::make_unique<dskDirectIP>());
@@ -778,7 +778,7 @@ void dskGameLobby::msgEditEnter(const unsigned ctrl_id)
     edit->setText("");
     if(gameChat->isVisible())
         GAMECLIENT.commandChat(msg, ChatDestination::All);
-    else if(lobbyClient_ && lobbyClient_->IsLoggedIn() && lobbyChat->isVisible())
+    else if(lobbyClient_ && lobbyClient_->isLoggedIn() && lobbyChat->isVisible())
         lobbyClient_->sendChat(msg);
 }
 

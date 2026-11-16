@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
 
         for(const MapPoint& pt : river)
         {
-            BOOST_TEST_REQUIRE(map.textureMap.any(pt, IsWater));
+            BOOST_TEST_REQUIRE(map.textureMap.any(pt, isWater));
         }
     }
 }

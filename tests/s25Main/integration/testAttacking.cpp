@@ -1320,7 +1320,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyRoadsOnConquer, DestroyRoadsOnConquerFixture)
     buildRoadForBlds(world.getNeighbour(flagPt, Direction::NorthWest), milBld1Pos);
     // Build a long road connecting left&right w/o any flag in between (See #863)
     buildRoadForBlds(leftBldPos, rightBldPos);
-    BOOST_TEST_REQUIRE(leftBld->getFlag()->getRoute(Direction::East)->GetLength() >= 10u);
+    BOOST_TEST_REQUIRE(leftBld->getFlag()->getRoute(Direction::East)->getLength() >= 10u);
 
     curPlayer = 0;
     this->Attack(milBld1Pos, 5, true);

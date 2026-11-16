@@ -16,7 +16,7 @@
 
 HeadlessReplay::HeadlessReplay(const boost::filesystem::path& replayPath)
 {
-    if(!replay_.loadHeader(replayPath) || !replay_.LoadGameData(mapInfo_))
+    if(!replay_.loadHeader(replayPath) || !replay_.loadGameData(mapInfo_))
     {
         const std::string reason =
           replay_.getLastErrorMsg().empty() ? std::string("Unknown error") : replay_.getLastErrorMsg();

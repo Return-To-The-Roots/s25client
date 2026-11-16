@@ -13,7 +13,7 @@ class ILobbyClient
 {
 public:
     virtual ~ILobbyClient() = default;
-    virtual bool IsLoggedIn() const = 0;
+    virtual bool isLoggedIn() const = 0;
     virtual void addListener(LobbyInterface* listener) = 0;
     virtual void removeListener(LobbyInterface* listener) = 0;
     virtual void sendServerJoinRequest() = 0;

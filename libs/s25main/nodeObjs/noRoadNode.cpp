@@ -68,7 +68,7 @@ void noRoadNode::DestroyRoad(const Direction dir)
     if(!route)
         return;
     MapPoint t = route->getF1()->getPos();
-    for(unsigned z = 0; z < route->GetLength(); ++z)
+    for(unsigned z = 0; z < route->getLength(); ++z)
     {
         world->setPointRoad(t, route->getRoute(z), PointRoad::None);
         world->recalcBQForRoad(t);

@@ -7,7 +7,7 @@
 
 RttrLobbyClient::RttrLobbyClient(LobbyClient& client) : client_(client) {}
 
-bool RttrLobbyClient::IsLoggedIn() const
+bool RttrLobbyClient::isLoggedIn() const
 {
     return client_.IsLoggedIn();
 }

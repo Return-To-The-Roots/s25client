@@ -45,7 +45,7 @@ public:
     /// Gibt Straßen-Typ zurück
     RoadType getRoadType() const { return rt; }
     /// Gibt die Länge der Staße zurück
-    unsigned GetLength() const { return route.size(); }
+    unsigned getLength() const { return route.size(); }
     /// gibt Flagge 1 zurück
     noRoadNode* getF1() const { return f1; }
     /// setzt Flagge 1 auf o

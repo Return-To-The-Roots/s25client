@@ -32,7 +32,7 @@ public:
     /// Get the value of the currently selected item
     const std::string& getSelItemText() const;
     /// Exchange the text of 2 items
-    void Swap(unsigned first, unsigned second);
+    void swap(unsigned first, unsigned second);
     /// Deletes an item. If the deleted item is selected then the selection is cleared.
     void remove(unsigned index);
 

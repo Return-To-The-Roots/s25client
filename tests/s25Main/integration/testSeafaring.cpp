@@ -237,7 +237,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         initGameRNG();
     }
 
-    ShipDirection GetShipDir(const noShip& ship, HarborId targetHbId) const
+    ShipDirection getShipDir(const noShip& ship, HarborId targetHbId) const
     {
         for(const auto dir : helpers::enumRange<ShipDirection>())
         {
@@ -960,7 +960,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
     // Wait till ship has loaded wares and is ready
     RTTR_EXEC_TILL(500, ship.isWaitingForExpeditionInstructions());
 
-    this->travelToNextSpot(this->GetShipDir(ship, harborId), player.getShipID(ship));
+    this->travelToNextSpot(this->getShipDir(ship, harborId), player.getShipID(ship));
     BOOST_TEST_REQUIRE(!ship.isWaitingForExpeditionInstructions());
     BOOST_TEST_REQUIRE(ship.isMoving());
     BOOST_TEST_REQUIRE(ship.getTargetHarbor() == harborId);
@@ -968,7 +968,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
     RTTR_EXEC_TILL(500, ship.isWaitingForExpeditionInstructions());
     BOOST_TEST_REQUIRE(ship.getPos() == coastPoint);
 
-    this->travelToNextSpot(this->GetShipDir(ship, nbHbId), player.getShipID(ship));
+    this->travelToNextSpot(this->getShipDir(ship, nbHbId), player.getShipID(ship));
     BOOST_TEST_REQUIRE(ship.getTargetHarbor() == nbHbId);
     // Already there
     BOOST_TEST(ship.isWaitingForExpeditionInstructions());
@@ -979,7 +979,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
     BOOST_TEST_REQUIRE(otherHarborId.isValid());
     // Precondition that any ship dir will be found
     BOOST_TEST_REQUIRE(world.isHarborAtSea(otherHarborId, seaId));
-    this->travelToNextSpot(this->GetShipDir(ship, otherHarborId), player.getShipID(ship));
+    this->travelToNextSpot(this->getShipDir(ship, otherHarborId), player.getShipID(ship));
     BOOST_TEST_REQUIRE(ship.getTargetHarbor() == otherHarborId);
     // Moving
     BOOST_TEST_REQUIRE(ship.isMoving());

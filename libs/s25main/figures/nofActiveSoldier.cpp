@@ -181,7 +181,7 @@ void nofActiveSoldier::expelEnemies() const
     for(auto* fig : figures)
     {
         // Enemy of us but no soldier, and walking on the road (i.e. no free workers like woodcutters etc.)
-        if(!owner.isAlly(fig->getPlayer()) && !fig->IsSoldier() && fig->isWalkingOnRoad())
+        if(!owner.isAlly(fig->getPlayer()) && !fig->isSoldier() && fig->isWalkingOnRoad())
         {
             // Then he should start wandering around
             fig->abrogate();

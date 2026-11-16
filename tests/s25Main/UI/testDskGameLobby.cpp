@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_SUITE(UI)
 
 MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
 {
-    MOCK_METHOD(IsLoggedIn, 0);
+    MOCK_METHOD(isLoggedIn, 0);
     MOCK_METHOD(addListener, 1);
     MOCK_METHOD(removeListener, 1);
     MOCK_METHOD(sendServerJoinRequest, 0);
@@ -43,7 +43,7 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
 
     auto client = std::make_unique<MockLobbyClient>();
     mock::sequence s, s2;
-    MOCK_EXPECT(client->IsLoggedIn).at_least(1).in(s2).returns(true);
+    MOCK_EXPECT(client->isLoggedIn).at_least(1).in(s2).returns(true);
     MOCK_EXPECT(client->addListener).exactly(1).in(s);
     MOCK_EXPECT(client->removeListener).exactly(1).in(s);
     MOCK_EXPECT(client->sendServerJoinRequest).exactly(1).in(s2);

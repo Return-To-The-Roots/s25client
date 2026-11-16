@@ -154,7 +154,7 @@ void Texturizer::applyMountainWaterTransitions(const std::vector<MapPoint>& tran
 {
     std::set<MapPoint, MapPointLess> nodes;
     nodes.insert(transitions.begin(), transitions.end());
-    const auto water = textureMap_.Find(IsWater);
+    const auto water = textureMap_.Find(isWater);
     const auto boulder = textureMap_.Find(isBuildableMountain);
     const auto swamp = textureMap_.Find(isSwamp);
     replaceTextures(textures_, 0, nodes, swamp, {water});
@@ -166,13 +166,13 @@ void Texturizer::addTextures(unsigned mountainLevel, unsigned coastline)
     applyTexturingByHeightMap(mountainLevel);
 
     auto coast = SelectPoints(
-      [this](const MapPoint& pt) { return this->textureMap_.any(pt, isLand) && this->textureMap_.any(pt, IsWater); },
+      [this](const MapPoint& pt) { return this->textureMap_.any(pt, isLand) && this->textureMap_.any(pt, isWater); },
       this->textures_.getSize());
 
     applyCoastTexturing(coast, 1); // small for tiny rivers
 
     auto isRiver = [this](const MapPoint& pt) {
-        auto suroundedByWater = [this](const MapPoint& pt) { return this->textureMap_.all(pt, IsWater); };
+        auto suroundedByWater = [this](const MapPoint& pt) { return this->textureMap_.all(pt, isWater); };
         return !helpers::contains_if(this->textures_.getNeighbours(pt), suroundedByWater);
     };
     helpers::erase_if(coast, isRiver);
@@ -189,7 +189,7 @@ void Texturizer::addTextures(unsigned mountainLevel, unsigned coastline)
 
     const auto moutainWaterTransition = SelectPoints(
       [this](const MapPoint& pt) {
-          return this->textureMap_.any(pt, isMinableMountain) && this->textureMap_.any(pt, IsWater);
+          return this->textureMap_.any(pt, isMinableMountain) && this->textureMap_.any(pt, isWater);
       },
       this->textures_.getSize());
 

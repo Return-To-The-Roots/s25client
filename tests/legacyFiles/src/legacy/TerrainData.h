@@ -49,7 +49,7 @@ public:
     /// Returns whether corn fields can grow on the terrain (no dessert, mountain etc)
     static bool isVital(TerrainType t);
     /// Returns whether the given terrain is any kind of water
-    static bool IsWater(TerrainType t);
+    static bool isWater(TerrainType t);
     /// Returns whether the given terrain is any kind of lava
     static bool isLava(TerrainType t);
     /// Returns whether the given terrain is any kind of snow

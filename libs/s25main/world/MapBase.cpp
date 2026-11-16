@@ -142,7 +142,7 @@ unsigned MapBase::calcMaxDistance() const
     return calcDistance(MapPoint::all(0), MapPoint(size_.x / 2, size_.y / 2));
 }
 
-ShipDirection MapBase::GetShipDir(MapPoint fromPt, MapPoint toPt) const
+ShipDirection MapBase::getShipDir(MapPoint fromPt, MapPoint toPt) const
 {
     // First divide into North/South by only looking at the y-Difference. On equal we choose South
     // Then choose between main dir (S/N) or partial E/W:

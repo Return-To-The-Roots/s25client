@@ -174,7 +174,7 @@ public:
     /// Gibt Job-Typ zurück
     Job getJobType() const { return job_; }
     /// Returns true if this is a soldier (they get some special handling at some points)
-    bool IsSoldier() const;
+    bool isSoldier() const;
 
     unsigned calcWalkAnimationFrame() const;
     DrawPoint interpolateWalkDrawPos(DrawPoint drawPt) const;

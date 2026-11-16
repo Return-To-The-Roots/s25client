@@ -255,7 +255,7 @@ bool Replay::loadHeader(const boost::filesystem::path& filepath)
     return true;
 }
 
-bool Replay::LoadGameData(MapInfo& mapInfo)
+bool Replay::loadGameData(MapInfo& mapInfo)
 {
     try
     {

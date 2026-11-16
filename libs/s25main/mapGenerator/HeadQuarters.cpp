@@ -37,7 +37,7 @@ std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
     // added before due to allowing tiny rivers to be part of
     // connected areas
 
-    helpers::erase_if(connectedArea, [&map](const MapPoint& pt) { return map.textureMap.any(pt, IsWater); });
+    helpers::erase_if(connectedArea, [&map](const MapPoint& pt) { return map.textureMap.any(pt, isWater); });
 
     return connectedArea;
 }

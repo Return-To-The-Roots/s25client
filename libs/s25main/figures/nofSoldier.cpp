@@ -15,7 +15,7 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMi
     : noFigure(SOLDIER_JOBS[rank], pos, player, goal), homeBld(home), hitpoints(HITPOINTS[rank])
 {
     hasArmor_ = armor;
-    RTTR_Assert(IsSoldier());
+    RTTR_Assert(isSoldier());
 }
 
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home, const unsigned char rank,
@@ -23,7 +23,7 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMi
     : noFigure(SOLDIER_JOBS[rank], pos, player), homeBld(&home), hitpoints(HITPOINTS[rank])
 {
     hasArmor_ = armor;
-    RTTR_Assert(IsSoldier());
+    RTTR_Assert(isSoldier());
 }
 
 void nofSoldier::serialize(SerializedGameData& sgd) const
@@ -38,7 +38,7 @@ void nofSoldier::serialize(SerializedGameData& sgd) const
 
 nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
 {
-    RTTR_Assert(IsSoldier());
+    RTTR_Assert(isSoldier());
 
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
         homeBld = sgd.popObject<nobBaseMilitary>();

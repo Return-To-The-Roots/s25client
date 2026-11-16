@@ -124,9 +124,9 @@ noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
     }
 }
 
-bool noFigure::IsSoldier() const
+bool noFigure::isSoldier() const
 {
-    return isSoldier(job_);
+    return ::isSoldier(job_);
 }
 
 void noFigure::actAtFirst()
@@ -263,7 +263,7 @@ void noFigure::walkToGoal()
     }
 
     // Straße abgelaufen oder noch gar keine Straße vorhanden?
-    if(!cur_rs || rs_pos == cur_rs->GetLength())
+    if(!cur_rs || rs_pos == cur_rs->getLength())
     {
         // Ziel erreicht?
         // Bei dem Träger können das beide Flaggen sein!
@@ -464,7 +464,7 @@ void noFigure::startWandering(const unsigned burned_wh_id)
     // 3x rumirren und eine Flagge suchen, wenn dann keine gefunden wurde, stirbt die Figur
     wander_way = WANDER_WAY_MIN + RANDOM_RAND(WANDER_WAY_MAX - WANDER_WAY_MIN);
     // Soldaten sind härter im Nehmen
-    wander_tryings = IsSoldier() ? getStrandedSoldierReturnSearchTryings(world->getGGS()) : WANDER_TRYINGS;
+    wander_tryings = isSoldier() ? getStrandedSoldierReturnSearchTryings(world->getGGS()) : WANDER_TRYINGS;
 
     // Wenn wir stehen, zusätzlich noch loslaufen!
     if(waiting_for_free_node)
@@ -546,7 +546,7 @@ void noFigure::wander()
     {
         // Soldaten sind härter im Nehmen
         const unsigned short wander_radius =
-          IsSoldier() ? getStrandedSoldierReturnSearchRadius(world->getGGS(), wander_tryings) : WANDER_RADIUS;
+          isSoldier() ? getStrandedSoldierReturnSearchRadius(world->getGGS(), wander_tryings) : WANDER_RADIUS;
 
         // Flaggen sammeln und dann zufällig eine auswählen
         const std::vector<noFlag*> flags =
@@ -711,23 +711,23 @@ void noFigure::correctSplitData(const RoadSegment* const rs2)
     // cur_rs entspricht Teilstück 1 !
 
     // Wenn man sich auf den ersten Teilstück befindet...
-    if((rs_pos < cur_rs->GetLength() && !rs_dir) || (rs_pos > rs2->GetLength() && rs_dir))
+    if((rs_pos < cur_rs->getLength() && !rs_dir) || (rs_pos > rs2->getLength() && rs_dir))
     {
         // Nur Position berichtigen
         if(rs_dir)
-            rs_pos -= rs2->GetLength();
+            rs_pos -= rs2->getLength();
     }
 
     // Wenn man auf dem 2. steht, ...
-    else if((rs_pos > cur_rs->GetLength() && !rs_dir) || (rs_pos < rs2->GetLength() && rs_dir))
+    else if((rs_pos > cur_rs->getLength() && !rs_dir) || (rs_pos < rs2->getLength() && rs_dir))
     {
         // Position berichtigen (wenn man in umgekehrter Richtung läuft, beibehalten!)
         if(!rs_dir)
-            rs_pos -= cur_rs->GetLength();
+            rs_pos -= cur_rs->getLength();
 
         // wir laufen auf dem 2. Teilstück
         cur_rs = rs2;
-    } else if((rs_pos == cur_rs->GetLength() && !rs_dir) || (rs_pos == rs2->GetLength() && rs_dir))
+    } else if((rs_pos == cur_rs->getLength() && !rs_dir) || (rs_pos == rs2->getLength() && rs_dir))
     {
         // wir stehen genau in der Mitte
         // abhängig von der Richtung machen, in die man gerade läuft
@@ -737,7 +737,7 @@ void noFigure::correctSplitData(const RoadSegment* const rs2)
             cur_rs = rs2;
             // und wir sind da noch am Anfang
             rs_pos = 0;
-        } else if(getCurMoveDir() == cur_rs->getRoute(cur_rs->GetLength() - 1) + 3u)
+        } else if(getCurMoveDir() == cur_rs->getRoute(cur_rs->getLength() - 1) + 3u)
         {
             // wir laufen auf dem 1. Teilstück
 
@@ -896,7 +896,7 @@ void noFigure::removeFromInventory()
     } else
     {
         world->getPlayer(player).decreaseInventoryJob(job_, 1);
-        if(isSoldier(getJobType()) && hasArmor_)
+        if(::isSoldier(getJobType()) && hasArmor_)
             world->getPlayer(player).decreaseInventoryJob(jobEnumToAmoredSoldierEnum(getJobType()), 1);
     }
 }

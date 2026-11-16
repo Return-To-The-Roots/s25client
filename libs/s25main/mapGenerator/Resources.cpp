@@ -87,7 +87,7 @@ void addObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
     const auto mountain = [&textureMap](const MapPoint& pt) { return textureMap.any(pt, isMountainOrSnowOrLava); };
     const auto mountainDistance = DistancesTo(map.size, mountain);
 
-    const auto water = [&textureMap](const MapPoint& pt) { return textureMap.any(pt, IsWater); };
+    const auto water = [&textureMap](const MapPoint& pt) { return textureMap.any(pt, isWater); };
     auto waterDistance = DistancesTo(map.size, water);
 
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -233,7 +233,7 @@ void addResources(Map& map, RandomUtility& rnd, const MapSettings& settings)
                     }
                 }
             }
-        } else if(textures.all(pt, IsWater))
+        } else if(textures.all(pt, isWater))
         {
             resources[pt] = libsiedler2::R_Fish;
         } else
@@ -253,7 +253,7 @@ void addAnimals(Map& map, RandomUtility& rnd)
     {
         if(rnd.byChance(3))
         {
-            if(textures.all(pt, IsWater))
+            if(textures.all(pt, isWater))
             {
                 map.animals[pt] = libsiedler2::Animal::Duck;
             } else if(textures.all(pt, isLand))

@@ -219,7 +219,7 @@ bool RoadPathFinder::findPathImpl(const noRoadNode& start, const noRoadNode& goa
             if(!isSegmentAllowed(*route))
                 continue;
 
-            const unsigned cost = best.cost + route->GetLength() + (neighbour != goalBld ? addCosts(best, dir) : 0);
+            const unsigned cost = best.cost + route->getLength() + (neighbour != goalBld ? addCosts(best, dir) : 0);
 
             if(cost > max)
                 continue;

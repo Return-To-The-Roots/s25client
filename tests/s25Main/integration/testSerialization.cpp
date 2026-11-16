@@ -545,7 +545,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
             continue;
         }
         MapInfo newMap;
-        BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
+        BOOST_TEST_REQUIRE(loadReplay.loadGameData(newMap));
         BOOST_TEST_REQUIRE(loadReplay.getNumPlayers() == 4u);
         for(unsigned j = 0; j < 4; j++)
         {
@@ -610,7 +610,7 @@ BOOST_FIXTURE_TEST_CASE(BrokenReplayWithMap, ReplayMapFixture)
     BOOST_TEST(loadReplay.getPlayerNames()[2] == "PlAI2");
     BOOST_TEST(loadReplay.getLastGF() == 5u);
     MapInfo newMap;
-    BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
+    BOOST_TEST_REQUIRE(loadReplay.loadGameData(newMap));
     BOOST_TEST_REQUIRE(loadReplay.getNumPlayers() == 4u);
     for(unsigned j = 0; j < 4; j++)
     {
@@ -699,7 +699,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
             continue;
         }
         MapInfo newMap;
-        BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
+        BOOST_TEST_REQUIRE(loadReplay.loadGameData(newMap));
         BOOST_TEST_REQUIRE(loadReplay.getNumPlayers() == 4u);
         for(unsigned j = 0; j < 4; j++)
         {

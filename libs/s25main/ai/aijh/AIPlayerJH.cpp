@@ -1128,7 +1128,7 @@ void AIPlayerJH::handleRoadConstructionComplete(MapPoint pt, Direction dir)
         return;
     // does the roadsegment still exist?
     const RoadSegment* const roadSeg = flag->getRoute(dir);
-    if(!roadSeg || roadSeg->GetLength() < 4) // road too short to need flags
+    if(!roadSeg || roadSeg->getLength() < 4) // road too short to need flags
         return;
     // check if this road leads to a warehouseflag and if it does start setting flags from the warehouseflag else from
     // the new flag goal is to move roadsegments with a length of more than 2 away from the warehouse

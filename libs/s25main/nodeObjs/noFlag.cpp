@@ -194,7 +194,7 @@ std::unique_ptr<Ware> noFlag::selectWare(const Direction roadDir, const bool swa
             if(!route)
                 continue;
 
-            if(route->GetLength() == 1)
+            if(route->getLength() == 1)
             {
                 // Gebäude?
 

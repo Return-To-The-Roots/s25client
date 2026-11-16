@@ -19,7 +19,7 @@ void placeHarborPosition(Map& map, const MapPoint& position)
     auto harborTexture = textures.Find(isBuildableCoast);
     auto triangles = GetTriangles(position, map.size);
 
-    auto isWater = [&textures](const MapPoint& pt) { return textures.any(pt, IsWater); };
+    auto isWaterTerrain = [&textures](const MapPoint& pt) { return textures.any(pt, isWater); };
 
     for(const Triangle& triangle : triangles)
     {
@@ -28,7 +28,7 @@ void placeHarborPosition(Map& map, const MapPoint& position)
 
     for(const Triangle& triangle : triangles)
     {
-        if(helpers::contains_if(GetTriangleEdges(triangle, map.size), isWater))
+        if(helpers::contains_if(GetTriangleEdges(triangle, map.size), isWaterTerrain))
         {
             map.harbors.push_back(triangle);
         }
@@ -41,8 +41,8 @@ std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vec
     std::set<MapPoint, MapPointLess> visited;
 
     const auto isCoast = [&map](const MapPoint& pt) {
-        const auto allWater = [&map](const MapPoint& p) { return map.textureMap.all(p, IsWater); };
-        return map.textureMap.any(pt, isLand) && map.textureMap.any(pt, IsWater)
+        const auto allWater = [&map](const MapPoint& p) { return map.textureMap.all(p, isWater); };
+        return map.textureMap.any(pt, isLand) && map.textureMap.any(pt, isWater)
                && helpers::contains_if(map.getTextures().getNeighbours(pt), allWater);
     };
 

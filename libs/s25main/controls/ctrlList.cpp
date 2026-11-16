@@ -210,7 +210,7 @@ void ctrlList::resize(const Extent& newSize)
     Window::resize(newSize);
 }
 
-void ctrlList::Swap(unsigned first, unsigned second)
+void ctrlList::swap(unsigned first, unsigned second)
 {
     // Evtl Selection auf das jeweilige Element beibehalten?
     if(first == selection_)

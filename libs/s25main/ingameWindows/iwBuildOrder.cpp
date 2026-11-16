@@ -158,7 +158,7 @@ void iwBuildOrder::msgButtonClick(const unsigned ctrl_id)
             while(selection > 0)
             {
                 std::swap(pendingBuildOrder[selection - 1], pendingBuildOrder[selection]);
-                list->Swap(selection - 1, selection);
+                list->swap(selection - 1, selection);
                 --selection;
             }
             settings_changed = true;
@@ -169,7 +169,7 @@ void iwBuildOrder::msgButtonClick(const unsigned ctrl_id)
             if(selection > 0)
             {
                 std::swap(pendingBuildOrder[selection - 1], pendingBuildOrder[selection]);
-                list->Swap(selection - 1, selection);
+                list->swap(selection - 1, selection);
             }
             settings_changed = true;
         }
@@ -179,7 +179,7 @@ void iwBuildOrder::msgButtonClick(const unsigned ctrl_id)
             if(selection < numOptions - 1u)
             {
                 std::swap(pendingBuildOrder[selection + 1], pendingBuildOrder[selection]);
-                list->Swap(selection + 1, selection);
+                list->swap(selection + 1, selection);
             }
             settings_changed = true;
         }
@@ -189,7 +189,7 @@ void iwBuildOrder::msgButtonClick(const unsigned ctrl_id)
             while(selection < numOptions - 1u)
             {
                 std::swap(pendingBuildOrder[selection + 1], pendingBuildOrder[selection]);
-                list->Swap(selection + 1, selection);
+                list->swap(selection + 1, selection);
                 ++selection;
             }
             settings_changed = true;

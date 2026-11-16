@@ -123,7 +123,7 @@ void AIConstruction::setFlagsAlongRoad(const noRoadNode& roadNode, Direction dir
     curPos = aii.gwb.getNeighbour(curPos, roadSeg.getDir(isBwdDir, 0));
     // Start after getting first neighbor (min distance == 2)
     // and skip last 2 points (min distance and last is flag)
-    for(unsigned i = 1; i + 2 < roadSeg.GetLength(); ++i)
+    for(unsigned i = 1; i + 2 < roadSeg.getLength(); ++i)
     {
         curPos = aii.gwb.getNeighbour(curPos, roadSeg.getDir(isBwdDir, i));
         aii.SetFlag(curPos);

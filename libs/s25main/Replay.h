@@ -68,7 +68,7 @@ public:
     /// Load the header (containing map and player names)
     bool loadHeader(const boost::filesystem::path& filepath);
     /// Load the remaining data into the mapInfo
-    bool LoadGameData(MapInfo& mapInfo);
+    bool loadGameData(MapInfo& mapInfo);
 
     /// Record a chat message
     void addChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str);

@@ -327,11 +327,11 @@ void nofCarrier::walked()
             {
                 // Dann umdrehen und holen
                 rs_dir = !rs_dir;
-                rs_pos = workplace->GetLength() - rs_pos;
+                rs_pos = workplace->getLength() - rs_pos;
                 state = CarrierState::FetchWare;
 
                 startWalking(cur_rs->getDir(rs_dir, rs_pos));
-            } else if(rs_pos == cur_rs->GetLength() / 2 || rs_pos == cur_rs->GetLength() / 2 + cur_rs->GetLength() % 2)
+            } else if(rs_pos == cur_rs->getLength() / 2 || rs_pos == cur_rs->getLength() / 2 + cur_rs->getLength() % 2)
             {
                 // Wir sind in der Mitte angekommen
                 state = CarrierState::WaitForWare;
@@ -351,10 +351,10 @@ void nofCarrier::walked()
             } else
             {
                 // Eventuell laufen wir in die falsche Richtung?
-                if(rs_pos > cur_rs->GetLength() / 2)
+                if(rs_pos > cur_rs->getLength() / 2)
                 {
                     rs_dir = !rs_dir;
-                    rs_pos = cur_rs->GetLength() - rs_pos;
+                    rs_pos = cur_rs->getLength() - rs_pos;
                 }
 
                 startWalking(cur_rs->getDir(rs_dir, rs_pos));
@@ -366,7 +366,7 @@ void nofCarrier::walked()
             // Zur Flagge laufen, um die Ware zu holen
 
             // Sind wir schon da?
-            if(rs_pos == cur_rs->GetLength())
+            if(rs_pos == cur_rs->getLength())
                 // Dann Ware aufnehmnen
                 fetchWare(false);
             else
@@ -376,7 +376,7 @@ void nofCarrier::walked()
         case CarrierState::CarryWare:
         {
             // Reached target flag?
-            if(rs_pos == cur_rs->GetLength())
+            if(rs_pos == cur_rs->getLength())
             {
                 // Flag just reached
                 auto& this_flag = assertNonNull<noFlag>(((rs_dir) ? workplace->getF1() : workplace->getF2()));
@@ -428,11 +428,11 @@ void nofCarrier::walked()
                         // No space at flag, go back and try again later
                         state = CarrierState::GoBackFromFlag;
                         rs_dir = !rs_dir;
-                        rs_pos = cur_rs->GetLength() - rs_pos;
+                        rs_pos = cur_rs->getLength() - rs_pos;
                         startWalking(getCurMoveDir() + 3u);
                     }
                 }
-            } else if(rs_pos == cur_rs->GetLength() - 1)
+            } else if(rs_pos == cur_rs->getLength() - 1)
             {
                 // If we are one step before the flag, check if we have to wait for space
                 auto* this_flag = static_cast<noFlag*>(((rs_dir) ? workplace->getF1() : workplace->getF2()));
@@ -467,7 +467,7 @@ void nofCarrier::walked()
         {
             // So tun, als ob der Träger gerade vom anderen Ende des Weges kommt, damit alles korrekt funktioniert
             cur_rs = workplace;
-            faceDir(workplace->getDir(rs_dir, workplace->GetLength() - 1));
+            faceDir(workplace->getDir(rs_dir, workplace->getLength() - 1));
             lookForWares();
         }
         break;
@@ -475,7 +475,7 @@ void nofCarrier::walked()
         {
             // Wieder umdrehen und so tun, als wären wir gerade normal angekommen
             rs_dir = !rs_dir;
-            rs_pos = cur_rs->GetLength() - rs_pos;
+            rs_pos = cur_rs->getLength() - rs_pos;
             state = CarrierState::CarryWare;
             walked();
         }
@@ -767,7 +767,7 @@ bool nofCarrier::addWareJob(const noRoadNode* rn)
         if(rs_dir == workplace->getNodeID(*rn) && state == CarrierState::WaitForWare)
         {
             rs_dir = !rs_dir;
-            rs_pos = cur_rs->GetLength() - rs_pos;
+            rs_pos = cur_rs->getLength() - rs_pos;
         }
         // beim Gehen in die Mitte nicht sofort umdrehen!
         else if(rs_dir == workplace->getNodeID(*rn))
@@ -811,7 +811,7 @@ void nofCarrier::removeWareJob()
             //// Wenn es an der anderen Flagge noch einen gibt, dort hin gehen
             // if(workplace->AreWareJobs(rs_dir))
             //{
-            //  rs_pos = cur_rs->GetLength()-rs_pos-2;
+            //  rs_pos = cur_rs->getLength()-rs_pos-2;
             //  rs_dir = !rs_dir;
             //}
             // else
@@ -861,7 +861,7 @@ bool nofCarrier::wantInBuilding(bool* calculated)
     if(!rs)
         return false;
 
-    if(rs->GetLength() != 1)
+    if(rs->getLength() != 1)
         return false;
 
     if(calculated)

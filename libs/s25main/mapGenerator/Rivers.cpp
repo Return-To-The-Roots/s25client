@@ -17,7 +17,7 @@ River createStream(RandomUtility& rnd, Map& map, const MapPoint& source, Directi
     std::vector<Direction> exlcuded{direction + 2, direction + 3, direction + 4};
 
     auto& textures = map.textureMap;
-    const auto water = textures.Find(IsWater);
+    const auto water = textures.Find(isWater);
 
     MapPoint currentNode = source;
     Direction currentDir = direction;

@@ -668,7 +668,7 @@ void MapLoader::calcHarborPosNeighbors(World& world)
             auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(world.getIdx(ownCoastPt));
             for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
             {
-                ShipDirection shipDir = world.GetShipDir(ownCoastPt, ownCoastPt);
+                ShipDirection shipDir = world.getShipDir(ownCoastPt, ownCoastPt);
                 world.harborData[startHbId].neighbors[shipDir].push_back(HarborPos::Neighbor(it->second, seaId, 0));
                 hbFound[it->second] = true;
             }
@@ -695,7 +695,7 @@ void MapLoader::calcHarborPosNeighbors(World& world)
 
                 if(ptValue > 0) // found harbor(s)
                 {
-                    const ShipDirection shipDir = world.GetShipDir(world.harborData[startHbId].pos, curPt);
+                    const ShipDirection shipDir = world.getShipDir(world.harborData[startHbId].pos, curPt);
                     const SeaId seaId = world.getSeaFromCoastalPoint(curPt);
                     RTTR_Assert(seaId);
                     auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(idx);
