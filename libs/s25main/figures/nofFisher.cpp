@@ -80,8 +80,8 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
         }
     }
 
-    LOADER.GetPlayerImage("rom_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
     DrawShadow(drawPt, 0, Direction(fishing_dir));
+    LOADER.GetPlayerImage("rom_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
 }
 
 unsigned short nofFisher::GetCarryID() const

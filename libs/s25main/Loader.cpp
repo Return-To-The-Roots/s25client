@@ -430,6 +430,7 @@ void Loader::LoadDummyMapFiles()
     pushRange(440, 484);
     pushRange(500, 527);
     pushRange(560, 561);
+    pushRange(900, 947); // Figure shadows
 
     for(const auto j : helpers::range(0, 6))
     {

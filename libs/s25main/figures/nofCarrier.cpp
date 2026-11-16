@@ -139,7 +139,9 @@ void nofCarrier::Draw(DrawPoint drawPt)
             if(state == CarrierState::WaitForWare
                || (waiting_for_free_node && !IsStoppedBetweenNodes() && !carried_ware))
             {
-                bool animation = false;
+                // Set if an idle animation should be drawn instead of the regular wait image
+                glArchivItem_Bitmap_Player* animationBmp = nullptr;
+                DrawPoint animationDrawPt = drawPt;
 
                 // Ist es schon Zeit für eine Animation?
                 unsigned current_gf = GetEvMgr().GetCurrentGF();
@@ -171,39 +173,33 @@ void nofCarrier::Draw(DrawPoint drawPt)
                         SetNewAnimationMoment();
                     } else
                     {
-                        animation = true;
-
                         if(!useNewyearsEgg)
                         {
                             // Nein, dann Animation abspielen
-                            LOADER
-                              .GetPlayerImage(
-                                "rom_bobs",
-                                ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
-                              ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
+                            animationBmp = LOADER.GetPlayerImage(
+                              "rom_bobs",
+                              ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF]);
                         } else // Silvesteregg
                         {
-                            glArchivItem_Bitmap_Player* bmp =
-                              LOADER.GetPlayerImage("firework", (current_gf - next_animation) / 3 + 1);
+                            animationBmp = LOADER.GetPlayerImage("firework", (current_gf - next_animation) / 3 + 1);
+                            animationDrawPt -= DrawPoint(26, 104);
 
-                            if(bmp)
-                                bmp->DrawFull(drawPt - DrawPoint(26, 104), COLOR_WHITE, world->GetPlayer(player).color);
-                            else
-                            {
+                            if(!animationBmp)
                                 SetNewAnimationMoment();
-                                animation = false;
-                            }
                         }
                     }
                 }
 
-                if(!animation)
+                if(animationBmp)
                 {
+                    DrawShadow(drawPt, 0, GetCurMoveDir());
+                    animationBmp->DrawFull(animationDrawPt, COLOR_WHITE, world->GetPlayer(player).color);
+                } else
+                {
+                    // Steht und wartet (ohne Ware)
                     LOADER.getCarrierBobSprite(world->GetPlayer(player).nation, fat, GetCurMoveDir(), 2)
                       .draw(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
-                } else
-                    // Steht und wartet (ohne Ware)
-                    DrawShadow(drawPt, 0, GetCurMoveDir());
+                }
             } else if(state == CarrierState::WaitForWareSpace
                       || (waiting_for_free_node && !IsStoppedBetweenNodes() && carried_ware))
             {
