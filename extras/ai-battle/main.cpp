@@ -105,7 +105,7 @@ int main(int argc, char** argv)
         ("ai", po::value(&opts.ais)->required(),"AI player(s) to add (aijh | dummy)")
         ("teams", po::value(&opts.teams),"Team assignment, e.g. \"0,1;2,3\" for a 2v2 (groups separated by ';', player indices by ','). Allied players get start pacts.")
         ("objective", po::value(&opts.objective)->default_value("domination"),"domination(default) | conquer")
-        ("wares", po::value(&opts.wares)->default_value("normal"),"Starting wares: vlow | low | normal (default) | alot")
+        ("wares", po::value(&opts.wares)->default_value("normal"),"Starting wares: vlow | low | normal (default) | alot | minimal | minimalplus")
         ("settings", po::value(&opts.settings_path),"INI file with an [addons] section to configure addon settings (optional)")
         ("replay", po::value(&opts.replay_path),"Filename to write replay to (optional)")
         ("save", po::value(&opts.savegame_path),"Filename to write savegame to (optional)")
@@ -197,6 +197,10 @@ int main(int argc, char** argv)
             ggs.startWares = StartWares::Normal;
         else if(opts.wares == "alot")
             ggs.startWares = StartWares::ALot;
+        else if(opts.wares == "minimal")
+            ggs.startWares = StartWares::Minimal;
+        else if(opts.wares == "minimalplus")
+            ggs.startWares = StartWares::MinimalPlus;
         else
         {
             bnw::cerr << "Unknown wares value: " << opts.wares << std::endl;

@@ -219,6 +219,8 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
     SET_AND_CHECK(objective, GO_CONQUER3_4, GameObjective::Conquer3_4);
     SET_AND_CHECK(startWares, SWR_LOW, StartWares::Low);
     SET_AND_CHECK(startWares, SWR_VLOW, StartWares::VLow);
+    SET_AND_CHECK(startWares, SWR_MINIMAL, StartWares::Minimal);
+    SET_AND_CHECK(startWares, SWR_MINIMALPLUS, StartWares::MinimalPlus);
 
     executeLua("rttr:SetGameSettings({fow=EXP_FOGOFWARE_EXPLORED})"); // Legacy
     shouldSettings.exploration = Exploration::FogOfWarExplored;

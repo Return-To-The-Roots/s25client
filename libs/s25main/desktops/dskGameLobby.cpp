@@ -245,6 +245,8 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
     combo->AddItem(_("Low"));
     combo->AddItem(_("Normal"));
     combo->AddItem(_("A lot"));
+    combo->AddItem(_("Minimal"));
+    combo->AddItem(_("Minimal+"));
 
     AddText(ID_txtGoals, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo = AddComboBox(ID_cbGoals, DrawPoint(600, 340), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
