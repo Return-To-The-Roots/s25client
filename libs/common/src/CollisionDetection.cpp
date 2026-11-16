@@ -19,7 +19,7 @@ bool IsPointInRect(const int x, const int y, const int rx, const int ry, const i
     return IsPointInRect(Position(x, y), Rect(Position(rx, ry), Extent(rwidth, rheight)));
 }
 
-bool DoRectsIntersect(const Rect& rect1, const Rect& rect2)
+bool doRectsIntersect(const Rect& rect1, const Rect& rect2)
 {
     // Size = 0 -> No intersection possible
     if(rect1.getSize() == Extent(0, 0) || rect2.getSize() == Extent(0, 0))

@@ -25,10 +25,10 @@ BOOST_AUTO_TEST_SUITE(UI)
 MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
 {
     MOCK_METHOD(IsLoggedIn, 0);
-    MOCK_METHOD(AddListener, 1);
-    MOCK_METHOD(RemoveListener, 1);
-    MOCK_METHOD(SendServerJoinRequest, 0);
-    MOCK_METHOD(SendChat, 1);
+    MOCK_METHOD(addListener, 1);
+    MOCK_METHOD(removeListener, 1);
+    MOCK_METHOD(sendServerJoinRequest, 0);
+    MOCK_METHOD(sendChat, 1);
 };
 
 BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
@@ -44,13 +44,13 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
     auto client = std::make_unique<MockLobbyClient>();
     mock::sequence s, s2;
     MOCK_EXPECT(client->IsLoggedIn).at_least(1).in(s2).returns(true);
-    MOCK_EXPECT(client->AddListener).exactly(1).in(s);
-    MOCK_EXPECT(client->RemoveListener).exactly(1).in(s);
-    MOCK_EXPECT(client->SendServerJoinRequest).exactly(1).in(s2);
-    MOCK_EXPECT(client->SendChat).exactly(1);
+    MOCK_EXPECT(client->addListener).exactly(1).in(s);
+    MOCK_EXPECT(client->removeListener).exactly(1).in(s);
+    MOCK_EXPECT(client->sendServerJoinRequest).exactly(1).in(s2);
+    MOCK_EXPECT(client->sendChat).exactly(1);
 
     // TODO: How to trigger through dskGameLobby?
-    client->SendChat("");
+    client->sendChat("");
 
     auto* desktop = WINDOWMANAGER.Switch(std::make_unique<dskGameLobby>(
       ServerType::Lobby, std::shared_ptr<GameLobby>(&gameLobby, [](auto) {}), 0, std::move(client)));
@@ -62,7 +62,7 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
     std::vector<ctrlButton*> chatBts = chatTab.front()->getCtrls<ctrlButton>();
     BOOST_TEST_REQUIRE(chatBts.size() == 2u);
 
-    WINDOWMANAGER.Draw();
+    WINDOWMANAGER.draw();
 
     // Send a chat message via lobby chat and game chat with either visible
     for(unsigned i = 0; i < 3; i++)
@@ -74,7 +74,7 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
         desktop->msgOptionGroupChange(chatTab.front()->getID(), chatBts[i % 2]->getID());
     }
     // Free desktop etc to trigger mock verification
-    WINDOWMANAGER.CleanUp();
+    WINDOWMANAGER.cleanUp();
 }
 
 BOOST_AUTO_TEST_CASE(CheckServerVersionValidity)

@@ -28,9 +28,9 @@ struct PathConditionReachableWithStaticBlockers : PathConditionReachable
 
 } // namespace
 
-bool DoesReachablePathExist(const GameWorldBase& world, const MapPoint startPt, const MapPoint endPt, unsigned maxLen)
+bool doesReachablePathExist(const GameWorldBase& world, const MapPoint startPt, const MapPoint endPt, unsigned maxLen)
 {
     RTTR_Assert(startPt != endPt);
-    return world.getFreePathFinder().FindPath(startPt, endPt, false, maxLen, nullptr, nullptr, nullptr,
+    return world.getFreePathFinder().findPath(startPt, endPt, false, maxLen, nullptr, nullptr, nullptr,
                                               PathConditionReachableWithStaticBlockers(world));
 }

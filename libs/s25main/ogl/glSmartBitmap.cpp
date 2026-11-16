@@ -32,7 +32,7 @@ glSmartBitmap::~glSmartBitmap()
 void glSmartBitmap::reset()
 {
     if(texture && !sharedTexture)
-        VIDEODRIVER.DeleteTexture(texture);
+        VIDEODRIVER.deleteTexture(texture);
     texture = 0;
 
     for(glBitmapItem& bmpItem : items)
@@ -201,7 +201,7 @@ void glSmartBitmap::generateTexture()
 
     if(!texture)
     {
-        texture = VIDEODRIVER.GenerateTexture();
+        texture = VIDEODRIVER.generateTexture();
 
         if(!texture)
             return;
@@ -212,7 +212,7 @@ void glSmartBitmap::generateTexture()
     libsiedler2::PixelBufferBGRA buffer(bufSize.x, bufSize.y);
     drawTo(buffer);
 
-    VIDEODRIVER.BindTexture(texture);
+    VIDEODRIVER.bindTexture(texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -240,7 +240,7 @@ void glSmartBitmap::generateTexture()
     }
 }
 
-void glSmartBitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= 0xFFFFFFFF*/)
+void glSmartBitmap::draw(Rect dstArea, Rect srcArea, unsigned color /*= 0xFFFFFFFF*/)
 {
     drawRect(dstArea, srcArea, color);
 }
@@ -331,7 +331,7 @@ void glSmartBitmap::drawRect(Rect dstArea, Rect srcArea, unsigned color /*= 0xFF
     glVertexPointer(2, GL_FLOAT, 0, vertices.data());
     glTexCoordPointer(2, GL_FLOAT, 0, curTexCoords.data());
     glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors.data());
-    VIDEODRIVER.BindTexture(texture);
+    VIDEODRIVER.bindTexture(texture);
     glDrawArrays(GL_QUADS, 0, numQuads);
     glDisableClientState(GL_COLOR_ARRAY);
 }

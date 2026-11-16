@@ -28,7 +28,7 @@ nofMetalworker::nofMetalworker(const MapPoint pos, const unsigned char player, n
     toolOrderSub = world->getNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
         if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged)
            && note.player == this->player)
-            CheckForOrders();
+            checkForOrders();
     });
 }
 
@@ -44,7 +44,7 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
         else
             nextProducedTool = GoodType(iWare);
     } else
-        nextProducedTool = sgd.PopOptionalEnum<GoodType>();
+        nextProducedTool = sgd.popOptionalEnum<GoodType>();
     if(state == State::EnterBuilding && current_ev == nullptr && !ware && !nextProducedTool)
     {
         LOG.write("Found invalid metalworker. Assuming corrupted savegame -> Trying to fix this. If you encounter this "
@@ -52,29 +52,29 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
                   "report this!");
         RTTR_Assert(false);
         state = State::WaitingForWaresOrProductionStopped;
-        current_ev = getEvMgr().AddEvent(this, 1000, 2);
+        current_ev = getEvMgr().addEvent(this, 1000, 2);
     }
     toolOrderSub = world->getNotifications().subscribe<ToolNote>([this](const ToolNote& note) {
         if((note.type == ToolNote::OrderPlaced || note.type == ToolNote::SettingsChanged)
            && note.player == this->player)
-            CheckForOrders();
+            checkForOrders();
     });
 }
 
 void nofMetalworker::Serialize(SerializedGameData& sgd) const
 {
     nofWorkman::Serialize(sgd);
-    sgd.PushOptionalEnum<uint8_t>(nextProducedTool);
+    sgd.pushOptionalEnum<uint8_t>(nextProducedTool);
 }
 
-void nofMetalworker::DrawWorking(DrawPoint drawPt)
+void nofMetalworker::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}}};
 
-    const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
+    const unsigned now_id = GAMECLIENT.interpolate(230, current_ev);
 
     LOADER.getPlayerImage("rom_bobs", 190 + (now_id % 23))
-      ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
+      ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     // Hämmer-Sound
     if(now_id % 23 == 3 || now_id % 23 == 7)
@@ -116,9 +116,9 @@ bool nofMetalworker::hasToolOrder() const
     return false;
 }
 
-bool nofMetalworker::AreWaresAvailable() const
+bool nofMetalworker::areWaresAvailable() const
 {
-    if(!nofWorkman::AreWaresAvailable())
+    if(!nofWorkman::areWaresAvailable())
         return false;
     // If produce nothing on zero is disabled we will always produce something ->OK
     if(world->getGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 0)
@@ -136,20 +136,20 @@ bool nofMetalworker::AreWaresAvailable() const
     return false;
 }
 
-bool nofMetalworker::StartWorking()
+bool nofMetalworker::startWorking()
 {
     nextProducedTool = getOrderedTool();
     if(!nextProducedTool)
         nextProducedTool = getRandomTool();
 
-    return nextProducedTool && nofWorkman::StartWorking();
+    return nextProducedTool && nofWorkman::startWorking();
 }
 
-void nofMetalworker::CheckForOrders()
+void nofMetalworker::checkForOrders()
 {
     // If we are waiting and an order or setting was changed -> See if we can work
     if(state == State::WaitingForWaresOrProductionStopped)
-        TryToWork();
+        tryToWork();
 }
 
 helpers::OptionalEnum<GoodType> nofMetalworker::getOrderedTool()
@@ -168,11 +168,11 @@ helpers::OptionalEnum<GoodType> nofMetalworker::getOrderedTool()
 
     const Tool tool = RANDOM_ELEMENT(random_array);
 
-    owner.ToolOrderProcessed(tool);
+    owner.toolOrderProcessed(tool);
 
     if(!hasToolOrder())
     {
-        SendPostMessage(player,
+        sendPostMessage(player,
                         std::make_unique<PostMsg>(getEvMgr().getCurrentGF(),
                                                   _("Completed the ordered amount of tools."), PostCategory::Economy));
     }
@@ -206,7 +206,7 @@ helpers::OptionalEnum<GoodType> nofMetalworker::getRandomTool()
     return TOOL_TO_GOOD[RANDOM_ELEMENT(random_array)];
 }
 
-helpers::OptionalEnum<GoodType> nofMetalworker::ProduceWare()
+helpers::OptionalEnum<GoodType> nofMetalworker::produceWare()
 {
     return nextProducedTool;
 }

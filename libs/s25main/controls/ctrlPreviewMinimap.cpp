@@ -18,16 +18,16 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent, const unsigned id, const 
 /**
  *  Zeichnet die MapPreview
  */
-void ctrlPreviewMinimap::Draw_()
+void ctrlPreviewMinimap::drawImpl()
 {
     if(mapSize == Extent::all(0))
         return;
 
     // Button drumrum zeichnen
-    Draw3DBorder(getBoundaryRect(), TextureColor::Grey, true);
+    draw3DBorder(getBoundaryRect(), TextureColor::Grey, true);
 
     // Map ansich zeichnen
-    DrawMap(minimap);
+    drawMap(minimap);
 
     const Extent playerPxlSize(4, 4);
     const DrawPoint basePos = getDrawPos();
@@ -36,7 +36,7 @@ void ctrlPreviewMinimap::Draw_()
     {
         // Spieler anwesend?
         if(player.pos.isValid())
-            DrawRectangle(Rect(basePos + CalcMapCoord(player.pos), playerPxlSize), player.color);
+            drawRectangle(Rect(basePos + calcMapCoord(player.pos), playerPxlSize), player.color);
     }
 }
 
@@ -50,7 +50,7 @@ Rect ctrlPreviewMinimap::getBoundaryRect() const
 void ctrlPreviewMinimap::setMap(const libsiedler2::ArchivItem_Map* const s2map)
 {
     for(auto& player : players)
-        player.pos = MapPoint::Invalid();
+        player.pos = MapPoint::invalid();
     if(!s2map)
     {
         setMapSize(Extent::all(0));

@@ -30,7 +30,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
     }
 
     // Katapultsteine serialisieren
-    sgd.PushObjectContainer(world.catapult_stones, true);
+    sgd.pushObjectContainer(world.catapult_stones, true);
     // Meeresinformationen serialisieren
     sgd.PushUnsignedInt(world.seas.size());
     for(const auto& sea : world.seas)
@@ -56,7 +56,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
         }
     }
 
-    sgd.PushObjectContainer(world.harbor_building_sites_from_sea, true);
+    sgd.pushObjectContainer(world.harbor_building_sites_from_sea, true);
 
     if(!world.hasLua())
         sgd.PushLongString("");
@@ -102,7 +102,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
             throw SerializedGameData::Error(std::string("Invalid landscape: ") + sLandscape);
     }
     world.Init(size, lt);
-    GameObject::ResetCounters(sgd.PopUnsignedInt());
+    GameObject::resetCounters(sgd.PopUnsignedInt());
 
     std::vector<DescIdx<TerrainDesc>> landscapeTerrains;
     if(sgd.getGameDataVersion() < 3)
@@ -125,7 +125,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         }
     }
 
-    sgd.PopObjectContainer(world.catapult_stones, GO_Type::Catapultstone);
+    sgd.popObjectContainer(world.catapult_stones, GO_Type::Catapultstone);
 
     world.seas.resize(sgd.PopUnsignedInt());
     for(auto& sea : world.seas)
@@ -137,7 +137,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
     world.harborData.reserve(numHarborPositions);
     for([[maybe_unused]] const auto i : helpers::range(numHarborPositions))
     {
-        world.harborData.emplace_back(sgd.PopMapPoint());
+        world.harborData.emplace_back(sgd.popMapPoint());
         auto& curHarborPos = world.harborData.back();
         helpers::popContainer(sgd, curHarborPos.seaIds);
         for(auto& neighbor : curHarborPos.neighbors)
@@ -205,7 +205,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
                             neighbor.sea = sea;
                             break;
                         }
-                        if(world.FindShipPath(world.getCoastalPoint(startHbId, sea),
+                        if(world.findShipPath(world.getCoastalPoint(startHbId, sea),
                                               world.getCoastalPoint(neighbor.id, sea), neighbor.distance, nullptr, &len)
                            && len == neighbor.distance)
                         {
@@ -219,7 +219,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         }
     }
 
-    sgd.PopObjectContainer(world.harbor_building_sites_from_sea, GO_Type::Buildingsite);
+    sgd.popObjectContainer(world.harbor_building_sites_from_sea, GO_Type::Buildingsite);
 
     const std::string luaScript = sgd.PopLongString();
     if(!luaScript.empty())
@@ -236,7 +236,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         auto lua = std::make_unique<LuaInterfaceGame>(game, localgameState);
         if(!lua->loadScriptString(luaScript))
             throw SerializedGameData::Error(_("Lua script failed to load."));
-        if(!lua->CheckScriptVersion())
+        if(!lua->checkScriptVersion())
             throw SerializedGameData::Error(_("Wrong version for lua script."));
         try
         {

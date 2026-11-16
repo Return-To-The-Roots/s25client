@@ -40,7 +40,7 @@ unsigned AsyncChecksum::getHash() const
 {
     Serializer ser;
     Serialize(ser);
-    return CalcChecksumOfBuffer(ser.GetData(), ser.GetLength());
+    return calcChecksumOfBuffer(ser.GetData(), ser.GetLength());
 }
 
 AsyncChecksum AsyncChecksum::create(const Game& game)

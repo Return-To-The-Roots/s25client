@@ -50,10 +50,10 @@ struct dskBenchmark::GameView
     GameWorldView view;
     GameView(GameWorldBase& gw, Extent size) : viewer(0u, gw), view(viewer, Position(0, 0), size)
     {
-        viewer.InitTerrainRenderer();
-        view.MoveToMapPt(MapPoint(0, 0));
-        view.ToggleShowBQ();
-        view.ToggleShowNames();
+        viewer.initTerrainRenderer();
+        view.moveToMapPt(MapPoint(0, 0));
+        view.toggleShowBQ();
+        view.toggleShowNames();
     }
 };
 
@@ -62,9 +62,9 @@ dskBenchmark::dskBenchmark()
 {
     for(std::chrono::milliseconds& t : testDurations_)
         t = std::chrono::milliseconds::zero();
-    AddText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F5 to start benchmark, F10 for all, NUM_n to set amount of instances",
+    addText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F5 to start benchmark, F10 for all, NUM_n to set amount of instances",
             COLOR_YELLOW, FontStyle::LEFT, LargeFont);
-    AddText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
+    addText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
 }
 
 dskBenchmark::~dskBenchmark()
@@ -108,14 +108,14 @@ bool dskBenchmark::msgKeyDown(const KeyEvent& ke)
 void dskBenchmark::msgPaintAfter()
 {
     for(const ColoredRect& rect : rects_)
-        DrawRectangle(rect.rect, rect.clr);
+        drawRectangle(rect.rect, rect.clr);
     for(const ColoredLine& line : lines_)
-        DrawLine(line.p1, line.p2, line.width, line.clr);
+        drawLine(line.p1, line.p2, line.width, line.clr);
     if(gameView_)
     {
         RoadBuildState roadState;
         roadState.mode = RoadBuildMode::Disabled;
-        gameView_->view.Draw(roadState, MapPoint::Invalid(), false);
+        gameView_->view.draw(roadState, MapPoint::invalid(), false);
     }
     if(curTest_ != Benchmark::None)
     {
@@ -131,7 +131,7 @@ void dskBenchmark::msgPaintAfter()
 void dskBenchmark::setActive(bool activate)
 {
     if(!IsActive() && activate)
-        VIDEODRIVER.ResizeScreen(VideoMode(1600, 900), DisplayMode::Windowed);
+        VIDEODRIVER.resizeScreen(VideoMode(1600, 900), DisplayMode::Windowed);
     dskMenuBase::setActive(activate);
 }
 
@@ -164,7 +164,7 @@ void dskBenchmark::startTest(Benchmark test)
                     if(pt.x >= 780)
                         pt.x = distrMove(rng);
                 }
-                AddText(ID_first + i, pt, txt, COLOR_YELLOW, FontStyle::LEFT, fnt);
+                addText(ID_first + i, pt, txt, COLOR_YELLOW, FontStyle::LEFT, fnt);
             }
             break;
         }
@@ -220,7 +220,7 @@ void dskBenchmark::startTest(Benchmark test)
                 return;
             std::vector<MapPoint> hqs(2, MapPoint(0, 0));
             hqs[1].x += 30;
-            MapLoader::PlaceHQs(game_->world_, hqs);
+            MapLoader::placeHQs(game_->world_, hqs);
             break;
         }
         case Benchmark::FullGame:
@@ -230,7 +230,7 @@ void dskBenchmark::startTest(Benchmark test)
                 return;
             std::vector<MapPoint> hqs(2, MapPoint(0, 0));
             hqs[1].x += 30;
-            MapLoader::PlaceHQs(game_->world_, hqs);
+            MapLoader::placeHQs(game_->world_, hqs);
             for(unsigned i = 0; i < hqs.size(); i++)
             {
                 std::vector<MapPoint> pts = game_->world_.getPointsInRadius(hqs[i], 15);
@@ -247,17 +247,17 @@ void dskBenchmark::startTest(Benchmark test)
                     if(game_->world_.getNode(pt).obj || game_->world_.getNode(flagPt).obj || !dist(rng))
                         continue;
                     BuildingType bldType = blds[getBld(rng)];
-                    noBuilding* bld = BuildingFactory::CreateBuilding(
+                    noBuilding* bld = BuildingFactory::createBuilding(
                       game_->world_, bldType, pt, i, distEqual(rng) ? Nation::Africans : Nation::Japanese);
                     if(bldType == BuildingType::Barracks)
                     {
                         auto* mil = static_cast<nobMilitary*>(bld);
-                        mil->AddPassiveSoldier(std::make_unique<nofPassiveSoldier>(pt, i, mil, mil, 0));
+                        mil->addPassiveSoldier(std::make_unique<nofPassiveSoldier>(pt, i, mil, mil, 0));
                     }
-                    auto& figure = game_->world_.AddFigure(
+                    auto& figure = game_->world_.addFigure(
                       flagPt, std::make_unique<nofPassiveWorker>(Job(getJob(rng)), flagPt, i, nullptr));
-                    figure.StartWandering();
-                    figure.StartWalking(Direction(getDir(rng)));
+                    figure.startWandering();
+                    figure.startWalking(Direction(getDir(rng)));
                 }
             }
             break;
@@ -288,7 +288,7 @@ void dskBenchmark::finishTest()
     for(Window* ctrl : ctrls)
     {
         if(ctrl->getID() >= ID_first)
-            DeleteCtrl(ctrl->getID());
+            deleteCtrl(ctrl->getID());
     }
     rects_.clear();
     lines_.clear();
@@ -356,7 +356,7 @@ void dskBenchmark::createGame()
                 lastHeight = helpers::clamp(lastHeight + uniform_int_distribution<int>(-1, 1)(rng), 8, 13);
             node.altitude = lastHeight;
         }
-        MapLoader::InitShadows(world);
+        MapLoader::initShadows(world);
         MapLoader::setMapExplored(world);
 
         GameLoader loader(LOADER, game_);

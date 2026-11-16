@@ -10,7 +10,7 @@
 #include "ai/AIPlayer.h"
 #include "network/GameClient.h"
 
-void GameClient::ExecuteNWF()
+void GameClient::executeNWF()
 {
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
@@ -27,11 +27,11 @@ void GameClient::ExecuteNWF()
         {
             // Set the current checksum as the GF checksum. The checksum from the command is from the last NWF!
             PlayerGameCommands replayCmds(checksum, currentGCs.gcs);
-            replayinfo->replay.AddGameCommand(curGF, player.id, replayCmds);
+            replayinfo->replay.addGameCommand(curGF, player.id, replayCmds);
         }
 
         // Das ganze Zeug soll die andere Funktion ausführen
-        ExecuteAllGCs(player.id, currentGCs);
+        executeAllGCs(player.id, currentGCs);
     }
 
     // Send GC message for this NWF
@@ -44,7 +44,7 @@ void GameClient::ExecuteNWF()
             gameCommands_.insert(gameCommands_.end(), aiGCs.begin(), aiGCs.end());
         else
             mainPlayer.sendMsgAsync(new GameMessage_GameCommand(ai.getPlayerId(), checksum, aiGCs));
-        for(auto& msg : ai.getAIInterface().FetchChatMessages())
+        for(auto& msg : ai.getAIInterface().fetchChatMessages())
             mainPlayer.sendMsgAsync(msg.release());
     }
     mainPlayer.sendMsgAsync(new GameMessage_GameCommand(0xFF, checksum, gameCommands_));

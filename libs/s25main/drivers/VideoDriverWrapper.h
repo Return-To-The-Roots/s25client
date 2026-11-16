@@ -33,37 +33,37 @@ public:
 
     /// Loads a new driver.
     /// Do not use this class unless this returned true!
-    bool LoadDriver(IVideoDriver* existingDriver);
-    bool LoadDriver(std::string& preference);
-    void UnloadDriver();
+    bool loadDriver(IVideoDriver* existingDriver);
+    bool loadDriver(std::string& preference);
+    void unloadDriver();
     IVideoDriver* getDriver() const { return videodriver.get(); }
 
     /// Erstellt das Fenster.
-    bool CreateScreen(VideoMode size, DisplayMode displayMode);
+    bool createScreen(VideoMode size, DisplayMode displayMode);
     /// Verändert Auflösung, Fenster/Fullscreen
-    bool ResizeScreen(VideoMode size, DisplayMode displayMode);
+    bool resizeScreen(VideoMode size, DisplayMode displayMode);
     /// Viewport (neu) setzen
-    void RenewViewport();
+    void renewViewport();
     /// zerstört das Fenster.
-    bool DestroyScreen();
+    bool destroyScreen();
     /// räumt die Texturen auf
-    void CleanUp();
+    void cleanUp();
     /// erstellt eine Textur
-    unsigned GenerateTexture();
-    void BindTexture(unsigned t);
-    void DeleteTexture(unsigned t);
+    unsigned generateTexture();
+    void bindTexture(unsigned t);
+    void deleteTexture(unsigned t);
 
     IRenderer* getRenderer() { return renderer_.get(); }
 
     /// Swapped den Buffer
-    void SwapBuffers();
+    void swapBuffers();
     /// Clears the screen (glClear)
-    void ClearScreen();
+    void clearScreen();
     // Should only be used to draw the mouse. For everything else use the events
     Position getMousePos() const;
 
     /// Get supported resolutions
-    std::set<VideoMode> ListVideoModes() const;
+    std::set<VideoMode> listVideoModes() const;
     std::set<VideoMode> getDefaultWindowSizes() const;
     bool hasVSync() const;
 
@@ -97,9 +97,9 @@ public:
     KeyEvent getModKeyState() const;
 
     // Nachrichtenschleife
-    bool Run();
+    bool run();
 
-    void ShowErrorMessage(const std::string& title, const std::string& message);
+    void showErrorMessage(const std::string& title, const std::string& message);
 
     unsigned getTickCount();
     /// Set framerate target (FPS)
@@ -116,14 +116,14 @@ public:
     static constexpr VideoMode MinWindowSize{800, 600};
 
 private:
-    bool Initialize();
+    bool initialize();
     bool setHwVSync(bool enabled);
 
     // lädt eine Funktion aus den Extensions
     void* loadExtension(const std::string& extension);
 
     // Alle (im Programm benutzen) Extensions laden
-    bool LoadAllExtensions();
+    bool loadAllExtensions();
 
     using Handle = std::unique_ptr<IVideoDriver, void (*)(IVideoDriver*)>;
 

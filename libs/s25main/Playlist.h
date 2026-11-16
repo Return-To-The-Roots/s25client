@@ -28,7 +28,7 @@ public:
     const std::string& getNextSong();
 
     /// Save playlist to file
-    bool SaveAs(const boost::filesystem::path& filepath) const;
+    bool saveAs(const boost::filesystem::path& filepath) const;
     /// Load playlist from file
     bool Load(Log& logger, const boost::filesystem::path& filepath);
 
@@ -42,7 +42,7 @@ public:
 
 private:
     /// Get the playlist ready for playing
-    void Prepare();
+    void prepare();
 
     std::vector<std::string> songs_; /// Filenames of titles to play
     unsigned numRepeats_ = 1;        /// How often to repeat each song

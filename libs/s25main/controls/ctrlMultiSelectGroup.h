@@ -17,11 +17,11 @@ public:
     ctrlMultiSelectGroup(Window* parent, unsigned id, GroupSelectType select_type);
 
     /// Selektiert einen neuen Button
-    void AddSelection(unsigned selection, bool notify = false);
+    void addSelection(unsigned selection, bool notify = false);
     /// Entfernt einen selektierten Button aus der Selektion
-    void RemoveSelection(unsigned selection, bool notify = false);
+    void removeSelection(unsigned selection, bool notify = false);
     /// Wechselt zwischen selektiert/nicht selektiert
-    void ToggleSelection(unsigned selection, bool notify = false);
+    void toggleSelection(unsigned selection, bool notify = false);
     /// Gibt Liste der aktuell selektierten Buttons zurück
     const std::set<unsigned>& getSelection() const { return selectedItems_; }
     /// Prüft ob ein Button ausgewählt ist

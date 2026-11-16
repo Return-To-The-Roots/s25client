@@ -15,11 +15,11 @@ iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* 
     setTitle(_("Headquarters"));
 
     // Soldaten Reservierungsseite
-    ctrlGroup& reserve = AddPage();
+    ctrlGroup& reserve = addPage();
     grpIdReserve = reserve.getID();
 
     // "Reserve"-Überschrift
-    reserve.AddText(0, DrawPoint(83, 87), _("Reserve"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
+    reserve.addText(0, DrawPoint(83, 87), _("Reserve"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Y-Abstand zwischen den Zeilen
     const unsigned Y_DISTANCE = 30;
@@ -27,17 +27,17 @@ iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* 
     for(unsigned i = 0; i < 5; ++i)
     {
         // Bildhintergrund
-        reserve.AddImage(1 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.getMapTexture(2298));
+        reserve.addImage(1 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.getMapTexture(2298));
         // Rang-Bild
-        reserve.AddImage(6 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.getMapTexture(2321 + i));
+        reserve.addImage(6 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.getMapTexture(2321 + i));
         // Minus-Button
-        reserve.AddImageButton(11 + i, DrawPoint(54, 112 + Y_DISTANCE * i), Extent(24, 24), TextureColor::Red1,
+        reserve.addImageButton(11 + i, DrawPoint(54, 112 + Y_DISTANCE * i), Extent(24, 24), TextureColor::Red1,
                                LOADER.getImageN("io", 139), _("Less"));
         // Plus-Button
-        reserve.AddImageButton(16 + i, DrawPoint(118, 112 + Y_DISTANCE * i), Extent(24, 24), TextureColor::Green2,
+        reserve.addImageButton(16 + i, DrawPoint(118, 112 + Y_DISTANCE * i), Extent(24, 24), TextureColor::Green2,
                                LOADER.getImageN("io", 138), _("More"));
         // Anzahl-Text
-        reserve.AddVarText(21 + i, DrawPoint(100, 117 + Y_DISTANCE * i), _("%u/%u"), 0xFFFFFF00, FontStyle::CENTER,
+        reserve.addVarText(21 + i, DrawPoint(100, 117 + Y_DISTANCE * i), _("%u/%u"), 0xFFFFFF00, FontStyle::CENTER,
                            NormalFont, 2, wh->getReserveAvailablePointer(i), wh->getReserveClaimedVisualPointer(i));
     }
 }

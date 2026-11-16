@@ -368,11 +368,11 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
                               TextureColor::Green1, "foo", font.get(), COLOR_BLACK);
         const Extent sizeBefore = txt.getSize();
         // Don't assume size, so get size for 0 chars
-        txt.ResizeForMaxChars(0);
+        txt.resizeForMaxChars(0);
         const Extent sizeZero = txt.getSize();
         BOOST_TEST(sizeZero.y == sizeBefore.y);
         const auto numChars = rttr::test::randomValue(1u, 20u);
-        txt.ResizeForMaxChars(numChars);
+        txt.resizeForMaxChars(numChars);
         BOOST_TEST(txt.getSize() == Extent(sizeZero.x + numChars * font->getDx(), sizeBefore.y));
     }
     {
@@ -380,11 +380,11 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
                            TextureColor::Green1, "foo", font.get(), "tooltip");
         const Extent sizeBefore = txt.getSize();
         // Don't assume size, so get size for 0 chars
-        txt.ResizeForMaxChars(0);
+        txt.resizeForMaxChars(0);
         const Extent sizeZero = txt.getSize();
         BOOST_TEST(sizeZero.y == sizeBefore.y);
         const auto numChars = rttr::test::randomValue(1u, 20u);
-        txt.ResizeForMaxChars(numChars);
+        txt.resizeForMaxChars(numChars);
         BOOST_TEST(txt.getSize() == Extent(sizeZero.x + numChars * font->getDx(), sizeBefore.y));
     }
 }
@@ -463,12 +463,12 @@ BOOST_AUTO_TEST_CASE(TableSorting)
     const std::vector<std::string> r4 = {"ccc", "10x30", "10", "09.11.2000 - 10:12"};
     const std::vector<std::string> r5 = {"zcc", "30x10", "13", "10.12.2000 - 10:12"};
     const std::vector<std::string> r6 = {"tts", "10x22", "42", "10.11.2001 - 10:12"};
-    table.AddRow(r1);
-    table.AddRow(r2);
-    table.AddRow(r3);
-    table.AddRow(r4);
-    table.AddRow(r5);
-    table.AddRow(r6);
+    table.addRow(r1);
+    table.addRow(r2);
+    table.addRow(r3);
+    table.addRow(r4);
+    table.addRow(r5);
+    table.addRow(r6);
 
     auto testRowsEqual = [&table](std::array<const std::vector<std::string>*, 6> rows) {
         for(unsigned i = 0; i < rows.size(); i++)
@@ -480,26 +480,26 @@ BOOST_AUTO_TEST_CASE(TableSorting)
         }
     };
 
-    table.SortRows(0, TableSortDir::Descending);
+    table.sortRows(0, TableSortDir::Descending);
     BOOST_TEST(table.getSortColumn() == 0);
     BOOST_TEST(table.getSortDirection() == TableSortDir::Descending);
     BOOST_TEST_CONTEXT("String column") testRowsEqual({&r5, &r6, &r4, &r3, &r1, &r2});
 
-    table.SortRows(1, TableSortDir::Ascending);
+    table.sortRows(1, TableSortDir::Ascending);
     BOOST_TEST(table.getSortColumn() == 1);
     BOOST_TEST(table.getSortDirection() == TableSortDir::Ascending);
     BOOST_TEST_CONTEXT("MapSize column") testRowsEqual({&r3, &r1, &r2, &r6, &r4, &r5});
 
-    table.SortRows(2, TableSortDir::Descending);
+    table.sortRows(2, TableSortDir::Descending);
     BOOST_TEST(table.getSortColumn() == 2);
     BOOST_TEST(table.getSortDirection() == TableSortDir::Descending);
     BOOST_TEST_CONTEXT("Number column") testRowsEqual({&r6, &r5, &r4, &r3, &r2, &r1});
 
-    table.SortRows(3, TableSortDir::Ascending);
+    table.sortRows(3, TableSortDir::Ascending);
     BOOST_TEST(table.getSortColumn() == 3);
     BOOST_TEST(table.getSortDirection() == TableSortDir::Ascending);
     BOOST_TEST_CONTEXT("Date column") testRowsEqual({&r4, &r1, &r2, &r3, &r5, &r6});
-    table.SortRows(3, TableSortDir::Descending);
+    table.sortRows(3, TableSortDir::Descending);
     BOOST_TEST(table.getSortColumn() == 3);
     BOOST_TEST(table.getSortDirection() == TableSortDir::Descending);
     BOOST_TEST_CONTEXT("Date column") testRowsEqual({&r6, &r5, &r3, &r2, &r1, &r4});

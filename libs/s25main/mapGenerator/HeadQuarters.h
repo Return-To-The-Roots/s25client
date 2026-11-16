@@ -50,7 +50,7 @@ std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, M
 
     // 1. look for points within a buildable area of radius 2 (min. req. of HQ)
     const auto obstacleDistance = DistancesTo(map.size, [&map](const MapPoint& pt) {
-        return map.textureMap.Any(pt, [](auto t) { return !t.Is(ETerrain::Buildable); });
+        return map.textureMap.any(pt, [](auto t) { return !t.Is(ETerrain::Buildable); });
     });
     const auto hasEnoughSpace = [&obstacleDistance](const MapPoint& pt) { return obstacleDistance[pt] >= 2; };
     std::vector<MapPoint> possiblePositions;
@@ -83,7 +83,7 @@ std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, M
     }
 
     // 5. sort remaining points by how close they're to desired mountain distance
-    const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, isMinableMountain); };
+    const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.any(pt, isMinableMountain); };
     const auto mountainDistances = DistancesTo(map.size, mountain);
     const auto desiredDistance = static_cast<unsigned>(distance);
     const auto desiredDistanceOffset = [&mountainDistances, desiredDistance](const MapPoint& pt) {
@@ -113,7 +113,7 @@ void PlaceHeadquarter(Map& map, const T_Container& area, MountainDistance distan
     const auto positions = FindHqPositions(map, area, distance);
     if(positions.empty())
         throw std::runtime_error("Could not find any valid HQ position!");
-    FlattenForCastleBuilding(map.z, positions.front());
+    flattenForCastleBuilding(map.z, positions.front());
     map.hqPositions.push_back(positions.front());
 }
 
@@ -128,6 +128,6 @@ void PlaceHeadquarter(Map& map, const T_Container& area, MountainDistance distan
  *
  * @throw runtime_error
  */
-void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistance distance, int retries = 10);
+void placeHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistance distance, int retries = 10);
 
 } // namespace rttr::mapGenerator

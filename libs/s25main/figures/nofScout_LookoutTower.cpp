@@ -19,30 +19,30 @@ nofScout_LookoutTower::nofScout_LookoutTower(SerializedGameData& sgd, const unsi
     : nofBuildingWorker(sgd, obj_id)
 {}
 
-void nofScout_LookoutTower::WalkedDerived() {}
+void nofScout_LookoutTower::walkedDerived() {}
 
-void nofScout_LookoutTower::DrawWorking(DrawPoint /*drawPt*/) {}
+void nofScout_LookoutTower::drawWorking(DrawPoint /*drawPt*/) {}
 
-void nofScout_LookoutTower::HandleDerivedEvent(const unsigned /*id*/) {}
+void nofScout_LookoutTower::handleDerivedEvent(const unsigned /*id*/) {}
 
-void nofScout_LookoutTower::WorkAborted()
+void nofScout_LookoutTower::workAborted()
 {
     // Im enstprechenden Radius alles neu berechnen
-    world->RecalcVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player, workplace);
+    world->recalcVisibilitiesAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player, workplace);
 }
 
-void nofScout_LookoutTower::WorkplaceReached()
+void nofScout_LookoutTower::workplaceReached()
 {
     // Im enstprechenden Radius alles sichtbar machen
-    world->MakeVisibleAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
+    world->makeVisibleAroundPoint(pos, VISUALRANGE_LOOKOUTTOWER, player);
 
     // Und Post versenden
-    SendPostMessage(player,
+    sendPostMessage(player,
                     std::make_unique<PostMsgWithBuilding>(getEvMgr().getCurrentGF(), _("Lookout-tower occupied"),
                                                           PostCategory::Military, *workplace));
 }
 
-bool nofScout_LookoutTower::AreWaresAvailable() const
+bool nofScout_LookoutTower::areWaresAvailable() const
 {
     // We never work!
     return false;

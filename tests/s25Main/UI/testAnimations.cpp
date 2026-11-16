@@ -43,7 +43,7 @@ struct TestWindow : public Window
     {}
 
 protected:
-    void Draw_() override {}
+    void drawImpl() override {}
 };
 
 struct WindowFixture
@@ -57,9 +57,9 @@ struct WindowFixture
     WindowFixture()
         : wnd(DrawPoint(0, 0), 0, nullptr, Extent(800, 600)), animMgr(wnd.getAnimationManager()), animFinished(false)
     {
-        bt = wnd.AddTextButton(0, DrawPoint(10, 20), Extent(100, 20), TextureColor::Red1, "Test", NormalFont);
-        bt2 = wnd.AddTextButton(1, DrawPoint(10, 40), Extent(100, 20), TextureColor::Red1, "Test", NormalFont);
-        wnd.Draw();
+        bt = wnd.addTextButton(0, DrawPoint(10, 20), Extent(100, 20), TextureColor::Red1, "Test", NormalFont);
+        bt2 = wnd.addTextButton(1, DrawPoint(10, 40), Extent(100, 20), TextureColor::Red1, "Test", NormalFont);
+        wnd.draw();
     }
 
     PredRes testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame,
@@ -662,10 +662,10 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
 {
     MockupVideoDriver* video = uiHelper::getVideoDriver();
     auto* dsk = WINDOWMANAGER.Switch(std::make_unique<Desktop>(nullptr));
-    WINDOWMANAGER.Draw();
-    bt = dsk->AddTextButton(0, DrawPoint(10, 20), Extent(100, 150), TextureColor::Red1, "", NormalFont);
+    WINDOWMANAGER.draw();
+    bt = dsk->addTextButton(0, DrawPoint(10, 20), Extent(100, 150), TextureColor::Red1, "", NormalFont);
     ctrlButton* btReference =
-      dsk->AddTextButton(1, DrawPoint(130, bt->getPos().y), bt->getSize(), TextureColor::Red1, "", NormalFont);
+      dsk->addTextButton(1, DrawPoint(130, bt->getPos().y), bt->getSize(), TextureColor::Red1, "", NormalFont);
     dsk->getAnimationManager().addAnimation(
       new MoveAnimation(bt, btReference->getPos(), 1000, Animation::RepeatType::None));
     dsk->msgPaintBefore();
@@ -681,7 +681,7 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
     video->tickCount_ += 1;
     dsk->msgPaintBefore();
     // Resize the screen and test that the final position got updated too
-    VIDEODRIVER.ResizeScreen(VideoMode(1024, 768), DisplayMode::Windowed);
+    VIDEODRIVER.resizeScreen(VideoMode(1024, 768), DisplayMode::Windowed);
     // Pass the animation
     video->tickCount_ += 1100;
     dsk->msgPaintBefore();

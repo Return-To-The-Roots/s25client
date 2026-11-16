@@ -16,7 +16,7 @@ public:
                  unsigned force_color, const std::string& tooltip, const std::string& button_minus_tooltip = "",
                  const std::string& button_plus_tooltip = "", unsigned short* write_val = nullptr);
 
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
     void setPosition(unsigned short position);
     const unsigned short& getPosition() const { return position; }
 
@@ -28,7 +28,7 @@ public:
     bool msgMouseMove(const MouseCoords& mc) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
     TextureColor tc;
@@ -42,5 +42,5 @@ private:
     /// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
     unsigned force_color;
 
-    unsigned CalcBarWidth() const;
+    unsigned calcBarWidth() const;
 };

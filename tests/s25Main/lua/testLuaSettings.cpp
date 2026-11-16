@@ -40,8 +40,8 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
     unsigned getMaxNumPlayers() const override { return players.size(); }
     JoinPlayerInfo& getJoinPlayer(unsigned playerIdx) override { return players.at(playerIdx); }
     const GlobalGameSettings& getGGS() const override { return ggs; }
-    void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) override { this->ggs = ggs; }
-    void CloseSlot(unsigned playerIdx) override { getJoinPlayer(playerIdx).ps = PlayerState::Locked; }
+    void changeGlobalGameSettings(const GlobalGameSettings& ggs) override { this->ggs = ggs; }
+    void closeSlot(unsigned playerIdx) override { getJoinPlayer(playerIdx).ps = PlayerState::Locked; }
     void setPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) override
     {
         getJoinPlayer(playerIdx).ps = state;
@@ -110,11 +110,11 @@ BOOST_AUTO_TEST_CASE(AssertionThrows)
 BOOST_AUTO_TEST_CASE(Events)
 {
     // All events need to work w/o having them
-    lua.EventSettingsInit(true, false);
-    lua.EventSettingsReady();
-    lua.EventPlayerJoined(0);
-    lua.EventPlayerLeft(0);
-    lua.EventPlayerReady(0);
+    lua.eventSettingsInit(true, false);
+    lua.eventSettingsReady();
+    lua.eventPlayerJoined(0);
+    lua.eventPlayerLeft(0);
+    lua.eventPlayerReady(0);
     BOOST_TEST_REQUIRE(lua.isChangeAllowed("general", true));
     BOOST_TEST_REQUIRE(!lua.isChangeAllowed("general", false));
     std::vector<AddonId> allowedAddons = lua.getAllowedAddons();
@@ -123,25 +123,25 @@ BOOST_AUTO_TEST_CASE(Events)
     clearLog();
     executeLua("function onSettingsInit(isSinglePlayer, isSavegame)\n  rttr:Log('init: '..tostring(isSinglePlayer)..' "
                "'..tostring(isSavegame))\nend");
-    lua.EventSettingsInit(true, false);
+    lua.eventSettingsInit(true, false);
     BOOST_TEST_REQUIRE(getLog() == "init: true false\n");
-    lua.EventSettingsInit(false, true);
+    lua.eventSettingsInit(false, true);
     BOOST_TEST_REQUIRE(getLog() == "init: false true\n");
 
     executeLua("function onSettingsReady()\n  rttr:Log('ready')\nend");
-    lua.EventSettingsReady();
+    lua.eventSettingsReady();
     BOOST_TEST_REQUIRE(getLog() == "ready\n");
 
     executeLua("function onPlayerJoined(playerIdx)\n  rttr:Log('joined'..playerIdx)\nend");
-    lua.EventPlayerJoined(2);
+    lua.eventPlayerJoined(2);
     BOOST_TEST_REQUIRE(getLog() == "joined2\n");
 
     executeLua("function onPlayerLeft(playerIdx)\n  rttr:Log('left'..playerIdx)\nend");
-    lua.EventPlayerLeft(2);
+    lua.eventPlayerLeft(2);
     BOOST_TEST_REQUIRE(getLog() == "left2\n");
 
     executeLua("function onPlayerReady(playerIdx)\n  rttr:Log('ready'..playerIdx)\nend");
-    lua.EventPlayerReady(2);
+    lua.eventPlayerReady(2);
     BOOST_TEST_REQUIRE(getLog() == "ready2\n");
 
     executeLua("function getAllowedChanges()\n  return {general=true, swapping=true}\nend");

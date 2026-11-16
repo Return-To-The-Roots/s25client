@@ -41,45 +41,45 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed p
                    LOADER.getImageN("resource", 41), true, CloseBehavior::Custom, parent),
       ggs(ggs), policy_(policy), whitelistedAddons_(std::move(whitelistedAddons))
 {
-    AddText(ID_txtAddFeatures, DrawPoint(20, 30), _("Additional features:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(ID_txtAddFeatures, DrawPoint(20, 30), _("Additional features:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
     Extent btSize(200, 22);
     if(policy != AddonChangeAllowed::None)
     {
-        AddTextButton(ID_btSavePreset, DrawPoint(20, getSize().y - 70), btSize, TextureColor::Green2, _("Save"),
+        addTextButton(ID_btSavePreset, DrawPoint(20, getSize().y - 70), btSize, TextureColor::Green2, _("Save"),
                       NormalFont, _("Save Addon Preset"));
-        AddTextButton(ID_btLoadPreset, DrawPoint(250, getSize().y - 70), btSize, TextureColor::Green2, _("Load"),
+        addTextButton(ID_btLoadPreset, DrawPoint(250, getSize().y - 70), btSize, TextureColor::Green2, _("Load"),
                       NormalFont, _("Load Addon Preset"));
-        AddTextButton(ID_btS2Defaults, DrawPoint(480, getSize().y - 70), btSize, TextureColor::Grey, _("Default"),
+        addTextButton(ID_btS2Defaults, DrawPoint(480, getSize().y - 70), btSize, TextureColor::Grey, _("Default"),
                       NormalFont, _("Use S2 Defaults"));
-        AddTextButton(ID_btApply, DrawPoint(20, getSize().y - 40), btSize, TextureColor::Green2, _("Apply"), NormalFont,
+        addTextButton(ID_btApply, DrawPoint(20, getSize().y - 40), btSize, TextureColor::Green2, _("Apply"), NormalFont,
                       _("Apply Changes"));
     }
 
-    AddTextButton(ID_btAbort, DrawPoint(250, getSize().y - 40), btSize, TextureColor::Red1, _("Abort"), NormalFont,
+    addTextButton(ID_btAbort, DrawPoint(250, getSize().y - 40), btSize, TextureColor::Red1, _("Abort"), NormalFont,
                   _("Close Without Saving"));
 
     // Kategorien
-    ctrlOptionGroup* optiongroup = AddOptionGroup(ID_grpAddonGroup, GroupSelectType::Check);
+    ctrlOptionGroup* optiongroup = addOptionGroup(ID_grpAddonGroup, GroupSelectType::Check);
     btSize = Extent(120, 22);
     // "Alle"
-    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::All), DrawPoint(20, 50), btSize, TextureColor::Green2,
+    optiongroup->addTextButton(static_cast<unsigned>(AddonGroup::All), DrawPoint(20, 50), btSize, TextureColor::Green2,
                                _("All"), NormalFont);
     // "Militär"
-    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Military), DrawPoint(150, 50), btSize,
+    optiongroup->addTextButton(static_cast<unsigned>(AddonGroup::Military), DrawPoint(150, 50), btSize,
                                TextureColor::Green2, _("Military"), NormalFont);
     // "Wirtschaft"
-    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Economy), DrawPoint(290, 50), btSize,
+    optiongroup->addTextButton(static_cast<unsigned>(AddonGroup::Economy), DrawPoint(290, 50), btSize,
                                TextureColor::Green2, _("Economy"), NormalFont);
     // "Spielverhalten"
-    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::GamePlay), DrawPoint(430, 50), btSize,
+    optiongroup->addTextButton(static_cast<unsigned>(AddonGroup::GamePlay), DrawPoint(430, 50), btSize,
                                TextureColor::Green2, _("Gameplay"), NormalFont);
     // "Sonstiges"
-    optiongroup->AddTextButton(static_cast<unsigned>(AddonGroup::Other), DrawPoint(560, 50), btSize,
+    optiongroup->addTextButton(static_cast<unsigned>(AddonGroup::Other), DrawPoint(560, 50), btSize,
                                TextureColor::Green2, _("Other"), NormalFont);
 
     ctrlScrollBar* scrollbar =
-      AddScrollBar(ID_scroll, DrawPoint(getSize().x - SCROLLBAR_WIDTH - 20, 90),
+      addScrollBar(ID_scroll, DrawPoint(getSize().x - SCROLLBAR_WIDTH - 20, 90),
                    Extent(SCROLLBAR_WIDTH, getSize().y - 170), SCROLLBAR_WIDTH, TextureColor::Green2, 1);
     scrollbar->setPageSize(scrollbar->getSize().y / AddonGuiLineHeight);
 
@@ -87,7 +87,7 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed p
     {
         const unsigned id = ID_grpAddonsStart + i;
         const Addon& addon = assertNonNull(ggs.getAddon(i));
-        addonGuis_.emplace_back(addon.createGui(*AddGroup(id), isReadOnly(addon.getId())));
+        addonGuis_.emplace_back(addon.createGui(*addGroup(id), isReadOnly(addon.getId())));
         addonGuis_.back()->setStatus(ggs.getSelection(addon.getId()));
     }
 
@@ -96,12 +96,12 @@ iwAddons::iwAddons(GlobalGameSettings& ggs, Window* parent, AddonChangeAllowed p
 
 iwAddons::~iwAddons() = default;
 
-void iwAddons::Close()
+void iwAddons::close()
 {
     // Close an open save/load preset window: the load window holds a callback into this window,
     // so it must not outlive it
-    WINDOWMANAGER.Close(CGI_ADDON_PRESETS);
-    IngameWindow::Close();
+    WINDOWMANAGER.close(CGI_ADDON_PRESETS);
+    IngameWindow::close();
 }
 
 void iwAddons::msgButtonClick(const unsigned ctrl_id)
@@ -120,7 +120,7 @@ void iwAddons::msgButtonClick(const unsigned ctrl_id)
                 switch(policy_)
                 {
                     default: break;
-                    case AddonChangeAllowed::AllAndSaveToConfig: ggs.SaveSettings(); break;
+                    case AddonChangeAllowed::AllAndSaveToConfig: ggs.saveSettings(); break;
                     case AddonChangeAllowed::All:
                     case AddonChangeAllowed::WhitelistOnly:
                         // send message via msgboxresult
@@ -128,12 +128,12 @@ void iwAddons::msgButtonClick(const unsigned ctrl_id)
                         break;
                 }
             }
-            Close();
+            close();
         }
         break;
 
         case ID_btAbort: // Discard changes
-            Close();
+            close();
             break;
 
         case ID_btSavePreset:
@@ -141,12 +141,12 @@ void iwAddons::msgButtonClick(const unsigned ctrl_id)
             std::map<unsigned, unsigned> states;
             for(const auto& gui : addonGuis_)
                 states[static_cast<unsigned>(gui->getAddon().getId())] = gui->getStatus();
-            WINDOWMANAGER.Show(std::make_unique<iwSaveAddonPreset>(std::move(states)));
+            WINDOWMANAGER.show(std::make_unique<iwSaveAddonPreset>(std::move(states)));
         }
         break;
 
         case ID_btLoadPreset:
-            WINDOWMANAGER.Show(std::make_unique<iwLoadAddonPreset>(
+            WINDOWMANAGER.show(std::make_unique<iwLoadAddonPreset>(
               [this](const std::map<unsigned, unsigned>& states) { applyAddonStates(states); }));
             break;
 
@@ -161,7 +161,7 @@ void iwAddons::msgButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwAddons::UpdateView(const AddonGroup selection)
+void iwAddons::updateView(const AddonGroup selection)
 {
     auto* scrollbar = getCtrl<ctrlScrollBar>(ID_scroll);
     const unsigned scrollPos = scrollbar->getScrollPos();
@@ -215,7 +215,7 @@ void iwAddons::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selec
         case ID_grpAddonGroup: // richtige Kategorie anzeigen
         {
             getCtrl<ctrlScrollBar>(ID_scroll)->setScrollPos(0);
-            UpdateView(static_cast<AddonGroup>(selection));
+            updateView(static_cast<AddonGroup>(selection));
         }
         break;
     }
@@ -227,17 +227,17 @@ void iwAddons::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selec
 void iwAddons::msgScrollChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
     auto* optiongroup = getCtrl<ctrlOptionGroup>(ID_grpAddonGroup);
-    UpdateView(static_cast<AddonGroup>(optiongroup->getSelection()));
+    updateView(static_cast<AddonGroup>(optiongroup->getSelection()));
 }
 
 bool iwAddons::msgWheelUp(const MouseCoords& /*mc*/)
 {
-    getCtrl<ctrlScrollBar>(ID_scroll)->Scroll(-2);
+    getCtrl<ctrlScrollBar>(ID_scroll)->scroll(-2);
     return true;
 }
 
 bool iwAddons::msgWheelDown(const MouseCoords& /*mc*/)
 {
-    getCtrl<ctrlScrollBar>(ID_scroll)->Scroll(+2);
+    getCtrl<ctrlScrollBar>(ID_scroll)->scroll(+2);
     return true;
 }

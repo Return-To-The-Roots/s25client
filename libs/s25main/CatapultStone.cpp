@@ -22,13 +22,13 @@ CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_m
                              const DrawPoint dest, const unsigned fly_duration)
     : dest_building(dest_building), dest_map(dest_map), startPos(start), destPos(dest), explode(false)
 {
-    event = getEvMgr().AddEvent(this, fly_duration);
+    event = getEvMgr().addEvent(this, fly_duration);
 }
 
 CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id)
-    : GameObject(sgd, obj_id), dest_building(sgd.PopMapPoint()), dest_map(sgd.PopMapPoint()),
+    : GameObject(sgd, obj_id), dest_building(sgd.popMapPoint()), dest_map(sgd.popMapPoint()),
       startPos(helpers::popPoint<Position>(sgd)), destPos(helpers::popPoint<Position>(sgd)), explode(sgd.PopBool()),
-      event(sgd.PopEvent())
+      event(sgd.popEvent())
 {}
 
 /// Serialisierungsfunktionen
@@ -39,12 +39,12 @@ void CatapultStone::Serialize(SerializedGameData& sgd) const
     helpers::pushPoint(sgd, startPos);
     helpers::pushPoint(sgd, destPos);
     sgd.PushBool(explode);
-    sgd.PushEvent(event);
+    sgd.pushEvent(event);
 }
 
-void CatapultStone::Destroy() {}
+void CatapultStone::destroy() {}
 
-void CatapultStone::Draw(DrawPoint drawOffset)
+void CatapultStone::draw(DrawPoint drawOffset)
 {
     const DrawPoint worldSize = DrawPoint(world->getWidth() * TR_W, world->getHeight() * TR_H);
 
@@ -54,21 +54,21 @@ void CatapultStone::Draw(DrawPoint drawOffset)
         DrawPoint drawPos = destPos - drawOffset + worldSize;
         drawPos.x %= worldSize.x;
         drawPos.y %= worldSize.y;
-        LOADER.getMapTexture(3102 + GAMECLIENT.Interpolate(4, event))->DrawFull(drawPos);
+        LOADER.getMapTexture(3102 + GAMECLIENT.interpolate(4, event))->drawFull(drawPos);
     } else
     {
         // Linear interpolieren zwischen Ausgangs- und Zielpunkt
-        Position curPos(GAMECLIENT.Interpolate(startPos.x, destPos.x, event),
-                        GAMECLIENT.Interpolate(startPos.y, destPos.y, event));
+        Position curPos(GAMECLIENT.interpolate(startPos.x, destPos.x, event),
+                        GAMECLIENT.interpolate(startPos.y, destPos.y, event));
         DrawPoint drawPos = curPos - drawOffset + worldSize;
         drawPos.x %= worldSize.x;
         drawPos.y %= worldSize.y;
         // Schatten auf linearer Linie zeichnen
-        LOADER.getMapTexture(3101)->DrawFull(drawPos, COLOR_SHADOW);
+        LOADER.getMapTexture(3101)->drawFull(drawPos, COLOR_SHADOW);
 
         Position distance = destPos - startPos;
         double whole = std::sqrt(double(distance.x * distance.x + distance.y * distance.y));
-        unsigned s = GAMECLIENT.Interpolate(static_cast<unsigned>(whole), event);
+        unsigned s = GAMECLIENT.interpolate(static_cast<unsigned>(whole), event);
 
         double dx = double(s) / whole - 0.5;
 
@@ -80,21 +80,21 @@ void CatapultStone::Draw(DrawPoint drawOffset)
 
         // Stein auf Parabel zeichnen
         drawPos.y = (drawPos.y + diff) % worldSize.y;
-        LOADER.getMapTexture(3100)->DrawFull(drawPos);
+        LOADER.getMapTexture(3100)->drawFull(drawPos);
     }
 }
 
-void CatapultStone::HandleEvent(const unsigned /*id*/)
+void CatapultStone::handleEvent(const unsigned /*id*/)
 {
     if(explode)
     {
         // Explodiert --> mich zerstören
-        world->RemoveCatapultStone(this);
-        getEvMgr().AddToKillList(this);
+        world->removeCatapultStone(this);
+        getEvMgr().addToKillList(this);
     } else
     {
         // Stein ist aufgeschlagen --> Explodierevent anmelden
-        event = getEvMgr().AddEvent(this, 10);
+        event = getEvMgr().addEvent(this, 10);
         explode = true;
 
         // Trifft der Stein?
@@ -104,10 +104,10 @@ void CatapultStone::HandleEvent(const unsigned /*id*/)
             auto* milBld = world->getSpecObj<nobMilitary>(dest_building);
             if(milBld)
             {
-                milBld->HitOfCatapultStone();
+                milBld->hitOfCatapultStone();
                 // If there are no troops left, destroy it
                 if(milBld->getNumTroops() == 0)
-                    world->DestroyNO(milBld->getPos());
+                    world->destroyNO(milBld->getPos());
             }
         } else
         {

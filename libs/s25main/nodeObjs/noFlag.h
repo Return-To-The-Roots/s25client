@@ -23,7 +23,7 @@ public:
     noFlag(SerializedGameData& sgd, unsigned obj_id);
     ~noFlag() override;
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::Flag; }
@@ -31,33 +31,33 @@ public:
     /// Gibt Auskunft darüber, ob noch Platz für eine Ware an der Flagge ist.
     bool hasSpaceForWare() const { return wares.size() < wares.max_size(); }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     BlockingManner getBM() const override { return BlockingManner::Flag; }
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War.
-    std::unique_ptr<FOWObject> CreateFOWObject() const override;
+    std::unique_ptr<FOWObject> createFOWObject() const override;
     /// Legt eine Ware an der Flagge ab.
-    void AddWare(std::unique_ptr<Ware> ware) override;
+    void addWare(std::unique_ptr<Ware> ware) override;
     /// Gibt die Anzahl der Waren zurück, die an der Flagge liegen.
     unsigned getNumWares() const { return wares.size(); }
     /// Wählt eine Ware von einer Flagge aus (anhand der Transportreihenfolge), entfernt sie von der Flagge und gibt sie
     /// zurück.
-    std::unique_ptr<Ware> SelectWare(Direction roadDir, bool swap_wares, const noFigure* carrier);
+    std::unique_ptr<Ware> selectWare(Direction roadDir, bool swap_wares, const noFigure* carrier);
     /// Prüft, ob es Waren gibt, die auf den Weg in Richtung dir getragen werden müssen.
     unsigned getNumWaresForRoad(Direction dir) const;
     /// Penalty for transporting a ware in a specific direction
     unsigned getPunishmentPoints(Direction dir) const override;
     /// Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
-    void DestroyAttachedBuilding();
+    void destroyAttachedBuilding();
     /// Baut normale Flaggen zu "gloriösen" aus bei Eselstraßen.
-    void Upgrade();
+    void upgrade();
     /// Feind übernimmt die Flagge.
-    void Capture(unsigned char new_owner);
+    void capture(unsigned char new_owner);
     /// Ist diese Flagge für eine bestimmte Lagerhausflüchtlingsgruppe (BWU) nicht zugänglich?
     bool isImpossibleForBWU(unsigned bwu_id) const;
     /// Hinzufügen, dass diese Flagge für eine bestimmte Lagerhausgruppe nicht zugänglich ist.
-    void ImpossibleForBWU(unsigned bwu_id);
+    void impossibleForBWU(unsigned bwu_id);
 
 private:
     unsigned short ani_offset;

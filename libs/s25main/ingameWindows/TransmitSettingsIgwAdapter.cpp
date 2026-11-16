@@ -16,18 +16,18 @@ TransmitSettingsIgwAdapter::TransmitSettingsIgwAdapter(unsigned id, const DrawPo
 {
     // Timer for transmitting changes every 2 seconds
     using namespace std::chrono_literals;
-    AddTimer(firstCtrlID + 1u, 2s);
+    addTimer(firstCtrlID + 1u, 2s);
 }
 
-void TransmitSettingsIgwAdapter::Close()
+void TransmitSettingsIgwAdapter::close()
 {
-    TransmitSettings();
+    transmitSettings();
     if(!settings_changed)
     {
-        IngameWindow::Close();
+        IngameWindow::close();
     } else
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(getTitle(),
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(getTitle(),
                                                       _("The changes could not be applied and will be discarded. A "
                                                         "potential reason for this is that the game is paused."),
                                                       this, MsgboxButton::OkCancel, MsgboxIcon::ExclamationRed,
@@ -38,13 +38,13 @@ void TransmitSettingsIgwAdapter::Close()
 void TransmitSettingsIgwAdapter::msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr)
 {
     if(msgbox_id == firstCtrlID && mbr == MsgboxResult::Ok)
-        IngameWindow::Close();
+        IngameWindow::close();
 }
 
 void TransmitSettingsIgwAdapter::msgTimer(const unsigned /*ctrl_id*/)
 {
     if(GAMECLIENT.isReplayModeOn())
-        UpdateSettings();
+        updateSettings();
     else
-        TransmitSettings();
+        transmitSettings();
 }

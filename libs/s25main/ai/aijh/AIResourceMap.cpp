@@ -40,7 +40,7 @@ void AIResourceMap::init()
 {
     const MapExtent mapSize = aiMap.getSize();
 
-    map.Resize(mapSize);
+    map.resize(mapSize);
     // Calculate value for each point.
     // This is quite expensive so do just for the diminishable resources to sort out ones where there will never be
     // anything, which allows to skip calculating the value when updating the resource map
@@ -61,7 +61,7 @@ void AIResourceMap::init()
             // Calculate only if we can build there
             const bool isValid =
               aii.gwb.isOfTerrain(pt, [requiredTerrain](const TerrainDesc& desc) { return desc.Is(requiredTerrain); });
-            map[pt] = isValid ? aii.CalcResourceValue(pt, res) : 0;
+            map[pt] = isValid ? aii.calcResourceValue(pt, res) : 0;
         }
     }
 }
@@ -76,7 +76,7 @@ void AIResourceMap::updateAround(const MapPoint& pt, int radius)
 
 MapPoint AIResourceMap::findBestPosition(const MapPoint& pt, BuildingQuality size, unsigned radius, int minimum) const
 {
-    MapPoint best = MapPoint::Invalid();
+    MapPoint best = MapPoint::invalid();
     int best_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
 
     std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
@@ -139,7 +139,7 @@ void AIResourceMap::updateAroundDiminishable(const MapPoint& pt, const int radiu
                 // unknown
                 if((r < 2 || !lastCircleValueCalculated) && step < 1 && curDir == Direction::NorthEast && resMapVal)
                 {
-                    resMapVal = aii.CalcResourceValue(curPt, res);
+                    resMapVal = aii.calcResourceValue(curPt, res);
                     circleStartValue = resMapVal;
                     lastCircleValueCalculated = true;
                     lastValueCalculated = true;
@@ -151,17 +151,17 @@ void AIResourceMap::updateAroundDiminishable(const MapPoint& pt, const int radiu
                 } else if(step < 1 && curDir == Direction::NorthEast) // circle not yet started? -> last direction was
                                                                       // outward (left=0)
                 {
-                    resMapVal = aii.CalcResourceValue(curPt, res, Direction::West, circleStartValue);
+                    resMapVal = aii.calcResourceValue(curPt, res, Direction::West, circleStartValue);
                     circleStartValue = resMapVal;
                 } else if(lastValueCalculated)
                 {
                     if(step > 0) // we moved direction i%6
-                        resMapVal = aii.CalcResourceValue(curPt, res, curDir, resMapVal);
+                        resMapVal = aii.calcResourceValue(curPt, res, curDir, resMapVal);
                     else // last step was the previous direction
-                        resMapVal = aii.CalcResourceValue(curPt, res, curDir - 1u, resMapVal);
+                        resMapVal = aii.calcResourceValue(curPt, res, curDir - 1u, resMapVal);
                 } else
                 {
-                    resMapVal = aii.CalcResourceValue(curPt, res);
+                    resMapVal = aii.calcResourceValue(curPt, res);
                     lastValueCalculated = true;
                 }
             }
@@ -187,17 +187,17 @@ void AIResourceMap::updateAroundReplinishable(const MapPoint& pt, const int radi
                 if(r == 1 && step == 0 && curDir == Direction::NorthEast)
                 {
                     // only do a complete calculation for the first point!
-                    resValue = aii.CalcResourceValue(curPt, res);
+                    resValue = aii.calcResourceValue(curPt, res);
                     circleStartValue = resValue;
                 } else if(step == 0 && curDir == Direction::NorthEast)
                 {
                     // circle not yet started? -> last direction was outward
-                    resValue = aii.CalcResourceValue(curPt, res, Direction::West, circleStartValue);
+                    resValue = aii.calcResourceValue(curPt, res, Direction::West, circleStartValue);
                     circleStartValue = resValue;
                 } else if(step > 0) // we moved direction i%6
-                    resValue = aii.CalcResourceValue(curPt, res, curDir, resValue);
+                    resValue = aii.calcResourceValue(curPt, res, curDir, resValue);
                 else // last step was the previous direction
-                    resValue = aii.CalcResourceValue(curPt, res, curDir - 1u, resValue);
+                    resValue = aii.calcResourceValue(curPt, res, curDir - 1u, resValue);
                 map[curPt] = resValue;
             }
         }

@@ -149,7 +149,7 @@ struct AddonPresetFixture : uiHelper::Fixture
         return found;
     }
 
-    static void closeMsgbox(iwMsgbox& msgbox) { WINDOWMANAGER.CloseNow(&msgbox); }
+    static void closeMsgbox(iwMsgbox& msgbox) { WINDOWMANAGER.closeNow(&msgbox); }
 
     // Answers the prompt on top and closes it, as its own button would.
     // Anything the answer opens (e.g. an error) stays open.
@@ -294,7 +294,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetSaveUnwritable, AddonPresetFixture)
 
     auto& msgbox = ensureNonNull(topMsgbox());
     BOOST_TEST(msgbox.getTitle() == _("Save Failed"));
-    BOOST_TEST(!wnd.ShouldBeClosed());
+    BOOST_TEST(!wnd.shouldBeClosed());
     BOOST_TEST(base.getCtrls<ctrlEdit>().at(0)->getText() == "blocked");
     closeMsgbox(msgbox);
 }
@@ -427,7 +427,7 @@ public:
     TestWindow(Window * parent, unsigned id, const DrawPoint& position) : Window(parent, id, position) {}
     MOCK_METHOD(msgPaintBefore, 0)
     MOCK_METHOD(msgPaintAfter, 0)
-    MOCK_METHOD(Draw_, 0, void())
+    MOCK_METHOD(drawImpl, 0, void())
 };
 } // namespace
 
@@ -440,16 +440,16 @@ BOOST_AUTO_TEST_CASE(DrawOrder)
     for(int i = 0; i < 3; i++)
     {
         wnds.push_back(
-          dsk->AddCtrl(std::make_unique<TestWindow>(dsk, static_cast<unsigned>(wnds.size()), DrawPoint(0, 0))));
+          dsk->addCtrl(std::make_unique<TestWindow>(dsk, static_cast<unsigned>(wnds.size()), DrawPoint(0, 0))));
     }
     // Some groups with own controls
     for(int i = 0; i < 3; i++)
     {
-        ctrlGroup* grp = dsk->AddGroup(100 + i);
+        ctrlGroup* grp = dsk->addGroup(100 + i);
         for(int i = 0; i < 3; i++)
         {
             wnds.push_back(
-              grp->AddCtrl(std::make_unique<TestWindow>(dsk, static_cast<unsigned>(wnds.size()), DrawPoint(0, 0))));
+              grp->addCtrl(std::make_unique<TestWindow>(dsk, static_cast<unsigned>(wnds.size()), DrawPoint(0, 0))));
         }
     }
     mock::sequence s;
@@ -457,10 +457,10 @@ BOOST_AUTO_TEST_CASE(DrawOrder)
     for(TestWindow* wnd : wnds)
         MOCK_EXPECT(wnd->msgPaintBefore).once().in(s);
     for(TestWindow* wnd : wnds)
-        MOCK_EXPECT(wnd->Draw_).once().in(s);
+        MOCK_EXPECT(wnd->drawImpl).once().in(s);
     for(TestWindow* wnd : wnds)
         MOCK_EXPECT(wnd->msgPaintAfter).once().in(s);
-    WINDOWMANAGER.Draw();
+    WINDOWMANAGER.draw();
     mock::verify();
 }
 

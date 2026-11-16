@@ -24,7 +24,7 @@ namespace {
 /// Return the ship dir from a point to an other point given by their difference
 ShipDirection getShipDir(const MapBase& world, MapPoint fromPt, const Position& diff)
 {
-    MapPoint toPt = world.MakeMapPoint(Position(fromPt) + diff);
+    MapPoint toPt = world.makeMapPoint(Position(fromPt) + diff);
     return world.GetShipDir(fromPt, toPt);
 }
 
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(GetShipDir)
 {
     // Width must be > 100*2 and Height > 174 * 2 to avoid wrapping errors (see testShipDir)
     MapBase world;
-    world.Resize(MapExtent(202, 350));
+    world.resize(MapExtent(202, 350));
     // Basic case
     testShipDir(world, MapPoint(world.getWidth() / 2, world.getHeight() / 2));
     // Left/Right border

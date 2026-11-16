@@ -23,23 +23,23 @@ World::World() : noNodeObj(nullptr) {}
 
 World::~World()
 {
-    Unload();
+    unload();
 }
 
 void World::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {
     RTTR_Assert(getSize() == MapExtent::all(0)); // Already init
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
-    Resize(mapSize);
+    resize(mapSize);
     if(!lt)
         throw std::runtime_error("Invalid landscape");
     this->lt = lt;
-    GameObject::ResetCounters();
+    GameObject::resetCounters();
 
     noNodeObj = std::make_unique<noNothing>();
 }
 
-void World::Unload()
+void World::unload()
 {
     // Collect and destroy roads
     std::set<RoadSegment*> roadsegments;
@@ -71,14 +71,14 @@ void World::Unload()
     harborData.clear();
     description_ = WorldDescription();
     noNodeObj.reset();
-    Resize(MapExtent::all(0));
+    resize(MapExtent::all(0));
 }
 
-void World::Resize(const MapExtent& newSize)
+void World::resize(const MapExtent& newSize)
 {
-    MapBase::Resize(newSize);
+    MapBase::resize(newSize);
     nodes.clear();
-    militarySquares.Clear();
+    militarySquares.clear();
     if(getSize().x > 0)
     {
         nodes.resize(prodOfComponents(getSize()));
@@ -86,7 +86,7 @@ void World::Resize(const MapExtent& newSize)
     }
 }
 
-noBase& World::AddFigureImpl(const MapPoint pt, std::unique_ptr<noBase> fig)
+noBase& World::addFigureImpl(const MapPoint pt, std::unique_ptr<noBase> fig)
 {
     RTTR_Assert(fig);
 
@@ -102,7 +102,7 @@ noBase& World::AddFigureImpl(const MapPoint pt, std::unique_ptr<noBase> fig)
     return result;
 }
 
-noBase* World::RemoveFigureImpl(const MapPoint pt, noBase& fig)
+noBase* World::removeFigureImpl(const MapPoint pt, noBase& fig)
 {
     return helpers::extractPtr(getNodeInt(pt).figures, &fig).release();
 }
@@ -132,7 +132,7 @@ void World::setNO(const MapPoint pt, noBase* obj, const bool replace /* = false*
     getNodeInt(pt).obj = obj;
 }
 
-void World::DestroyNO(const MapPoint pt, const bool checkExists /* = true*/)
+void World::destroyNO(const MapPoint pt, const bool checkExists /* = true*/)
 {
     noBase* obj = getNodeInt(pt).obj;
     if(obj)
@@ -140,7 +140,7 @@ void World::DestroyNO(const MapPoint pt, const bool checkExists /* = true*/)
         // Destroy may remove the NO already from the map or replace it (e.g. building -> fire)
         // So remove from map, then destroy and free
         getNodeInt(pt).obj = nullptr;
-        obj->Destroy();
+        obj->destroy();
         deletePtr(obj);
     } else
         RTTR_Assert(!checkExists);
@@ -156,7 +156,7 @@ GO_Type World::getGOT(const MapPoint pt) const
         return GO_Type::Nothing;
 }
 
-void World::ReduceResource(const MapPoint pt)
+void World::reduceResource(const MapPoint pt)
 {
     const uint8_t curAmount = getNodeInt(pt).resources.getAmount();
     RTTR_Assert(curAmount > 0);
@@ -180,21 +180,21 @@ void World::setVisibility(const MapPoint pt, unsigned char player, Visibility vi
     if(vis == Visibility::Visible)
         node.object.reset();
     else if(vis == Visibility::FogOfWar)
-        SaveFOWNode(pt, player, fowTime);
-    VisibilityChanged(pt, player, oldVis, vis);
+        saveFOWNode(pt, player, fowTime);
+    visibilityChanged(pt, player, oldVis, vis);
 }
 
-void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
+void World::changeAltitude(const MapPoint pt, const unsigned char altitude)
 {
     getNodeInt(pt).altitude = altitude;
 
     // Schattierung neu berechnen von diesem Punkt und den Punkten drumherum
-    RecalcShadow(pt);
+    recalcShadow(pt);
     for(const MapPoint nb : getNeighbours(pt))
-        RecalcShadow(nb);
+        recalcShadow(nb);
 
     // Abgeleiteter Klasse Bescheid sagen
-    AltitudeChanged(pt);
+    altitudeChanged(pt);
 }
 
 bool World::isPlayerTerritory(const MapPoint pt, const unsigned char owner) const
@@ -216,10 +216,10 @@ bool World::isPlayerTerritory(const MapPoint pt, const unsigned char owner) cons
 
 BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player) const
 {
-    return AdjustBQ(pt, player, getNode(pt).bq);
+    return adjustBQ(pt, player, getNode(pt).bq);
 }
 
-BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const
+BuildingQuality World::adjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const
 {
     if(nodeBQ == BuildingQuality::Nothing || !isPlayerTerritory(pt, player + 1))
         return BuildingQuality::Nothing;
@@ -308,13 +308,13 @@ helpers::EnumArray<DescIdx<TerrainDesc>, Direction> World::getTerrainsAround(Map
     return result;
 }
 
-void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime)
+void World::saveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime)
 {
     FoWNode& fow = getNodeInt(pt).fow[player];
     fow.last_update_time = curTime;
 
     // FOW-Objekt erzeugen
-    fow.object = getNO(pt)->CreateFOWObject();
+    fow.object = getNO(pt)->createFOWObject();
 
     // Wege speichern, aber nur richtige, keine, die gerade gebaut werden
     for(const auto dir : helpers::EnumRange<RoadDir>{})
@@ -366,7 +366,7 @@ MapPoint World::getCoastalPoint(const HarborId harborId, const SeaId seaId) cons
     }
 
     // Keinen Punkt gefunden
-    return MapPoint::Invalid();
+    return MapPoint::invalid();
 }
 
 PointRoad World::getRoad(const MapPoint pt, RoadDir dir) const
@@ -386,13 +386,13 @@ PointRoad World::getPointFOWRoad(MapPoint pt, Direction dir, const unsigned char
     return getNode(pt).fow[viewing_player].roads[rDir];
 }
 
-void World::AddCatapultStone(CatapultStone* cs)
+void World::addCatapultStone(CatapultStone* cs)
 {
     RTTR_Assert(!helpers::contains(catapult_stones, cs));
     catapult_stones.push_back(cs);
 }
 
-void World::RemoveCatapultStone(CatapultStone* cs)
+void World::removeCatapultStone(CatapultStone* cs)
 {
     RTTR_Assert(helpers::contains(catapult_stones, cs));
     catapult_stones.remove(cs);
@@ -481,7 +481,7 @@ bool World::setBQ(const MapPoint pt, BuildingQuality bq)
     return oldBQ != bq;
 }
 
-void World::RecalcShadow(const MapPoint pt)
+void World::recalcShadow(const MapPoint pt)
 {
     int altitude = getNode(pt).altitude;
     int A = getNeighbourNode(pt, Direction::NorthEast).altitude - altitude;
@@ -497,7 +497,7 @@ void World::RecalcShadow(const MapPoint pt)
     getNodeInt(pt).shadow = shadingS2;
 }
 
-void World::MakeWholeMapVisibleForAllPlayers()
+void World::makeWholeMapVisibleForAllPlayers()
 {
     for(auto& mapNode : nodes)
     {

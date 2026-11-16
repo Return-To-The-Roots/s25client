@@ -38,14 +38,14 @@ struct GetEstimatedDistance
 using QueueImpl = OpenListBinaryHeap<FreePathNode, GetEstimatedDistance>;
 
 template<class TNodeChecker>
-bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool randomRoute, unsigned maxLength,
+bool FreePathFinder::findPath(const MapPoint start, const MapPoint dest, bool randomRoute, unsigned maxLength,
                               std::vector<Direction>* route, unsigned* length, Direction* firstDir,
                               const TNodeChecker& nodeChecker)
 {
     RTTR_Assert(start != dest);
 
     // increase currentVisit, so we don't have to clear the visited-states at every run
-    IncreaseCurrentVisit();
+    increaseCurrentVisit();
 
     QueueImpl todo;
     const unsigned startId = gwb_.getIdx(start);
@@ -54,7 +54,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
     FreePathNode& destNode = fpNodes[destId];
 
     // Anfangsknoten einfügen Und mit entsprechenden Werten füllen
-    startNode.targetDistance = gwb_.CalcDistance(start, dest);
+    startNode.targetDistance = gwb_.calcDistance(start, dest);
     startNode.estimatedDistance = startNode.targetDistance;
     startNode.lastVisited = currentVisit;
     startNode.prev = nullptr;
@@ -150,7 +150,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
                 // Alles in Ordnung, Knoten kann gebildet werden
                 neighbour.lastVisited = currentVisit;
                 neighbour.curDistance = best.curDistance + 1;
-                neighbour.targetDistance = gwb_.CalcDistance(neighbourPos, dest);
+                neighbour.targetDistance = gwb_.calcDistance(neighbourPos, dest);
                 neighbour.estimatedDistance = neighbour.curDistance + neighbour.targetDistance;
                 neighbour.dir = dir;
                 neighbour.prev = &best;
@@ -166,7 +166,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
 
 /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
 template<class TNodeChecker>
-bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<Direction>& route, unsigned pos,
+bool FreePathFinder::checkRoute(const MapPoint start, const std::vector<Direction>& route, unsigned pos,
                                 const TNodeChecker& nodeChecker, MapPoint* dest) const
 {
     RTTR_Assert(pos < route.size());

@@ -35,39 +35,39 @@ noCharburnerPile::noCharburnerPile(const MapPoint pos)
 
 noCharburnerPile::~noCharburnerPile() = default;
 
-void noCharburnerPile::Destroy()
+void noCharburnerPile::destroy()
 {
-    getEvMgr().RemoveEvent(event);
+    getEvMgr().removeEvent(event);
 
     // Bauplätze drumrum neu berechnen
-    world->RecalcBQAroundPointBig(pos);
+    world->recalcBQAroundPointBig(pos);
 
-    noCoordBase::Destroy();
+    noCoordBase::destroy();
 }
 
 void noCharburnerPile::Serialize(SerializedGameData& sgd) const
 {
     noCoordBase::Serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(state);
+    sgd.pushEnum<uint8_t>(state);
     sgd.PushUnsignedShort(step);
     sgd.PushUnsignedShort(sub_step);
-    sgd.PushEvent(event);
+    sgd.pushEvent(event);
 }
 
 noCharburnerPile::noCharburnerPile(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), state(sgd.Pop<State>()), step(sgd.PopUnsignedShort()), sub_step(sgd.PopUnsignedShort()),
-      event(sgd.PopEvent())
+    : noCoordBase(sgd, obj_id), state(sgd.pop<State>()), step(sgd.PopUnsignedShort()), sub_step(sgd.PopUnsignedShort()),
+      event(sgd.popEvent())
 {}
 
-void noCharburnerPile::Draw(DrawPoint drawPt)
+void noCharburnerPile::draw(DrawPoint drawPt)
 {
     switch(state)
     {
         case State::Wood:
         {
             // Draw sand on which the wood stack is constructed
-            LOADER.getImageN("charburner_bobs", 25)->DrawFull(drawPt);
+            LOADER.getImageN("charburner_bobs", 25)->drawFull(drawPt);
 
             glArchivItem_Bitmap* image;
             if(step == 0)
@@ -77,12 +77,12 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
                 image = LOADER.getImageN("charburner_bobs", 28);
 
                 // Draw wood pile beneath the cover
-                LOADER.getImageN("charburner_bobs", 26)->DrawFull(drawPt);
+                LOADER.getImageN("charburner_bobs", 26)->drawFull(drawPt);
             }
 
             unsigned short progress = sub_step * 100 / CONSTRUCTION_WORKING_STEPS[step];
             if(progress != 0)
-                image->DrawPercent(drawPt, progress);
+                image->drawPercent(drawPt, progress);
         }
             return;
         case State::Smoldering:
@@ -90,32 +90,32 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
             LOADER
               .getImageN("charburner_bobs",
                          27 + GAMECLIENT.getGlobalAnimation(2, 10, 1, getObjId() + this->pos.x * 10 + this->pos.y * 10))
-              ->DrawFull(drawPt);
+              ->drawFull(drawPt);
 
             // Dann Qualm zeichnen
             unsigned globalAnimation = GAMECLIENT.getGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100);
             LOADER.getMapTexture(692 + 1 * 8 + globalAnimation)
-              ->DrawFull(drawPt + DrawPoint(21, -11), 0x99EEEEEE); //-V525
-            LOADER.getMapTexture(692 + 2 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 06), 0x99EEEEEE);
-            LOADER.getMapTexture(692 + 1 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(25, 11), 0x99EEEEEE);
-            LOADER.getMapTexture(692 + 3 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 35), 0x99EEEEEE);
+              ->drawFull(drawPt + DrawPoint(21, -11), 0x99EEEEEE); //-V525
+            LOADER.getMapTexture(692 + 2 * 8 + globalAnimation)->drawFull(drawPt - DrawPoint(2, 06), 0x99EEEEEE);
+            LOADER.getMapTexture(692 + 1 * 8 + globalAnimation)->drawFull(drawPt - DrawPoint(25, 11), 0x99EEEEEE);
+            LOADER.getMapTexture(692 + 3 * 8 + globalAnimation)->drawFull(drawPt - DrawPoint(2, 35), 0x99EEEEEE);
         }
             return;
         case State::RemoveCover:
         {
-            LOADER.getImageN("charburner_bobs", 28 + step)->DrawFull(drawPt);
+            LOADER.getImageN("charburner_bobs", 28 + step)->drawFull(drawPt);
         }
             return;
         case State::Harvest:
         {
-            LOADER.getImageN("charburner_bobs", 34 + step)->DrawFull(drawPt);
+            LOADER.getImageN("charburner_bobs", 34 + step)->drawFull(drawPt);
         }
             return;
         default: return;
     }
 }
 
-void noCharburnerPile::HandleEvent(const unsigned /*id*/)
+void noCharburnerPile::handleEvent(const unsigned /*id*/)
 {
     // Smoldering is over
     // Pile is ready for the remove of the cover
@@ -123,24 +123,24 @@ void noCharburnerPile::HandleEvent(const unsigned /*id*/)
     {
         state = State::RemoveCover;
         // start a selfdestruct timer
-        event = getEvMgr().AddEvent(this, SELFDESTRUCT_DELAY, 0);
+        event = getEvMgr().addEvent(this, SELFDESTRUCT_DELAY, 0);
     } else
     {
         // selfdestruct!
         event = nullptr;
         world->setNO(pos, new noFire(pos, false), true);
-        world->RecalcBQAroundPoint(pos);
-        getEvMgr().AddToKillList(this);
+        world->recalcBQAroundPoint(pos);
+        getEvMgr().addToKillList(this);
     }
 }
 
 /// Charburner has worked on it --> Goto next step
-void noCharburnerPile::NextStep()
+void noCharburnerPile::nextStep()
 {
     // reset selfdestruct timer
     if(event)
-        getEvMgr().RemoveEvent(event);
-    event = getEvMgr().AddEvent(this, SELFDESTRUCT_DELAY, 0);
+        getEvMgr().removeEvent(event);
+    event = getEvMgr().addEvent(this, SELFDESTRUCT_DELAY, 0);
 
     // execute step
     switch(state)
@@ -159,8 +159,8 @@ void noCharburnerPile::NextStep()
                 {
                     step = 0;
                     state = State::Smoldering;
-                    getEvMgr().RemoveEvent(event);
-                    event = getEvMgr().AddEvent(this, SMOLDERING_LENGTH, 0);
+                    getEvMgr().removeEvent(event);
+                    event = getEvMgr().addEvent(this, SMOLDERING_LENGTH, 0);
                 }
             }
         }
@@ -195,10 +195,10 @@ void noCharburnerPile::NextStep()
                 {
                     // Add an empty pile as environmental object
                     world->setNO(pos, new noEnvObject(pos, 40, 6), true);
-                    getEvMgr().AddToKillList(this);
+                    getEvMgr().addToKillList(this);
 
                     // BQ drumrum neu berechnen
-                    world->RecalcBQAroundPoint(pos);
+                    world->recalcBQAroundPoint(pos);
                 }
             }
         }

@@ -23,36 +23,36 @@ void noMovable::Serialize(SerializedGameData& sgd) const
 {
     noCoordBase::Serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(curMoveDir);
+    sgd.pushEnum<uint8_t>(curMoveDir);
     sgd.PushUnsignedChar(ascent);
-    sgd.PushEvent(current_ev);
+    sgd.pushEvent(current_ev);
     sgd.PushUnsignedInt(pauseEv.elapsed);
     sgd.PushUnsignedInt(pauseEv.length);
     sgd.PushBool(moving);
 }
 
 noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), curMoveDir(sgd.Pop<Direction>()), ascent(sgd.PopUnsignedChar())
+    : noCoordBase(sgd, obj_id), curMoveDir(sgd.pop<Direction>()), ascent(sgd.PopUnsignedChar())
 {
-    current_ev = sgd.PopEvent();
+    current_ev = sgd.popEvent();
     pauseEv = EventState(sgd);
     moving = sgd.PopBool();
 }
 
-void noMovable::Walk()
+void noMovable::walk()
 {
     moving = false;
     const MapPoint oldPos = pos;
     pos = world->getNeighbour(pos, curMoveDir);
-    world->AddFigure(pos, world->RemoveFigure(oldPos, *this));
+    world->addFigure(pos, world->RemoveFigure(oldPos, *this));
 }
 
-void noMovable::FaceDir(Direction newDir)
+void noMovable::faceDir(Direction newDir)
 {
     curMoveDir = newDir;
 }
 
-void noMovable::StartMoving(const Direction dir, unsigned gf_length)
+void noMovable::startMoving(const Direction dir, unsigned gf_length)
 {
     RTTR_Assert(!moving);
 
@@ -64,7 +64,7 @@ void noMovable::StartMoving(const Direction dir, unsigned gf_length)
         // Avoid setting an event for current gf by increasing the length
         if(pauseEv.length == pauseEv.elapsed)
             pauseEv.length++;
-        current_ev = getEvMgr().AddEvent(this, pauseEv.length, 0, pauseEv.elapsed);
+        current_ev = getEvMgr().addEvent(this, pauseEv.length, 0, pauseEv.elapsed);
         pauseEv = EventState();
         moving = true;
         return;
@@ -96,12 +96,12 @@ void noMovable::StartMoving(const Direction dir, unsigned gf_length)
         case -5: ascent = 0; break; // steil runter
     }
 
-    current_ev = getEvMgr().AddEvent(this, gf_length);
+    current_ev = getEvMgr().addEvent(this, gf_length);
     this->curMoveDir = dir;
     moving = true;
 }
 
-DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
+DrawPoint noMovable::calcRelative(DrawPoint curPt, DrawPoint nextPt) const
 {
     if(current_ev)
     {
@@ -166,21 +166,21 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
 }
 
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
-DrawPoint noMovable::CalcWalkingRelative() const
+DrawPoint noMovable::calcWalkingRelative() const
 {
     Position curPt = world->getNodePos(pos);
     Position nextPt = world->getNodePos(world->getNeighbour(pos, curMoveDir));
 
-    return CalcRelative(curPt, nextPt);
+    return calcRelative(curPt, nextPt);
 }
 
-void noMovable::PauseWalking()
+void noMovable::pauseWalking()
 {
     RTTR_Assert(isMoving());
     // Frames festhalten, bis zu denen wir gekommen sind
     pauseEv = EventState(getEvMgr().getCurrentGF() - current_ev->startGF, current_ev->length);
     // Event abmelden
-    getEvMgr().RemoveEvent(current_ev);
+    getEvMgr().removeEvent(current_ev);
     moving = false;
 }
 

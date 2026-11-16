@@ -30,7 +30,7 @@ public:
              std::vector<AddonId> whitelistedAddons = {});
     ~iwAddons() override;
 
-    void Close() override;
+    void close() override;
 
 protected:
     void msgButtonClick(unsigned ctrl_id) override;
@@ -47,7 +47,7 @@ private:
     std::vector<std::unique_ptr<AddonGui>> addonGuis_;
 
     /// Aktualisiert die Addons, die angezeigt werden sollen
-    void UpdateView(AddonGroup selection);
+    void updateView(AddonGroup selection);
     bool isReadOnly(AddonId) const;
     void applyAddonStates(const std::map<unsigned, unsigned>& states);
 };

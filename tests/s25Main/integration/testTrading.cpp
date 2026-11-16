@@ -31,7 +31,7 @@ struct TradeFixture : public WorldWithGCExecution3P
         world.getPlayer(2).team = Team::Team2;
         for(unsigned i = 0; i < world.getNumPlayers(); i++)
         {
-            world.getPlayer(i).MakeStartPacts();
+            world.getPlayer(i).makeStartPacts();
             players[i] = &world.getPlayer(i);
         }
         BOOST_TEST_REQUIRE(players[1]->isAlly(0));
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(TradeWares)
     testAfterLeaving(2);
 
     // Let caravan arrive (20GFs per node)
-    unsigned distance = world.CalcDistance(curWh->getPos(), players[0]->getHQPos()) + 2;
+    unsigned distance = world.calcDistance(curWh->getPos(), players[0]->getHQPos()) + 2;
     RTTR_SKIP_GFS(20 * distance);
     // Some were recruited
     numHelpers -= numSwords;
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(TradeFigures)
     testAfterLeaving(2);
 
     // Let caravan arrive (20GFs per node)
-    unsigned distance = world.CalcDistance(curWh->getPos(), players[0]->getHQPos()) + 2;
+    unsigned distance = world.calcDistance(curWh->getPos(), players[0]->getHQPos()) + 2;
     RTTR_SKIP_GFS(20 * distance);
     // Some were recruited
     numHelpers -= numSwords;
@@ -206,14 +206,14 @@ BOOST_AUTO_TEST_CASE(TradeLessFiguresThenInStoreHouse)
     auto* const hqPlayer1 = world.getSpecObj<nobBaseWarehouse>(players[1]->getHQPos());
 
     // Add second warehouse
-    auto* wh1 = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(
+    auto* wh1 = static_cast<nobBaseWarehouse*>(BuildingFactory::createBuilding(
       world, BuildingType::Storehouse, players[1]->getHQPos() + MapPoint(2, 0), 1, Nation::Romans));
     world.BuildRoad(0, false, wh1->getFlagPos(), {2, Direction::East});
 
     PeopleCounts inv;
     inv[Job::Woodcutter] = 2;
     inv[Job::Helper] = 1;
-    wh1->AddToInventory(inv, true);
+    wh1->addToInventory(inv, true);
 
     BOOST_TEST_REQUIRE(hqPlayer1->getNumRealFigures(Job::Woodcutter) == 8);
     BOOST_TEST_REQUIRE(wh1->getNumRealFigures(Job::Woodcutter) == 2);
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE(TradeFail)
     std::vector<MapPoint> pts = world.getPointsInRadius(curWh->getPos(), 10);
     for(const MapPoint& pt : pts)
     {
-        if(world.CalcDistance(pt, curWh->getPos()) >= 8)
+        if(world.calcDistance(pt, curWh->getPos()) >= 8)
             world.setOwner(pt, 2 + 1); // playerID = 2 -> Owner = +1
     }
     // New trade fails
@@ -303,14 +303,14 @@ BOOST_AUTO_TEST_CASE(TradeFailDie)
 
 BOOST_AUTO_TEST_CASE(TradeMessages)
 {
-    const PostBox& postbox = world.getPostMgr().AddPostBox(0);
+    const PostBox& postbox = world.getPostMgr().addPostBox(0);
 
     this->TradeOverLand(players[0]->getHQPos(), Job::Woodcutter, 2);
     numHelpers -= 1;
     numWoodcutters -= 2;
     testAfterLeaving(2);
 
-    unsigned distance = world.CalcDistance(curWh->getPos(), players[0]->getHQPos()) + 2;
+    unsigned distance = world.calcDistance(curWh->getPos(), players[0]->getHQPos()) + 2;
     RTTR_SKIP_GFS(20 * distance);
     // warriors are recruited
     numHelpers -= numSwords;
@@ -328,7 +328,7 @@ BOOST_AUTO_TEST_CASE(TradeMessages)
     numBoards -= 2;
     testAfterLeaving(2);
 
-    distance = world.CalcDistance(curWh->getPos(), players[0]->getHQPos()) + 2;
+    distance = world.calcDistance(curWh->getPos(), players[0]->getHQPos()) + 2;
     RTTR_SKIP_GFS(20 * distance);
 
     const PostMsg* post2 = postbox.getMsg(1);

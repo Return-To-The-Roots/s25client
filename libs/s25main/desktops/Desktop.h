@@ -26,12 +26,12 @@ public:
     static const unsigned fpsDisplayId;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
     glArchivItem_Bitmap* background;
 
 private:
-    void UpdateFps(unsigned newFps);
+    void updateFps(unsigned newFps);
 
     unsigned lastFPS_;
 };

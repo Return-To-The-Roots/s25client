@@ -213,7 +213,7 @@ void GlobalGameSettings::registerAddon(std::unique_ptr<Addon> addon)
 /**
  *  loads the saved addon configuration from the SETTINGS.
  */
-void GlobalGameSettings::LoadSettings()
+void GlobalGameSettings::loadSettings()
 {
     resetAddons();
 
@@ -237,7 +237,7 @@ void GlobalGameSettings::LoadSettings()
 /**
  *  saves the current addon configuration to the SETTINGS.
  */
-void GlobalGameSettings::SaveSettings() const
+void GlobalGameSettings::saveSettings() const
 {
     SETTINGS.addons.configuration.clear();
     for(const AddonWithState& addon : addons)

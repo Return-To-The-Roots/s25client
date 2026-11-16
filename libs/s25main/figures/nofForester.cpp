@@ -25,7 +25,7 @@ bool IsPotentialNewFieldForOwnFarm(GameWorld& world, const MapPoint pt, const un
     if(nofFarmer::getNewFieldPointQuality(world, pt) == nofFarmhand::PointQuality::NotPossible)
         return false;
 
-    return world.CheckPointsInRadius(
+    return world.checkPointsInRadius(
       pt, nofFarmhand::getWorkRadius(world.getGGS(), Job::Farmer),
       [&world, player](const MapPoint farmPt, unsigned) {
           if(world.getNO(farmPt)->getType() != NodalObjectType::Building)
@@ -45,11 +45,11 @@ nofForester::nofForester(const MapPoint pos, const unsigned char player, nobUsua
 nofForester::nofForester(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
 
 /// Malt den Arbeiter beim Arbeiten
-void nofForester::DrawWorking(DrawPoint drawPt)
+void nofForester::drawWorking(DrawPoint drawPt)
 {
-    unsigned short now_id = GAMECLIENT.Interpolate(36, current_ev);
+    unsigned short now_id = GAMECLIENT.interpolate(36, current_ev);
     // Baum pflanzen
-    LOADER.getPlayerImage("rom_bobs", 48 + now_id)->DrawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+    LOADER.getPlayerImage("rom_bobs", 48 + now_id)->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
 
     // Schaufel-Sound
     if(now_id == 7 || now_id == 18)
@@ -71,10 +71,10 @@ unsigned short nofForester::getCarryID() const
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofForester::WorkStarted() {}
+void nofForester::workStarted() {}
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-void nofForester::WorkFinished()
+void nofForester::workFinished()
 {
     // Wenn irgendwo ne Straße schon ist, NICHT einsetzen!
     for(const auto dir : helpers::EnumRange<Direction>{})
@@ -87,7 +87,7 @@ void nofForester::WorkFinished()
     // Wenn Objekt ein Zierobjekt ist, dann löschen, ansonsten den Baum NICHT einsetzen!
     if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
     {
-        world->DestroyNO(pos, false);
+        world->destroyNO(pos, false);
 
         // Je nach Landschaft andere Bäume pflanzbar!
         const std::array<boost::container::static_vector<unsigned char, 6>, 3> AVAILABLE_TREES = {
@@ -98,7 +98,7 @@ void nofForester::WorkFinished()
         world->setNO(pos, new noTree(pos, RANDOM_ELEMENT(AVAILABLE_TREES[landscapeType]), 0));
 
         // BQ drumherum neu berechnen
-        world->RecalcBQAroundPoint(pos);
+        world->recalcBQAroundPoint(pos);
 
         // Minimap Bescheid geben (neuer Baum)
         if(world->getGameInterface())

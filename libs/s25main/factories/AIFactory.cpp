@@ -7,7 +7,7 @@
 #include "ai/aijh/AIPlayerJH.h"
 #include "gameTypes/AIInfo.h"
 
-std::unique_ptr<AIPlayer> AIFactory::Create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world)
+std::unique_ptr<AIPlayer> AIFactory::create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world)
 {
     switch(aiInfo.type)
     {

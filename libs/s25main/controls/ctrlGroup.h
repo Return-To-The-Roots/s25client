@@ -12,7 +12,7 @@ enum class GroupSelectType : unsigned
 {
     Illuminate,
     Check,
-    Show
+    show
 };
 
 class ctrlGroup : public Window

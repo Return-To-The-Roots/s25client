@@ -19,11 +19,11 @@ public:
 
 private:
     /// Malt die bunten Kästchen über den Buttons
-    void DrawRectangles();
+    void drawRectangles();
     /// Zeichnet das Achsensystem
-    void DrawAxis();
+    void drawAxis();
     /// Zeichnet die Statistikdaten (TODO)
-    void DrawStatistic();
+    void drawStatistic();
 
     // Die Farben für die einzelnen Warenlinien
     static const std::array<unsigned, 14> BarColors;
@@ -38,7 +38,7 @@ private:
     // Maximalwert der y-Achse
     ctrlText* maxValue;
 
-    void DrawContent() override;
+    void drawContent() override;
     // Durchgereichte Methoden vom Window
     void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
     void msgButtonClick(unsigned ctrl_id) override;

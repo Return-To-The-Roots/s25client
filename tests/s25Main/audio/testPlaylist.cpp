@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(SaveLoadResultsInSamePlaylist)
     Playlist pl(songs, numRepeats, isRandom);
     rttr::test::TmpFolder tmpFolder;
     const auto filepath = tmpFolder.get() / "playlist.pll";
-    BOOST_TEST_REQUIRE(pl.SaveAs(filepath));
+    BOOST_TEST_REQUIRE(pl.saveAs(filepath));
     Playlist pl2;
     BOOST_TEST_REQUIRE(pl2.Load(LOG, filepath));
     BOOST_TEST(pl.getSongs() == pl2.getSongs(), boost::test_tools::per_element());

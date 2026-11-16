@@ -12,8 +12,8 @@
 #include "s25util/strAlgos.h"
 #include <kaguya/kaguya.hpp>
 
-KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddEnvObjectWrapper, LuaWorld, AddEnvObject, 3, 4)
-KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddStaticObjectWrapper, LuaWorld, AddStaticObject, 3, 5)
+KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddEnvObjectWrapper, LuaWorld, addEnvObject, 3, 4)
+KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddStaticObjectWrapper, LuaWorld, addStaticObject, 3, 5)
 
 void LuaWorld::Register(kaguya::State& state)
 {
@@ -33,7 +33,7 @@ void LuaWorld::Register(kaguya::State& state)
     state["World"].setClass(kaguya::UserdataMetatable<LuaWorld>()
                               .addFunction("AddEnvObject", AddEnvObjectWrapper())
                               .addFunction("AddStaticObject", AddStaticObjectWrapper())
-                              .addFunction("AddAnimal", &LuaWorld::AddAnimal)
+                              .addFunction("AddAnimal", &LuaWorld::addAnimal)
                               .addFunction("SetComputerBarrier", &LuaWorld::setComputerBarrier));
 }
 
@@ -48,11 +48,11 @@ static bool isValidObject(unsigned file, unsigned id)
     }
 }
 
-bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */)
+bool LuaWorld::addEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */)
 {
     lua::assertTrue(isValidObject(file, id), "Invalid object (file/id)");
 
-    MapPoint pt = gw.MakeMapPoint(Position(x, y));
+    MapPoint pt = gw.makeMapPoint(Position(x, y));
     noBase* obj = gw.getNode(pt).obj;
     if(obj)
     {
@@ -62,18 +62,18 @@ bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF
             return false;
     }
 
-    gw.DestroyNO(pt, false);
+    gw.destroyNO(pt, false);
     gw.setNO(pt, new noEnvObject(pt, id, file));
-    gw.RecalcBQAroundPoint(pt);
+    gw.recalcBQAroundPoint(pt);
     return true;
 }
 
-bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */, unsigned size /* = 1 */)
+bool LuaWorld::addStaticObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF */, unsigned size /* = 1 */)
 {
     lua::assertTrue(size <= 2, "Invalid size");
     lua::assertTrue(isValidObject(file, id), "Invalid object (file/id)");
 
-    MapPoint pt = gw.MakeMapPoint(Position(x, y));
+    MapPoint pt = gw.makeMapPoint(Position(x, y));
     noBase* obj = gw.getNode(pt).obj;
     if(obj)
     {
@@ -83,19 +83,19 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
             return false;
     }
 
-    gw.DestroyNO(pt, false);
+    gw.destroyNO(pt, false);
     gw.setNO(pt, new noStaticObject(pt, id, file, size));
     if(size > 1)
-        gw.RecalcBQAroundPointBig(pt);
+        gw.recalcBQAroundPointBig(pt);
     else if(size == 1)
-        gw.RecalcBQAroundPoint(pt);
+        gw.recalcBQAroundPoint(pt);
     return true;
 }
 
-void LuaWorld::AddAnimal(int x, int y, lua::SafeEnum<Species> species)
+void LuaWorld::addAnimal(int x, int y, lua::SafeEnum<Species> species)
 {
-    MapPoint pos = gw.MakeMapPoint(Position(x, y));
-    gw.AddFigure(pos, std::make_unique<noAnimal>(species, pos)).StartLiving();
+    MapPoint pos = gw.makeMapPoint(Position(x, y));
+    gw.addFigure(pos, std::make_unique<noAnimal>(species, pos)).startLiving();
 }
 
 void LuaWorld::setComputerBarrier(unsigned radius, unsigned short x, unsigned short y)

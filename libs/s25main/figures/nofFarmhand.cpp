@@ -29,7 +29,7 @@ void nofFarmhand::Serialize(SerializedGameData& sgd) const
 }
 
 nofFarmhand::nofFarmhand(SerializedGameData& sgd, const unsigned obj_id)
-    : nofBuildingWorker(sgd, obj_id), dest(sgd.PopMapPoint())
+    : nofBuildingWorker(sgd, obj_id), dest(sgd.popMapPoint())
 {}
 
 unsigned nofFarmhand::getWorkRadius(const Job job)
@@ -64,26 +64,26 @@ unsigned nofFarmhand::getWorkRadius(const GlobalGameSettings& ggs, const Job job
     }
 }
 
-void nofFarmhand::WalkedDerived()
+void nofFarmhand::walkedDerived()
 {
     switch(state)
     {
-        case State::WalkToWorkpoint: WalkToWorkpoint(); break;
-        case State::WalkingHome: WalkHome(); break;
+        case State::WalkToWorkpoint: walkToWorkpoint(); break;
+        case State::WalkingHome: walkHome(); break;
         default: break;
     }
 }
 
-void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
+void nofFarmhand::handleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
         case State::Work:
         {
             // Done working -> Handle results of the work (step)
-            WorkFinished();
+            workFinished();
             world->setReserved(pos, false);
-            StartWalkingHome();
+            startWalkingHome();
 
             if(was_sounding)
             {
@@ -132,7 +132,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                     for(MapCoord r2 = 0; r2 < r; pt = world->getNeighbour(pt, dir), ++r2)
                     {
                         const auto quality = getPointQuality(pt, true);
-                        if(quality != PointQuality::NotPossible && world->FindHumanPath(this->pos, pt, 20))
+                        if(quality != PointQuality::NotPossible && world->findHumanPath(this->pos, pt, 20))
                         {
                             if(!world->getNode(pt).reserved)
                             {
@@ -166,15 +166,15 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
 
                 // Start working
                 workplace->is_working = true;
-                workplace->StopNotWorking();
+                workplace->stopNotWorking();
 
                 // Avoid others taking this point too
                 world->setReserved(dest, true);
 
                 // Walk out of the building first
                 state = State::WalkToWorkpoint;
-                StartWalking(Direction::SouthEast);
-                WalkingStarted();
+                startWalking(Direction::SouthEast);
+                walkingStarted();
             } else
             {
                 if(!wait)
@@ -182,7 +182,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                     switch(job_)
                     {
                         case Job::Stonemason:
-                        case Job::Fisher: workplace->OnOutOfResources(); break;
+                        case Job::Fisher: workplace->onOutOfResources(); break;
                         case Job::Woodcutter:
                             world->getNotifications().publish(BuildingNote(
                               BuildingNote::NoRessources, player, workplace->getPos(), workplace->getBuildingType()));
@@ -192,8 +192,8 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 }
 
                 // Try to find something later
-                current_ev = getEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
-                workplace->StartNotWorking();
+                current_ev = getEvMgr().addEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+                workplace->startNotWorking();
             }
         }
         break;
@@ -201,70 +201,70 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
     }
 }
 
-void nofFarmhand::WalkToWorkpoint()
+void nofFarmhand::walkToWorkpoint()
 {
     if(getPointQuality(dest) == PointQuality::NotPossible)
     {
         // Point became invalid -> Abort and go home
-        WorkAborted();
-        StartWalkingHome();
+        workAborted();
+        startWalkingHome();
     } else if(pos == dest)
     {
         // Arrived at target -> Start working
         state = State::Work;
-        current_ev = getEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
-        WorkStarted();
+        current_ev = getEvMgr().addEvent(this, JOB_CONSTS[job_].work_length, 1);
+        workStarted();
     } else
     {
         // Keep on walking if possible
-        const auto dir = world->FindHumanPath(pos, dest, 20);
+        const auto dir = world->findHumanPath(pos, dest, 20);
         if(dir)
-            StartWalking(*dir);
+            startWalking(*dir);
         else
         {
             // Point now unreachable -> abort and go gome
-            WorkAborted();
-            StartWalkingHome();
+            workAborted();
+            startWalkingHome();
         }
     }
 }
 
-void nofFarmhand::StartWalkingHome()
+void nofFarmhand::startWalkingHome()
 {
     state = State::WalkingHome;
     // Fahne vor dem Gebäude anpeilen
     dest = world->getNeighbour(workplace->getPos(), Direction::SouthEast);
 
     // Zu Laufen anfangen
-    WalkHome();
+    walkHome();
 }
 
-void nofFarmhand::WalkHome()
+void nofFarmhand::walkHome()
 {
     // Sind wir zu Hause angekommen? (genauer an der Flagge !!)
     if(pos == dest)
     {
         // Weiteres übernimmt nofBuildingWorker
-        WorkingReady();
+        workingReady();
         return;
     }
 
-    const auto dir = world->FindHumanPath(pos, dest, 40);
+    const auto dir = world->findHumanPath(pos, dest, 40);
     // Weg suchen und ob wir überhaupt noch nach Hause kommen
     if(!dir)
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
-        AbrogateWorkplace();
-        StartWandering();
-        Wander();
+        abrogateWorkplace();
+        startWandering();
+        wander();
     } else
     {
         // All good, let's start walking there
-        StartWalking(*dir);
+        startWalking(*dir);
     }
 }
 
-void nofFarmhand::WorkAborted()
+void nofFarmhand::workAborted()
 {
     // Platz freigeben, falls man gerade arbeitet
     if(state == State::Work || state == State::WalkToWorkpoint)
@@ -272,14 +272,14 @@ void nofFarmhand::WorkAborted()
 }
 
 /// Zeichnen der Figur in sonstigen Arbeitslagen
-void nofFarmhand::DrawOtherStates(DrawPoint drawPt)
+void nofFarmhand::drawOtherStates(DrawPoint drawPt)
 {
     switch(state)
     {
         case State::WalkToWorkpoint:
         {
             // Normales Laufen zeichnen
-            DrawWalking(drawPt);
+            drawWalking(drawPt);
         }
         break;
         default: return;
@@ -287,4 +287,4 @@ void nofFarmhand::DrawOtherStates(DrawPoint drawPt)
 }
 
 /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
-void nofFarmhand::WalkingStarted() {}
+void nofFarmhand::walkingStarted() {}

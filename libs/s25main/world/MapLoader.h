@@ -29,15 +29,15 @@ class MapLoader
 
     DescIdx<TerrainDesc> getTerrainFromS2(uint8_t s2Id) const;
     /// Initialize the nodes according to the map data
-    bool InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration exploration);
+    bool initNodes(const libsiedler2::ArchivItem_Map& map, Exploration exploration);
     /// Place all objects on the nodes according to the map data.
-    void PlaceObjects(const libsiedler2::ArchivItem_Map& map);
-    void PlaceAnimals(const libsiedler2::ArchivItem_Map& map);
+    void placeObjects(const libsiedler2::ArchivItem_Map& map);
+    void placeAnimals(const libsiedler2::ArchivItem_Map& map);
 
     /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
     /// Wasserpunkte mit der gleichen seaId belegt und die Anzahl zurückgibt
-    static unsigned MeasureSea(World& world, MapPoint start, SeaId seaId);
-    static void CalcHarborPosNeighbors(World& world);
+    static unsigned measureSea(World& world, MapPoint start, SeaId seaId);
+    static void calcHarborPosNeighbors(World& world);
 
 public:
     /// Construct a loader for the given world.
@@ -46,11 +46,11 @@ public:
     bool Load(const libsiedler2::ArchivItem_Map& map, Exploration exploration);
     /// Load the map from the given filepath
     bool Load(const boost::filesystem::path& mapFilePath);
-    bool LoadLuaScript(Game& game, ILocalGameState& localgameState, const boost::filesystem::path& luaFilePath);
+    bool loadLuaScript(Game& game, ILocalGameState& localgameState, const boost::filesystem::path& luaFilePath);
     /// Place the HQs on a loaded map (must be loaded first as hqPositions etc. are used)
     /// Optionally add the starting wares to the HQs.
     /// Return false if there was an error (e.g. invalid start position)
-    bool PlaceHQs(bool addStartWares = true);
+    bool placeHQs(bool addStartWares = true);
     /// Setup resources like gold and water after loading a new map.
     /// TODO(Replay): Remove fixFish (always set to true)
     static void setupResources(GameWorldBase& world, bool fixFish = true);
@@ -58,19 +58,19 @@ public:
     /// Return the (original/unshuffled) position of the players HQ (only valid after successful load)
     MapPoint getOriginalHQPos(unsigned player) const { return hqPositions_[player]; }
 
-    static void InitShadows(World& world);
+    static void initShadows(World& world);
     static void setMapExplored(World& world);
-    static bool InitSeasAndHarbors(World& world,
+    static bool initSeasAndHarbors(World& world,
                                    const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
     /// Place the HQs on a loaded map and add starting wares if desired.
     /// Return false if there was an error.
-    static bool PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions, bool addStartWares = true);
+    static bool placeHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions, bool addStartWares = true);
 
 private:
     /// Converts map resources between types or deletes them. Used for games without gold.
-    static void ConvertMineResourceTypes(GameWorldBase& world, ResourceType from, ResourceType to);
+    static void convertMineResourceTypes(GameWorldBase& world, ResourceType from, ResourceType to);
     /// Fills water depending on terrain and Addon setting.
-    static void PlaceAndFixWater(GameWorldBase& world);
+    static void placeAndFixWater(GameWorldBase& world);
     /// Removes fish resources that cannot be reached by fisheries.
-    static void RemoveUnusableFishResources(GameWorldBase& world);
+    static void removeUnusableFishResources(GameWorldBase& world);
 };

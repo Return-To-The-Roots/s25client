@@ -46,45 +46,45 @@ BOOST_AUTO_TEST_CASE(RectIntersect)
     Rect rect1(Position(10, 20), Extent(5, 15));
     Rect rect2(rect1);
     // Identity
-    BOOST_TEST(DoRectsIntersect(rect1, rect2));
-    BOOST_TEST(DoRectsIntersect(rect2, rect1));
+    BOOST_TEST(doRectsIntersect(rect1, rect2));
+    BOOST_TEST(doRectsIntersect(rect2, rect1));
     // Just in and out on each line
     // Right
     rect2.move(Position(rect1.getSize().x, 0)); //-V807
-    BOOST_TEST(!DoRectsIntersect(rect1, rect2));
-    BOOST_TEST(!DoRectsIntersect(rect2, rect1));
+    BOOST_TEST(!doRectsIntersect(rect1, rect2));
+    BOOST_TEST(!doRectsIntersect(rect2, rect1));
     rect2.move(-Position(1, 0));
-    BOOST_TEST(DoRectsIntersect(rect1, rect2));
-    BOOST_TEST(DoRectsIntersect(rect2, rect1));
+    BOOST_TEST(doRectsIntersect(rect1, rect2));
+    BOOST_TEST(doRectsIntersect(rect2, rect1));
     // Left
     rect2 = rect1;
     rect2.move(-Position(rect1.getSize().x, 0));
-    BOOST_TEST(!DoRectsIntersect(rect1, rect2));
-    BOOST_TEST(!DoRectsIntersect(rect2, rect1));
+    BOOST_TEST(!doRectsIntersect(rect1, rect2));
+    BOOST_TEST(!doRectsIntersect(rect2, rect1));
     rect2.move(Position(1, 0));
-    BOOST_TEST(DoRectsIntersect(rect1, rect2));
-    BOOST_TEST(DoRectsIntersect(rect2, rect1));
+    BOOST_TEST(doRectsIntersect(rect1, rect2));
+    BOOST_TEST(doRectsIntersect(rect2, rect1));
     // Bottom
     rect2 = rect1;
     rect2.move(Position(0, rect1.getSize().y));
-    BOOST_TEST(!DoRectsIntersect(rect1, rect2));
-    BOOST_TEST(!DoRectsIntersect(rect2, rect1));
+    BOOST_TEST(!doRectsIntersect(rect1, rect2));
+    BOOST_TEST(!doRectsIntersect(rect2, rect1));
     rect2.move(-Position(0, 1));
-    BOOST_TEST(DoRectsIntersect(rect1, rect2));
-    BOOST_TEST(DoRectsIntersect(rect2, rect1));
+    BOOST_TEST(doRectsIntersect(rect1, rect2));
+    BOOST_TEST(doRectsIntersect(rect2, rect1));
     // Top
     rect2 = rect1;
     rect2.move(-Position(0, rect1.getSize().y));
-    BOOST_TEST(!DoRectsIntersect(rect1, rect2));
-    BOOST_TEST(!DoRectsIntersect(rect2, rect1));
+    BOOST_TEST(!doRectsIntersect(rect1, rect2));
+    BOOST_TEST(!doRectsIntersect(rect2, rect1));
     rect2.move(Position(0, 1));
-    BOOST_TEST(DoRectsIntersect(rect1, rect2));
-    BOOST_TEST(DoRectsIntersect(rect2, rect1));
+    BOOST_TEST(doRectsIntersect(rect1, rect2));
+    BOOST_TEST(doRectsIntersect(rect2, rect1));
 
     // Empty rect
     Rect emptyRect(rect1.getOrigin(), Extent(0, 0));
-    BOOST_TEST(!DoRectsIntersect(rect1, emptyRect));
-    BOOST_TEST(!DoRectsIntersect(emptyRect, rect1));
+    BOOST_TEST(!doRectsIntersect(rect1, emptyRect));
+    BOOST_TEST(!doRectsIntersect(emptyRect, rect1));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

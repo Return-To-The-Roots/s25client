@@ -14,14 +14,14 @@ class nofMiner : public nofWorkman
 {
 protected:
     /// Zeichnet ihn beim Arbeiten
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short getCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
-    helpers::OptionalEnum<GoodType> ProduceWare() override;
+    helpers::OptionalEnum<GoodType> produceWare() override;
 
-    bool AreWaresAvailable() const override;
-    bool StartWorking() override;
+    bool areWaresAvailable() const override;
+    bool startWorking() override;
     ResourceType getRequiredResType() const;
 
 public:

@@ -31,14 +31,14 @@ noFighting::noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2) :
     player_won = 0xFF;
 
     // Beginn-Event Anmelden (Soldaten gehen auf ihre Seiten)
-    current_ev = getEvMgr().AddEvent(this, 15);
+    current_ev = getEvMgr().addEvent(this, 15);
 
     // anderen Leute, die auf diesem Punkt zulaufen, stoppen
-    world->StopOnRoads(pos);
+    world->stopOnRoads(pos);
 
     // Sichtradius behalten
-    world->MakeVisibleAroundPoint(pos, VISUALRANGE_SOLDIER, soldier1.getPlayer());
-    world->MakeVisibleAroundPoint(pos, VISUALRANGE_SOLDIER, soldier2.getPlayer());
+    world->makeVisibleAroundPoint(pos, VISUALRANGE_SOLDIER, soldier1.getPlayer());
+    world->makeVisibleAroundPoint(pos, VISUALRANGE_SOLDIER, soldier2.getPlayer());
 }
 
 noFighting::~noFighting() = default;
@@ -49,37 +49,37 @@ void noFighting::Serialize(SerializedGameData& sgd) const
 
     sgd.PushUnsignedChar(turn);
     sgd.PushUnsignedChar(defending_animation);
-    sgd.PushEvent(current_ev);
+    sgd.pushEvent(current_ev);
     sgd.PushUnsignedChar(player_won);
 
     for(const auto& soldier : soldiers)
-        sgd.PushObject(soldier);
+        sgd.pushObject(soldier);
 }
 
 noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
     : noBase(sgd, obj_id), turn(sgd.PopUnsignedChar()), defending_animation(sgd.PopUnsignedChar()),
-      current_ev(sgd.PopEvent()), player_won(sgd.PopUnsignedChar())
+      current_ev(sgd.popEvent()), player_won(sgd.PopUnsignedChar())
 
 {
     for(auto& soldier : soldiers)
-        soldier.reset(sgd.PopObject<nofActiveSoldier>());
+        soldier.reset(sgd.popObject<nofActiveSoldier>());
 }
 
-void noFighting::Destroy()
+void noFighting::destroy()
 {
     RTTR_Assert(!soldiers[0]);
     RTTR_Assert(!soldiers[1]);
-    noBase::Destroy();
+    noBase::destroy();
 }
 
-void noFighting::Draw(DrawPoint drawPt)
+void noFighting::draw(DrawPoint drawPt)
 {
     switch(turn)
     {
         case 3:
         case 4:
         {
-            const unsigned curAnimFrame = GAMECLIENT.Interpolate(16, current_ev);
+            const unsigned curAnimFrame = GAMECLIENT.interpolate(16, current_ev);
             const auto& soldier = *soldiers[turn - 3];
             const GamePlayer& owner = world->getPlayer(soldier.getPlayer());
 
@@ -97,10 +97,10 @@ void noFighting::Draw(DrawPoint drawPt)
                     drawPt.x -= 12;
                 else
                     drawPt.x += 12;
-                LOADER.getPlayerImage("rom_bobs", 903 + curAnimFrame - 4)->DrawFull(drawPt, COLOR_WHITE, owner.color);
+                LOADER.getPlayerImage("rom_bobs", 903 + curAnimFrame - 4)->drawFull(drawPt, COLOR_WHITE, owner.color);
             }
             if(soldiers[turn - 3]->hasArmor())
-                soldiers[turn - 3]->DrawArmor(drawPt);
+                soldiers[turn - 3]->drawArmor(drawPt);
 
             // Sterbesound abspielen
             if(curAnimFrame == 6)
@@ -110,17 +110,17 @@ void noFighting::Draw(DrawPoint drawPt)
         case 2:
         {
             // Erste Phase des Kampfes, die Soldaten gehen jeweils nach links bzw. rechts
-            auto x_diff = int(GAMECLIENT.Interpolate(12, current_ev));
+            auto x_diff = int(GAMECLIENT.interpolate(12, current_ev));
             drawPt.x -= x_diff;
             for(unsigned i : {0, 1})
             {
                 const GamePlayer& owner = world->getPlayer(soldiers[i]->getPlayer());
                 glSmartBitmap& bmp = LOADER.getBobSprite(owner.nation, soldiers[i]->getJobType(),
                                                          (i == 0) ? Direction::West : Direction::East,
-                                                         GAMECLIENT.Interpolate(8, current_ev));
+                                                         GAMECLIENT.interpolate(8, current_ev));
                 bmp.draw(drawPt, COLOR_WHITE, owner.color);
                 if(soldiers[i]->hasArmor())
-                    soldiers[i]->DrawArmor(drawPt);
+                    soldiers[i]->drawArmor(drawPt);
                 drawPt.x += 2 * x_diff;
             }
         }
@@ -129,7 +129,7 @@ void noFighting::Draw(DrawPoint drawPt)
         {
             // Kampf
             // Aktueller Animationsframe
-            const unsigned curAnimFrame = GAMECLIENT.Interpolate(8, current_ev);
+            const unsigned curAnimFrame = GAMECLIENT.interpolate(8, current_ev);
 
             for(unsigned i : {0, 1})
             {
@@ -173,7 +173,7 @@ void noFighting::Draw(DrawPoint drawPt)
                     }
                 }
                 if(soldiers[i]->hasArmor())
-                    soldiers[i]->DrawArmor(drawPt + DrawPoint(i == 0 ? -12 : 12, 0));
+                    soldiers[i]->drawArmor(drawPt + DrawPoint(i == 0 ? -12 : 12, 0));
             }
 
             // Angriffssound
@@ -184,7 +184,7 @@ void noFighting::Draw(DrawPoint drawPt)
     }
 }
 
-void noFighting::HandleEvent(const unsigned id)
+void noFighting::handleEvent(const unsigned id)
 {
     // Normales Ablaufevent?
     if(id == 0)
@@ -198,7 +198,7 @@ void noFighting::HandleEvent(const unsigned id)
                 // "Auslosen", wer als erstes dran ist mit Angreifen
                 turn = static_cast<unsigned char>(RANDOM_RAND(2));
                 // anfangen anzugreifen
-                StartAttack();
+                startAttack();
             }
                 return;
             case 0:
@@ -210,34 +210,34 @@ void noFighting::HandleEvent(const unsigned id)
                 // Wurde der eine getroffen?
                 if(defending_animation == 3)
                 {
-                    soldiers[1 - turn]->TakeHit();
+                    soldiers[1 - turn]->takeHit();
                     if(soldiers[1 - turn]->getHitpoints() == 0)
                     {
                         // Besitzer merken für die Sichtbarkeiten am Ende dann
                         player_won = soldiers[turn]->getPlayer();
                         // Soldat Bescheid sagen, dass er stirbt
-                        soldiers[1 - turn]->LostFighting();
+                        soldiers[1 - turn]->lostFighting();
                         // Anderen Soldaten auf die Karte wieder setzen, Bescheid sagen, er kann wieder loslaufen
                         const MapPoint pos = soldiers[turn]->getPos();
-                        auto& winningSoldier = world->AddFigure(pos, std::move(soldiers[turn]));
+                        auto& winningSoldier = world->addFigure(pos, std::move(soldiers[turn]));
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
                         // Do this before calling WonFighting so this fight doesn't block the soldier looking for a new
                         // fight spot
                         turn = 3 + (1 - turn);
-                        winningSoldier.WonFighting();
+                        winningSoldier.wonFighting();
                         // Event zum Sterben des einen Soldaten anmelden
-                        current_ev = getEvMgr().AddEvent(this, 30);
+                        current_ev = getEvMgr().addEvent(this, 30);
                         // Umstehenden Figuren Bescheid Bescheid sagen
-                        world->RoadNodeAvailable(pos);
+                        world->roadNodeAvailable(pos);
 
                         // In die Statistik eintragen
-                        world->getPlayer(player_won).ChangeStatisticValue(StatisticType::Vanquished, 1);
+                        world->getPlayer(player_won).changeStatisticValue(StatisticType::Vanquished, 1);
                         return;
                     }
                 }
 
                 turn = 1 - turn;
-                StartAttack();
+                startAttack();
             }
                 return;
             case 3:
@@ -250,26 +250,26 @@ void noFighting::HandleEvent(const unsigned id)
                 world->getSoundMgr().stopSounds(*this);
 
                 // Kampf ist endgültig beendet
-                getEvMgr().AddToKillList(world->RemoveFigure(pt, *this));
+                getEvMgr().addToKillList(world->RemoveFigure(pt, *this));
 
                 // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
                 NodalObjectType noType = world->getNO(pt)->getType();
                 if(noType == NodalObjectType::Nothing || noType == NodalObjectType::Environment)
                 {
-                    world->DestroyNO(pt, false);
+                    world->destroyNO(pt, false);
                     world->setNO(pt, new noSkeleton(pt));
                 }
 
                 // Sichtradius ausblenden am Ende des Kampfes, an jeweiligen Soldaten dann übergeben, welcher überlebt
                 // hat
-                world->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->getPlayer(),
+                world->recalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->getPlayer(),
                                                      nullptr);
-                world->RecalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, player_won, nullptr);
+                world->recalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, player_won, nullptr);
 
                 // Soldaten endgültig umbringen
                 world->getPlayer(soldiers[player_lost]->getPlayer())
-                  .DecreaseInventoryJob(soldiers[player_lost]->getJobType(), 1);
-                soldiers[player_lost]->Destroy();
+                  .decreaseInventoryJob(soldiers[player_lost]->getJobType(), 1);
+                soldiers[player_lost]->destroy();
                 soldiers[player_lost].reset();
             }
             break;
@@ -278,7 +278,7 @@ void noFighting::HandleEvent(const unsigned id)
         RTTR_Assert(false);
 }
 
-void noFighting::StartAttack()
+void noFighting::startAttack()
 {
     // "Auswürfeln", ob der Angreifer (also der, der gerade den Angriff vollzieht) trifft oder ob sich der andere
     // erfolgreich verteidigt
@@ -307,7 +307,7 @@ void noFighting::StartAttack()
         defending_animation = static_cast<unsigned char>(RANDOM_RAND(3));
 
     // Entsprechendes Event anmelden
-    current_ev = getEvMgr().AddEvent(this, 15);
+    current_ev = getEvMgr().addEvent(this, 15);
 }
 
 bool noFighting::IsActive() const

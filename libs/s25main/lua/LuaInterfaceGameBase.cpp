@@ -31,11 +31,11 @@ void LuaInterfaceGameBase::Register(kaguya::State& state)
         .addStaticFunction("GetFeatureLevel", &LuaInterfaceGameBase::getFeatureLevel)
         .addFunction("IsHost", &LuaInterfaceGameBase::isHost)
         .addFunction("GetLocalPlayerIdx", &LuaInterfaceGameBase::getLocalPlayerIdx)
-        .addOverloadedFunctions("MsgBox", &LuaInterfaceGameBase::MsgBox, &LuaInterfaceGameBase::MsgBox2)
-        .addOverloadedFunctions("MsgBoxEx", &LuaInterfaceGameBase::MsgBoxEx, &LuaInterfaceGameBase::MsgBoxEx2));
+        .addOverloadedFunctions("MsgBox", &LuaInterfaceGameBase::msgBox, &LuaInterfaceGameBase::msgBox2)
+        .addOverloadedFunctions("MsgBoxEx", &LuaInterfaceGameBase::msgBoxEx, &LuaInterfaceGameBase::msgBoxEx2));
 }
 
-bool LuaInterfaceGameBase::CheckScriptVersion()
+bool LuaInterfaceGameBase::checkScriptVersion()
 {
     kaguya::LuaRef func = lua["getRequiredLuaVersion"];
     if(func.type() == LUA_TFUNCTION)
@@ -66,24 +66,24 @@ unsigned LuaInterfaceGameBase::getLocalPlayerIdx() const
     return localGameState.getPlayerId();
 }
 
-void LuaInterfaceGameBase::MsgBox(const std::string& title, const std::string& msg, bool isError)
+void LuaInterfaceGameBase::msgBox(const std::string& title, const std::string& msg, bool isError)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MsgboxButton::Ok,
+    WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MsgboxButton::Ok,
                                                   isError ? MsgboxIcon::ExclamationRed : MsgboxIcon::ExclamationGreen));
 }
 
-void LuaInterfaceGameBase::MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile,
+void LuaInterfaceGameBase::msgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile,
                                     unsigned iconIdx)
 {
-    WINDOWMANAGER.Show(
+    WINDOWMANAGER.show(
       std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MsgboxButton::Ok, ResourceId::make(iconFile), iconIdx));
 }
 
-void LuaInterfaceGameBase::MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile,
+void LuaInterfaceGameBase::msgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile,
                                      unsigned iconIdx, int iconX, int iconY)
 {
     auto msgBox =
       std::make_unique<iwMsgbox>(_(title), _(msg), nullptr, MsgboxButton::Ok, ResourceId::make(iconFile), iconIdx);
-    msgBox->MoveIcon(DrawPoint(iconX, iconY));
-    WINDOWMANAGER.Show(std::move(msgBox));
+    msgBox->moveIcon(DrawPoint(iconX, iconY));
+    WINDOWMANAGER.show(std::move(msgBox));
 }

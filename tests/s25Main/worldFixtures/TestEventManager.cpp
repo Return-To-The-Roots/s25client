@@ -26,12 +26,12 @@ unsigned TestEventManager::doExecuteNextEvent(unsigned maxGF)
     }
     unsigned numGFs = itEvents->first - getCurrentGF();
     currentGF = itEvents->first;
-    ExecuteEvents(itEvents);
-    DestroyCurrentObjects();
+    executeEvents(itEvents);
+    destroyCurrentObjects();
     return numGFs;
 }
 
-unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
+unsigned TestEventManager::executeNextEvent(unsigned maxGF)
 {
     const auto numGFs = doExecuteNextEvent(maxGF);
     if(numGFs > 0)
@@ -40,8 +40,8 @@ unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
         {
             if(player.isUsed())
             {
-                player.TestForEmergencyProgramm();
-                player.TestPacts();
+                player.testForEmergencyProgramm();
+                player.testPacts();
             }
         }
     }
@@ -76,12 +76,12 @@ bool TestEventManager::isEventActive(const GameObject& obj, const unsigned id) c
     return false;
 }
 
-const GameEvent* TestEventManager::RescheduleEvent(const GameEvent* event, unsigned targetGF)
+const GameEvent* TestEventManager::rescheduleEvent(const GameEvent* event, unsigned targetGF)
 {
-    RemoveEventFromQueue(*event);
+    removeEventFromQueue(*event);
     // Hacky but we need to preserve the location (pointer) of the event as objects store it
     const_cast<GameEvent*>(event)->length = targetGF - event->startGF;
-    return AddEventToQueue(event);
+    return addEventToQueue(event);
 }
 
 std::vector<const GameEvent*> TestEventManager::getEvents() const

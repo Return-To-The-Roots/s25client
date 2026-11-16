@@ -106,7 +106,7 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedWithS2MapFixture)
 {
     using libsiedler2::MapLayer;
     // Init BQ
-    world.InitAfterLoad();
+    world.initAfterLoad();
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         BOOST_TEST_INFO("pt " << pt);
@@ -223,7 +223,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     }
 
     // Check if this works
-    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, hbPos));
+    BOOST_TEST_REQUIRE(MapLoader::initSeasAndHarbors(world, hbPos));
     // All harbors valid
     BOOST_TEST_REQUIRE(world.getNumHarborPoints() == hbPos.size());
     for(const auto startHb : helpers::idRange<HarborId>(world.getNumHarborPoints()))
@@ -240,7 +240,7 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
                 MapPoint destPt = world.getCoastalPoint(targetHb, seaId);
                 BOOST_TEST_REQUIRE(destPt.isValid());
                 std::vector<Direction> route;
-                BOOST_TEST_REQUIRE((startPt == destPt || world.FindShipPath(startPt, destPt, 10000, &route, nullptr)));
+                BOOST_TEST_REQUIRE((startPt == destPt || world.findShipPath(startPt, destPt, 10000, &route, nullptr)));
                 BOOST_TEST_REQUIRE(route.size() == world.getMinHarborDistance(startHb, targetHb));
             }
         }
@@ -271,7 +271,7 @@ BOOST_FIXTURE_TEST_CASE(LoadLua, WorldFixture<UninitializedWorldCreator>)
     invalidLuaFile.close();
     {
         rttr::test::LogAccessor logAcc;
-        BOOST_TEST_REQUIRE(!loader.LoadLuaScript(*game, lgs, invalidLuaFile.filePath));
+        BOOST_TEST_REQUIRE(!loader.loadLuaScript(*game, lgs, invalidLuaFile.filePath));
         BOOST_TEST(!world.hasLua());
         RTTR_REQUIRE_LOG_CONTAINS("getRequiredLuaVersion()", false); // Should show a warning
     }
@@ -281,7 +281,7 @@ BOOST_FIXTURE_TEST_CASE(LoadLua, WorldFixture<UninitializedWorldCreator>)
                              << "\n end";
     validLuaFile.close();
 
-    BOOST_TEST_REQUIRE(loader.LoadLuaScript(*game, lgs, validLuaFile.filePath));
+    BOOST_TEST_REQUIRE(loader.loadLuaScript(*game, lgs, validLuaFile.filePath));
     BOOST_TEST(world.hasLua());
 }
 

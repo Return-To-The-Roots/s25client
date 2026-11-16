@@ -44,7 +44,7 @@ public:
                      bool initOGL = true);
     ~dskGameInterface() override;
 
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
     void setActive(bool activate = true) override;
 
     void LC_Status_ConnectionLost() override;
@@ -63,8 +63,8 @@ public:
     void CI_Error(ClientError ce) override;
     void CI_PlayersSwapped(unsigned player1, unsigned player2) override;
 
-    void NewPostMessage(const PostMsg& msg, unsigned msgCt);
-    void PostMessageDeleted(unsigned msgCt);
+    void newPostMessage(const PostMsg& msg, unsigned msgCt);
+    void postMessageDeleted(unsigned msgCt);
 
     /// Wird aufgerufen, wann immer eine Flagge zerstört wurde, da so evtl der Wegbau abgebrochen werden muss
     void GI_FlagDestroyed(MapPoint pt) override;
@@ -90,35 +90,35 @@ public:
     // Bei Wasserwegen kann die Reichweite nicht bis zum gewünschten
     // Punkt reichen. Dann werden die Zielkoordinaten geändert, daher
     // call-by-reference
-    bool BuildRoadPart(MapPoint& cSel);
+    bool buildRoadPart(MapPoint& cSel);
     // Return the id (index + 1) of the point in the currently build road (1 = startPt)
     // If pt is not on the road, return 0
     unsigned getIdInCurBuildRoad(MapPoint pt);
     /// Baut Weg zurück von Ende bis zu start_id
-    void DemolishRoad(unsigned start_id);
+    void demolishRoad(unsigned start_id);
     // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
     // ansonsten gibt's nur nen Button zum Abbrechen
-    void ShowRoadWindow(const Position& mousePos);
+    void showRoadWindow(const Position& mousePos);
     /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch berücksichtigt, obs ne besondere Flagge ist usw
-    void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
+    void showActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
                           bool enable_military_buildings);
 
     const GameWorldView& getView() const { return gwv; }
 
-    void OnChatCommand(const std::string& cmd) override;
+    void onChatCommand(const std::string& cmd) override;
 
 protected:
     /// Initializes player specific stuff after start or player swap
-    void InitPlayer();
+    void initPlayer();
 
     /// Lässt das Spiel laufen (zeichnen)
-    void Run();
+    void run();
 
     /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
-    void UpdatePostIcon(unsigned postmessages_count, bool showPigeon);
+    void updatePostIcon(unsigned postmessages_count, bool showPigeon);
 
     /// Executed during left click. Checks click pos for buildings/roads
-    bool ContextClick(const MouseCoords& mc);
+    bool contextClick(const MouseCoords& mc);
 
     void msgButtonClick(unsigned ctrl_id) override;
     void msgPaintBefore() override;
@@ -132,17 +132,17 @@ protected:
 
     bool msgWheelUp(const MouseCoords& mc) override;
     bool msgWheelDown(const MouseCoords& mc) override;
-    void WheelZoom(float step);
+    void wheelZoom(float step);
 
     void msgWindowClosed(IngameWindow& wnd) override;
 
-    void OnBuildingNote(const BuildingNote& note);
+    void onBuildingNote(const BuildingNote& note);
 
-    void StopScrolling();
-    void StartScrolling(const Position& mousePos);
-    void ToggleFoW();              // Switch Fog of War mode if possible
-    void DisableFoW(bool hideFOW); // Set Fog of War mode if possible
-    void ShowPersistentWindowsAfterSwitch();
+    void stopScrolling();
+    void startScrolling(const Position& mousePos);
+    void toggleFoW();              // Switch Fog of War mode if possible
+    void disableFoW(bool hideFOW); // Set Fog of War mode if possible
+    void showPersistentWindowsAfterSwitch();
 
     PostBox& getPostBox();
     std::shared_ptr<const Game> game_;

@@ -72,12 +72,12 @@ BOOST_AUTO_TEST_CASE(StrandedSoldierReturnSearchVeryLargeEscalatesThroughThreeSt
 
 BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
 {
-    world.getPlayer(curPlayer).getFirstWH()->AddToInventory(PeopleCounts::make(Job::Helper, 10), true);
+    world.getPlayer(curPlayer).getFirstWH()->addToInventory(PeopleCounts::make(Job::Helper, 10), true);
     MapPoint flagPos = world.getNeighbour(hqPos, Direction::SouthEast);
     MapPoint whPos(flagPos.x + 5, flagPos.y);
     auto* wh = static_cast<nobBaseWarehouse*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Romans));
-    wh->AddToInventory(PeopleCounts::make(Job::Helper, 1), true);
+      BuildingFactory::createBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Romans));
+    wh->addToInventory(PeopleCounts::make(Job::Helper, 1), true);
     const unsigned numHelpers = world.getPlayer(curPlayer).getInventory().people[Job::Helper]; //-V807
     MapPoint whFlagPos = world.getNeighbour(whPos, Direction::SouthEast);
     // Build a road -> Requests a worker
@@ -116,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE(DestroyWHWithWare, WorldWithGCExecution2P)
     MapPoint flagPos = world.getNeighbour(hqPos, Direction::SouthEast);
     MapPoint whFlagPos(flagPos.x + 5, flagPos.y);
     MapPoint whPos = world.getNeighbour(whFlagPos, Direction::NorthWest);
-    BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, whPos, curPlayer, Nation::Romans);
+    BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, whPos, curPlayer, Nation::Romans);
     // Build a road
     this->BuildRoad(whFlagPos, false, std::vector<Direction>(5, Direction::West));
     // Request people and wares
@@ -133,14 +133,14 @@ using EmptyWorldFixture1PBig = WorldFixture<CreateEmptyWorld, 1, 22, 20>;
 BOOST_FIXTURE_TEST_CASE(ScoutScouts, EmptyWorldFixture1PBig)
 {
     const MapPoint hqFlagPos = world.getNeighbour(world.getPlayer(0).getHQPos(), Direction::SouthEast);
-    auto& scout = world.AddFigure(
+    auto& scout = world.addFigure(
       hqFlagPos, std::make_unique<nofScout_Free>(hqFlagPos, 0, world.getSpecObj<noRoadNode>(hqFlagPos)));
-    scout.ActAtFirst();
+    scout.actAtFirst();
     const auto countVisibleNodes = [&]() {
         unsigned numVisibleNodes = 0;
         RTTR_FOREACH_PT(MapPoint, world.getSize())
         {
-            if(world.CalcVisiblityWithAllies(pt, 0) != Visibility::Invisible)
+            if(world.calcVisiblityWithAllies(pt, 0) != Visibility::Invisible)
                 numVisibleNodes++;
         }
         return numVisibleNodes;
@@ -170,8 +170,8 @@ BOOST_FIXTURE_TEST_CASE(GeologistPlacesSigns, EmptyWorldFixture1P)
     for(unsigned i = 0; i < 10; i++)
     {
         world
-          .AddFigure(hqFlagPos, std::make_unique<nofGeologist>(hqFlagPos, 0, world.getSpecObj<noRoadNode>(hqFlagPos)))
-          .ActAtFirst();
+          .addFigure(hqFlagPos, std::make_unique<nofGeologist>(hqFlagPos, 0, world.getSpecObj<noRoadNode>(hqFlagPos)))
+          .actAtFirst();
     }
 
     std::vector<ResourceNote> notes;

@@ -104,7 +104,7 @@ struct And : private T_Func1, private T_Func2
 /// \tparam T_AdditionalCosts Cost for each road segment but the one to the goal building
 /// \tparam T_SegmentConstraints Predicate whether a road is allowed
 template<class T_AdditionalCosts, class T_SegmentConstraints>
-bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goal, const unsigned max,
+bool RoadPathFinder::findPathImpl(const noRoadNode& start, const noRoadNode& goal, const unsigned max,
                                   const T_AdditionalCosts addCosts, const T_SegmentConstraints isSegmentAllowed,
                                   unsigned* const length, RoadPathDirection* const firstDir,
                                   MapPoint* const firstNodePos)
@@ -148,7 +148,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
     todo.clear();
 
     const MapPoint goalPos = goal.getPos();
-    start.targetDistance = gwb_.CalcDistance(start.getPos(), goalPos);
+    start.targetDistance = gwb_.calcDistance(start.getPos(), goalPos);
     start.estimate = start.targetDistance;
     start.last_visit = currentVisit;
     start.prev = nullptr;
@@ -240,7 +240,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             {
                 // Not visited yet -> Add to list
                 neighbour->cost = cost;
-                neighbour->targetDistance = gwb_.CalcDistance(neighbour->getPos(), goalPos);
+                neighbour->targetDistance = gwb_.calcDistance(neighbour->getPos(), goalPos);
                 neighbour->estimate = neighbour->targetDistance + cost;
                 neighbour->last_visit = currentVisit;
                 neighbour->prev = &best;
@@ -277,7 +277,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             {
                 // Not visited yet -> Add to list
                 dest.cost = cost;
-                dest.targetDistance = gwb_.CalcDistance(dest.getPos(), goalPos);
+                dest.targetDistance = gwb_.calcDistance(dest.getPos(), goalPos);
                 dest.estimate = dest.targetDistance + cost;
                 dest.last_visit = currentVisit;
                 dest.prev = &best;
@@ -292,7 +292,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
     return false;
 }
 
-bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, const bool wareMode, const unsigned max,
+bool RoadPathFinder::findPath(const noRoadNode& start, const noRoadNode& goal, const bool wareMode, const unsigned max,
                               const RoadSegment* const forbidden, unsigned* const length,
                               RoadPathDirection* const firstDir, MapPoint* const firstNodePos)
 {
@@ -302,25 +302,25 @@ bool RoadPathFinder::FindPath(const noRoadNode& start, const noRoadNode& goal, c
     {
         // TODO(Replay): Change to target flag instead of its attached building
         if(forbidden)
-            return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(),
+            return findPathImpl(start, goal, max, AdditonalCosts::Carrier(),
                                 SegmentConstraints::AvoidSegment(forbidden), length, firstDir, firstNodePos);
         else
-            return FindPathImpl(start, goal, max, AdditonalCosts::Carrier(), SegmentConstraints::None(), length,
+            return findPathImpl(start, goal, max, AdditonalCosts::Carrier(), SegmentConstraints::None(), length,
                                 firstDir, firstNodePos);
     } else
     {
         if(forbidden)
-            return FindPathImpl(start, goal, max, AdditonalCosts::None(),
+            return findPathImpl(start, goal, max, AdditonalCosts::None(),
                                 SegmentConstraints::And<SegmentConstraints::AvoidSegment,
                                                         SegmentConstraints::AvoidRoadType<RoadType::Water>>(forbidden),
                                 length, firstDir, firstNodePos);
         else
-            return FindPathImpl(start, goal, max, AdditonalCosts::None(),
+            return findPathImpl(start, goal, max, AdditonalCosts::None(),
                                 SegmentConstraints::AvoidRoadType<RoadType::Water>(), length, firstDir, firstNodePos);
     }
 }
 
-bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal, const bool allowWaterRoads,
+bool RoadPathFinder::pathExists(const noRoadNode& start, const noRoadNode& goal, const bool allowWaterRoads,
                                 const unsigned max, const RoadSegment* const forbidden)
 {
     if(allowWaterRoads)
@@ -328,17 +328,17 @@ bool RoadPathFinder::PathExists(const noRoadNode& start, const noRoadNode& goal,
         // TODO(Replay): Change to target flag instead of its attached building.
         // Likely combine with RoadPathFinder::FindPath
         if(forbidden)
-            return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidSegment(forbidden));
+            return findPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidSegment(forbidden));
         else
-            return FindPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::None());
+            return findPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::None());
     } else
     {
         if(forbidden)
-            return FindPathImpl(start, goal, max, AdditonalCosts::None(),
+            return findPathImpl(start, goal, max, AdditonalCosts::None(),
                                 SegmentConstraints::And<SegmentConstraints::AvoidSegment,
                                                         SegmentConstraints::AvoidRoadType<RoadType::Water>>(forbidden));
         else
-            return FindPathImpl(start, goal, max, AdditonalCosts::None(),
+            return findPathImpl(start, goal, max, AdditonalCosts::None(),
                                 SegmentConstraints::AvoidRoadType<RoadType::Water>());
     }
 }

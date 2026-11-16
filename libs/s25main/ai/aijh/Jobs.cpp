@@ -20,7 +20,7 @@ namespace AIJH {
 
 AIJob::AIJob(AIPlayerJH& aijh) : aijh(aijh), state(JobState::Waiting) {}
 
-void BuildJob::ExecuteJob()
+void BuildJob::executeJob()
 {
     // are we allowed to plan construction work in the area in this nwf?
     if(!aijh.getConstruction().canStillConstructHere(around))
@@ -31,14 +31,14 @@ void BuildJob::ExecuteJob()
 
     switch(state)
     {
-        case JobState::Start: TryToBuild(); break;
+        case JobState::Start: tryToBuild(); break;
 
-        case JobState::ExecutingRoad1: BuildMainRoad(); break;
+        case JobState::ExecutingRoad1: buildMainRoad(); break;
 
-        case JobState::ExecutingRoad2: TryToBuildSecondaryRoad(); break;
+        case JobState::ExecutingRoad2: tryToBuildSecondaryRoad(); break;
         case JobState::ExecutingRoad2_2:
             // evtl noch prüfen ob auch dieser Straßenbau erfolgreich war?
-            aijh.RecalcGround(target, route);
+            aijh.recalcGround(target, route);
             state = JobState::Finished;
             break;
 
@@ -61,7 +61,7 @@ void BuildJob::ExecuteJob()
     }
 }
 
-void BuildJob::TryToBuild()
+void BuildJob::tryToBuild()
 {
     AIConstruction& aiConstruction = aijh.getConstruction();
 
@@ -70,7 +70,7 @@ void BuildJob::TryToBuild()
         return;
     }
 
-    if(!aiConstruction.Wanted(type))
+    if(!aiConstruction.wanted(type))
     {
         state = JobState::Finished;
         return;
@@ -92,10 +92,10 @@ void BuildJob::TryToBuild()
         searchMode = SearchMode::Radius;
     }
 
-    MapPoint foundPos = MapPoint::Invalid();
+    MapPoint foundPos = MapPoint::invalid();
     if(searchMode == SearchMode::Radius)
     {
-        foundPos = aijh.FindPositionForBuildingAround(type, around);
+        foundPos = aijh.findPositionForBuildingAround(type, around);
         if(BuildingProperties::isMilitary(type))
         {
             if(foundPos.isValid())
@@ -106,7 +106,7 @@ void BuildJob::TryToBuild()
                 RTTR_Assert(aiInterface.getBuildingQuality(foundPos) == aijh.getAINode(foundPos).bq);
                 if(type != BuildingType::Fortress && aiInterface.getBuildingQuality(foundPos) != BuildingQuality::Mine
                    && aiInterface.getBuildingQuality(foundPos) > BUILDING_SIZE[type]
-                   && aijh.BQsurroundcheck(foundPos, 6, true, 10) < 10)
+                   && aijh.bQsurroundcheck(foundPos, 6, true, 10) < 10)
                 {
                     // more than 80% is unbuildable in range 7 -> upgrade
                     for(BuildingType bld : BuildingProperties::militaryBldTypes)
@@ -125,7 +125,7 @@ void BuildJob::TryToBuild()
                 {
                     if(BUILDING_SIZE[bld] < BUILDING_SIZE[type] && aijh.getInterface().canBuildBuildingtype(bld))
                     {
-                        aijh.AddBuildJob(bld, around);
+                        aijh.addBuildJob(bld, around);
                         break;
                     }
                 }
@@ -157,10 +157,10 @@ void BuildJob::TryToBuild()
     }
     target = foundPos;
     state = JobState::ExecutingRoad1;
-    aiConstruction.ConstructionOrdered(*this);
+    aiConstruction.constructionOrdered(*this);
 }
 
-void BuildJob::BuildMainRoad()
+void BuildJob::buildMainRoad()
 {
     AIInterface& aiInterface = aijh.getInterface();
     const auto* bld = aiInterface.gwb.getSpecObj<noBuildingSite>(target);
@@ -178,7 +178,7 @@ void BuildJob::BuildMainRoad()
                       << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
             aijh.getAINode(target).bq = bq;
-            aijh.AddBuildJob(type, around);
+            aijh.addBuildJob(type, around);
         }
         return;
     }
@@ -198,7 +198,7 @@ void BuildJob::BuildMainRoad()
     if(!aiConstruction.isConnectedToRoadSystem(houseFlag))
     {
         // Bau unmöglich?
-        if(!aiConstruction.ConnectFlagToRoadSytem(houseFlag, route))
+        if(!aiConstruction.connectFlagToRoadSytem(houseFlag, route))
         {
             state = JobState::Failed;
 #ifdef DEBUG_AI
@@ -211,7 +211,7 @@ void BuildJob::BuildMainRoad()
             aijh.getAINode(target).failed_penalty = 20;
             aiInterface.DestroyBuilding(target);
             aiInterface.DestroyFlag(houseFlag->getPos());
-            aijh.AddBuildJob(type, around);
+            aijh.addBuildJob(type, around);
             return;
         }
     }
@@ -222,14 +222,14 @@ void BuildJob::BuildMainRoad()
 
     switch(type)
     {
-        case BuildingType::Forester: aijh.AddBuildJob(BuildingType::Woodcutter, target); break;
+        case BuildingType::Forester: aijh.addBuildJob(BuildingType::Woodcutter, target); break;
         case BuildingType::Charburner:
         case BuildingType::Farm: aijh.setFarmedNodes(target, true); break;
-        case BuildingType::Mill: aijh.AddBuildJob(BuildingType::Bakery, target); break;
-        case BuildingType::PigFarm: aijh.AddBuildJob(BuildingType::Slaughterhouse, target); break;
+        case BuildingType::Mill: aijh.addBuildJob(BuildingType::Bakery, target); break;
+        case BuildingType::PigFarm: aijh.addBuildJob(BuildingType::Slaughterhouse, target); break;
         case BuildingType::Bakery:
         case BuildingType::Slaughterhouse:
-        case BuildingType::Brewery: aijh.AddBuildJob(BuildingType::Well, target); break;
+        case BuildingType::Brewery: aijh.addBuildJob(BuildingType::Well, target); break;
         default: break;
     }
 
@@ -241,14 +241,14 @@ void BuildJob::BuildMainRoad()
     if(!BuildingProperties::isMilitary(type)) // not a military building? -> build secondary road now
     {
         state = JobState::ExecutingRoad2;
-        return TryToBuildSecondaryRoad();
+        return tryToBuildSecondaryRoad();
     } else // military buildings only get 1 road
     {
         state = JobState::Finished;
     }
 }
 
-void BuildJob::TryToBuildSecondaryRoad()
+void BuildJob::tryToBuildSecondaryRoad()
 {
     const auto* houseFlag =
       aijh.getWorld().getSpecObj<noFlag>(aijh.getWorld().getNeighbour(target, Direction::SouthEast));
@@ -261,11 +261,11 @@ void BuildJob::TryToBuildSecondaryRoad()
         std::cout << "Player " << (unsigned)aijh.getPlayerId() << ", Job failed: House flag is gone, "
                   << BUILDING_NAMES[type] << " at " << target.x << "/" << target.y << ". Retrying..." << std::endl;
 #endif
-        aijh.AddBuildJob(type, around);
+        aijh.addBuildJob(type, around);
         return;
     }
 
-    if(aijh.getConstruction().BuildAlternativeRoad(houseFlag, route))
+    if(aijh.getConstruction().buildAlternativeRoad(houseFlag, route))
     {
         state = JobState::ExecutingRoad2_2;
     } else
@@ -276,7 +276,7 @@ EventJob::EventJob(AIPlayerJH& aijh, std::unique_ptr<AIEvent::Base> ev) : AIJob(
 
 EventJob::~EventJob() = default;
 
-void EventJob::ExecuteJob()
+void EventJob::executeJob()
 {
     // for now it is assumed that all these will be finished or failed after execution (no wait or progress)
     using AIEvent::EventType;
@@ -285,21 +285,21 @@ void EventJob::ExecuteJob()
         case EventType::BuildingConquered:
         {
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.HandleNewMilitaryBuildingOccupied(evb.getPos());
+            aijh.handleNewMilitaryBuildingOccupied(evb.getPos());
             state = JobState::Finished;
         }
         break;
         case EventType::BuildingLost:
         {
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.HandleMilitaryBuilingLost(evb.getPos());
+            aijh.handleMilitaryBuilingLost(evb.getPos());
             state = JobState::Finished;
         }
         break;
         case EventType::LostLand:
         {
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.HandleLostLand(evb.getPos());
+            aijh.handleLostLand(evb.getPos());
             state = JobState::Finished;
         }
         break;
@@ -307,77 +307,77 @@ void EventJob::ExecuteJob()
         {
             // todo maybe do sth about it?
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.HandleBuilingDestroyed(evb.getPos(), evb.getBuildingType());
+            aijh.handleBuilingDestroyed(evb.getPos(), evb.getBuildingType());
             state = JobState::Finished;
         }
         break;
         case EventType::NoMoreResourcesReachable:
         {
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.HandleNoMoreResourcesReachable(evb.getPos(), evb.getBuildingType());
+            aijh.handleNoMoreResourcesReachable(evb.getPos(), evb.getBuildingType());
             state = JobState::Finished;
         }
         break;
         case EventType::BorderChanged:
         {
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.HandleBorderChanged(evb.getPos());
+            aijh.handleBorderChanged(evb.getPos());
             state = JobState::Finished;
         }
         break;
         case EventType::BuildingFinished:
         {
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.HandleBuildingFinished(evb.getPos(), evb.getBuildingType());
+            aijh.handleBuildingFinished(evb.getPos(), evb.getBuildingType());
             state = JobState::Finished;
         }
         break;
         case EventType::ExpeditionWaiting:
         {
             const auto& lvb = *checkedCast<AIEvent::Location*>(ev.get());
-            aijh.HandleExpedition(lvb.getPos());
+            aijh.handleExpedition(lvb.getPos());
             state = JobState::Finished;
         }
         break;
         case EventType::TreeChopped:
         {
             const auto& lvb = *checkedCast<AIEvent::Location*>(ev.get());
-            aijh.HandleTreeChopped(lvb.getPos());
+            aijh.handleTreeChopped(lvb.getPos());
             state = JobState::Finished;
         }
         break;
         case EventType::NewColonyFounded:
         {
             const auto& lvb = *checkedCast<AIEvent::Location*>(ev.get());
-            aijh.HandleNewColonyFounded(lvb.getPos());
+            aijh.handleNewColonyFounded(lvb.getPos());
             state = JobState::Finished;
         }
         break;
         case EventType::ShipBuilt:
         {
             const auto& lvb = *checkedCast<AIEvent::Location*>(ev.get());
-            aijh.HandleShipBuilt(lvb.getPos());
+            aijh.handleShipBuilt(lvb.getPos());
             state = JobState::Finished;
         }
         break;
         case EventType::RoadConstructionComplete:
         {
             const auto& dvb = *checkedCast<AIEvent::Direction*>(ev.get());
-            aijh.HandleRoadConstructionComplete(dvb.getPos(), dvb.getDirection());
+            aijh.handleRoadConstructionComplete(dvb.getPos(), dvb.getDirection());
             state = JobState::Finished;
         }
         break;
         case EventType::RoadConstructionFailed:
         {
             const auto& dvb = *checkedCast<AIEvent::Direction*>(ev.get());
-            aijh.HandleRoadConstructionFailed(dvb.getPos(), dvb.getDirection());
+            aijh.handleRoadConstructionFailed(dvb.getPos(), dvb.getDirection());
             state = JobState::Finished;
         }
         break;
         case EventType::LuaConstructionOrder:
         {
             const auto& evb = *checkedCast<AIEvent::Building*>(ev.get());
-            aijh.ExecuteLuaConstructionOrder(evb.getPos(), evb.getBuildingType(), true);
+            aijh.executeLuaConstructionOrder(evb.getPos(), evb.getBuildingType(), true);
             state = JobState::Finished;
         }
         break;
@@ -390,7 +390,7 @@ void EventJob::ExecuteJob()
     state = JobState::Finished;
 }
 
-void ConnectJob::ExecuteJob()
+void ConnectJob::executeJob()
 {
 #ifdef DEBUG_AI
     std::cout << "Player " << (unsigned)aijh.getPlayerId() << ", ConnectJob executed..." << std::endl;
@@ -434,7 +434,7 @@ void ConnectJob::ExecuteJob()
         std::cout << "Flag is not connected..." << std::endl;
 #endif
         // building road possible?
-        if(!construction.ConnectFlagToRoadSytem(flag, route, 24))
+        if(!construction.connectFlagToRoadSytem(flag, route, 24))
         {
 #ifdef DEBUG_AI
             std::cout << "Flag is not connectable." << std::endl;
@@ -451,12 +451,12 @@ void ConnectJob::ExecuteJob()
 #ifdef DEBUG_AI
         std::cout << "Flag is connected." << std::endl;
 #endif
-        aijh.RecalcGround(flagPos, route);
+        aijh.recalcGround(flagPos, route);
         state = JobState::Finished;
     }
 }
 
-void SearchJob::ExecuteJob()
+void SearchJob::executeJob()
 {
     state = JobState::Failed;
     PositionSearchState searchState = search->execute(aijh);
@@ -468,7 +468,7 @@ void SearchJob::ExecuteJob()
     else
     {
         state = JobState::Finished;
-        aijh.AddBuildJob(search->getBld(), search->getResultPt(), true, false);
+        aijh.addBuildJob(search->getBld(), search->getResultPt(), true, false);
     }
 }
 

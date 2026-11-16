@@ -86,7 +86,7 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
 
     // Add nothing -> nothing changed
     GoodsAndPeopleCounts newGoods;
-    hq.AddToInventory(newGoods, true);
+    hq.addToInventory(newGoods, true);
     testNumGoodsHQ();
     testNumGoodsPlayer();
 
@@ -106,7 +106,7 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     }
     numPeoplePlayer = numPeople;
     numArmoredSoldiersPlayer = numArmoredSoldiers;
-    hq.AddToInventory(newGoods, true);
+    hq.addToInventory(newGoods, true);
     testNumGoodsHQ();
     testNumGoodsPlayer();
 
@@ -116,7 +116,7 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     for(const auto i : helpers::enumRange<ArmoredSoldier>())
         numArmoredSoldiers[i] += newGoods[i];
 
-    hq.AddToInventory(newGoods, false);
+    hq.addToInventory(newGoods, false);
     testNumGoodsHQ();
     testNumGoodsPlayer();
 
@@ -131,28 +131,28 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
         numGoods[i] += rttr::enum_cast(i) + 2;
     }
     numGoodsPlayer = numGoods;
-    hq.AddToInventory(newGoods, true);
+    hq.addToInventory(newGoods, true);
     testNumGoodsHQ();
     testNumGoodsPlayer();
 
     // Add only to hq but not to player
     for(const auto i : helpers::enumRange<GoodType>())
         numGoods[i] += newGoods[i];
-    hq.AddToInventory(newGoods, false);
+    hq.addToInventory(newGoods, false);
     testNumGoodsHQ();
     testNumGoodsPlayer();
 
 #if RTTR_ENABLE_ASSERTS
-    RTTR_REQUIRE_ASSERT(hq.AddToInventory(PeopleCounts::make(Job::BoatCarrier, 1), false));
-    RTTR_REQUIRE_ASSERT(hq.AddToInventory(GoodCounts::make(GoodType::ShieldAfricans, 1), false));
+    RTTR_REQUIRE_ASSERT(hq.addToInventory(PeopleCounts::make(Job::BoatCarrier, 1), false));
+    RTTR_REQUIRE_ASSERT(hq.addToInventory(GoodCounts::make(GoodType::ShieldAfricans, 1), false));
 #endif
 }
 
-BOOST_FIXTURE_TEST_CASE(OrderJob, EmptyWorldFixture1P)
+BOOST_FIXTURE_TEST_CASE(orderJob, EmptyWorldFixture1P)
 {
     GamePlayer& player = world.getPlayer(0);
     auto* hq = world.getSpecObj<nobBaseWarehouse>(player.getHQPos());
-    auto* wh = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(
+    auto* wh = static_cast<nobBaseWarehouse*>(BuildingFactory::createBuilding(
       world, BuildingType::Storehouse, player.getHQPos() + MapPoint(4, 0), 0, Nation::Romans));
     world.BuildRoad(0, false, hq->getFlagPos(), {4, Direction::East});
 
@@ -162,29 +162,29 @@ BOOST_FIXTURE_TEST_CASE(OrderJob, EmptyWorldFixture1P)
         inv[Job::Builder] = rttr::test::randomValue(3, 7);
         inv[GoodType::Hammer] = rttr::test::randomValue(3, 7);
         inv[Job::Helper] = rttr::test::randomValue(7, 23); // At least one per hammer
-        hq->AddToInventory(inv, true);
+        hq->addToInventory(inv, true);
     }
 
     // Order all existing builders
     while(hq->getNumRealFigures(Job::Builder) > 0u)
     {
         const auto numBuilders = hq->getNumRealFigures(Job::Builder);
-        BOOST_TEST(hq->OrderJob(Job::Builder, *wh, false));
+        BOOST_TEST(hq->orderJob(Job::Builder, *wh, false));
         BOOST_TEST_REQUIRE(hq->getNumRealFigures(Job::Builder) == numBuilders - 1u);
     }
     // Ordering another one fails
-    BOOST_TEST_REQUIRE(!hq->OrderJob(Job::Builder, *wh, false));
+    BOOST_TEST_REQUIRE(!hq->orderJob(Job::Builder, *wh, false));
     BOOST_TEST_REQUIRE(hq->getNumRealFigures(Job::Builder) == 0u);
     // Recruit all possible builders
     while(hq->getNumRealWares(GoodType::Hammer) > 0u)
     {
         const auto numHammers = hq->getNumRealWares(GoodType::Hammer);
-        BOOST_TEST(hq->OrderJob(Job::Builder, *wh, true));
+        BOOST_TEST(hq->orderJob(Job::Builder, *wh, true));
         BOOST_TEST_REQUIRE(hq->getNumRealWares(GoodType::Hammer) == numHammers - 1u);
         BOOST_TEST_REQUIRE(hq->getNumRealFigures(Job::Builder) == 0u);
     }
     // Ordering another one fails
-    BOOST_TEST_REQUIRE(!hq->OrderJob(Job::Builder, *wh, true));
+    BOOST_TEST_REQUIRE(!hq->orderJob(Job::Builder, *wh, true));
     BOOST_TEST(hq->getNumRealFigures(Job::Builder) == 0u);
     BOOST_TEST(hq->getNumRealWares(GoodType::Hammer) == 0u);
 }
@@ -197,15 +197,15 @@ BOOST_FIXTURE_TEST_CASE(DestroyBuilding, EmptyWorldFixture1P)
     MapPoint whPos = player.getHQPos() + MapPoint(4, 0);
 
     auto* wh = static_cast<nobBaseWarehouse*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, 0, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Storehouse, whPos, 0, Nation::Romans));
 
     world.BuildRoad(0, false, hq->getFlagPos(), {4, Direction::East});
 
     // Reproduce issue #1559, where a dependent figure on the same position would cause a crash
     // upon building destruction.
     auto& scout =
-      world.AddFigure(whPos, std::make_unique<nofScout_Free>(whPos, 0, world.getSpecObj<noRoadNode>(whPos)));
-    wh->AddDependentFigure(scout);
+      world.addFigure(whPos, std::make_unique<nofScout_Free>(whPos, 0, world.getSpecObj<noRoadNode>(whPos)));
+    wh->addDependentFigure(scout);
 
     world.DestroyBuilding(whPos, 0);
 }
@@ -218,9 +218,9 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
     MapPoint wh2Pos = wh1Pos + MapPoint(2, 0);
 
     auto* wh1 = static_cast<nobBaseWarehouse*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, wh1Pos, 0, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Storehouse, wh1Pos, 0, Nation::Romans));
     auto* wh2 = static_cast<nobBaseWarehouse*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, wh2Pos, 0, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Storehouse, wh2Pos, 0, Nation::Romans));
 
     world.BuildRoad(0, false, wh1->getFlagPos(), {2, Direction::East});
     MilitarySettings milSettings = MILITARY_SETTINGS_SCALE;
@@ -240,7 +240,7 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
             continue;
         inv[good] = 1;
     }
-    wh1->AddToInventory(inv, true);
+    wh1->addToInventory(inv, true);
 
     for(const auto job : helpers::enumRange<Job>())
     {
@@ -297,7 +297,7 @@ BOOST_FIXTURE_TEST_CASE(AddSoldierWithArmor, EmptyWorldFixture1P)
       std::make_unique<nofPassiveSoldier>(player.getHQPos(), 0, nullptr, nullptr, getSoldierRank(Job::Sergeant));
     soldierWithArmor->setArmor(true);
 
-    hq->AddFigure(std::move(soldierWithArmor));
+    hq->addFigure(std::move(soldierWithArmor));
     BOOST_TEST(hq->getNumRealArmoredFigures(ArmoredSoldier::Sergeant) == 1);
     BOOST_TEST(hq->getNumVisualArmoredFigures(ArmoredSoldier::Sergeant) == 1);
     BOOST_TEST(hq->getNumRealWares(GoodType::Armor) == 0);
@@ -314,7 +314,7 @@ BOOST_FIXTURE_TEST_CASE(CheckReserveSoldierWithArmor, EmptyWorldFixture1P)
       std::make_unique<nofPassiveSoldier>(player.getHQPos(), 0, nullptr, nullptr, getSoldierRank(Job::Sergeant));
     soldierWithArmor->setArmor(true);
 
-    hq->AddFigure(std::move(soldierWithArmor));
+    hq->addFigure(std::move(soldierWithArmor));
     BOOST_TEST(hq->getNumRealArmoredFigures(ArmoredSoldier::Sergeant) == 0);
     BOOST_TEST(hq->getNumVisualArmoredFigures(ArmoredSoldier::Sergeant) == 0);
     BOOST_TEST(hq->getNumRealFigures(Job::Sergeant) == 0);

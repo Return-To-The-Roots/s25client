@@ -24,13 +24,13 @@ public:
                       IngameMinimap& minimap, GameWorldView& gwv);
 
     /// Zeichnet die MapPreview
-    void Draw_() override;
+    void drawImpl() override;
 
     bool msgLeftDown(const MouseCoords& mc) override;
     bool msgMouseMove(const MouseCoords& mc) override;
 
     /// Die einzelnen Dinge umschalten
-    void ToggleTerritory();
-    void ToggleHouses();
-    void ToggleRoads();
+    void toggleTerritory();
+    void toggleHouses();
+    void toggleRoads();
 };

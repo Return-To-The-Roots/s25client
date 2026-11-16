@@ -16,16 +16,16 @@ noBuilding::noBuilding(const BuildingType type, const MapPoint pos, const unsign
     : noBaseBuilding(NodalObjectType::Building, type, pos, player), opendoor(0)
 {}
 
-void noBuilding::Destroy()
+void noBuilding::destroy()
 {
     // First we have to remove the building from the map and the player
     // Replace by fire (huts and mines become small fire, rest big)
     world->setNO(pos, new noFire(pos, getSize() != BuildingQuality::Hut && getSize() != BuildingQuality::Mine), true);
-    world->getPlayer(player).RemoveBuilding(this, bldType_);
+    world->getPlayer(player).removeBuilding(this, bldType_);
     // Destroy derived buildings
     DestroyBuilding();
     // Then go further down the chain
-    noBaseBuilding::Destroy();
+    noBaseBuilding::destroy();
 }
 
 void noBuilding::Serialize(SerializedGameData& sgd) const
@@ -45,31 +45,31 @@ noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id)
     }
 }
 
-void noBuilding::DrawBaseBuilding(DrawPoint drawPt) const
+void noBuilding::drawBaseBuilding(DrawPoint drawPt) const
 {
-    getBuildingImage().DrawFull(drawPt);
-    DrawDoor(drawPt);
+    getBuildingImage().drawFull(drawPt);
+    drawDoor(drawPt);
 }
 
-void noBuilding::DrawDoor(DrawPoint drawPt) const
+void noBuilding::drawDoor(DrawPoint drawPt) const
 {
     if(!isDoorOpen())
         return;
-    getDoorImage().DrawFull(drawPt);
+    getDoorImage().drawFull(drawPt);
 }
 
-void noBuilding::OpenDoor()
+void noBuilding::openDoor()
 {
     ++opendoor;
 }
 
-void noBuilding::CloseDoor()
+void noBuilding::closeDoor()
 {
     RTTR_Assert(isDoorOpen());
     --opendoor;
 }
 
-std::unique_ptr<FOWObject> noBuilding::CreateFOWObject() const
+std::unique_ptr<FOWObject> noBuilding::createFOWObject() const
 {
     return std::make_unique<fowBuilding>(bldType_, nation);
 }

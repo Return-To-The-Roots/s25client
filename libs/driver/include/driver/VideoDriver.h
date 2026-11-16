@@ -46,7 +46,7 @@ public:
     bool isOpenGL() const override { return true; }
 
 protected:
-    VideoMode FindClosestVideoMode(VideoMode mode) const;
+    VideoMode findClosestVideoMode(VideoMode mode) const;
     void setNewSize(VideoMode windowSize, Extent renderSize);
 
     VideoDriverLoaderInterface* CallBack; /// DriverCallback to notify on player input

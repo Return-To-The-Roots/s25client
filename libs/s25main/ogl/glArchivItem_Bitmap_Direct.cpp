@@ -35,7 +35,7 @@ void glArchivItem_Bitmap_Direct::endUpdate()
     Position origin = areaToUpdate_.getOrigin();
     int ec = print(buffer, nullptr, 0, 0, origin.x, origin.y);
     RTTR_Assert(ec == 0);
-    VIDEODRIVER.BindTexture(getTexNoCreate());
+    VIDEODRIVER.bindTexture(getTexNoCreate());
     glTexSubImage2D(GL_TEXTURE_2D, 0, origin.x, origin.y, buffer.getWidth(), buffer.getHeight(), GL_BGRA,
                     GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 }

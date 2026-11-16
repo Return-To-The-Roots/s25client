@@ -31,7 +31,7 @@ public:
     noBase(SerializedGameData& sgd, unsigned obj_id);
 
     /// An x,y zeichnen.
-    virtual void Draw(DrawPoint drawPt) = 0;
+    virtual void draw(DrawPoint drawPt) = 0;
 
     /// Type zurückgeben.
     NodalObjectType getType() const { return nop; }
@@ -39,7 +39,7 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-    virtual std::unique_ptr<FOWObject> CreateFOWObject() const;
+    virtual std::unique_ptr<FOWObject> createFOWObject() const;
 
     virtual BlockingManner getBM() const;
     /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt

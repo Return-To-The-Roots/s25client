@@ -15,10 +15,10 @@ public:
     noDisappearingEnvObject(MapPoint pos, unsigned living_time, unsigned add_var_living_time);
     noDisappearingEnvObject(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 
 protected:
     /// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll

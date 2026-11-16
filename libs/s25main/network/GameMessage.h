@@ -19,7 +19,7 @@ public:
     GameMessage(uint16_t id) : Message(id) {}
 
     /// Run Methode für GameMessages, wobei PlayerId ggf. schon in der Message festgemacht wurde
-    virtual bool Run(GameMessageInterface* callback) const = 0;
+    virtual bool runGame(GameMessageInterface* callback) const = 0;
 
     bool run(MessageInterface* callback, unsigned senderPlayerID) override;
 

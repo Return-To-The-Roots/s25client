@@ -54,67 +54,67 @@ iwSettings::iwSettings()
     constexpr auto btSpacing = btSize.x / 3;
 
     DrawPoint curPos(leftColOffset, 30);
-    AddText(ID_txtDisplayMode, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(ID_txtDisplayMode, curPos, _("Mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlComboBox* cbDisplayMode =
-      AddComboBox(ID_cbDisplayMode, curPos + rightColOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
-    cbDisplayMode->AddItem(_("Windowed"));
-    cbDisplayMode->AddItem(_("Fullscreen"));
-    cbDisplayMode->AddItem(_("Borderless window"));
+      addComboBox(ID_cbDisplayMode, curPos + rightColOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
+    cbDisplayMode->addItem(_("Windowed"));
+    cbDisplayMode->addItem(_("Fullscreen"));
+    cbDisplayMode->addItem(_("Borderless window"));
     cbDisplayMode->setSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
     curPos.y += ctrlSize.y + 5;
 
-    auto* grpResolution = AddGroup(ID_grpResolution);
-    grpResolution->AddText(ID_txtResolution, curPos, _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
+    auto* grpResolution = addGroup(ID_grpResolution);
+    grpResolution->addText(ID_txtResolution, curPos, _("Fullscreen resolution:"), COLOR_YELLOW, FontStyle{},
                            NormalFont);
-    auto* cbResolution = grpResolution->AddComboBox(ID_cbResolution, curPos + rightColOffset, ctrlSize,
+    auto* cbResolution = grpResolution->addComboBox(ID_cbResolution, curPos + rightColOffset, ctrlSize,
                                                     TextureColor::Grey, NormalFont, 110);
-    auto* grpWindowSize = AddGroup(ID_grpWindowSize);
-    grpWindowSize->AddText(ID_txtWindowSize, curPos, _("Window size:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    auto& cbWindowSize = *grpWindowSize->AddComboBox(ID_cbWindowSize, curPos + rightColOffset, ctrlSize,
+    auto* grpWindowSize = addGroup(ID_grpWindowSize);
+    grpWindowSize->addText(ID_txtWindowSize, curPos, _("Window size:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    auto& cbWindowSize = *grpWindowSize->addComboBox(ID_cbWindowSize, curPos + rightColOffset, ctrlSize,
                                                      TextureColor::Grey, NormalFont, 150);
     curPos.y += ctrlSize.y + 1;
     grpWindowSize
-      ->AddCheckBox(ID_cbLockWindowSize, curPos, cbSize, TextureColor::Grey, _("Lock window size:"), NormalFont, false)
+      ->addCheckBox(ID_cbLockWindowSize, curPos, cbSize, TextureColor::Grey, _("Lock window size:"), NormalFont, false)
       ->setChecked(!SETTINGS.video.displayMode.resizeable);
 
-    const auto supportedResolutions = VIDEODRIVER.ListVideoModes();
+    const auto supportedResolutions = VIDEODRIVER.listVideoModes();
     supportedResolutions_.assign(supportedResolutions.begin(), supportedResolutions.end());
     for(const auto& videoMode : supportedResolutions_)
     {
-        cbResolution->AddItem(helpers::format("%ux%u", videoMode.width, videoMode.height));
+        cbResolution->addItem(helpers::format("%ux%u", videoMode.width, videoMode.height));
         if(videoMode == SETTINGS.video.fullscreenSize)
             cbResolution->setSelection(cbResolution->getNumItems() - 1);
     }
     const auto windowSizes = VIDEODRIVER.getDefaultWindowSizes();
     windowSizes_.assign(windowSizes.begin(), windowSizes.end());
-    cbWindowSize.AddItem(""); // Placeholder for current window size
+    cbWindowSize.addItem(""); // Placeholder for current window size
     for(const auto& size : windowSizes_)
-        cbWindowSize.AddItem(helpers::format("%ux%u", size.width, size.height));
+        cbWindowSize.addItem(helpers::format("%ux%u", size.width, size.height));
 
     curPos.y += cbSize.y + 15;
 
-    AddText(ID_txtMapScrollMode, curPos, _("Map scroll mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(ID_txtMapScrollMode, curPos, _("Map scroll mode:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlComboBox* cbMapScrollMode =
-      AddComboBox(ID_cbMapScrollMode, curPos + rightColOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
-    cbMapScrollMode->AddItem(
+      addComboBox(ID_cbMapScrollMode, curPos + rightColOffset, ctrlSize, TextureColor::Grey, NormalFont, 100);
+    cbMapScrollMode->addItem(
       _("Scroll same (Map moves in the same direction the mouse is moved when scrolling/panning.)"));
-    cbMapScrollMode->AddItem(
+    cbMapScrollMode->addItem(
       _("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
-    cbMapScrollMode->AddItem(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
+    cbMapScrollMode->addItem(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
     cbMapScrollMode->setSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
 
     curPos.y += ctrlSize.y + 10;
-    AddCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart Cursor"), NormalFont, false)
+    addCheckBox(ID_cbSmartCursor, curPos, cbSize, TextureColor::Grey, _("Smart Cursor"), NormalFont, false)
       ->setChecked(SETTINGS.global.smartCursor)
       ->setTooltip(_("Place cursor on default button for new dialogs / action windows (default)"));
     curPos.y += cbSize.y + 3;
-    AddCheckBox(ID_cbStatisticScale, curPos, cbSize, TextureColor::Grey, _("Statistics Scale"), NormalFont, false)
+    addCheckBox(ID_cbStatisticScale, curPos, cbSize, TextureColor::Grey, _("Statistics Scale"), NormalFont, false)
       ->setChecked(SETTINGS.ingame.scaleStatistics);
 
     curPos = DrawPoint(leftColOffset + btSpacing, getSize().y - 40);
-    AddTextButton(ID_btApply, curPos, btSize, TextureColor::Green2, _("Apply"), NormalFont, _("Apply Changes"));
+    addTextButton(ID_btApply, curPos, btSize, TextureColor::Green2, _("Apply"), NormalFont, _("Apply Changes"));
     curPos.x += btSize.x + btSpacing;
-    AddTextButton(ID_btAbort, curPos, btSize, TextureColor::Red1, _("Abort"), NormalFont, _("Close Without Saving"));
+    addTextButton(ID_btAbort, curPos, btSize, TextureColor::Red1, _("Abort"), NormalFont, _("Close Without Saving"));
 
     updateWindowSizeComboBox();
     updateResolutionGroups();
@@ -151,17 +151,17 @@ void iwSettings::msgButtonClick(unsigned ctrl_id)
                 && VIDEODRIVER.getWindowSize() != screenSize)
                || SETTINGS.video.displayMode != VIDEODRIVER.getDisplayMode())
             {
-                if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.displayMode))
+                if(!VIDEODRIVER.resizeScreen(screenSize, SETTINGS.video.displayMode))
                 {
-                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+                    WINDOWMANAGER.show(std::make_unique<iwMsgbox>(
                       _("Sorry!"), _("You need to restart your game to change the screen resolution!"), this,
                       MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
                 }
             }
-            SETTINGS.Save();
+            SETTINGS.save();
         }
         break;
-        case ID_btAbort: Close(); break;
+        case ID_btAbort: close(); break;
         default: RTTR_Assert(false);
     }
 }
@@ -188,7 +188,7 @@ void iwSettings::msgGroupComboSelectItem(unsigned /*group_id*/, unsigned ctrl_id
         // Directly apply new window size
         if(currentDisplayMode == DisplayMode::Windowed && VIDEODRIVER.getDisplayMode() == DisplayMode::Windowed)
         {
-            VIDEODRIVER.ResizeScreen(windowSizes_[selection - 1], DisplayMode::Windowed);
+            VIDEODRIVER.resizeScreen(windowSizes_[selection - 1], DisplayMode::Windowed);
         } else
             closeBehavior_ = CloseBehavior::Custom;
     } else

@@ -22,8 +22,8 @@ class MilitarySquares
 public:
     MilitarySquares();
     void Init(const MapExtent& mapSize);
-    void Clear();
-    void Add(nobBaseMilitary* bld);
-    void Remove(nobBaseMilitary* bld);
+    void clear();
+    void add(nobBaseMilitary* bld);
+    void remove(nobBaseMilitary* bld);
     sortedMilitaryBlds getBuildingsInRange(MapPoint pt, unsigned short radius) const;
 };

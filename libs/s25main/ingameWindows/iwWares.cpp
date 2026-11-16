@@ -38,36 +38,36 @@ static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPo
     if(allow_outhousing)
     {
         ctrlButton* b =
-          page.AddImageButton(100 + idOffset, btPos, btSize, TextureColor::Grey, LOADER.getMapTexture(2298), name);
+          page.addImageButton(100 + idOffset, btPos, btSize, TextureColor::Grey, LOADER.getMapTexture(2298), name);
         b->setBorder(false);
     } else
-        page.AddImage(100 + idOffset, btPos + btSize / 2, LOADER.getMapTexture(2298), name);
+        page.addImage(100 + idOffset, btPos + btSize / 2, LOADER.getMapTexture(2298), name);
 
     // Background image for the amount
     const DrawPoint bgCtPos = btPos + DrawPoint(btSize.x / 2, 32);
-    page.AddImage(200 + idOffset, bgCtPos, LOADER.getMapTexture(2299));
+    page.addImage(200 + idOffset, bgCtPos, LOADER.getMapTexture(2299));
 
     // The actual image for the element
     const DrawPoint warePos = btPos + btSize / 2;
-    page.AddImage(300 + idOffset, warePos, img);
+    page.addImage(300 + idOffset, warePos, img);
 
     // Overlay for "don't collect"
     DrawPoint overlayPos = warePos - DrawPoint(0, 4);
-    ctrlImage* image = page.AddImage(400 + idOffset, overlayPos, LOADER.getImageN("io", 222));
+    ctrlImage* image = page.addImage(400 + idOffset, overlayPos, LOADER.getImageN("io", 222));
     image->setVisible(false);
 
     // Overlay for "send out"
     overlayPos = warePos + DrawPoint(0, 10);
-    image = page.AddImage(500 + idOffset, overlayPos, LOADER.getImageN("io", 221));
+    image = page.addImage(500 + idOffset, overlayPos, LOADER.getImageN("io", 221));
     image->setVisible(false);
 
     // Overlay for "collect"
-    image = page.AddImage(700 + idOffset, overlayPos, LOADER.getImageN("io_new", 3));
+    image = page.addImage(700 + idOffset, overlayPos, LOADER.getImageN("io_new", 3));
     image->setVisible(false);
 
     // Amount of the element
     const DrawPoint txtPos = btPos + DrawPoint(btSize.x, 40);
-    page.AddText(600 + idOffset, txtPos, "", COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM, font);
+    page.addText(600 + idOffset, txtPos, "", COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM, font);
 }
 
 iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, const std::string& title,
@@ -118,10 +118,10 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
     helpers::erase_if(JOB_DISPLAY_ORDER, makeIsUnusedJob(player.getGameWorld().getGGS()));
 
     // Warenseite hinzufügen
-    ctrlGroup& waresPage = AddPage();
+    ctrlGroup& waresPage = addPage();
     warePageID = waresPage.getID();
     // Figurenseite hinzufügen
-    ctrlGroup& figuresPage = AddPage();
+    ctrlGroup& figuresPage = addPage();
     peoplePageID = figuresPage.getID();
 
     bool isRowWithFourElemens = true;
@@ -158,14 +158,14 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
     }
 
     // compute the final window size
-    Resize(Extent(getSize().x, topMargin + (y + 1) * rowHeight + spacingBetweenLastRowAndButtonRow + additionalYSpace
+    resize(Extent(getSize().x, topMargin + (y + 1) * rowHeight + spacingBetweenLastRowAndButtonRow + additionalYSpace
                                  + buttonRowHeight + bottomMargin));
 
     // "Next page" button
-    AddImageButton(0, DrawPoint(52, getFullSize().y - 47), Extent(66, 32), TextureColor::Grey,
+    addImageButton(0, DrawPoint(52, getFullSize().y - 47), Extent(66, 32), TextureColor::Grey,
                    LOADER.getImageN("io", 84), _("Next page"));
     // "Help" button
-    AddImageButton(12, DrawPoint(16, getFullSize().y - 47), Extent(32, 32), TextureColor::Grey,
+    addImageButton(12, DrawPoint(16, getFullSize().y - 47), Extent(32, 32), TextureColor::Grey,
                    LOADER.getImageN("io", 225), _("Help"));
 
     waresPage.setVisible(true);
@@ -180,7 +180,7 @@ void iwWares::msgButtonClick(const unsigned ctrl_id)
             setPage(curPage_ + 1);
             break;
         case 12: // Hilfe
-            WINDOWMANAGER.ReplaceWindow(
+            WINDOWMANAGER.replaceWindow(
               std::make_unique<iwHelp>(_("Here you will find a list of your entire stores of "
                                          "merchandise and all the inhabitants of your realm.")));
             break;
@@ -253,9 +253,9 @@ void iwWares::setPage(unsigned page)
         group->setVisible(true);
 }
 
-ctrlGroup& iwWares::AddPage()
+ctrlGroup& iwWares::addPage()
 {
-    ctrlGroup& grp = *AddGroup(ID_pageOffset + numPages);
+    ctrlGroup& grp = *addGroup(ID_pageOffset + numPages);
     numPages++;
     grp.setVisible(false);
     return grp;

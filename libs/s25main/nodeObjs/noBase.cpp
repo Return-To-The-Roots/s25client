@@ -7,15 +7,15 @@
 
 noBase::noBase(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id)
 {
-    nop = sgd.Pop<NodalObjectType>();
+    nop = sgd.pop<NodalObjectType>();
 }
 
 void noBase::Serialize(SerializedGameData& sgd) const
 {
-    sgd.PushEnum<uint8_t>(nop);
+    sgd.pushEnum<uint8_t>(nop);
 }
 
-std::unique_ptr<FOWObject> noBase::CreateFOWObject() const
+std::unique_ptr<FOWObject> noBase::createFOWObject() const
 {
     return nullptr;
 }

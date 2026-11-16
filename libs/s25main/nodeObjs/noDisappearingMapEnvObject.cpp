@@ -33,10 +33,10 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, 
 /**
  *  An x,y zeichnen.
  */
-void noDisappearingMapEnvObject::Draw(DrawPoint drawPt)
+void noDisappearingMapEnvObject::draw(DrawPoint drawPt)
 {
     // Bild
-    LOADER.getMapTexture(map_id)->DrawFull(drawPt, getDrawColor());
+    LOADER.getMapTexture(map_id)->drawFull(drawPt, getDrawColor());
     // Schatten
-    LOADER.getMapTexture(map_id + 100)->DrawFull(drawPt, getDrawShadowColor());
+    LOADER.getMapTexture(map_id + 100)->drawFull(drawPt, getDrawShadowColor());
 }

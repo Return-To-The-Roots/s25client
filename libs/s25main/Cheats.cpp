@@ -77,9 +77,9 @@ void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
     if(!canPlaceCheatBuilding(mp))
         return;
 
-    world_.DestroyNO(mp, false); // if CanPlaceCheatBuilding is true then this must be safe to destroy
+    world_.destroyNO(mp, false); // if CanPlaceCheatBuilding is true then this must be safe to destroy
     auto* hq =
-      BuildingFactory::CreateBuilding(world_, BuildingType::Headquarters, mp, player.getPlayerId(), player.nation);
+      BuildingFactory::createBuilding(world_, BuildingType::Headquarters, mp, player.getPlayerId(), player.nation);
     checkedCast<nobHQ*>(hq)->setIsTent(player.isHQTent());
 }
 
@@ -87,7 +87,7 @@ void Cheats::toggleHumanAIPlayer()
 {
     if(isCheatModeOn() && !GAMECLIENT.isReplayModeOn())
     {
-        GAMECLIENT.ToggleHumanAIPlayer(AI::Info{AI::Type::Default, AI::Level::Easy});
+        GAMECLIENT.toggleHumanAIPlayer(AI::Info{AI::Type::Default, AI::Level::Easy});
         isHumanAIPlayer_ = !isHumanAIPlayer_;
     }
 }
@@ -122,7 +122,7 @@ void Cheats::destroyBuildings(const PlayerIDSet& playerIds)
     RTTR_FOREACH_PT(MapPoint, world_.getSize())
     {
         if(world_.getNO(pt)->getType() == NodalObjectType::Building && playerIds.count(world_.getNode(pt).owner - 1))
-            world_.DestroyNO(pt);
+            world_.destroyNO(pt);
     }
 }
 

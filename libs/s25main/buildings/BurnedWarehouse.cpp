@@ -23,7 +23,7 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
     : noCoordBase(NodalObjectType::BurnedWarehouse, pos), player(player), go_out_phase(0), people(people)
 {
     // First event
-    getEvMgr().AddEvent(this, PHASE_LENGTH, 0);
+    getEvMgr().addEvent(this, PHASE_LENGTH, 0);
 }
 
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
@@ -38,9 +38,9 @@ BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
 
 BurnedWarehouse::~BurnedWarehouse() = default;
 
-void BurnedWarehouse::Destroy()
+void BurnedWarehouse::destroy()
 {
-    noCoordBase::Destroy();
+    noCoordBase::destroy();
 }
 
 void BurnedWarehouse::Serialize(SerializedGameData& sgd) const
@@ -53,7 +53,7 @@ void BurnedWarehouse::Serialize(SerializedGameData& sgd) const
     helpers::pushContainer(sgd, people.armoredSoldiers);
 }
 
-void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
+void BurnedWarehouse::handleEvent(const unsigned /*id*/)
 {
     RTTR_Assert(go_out_phase != GO_OUT_PHASES);
 
@@ -69,12 +69,12 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
     if(possibleDirs.empty())
     {
         // No way out for figures -> all die and we can remove this object
-        getEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
+        getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
         auto& currentPlayer = world->getPlayer(player);
         for(const auto i : helpers::enumRange<Job>())
-            currentPlayer.DecreaseInventoryJob(i, people[i]);
+            currentPlayer.decreaseInventoryJob(i, people[i]);
         for(const auto i : helpers::enumRange<ArmoredSoldier>())
-            currentPlayer.DecreaseInventoryJob(i, people[i]);
+            currentPlayer.decreaseInventoryJob(i, people[i]);
 
         return;
     }
@@ -108,7 +108,7 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
             for([[maybe_unused]] const auto z : helpers::range(curNumPeople))
             {
                 // Create job and send moving into the current direction
-                auto& figure = world->AddFigure(pos, std::make_unique<nofPassiveWorker>(job, pos, player, nullptr));
+                auto& figure = world->addFigure(pos, std::make_unique<nofPassiveWorker>(job, pos, player, nullptr));
                 if(isSoldier(job))
                 {
                     auto const armoredSoldier = jobEnumToAmoredSoldierEnum(job);
@@ -118,8 +118,8 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
                         people[armoredSoldier]--;
                     }
                 }
-                figure.StartWandering(getObjId());
-                figure.StartWalking(curDir);
+                figure.startWandering(getObjId());
+                figure.startWalking(curDir);
             }
         }
     }
@@ -129,12 +129,12 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
     if(go_out_phase == GO_OUT_PHASES)
     {
         // All done
-        getEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
+        getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
         // There shouldn't be any more
         for(unsigned int num : people.people)
             RTTR_Assert(num == 0);
         for(unsigned int num : people.armoredSoldiers)
             RTTR_Assert(num == 0);
     } else // Not done yet
-        getEvMgr().AddEvent(this, PHASE_LENGTH, 0);
+        getEvMgr().addEvent(this, PHASE_LENGTH, 0);
 }

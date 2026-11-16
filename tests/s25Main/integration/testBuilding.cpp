@@ -70,7 +70,7 @@ boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const s
 
 BOOST_FIXTURE_TEST_CASE(checkBQs_Correct, EmptyWorldFixture1P)
 {
-    const MapPoint flagPos = world.MakeMapPoint(world.getPlayer(0).getHQPos() - Position(5, 6));
+    const MapPoint flagPos = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(5, 6));
     const std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(flagPos, 4);
     std::stringstream s;
     s << flagPos;
@@ -90,7 +90,7 @@ BOOST_FIXTURE_TEST_CASE(checkBQs_Correct, EmptyWorldFixture1P)
 
 BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
 {
-    const MapPoint flagPos = world.MakeMapPoint(world.getPlayer(0).getHQPos() - Position(5, 6));
+    const MapPoint flagPos = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(5, 6));
     const MapPoint bldPos = world.getNeighbour(flagPos, Direction::NorthWest);
     // All points possibly affected by a building
     const std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(bldPos, 4);
@@ -193,13 +193,13 @@ BOOST_FIXTURE_TEST_CASE(BQWithRoad, EmptyWorldFixture0P)
     {
         roadPts.push_back(curPt);
         world.setPointRoad(curPt, Direction::SouthEast, PointRoad::Normal);
-        world.RecalcBQForRoad(curPt);
+        world.recalcBQForRoad(curPt);
         curPt = world.getNeighbour(curPt, Direction::SouthEast);
     }
     // Final pt still belongs to road
     roadPts.push_back(curPt);
     // Normally this is done by the flag
-    world.RecalcBQForRoad(curPt);
+    world.recalcBQForRoad(curPt);
 
     for(MapPoint pt : roadPts)
     {
@@ -223,7 +223,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     dskGameInterface gameDesktop(this->game, std::shared_ptr<NWFInfo>(), 0, false);
     const GameWorldViewer& gwv = gameDesktop.getView().getViewer();
     // Start at a position a bit away from the HQ so all points are castles
-    const MapPoint roadPt = world.MakeMapPoint(world.getPlayer(0).getHQPos() - Position(6, 6));
+    const MapPoint roadPt = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(6, 6));
     const std::vector<MapPoint> roadRadiusPts = world.GetPointsInRadiusWithCenter(roadPt, 6);
     for(const MapPoint& pt : roadRadiusPts)
         BOOST_TEST_CONTEXT(" at " << pt)
@@ -247,7 +247,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     roadPts.push_back(curPt);
 
     MapPoint curRoadEndPt = curPt;
-    gameDesktop.BuildRoadPart(curRoadEndPt);
+    gameDesktop.buildRoadPart(curRoadEndPt);
     BOOST_TEST_REQUIRE(curRoadEndPt == curPt);
 
     for(MapPoint pt : roadPts)
@@ -264,7 +264,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     // Destroy road partially
     // The first point (after start) must have ID 2
     BOOST_TEST_REQUIRE(gameDesktop.getIdInCurBuildRoad(roadPts[1]) == 2u);
-    gameDesktop.DemolishRoad(2);
+    gameDesktop.demolishRoad(2);
     BOOST_TEST_REQUIRE(gwv.isOnRoad(roadPts[0]));
     BOOST_TEST_REQUIRE(gwv.isOnRoad(roadPts[1]));
     for(unsigned i = 2; i < roadPts.size(); i++)
@@ -296,7 +296,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     roadPts.push_back(curPt);
 
     curRoadEndPt = curPt;
-    gameDesktop.BuildRoadPart(curRoadEndPt);
+    gameDesktop.buildRoadPart(curRoadEndPt);
     BOOST_TEST_REQUIRE(curRoadEndPt == curPt);
 
     for(MapPoint pt : roadPts)
@@ -338,7 +338,7 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1PBiggest)
     std::vector<MapPoint> pts = world.getPointsInRadius(hqPos, hqRadius + 1);
     for(const MapPoint pt : pts)
     {
-        const unsigned distance = world.CalcDistance(pt, hqPos);
+        const unsigned distance = world.calcDistance(pt, hqPos);
         if(distance < 3)
             continue; // Influenced by HQ
         else if(distance + 1 < hqRadius)
@@ -392,14 +392,14 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1PBiggest)
 
 static void addStaticObj(GameWorldBase& world, const MapPoint& pos, unsigned size)
 {
-    world.DestroyNO(pos, false);
+    world.destroyNO(pos, false);
     world.setNO(pos, new noStaticObject(pos, 0, 0, size));
-    world.RecalcBQAroundPointBig(pos);
+    world.recalcBQAroundPointBig(pos);
 }
 
 BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
 {
-    const MapPoint objPos = world.MakeMapPoint(world.getPlayer(0).getHQPos() - Position(3, 6));
+    const MapPoint objPos = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(3, 6));
     const std::vector<MapPoint> ptsAroundObj = world.GetPointsInRadiusWithCenter(objPos, 2);
     const std::vector<MapPoint> radius1Pts = world.getPointsInRadius(objPos, 1);
     BOOST_TEST_REQUIRE(checkBQs(world, ptsAroundObj, ReducedBQMap()));
@@ -458,7 +458,7 @@ BOOST_FIXTURE_TEST_CASE(RoadRemovesObjs, EmptyWorldFixture1P)
         world.setOwner(pt, 1);
     const MapPoint hqPos = world.getPlayer(0).getHQPos();
     const MapPoint startPos = world.getNeighbour(hqPos, Direction::SouthEast);
-    const MapPoint endPos = world.MakeMapPoint(startPos + Position(4, 0));
+    const MapPoint endPos = world.makeMapPoint(startPos + Position(4, 0));
     // Place these env objs
     const std::vector<unsigned> ids{505, 506, 507, 508, 509, 510, 512, 513, 514, 515, 531, 536, 541, 542, 543,
                                     544, 545, 546, 547, 548, 550, 551, 552, 553, 554, 555, 556, 557, 558, 559};
@@ -487,14 +487,14 @@ BOOST_FIXTURE_TEST_CASE(FisherIgnoresIsolatedFishWater, EmptyWorldFixture1PBigge
 {
     const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.getDescription());
 
-    const MapPoint fisheryPos = world.MakeMapPoint(world.getPlayer(0).getHQPos() - Position(6, 6));
+    const MapPoint fisheryPos = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(6, 6));
     auto* fishery = dynamic_cast<nobUsual*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Fishery, fisheryPos, 0, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Fishery, fisheryPos, 0, Nation::Romans));
     BOOST_TEST_REQUIRE(fishery);
 
     nofFisher fisher(fisheryPos, 0, fishery);
 
-    const MapPoint workPt = world.MakeMapPoint(fisheryPos + Position(4, 0));
+    const MapPoint workPt = world.makeMapPoint(fisheryPos + Position(4, 0));
     const MapPoint fishPt = world.getNeighbour(workPt, Direction::East);
 
     auto makeWaterPoint = [&](const MapPoint pt) {

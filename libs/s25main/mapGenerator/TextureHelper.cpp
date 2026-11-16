@@ -6,7 +6,7 @@
 
 namespace rttr::mapGenerator {
 
-uint8_t ByHumidity(const TerrainDesc& terrain)
+uint8_t byHumidity(const TerrainDesc& terrain)
 {
     return terrain.humidity;
 }

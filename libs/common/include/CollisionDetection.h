@@ -10,4 +10,4 @@
 bool IsPointInRect(const Position& pt, const Rect& rect);
 bool IsPointInRect(int x, int y, const Rect& rect);
 bool IsPointInRect(int x, int y, int rx, int ry, int rwidth, int rheight);
-bool DoRectsIntersect(const Rect& rect1, const Rect& rect2);
+bool doRectsIntersect(const Rect& rect1, const Rect& rect2);

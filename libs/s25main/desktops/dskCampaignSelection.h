@@ -18,7 +18,7 @@ public:
     ~dskCampaignSelection() noexcept;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
     class CampaignDataHolder;
@@ -27,7 +27,7 @@ private:
     void msgTableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
     void msgButtonClick(unsigned ctrl_id) override;
     void msgTimer(unsigned ctrl_id) override;
-    void FillCampaignsTable();
+    void fillCampaignsTable();
     void showCampaignInfo(bool show);
     void showCampaignMissionSelectionScreen();
     void loadCampaigns();

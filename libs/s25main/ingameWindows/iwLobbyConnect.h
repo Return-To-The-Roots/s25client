@@ -27,5 +27,5 @@ protected:
 
 private:
     void setText(const std::string& text, unsigned color, bool button);
-    void ReadFromEditAndSaveLobbyData(std::string& user, std::string& pass);
+    void readFromEditAndSaveLobbyData(std::string& user, std::string& pass);
 };

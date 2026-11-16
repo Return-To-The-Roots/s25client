@@ -9,7 +9,7 @@
 class IChatCmdListener
 {
 public:
-    virtual void OnChatCommand(const std::string& cmd) = 0;
+    virtual void onChatCommand(const std::string& cmd) = 0;
 };
 
 class iwChat : public IngameWindow

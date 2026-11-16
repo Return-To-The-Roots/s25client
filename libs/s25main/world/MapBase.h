@@ -37,18 +37,18 @@ class MapBase
     MapExtent size_;
 
 public:
-    static unsigned CreateGUIID(MapPoint pt);
+    static unsigned createGUIID(MapPoint pt);
 
     MapBase();
 
-    virtual void Resize(const MapExtent& newSize);
+    virtual void resize(const MapExtent& newSize);
 
     /// Return the size of the world
     unsigned short getWidth() const { return getSize().x; }
     unsigned short getHeight() const { return getSize().y; }
     MapExtent getSize() const { return size_; }
     /// Returns a MapPoint from a point. This ensures, the coords are actually in the map [0, mapSize)
-    MapPoint MakeMapPoint(Position pt) const;
+    MapPoint makeMapPoint(Position pt) const;
     /// Returns the linear index for a map point
     unsigned getIdx(MapPoint pt) const;
 
@@ -87,15 +87,15 @@ public:
     /// Returns true, if the IsValid functor returns true for any point in the given radius
     /// If includePt is true, then the point itself is also checked
     template<class T_IsValidPt>
-    bool CheckPointsInRadius(MapPoint pt, unsigned radius, T_IsValidPt&& isValid, bool includePt) const;
+    bool checkPointsInRadius(MapPoint pt, unsigned radius, T_IsValidPt&& isValid, bool includePt) const;
 
     /// Return the distance between 2 points on the map (includes wrapping around map borders)
-    unsigned CalcDistance(const Position& p1, const Position& p2) const;
-    unsigned CalcDistance(const MapPoint p1, const MapPoint p2) const
+    unsigned calcDistance(const Position& p1, const Position& p2) const;
+    unsigned calcDistance(const MapPoint p1, const MapPoint p2) const
     {
-        return CalcDistance(Position(p1), Position(p2));
+        return calcDistance(Position(p1), Position(p2));
     }
-    unsigned CalcMaxDistance() const;
+    unsigned calcMaxDistance() const;
     /// Return the direction for ships for going from one point to another
     ShipDirection GetShipDir(MapPoint fromPt, MapPoint toPt) const;
 };
@@ -165,7 +165,7 @@ detail::GetPointsResult_t<T_TransformPt> MapBase::getPointsInRadius(const MapPoi
 }
 
 template<class T_IsValidPt>
-inline bool MapBase::CheckPointsInRadius(const MapPoint pt, unsigned radius, T_IsValidPt&& isValid,
+inline bool MapBase::checkPointsInRadius(const MapPoint pt, unsigned radius, T_IsValidPt&& isValid,
                                          bool includePt) const
 {
     if(includePt && isValid(pt, 0))

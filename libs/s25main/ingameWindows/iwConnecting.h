@@ -22,7 +22,7 @@ public:
     /// If unset an error message box is shown
     boost::signals2::signal<void(ClientError)> onError;
 
-    void Close() override;
+    void close() override;
     void msgButtonClick(unsigned ctrlId) override;
 
 private:

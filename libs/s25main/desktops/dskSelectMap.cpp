@@ -71,7 +71,7 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
 
     // Die Tabelle für die Maps
     using SRT = ctrlTable::SortType;
-    AddTable(1, DrawPoint(110, 35), Extent(680, 400), TextureColor::Grey, NormalFont,
+    addTable(1, DrawPoint(110, 35), Extent(680, 400), TextureColor::Grey, NormalFont,
              ctrlTable::Columns{{_("Name"), 250, SRT::String},
                                 {_("Author"), 216, SRT::String},
                                 {_("Player"), 170, SRT::Number},
@@ -80,52 +80,52 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
                                 {"", 0, SRT::Default}});
 
     // "Karten Auswahl"
-    AddText(2, DrawPoint(400, 5), _("Selection of maps"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    addText(2, DrawPoint(400, 5), _("Selection of maps"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     // "Zurück"
-    AddTextButton(3, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
+    addTextButton(3, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
     // "Spiel laden..."
-    AddTextButton(4, DrawPoint(590, 530), Extent(200, 22), TextureColor::Green2, _("Load game..."), NormalFont);
+    addTextButton(4, DrawPoint(590, 530), Extent(200, 22), TextureColor::Green2, _("Load game..."), NormalFont);
     // "Weiter"
-    AddTextButton(5, DrawPoint(590, 560), Extent(200, 22), TextureColor::Green2, _("Continue"), NormalFont);
+    addTextButton(5, DrawPoint(590, 560), Extent(200, 22), TextureColor::Green2, _("Continue"), NormalFont);
     // random map generation
-    AddTextButton(6, DrawPoint(380, 530), Extent(150, 22), TextureColor::Green2, _("Random Map"), NormalFont);
+    addTextButton(6, DrawPoint(380, 530), Extent(150, 22), TextureColor::Green2, _("Random Map"), NormalFont);
     // random map settings
-    AddTextButton(7, DrawPoint(540, 530), Extent(40, 22), TextureColor::Green2, _("..."), NormalFont);
+    addTextButton(7, DrawPoint(540, 530), Extent(40, 22), TextureColor::Green2, _("..."), NormalFont);
 
-    ctrlOptionGroup* optiongroup = AddOptionGroup(10, GroupSelectType::Check);
+    ctrlOptionGroup* optiongroup = addOptionGroup(10, GroupSelectType::Check);
     Extent catBtSize = Extent(90, 22);
     // "Alte"
     DrawPoint curBtPos = DrawPoint(10, 35);
-    optiongroup->AddTextButton(0, curBtPos, catBtSize, TextureColor::Grey, _("Old maps"), NormalFont);
+    optiongroup->addTextButton(0, curBtPos, catBtSize, TextureColor::Grey, _("Old maps"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Neue"
-    optiongroup->AddTextButton(1, curBtPos, catBtSize, TextureColor::Grey, _("New maps"), NormalFont);
+    optiongroup->addTextButton(1, curBtPos, catBtSize, TextureColor::Grey, _("New maps"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Eigene"
-    optiongroup->AddTextButton(2, curBtPos, catBtSize, TextureColor::Grey, _("Own maps"), NormalFont);
+    optiongroup->addTextButton(2, curBtPos, catBtSize, TextureColor::Grey, _("Own maps"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Kontinente"
-    optiongroup->AddTextButton(3, curBtPos, catBtSize, TextureColor::Grey, _("Continents"), NormalFont);
+    optiongroup->addTextButton(3, curBtPos, catBtSize, TextureColor::Grey, _("Continents"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Kampagne"
-    optiongroup->AddTextButton(4, curBtPos, catBtSize, TextureColor::Grey, _("Campaign"), NormalFont);
+    optiongroup->addTextButton(4, curBtPos, catBtSize, TextureColor::Grey, _("Campaign"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "RTTR"
-    optiongroup->AddTextButton(5, curBtPos, catBtSize, TextureColor::Grey, _("RTTR"), NormalFont);
+    optiongroup->addTextButton(5, curBtPos, catBtSize, TextureColor::Grey, _("RTTR"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Andere"
-    optiongroup->AddTextButton(6, curBtPos, catBtSize, TextureColor::Grey, _("Other"), NormalFont);
+    optiongroup->addTextButton(6, curBtPos, catBtSize, TextureColor::Grey, _("Other"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Andere"
-    optiongroup->AddTextButton(7, curBtPos, catBtSize, TextureColor::Grey, _("Sea"), NormalFont);
+    optiongroup->addTextButton(7, curBtPos, catBtSize, TextureColor::Grey, _("Sea"), NormalFont);
     curBtPos.y += catBtSize.y + 3;
     // "Heruntergeladene"
-    optiongroup->AddTextButton(8, curBtPos, catBtSize, TextureColor::Grey, _("Played"), NormalFont);
+    optiongroup->addTextButton(8, curBtPos, catBtSize, TextureColor::Grey, _("Played"), NormalFont);
 
-    AddPreviewMinimap(11, DrawPoint(110, 445), Extent(140, 140), nullptr);
-    AddText(12, DrawPoint(260, 470), _("Map: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
-    AddText(13, DrawPoint(260, 490), _("Mapfile: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+    addPreviewMinimap(11, DrawPoint(110, 445), Extent(140, 140), nullptr);
+    addText(12, DrawPoint(260, 470), _("Map: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+    addText(13, DrawPoint(260, 490), _("Mapfile: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
     // "Eigene" auswählen
     optiongroup->setSelection(5, true);
@@ -145,7 +145,7 @@ void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned sel
     auto* table = getCtrl<ctrlTable>(1);
 
     // Tabelle leeren
-    table->DeleteAllItems();
+    table->deleteAllItems();
 
     // Old, New, Own, Continents, Campaign, RTTR, Other, Sea, Played
     static const std::array<std::string, 9> ids = {{s25::folders::mapsOld, s25::folders::mapsNew, s25::folders::mapsOwn,
@@ -155,26 +155,26 @@ void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned sel
 
     const size_t numFaultyMapsPrior = brokenMapPaths.size();
     const bfs::path mapPath = RTTRCONFIG.ExpandPath(ids[selection]);
-    FillTable(ListDir(mapPath, "swd"));
-    FillTable(ListDir(mapPath, "wld"));
+    fillTable(ListDir(mapPath, "swd"));
+    fillTable(ListDir(mapPath, "wld"));
     // For own maps (WORLDS folder) also use the one in the installation folder as S2 does
     if(mapPath.filename() == "WORLDS")
     {
         const bfs::path worldsPath = RTTRCONFIG.ExpandPath("WORLDS");
-        FillTable(ListDir(worldsPath, "swd"));
-        FillTable(ListDir(worldsPath, "wld"));
+        fillTable(ListDir(worldsPath, "swd"));
+        fillTable(ListDir(worldsPath, "wld"));
     }
 
     if(brokenMapPaths.size() > numFaultyMapsPrior)
     {
         std::string errorTxt = helpers::format(_("%1% map(s) could not be loaded. Check the log for details"),
                                                brokenMapPaths.size() - numFaultyMapsPrior);
-        WINDOWMANAGER.Show(
+        WINDOWMANAGER.show(
           std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
     }
 
     // Dann noch sortieren
-    table->SortRows(0, TableSortDir::Ascending);
+    table->sortRows(0, TableSortDir::Ascending);
 
     // und Auswahl zurücksetzen
     table->setSelection(std::nullopt);
@@ -232,10 +232,10 @@ void dskSelectMap::msgTableSelectItem(const unsigned ctrl_id, const std::optiona
             {
                 const std::string errorTxt = helpers::format(_("Could not load map:\n%1%\n%2%"), path, e.what());
                 LOG.write("%1%\n") % errorTxt;
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok,
+                WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok,
                                                               MsgboxIcon::ExclamationRed, 1));
                 brokenMapPaths.insert(path);
-                table.RemoveRow(*selection);
+                table.removeRow(*selection);
             }
         }
     }
@@ -244,7 +244,7 @@ void dskSelectMap::msgTableSelectItem(const unsigned ctrl_id, const std::optiona
     txtMapPath.setPos(DrawPoint(txtXPos, txtMapPath.getPos().y));
 }
 
-void dskSelectMap::GoBack() const
+void dskSelectMap::goBack() const
 {
     if(csi.type == ServerType::Local)
         WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
@@ -262,18 +262,18 @@ void dskSelectMap::msgButtonClick(const unsigned ctrl_id)
     {
         case 3: // "Zurück"
         {
-            GoBack();
+            goBack();
         }
         break;
         case 4: // "Spiel laden..."
         {
             // Ladefenster aufrufen
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwLoad>(csi));
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwLoad>(csi));
         }
         break;
         case 5: // "Weiter"
         {
-            StartServer();
+            startServer();
         }
         break;
         case 6: // random map
@@ -282,15 +282,15 @@ void dskSelectMap::msgButtonClick(const unsigned ctrl_id)
             {
                 newRandMapPath.clear();
                 randMapGenError.clear();
-                waitWnd = &WINDOWMANAGER.Show(std::make_unique<iwPleaseWait>());
+                waitWnd = &WINDOWMANAGER.show(std::make_unique<iwPleaseWait>());
                 // mapGenThread = new boost::thread(boost::bind(&dskSelectMap::CreateRandomMap, this));
-                CreateRandomMap();
+                createRandomMap();
             }
         }
         break;
         case 7: // random map generator settings
         {
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMapGenerator>(rndMapSettings));
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwMapGenerator>(rndMapSettings));
         }
         break;
     }
@@ -299,10 +299,10 @@ void dskSelectMap::msgButtonClick(const unsigned ctrl_id)
 void dskSelectMap::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
     // Doppelklick auf bestimmte Map -> weiter
-    StartServer();
+    startServer();
 }
 
-void dskSelectMap::CreateRandomMap()
+void dskSelectMap::createRandomMap()
 {
     // setup filepath for the random map
     const auto mapPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / "Random.swd";
@@ -310,7 +310,7 @@ void dskSelectMap::CreateRandomMap()
     try
     {
         // create a random map and save filepath
-        rttr::mapGenerator::CreateRandomMap(mapPath, rndMapSettings);
+        rttr::mapGenerator::createRandomMap(mapPath, rndMapSettings);
         newRandMapPath = mapPath;
     } catch(const std::runtime_error& e)
     {
@@ -318,7 +318,7 @@ void dskSelectMap::CreateRandomMap()
     }
 }
 
-void dskSelectMap::OnMapCreated(const boost::filesystem::path& mapPath)
+void dskSelectMap::onMapCreated(const boost::filesystem::path& mapPath)
 {
     // select the "played maps" entry
     auto* optionGroup = getCtrl<ctrlOptionGroup>(10);
@@ -338,7 +338,7 @@ void dskSelectMap::OnMapCreated(const boost::filesystem::path& mapPath)
 }
 
 /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle
-void dskSelectMap::StartServer()
+void dskSelectMap::startServer()
 {
     auto* table = getCtrl<ctrlTable>(1);
     const auto& selection = table->getSelection();
@@ -350,16 +350,16 @@ void dskSelectMap::StartServer()
         const std::string& mapPath = table->getItemText(*selection, 5);
 
         // Server starten
-        if(!GAMECLIENT.HostGame(csi, {mapPath, MapType::OldMap}))
-            GoBack();
+        if(!GAMECLIENT.hostGame(csi, {mapPath, MapType::OldMap}))
+            goBack();
         else
         {
             std::unique_ptr<ILobbyClient> lobbyClient;
             if(csi.type == ServerType::Lobby)
                 lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
-            iwConnecting& wnd = WINDOWMANAGER.Show(std::make_unique<iwConnecting>(csi.type, std::move(lobbyClient)));
+            iwConnecting& wnd = WINDOWMANAGER.show(std::make_unique<iwConnecting>(csi.type, std::move(lobbyClient)));
             onErrorConnection_ = wnd.onError.connect([this](ClientError error) {
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(error), this,
+                WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), clientErrorToStr(error), this,
                                                               MsgboxButton::Ok, MsgboxIcon::ExclamationRed,
                                                               ID_msgBoxError));
             });
@@ -371,7 +371,7 @@ void dskSelectMap::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
 {
     if(msgbox_id == ID_msgBoxError)
     {
-        GAMECLIENT.Stop();
+        GAMECLIENT.stop();
 
         if(csi.type == ServerType::Lobby && LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
@@ -389,33 +389,33 @@ void dskSelectMap::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
  */
 void dskSelectMap::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed,
+    WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed,
                                                   ID_msgBoxError));
 }
 
-void dskSelectMap::Draw_()
+void dskSelectMap::drawImpl()
 {
     if(!newRandMapPath.empty() || !randMapGenError.empty())
     {
         if(waitWnd)
         {
-            waitWnd->Close();
+            waitWnd->close();
             waitWnd = nullptr;
         }
         if(!randMapGenError.empty())
         {
             const std::string errorTxt = _("Failed to generate random map.\nReason: ") + randMapGenError;
-            WINDOWMANAGER.Show(
+            WINDOWMANAGER.show(
               std::make_unique<iwMsgbox>(_("Error"), errorTxt, nullptr, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
         } else
-            OnMapCreated(newRandMapPath);
+            onMapCreated(newRandMapPath);
         newRandMapPath.clear();
         randMapGenError.clear();
     }
-    Desktop::Draw_();
+    Desktop::drawImpl();
 }
 
-void dskSelectMap::FillTable(const std::vector<bfs::path>& files)
+void dskSelectMap::fillTable(const std::vector<bfs::path>& files)
 {
     auto* table = getCtrl<ctrlTable>(1);
 
@@ -447,6 +447,6 @@ void dskSelectMap::FillTable(const std::vector<bfs::path>& files)
             name += " (*)";
         std::string author = s25util::ansiToUTF8(header.getAuthor());
 
-        table->AddRow({name, author, players, landscapeNames[header.getGfxSet()], size, filePath.string()});
+        table->addRow({name, author, players, landscapeNames[header.getGfxSet()], size, filePath.string()});
     }
 }

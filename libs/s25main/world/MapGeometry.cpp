@@ -60,7 +60,7 @@ Position getNeighbour2(Position pt, unsigned dir)
     return pt;
 }
 
-MapPoint MakeMapPoint(Position pt, const MapExtent& size)
+MapPoint makeMapPoint(Position pt, const MapExtent& size)
 {
     // Shift into range
     pt.x %= size.x;

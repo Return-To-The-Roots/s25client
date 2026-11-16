@@ -81,42 +81,42 @@ void ctrlGroup::msgTableLeftButton(const unsigned ctrl_id, const std::optional<u
 
 bool ctrlGroup::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftDown, mc);
+    return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
 bool ctrlGroup::msgRightDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgRightDown, mc);
+    return relayMouseMessage(&Window::msgRightDown, mc);
 }
 
 bool ctrlGroup::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
 bool ctrlGroup::msgRightUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgRightUp, mc);
+    return relayMouseMessage(&Window::msgRightUp, mc);
 }
 
 bool ctrlGroup::msgWheelUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgWheelUp, mc);
+    return relayMouseMessage(&Window::msgWheelUp, mc);
 }
 
 bool ctrlGroup::msgWheelDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgWheelDown, mc);
+    return relayMouseMessage(&Window::msgWheelDown, mc);
 }
 
 bool ctrlGroup::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgMouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }
 
 bool ctrlGroup::msgKeyDown(const KeyEvent& ke)
 {
-    return RelayKeyboardMessage(&Window::msgKeyDown, ke);
+    return relayKeyboardMessage(&Window::msgKeyDown, ke);
 }
 
 void ctrlGroup::msgGroupButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)

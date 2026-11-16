@@ -89,10 +89,10 @@ BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
                 endPt = world.getNeighbour(endPt, dir);
             unsigned length;
             // Must be able to go there directly
-            BOOST_TEST_REQUIRE(world.FindHumanPath(startPt, endPt, 99, false, &length));
+            BOOST_TEST_REQUIRE(world.findHumanPath(startPt, endPt, 99, false, &length));
             BOOST_TEST_REQUIRE(length == 3u);
             // Inverse route
-            BOOST_TEST_REQUIRE(world.FindHumanPath(endPt, startPt, 99, false, &length));
+            BOOST_TEST_REQUIRE(world.findHumanPath(endPt, startPt, 99, false, &length));
             BOOST_TEST_REQUIRE(length == 3u);
         }
     }
@@ -106,18 +106,18 @@ BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
 
     setupTestcase1(world, startPt, tWater, tLand);
     // 4 steps right
-    MapPoint endPt = world.MakeMapPoint(Position(startPt.x + 4, startPt.y));
+    MapPoint endPt = world.makeMapPoint(Position(startPt.x + 4, startPt.y));
     unsigned length;
     std::vector<Direction> route;
     // Forward route
-    BOOST_TEST_REQUIRE(world.FindHumanPath(startPt, endPt, 99, false, &length, &route));
+    BOOST_TEST_REQUIRE(world.findHumanPath(startPt, endPt, 99, false, &length, &route));
     BOOST_TEST_REQUIRE(length == 6u);
     BOOST_TEST_REQUIRE(route.size() == 6u);
     const std::vector<Direction> expectedRoute{Direction::NorthEast, Direction::SouthEast, Direction::SouthEast,
                                                Direction::NorthEast, Direction::East,      Direction::East};
     BOOST_TEST_REQUIRE(route == expectedRoute, boost::test_tools::per_element());
     // Inverse route
-    BOOST_TEST_REQUIRE(world.FindHumanPath(endPt, startPt, 99, false, &length, &route));
+    BOOST_TEST_REQUIRE(world.findHumanPath(endPt, startPt, 99, false, &length, &route));
     BOOST_TEST_REQUIRE(length == 6u);
     BOOST_TEST_REQUIRE(route.size() == 6u);
     std::vector<Direction> expectedRevRoute;
@@ -154,10 +154,10 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
                 endPt = world.getNeighbour(endPt, dir);
             // We can't go directly so 1 step detour
             unsigned length;
-            BOOST_TEST_REQUIRE(world.FindHumanPath(startPt, endPt, 99, false, &length));
+            BOOST_TEST_REQUIRE(world.findHumanPath(startPt, endPt, 99, false, &length));
             BOOST_TEST_REQUIRE(length == 4u);
             // Inverse route
-            BOOST_TEST_REQUIRE(world.FindHumanPath(endPt, startPt, 99, false, &length));
+            BOOST_TEST_REQUIRE(world.findHumanPath(endPt, startPt, 99, false, &length));
             BOOST_TEST_REQUIRE(length == 4u);
             // But road must be constructible
             world.SetFlag(startPt, 0);
@@ -209,10 +209,10 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
             for(int i = 0; i < 2; i++)
             {
                 unsigned length;
-                BOOST_TEST_REQUIRE(world.FindHumanPath(curStartPt, endPt, 99, false, &length));
+                BOOST_TEST_REQUIRE(world.findHumanPath(curStartPt, endPt, 99, false, &length));
                 BOOST_TEST_REQUIRE(length == 4u);
                 // Inverse route
-                BOOST_TEST_REQUIRE(world.FindHumanPath(endPt, curStartPt, 99, false, &length));
+                BOOST_TEST_REQUIRE(world.findHumanPath(endPt, curStartPt, 99, false, &length));
                 BOOST_TEST_REQUIRE(length == 4u);
                 // No road must be constructible
                 world.SetFlag(startPt, 0);
@@ -248,10 +248,10 @@ BOOST_FIXTURE_TEST_CASE(BlockedPaths, WorldFixtureEmpty0P)
     for(unsigned i = 0; i < 12; i++)
         surroundingPts2.push_back(world.getNeighbour2(startPt, i));
     for(const MapPoint& pt : surroundingPts2)
-        BOOST_TEST_REQUIRE(!world.FindHumanPath(startPt, pt));
+        BOOST_TEST_REQUIRE(!world.findHumanPath(startPt, pt));
     // Allow left exit
-    world.DestroyNO(surroundingPts[0]);
-    BOOST_TEST_REQUIRE(world.FindHumanPath(startPt, surroundingPts2[0]));
+    world.destroyNO(surroundingPts[0]);
+    BOOST_TEST_REQUIRE(world.findHumanPath(startPt, surroundingPts2[0]));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

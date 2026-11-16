@@ -10,19 +10,19 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
     : nobBaseWarehouse(BuildingType::Storehouse, pos, player, nation)
 {
     // Post versenden
-    SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(
+    sendPostMessage(player, std::make_unique<PostMsgWithBuilding>(
                               getEvMgr().getCurrentGF(), _("New storehouse finished"), PostCategory::Economy, *this));
 }
 
 nobStorehouse::nobStorehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id) {}
 
-void nobStorehouse::Draw(DrawPoint drawPt)
+void nobStorehouse::draw(DrawPoint drawPt)
 {
     // Gebäude an sich zeichnen
-    DrawBaseBuilding(drawPt);
+    drawBaseBuilding(drawPt);
 }
 
-void nobStorehouse::HandleEvent(const unsigned id)
+void nobStorehouse::handleEvent(const unsigned id)
 {
-    HandleBaseEvent(id);
+    handleBaseEvent(id);
 }

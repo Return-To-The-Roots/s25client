@@ -37,22 +37,22 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* 
       gcFactory(gcFactory), player(ship ? ship->getPlayerId() : gwv.getViewer().getPlayerId()),
       ship_id(ship ? gwv.getWorld().getPlayer(player).getShipID(*ship) : 0)
 {
-    AddImage(0, DrawPoint(126, 101), LOADER.getImageN("io", 228));
-    AddImageButton(2, DrawPoint(18, 192), Extent(30, 35), TextureColor::Grey,
+    addImage(0, DrawPoint(126, 101), LOADER.getImageN("io", 228));
+    addImageButton(2, DrawPoint(18, 192), Extent(30, 35), TextureColor::Grey,
                    LOADER.getImageN("io", 225)); // Viewer: 226 - Hilfe
-    AddImageButton(3, DrawPoint(51, 196), Extent(30, 26), TextureColor::Grey,
+    addImageButton(3, DrawPoint(51, 196), Extent(30, 26), TextureColor::Grey,
                    LOADER.getImageN("io", 102)); // Viewer: 103 - Schnell zurück
-    AddImageButton(4, DrawPoint(81, 196), Extent(30, 26), TextureColor::Grey,
+    addImageButton(4, DrawPoint(81, 196), Extent(30, 26), TextureColor::Grey,
                    LOADER.getImageN("io", 103)); // Viewer: 104 - Zurück
-    AddImageButton(5, DrawPoint(111, 196), Extent(30, 26), TextureColor::Grey,
+    addImageButton(5, DrawPoint(111, 196), Extent(30, 26), TextureColor::Grey,
                    LOADER.getImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton(6, DrawPoint(141, 196), Extent(30, 26), TextureColor::Grey,
+    addImageButton(6, DrawPoint(141, 196), Extent(30, 26), TextureColor::Grey,
                    LOADER.getImageN("io", 105)); // Viewer: 106 - Schnell vor
-    AddImageButton(7, DrawPoint(181, 196), Extent(30, 26), TextureColor::Grey, LOADER.getImageN("io", 107),
+    addImageButton(7, DrawPoint(181, 196), Extent(30, 26), TextureColor::Grey, LOADER.getImageN("io", 107),
                    _("Go to place")); // "Gehe Zu Ort"
 
     // Die Expeditionsweiterfahrbuttons
-    AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TextureColor::Grey, LOADER.getImageN("io", 187),
+    addImageButton(10, DrawPoint(60, 81), Extent(18, 18), TextureColor::Grey, LOADER.getImageN("io", 187),
                    _("Found colony"))
       ->setVisible(false);
 
@@ -61,18 +61,18 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* 
     constexpr helpers::EnumArray<unsigned, ShipDirection> BUTTON_IDs = {{185, 186, 181, 182, 183, 184}};
 
     // Expedition abbrechen
-    AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TextureColor::Red1, LOADER.getImageN("io", 40),
+    addImageButton(11, DrawPoint(200, 143), Extent(18, 18), TextureColor::Red1, LOADER.getImageN("io", 40),
                    _("Return to harbor"))
       ->setVisible(false);
 
     // Die 6 Richtungen
     for(const auto dir : helpers::EnumRange<ShipDirection>{})
-        AddImageButton(12 + rttr::enum_cast(dir), BUTTON_POS[dir], Extent(18, 18), TextureColor::Grey,
+        addImageButton(12 + rttr::enum_cast(dir), BUTTON_POS[dir], Extent(18, 18), TextureColor::Grey,
                        LOADER.getImageN("io", BUTTON_IDs[dir]))
           ->setVisible(false);
 }
 
-void iwShip::DrawContent()
+void iwShip::drawContent()
 {
     static boost::format valByValFmt{"%1%/%2%"};
 
@@ -90,20 +90,20 @@ void iwShip::DrawContent()
         // Immer noch nicht? Dann gibt es keine Schiffe mehr und wir zeigen eine entsprechende Meldung an
         if(!ship)
         {
-            NormalFont->Draw(getDrawPos() + DrawPoint(getSize().x / 2, 60), _("No ships available"),
+            NormalFont->draw(getDrawPos() + DrawPoint(getSize().x / 2, 60), _("No ships available"),
                              FontStyle::CENTER | FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
             return;
         }
     }
 
     // Schiffsname
-    NormalFont->Draw(getDrawPos() + DrawPoint(42, 42), ship->getName(), FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
+    NormalFont->draw(getDrawPos() + DrawPoint(42, 42), ship->getName(), FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
     valByValFmt % (ship_id + 1) % owner.getNumShips();
-    NormalFont->Draw(getDrawPos() + DrawPoint(208, 42), valByValFmt.str(), FontStyle::RIGHT | FontStyle::NO_OUTLINE,
+    NormalFont->draw(getDrawPos() + DrawPoint(208, 42), valByValFmt.str(), FontStyle::RIGHT | FontStyle::NO_OUTLINE,
                      COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
-    LOADER.getImageN("boot_z", 12)->DrawFull(getDrawPos() + DrawPoint(138, 117));
+    LOADER.getImageN("boot_z", 12)->drawFull(getDrawPos() + DrawPoint(138, 117));
 
     // Expeditions-Buttons malen?
     if(ship->isWaitingForExpeditionInstructions())
@@ -125,14 +125,14 @@ void iwShip::DrawContent()
             getCtrl<Window>(10 + i)->setVisible(false);
     }
 
-    DrawCargo();
+    drawCargo();
 }
 
 void iwShip::msgButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == 2) // Hilfe
     {
-        WINDOWMANAGER.ReplaceWindow(
+        WINDOWMANAGER.replaceWindow(
           std::make_unique<iwHelp>(_("The ship register contains all the ships in your fleet. Here you can monitor "
                                      "the loading and destinations of individual ships. Ships on an expedition are "
                                      "controlled from here as well.")));
@@ -149,14 +149,14 @@ void iwShip::msgButtonClick(const unsigned ctrl_id)
     {
         bool success = false;
         if(ctrl_id == 10)
-            success = gcFactory.FoundColony(ship_id);
+            success = gcFactory.foundColony(ship_id);
         else if(ctrl_id == 11)
             success = gcFactory.CancelExpedition(ship_id);
         else
-            success = gcFactory.TravelToNextSpot(ShipDirection(ctrl_id - 12), ship_id);
+            success = gcFactory.travelToNextSpot(ShipDirection(ctrl_id - 12), ship_id);
 
         if(success)
-            Close();
+            close();
     }
 
     switch(ctrl_id)
@@ -193,13 +193,13 @@ void iwShip::msgButtonClick(const unsigned ctrl_id)
         break;
         case 7: // "Gehe Zu Ort"
         {
-            gwv.MoveToMapPt(ship->getPos());
+            gwv.moveToMapPt(ship->getPos());
         }
         break;
     }
 }
 
-void iwShip::DrawCargo()
+void iwShip::drawCargo()
 {
     const GamePlayer& owner = gwv.getWorld().getPlayer(player);
     const noShip* ship = owner.getShipByID(ship_id);
@@ -260,9 +260,9 @@ void iwShip::DrawCargo()
             orderedFigures[job]--;
 
             if(job == Job::PackDonkey)
-                LOADER.getMapTexture(2016)->DrawFull(drawPt);
+                LOADER.getMapTexture(2016)->drawFull(drawPt);
             else if(job == Job::BoatCarrier)
-                LOADER.getBob("carrier")->Draw(rttr::enum_cast(GoodType::Boat), libsiedler2::ImgDir::SW, false, 0,
+                LOADER.getBob("carrier")->draw(rttr::enum_cast(GoodType::Boat), libsiedler2::ImgDir::SW, false, 0,
                                                drawPt, owner.color);
             else if(wineaddon::isWineAddonJobType(job))
             {
@@ -275,7 +275,7 @@ void iwShip::DrawCargo()
                 LOADER
                   .getPlayerImage("wine_bobs",
                                   wineaddon::bobIndex[type] + static_cast<unsigned>(libsiedler2::ImgDir::SW) * 8)
-                  ->DrawFull(drawPt, COLOR_WHITE, owner.color);
+                  ->drawFull(drawPt, COLOR_WHITE, owner.color);
             } else if(leatheraddon::isLeatherAddonJobType(job))
             {
                 leatheraddon::BobType type = leatheraddon::BobType::SkinnerWalking;
@@ -287,11 +287,11 @@ void iwShip::DrawCargo()
                 LOADER
                   .getPlayerImage("leather_bobs",
                                   leatheraddon::bobIndex[type] + static_cast<unsigned>(libsiedler2::ImgDir::SW) * 8)
-                  ->DrawFull(drawPt, COLOR_WHITE, owner.color);
+                  ->drawFull(drawPt, COLOR_WHITE, owner.color);
             } else
             {
                 const auto& spriteData = JOB_SPRITE_CONSTS[job];
-                LOADER.getBob("jobs")->Draw(spriteData.getBobId(owner.nation), libsiedler2::ImgDir::SW,
+                LOADER.getBob("jobs")->draw(spriteData.getBobId(owner.nation), libsiedler2::ImgDir::SW,
                                             spriteData.isFat(), 0, drawPt, owner.color);
             }
 
@@ -300,8 +300,8 @@ void iwShip::DrawCargo()
                 armoredFigures[jobEnumToAmoredSoldierEnum(job)]--;
                 if(gwv.getWorld().getGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
                 {
-                    SmallFont->Draw(drawPt + DrawPoint(-2, -25), "+", FontStyle::CENTER, COLOR_RED);
-                    SmallFont->Draw(drawPt + DrawPoint(1, -25), "1", FontStyle::CENTER, COLOR_RED);
+                    SmallFont->draw(drawPt + DrawPoint(-2, -25), "+", FontStyle::CENTER, COLOR_RED);
+                    SmallFont->draw(drawPt + DrawPoint(1, -25), "1", FontStyle::CENTER, COLOR_RED);
                 }
             }
 
@@ -325,7 +325,7 @@ void iwShip::DrawCargo()
 
             const auto draw_id = convertShieldToNation(ware, owner.nation);
 
-            LOADER.getWareStackTex(draw_id)->DrawFull(drawPt);
+            LOADER.getWareStackTex(draw_id)->drawFull(drawPt);
             drawPt.x += xStep;
             lineCounter++;
         }

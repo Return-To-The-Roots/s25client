@@ -16,7 +16,7 @@ public:
 private:
     GameWorldView& gwv;
 
-    void SkipGFs(unsigned edtCtrlId);
+    void skipGFs(unsigned edtCtrlId);
 
     void msgButtonClick(unsigned ctrlId) override;
     void msgEditEnter(unsigned ctrlId) override;

@@ -21,7 +21,7 @@ public:
     virtual ~IGameLobbyController() = default;
     virtual unsigned getMaxNumPlayers() const = 0;
     virtual JoinPlayerInfo& getJoinPlayer(unsigned playerIdx) = 0;
-    virtual void CloseSlot(unsigned playerIdx) = 0;
+    virtual void closeSlot(unsigned playerIdx) = 0;
     virtual void setPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) = 0;
     virtual void setName(unsigned playerIdx, const std::string& name) = 0;
     virtual void setPortrait(unsigned playerIdx, unsigned portraitIndex) = 0;
@@ -29,5 +29,5 @@ public:
     virtual void setTeam(unsigned playerIdx, Team newTeam) = 0;
     virtual void setNation(unsigned playerIdx, Nation newNation) = 0;
     virtual const GlobalGameSettings& getGGS() const = 0;
-    virtual void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) = 0;
+    virtual void changeGlobalGameSettings(const GlobalGameSettings& ggs) = 0;
 };

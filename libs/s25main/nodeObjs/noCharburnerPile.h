@@ -41,13 +41,13 @@ public:
 
     ~noCharburnerPile() override;
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::Charburnerpile; }
 
-    void Draw(DrawPoint drawPt) override;
-    void HandleEvent(unsigned id) override;
+    void draw(DrawPoint drawPt) override;
+    void handleEvent(unsigned id) override;
 
     BlockingManner getBM() const override { return BlockingManner::NothingAround; }
 
@@ -55,7 +55,7 @@ public:
     State getState() const { return state; }
 
     /// Charburner has worked on it --> Goto next step
-    void NextStep();
+    void nextStep();
 
     /// Dertermines if the charburner pile needs wood or grain
     /// Only graphical "effect", dertermines which ware the charburner will be carrying

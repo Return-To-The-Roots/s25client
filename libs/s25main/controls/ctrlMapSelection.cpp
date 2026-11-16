@@ -32,7 +32,7 @@ ctrlMapSelection::MapImages::MapImages(const SelectionMapInputData& data)
         std::vector<std::string> pathsToLoad;
         for(const auto& res : {data.background, data.map, data.missionMapMask, data.marker, data.conquered})
             pathsToLoad.push_back(res.filePath);
-        LOADER.LoadFiles(pathsToLoad);
+        LOADER.loadFiles(pathsToLoad);
     }
 
     background = getImage(data.background);
@@ -97,7 +97,7 @@ void ctrlMapSelection::setSelection(size_t select)
         if(missionStatus[select].playable)
             currentSelectionPos = inputData.missionSelectionInfos[select].ankerPos;
     } else
-        currentSelectionPos = Position::Invalid();
+        currentSelectionPos = Position::invalid();
 }
 
 std::optional<unsigned> ctrlMapSelection::getSelection() const
@@ -165,18 +165,18 @@ DrawPoint ctrlMapSelection::getMapPosition()
 void ctrlMapSelection::drawImageOnMap(glArchivItem_Bitmap* image, const Position& drawPos)
 {
     const auto originCorrection = image->getOrigin() - scale(image->getOrigin());
-    image->DrawFull(Rect(getMapPosition() + scale(drawPos) + originCorrection, scale(image->getSize())));
+    image->drawFull(Rect(getMapPosition() + scale(drawPos) + originCorrection, scale(image->getSize())));
 }
 
-void ctrlMapSelection::Draw_()
+void ctrlMapSelection::drawImpl()
 {
-    Window::Draw_();
+    Window::drawImpl();
 
-    mapImages.background->DrawFull(Rect(getBackgroundPosition(), scale(mapImages.background->getSize())));
+    mapImages.background->drawFull(Rect(getBackgroundPosition(), scale(mapImages.background->getSize())));
 
     const Rect mapRect = Rect(getMapPosition(), scale(mapImages.map->getSize()));
-    mapImages.map->DrawFull(mapRect);
-    mapImages.enabledMask->DrawFull(mapRect);
+    mapImages.map->drawFull(mapRect);
+    mapImages.enabledMask->drawFull(mapRect);
 
     for(const auto idx : helpers::range(missionStatus.size()))
     {

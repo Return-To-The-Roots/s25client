@@ -41,7 +41,7 @@ public:
     /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
     bool Load(DriverType dt, std::string& preference);
     /// Gibt eine Treiber-Handle wieder frei
-    void Unload();
+    void unload();
     bool isLoaded() const;
     template<typename T>
     T* getFunction(const std::string& name)
@@ -50,11 +50,11 @@ public:
     }
 
     /// Läd eine Liste von verfügbaren Treibern
-    static std::vector<DriverItem> LoadDriverList(DriverType dt);
+    static std::vector<DriverItem> loadDriverList(DriverType dt);
 
 private:
     boost::dll::shared_library dll;
     /// Checks if the library is valid. Puts either the name or the error message into nameOrError
-    static bool CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError);
+    static bool checkLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError);
 };
 } // namespace drivers

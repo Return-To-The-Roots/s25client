@@ -29,7 +29,7 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
     : IngameWindow(CGI_README, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.getImageN("resource", 41))
 {
     ctrlMultiline* text =
-      AddMultiline(2, DrawPoint(10, 20), Extent(getSize().x - 20, 450), TextureColor::Green1, NormalFont);
+      addMultiline(2, DrawPoint(10, 20), Extent(getSize().x - 20, 450), TextureColor::Green1, NormalFont);
 
     // Pfad mit gewählter Sprache auswählen
     std::vector<bfs::path> paths;
@@ -44,12 +44,12 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
         file.open(*existingFilePath);
     if(!file)
     {
-        text->AddString((boost::format(_("The file was not found!")) % filename).str(), COLOR_RED, false);
+        text->addString((boost::format(_("The file was not found!")) % filename).str(), COLOR_RED, false);
     } else
     {
         std::stringstream stream;
         stream << file.rdbuf();
-        text->AddString(stream.str(), COLOR_YELLOW, false);
+        text->addString(stream.str(), COLOR_YELLOW, false);
     }
 
     text->setWidth(text->getContentSize().x);

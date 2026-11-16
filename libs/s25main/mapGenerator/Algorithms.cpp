@@ -7,7 +7,7 @@
 
 namespace rttr::mapGenerator {
 
-void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue)
+void updateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue)
 {
     while(!queue.empty())
     {
@@ -33,7 +33,7 @@ void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& que
     }
 }
 
-void FlattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos)
+void flattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos)
 {
     const auto& neighbors = heightMap.getNeighbours(pos);
     const auto& farNeighbors = heightMap.getPointsInRadius(pos, 2);

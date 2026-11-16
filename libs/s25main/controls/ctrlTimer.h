@@ -12,16 +12,16 @@ class ctrlTimer : public Window
 public:
     ctrlTimer(Window* parent, unsigned id, std::chrono::milliseconds timeout);
 
-    void Start();
-    void Start(std::chrono::milliseconds timeout);
-    void Stop();
+    void start();
+    void start(std::chrono::milliseconds timeout);
+    void stop();
     bool isRunning() const { return timer_.isRunning(); }
     Timer::duration getElapsed() const { return timer_.getElapsed(); }
 
     void msgPaintBefore() override;
 
 protected:
-    void Draw_() override{};
+    void drawImpl() override{};
 
 private:
     std::chrono::milliseconds timeout_;

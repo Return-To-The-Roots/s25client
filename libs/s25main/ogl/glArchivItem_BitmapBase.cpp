@@ -26,7 +26,7 @@ glArchivItem_BitmapBase::glArchivItem_BitmapBase(const glArchivItem_BitmapBase& 
 
 glArchivItem_BitmapBase::~glArchivItem_BitmapBase()
 {
-    DeleteTexture();
+    deleteTexture();
 }
 
 /**
@@ -35,16 +35,16 @@ glArchivItem_BitmapBase::~glArchivItem_BitmapBase()
 unsigned glArchivItem_BitmapBase::getTexture()
 {
     if(texture == 0)
-        GenerateTexture();
+        generateTexture();
     return texture;
 }
 
 /**
  *  Löscht die GL-Textur (z.B fürs Neuerstellen)
  */
-void glArchivItem_BitmapBase::DeleteTexture()
+void glArchivItem_BitmapBase::deleteTexture()
 {
-    VIDEODRIVER.DeleteTexture(texture);
+    VIDEODRIVER.deleteTexture(texture);
     texture = 0;
 }
 
@@ -57,7 +57,7 @@ void glArchivItem_BitmapBase::setInterpolateTexture(bool interpolate)
 
     // neugenerierung der Textur anstoßen
     if(texture != 0)
-        DeleteTexture();
+        deleteTexture();
 }
 
 Extent glArchivItem_BitmapBase::getTexSize() const
@@ -69,26 +69,26 @@ Extent glArchivItem_BitmapBase::getTexSize() const
 /**
  *  Erzeugt die Textur.
  */
-void glArchivItem_BitmapBase::GenerateTexture()
+void glArchivItem_BitmapBase::generateTexture()
 {
-    textureSize_ = CalcTextureSize();
+    textureSize_ = calcTextureSize();
     if(textureSize_.x == 0 || textureSize_.y == 0)
         return;
 
-    texture = VIDEODRIVER.GenerateTexture();
+    texture = VIDEODRIVER.generateTexture();
     if(!texture)
         return;
 
     if(!getPalette() && getFormat() == libsiedler2::TextureFormat::Paletted)
         setPaletteCopy(*LOADER.getPaletteN("pal5"));
 
-    VIDEODRIVER.BindTexture(texture);
+    VIDEODRIVER.bindTexture(texture);
 
     GLint filter = interpolateTexture_ ? GL_NEAREST : GL_LINEAR;
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 
-    FillTexture();
+    fillTexture();
 }
 
 int glArchivItem_BitmapBase::getInternalFormat() const

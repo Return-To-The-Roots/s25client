@@ -40,9 +40,9 @@ public:
 
 protected:
     /// Zeichnet Grundstruktur des Buttons
-    void Draw_() override;
+    void drawImpl() override;
     /// Abgeleitete Klassen müssen erweiterten Button-Inhalt zeichnen
-    virtual void DrawContent() const = 0;
+    virtual void drawContent() const = 0;
 
     /// Texturfarbe des Buttons
     TextureColor tc;

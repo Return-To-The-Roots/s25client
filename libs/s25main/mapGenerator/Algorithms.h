@@ -63,7 +63,7 @@ void Smooth(unsigned iterations, unsigned radius, NodeMapBase<T>& nodes)
 }
 
 /// Flatten the height map so a castle sized building can be placed at pos
-void FlattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos);
+void flattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos);
 
 /**
  * Maps the values to the specified range [minimum, maximum].
@@ -73,7 +73,7 @@ void FlattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos);
  * @param maximum maximum value to map any values to
  */
 template<typename T>
-void Scale(NodeMapBase<T>& values, T minimum, T maximum)
+void scale(NodeMapBase<T>& values, T minimum, T maximum)
 {
     auto range = GetRange(values);
     auto actualRange = range.getDifference();
@@ -147,7 +147,7 @@ std::vector<MapPoint> Collect(const MapBase& map, const MapPoint& pt, T&& evalua
  * @param distances distance map which is being updated
  * @param queue queue with initial elements to used for distance computation
  */
-void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue);
+void updateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue);
 
 /**
  * Computes a map of distance values describing the distance of each grid position to the closest flagged point.
@@ -162,7 +162,7 @@ NodeMapBase<unsigned> DistancesTo(const T_Container& flaggedPoints, const MapExt
 {
     std::queue<MapPoint> queue;
     NodeMapBase<unsigned> distances;
-    distances.Resize(size, unsigned(-1));
+    distances.resize(size, unsigned(-1));
 
     for(const MapPoint& pt : flaggedPoints)
     {
@@ -170,7 +170,7 @@ NodeMapBase<unsigned> DistancesTo(const T_Container& flaggedPoints, const MapExt
         queue.push(pt);
     }
 
-    UpdateDistances(distances, queue);
+    updateDistances(distances, queue);
 
     return distances;
 }
@@ -199,7 +199,7 @@ NodeMapBase<unsigned> Distances(const MapExtent& size, const T_Container& area, 
 {
     std::queue<MapPoint> queue;
     NodeMapBase<unsigned> distances;
-    distances.Resize(size, defaultValue);
+    distances.resize(size, defaultValue);
 
     for(const MapPoint& pt : area)
     {
@@ -213,7 +213,7 @@ NodeMapBase<unsigned> Distances(const MapExtent& size, const T_Container& area, 
         }
     }
 
-    UpdateDistances(distances, queue);
+    updateDistances(distances, queue);
 
     return distances;
 }

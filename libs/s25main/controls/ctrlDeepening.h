@@ -16,9 +16,9 @@ public:
     ctrlDeepening(Window* parent, unsigned id, DrawPoint pos, const Extent& size, TextureColor tc);
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
     /// Derived classes have to draw the content
-    virtual void DrawContent() const = 0;
+    virtual void drawContent() const = 0;
 
 private:
     TextureColor tc;

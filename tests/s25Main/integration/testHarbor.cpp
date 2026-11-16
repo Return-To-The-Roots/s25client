@@ -16,7 +16,7 @@ struct HarborFixture : WorldFixture<CreateEmptyWorld, 1>
     {
         GamePlayer& player = world.getPlayer(0);
         hq = world.getSpecObj<nobBaseWarehouse>(player.getHQPos());
-        hb = static_cast<nobHarborBuilding*>(BuildingFactory::CreateBuilding(
+        hb = static_cast<nobHarborBuilding*>(BuildingFactory::createBuilding(
           world, BuildingType::HarborBuilding, player.getHQPos() + MapPoint(4, 0), 0, Nation::Romans));
         world.BuildRoad(0, false, hq->getFlagPos(), {4, Direction::East});
     }
@@ -31,10 +31,10 @@ BOOST_FIXTURE_TEST_CASE(StartExpeditionThenCancel, HarborFixture)
     addStartResources();
     BOOST_TEST_REQUIRE(hq->getNumRealFigures(Job::Builder) >= 1u); // Must have a builder
     const auto numLeavingFigs = hq->getLeavingFigures().size();
-    hb->StartExpedition();
+    hb->startExpedition();
     // Builder should be ordered
     BOOST_TEST_REQUIRE(hq->getLeavingFigures().size() == numLeavingFigs + 1u);
-    hb->StopExpedition();
+    hb->stopExpedition();
     // Builder should still come
     BOOST_TEST_REQUIRE(hq->getLeavingFigures().size() == numLeavingFigs + 1u);
 }
@@ -44,7 +44,7 @@ BOOST_FIXTURE_TEST_CASE(StartExpeditionThenDestroy, HarborFixture)
     addStartResources();
     BOOST_TEST_REQUIRE(hq->getNumRealFigures(Job::Builder) >= 1u); // Must have a builder
     const auto numLeavingFigs = hq->getLeavingFigures().size();
-    hb->StartExpedition();
+    hb->startExpedition();
     // Builder should be ordered
     BOOST_TEST_REQUIRE(hq->getLeavingFigures().size() == numLeavingFigs + 1u);
     world.DestroyBuilding(hb->getPos(), 0);

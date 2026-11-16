@@ -36,7 +36,7 @@ void GameMessage_Player_List::Deserialize(Serializer& ser)
         playerInfos.push_back(JoinPlayerInfo(ser));
 }
 
-bool GameMessage_Player_List::Run(GameMessageInterface* callback) const
+bool GameMessage_Player_List::runGame(GameMessageInterface* callback) const
 {
     LOG.writeToFile("<<< NMS_PLAYER_LIST(%d)\n") % playerInfos.size();
     for(unsigned i = 0; i < playerInfos.size(); ++i)
@@ -46,7 +46,7 @@ bool GameMessage_Player_List::Run(GameMessageInterface* callback) const
           % playerInfo.ping % rttr::enum_cast(playerInfo.nation) % playerInfo.color % rttr::enum_cast(playerInfo.team)
           % (playerInfo.isReady ? "true" : "false");
     }
-    return callback->OnGameMessage(*this);
+    return callback->onGameMessage(*this);
 }
 
 void GameMessage_Server_Async::Serialize(Serializer& ser) const

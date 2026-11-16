@@ -20,13 +20,13 @@ nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nob
 nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
 
 /// Malt den Arbeiter beim Arbeiten
-void nofStonemason::DrawWorking(DrawPoint drawPt)
+void nofStonemason::drawWorking(DrawPoint drawPt)
 {
     unsigned now_id;
 
     // Stein hauen
-    LOADER.getPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
-      ->DrawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+    LOADER.getPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.interpolate(64, current_ev)) % 8)
+      ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
 
     if(now_id % 8 == 5)
     {
@@ -41,26 +41,26 @@ unsigned short nofStonemason::getCarryID() const
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofStonemason::WorkStarted() {}
+void nofStonemason::workStarted() {}
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-void nofStonemason::WorkFinished()
+void nofStonemason::workFinished()
 {
     // Stein abhauen (wenn er nur noch ganz klein ist, dann wird er von der Landkarte getilgt)
     if(world->getSpecObj<noGranite>(pos)->isSmall())
     {
         // Granitklötzchen löschen
-        world->DestroyNO(pos);
+        world->destroyNO(pos);
 
         // Minimap Bescheid geben (Granitglötzchen muss weg)
         if(world->getGameInterface())
             world->getGameInterface()->GI_UpdateMinimap(pos);
 
         // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
-        world->RecalcBQAroundPoint(pos);
+        world->recalcBQAroundPoint(pos);
     } else
         // ansonsten wird er um 1 kleiner
-        world->getSpecObj<noGranite>(pos)->Hew();
+        world->getSpecObj<noGranite>(pos)->hew();
 
     // Stein in die Hand nehmen
     ware = GoodType::Stones;

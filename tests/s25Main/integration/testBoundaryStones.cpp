@@ -15,7 +15,7 @@ namespace {
 using WorldFixtureEmpty0P = WorldFixture<CreateEmptyWorld, 0>;
 boost::test_tools::predicate_result boundaryStonesMatch(GameWorld& world, const std::vector<BoundaryStones>& expected)
 {
-    world.RecalcBorderStones(Position(0, 0), Extent(world.getSize()));
+    world.recalcBorderStones(Position(0, 0), Extent(world.getSize()));
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         const BoundaryStones& isValue = world.getNode(pt).boundary_stones;

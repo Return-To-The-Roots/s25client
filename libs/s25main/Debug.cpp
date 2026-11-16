@@ -150,35 +150,35 @@ DebugInfo::DebugInfo()
 {
     sock.Connect("debug.rttr.info", 4123, false, SETTINGS.proxy);
 
-    Send("RTTRDBG", 7);
+    send("RTTRDBG", 7);
 
     // Protocol Version
-    SendUnsigned(2);
+    sendUnsigned(2);
 
 // OS
 #if defined _WIN32 || defined __CYGWIN__
-    SendString("WIN");
+    sendString("WIN");
 // TODO: These should be based on uname(3) output.
 #elif defined __APPLE__
-    SendString("MAC");
+    sendString("MAC");
 #elif defined __FreeBSD__
-    SendString("BSD");
+    sendString("BSD");
 #else
-    SendString("LNX");
+    sendString("LNX");
 #endif
 
     // Bits
-    SendUnsigned(sizeof(void*) * 8u);
+    sendUnsigned(sizeof(void*) * 8u);
 
-    SendString(rttr::version::getVersion());
-    SendString(rttr::version::getRevision());
+    sendString(rttr::version::getVersion());
+    sendString(rttr::version::getRevision());
 
-    SendUnsigned(GAMECLIENT.getGFNumber());
+    sendUnsigned(GAMECLIENT.getGFNumber());
 }
 
 DebugInfo::~DebugInfo()
 {
-    SendString("DONE");
+    sendString("DONE");
     sock.Close();
 }
 
@@ -193,7 +193,7 @@ DebugInfo::stacktrace_t DebugInfo::getStackTrace(void* ctx) noexcept(false)
     return stacktrace;
 }
 
-bool DebugInfo::Send(const void* buffer, size_t length)
+bool DebugInfo::send(const void* buffer, size_t length)
 {
     const auto* ptr = (const char*)buffer;
 
@@ -218,44 +218,44 @@ bool DebugInfo::Send(const void* buffer, size_t length)
     return true;
 }
 
-bool DebugInfo::SendUnsigned(uint32_t i)
+bool DebugInfo::sendUnsigned(uint32_t i)
 {
     // Debug server does not handle endianness and is little endian... TODO: Fix server
     boost::endian::native_to_little_inplace(i);
-    return (Send(&i, 4));
+    return (send(&i, 4));
 }
 
-bool DebugInfo::SendSigned(int32_t i)
+bool DebugInfo::sendSigned(int32_t i)
 {
     // Debug server does not handle endianness and is little endian... TODO: Fix server
     boost::endian::native_to_little_inplace(i);
-    return (Send(&i, 4));
+    return (send(&i, 4));
 }
 
-bool DebugInfo::SendString(const char* str, size_t len)
+bool DebugInfo::sendString(const char* str, size_t len)
 {
     if(len == 0)
         len = strlen(str) + 1;
 
-    if(!SendUnsigned(len))
+    if(!sendUnsigned(len))
         return false;
 
-    return (Send(str, len));
+    return (send(str, len));
 }
 
-bool DebugInfo::SendString(const std::string& str)
+bool DebugInfo::sendString(const std::string& str)
 {
-    return SendString(str.c_str(), str.length() + 1); // +1 to include nullptr terminator
+    return sendString(str.c_str(), str.length() + 1); // +1 to include nullptr terminator
 }
 
-bool DebugInfo::SendStackTrace(const stacktrace_t& stacktrace)
+bool DebugInfo::sendStackTrace(const stacktrace_t& stacktrace)
 {
     if(stacktrace.empty())
         return false;
 
     LOG.write("Will now send %1% stack frames\n") % stacktrace.size();
 
-    if(!SendString("StackTrace"))
+    if(!sendString("StackTrace"))
         return false;
 
     using littleVoid_t =
@@ -267,10 +267,10 @@ bool DebugInfo::SendStackTrace(const stacktrace_t& stacktrace)
         endStacktrace.push_back(reinterpret_cast<littleVoid_t::value_type>(ptr));
 
     unsigned stacktraceLen = sizeof(littleVoid_t) * endStacktrace.size();
-    return SendString(reinterpret_cast<const char*>(endStacktrace.data()), stacktraceLen);
+    return sendString(reinterpret_cast<const char*>(endStacktrace.data()), stacktraceLen);
 }
 
-bool DebugInfo::SendReplay()
+bool DebugInfo::sendReplay()
 {
     LOG.write("Sending replay...\n");
 
@@ -282,18 +282,18 @@ bool DebugInfo::SendReplay()
         if(!rpl || !rpl->isRecording())
             return true;
         const auto replayPath = rpl->getPath();
-        rpl->Close();
+        rpl->close();
 
         BinaryFile f;
         if(f.Open(replayPath, OpenFileMode::Read))
         {
-            if(!SendString("Replay"))
+            if(!sendString("Replay"))
                 return false;
-            if(SendFile(f))
+            if(sendFile(f))
                 return true;
         }
         // Empty replay
-        SendUnsigned(0);
+        sendUnsigned(0);
         return false;
     } else
     {
@@ -303,23 +303,23 @@ bool DebugInfo::SendReplay()
     return true;
 }
 
-bool DebugInfo::SendAsyncLog(const boost::filesystem::path& asyncLogFilepath)
+bool DebugInfo::sendAsyncLog(const boost::filesystem::path& asyncLogFilepath)
 {
     BinaryFile file;
     if(!file.Open(asyncLogFilepath, OpenFileMode::Read))
         return false;
 
-    if(!SendString("AsyncLog"))
+    if(!sendString("AsyncLog"))
         return false;
 
-    if(SendFile(file))
+    if(sendFile(file))
         return true;
     // Empty
-    SendUnsigned(0);
+    sendUnsigned(0);
     return false;
 }
 
-bool DebugInfo::SendFile(BinaryFile& file)
+bool DebugInfo::sendFile(BinaryFile& file)
 {
     file.Seek(0, SEEK_END);
     unsigned fileSize = file.Tell();
@@ -338,7 +338,7 @@ bool DebugInfo::SendFile(BinaryFile& file)
     {
         LOG.write("- Sending...\n");
 
-        if(SendString(compressed.get(), compressed_len))
+        if(sendString(compressed.get(), compressed_len))
         {
             LOG.write("-> success\n");
             return true;

@@ -20,9 +20,9 @@ nofWoodcutter::nofWoodcutter(const MapPoint pos, const unsigned char player, nob
 nofWoodcutter::nofWoodcutter(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
 
 /// Malt den Arbeiter beim Arbeiten
-void nofWoodcutter::DrawWorking(DrawPoint drawPt)
+void nofWoodcutter::drawWorking(DrawPoint drawPt)
 {
-    unsigned short nowId = GAMECLIENT.Interpolate(118, current_ev);
+    unsigned short nowId = GAMECLIENT.interpolate(118, current_ev);
 
     if(nowId < 10)
     {
@@ -33,7 +33,7 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     {
         // 2. Hacken
         LOADER.getPlayerImage("rom_bobs", 24 + (nowId - 10) % 8)
-          ->DrawFull(drawPt - DrawPoint(9, 0), COLOR_WHITE, world->getPlayer(player).color);
+          ->drawFull(drawPt - DrawPoint(9, 0), COLOR_WHITE, world->getPlayer(player).color);
 
         if((nowId - 10) % 8 == 3)
         {
@@ -45,7 +45,7 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     {
         // 3. Warten bis Baum umfällt
         LOADER.getPlayerImage("rom_bobs", 24)
-          ->DrawFull(drawPt - DrawPoint(9, 0), COLOR_WHITE, world->getPlayer(player).color);
+          ->drawFull(drawPt - DrawPoint(9, 0), COLOR_WHITE, world->getPlayer(player).color);
 
         if(nowId == 90)
         {
@@ -71,15 +71,15 @@ unsigned short nofWoodcutter::getCarryID() const
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofWoodcutter::WorkStarted()
+void nofWoodcutter::workStarted()
 {
     RTTR_Assert(world->getSpecObj<noTree>(dest)->getType() == NodalObjectType::Tree);
 
-    world->getSpecObj<noTree>(dest)->FallSoon();
+    world->getSpecObj<noTree>(dest)->fallSoon();
 }
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-void nofWoodcutter::WorkFinished()
+void nofWoodcutter::workFinished()
 {
     // Holz in die Hand nehmen
     ware = GoodType::Wood;
@@ -93,17 +93,17 @@ nofFarmhand::PointQuality nofWoodcutter::getPointQuality(const MapPoint pt, bool
     const noBase* no = world->getNO(pt);
     if(no->getType() == NodalObjectType::Tree)
     {
-        if(static_cast<const noTree*>(no)->isFullyGrown() && static_cast<const noTree*>(no)->ProducesWood())
+        if(static_cast<const noTree*>(no)->isFullyGrown() && static_cast<const noTree*>(no)->producesWood())
             return PointQuality::Class1;
     }
 
     return PointQuality::NotPossible;
 }
 
-void nofWoodcutter::WorkAborted()
+void nofWoodcutter::workAborted()
 {
-    nofFarmhand::WorkAborted();
+    nofFarmhand::workAborted();
     // Dem Baum Bescheid sagen
     if(state == State::Work)
-        world->getSpecObj<noTree>(pos)->DontFall();
+        world->getSpecObj<noTree>(pos)->dontFall();
 }

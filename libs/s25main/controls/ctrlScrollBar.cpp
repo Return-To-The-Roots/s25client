@@ -15,14 +15,14 @@ ctrlScrollBar::ctrlScrollBar(Window* parent, unsigned id, const DrawPoint& pos, 
 {
     setVisible(false);
 
-    AddImageButton(0, DrawPoint(0, 0), Extent(size.x, button_height), tc, LOADER.getImageN("io", 33));
-    AddImageButton(1, DrawPoint(0, (size.y > button_height) ? size.y - button_height : 1),
+    addImageButton(0, DrawPoint(0, 0), Extent(size.x, button_height), tc, LOADER.getImageN("io", 33));
+    addImageButton(1, DrawPoint(0, (size.y > button_height) ? size.y - button_height : 1),
                    Extent(size.x, button_height), tc, LOADER.getImageN("io", 34));
 
-    Resize(size);
+    resize(size);
 }
 
-void ctrlScrollBar::Scroll(int distance)
+void ctrlScrollBar::scroll(int distance)
 {
     if(distance == 0 || scroll_range == 0)
         return;
@@ -36,7 +36,7 @@ void ctrlScrollBar::Scroll(int distance)
     if(scroll_pos != static_cast<unsigned short>(newScrollPos))
     {
         scroll_pos = static_cast<unsigned short>(newScrollPos);
-        UpdateSliderFromPos();
+        updateSliderFromPos();
         getParent()->msgScrollChange(getID(), scroll_pos);
     }
 }
@@ -46,7 +46,7 @@ bool ctrlScrollBar::msgLeftUp(const MouseCoords& mc)
     isMouseScrolling = false;
 
     // ButtonMessages weiterleiten
-    return RelayMouseMessage(&Window::msgLeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
 bool ctrlScrollBar::msgLeftDown(const MouseCoords& mc)
@@ -65,7 +65,7 @@ bool ctrlScrollBar::msgLeftDown(const MouseCoords& mc)
         else
             sliderPos -= sliderHeight / 2;
 
-        UpdatePosFromSlider();
+        updatePosFromSlider();
         return true;
     } else
     {
@@ -83,12 +83,12 @@ bool ctrlScrollBar::msgLeftDown(const MouseCoords& mc)
                 sliderPos = scroll_height - sliderHeight;
             }
 
-            UpdatePosFromSlider();
+            updatePosFromSlider();
             return true;
         }
     }
 
-    return RelayMouseMessage(&Window::msgLeftDown, mc);
+    return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
 bool ctrlScrollBar::msgMouseMove(const MouseCoords& mc)
@@ -100,12 +100,12 @@ bool ctrlScrollBar::msgMouseMove(const MouseCoords& mc)
         if(sliderPos + sliderHeight > scroll_height)
             sliderPos = moveDist < 0 ? 0 : (scroll_height - sliderHeight);
 
-        UpdatePosFromSlider();
+        updatePosFromSlider();
     }
     last_y = mc.pos.y;
 
     // ButtonMessages weiterleiten
-    return RelayMouseMessage(&Window::msgMouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }
 
 void ctrlScrollBar::msgButtonClick(const unsigned ctrl_id)
@@ -113,10 +113,10 @@ void ctrlScrollBar::msgButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case 0: // Upwards
-            Scroll(-1);
+            scroll(-1);
             break;
         case 1: // Downwards
-            Scroll(+1);
+            scroll(+1);
             break;
     }
 }
@@ -129,7 +129,7 @@ void ctrlScrollBar::setScrollPos(unsigned short scroll_pos)
     if(this->scroll_pos != scroll_pos)
     {
         this->scroll_pos = scroll_pos;
-        UpdateSliderFromPos();
+        updateSliderFromPos();
     }
 }
 
@@ -141,7 +141,7 @@ void ctrlScrollBar::setRange(unsigned short scroll_range)
     if(this->scroll_range != scroll_range)
     {
         this->scroll_range = scroll_range;
-        RecalculateSizes();
+        recalculateSizes();
     }
 }
 
@@ -153,20 +153,20 @@ void ctrlScrollBar::setPageSize(unsigned short pagesize)
     if(this->pagesize != pagesize)
     {
         this->pagesize = pagesize;
-        RecalculateSizes();
+        recalculateSizes();
     }
 }
 
-void ctrlScrollBar::Resize(const Extent& newSize)
+void ctrlScrollBar::resize(const Extent& newSize)
 {
-    Window::Resize(newSize);
+    Window::resize(newSize);
 
     // Up button
     Extent btSize = Extent(newSize.x, button_height);
-    getCtrl<ctrlButton>(0)->Resize(btSize);
+    getCtrl<ctrlButton>(0)->resize(btSize);
     // Down button
     auto* downButton = getCtrl<ctrlButton>(1);
-    downButton->Resize(btSize);
+    downButton->resize(btSize);
 
     if(newSize.y >= button_height)
     {
@@ -175,7 +175,7 @@ void ctrlScrollBar::Resize(const Extent& newSize)
     } else
         downButton->setVisible(false);
 
-    RecalculateSizes();
+    recalculateSizes();
 }
 
 /**
@@ -183,23 +183,23 @@ void ctrlScrollBar::Resize(const Extent& newSize)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-void ctrlScrollBar::Draw_()
+void ctrlScrollBar::drawImpl()
 {
     RTTR_Assert(scroll_range > pagesize); // Don't show unneccessary scrollbars, otherwise invariants might be violated.
     if(scroll_height == 0)
         return;
     DrawPoint pos = getDrawPos();
     // Leiste
-    Draw3D(Rect(pos + DrawPoint(0, button_height - 2), getSize().x, getSize().y - button_height * 2 + 4), tc, false);
+    draw3D(Rect(pos + DrawPoint(0, button_height - 2), getSize().x, getSize().y - button_height * 2 + 4), tc, false);
 
     // Buttons
-    Window::Draw_();
+    Window::drawImpl();
 
     // Scrollbar
-    Draw3D(Rect(pos + DrawPoint(0, button_height + sliderPos), getSize().x, sliderHeight), tc, true);
+    draw3D(Rect(pos + DrawPoint(0, button_height + sliderPos), getSize().x, sliderHeight), tc, true);
 }
 
-void ctrlScrollBar::UpdatePosFromSlider()
+void ctrlScrollBar::updatePosFromSlider()
 {
     RTTR_Assert(sliderPos + sliderHeight <= scroll_height); // Slider must be inside bar
     unsigned short newScrollPos = (sliderPos * scroll_range) / scroll_height;
@@ -211,7 +211,7 @@ void ctrlScrollBar::UpdatePosFromSlider()
     }
 }
 
-void ctrlScrollBar::UpdateSliderFromPos()
+void ctrlScrollBar::updateSliderFromPos()
 {
     if(scroll_pos + pagesize >= scroll_range)
         sliderPos = scroll_height - sliderHeight;
@@ -222,7 +222,7 @@ void ctrlScrollBar::UpdateSliderFromPos()
 /**
  *  berechnet die Werte für die Scrollbar.
  */
-void ctrlScrollBar::RecalculateSizes()
+void ctrlScrollBar::recalculateSizes()
 {
     scroll_height = ((getSize().y > 2u * button_height) ? getSize().y - 2u * button_height : 0);
 
@@ -230,7 +230,7 @@ void ctrlScrollBar::RecalculateSizes()
     {
         sliderHeight = (scroll_height * pagesize) / scroll_range;
 
-        UpdateSliderFromPos();
+        updateSliderFromPos();
 
         if(!isVisible())
         {

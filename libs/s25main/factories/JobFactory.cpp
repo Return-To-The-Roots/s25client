@@ -52,7 +52,7 @@
 #include "nodeObjs/noFlag.h"
 #include <stdexcept>
 
-std::unique_ptr<noFigure> JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsigned char player,
+std::unique_ptr<noFigure> JobFactory::createJob(const Job job_id, const MapPoint pt, const unsigned char player,
                                                 noRoadNode& goal)
 {
     if(nobBaseWarehouse::isStorehouseGOT(goal.getGOT()))

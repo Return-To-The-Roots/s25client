@@ -18,7 +18,7 @@ void MilitarySquares::Init(const MapExtent& mapSize)
     squares.resize(size_.x * size_.y);
 }
 
-void MilitarySquares::Clear()
+void MilitarySquares::clear()
 {
     squares.clear();
     size_ = MapExtent::all(0);
@@ -30,12 +30,12 @@ std::list<nobBaseMilitary*>& MilitarySquares::getSquare(const MapPoint pt)
     return squares[milPt.y * size_.x + milPt.x];
 }
 
-void MilitarySquares::Add(nobBaseMilitary* const bld)
+void MilitarySquares::add(nobBaseMilitary* const bld)
 {
     getSquare(bld->getPos()).push_back(bld);
 }
 
-void MilitarySquares::Remove(nobBaseMilitary* const bld)
+void MilitarySquares::remove(nobBaseMilitary* const bld)
 {
     RTTR_Assert(helpers::contains(getSquare(bld->getPos()), bld));
     getSquare(bld->getPos()).remove(bld);

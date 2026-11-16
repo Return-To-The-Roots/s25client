@@ -35,7 +35,7 @@ std::vector<Direction> FindPathForRoad(const T_WorldOrViewer& world, const MapPo
 {
     RTTR_Assert(startPt != endPt);
     std::vector<Direction> road;
-    getWorld(world).getFreePathFinder().FindPath(startPt, endPt, false, maxLen, &road, nullptr, nullptr,
+    getWorld(world).getFreePathFinder().findPath(startPt, endPt, false, maxLen, &road, nullptr, nullptr,
                                                  makePathConditionRoad(world, isBoatRoad));
     return road;
 }

@@ -31,9 +31,9 @@ ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& p
     }
 
     Extent btSize = Extent::all(size.y);
-    AddImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.getImageN(btMinusRes, button_minus),
+    addImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.getImageN(btMinusRes, button_minus),
                    (!button_minus_tooltip.empty() ? button_minus_tooltip : _("Less")));
-    AddImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.getImageN(btPlusRes, button_plus),
+    addImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.getImageN(btPlusRes, button_plus),
                    (!button_plus_tooltip.empty() ? button_plus_tooltip : _("More")));
 
     // Hide left and right 3D border by making the buttons overlap the bar
@@ -53,20 +53,20 @@ void ctrlProgress::setPosition(unsigned short position)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-void ctrlProgress::Draw_()
+void ctrlProgress::drawImpl()
 {
     DrawPoint barPos = getDrawPos() + DrawPoint(padding_);
     // Offset by button size
     barPos.x += getSize().y;
-    Extent barSize(CalcBarWidth(), getSize().y - 2 * padding_.y);
-    Draw3D(Rect(barPos, barSize), tc, false);
+    Extent barSize(calcBarWidth(), getSize().y - 2 * padding_.y);
+    draw3D(Rect(barPos, barSize), tc, false);
 
     // Buttons
-    Window::Draw_();
+    Window::drawImpl();
 
     const DrawPoint innerPadding(4, 4);
     unsigned percentage = position * 100 / maximum;
-    unsigned progress = (CalcBarWidth() - innerPadding.x * 2) * position / maximum;
+    unsigned progress = (calcBarWidth() - innerPadding.x * 2) * position / maximum;
 
     // Farbe herausfinden
     unsigned color = 0xFFD70000;
@@ -86,26 +86,26 @@ void ctrlProgress::Draw_()
     }
 
     // Leiste
-    DrawRectangle(Rect(barPos + innerPadding, progress, getSize().y - 2 * (innerPadding.y + padding_.y)), color);
+    drawRectangle(Rect(barPos + innerPadding, progress, getSize().y - 2 * (innerPadding.y + padding_.y)), color);
 
     // Prozentzahlen zeichnen
-    SmallFont->Draw(getDrawPos() + DrawPoint(getSize()) / 2, std::to_string(percentage) + "%",
+    SmallFont->draw(getDrawPos() + DrawPoint(getSize()) / 2, std::to_string(percentage) + "%",
                     FontStyle::CENTER | FontStyle::VCENTER, COLOR_YELLOW);
 }
 
-void ctrlProgress::Resize(const Extent& newSize)
+void ctrlProgress::resize(const Extent& newSize)
 {
-    Window::Resize(newSize);
+    Window::resize(newSize);
 
     auto* lessBt = getCtrl<Window>(0);
     auto* moreBt = getCtrl<Window>(1);
     Extent btSize(newSize.y, newSize.y);
-    lessBt->Resize(btSize);
-    moreBt->Resize(btSize);
+    lessBt->resize(btSize);
+    moreBt->resize(btSize);
     moreBt->setPos(DrawPoint(newSize.x - btSize.x, 0));
 }
 
-unsigned ctrlProgress::CalcBarWidth() const
+unsigned ctrlProgress::calcBarWidth() const
 {
     return getSize().x - 2 * (padding_.x + getSize().y);
 }
@@ -147,12 +147,12 @@ bool ctrlProgress::msgLeftDown(const MouseCoords& mc)
             getParent()->msgProgressChange(getID(), position);
         return true;
     } else
-        return RelayMouseMessage(&Window::msgLeftDown, mc);
+        return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
 bool ctrlProgress::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
 bool ctrlProgress::msgWheelUp(const MouseCoords& mc)
@@ -180,7 +180,7 @@ bool ctrlProgress::msgWheelDown(const MouseCoords& mc)
 bool ctrlProgress::msgMouseMove(const MouseCoords& mc)
 {
     // an Buttons weiterleiten
-    RelayMouseMessage(&Window::msgMouseMove, mc);
+    relayMouseMessage(&Window::msgMouseMove, mc);
 
     Extent offset(getSize().y + padding_.x, 0);
     DrawPoint rectOrig = getDrawPos() + DrawPoint(offset);

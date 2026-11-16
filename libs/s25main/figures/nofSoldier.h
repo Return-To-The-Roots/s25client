@@ -18,10 +18,10 @@ protected:
     uint8_t hitpoints;
 
     /// Draw during regular walking
-    void DrawSoldierWaiting(DrawPoint drawPt);
+    void drawSoldierWaiting(DrawPoint drawPt);
 
     /// Tell workplace (i.e. home bld) that we are not coming back
-    void AbrogateWorkplace() override;
+    void abrogateWorkplace() override;
 
     explicit nofSoldier(const nofSoldier&) = default;
 
@@ -31,10 +31,10 @@ public:
     nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank, bool armor = false);
     nofSoldier(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override
+    void destroy() override
     {
         RTTR_Assert(!getHomeBld());
-        noFigure::Destroy();
+        noFigure::destroy();
     }
     void Serialize(SerializedGameData& sgd) const override;
 

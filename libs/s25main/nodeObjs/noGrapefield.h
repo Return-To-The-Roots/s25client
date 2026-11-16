@@ -37,13 +37,13 @@ public:
 
     ~noGrapefield() override;
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::Grapefield; }
 
-    void Draw(DrawPoint drawPt) override;
-    void HandleEvent(unsigned id) override;
+    void draw(DrawPoint drawPt) override;
+    void handleEvent(unsigned id) override;
 
     BlockingManner getBM() const override { return BlockingManner::FlagsAround; }
 
@@ -54,7 +54,7 @@ public:
     unsigned getHarvestID() const;
 
     /// Winegrower starts harvesting the field
-    void BeginHarvesting();
+    void beginHarvesting();
     /// Winegrower is interrupted during harvesting
-    void AbortHarvesting();
+    void abortHarvesting();
 };

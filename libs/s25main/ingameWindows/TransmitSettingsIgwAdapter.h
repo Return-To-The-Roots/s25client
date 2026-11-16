@@ -19,11 +19,11 @@ public:
                                glArchivItem_Bitmap* background, bool modal = false);
 
     /// Updates the control elements with values from visual settings
-    virtual void UpdateSettings() = 0;
+    virtual void updateSettings() = 0;
     /// sends potential changes to the client
-    virtual void TransmitSettings() = 0;
+    virtual void transmitSettings() = 0;
 
-    void Close() override;
+    void close() override;
 
     void msgTimer(unsigned ctrl_id) override;
     void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;

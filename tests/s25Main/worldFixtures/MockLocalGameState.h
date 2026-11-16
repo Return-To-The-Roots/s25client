@@ -11,6 +11,6 @@ MOCK_BASE_CLASS(MockLocalGameState, ILocalGameState)
 {
     MOCK_CONST_METHOD(getPlayerId, 0);
     MOCK_CONST_METHOD(isHost, 0);
-    MOCK_CONST_METHOD(FormatGFTime, 1);
-    MOCK_NON_CONST_METHOD(SystemChat, 1);
+    MOCK_CONST_METHOD(formatGFTime, 1);
+    MOCK_NON_CONST_METHOD(systemChat, 1);
 };

@@ -30,16 +30,16 @@ private:
     bool isReplay;
     Subscription toolSubscription;
 
-    void AddToolSettingSlider(unsigned id, GoodType ware);
+    void addToolSettingSlider(unsigned id, GoodType ware);
     /// Updatet die Steuerelemente mit den übergebenen Einstellungen
-    void UpdateSettings(const ToolSettings& tool_settings);
-    void UpdateSettings() override;
+    void updateSettings(const ToolSettings& tool_settings);
+    void updateSettings() override;
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-    void TransmitSettings() override;
+    void transmitSettings() override;
 
     void msgButtonClick(unsigned ctrl_id) override;
     void msgProgressChange(unsigned ctrl_id, unsigned short position) override;
 
-    void UpdateTexts();
+    void updateTexts();
     void msgPaintBefore() override;
 };

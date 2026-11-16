@@ -24,8 +24,8 @@ ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Exte
       notify_(notify)
 {
     txtCtrl = static_cast<ctrlTextDeepening*>(
-      AddTextDeepening(0, DrawPoint(0, 0), size, tc, "", font, COLOR_YELLOW, FontStyle::LEFT | FontStyle::VCENTER));
-    UpdateInternalText();
+      addTextDeepening(0, DrawPoint(0, 0), size, tc, "", font, COLOR_YELLOW, FontStyle::LEFT | FontStyle::VCENTER));
+    updateInternalText();
 }
 
 /**
@@ -45,8 +45,8 @@ void ctrlEdit::setText(const std::string& text)
 
     viewStart_ = 0;
     cursorPos_ = text_.length();
-    UpdateInternalText();
-    Notify();
+    updateInternalText();
+    notify();
 }
 
 void ctrlEdit::setText(const unsigned text)
@@ -101,7 +101,7 @@ static void removeFirstCharFromString(std::string& str)
     str.erase(str.begin(), it);
 }
 
-void ctrlEdit::UpdateInternalText()
+void ctrlEdit::updateInternalText()
 {
     if(text_.empty())
     {
@@ -147,20 +147,20 @@ void ctrlEdit::UpdateInternalText()
     }
 }
 
-inline void ctrlEdit::CursorLeft()
+inline void ctrlEdit::cursorLeft()
 {
     if(cursorPos_ == 0)
         return;
     --cursorPos_;
-    UpdateInternalText();
+    updateInternalText();
 }
 
-inline void ctrlEdit::CursorRight()
+inline void ctrlEdit::cursorRight()
 {
     if(cursorPos_ == text_.length())
         return;
     ++cursorPos_;
-    UpdateInternalText();
+    updateInternalText();
 }
 
 /**
@@ -168,9 +168,9 @@ inline void ctrlEdit::CursorRight()
  *
  *  @todo muss alles überarbeitet werden
  */
-void ctrlEdit::Draw_()
+void ctrlEdit::drawImpl()
 {
-    Window::Draw_();
+    Window::drawImpl();
     // Alle 500ms Cursor für 500ms anzeigen
     if(focus_ && !isDisabled_ && VIDEODRIVER.getTickCount() % 1000 < 500)
     {
@@ -179,7 +179,7 @@ void ctrlEdit::Draw_()
         cursorDrawPos.x += cursorOffsetX_ + ctrlTextDeepening::borderSize.x;
         cursorDrawPos.y += (getSize().y - (fontHeight + 2)) / 2;
 
-        DrawRectangle(Rect(cursorDrawPos, Extent(1, fontHeight + 2)), 0xFFFFA000);
+        drawRectangle(Rect(cursorDrawPos, Extent(1, fontHeight + 2)), 0xFFFFA000);
     }
 }
 
@@ -188,7 +188,7 @@ void ctrlEdit::Draw_()
  *
  *  @param[in] text Das Zeichen
  */
-void ctrlEdit::AddChar(char32_t c)
+void ctrlEdit::addChar(char32_t c)
 {
     if(editType_ == EditType::Number && (c < '0' || c > '9'))
         return;
@@ -199,14 +199,14 @@ void ctrlEdit::AddChar(char32_t c)
         return;
 
     text_.insert(cursorPos_, 1, c);
-    CursorRight();
-    Notify();
+    cursorRight();
+    notify();
 }
 
 /**
  *  entfernt ein Zeichen
  */
-void ctrlEdit::RemoveChar()
+void ctrlEdit::removeChar()
 {
     if(cursorPos_ > 0 && !text_.empty())
     {
@@ -216,15 +216,15 @@ void ctrlEdit::RemoveChar()
         while(!text_.empty() && text_.length() <= viewStart_)
             --viewStart_;
 
-        CursorLeft();
-        Notify();
+        cursorLeft();
+        notify();
     }
 }
 
 /**
  *  benachrichtigt das Parent ("OnChange")
  */
-void ctrlEdit::Notify()
+void ctrlEdit::notify()
 {
     if(!notify_ || !getParent())
         return;
@@ -232,10 +232,10 @@ void ctrlEdit::Notify()
     getParent()->msgEditChange(getID());
 }
 
-void ctrlEdit::Resize(const Extent& newSize)
+void ctrlEdit::resize(const Extent& newSize)
 {
-    Window::Resize(newSize);
-    UpdateInternalText();
+    Window::resize(newSize);
+    updateInternalText();
 }
 
 /**
@@ -284,9 +284,9 @@ bool ctrlEdit::msgKeyDown(const KeyEvent& ke)
                 {
                     --cursorPos_;
                 }
-                UpdateInternalText();
+                updateInternalText();
             } else
-                CursorLeft(); // just one step
+                cursorLeft(); // just one step
             break;
 
         case KeyType::Right: // Cursor nach Rechts
@@ -303,26 +303,26 @@ bool ctrlEdit::msgKeyDown(const KeyEvent& ke)
                 {
                     ++cursorPos_;
                 }
-                UpdateInternalText();
+                updateInternalText();
             } else
-                CursorRight(); // just one step
+                cursorRight(); // just one step
             break;
 
         case KeyType::Char: // Zeichen eingegeben
-            if(!isDisabled_ && txtCtrl->getFont()->CharExist(ke.c))
-                AddChar(ke.c);
+            if(!isDisabled_ && txtCtrl->getFont()->charExist(ke.c))
+                addChar(ke.c);
             break;
 
         case KeyType::Backspace: // Backspace gedrückt
             if(!isDisabled_)
-                RemoveChar();
+                removeChar();
             break;
 
         case KeyType::Delete: // Entfernen gedrückt
             if(!isDisabled_ && cursorPos_ < text_.length())
             {
-                CursorRight();
-                RemoveChar();
+                cursorRight();
+                removeChar();
             }
             break;
 
@@ -335,7 +335,7 @@ bool ctrlEdit::msgKeyDown(const KeyEvent& ke)
             if(cursorPos_ > 0)
             {
                 cursorPos_ = 0;
-                UpdateInternalText();
+                updateInternalText();
             }
             break;
 
@@ -343,7 +343,7 @@ bool ctrlEdit::msgKeyDown(const KeyEvent& ke)
             if(cursorPos_ < text_.length())
             {
                 cursorPos_ = text_.length();
-                UpdateInternalText();
+                updateInternalText();
             }
             break;
     }

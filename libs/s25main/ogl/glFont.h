@@ -28,7 +28,7 @@ public:
     /// Draw the the text at the given position with format (alignment) and color.
     /// If maxWidth is given then the text length will be at most maxWidth. If the text is shortened then end is
     /// appended (included in maxWidth)
-    void Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE,
+    void draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color = COLOR_WHITE,
               unsigned short maxWidth = 0xFFFF, const std::string& end = "...") const;
 
     /// Return the width of the drawn text. If maxWidth is given then the width will be <= maxWidth and maxNumChars will
@@ -52,7 +52,7 @@ public:
         };
 
         /// Create an array of strings by breaking the given string at the contained line range information
-        std::vector<std::string> CreateSingleStrings(const std::string& text) const;
+        std::vector<std::string> createSingleStrings(const std::string& text) const;
 
         /// Information on each line detected
         std::vector<LineRange> lines;
@@ -63,9 +63,9 @@ public:
     WrapInfo getWrapInfo(const std::string& text, unsigned short primary_width, unsigned short secondary_width) const;
 
     /// prüft ob ein Buchstabe existiert.
-    bool CharExist(char32_t c) const;
+    bool charExist(char32_t c) const;
     /// liefert die Breite eines Zeichens
-    unsigned CharWidth(char32_t c) const { return getCharInfo(c).width; }
+    unsigned charWidth(char32_t c) const { return getCharInfo(c).width; }
 
 private:
     struct CharInfo
@@ -82,10 +82,10 @@ private:
         std::vector<GlPoint> vertices;
     };
 
-    void AddCharInfo(char32_t c, const CharInfo& info);
+    void addCharInfo(char32_t c, const CharInfo& info);
     /// liefert das Char-Info eines Zeichens
     const CharInfo& getCharInfo(char32_t c) const;
-    void DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const;
+    void drawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const;
 
     Extent maxCharSize; // How big each char is at most (aka dx,dy)
     std::unique_ptr<glArchivItem_Bitmap> fontNoOutline;

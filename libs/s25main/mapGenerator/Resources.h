@@ -25,10 +25,10 @@ public:
 
 std::vector<Tree> CreateTrees(const TextureMap& textures);
 
-void AddObjects(Map& map, RandomUtility& rnd, const MapSettings& settings);
+void addObjects(Map& map, RandomUtility& rnd, const MapSettings& settings);
 
-void AddResources(Map& map, RandomUtility& rnd, const MapSettings& settings);
+void addResources(Map& map, RandomUtility& rnd, const MapSettings& settings);
 
-void AddAnimals(Map& map, RandomUtility& rnd);
+void addAnimals(Map& map, RandomUtility& rnd);
 
 } // namespace rttr::mapGenerator

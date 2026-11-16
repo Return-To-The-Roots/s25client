@@ -34,15 +34,15 @@ struct DummyWorker : GameObject
 
     explicit DummyWorker(GameWorld& world, MapPoint pos) : world(world), pos(pos) {}
 
-    void HandleEvent(unsigned) override
+    void handleEvent(unsigned) override
     {
         nodeWasEmptyWhenReplaced = (world.getNode(pos).obj == nullptr);
-        world.DestroyNO(pos, false);
+        world.destroyNO(pos, false);
         world.setNO(pos, new noStaticObject(pos, staticObjId));
     }
 
     // LCOV_EXCL_START
-    void Destroy() override {}
+    void destroy() override {}
     void Serialize(SerializedGameData&) const override {}
     GO_Type getGOT() const final { return GO_Type::NofGeologist; }
     // LCOV_EXCL_STOP
@@ -91,20 +91,20 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(RemoveEnvObjectFromNodeBeforeKill, T, Disappearing
     {
         // Except for fire, which burns until it gets removed,
         // objects start fading after some time and only then get removed, so trigger the first event.
-        em.RescheduleEvent(em.getObjEvents(obj).at(0), em.getCurrentGF() + 1);
-        em.RescheduleEvent(em.getObjEvents(obj2).at(0), em.getCurrentGF() + 1);
-        em.ExecuteNextGF();
+        em.rescheduleEvent(em.getObjEvents(obj).at(0), em.getCurrentGF() + 1);
+        em.rescheduleEvent(em.getObjEvents(obj2).at(0), em.getCurrentGF() + 1);
+        em.executeNextGF();
     }
     DummyWorker worker(world, testPos);
     DummyWorker worker2(world, testPos2);
     // Add worker event before and after object event, but both in the same GF
-    em.AddEvent(&worker, 1);
-    em.RescheduleEvent(em.getObjEvents(obj).at(0), em.getCurrentGF() + 1);
-    em.RescheduleEvent(em.getObjEvents(obj2).at(0), em.getCurrentGF() + 1);
-    em.AddEvent(&worker2, 1);
+    em.addEvent(&worker, 1);
+    em.rescheduleEvent(em.getObjEvents(obj).at(0), em.getCurrentGF() + 1);
+    em.rescheduleEvent(em.getObjEvents(obj2).at(0), em.getCurrentGF() + 1);
+    em.addEvent(&worker2, 1);
 
     BOOST_TEST(getNumObjs() == 4u);
-    em.ExecuteNextGF();
+    em.executeNextGF();
     // Just replaced the objects, so count should be the same.
     // A double free would decrease this multiple times per object.
     BOOST_TEST(getNumObjs() == 4u);
@@ -127,11 +127,11 @@ BOOST_AUTO_TEST_CASE(ShipBuildingSiteDestroyDoesNotClobberNode)
     world.setNO(testPos, site);
     auto* staticObj = new noStaticObject(testPos, DummyWorker::staticObjId);
     BOOST_TEST(getNumObjs() == 2u);
-    world.DestroyNO(testPos);
+    world.destroyNO(testPos);
     world.setNO(testPos, staticObj);
     BOOST_TEST(getNumObjs() == 1u); // Catch possible double-free
     BOOST_TEST(ensureNonNull(world.getSpecObj<noStaticObject>(testPos)).getItemID() == DummyWorker::staticObjId);
-    world.DestroyNO(testPos);
+    world.destroyNO(testPos);
 
     // Fully build ship, then build new object there
     // Fake a nearby sea
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(ShipBuildingSiteDestroyDoesNotClobberNode)
     BOOST_TEST(getNumObjs() == 1u);
     do
     {
-        site->MakeBuildStep();
+        site->makeBuildStep();
     } while(world.getNO(testPos)->getGOT() == GO_Type::Shipbuildingsite);
     // Replaced by ship
     BOOST_TEST(world.getPlayer(0).getNumShips() == 1u);
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(ShipBuildingSiteDestroyDoesNotClobberNode)
     world.setNO(testPos, staticObj);
 
     // Should only destroy the building site
-    em.ExecuteNextGF();
+    em.executeNextGF();
     BOOST_TEST(getNumObjs() == 2u);
     BOOST_TEST(ensureNonNull(world.getSpecObj<noStaticObject>(testPos)).getItemID() == DummyWorker::staticObjId);
 }

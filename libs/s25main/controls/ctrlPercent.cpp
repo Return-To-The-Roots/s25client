@@ -17,7 +17,7 @@ ctrlPercent::ctrlPercent(Window* parent, unsigned id, const DrawPoint& pos, cons
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-void ctrlPercent::Draw_()
+void ctrlPercent::drawImpl()
 {
     unsigned short percentage = getPercentage();
 
@@ -36,14 +36,14 @@ void ctrlPercent::Draw_()
         color = COLOR_0_PERCENT;
 
     // Box zeichnen
-    Draw3D(Rect(getDrawPos(), getSize()), tc, false);
+    draw3D(Rect(getDrawPos(), getSize()), tc, false);
 
     // Fortschritt zeichnen
     Extent progSize = getSize() - Extent(8, 8);
     progSize.x = (progSize.x * percentage) / 100;
-    DrawRectangle(Rect(getDrawPos() + DrawPoint(4, 4), progSize), color);
+    drawRectangle(Rect(getDrawPos() + DrawPoint(4, 4), progSize), color);
 
     // Text zeichnen
     std::string caption = helpers::toString(percentage) + "%";
-    font->Draw(getDrawPos() + DrawPoint(getSize()) / 2, caption, FontStyle::CENTER | FontStyle::VCENTER, text_color);
+    font->draw(getDrawPos() + DrawPoint(getSize()) / 2, caption, FontStyle::CENTER | FontStyle::VCENTER, text_color);
 }

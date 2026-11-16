@@ -15,13 +15,13 @@ ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseText(text, COLOR_YELLOW, font)
 {}
 
-void ctrlTextButton::ResizeForMaxChars(unsigned numChars)
+void ctrlTextButton::resizeForMaxChars(unsigned numChars)
 {
     const auto maxTextWidth = font->getDx() * numChars;
-    Resize(Extent(maxTextWidth + contentOffset * 2, getSize().y));
+    resize(Extent(maxTextWidth + contentOffset * 2, getSize().y));
 }
 
-void ctrlTextButton::DrawContent() const
+void ctrlTextButton::drawContent() const
 {
     const bool isPressed = state == ButtonState::Pressed || isChecked;
     unsigned color;
@@ -39,10 +39,10 @@ void ctrlTextButton::DrawContent() const
         unsigned maxNumChars;
         font->getWidth(text, maxTextWidth, &maxNumChars);
         if(maxNumChars < text.length())
-            ShowTooltip(text);
+            showTooltip(text);
     }
 
     const unsigned short offset = isPressed ? contentOffset : 0;
-    font->Draw(getDrawPos() + getSize() / 2u + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER,
+    font->draw(getDrawPos() + getSize() / 2u + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER,
                color, maxTextWidth);
 }

@@ -22,8 +22,8 @@ public:
            const DrawPoint& pos = IngameWindow::posAtMouse);
 
 private:
-    void DrawContent() override;
+    void drawContent() override;
     void msgButtonClick(unsigned ctrl_id) override;
 
-    void DrawCargo();
+    void drawCargo();
 };

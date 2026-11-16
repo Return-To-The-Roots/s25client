@@ -58,7 +58,7 @@ void GameClient::commandSetColor(unsigned newColor)
  *  @param[in] old_id Alte Spieler-ID
  *  @param[in] new_id Neue Spieler-ID
  */
-void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigned char playerId2)
+void GameClient::changePlayerIngame(const unsigned char playerId1, const unsigned char playerId2)
 {
     RTTR_Assert(state == ClientState::Game); // Must be ingame
 
@@ -97,7 +97,7 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
         {
             // Switch AIs
             game->aiPlayers_.erase_if([playerId2](const auto& player) { return player.getPlayerId() == playerId2; });
-            game->AddAIPlayer(CreateAIPlayer(playerId1, AI::Info(AI::Type::Dummy)));
+            game->addAIPlayer(createAIPlayer(playerId1, AI::Info(AI::Type::Dummy)));
         }
         getPlayer(playerId1).ps = PlayerState::AI;
         getPlayer(playerId2).ps = PlayerState::Occupied;

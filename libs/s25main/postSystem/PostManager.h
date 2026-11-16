@@ -17,10 +17,10 @@ class PostManager
 public:
     PostManager();
     ~PostManager();
-    PostBox& AddPostBox(unsigned player);
+    PostBox& addPostBox(unsigned player);
     PostBox* getPostBox(unsigned player) const;
-    void RemovePostBox(unsigned player);
-    void SendMsg(unsigned player, std::unique_ptr<PostMsg> msg) const;
+    void removePostBox(unsigned player);
+    void sendMsg(unsigned player, std::unique_ptr<PostMsg> msg) const;
     void setMissionGoal(unsigned player, const std::string& newGoal) const;
 
 private:

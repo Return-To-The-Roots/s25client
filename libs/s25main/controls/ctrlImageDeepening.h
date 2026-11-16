@@ -15,5 +15,5 @@ public:
                        ITexture* image);
 
 protected:
-    void DrawContent() const override;
+    void drawContent() const override;
 };

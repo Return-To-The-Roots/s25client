@@ -29,5 +29,5 @@ private:
     CampaignDescription& campaignDesc_;
     boost::filesystem::path basePath_;
 
-    bool CheckScriptVersion();
+    bool checkScriptVersion();
 };

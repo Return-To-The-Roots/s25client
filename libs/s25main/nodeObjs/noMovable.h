@@ -36,7 +36,7 @@ class noMovable : public noCoordBase
 protected:
     const GameEvent* current_ev;
     /// Pausiert ein gerade laufendes Wesen
-    void PauseWalking();
+    void pauseWalking();
 
 public:
     noMovable(NodalObjectType nop, MapPoint pos);
@@ -52,15 +52,15 @@ public:
     uint8_t getAscent() const { return ascent; }
     const EventState& getPausedEvent() { return pauseEv; }
     /// "Turns" the object in that direction without starting to walk
-    void FaceDir(Direction newDir);
+    void faceDir(Direction newDir);
     /// In aktueller Richtung ein Stück zurücklegen
-    void Walk();
+    void walk();
     // Starten zu Laufen, Event anmelden
-    void StartMoving(Direction dir, unsigned gf_length);
+    void startMoving(Direction dir, unsigned gf_length);
     // Interpoliert die Position zwischen zwei Knoten punkten
-    DrawPoint CalcRelative(DrawPoint curPt, DrawPoint nextPt) const;
+    DrawPoint calcRelative(DrawPoint curPt, DrawPoint nextPt) const;
     /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
-    DrawPoint CalcWalkingRelative() const;
+    DrawPoint calcWalkingRelative() const;
     // Steht er in der zwischen 2 Wegpunkten?
     bool isStoppedBetweenNodes() const { return pauseEv.elapsed > 0; }
     /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)

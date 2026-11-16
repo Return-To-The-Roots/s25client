@@ -27,23 +27,23 @@ public:
     ~dskGameLobby();
 
     /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
     void setActive(bool activate = true) override;
 
 private:
     void setPlayerReady(unsigned char player, bool ready);
     // GGS von den Controls auslesen
-    void UpdateGGS();
+    void updateGGS();
     /// Aktualisiert eine Spielerreihe (löscht Controls und legt neue an)
-    void UpdatePlayerRow(unsigned row);
+    void updatePlayerRow(unsigned row);
 
     /// Füllt die Felder einer Reihe aus
-    void ChangeTeam(unsigned player, Team);
-    void ChangeReady(unsigned player, bool ready);
-    void ChangeNation(unsigned player, Nation);
-    void ChangePortrait(unsigned player, unsigned portraitIndex);
-    void ChangePing(unsigned playerId);
-    void ChangeColor(unsigned player, unsigned color);
+    void changeTeam(unsigned player, Team);
+    void changeReady(unsigned player, bool ready);
+    void changeNation(unsigned player, Nation);
+    void changePortrait(unsigned player, unsigned portraitIndex);
+    void changePing(unsigned playerId);
+    void changeColor(unsigned player, unsigned color);
 
     void msgPaintBefore() override;
     void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
@@ -73,7 +73,7 @@ private:
     void CI_Countdown(unsigned remainingTimeInSec) override;
     void CI_CancelCountdown(bool error) override;
 
-    void FlashGameChat();
+    void flashGameChat();
 
     void LC_Status_Error(const std::string& error) override;
     void LC_Chat(const std::string& player, const std::string& text) override;
@@ -82,7 +82,7 @@ private:
     bool forceOptions = false;
     bool checkOptions();
 
-    void GoBack();
+    void goBack();
     bool isSinglePlayer() const { return serverType == ServerType::Local; }
     /// Check whether the given setting can be changed, i.e. is not disabled by lua
     bool isChangeAllowed(const std::string& setting) const;

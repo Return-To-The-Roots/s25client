@@ -66,7 +66,7 @@ public:
     /// Get window title
     const std::string& getTitle() const { return title_; }
 
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
     /// Set the size of the (expanded) content area
     void setIwSize(const Extent& newSize);
     /// Get the size of the (expanded) content area
@@ -80,9 +80,9 @@ public:
     void setPos(DrawPoint newPos, bool saveRestorePos = true);
 
     /// Queue the window for closing, will be done in next draw cycle
-    virtual void Close();
+    virtual void close();
     /// Return if the window will be closes
-    bool ShouldBeClosed() const { return closeme; }
+    bool shouldBeClosed() const { return closeme; }
 
     /// Minimize window (only title bar and bottom border remains)
     void setMinimized(bool minimized = true);
@@ -106,26 +106,26 @@ public:
     bool msgMouseMove(const MouseCoords&) override;
 
 protected:
-    void Draw_() final;
+    void drawImpl() final;
     /// Called when not minimized before drawing the frame
-    virtual void DrawBackground();
+    virtual void drawBackground();
     /// Called when not minimized after the frame and background have been drawn
-    virtual void DrawContent() {}
+    virtual void drawContent() {}
 
     /// Move window to center of screen
-    void MoveToCenter();
+    void moveToCenter();
     /// Move window next to current cursor position
-    void MoveNextToMouse();
+    void moveNextToMouse();
 
     /// Return if events (mouse move...) should be passed to controls of the window
     bool isMessageRelayAllowed() const override;
 
-    void SaveOpenStatus(bool isOpen) const;
+    void saveOpenStatus(bool isOpen) const;
 
-    void StartDragging(const Position& pos);
+    void startDragging(const Position& pos);
 
     // Return true if dragging stopped
-    bool StopDragging();
+    bool stopDragging();
 
     unsigned short iwHeight;
     std::string title_;

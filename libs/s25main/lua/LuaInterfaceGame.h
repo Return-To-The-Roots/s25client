@@ -29,35 +29,35 @@ public:
     bool Serialize(Serializer& luaSaveState);
     bool Deserialize(Serializer& luaSaveState);
 
-    void EventExplored(unsigned player, MapPoint pt, unsigned char owner);
-    void EventOccupied(unsigned player, MapPoint pt);
-    void EventAttack(unsigned char attackerPlayerId, unsigned char defenderPlayerId, unsigned attackerCount);
-    void EventStart(bool isFirstStart);
-    void EventGameFrame(unsigned nr);
-    void EventResourceFound(unsigned char player, MapPoint pt, ResourceType type, unsigned char quantity);
+    void eventExplored(unsigned player, MapPoint pt, unsigned char owner);
+    void eventOccupied(unsigned player, MapPoint pt);
+    void eventAttack(unsigned char attackerPlayerId, unsigned char defenderPlayerId, unsigned attackerCount);
+    void eventStart(bool isFirstStart);
+    void eventGameFrame(unsigned nr);
+    void eventResourceFound(unsigned char player, MapPoint pt, ResourceType type, unsigned char quantity);
     // Called if player wants to cancel a pact
-    bool EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
+    bool eventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
     // Called if player suggests a pact
-    void EventSuggestPact(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
+    void eventSuggestPact(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
                           unsigned duration);
     // called if pact was canceled
-    void EventPactCanceled(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
+    void eventPactCanceled(PactType pt, unsigned char canceledByPlayerId, unsigned char targetPlayerId);
     // called if pact was created
-    void EventPactCreated(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
+    void eventPactCreated(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
                           unsigned duration);
     // Callable from Lua
-    void ClearResources();
+    void clearResources();
     unsigned getGF() const;
-    std::string FormatNumGFs(unsigned numGFs) const;
+    std::string formatNumGFs(unsigned numGFs) const;
     unsigned getNumPlayers() const;
-    void Chat(int playerIdx, const std::string& msg);
-    void MissionStatement(int playerIdx, const std::string& title, const std::string& msg);
-    void MissionStatement2(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx);
-    void MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx,
+    void chat(int playerIdx, const std::string& msg);
+    void missionStatement(int playerIdx, const std::string& title, const std::string& msg);
+    void missionStatement2(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx);
+    void missionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx,
                            bool pause);
     void setMissionGoal(int playerIdx, const std::string& newGoal = "");
-    void PostMessageLua(int playerIdx, const std::string& msg);
-    void PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y);
+    void postMessageLua(int playerIdx, const std::string& msg);
+    void postMessageWithLocation(int playerIdx, const std::string& msg, int x, int y);
 
 private:
     ILocalGameState& localGameState;

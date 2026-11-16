@@ -20,7 +20,7 @@ public:
 private:
     void msgTimer(unsigned ctrl_id) override;
     bool msgLeftDown(const MouseCoords& mc) override;
-    void LoadFiles();
+    void loadFiles();
 
     std::unique_ptr<glArchivItem_Bitmap> splashImg;
     bool isLoading, isLoaded;

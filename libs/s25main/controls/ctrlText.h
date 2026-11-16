@@ -20,7 +20,7 @@ public:
     void setMaxWidth(unsigned short maxWidth) { maxWidth_ = maxWidth; }
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
     FontStyle format_;
     unsigned short maxWidth_;

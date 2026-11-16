@@ -18,7 +18,7 @@ public:
     TerrainData() = delete;
 
     /// Returns the terrain type for a given map terrain index
-    static TerrainType MapIdx2Terrain(unsigned char mapIdx);
+    static TerrainType mapIdx2Terrain(unsigned char mapIdx);
     /// Returns the position in the texture image
     static Rect getPosInTexture(TerrainType t);
     /// Returns whether the terrains texture is animated
@@ -36,7 +36,7 @@ public:
     /// Gets the edge type that t1 draws over t2
     /// 0: None, 1: Snow, 2: Mountain, 3: Desert, 4: Meadow, 5: Water
     static unsigned char getEdgeType(Landscape landsCape, TerrainType t1, TerrainType t2);
-    static void PrintEdgePrios();
+    static void printEdgePrios();
     static const std::array<int, NUM_TTS>& getEdgePrios(Landscape landsCape);
     /// Returns whether the given map terrain index is a harbour spot
     static bool isHarborSpot(unsigned char mapIdx) { return (mapIdx & 0x40) != 0; }

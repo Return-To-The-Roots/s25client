@@ -18,11 +18,11 @@ class nofMetalworker : public nofWorkman
 
 protected:
     /// Zeichnet ihn beim Arbeiten
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short getCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
-    helpers::OptionalEnum<GoodType> ProduceWare() override;
+    helpers::OptionalEnum<GoodType> produceWare() override;
     /// Returns the next tool to be produced according to the orders
     helpers::OptionalEnum<GoodType> getOrderedTool();
     /// Returns a random tool according to the priorities
@@ -30,9 +30,9 @@ protected:
 
     bool hasToolOrder() const;
 
-    bool AreWaresAvailable() const override;
-    bool StartWorking() override;
-    void CheckForOrders();
+    bool areWaresAvailable() const override;
+    bool startWorking() override;
+    void checkForOrders();
 
 public:
     nofMetalworker(MapPoint pos, unsigned char player, nobUsual* workplace);

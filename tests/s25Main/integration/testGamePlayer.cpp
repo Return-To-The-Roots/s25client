@@ -28,20 +28,20 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
     BOOST_TEST_REQUIRE(!world.getPlayer(0).IsDefeated());
     BOOST_TEST_REQUIRE(!world.getPlayer(1).IsDefeated());
     // Destroy HQ -> defeated
-    world.DestroyNO(world.getPlayer(1).getHQPos()); //-V522
+    world.destroyNO(world.getPlayer(1).getHQPos()); //-V522
     BOOST_TEST_REQUIRE(!world.getPlayer(0).IsDefeated());
     BOOST_TEST_REQUIRE(world.getPlayer(1).IsDefeated());
     // Destroy HQ but leave a military bld
-    MapPoint milBldPos = world.MakeMapPoint(world.getPlayer(0).getFirstWH()->getPos() + Position(4, 0)); //-V522
+    MapPoint milBldPos = world.makeMapPoint(world.getPlayer(0).getFirstWH()->getPos() + Position(4, 0)); //-V522
     auto* milBld = dynamic_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBldPos, 0, Nation::Babylonians));
-    auto& sld = world.AddFigure(milBldPos, std::make_unique<nofPassiveSoldier>(milBldPos, 0, milBld, milBld, 0));
-    milBld->GotWorker(Job::Private, sld);
-    sld.WalkToGoal();
-    world.DestroyNO(world.getPlayer(0).getHQPos());
+      BuildingFactory::createBuilding(world, BuildingType::Watchtower, milBldPos, 0, Nation::Babylonians));
+    auto& sld = world.addFigure(milBldPos, std::make_unique<nofPassiveSoldier>(milBldPos, 0, milBld, milBld, 0));
+    milBld->gotWorker(Job::Private, sld);
+    sld.walkToGoal();
+    world.destroyNO(world.getPlayer(0).getHQPos());
     BOOST_TEST_REQUIRE(!world.getPlayer(0).IsDefeated());
     // Destroy this -> defeated
-    world.DestroyNO(milBldPos);
+    world.destroyNO(milBldPos);
     BOOST_TEST_REQUIRE(world.getPlayer(0).IsDefeated());
 }
 
@@ -74,9 +74,9 @@ struct MineProductivityFixture : WorldFixture<CreateEmptyWorld, 1, MINE_MAP_SIZE
 
     MineProductivityFixture()
     {
-        minePos = world.MakeMapPoint(world.getPlayer(0).getHQPos() + Position(4, 0));
+        minePos = world.makeMapPoint(world.getPlayer(0).getHQPos() + Position(4, 0));
         coalMine = static_cast<nobUsual*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::CoalMine, minePos, 0, Nation::Romans));
+          BuildingFactory::createBuilding(world, BuildingType::CoalMine, minePos, 0, Nation::Romans));
         // Clear resources in the radius explicitly.
         for(const MapPoint pt : world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS))
             world.setResource(pt, Resource());
@@ -110,8 +110,8 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
     using boost::test_tools::per_element;
     const auto& buildingRegister = world.getPlayer(0).getBuildingRegister();
     helpers::EnumArray<unsigned short, BuildingType> expectedProductivity{};
-    BOOST_TEST(buildingRegister.CalcProductivities() == expectedProductivity, per_element());
-    BOOST_TEST(buildingRegister.CalcAverageProductivity() == 0u);
+    BOOST_TEST(buildingRegister.calcProductivities() == expectedProductivity, per_element());
+    BOOST_TEST(buildingRegister.calcAverageProductivity() == 0u);
 
     const auto buildingTypesEnum = helpers::EnumRange<BuildingType>{};
     std::vector<BuildingType> buildingTypes(buildingTypesEnum.begin(), buildingTypesEnum.end());
@@ -135,7 +135,7 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
             // Size checks (in x) only for safety. Should never fail due to construction of map size
             while(world.getNode(curPos).bq != BuildingQuality::Castle)
                 BOOST_TEST_REQUIRE((++curPos.x) < world.getSize().x);
-            bld = BuildingFactory::CreateBuilding(world, bldType, curPos, 0, Nation::Babylonians);
+            bld = BuildingFactory::createBuilding(world, bldType, curPos, 0, Nation::Babylonians);
             BOOST_TEST_REQUIRE((curPos.x += 2) < world.getSize().x);
         }
         // Test productivity calculation for all buildings shown in the productivity window
@@ -148,17 +148,17 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
             expectedProductivity[bldType] = productivity;
         }
     }
-    BOOST_TEST(buildingRegister.CalcProductivities() == expectedProductivity, per_element());
+    BOOST_TEST(buildingRegister.calcProductivities() == expectedProductivity, per_element());
     unsigned avgProd = std::accumulate(expectedProductivity.begin(), expectedProductivity.end(), 0u)
                        / iwBuildingProductivities::allIcons.size();
-    BOOST_TEST(buildingRegister.CalcAverageProductivity() == avgProd);
+    BOOST_TEST(buildingRegister.calcAverageProductivity() == avgProd);
 
     // Average productivity over multiple buildings of same type
     avgProd = 0;
     for(const BuildingType bldType : iwBuildingProductivities::allIcons)
     {
         auto* bld =
-          static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, bldType, curPos, 0, Nation::Babylonians));
+          static_cast<nobUsual*>(BuildingFactory::createBuilding(world, bldType, curPos, 0, Nation::Babylonians));
         if((curPos.x += 2) >= world.getSize().x)
             curPos = MapPoint(0, curPos.y + 2);
         const auto productivity = rttr::test::randomValue(1, 100);
@@ -167,8 +167,8 @@ BOOST_FIXTURE_TEST_CASE(ProductivityStats, WorldFixtureEmpty1P)
         expectedProductivity[bldType] = (productivity + expectedProductivity[bldType]) / 2;
     }
     avgProd /= iwBuildingProductivities::allIcons.size() * 2;
-    BOOST_TEST(buildingRegister.CalcProductivities() == expectedProductivity, per_element());
-    BOOST_TEST(buildingRegister.CalcAverageProductivity() == avgProd);
+    BOOST_TEST(buildingRegister.calcProductivities() == expectedProductivity, per_element());
+    BOOST_TEST(buildingRegister.calcAverageProductivity() == avgProd);
 }
 
 BOOST_FIXTURE_TEST_CASE(MineProductivityAccountsForS4LikeResourceChance, MineProductivityFixture)
@@ -191,7 +191,7 @@ BOOST_FIXTURE_TEST_CASE(MineProductivityAccountsForS4LikeResourceChance, MinePro
     // Lowering the base productivity scales the result by the same factor: 80% of the 50% chance -> 40%.
     setProductivity(coalMine, 80);
     BOOST_TEST(coalMine->getProductivity() == 40u);
-    BOOST_TEST(world.getPlayer(0).getBuildingRegister().CalcProductivities()[BuildingType::CoalMine] == 40u);
+    BOOST_TEST(world.getPlayer(0).getBuildingRegister().calcProductivities()[BuildingType::CoalMine] == 40u);
     // No resources left -> no production.
     setProductivity(coalMine, 100);
     setCoalAmounts(0, 0);
@@ -211,7 +211,7 @@ BOOST_FIXTURE_TEST_CASE(MineProductivityUsesAllMatchingResourcesWithinMineRadius
 
     // A different resource type in range and matching coal just outside the radius must not count as coal.
     world.setResource(world.getNeighbour(minePos, Direction::NorthWest), Resource(ResourceType::Iron, 15));
-    const MapPoint outOfRangePt = world.MakeMapPoint(minePos + Position(MINER_RADIUS + 1, 0));
+    const MapPoint outOfRangePt = world.makeMapPoint(minePos + Position(MINER_RADIUS + 1, 0));
     world.setResource(outOfRangePt, Resource(ResourceType::Coal, 15));
     BOOST_TEST(getRemainingMineResources(world, minePos, ResourceType::Coal) == 0u);
     BOOST_TEST(coalMine->getProductivity() == 0u);
@@ -221,7 +221,7 @@ BOOST_FIXTURE_TEST_CASE(MineProductivityUsesAllMatchingResourcesWithinMineRadius
     spreadCoalInRadius(S4LIKE_FULL_PRODUCTIVITY_AMOUNT / 2);
     BOOST_TEST(getRemainingMineResources(world, minePos, ResourceType::Coal) == 10u);
     BOOST_TEST(coalMine->getProductivity() == 50u);
-    BOOST_TEST(world.getPlayer(0).getBuildingRegister().CalcProductivities()[BuildingType::CoalMine] == 50u);
+    BOOST_TEST(world.getPlayer(0).getBuildingRegister().calcProductivities()[BuildingType::CoalMine] == 50u);
 }
 
 BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsFalse_IfPrimaryHQIsNotTent, WorldFixtureEmpty1P)
@@ -232,7 +232,7 @@ BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsFalse_IfPrimaryHQIsNotTent, WorldFixture
     MapPoint newHqPos = p1.getHQPos();
     newHqPos.x += 3;
     static_cast<nobHQ*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians))
+      BuildingFactory::createBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians))
       ->setIsTent(true);
 
     BOOST_TEST_REQUIRE(p1.isHQTent() == false);
@@ -247,7 +247,7 @@ BOOST_FIXTURE_TEST_CASE(IsHQTent_ReturnsTrue_IfPrimaryHQIsTent, WorldFixtureEmpt
     MapPoint newHqPos = p1.getHQPos();
     newHqPos.x += 3;
     static_cast<nobHQ*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians))
+      BuildingFactory::createBuilding(world, BuildingType::Headquarters, newHqPos, 0, Nation::Babylonians))
       ->setIsTent(false);
 
     BOOST_TEST_REQUIRE(p1.isHQTent() == true);

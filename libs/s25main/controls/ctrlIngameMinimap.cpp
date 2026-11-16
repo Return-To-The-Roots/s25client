@@ -19,15 +19,15 @@ ctrlIngameMinimap::ctrlIngameMinimap(Window* parent, const unsigned id, const Dr
 /**
  *  Zeichnet die MapPreview
  */
-void ctrlIngameMinimap::Draw_()
+void ctrlIngameMinimap::drawImpl()
 {
-    DrawMap(minimap);
+    drawMap(minimap);
 
     // Mittleren Punkt berechnen und dort hinscrollen
     Position middlePt = (gwv.getLastPt() + gwv.getFirstPt()) / 2;
 
     // Koordinaten korrigieren
-    DrawPoint middle_corrected(MakeMapPoint(middlePt, minimap.getMapSize()));
+    DrawPoint middle_corrected(makeMapPoint(middlePt, minimap.getMapSize()));
 
     // Scroll-Auswahl-Bild holen
     glArchivItem_Bitmap* image = LOADER.getMapImage(23);
@@ -64,7 +64,7 @@ void ctrlIngameMinimap::Draw_()
         drawSize.y -= overDrawSize.y;
 
     // Zeichnen
-    image->DrawPart(Rect(getMapDrawArea().getOrigin() + pos, drawSize), srcOffset);
+    image->drawPart(Rect(getMapDrawArea().getOrigin() + pos, drawSize), srcOffset);
 }
 
 bool ctrlIngameMinimap::msgLeftDown(const MouseCoords& mc)
@@ -83,7 +83,7 @@ bool ctrlIngameMinimap::msgMouseMove(const MouseCoords& mc)
             DrawPoint mapCoord = (mc.pos - DrawPoint(getMapDrawArea().getOrigin())) * DrawPoint(minimap.getMapSize())
                                  / DrawPoint(getCurMapSize());
 
-            gwv.MoveToMapPt(MapPoint(mapCoord));
+            gwv.moveToMapPt(MapPoint(mapCoord));
 
             return true;
         }
@@ -92,17 +92,17 @@ bool ctrlIngameMinimap::msgMouseMove(const MouseCoords& mc)
     return false;
 }
 
-void ctrlIngameMinimap::ToggleTerritory()
+void ctrlIngameMinimap::toggleTerritory()
 {
-    minimap.ToggleTerritory();
+    minimap.toggleTerritory();
 }
 
-void ctrlIngameMinimap::ToggleHouses()
+void ctrlIngameMinimap::toggleHouses()
 {
-    minimap.ToggleHouses();
+    minimap.toggleHouses();
 }
 
-void ctrlIngameMinimap::ToggleRoads()
+void ctrlIngameMinimap::toggleRoads()
 {
-    minimap.ToggleRoads();
+    minimap.toggleRoads();
 }

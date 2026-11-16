@@ -16,9 +16,9 @@ public:
     ~noExtension() override;
 
     noBase* getBaseObject() const { return base; }
-    void Draw(DrawPoint /*drawPt*/) override {}
+    void draw(DrawPoint /*drawPt*/) override {}
 
-    void Destroy() override {}
+    void destroy() override {}
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::Extension; }

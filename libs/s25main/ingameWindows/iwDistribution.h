@@ -29,10 +29,10 @@ private:
     GameCommandFactory& gcFactory;
 
     /// Updatet die Steuerelemente mit den übergebenen Einstellungen
-    void UpdateSettings(const Distributions& distribution);
-    void UpdateSettings() override;
+    void updateSettings(const Distributions& distribution);
+    void updateSettings() override;
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
-    void TransmitSettings() override;
+    void transmitSettings() override;
 
     void msgGroupProgressChange(unsigned group_id, unsigned ctrl_id, unsigned short position) override;
     void msgButtonClick(unsigned ctrl_id) override;
@@ -40,5 +40,5 @@ private:
     /// Groups for the settings
     std::vector<DistributionGroup> groups;
     /// Initialize the groups structure
-    void CreateGroups();
+    void createGroups();
 };

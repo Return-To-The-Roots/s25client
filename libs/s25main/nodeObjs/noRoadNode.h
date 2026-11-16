@@ -40,7 +40,7 @@ public:
     noRoadNode(const noRoadNode&) = delete;
     ~noRoadNode() override;
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     RoadSegment* getRoute(const Direction dir) const { return routes[dir]; }
@@ -51,12 +51,12 @@ public:
     void DestroyRoad(Direction dir);
     void UpgradeRoad(Direction dir) const;
     /// Vernichtet Alle Straße um diesen Knoten
-    void DestroyAllRoads();
+    void destroyAllRoads();
 
     unsigned char getPlayer() const { return player; }
 
     /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
-    virtual void AddWare(std::unique_ptr<Ware> ware) = 0;
+    virtual void addWare(std::unique_ptr<Ware> ware) = 0;
 
     /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine
     /// bestimmte Richtung noch transportiert werden müssen

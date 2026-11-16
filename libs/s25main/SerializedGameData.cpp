@@ -215,7 +215,7 @@ SerializedGameData::SerializedGameData()
     : debugMode(false), expectedNumObjects(0), em(nullptr), writeEm(nullptr), isReading(false)
 {}
 
-void SerializedGameData::Prepare(bool reading)
+void SerializedGameData::prepare(bool reading)
 {
     static const std::array<char, 4> versionID = {"VER"};
     if(reading)
@@ -238,9 +238,9 @@ void SerializedGameData::Prepare(bool reading)
     isReading = reading;
 }
 
-void SerializedGameData::MakeSnapshot(const Game& game)
+void SerializedGameData::makeSnapshot(const Game& game)
 {
-    Prepare(false);
+    prepare(false);
 
     const GameWorldBase& gw = game.world_;
     writeEm = &gw.getEvMgr();
@@ -255,7 +255,7 @@ void SerializedGameData::MakeSnapshot(const Game& game)
     writeEm->Serialize(*this);
     if(game.ggs_.objective == GameObjective::EconomyMode)
     {
-        PushObject(gw.getEconHandler(), true);
+        pushObject(gw.getEconHandler(), true);
     }
     // Spieler serialisieren
     for(const auto& player : gw.getPlayers())
@@ -284,9 +284,9 @@ void SerializedGameData::MakeSnapshot(const Game& game)
     writtenEventIds.clear();
 }
 
-void SerializedGameData::ReadSnapshot(Game& game, ILocalGameState& localGameState)
+void SerializedGameData::readSnapshot(Game& game, ILocalGameState& localGameState)
 {
-    Prepare(true);
+    prepare(true);
 
     GameWorld& gw = game.world_;
     em = &gw.getEvMgr();
@@ -298,7 +298,7 @@ void SerializedGameData::ReadSnapshot(Game& game, ILocalGameState& localGameStat
     if(gw.getGGS().objective == GameObjective::EconomyMode)
     {
         gw.setEconHandler(
-          std::unique_ptr<EconomyModeHandler>(PopObject<EconomyModeHandler>(GO_Type::Economymodehandler)));
+          std::unique_ptr<EconomyModeHandler>(popObject<EconomyModeHandler>(GO_Type::Economymodehandler)));
     }
 
     for(auto& player : gw.getPlayers())
@@ -336,7 +336,7 @@ void SerializedGameData::ReadSnapshot(Game& game, ILocalGameState& localGameStat
     readEvents.clear();
 }
 
-void SerializedGameData::PushObject_(const GameObject* go, const bool known)
+void SerializedGameData::pushObjectImpl(const GameObject* go, const bool known)
 {
     RTTR_Assert(!isReading);
 
@@ -378,7 +378,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
 
     // Objekt nich bekannt? Dann Type-ID noch mit drauf
     if(!known)
-        PushEnum<uint16_t>(go->getGOT());
+        pushEnum<uint16_t>(go->getGOT());
 
     // Objekt serialisieren
     if(debugMode)
@@ -391,7 +391,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     PushUnsignedShort(getSafetyCode(*go));
 }
 
-void SerializedGameData::PushEvent(const GameEvent* event)
+void SerializedGameData::pushEvent(const GameEvent* event)
 {
     if(!event)
     {
@@ -412,7 +412,7 @@ void SerializedGameData::PushEvent(const GameEvent* event)
     PushUnsignedShort(getSafetyCode(*event));
 }
 
-const GameEvent* SerializedGameData::PopEvent()
+const GameEvent* SerializedGameData::popEvent()
 {
     unsigned instanceId = PopUnsignedInt();
     if(!instanceId)
@@ -436,7 +436,7 @@ const GameEvent* SerializedGameData::PopEvent()
 }
 
 /// FoW-Objekt
-void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
+void SerializedGameData::pushFOWObject(const FOWObject* fowobj)
 {
     // Gibts das Objekt gar nich?
     if(!fowobj)
@@ -447,16 +447,16 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
     }
 
     // Objekt-Typ
-    PushEnum<uint8_t>(fowobj->getType());
+    pushEnum<uint8_t>(fowobj->getType());
 
     // Objekt serialisieren
     fowobj->Serialize(*this);
 }
 
-std::unique_ptr<FOWObject> SerializedGameData::PopFOWObject()
+std::unique_ptr<FOWObject> SerializedGameData::popFOWObject()
 {
     // Typ auslesen
-    auto type = Pop<FoW_Type>();
+    auto type = pop<FoW_Type>();
 
     // Kein Objekt?
     if(type == FoW_Type::Nothing)
@@ -466,7 +466,7 @@ std::unique_ptr<FOWObject> SerializedGameData::PopFOWObject()
     return createFOWObject(type);
 }
 
-GameObject* SerializedGameData::PopObject_(helpers::OptionalEnum<GO_Type> got)
+GameObject* SerializedGameData::popObjectImpl(helpers::OptionalEnum<GO_Type> got)
 {
     RTTR_Assert(isReading);
     // Obj-ID holen
@@ -481,7 +481,7 @@ GameObject* SerializedGameData::PopObject_(helpers::OptionalEnum<GO_Type> got)
 
     // Objekt nich bekannt? Dann in den heiligen Schriften lesen
     if(!got)
-        got = Pop<GO_Type>();
+        got = pop<GO_Type>();
 
     // und erzeugen
     std::unique_ptr<GameObject> go = createGameObject(*got, objId);
@@ -515,7 +515,7 @@ SerializedGameData::Error SerializedGameData::makeOutOfRange(unsigned value, uns
     return Error(helpers::format("%s is out of range. Maximum allowed value: %s", value, maxValue));
 }
 
-void SerializedGameData::AddObject(GameObject* go)
+void SerializedGameData::addObject(GameObject* go)
 {
     RTTR_Assert(isReading);
     RTTR_Assert(!readObjects[go->getObjId()]); // Do not call this multiple times per GameObject
@@ -523,7 +523,7 @@ void SerializedGameData::AddObject(GameObject* go)
     RTTR_Assert(readObjects.size() < expectedNumObjects);
 }
 
-unsigned SerializedGameData::AddEvent(unsigned instanceId, GameEvent* ev)
+unsigned SerializedGameData::addEvent(unsigned instanceId, GameEvent* ev)
 {
     RTTR_Assert(isReading);
     RTTR_Assert(!readEvents[instanceId]); // Do not call this multiple times per GameObject

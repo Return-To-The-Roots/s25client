@@ -26,14 +26,14 @@ private:
     // Bin ich fett? (werde immer mal dünn oder fett, damits nicht immer gleich aussieht, wenn jemand rauskommt)
     bool fat;
 
-    void GoalReached() override;
-    void Walked() override;
+    void goalReached() override;
+    void walked() override;
     /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
-    void AbrogateWorkplace() override;
+    void abrogateWorkplace() override;
 
-    void LooseWare();
+    void looseWare();
 
-    void HandleDerivedEvent(unsigned id) override;
+    void handleDerivedEvent(unsigned id) override;
 
 public:
     nofWarehouseWorker(MapPoint pos, unsigned char player, std::unique_ptr<Ware> ware, bool task);
@@ -42,16 +42,16 @@ public:
 
     ~nofWarehouseWorker() override;
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::NofWarehouseworker; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     // Ware nach draußen bringen (von Lagerhaus aus aufgerufen)
-    void CarryWare(Ware* ware);
+    void carryWare(Ware* ware);
 
     /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Träger-Bestände nicht beeinflussen?)
-    bool MemberOfWarehouse() const override { return true; }
+    bool memberOfWarehouse() const override { return true; }
 };

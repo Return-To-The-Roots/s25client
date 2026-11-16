@@ -12,5 +12,5 @@ class SoundEffectItem : public SoundItem
 {
 public:
     /// Play the sound effect
-    EffectPlayId Play(uint8_t volume, bool loop);
+    EffectPlayId play(uint8_t volume, bool loop);
 };

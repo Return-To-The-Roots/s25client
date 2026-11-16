@@ -20,5 +20,5 @@ private:
 
 public:
     iwMinimap(IngameMinimap& minimap, GameWorldView& gwv);
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
 };

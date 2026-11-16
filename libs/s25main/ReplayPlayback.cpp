@@ -19,7 +19,7 @@ ReplayCommandsResult ExecuteReplayCommands(Replay& replay, std::optional<unsigne
     const AsyncChecksum checksum = AsyncChecksum::create(game);
     do
     {
-        const auto cmd = replay.ReadCommand();
+        const auto cmd = replay.readCommand();
         visit(composeVisitor(
                 [&onChat](const Replay::ChatCommand& chatCmd) {
                     if(onChat)
@@ -28,7 +28,7 @@ ReplayCommandsResult ExecuteReplayCommands(Replay& replay, std::optional<unsigne
                 [&](const Replay::GameCommand& gameCmd) {
                     result.executedGameCommands = true;
                     for(const gc::GameCommandPtr& gc : gameCmd.cmds.gcs)
-                        gc->Execute(game.world_, gameCmd.player);
+                        gc->execute(game.world_, gameCmd.player);
 
                     const AsyncChecksum& expected = gameCmd.cmds.checksum;
                     // A zero checksum means the recording did not store one
@@ -36,7 +36,7 @@ ReplayCommandsResult ExecuteReplayCommands(Replay& replay, std::optional<unsigne
                         result.desync = ReplayDesync{curGF, expected, checksum};
                 }),
               cmd);
-        nextGF = replay.ReadGF();
+        nextGF = replay.readGF();
     } while(nextGF == curGF);
     return result;
 }

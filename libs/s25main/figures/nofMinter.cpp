@@ -17,16 +17,16 @@ nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* w
 
 nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofMinter::DrawWorking(DrawPoint drawPt)
+void nofMinter::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12}}};
 
-    unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
+    unsigned now_id = GAMECLIENT.interpolate(136, current_ev);
 
     if(now_id < 91)
     {
         LOADER.getPlayerImage("rom_bobs", 84 + (now_id) % 8)
-          ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+          ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
                      world->getPlayer(workplace->getPlayer()).color);
 
         // Evtl Sound abspielen
@@ -40,8 +40,8 @@ void nofMinter::DrawWorking(DrawPoint drawPt)
     last_id = now_id;
 }
 
-helpers::OptionalEnum<GoodType> nofMinter::ProduceWare()
+helpers::OptionalEnum<GoodType> nofMinter::produceWare()
 {
-    world->getPlayer(player).ChangeStatisticValue(StatisticType::Gold, 1);
+    world->getPlayer(player).changeStatisticValue(StatisticType::Gold, 1);
     return GoodType::Coins;
 }

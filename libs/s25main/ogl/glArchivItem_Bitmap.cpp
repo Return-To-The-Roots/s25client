@@ -17,7 +17,7 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
 /**
  *  Zeichnet die Textur.
  */
-void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= COLOR_WHITE*/)
+void glArchivItem_Bitmap::draw(Rect dstArea, Rect srcArea, unsigned color /*= COLOR_WHITE*/)
 {
     if(getTexture() == 0)
         return;
@@ -58,42 +58,42 @@ void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= CO
 
     glVertexPointer(2, GL_FLOAT, 0, vertices.data());
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords.data());
-    VIDEODRIVER.BindTexture(getTexture());
+    VIDEODRIVER.bindTexture(getTexture());
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, 4);
 }
 
-void glArchivItem_Bitmap::DrawFull(const Rect& destArea, unsigned color)
+void glArchivItem_Bitmap::drawFull(const Rect& destArea, unsigned color)
 {
-    Draw(destArea, Rect(Position(0, 0), getSize()), color);
+    draw(destArea, Rect(Position(0, 0), getSize()), color);
 }
 
-void glArchivItem_Bitmap::DrawFull(const DrawPoint& dstPos, unsigned color)
+void glArchivItem_Bitmap::drawFull(const DrawPoint& dstPos, unsigned color)
 {
-    DrawFull(Rect(dstPos, getSize()), color);
+    drawFull(Rect(dstPos, getSize()), color);
 }
 
-void glArchivItem_Bitmap::DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color)
+void glArchivItem_Bitmap::drawPart(const Rect& destArea, const DrawPoint& offset, unsigned color)
 {
-    Draw(destArea, Rect(offset, destArea.getSize()), color);
+    draw(destArea, Rect(offset, destArea.getSize()), color);
 }
 
-void glArchivItem_Bitmap::DrawPart(const Rect& destArea, unsigned color /*= COLOR_WHITE*/)
+void glArchivItem_Bitmap::drawPart(const Rect& destArea, unsigned color /*= COLOR_WHITE*/)
 {
-    DrawPart(destArea, DrawPoint::all(0), color);
+    drawPart(destArea, DrawPoint::all(0), color);
 }
 
-void glArchivItem_Bitmap::DrawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color /*= COLOR_WHITE*/)
+void glArchivItem_Bitmap::drawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color /*= COLOR_WHITE*/)
 {
     RTTR_Assert(percent <= 100);
     if(percent == 0u)
         return;
     unsigned drawnHeight = getHeight() * std::min(100u, percent) / 100;
     DrawPoint offset(0, getHeight() - drawnHeight);
-    DrawPart(Rect(dstPos + offset, getWidth(), drawnHeight), offset, color);
+    drawPart(Rect(dstPos + offset, getWidth(), drawnHeight), offset, color);
 }
 
-void glArchivItem_Bitmap::FillTexture()
+void glArchivItem_Bitmap::fillTexture()
 {
     int iformat = getInternalFormat(), dformat = GL_BGRA;
 
@@ -103,7 +103,7 @@ void glArchivItem_Bitmap::FillTexture()
     glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 }
 
-Extent glArchivItem_Bitmap::CalcTextureSize() const
+Extent glArchivItem_Bitmap::calcTextureSize() const
 {
     return VIDEODRIVER.calcPreferredTextureSize(getSize());
 }

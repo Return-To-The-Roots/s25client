@@ -27,7 +27,7 @@ private:
 
     void msgButtonClick(unsigned ctrl_id) override;
     template<class T_Window, class T_Building>
-    void GoToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds);
+    void goToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds);
 
     void setBuildingOrder();
     std::vector<BuildingType> bts;

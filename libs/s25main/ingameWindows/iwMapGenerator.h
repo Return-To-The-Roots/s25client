@@ -56,7 +56,7 @@ private:
     rttr::mapGenerator::MapSettings& mapSettings;
 
     /// Reset the UI to the values of @ref mapSettings
-    void Reset();
+    void reset();
     /// Updates @ref mapSettings with the values currently configured in the UI.
-    void Apply();
+    void apply();
 };

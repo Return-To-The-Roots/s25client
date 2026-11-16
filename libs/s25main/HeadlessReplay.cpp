@@ -16,7 +16,7 @@
 
 HeadlessReplay::HeadlessReplay(const boost::filesystem::path& replayPath)
 {
-    if(!replay_.LoadHeader(replayPath) || !replay_.LoadGameData(mapInfo_))
+    if(!replay_.loadHeader(replayPath) || !replay_.LoadGameData(mapInfo_))
     {
         const std::string reason =
           replay_.getLastErrorMsg().empty() ? std::string("Unknown error") : replay_.getLastErrorMsg();
@@ -39,8 +39,8 @@ HeadlessReplay::HeadlessReplay(const boost::filesystem::path& replayPath)
     if(game_->world_.hasLua())
         game_->world_.getLua().setSuppressStdout(true);
 
-    game_->Start(isFromSavegame());
-    nextGF_ = replay_.ReadGF();
+    game_->start(isFromSavegame());
+    nextGF_ = replay_.readGF();
 }
 
 HeadlessReplay::~HeadlessReplay() = default;
@@ -55,7 +55,7 @@ unsigned HeadlessReplay::getCurrentGF() const
     return game_->em_->getCurrentGF();
 }
 
-bool HeadlessReplay::RunGF()
+bool HeadlessReplay::runGF()
 {
     const unsigned curGF = getCurrentGF();
     if(desync_ || curGF > replay_.getLastGF())
@@ -71,16 +71,16 @@ bool HeadlessReplay::RunGF()
     // Stop at a desync so the world and the RNG log still show the state that produced it
     if(desync_)
         return false;
-    game_->RunGF();
+    game_->runGF();
     return getCurrentGF() <= replay_.getLastGF();
 }
 
-bool HeadlessReplay::Run(const std::function<void(const HeadlessReplay&)>& onGameFrame)
+bool HeadlessReplay::run(const std::function<void(const HeadlessReplay&)>& onGameFrame)
 {
     bool hasMoreFrames;
     do
     {
-        hasMoreFrames = RunGF();
+        hasMoreFrames = runGF();
         if(onGameFrame)
             onGameFrame(*this);
     } while(hasMoreFrames);

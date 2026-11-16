@@ -29,14 +29,14 @@ nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmha
 {}
 
 /// Malt den Arbeiter beim Arbeiten
-void nofFarmer::DrawWorking(DrawPoint drawPt)
+void nofFarmer::drawWorking(DrawPoint drawPt)
 {
     unsigned now_id;
 
     if(harvest)
     {
-        LOADER.getPlayerImage("rom_bobs", 140 + (now_id = GAMECLIENT.Interpolate(88, current_ev)) % 8)
-          ->DrawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+        LOADER.getPlayerImage("rom_bobs", 140 + (now_id = GAMECLIENT.interpolate(88, current_ev)) % 8)
+          ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
@@ -47,8 +47,8 @@ void nofFarmer::DrawWorking(DrawPoint drawPt)
 
     } else
     {
-        LOADER.getPlayerImage("rom_bobs", 132 + GAMECLIENT.Interpolate(88, current_ev) % 8)
-          ->DrawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+        LOADER.getPlayerImage("rom_bobs", 132 + GAMECLIENT.interpolate(88, current_ev) % 8)
+          ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
     }
 }
 
@@ -88,18 +88,18 @@ nofFarmhand::PointQuality nofFarmer::getNewFieldPointQuality(const GameWorld& wo
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofFarmer::WorkStarted()
+void nofFarmer::workStarted()
 {
     // Wenn ich zu einem Getreidefeld gehe, ernte ich es ab, ansonsten sähe ich
     harvest = (world->getNO(pos)->getType() == NodalObjectType::Grainfield);
 
     // Getreidefeld Bescheid sagen, damits nicht plötzlich verschwindet, während wir arbeiten
     if(harvest)
-        world->getSpecObj<noGrainfield>(pos)->BeginHarvesting();
+        world->getSpecObj<noGrainfield>(pos)->beginHarvesting();
 }
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-void nofFarmer::WorkFinished()
+void nofFarmer::workFinished()
 {
     if(harvest)
     {
@@ -110,7 +110,7 @@ void nofFarmer::WorkFinished()
         if(nob->getGOT() != GO_Type::Grainfield)
             return;
         unsigned mapLstId = static_cast<noGrainfield*>(nob)->getHarvestMapLstID();
-        world->DestroyNO(pos);
+        world->destroyNO(pos);
         world->setNO(pos, new noEnvObject(pos, mapLstId));
 
         // Getreide, was wir geerntet haben, in die Hand nehmen
@@ -127,7 +127,7 @@ void nofFarmer::WorkFinished()
         // Nur Zierobjekte und Schilder dürfen weggerissen werden
         if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
         {
-            world->DestroyNO(pos, false);
+            world->destroyNO(pos, false);
             // neues Getreidefeld setzen
             world->setNO(pos, new noGrainfield(pos));
         }
@@ -137,7 +137,7 @@ void nofFarmer::WorkFinished()
     }
 
     // BQ drumrum neu berechnen
-    world->RecalcBQAroundPoint(pos);
+    world->recalcBQAroundPoint(pos);
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
@@ -156,10 +156,10 @@ nofFarmhand::PointQuality nofFarmer::getPointQuality(const MapPoint pt, bool /* 
         return getNewFieldPointQuality(*world, pt);
 }
 
-void nofFarmer::WorkAborted()
+void nofFarmer::workAborted()
 {
-    nofFarmhand::WorkAborted();
+    nofFarmhand::workAborted();
     // dem Getreidefeld Bescheid sagen, damit es wieder verdorren kann, wenn wir abernten
     if(harvest && state == State::Work)
-        world->getSpecObj<noGrainfield>(pos)->EndHarvesting();
+        world->getSpecObj<noGrainfield>(pos)->endHarvesting();
 }

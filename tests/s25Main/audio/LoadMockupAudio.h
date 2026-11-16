@@ -22,10 +22,10 @@ struct LoadMockupAudio
         SETTINGS.sound.musicEnabled = true;
         auto driver = std::make_unique<MockupAudioDriver>(audioCallbackMock.get());
         audioDriverMock = driver.get();
-        AUDIODRIVER.LoadDriver(std::move(driver));
+        AUDIODRIVER.loadDriver(std::move(driver));
         BOOST_TEST_REQUIRE(AUDIODRIVER.getName() != "");
     }
-    ~LoadMockupAudio() { AUDIODRIVER.UnloadDriver(); }
+    ~LoadMockupAudio() { AUDIODRIVER.unloadDriver(); }
     /// Return a callable to be used with MOCK_EXPECT(...).calls(...) that loads a sound of the given type
     auto makeDoLoad(driver::SoundType type)
     {

@@ -17,14 +17,14 @@ nofCarpenter::nofCarpenter(const MapPoint pos, const unsigned char player, nobUs
 
 nofCarpenter::nofCarpenter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofCarpenter::DrawWorking(DrawPoint drawPt)
+void nofCarpenter::drawWorking(DrawPoint drawPt)
 {
     static constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3}}};
 
     unsigned now_id;
 
-    LOADER.getPlayerImage("rom_bobs", 32 + ((now_id = GAMECLIENT.Interpolate(136, current_ev)) % 8))
-      ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
+    LOADER.getPlayerImage("rom_bobs", 32 + ((now_id = GAMECLIENT.interpolate(136, current_ev)) % 8))
+      ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     // Evtl Sound abspielen
     if(now_id % 8 == 3 || now_id % 8 == 7)
@@ -36,7 +36,7 @@ void nofCarpenter::DrawWorking(DrawPoint drawPt)
     last_id = now_id;
 }
 
-helpers::OptionalEnum<GoodType> nofCarpenter::ProduceWare()
+helpers::OptionalEnum<GoodType> nofCarpenter::produceWare()
 {
     return GoodType::Boards;
 }

@@ -53,7 +53,7 @@ public:
 
     ~Ware() override;
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::Ware; }
@@ -65,36 +65,36 @@ public:
     /// Sets the new goal and notifies it
     void setGoal(noBaseBuilding* newGoal);
     /// Berechnet den Weg neu zu ihrem Ziel
-    void RecalcRoute();
+    void recalcRoute();
     /// set new next dir
     void setNextDir(RoadPathDirection newNextDir) { next_dir = newNextDir; }
     void setNextDir(Direction newNextDir) { next_dir = toRoadPathDirection(newNextDir); }
     /// Wird aufgerufen, wenn es das Ziel der Ware nicht mehr gibt und sie wieder "nach Hause" getragen werden muss
-    void GoalDestroyed();
+    void goalDestroyed();
     /// Changes the state of the ware
-    void WaitAtFlag(noFlag& flag);
-    void WaitInWarehouse(nobBaseWarehouse& wh);
-    void Carry(noRoadNode& nextGoal);
+    void waitAtFlag(noFlag& flag);
+    void waitInWarehouse(nobBaseWarehouse& wh);
+    void carry(noRoadNode& nextGoal);
     /// Gibt dem Ziel der Ware bekannt, dass diese nicht mehr kommen kann
-    void NotifyGoalAboutLostWare();
+    void notifyGoalAboutLostWare();
     /// Wenn die Ware vernichtet werden muss
-    void WareLost(unsigned char player);
+    void wareLost(unsigned char player);
     /// Gibt Status der Ware zurück
     bool isWaitingAtFlag() const { return (state == State::WaitAtFlag); }
     bool isWaitingInWarehouse() const { return (state == State::WaitInWarehouse); }
     bool isWaitingForShip() const { return (state == State::WaitForShip); }
     bool isCarried() const { return (state == State::Carried); }
     /// Sagt dem Träger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
-    void RemoveWareJobForDir(RoadPathDirection last_next_dir);
+    void removeWareJobForDir(RoadPathDirection last_next_dir);
     /// Überprüft, ob es noch ein Weg zum Ziel gibt
     bool isRouteToGoal();
     /// Tells the ware that it should look for a warehouse to go to and notifies that (if found)
     /// Sets nextDir to the next direction or invalid of no warehouse found
-    bool FindRouteToWarehouse();
+    bool findRouteToWarehouse();
     /// Tells a carrier that we want to be carried
-    void CallCarrier();
+    void callCarrier();
     /// a building is looking for a ware - check if this lost ware can be send to the building and then do it
-    unsigned CheckNewGoalForLostWare(const noBaseBuilding& newgoal) const;
+    unsigned checkNewGoalForLostWare(const noBaseBuilding& newgoal) const;
     void setNewGoalForLostWare(noBaseBuilding& newgoal);
     /// Gibt Ort der Ware zurück
     noRoadNode* getLocation() { return location; }
@@ -102,15 +102,15 @@ public:
     /// Ist die Ware eine LostWare (Ware, die kein Ziel mehr hat und irgendwo sinnlos rumliegt)?
     bool isLostWare() const { return ((goal == nullptr) && state != State::OnShip); }
     /// Informiert Ware, dass eine Schiffsreise beginnt
-    void StartShipJourney();
+    void startShipJourney();
     /// Informiert Ware, dass Schiffsreise beendet ist und die Ware nun in einem Hafengebäude liegt
-    void ShipJorneyEnded(nobHarborBuilding* hb);
+    void shipJorneyEnded(nobHarborBuilding* hb);
     /// Beginnt damit auf ein Schiff im Hafen zu warten
-    void WaitForShip(nobHarborBuilding* hb);
+    void waitForShip(nobHarborBuilding* hb);
 
-    std::string ToString() const override;
+    std::string toString() const override;
 
-    static std::string GoodType2String(GoodType value)
+    static std::string goodType2String(GoodType value)
     {
         switch(value)
         {
@@ -166,5 +166,5 @@ private:
         unsigned length;
         RoadPathDirection dir;
     };
-    RouteParams CalcPathToGoal(const noBaseBuilding& newgoal) const;
+    RouteParams calcPathToGoal(const noBaseBuilding& newgoal) const;
 };

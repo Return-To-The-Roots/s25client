@@ -19,16 +19,16 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent, const unsigned id, cons
 /**
  *  zeichnet das Fenster.
  */
-void ctrlBuildingIcon::Draw_()
+void ctrlBuildingIcon::drawImpl()
 {
     if(state == ButtonState::Hover || state == ButtonState::Pressed)
-        LOADER.getImageN("io", 0)->DrawPart(getDrawRect());
+        LOADER.getImageN("io", 0)->drawPart(getDrawRect());
     glArchivItem_Bitmap* image = LOADER.getNationIcon(nation, type);
     if(image)
-        image->DrawFull(getDrawPos() + getSize() / 2, (state == ButtonState::Pressed ? COLOR_YELLOW : COLOR_WHITE));
+        image->drawFull(getDrawPos() + getSize() / 2, (state == ButtonState::Pressed ? COLOR_YELLOW : COLOR_WHITE));
 }
 
-void ctrlBuildingIcon::DrawContent() const {}
+void ctrlBuildingIcon::drawContent() const {}
 
 bool ctrlBuildingIcon::msgMouseMove(const MouseCoords& mc)
 {

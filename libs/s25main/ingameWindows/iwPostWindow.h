@@ -33,11 +33,11 @@ private:
     bool lastHasMissionGoal;
 
     /// Passt Steuerelemente an, setzt Einstellung für diverse Controls passend für die aktuelle PostMessage
-    void DisplayPostMessage();
+    void displayPostMessage();
     /// Setzt den Text mehrzeilig in das Postfenster
     void setMessageText(const std::string& message);
-    void FilterMessages();
-    bool ValidateMessages();
+    void filterMessages();
+    bool validateMessages();
     const PostMsg* getMsg(unsigned id) const;
-    void SwitchCategory(PostCategory cat);
+    void switchCategory(PostCategory cat);
 };

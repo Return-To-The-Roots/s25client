@@ -8,7 +8,7 @@
 
 namespace rttr::mapGenerator {
 
-Island CreateIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLandDist, double mountainCoverage)
+Island createIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLandDist, double mountainCoverage)
 {
     Island island;
 
@@ -18,14 +18,14 @@ Island CreateIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLan
     const unsigned minDistance = std::min(maxDistance, minLandDist * 10);
     const auto possibleCenters = SelectPoints(
       [&distances, minDistance](const MapPoint& pt) { return distances[pt] >= minDistance; }, distances.getSize());
-    const MapPoint center = rnd.RandomItem(possibleCenters);
+    const MapPoint center = rnd.randomItem(possibleCenters);
 
     const auto compare = [&distances, &center](const MapPoint& rhs, const MapPoint& lhs) {
         // computes prefered extension points for the island by considering distance to
         // center of the island and maximizing distance to other land
 
-        const auto ratioRhs = distances[rhs] - distances.CalcDistance(center, rhs);
-        const auto ratioLhs = distances[lhs] - distances.CalcDistance(center, lhs);
+        const auto ratioRhs = distances[rhs] - distances.calcDistance(center, rhs);
+        const auto ratioLhs = distances[lhs] - distances.calcDistance(center, lhs);
 
         return ratioRhs < ratioLhs;
     };
@@ -65,7 +65,7 @@ Island CreateIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLan
     for(const MapPoint& pt : island)
     {
         const auto base = map.height.minimum + coastDistance[pt];
-        const auto minimum = rnd.RandomValue(base, base + 1u);
+        const auto minimum = rnd.randomValue(base, base + 1u);
         map.z[pt] = std::min(static_cast<uint8_t>(minimum), map.height.maximum);
     }
 
@@ -76,7 +76,7 @@ Island CreateIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLan
     auto textures = map.textureMap.FindAll(isBuildableLand);
     auto textureRange = ValueRange<unsigned>(0u, mountainLevel);
 
-    map.textureMap.Sort(textures, ByHumidity);
+    map.textureMap.sort(textures, byHumidity);
 
     for(const MapPoint& pt : island)
     {

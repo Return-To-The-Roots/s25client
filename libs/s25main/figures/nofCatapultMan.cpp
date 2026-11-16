@@ -21,7 +21,7 @@
 const std::array<DrawPoint, 6> STONE_STARTS = {{{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}}};
 
 nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd)
-    : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt())
+    : pos(sgd.popMapPoint()), distance(sgd.PopUnsignedInt())
 {}
 
 void nofCatapultMan::PossibleTarget::Serialize(SerializedGameData& sgd) const
@@ -46,9 +46,9 @@ void nofCatapultMan::Serialize(SerializedGameData& sgd) const
     target.PossibleTarget::Serialize(sgd);
 }
 
-void nofCatapultMan::WalkedDerived() {}
+void nofCatapultMan::walkedDerived() {}
 
-void nofCatapultMan::DrawWorking(DrawPoint drawPt)
+void nofCatapultMan::drawWorking(DrawPoint drawPt)
 {
     // Offset of the catapult
     drawPt -= DrawPoint(7, 19);
@@ -57,7 +57,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
         default: return;
         case State::CatapultTargetBuilding:
         {
-            int step = GAMECLIENT.Interpolate(std::abs(wheel_steps) + 1, current_ev);
+            int step = GAMECLIENT.interpolate(std::abs(wheel_steps) + 1, current_ev);
 
             if(step <= std::abs(wheel_steps))
             {
@@ -65,7 +65,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
                     step = -step;
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen
-                LOADER.getPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->DrawFull(drawPt);
+                LOADER.getPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->drawFull(drawPt);
             }
             // else
             //  // Katapult schießend zeichnen
@@ -74,11 +74,11 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
         break;
         case State::CatapultBackoff:
         {
-            int step = GAMECLIENT.Interpolate((std::abs(wheel_steps) + 3) * 2, current_ev);
+            int step = GAMECLIENT.interpolate((std::abs(wheel_steps) + 3) * 2, current_ev);
 
             if(step < 2 * 3)
                 // Katapult nach Schießen zeichnen (hin und her wippen
-                LOADER.getPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->DrawFull(drawPt);
+                LOADER.getPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->drawFull(drawPt);
             else
             {
                 step = (step - 6) / 2;
@@ -87,14 +87,14 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
                     step = -(step);
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen (zurück in Ausgangsposition: Richtung 4)
-                LOADER.getPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->DrawFull(drawPt);
+                LOADER.getPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->drawFull(drawPt);
             }
         }
         break;
     }
 }
 
-void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
+void nofCatapultMan::handleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
@@ -106,7 +106,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             // Liste von potentiellen Zielen
             std::vector<PossibleTarget> possibleTargets;
 
-            sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 3);
+            sortedMilitaryBlds buildings = world->lookForMilitaryBuildings(pos, 3);
             for(auto* building : buildings)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
@@ -118,7 +118,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                        && !static_cast<nobMilitary*>(building)->isNewBuilt())
                     {
                         // Entfernung ausrechnen
-                        unsigned distance = world->CalcDistance(pos, building->getPos());
+                        unsigned distance = world->calcDistance(pos, building->getPos());
 
                         // Entfernung nicht zu hoch?
                         if(distance <= CATAPULT_MAX_TARGET_RANGE)
@@ -134,13 +134,13 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             if(possibleTargets.empty())
             {
                 // Weiter warten, vielleicht gibts ja später wieder mal was
-                current_ev = getEvMgr().AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
-                workplace->StartNotWorking();
+                current_ev = getEvMgr().addEvent(this, CATAPULT_WAIT1_LENGTH, 1);
+                workplace->startNotWorking();
                 return;
             }
 
             // Waren verbrauchen
-            workplace->ConsumeWares();
+            workplace->consumeWares();
 
             // Eins zufällig auswählen
             target = RANDOM_ELEMENT(possibleTargets);
@@ -203,7 +203,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             if(wheel_steps < -3)
                 wheel_steps = 6 + wheel_steps;
 
-            current_ev = getEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 1), 1);
+            current_ev = getEvMgr().addEvent(this, 15 * (std::abs(wheel_steps) + 1), 1);
 
             state = State::CatapultTargetBuilding;
 
@@ -266,10 +266,10 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             }
 
             // Stein erzeugen
-            world->AddCatapultStone(new CatapultStone(target.pos, destMap, start, dest, 80));
+            world->addCatapultStone(new CatapultStone(target.pos, destMap, start, dest, 80));
 
             // Katapult wieder in Ausgangslage zurückdrehen
-            current_ev = getEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
+            current_ev = getEvMgr().addEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
 
             state = State::CatapultBackoff;
         }
@@ -280,10 +280,10 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             // wir arbeiten nicht mehr
             workplace->is_working = false;
             // Wieder versuchen, zu arbeiten
-            TryToWork();
+            tryToWork();
         }
         break;
     }
 }
 
-void nofCatapultMan::WorkAborted() {}
+void nofCatapultMan::workAborted() {}

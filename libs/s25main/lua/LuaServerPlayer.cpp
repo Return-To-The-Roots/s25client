@@ -26,7 +26,7 @@ void LuaServerPlayer::Register(kaguya::State& state)
                                .addFunction("SetNation", &LuaServerPlayer::setNation)
                                .addFunction("SetTeam", &LuaServerPlayer::setTeam)
                                .addFunction("SetColor", &LuaServerPlayer::setColor)
-                               .addFunction("Close", &LuaServerPlayer::Close)
+                               .addFunction("Close", &LuaServerPlayer::close)
                                .addFunction("SetAI", &LuaServerPlayer::setAI)
                                .addFunction("SetName", &LuaServerPlayer::setName)
                                .addFunction("SetPortrait", &LuaServerPlayer::setPortrait));
@@ -55,11 +55,11 @@ void LuaServerPlayer::setColor(unsigned colorOrIdx)
     lobbyServerController_.setColor(playerId, player.color);
 }
 
-void LuaServerPlayer::Close()
+void LuaServerPlayer::close()
 {
     if(player.ps == PlayerState::Locked)
         return;
-    lobbyServerController_.CloseSlot(playerId);
+    lobbyServerController_.closeSlot(playerId);
 }
 
 void LuaServerPlayer::setAI(unsigned level)

@@ -24,26 +24,26 @@ MOCK_BASE_CLASS(MockAudioDriverCallback, IAudioDriverCallback)
 MOCK_BASE_CLASS(MockupAudioDriver, driver::AudioDriver)
 {
     MockupAudioDriver(IAudioDriverCallback * callback) : AudioDriver(callback) {}
-    ~MockupAudioDriver() override { CleanUp(); }
+    ~MockupAudioDriver() override { cleanUp(); }
     const char* getName() const override { return "MockupAudio"; }
-    bool Initialize() override
+    bool initialize() override
     {
         setNumChannels(DEFAULT_NUM_CHANNELS);
         initialized = true;
         return true;
     }
-    MOCK_NON_CONST_METHOD(LoadEffect, 1, driver::RawSoundHandle(const std::string&));
-    MOCK_NON_CONST_METHOD(LoadEffect, 2, driver::RawSoundHandle(const std::vector<char>&, const std::string&),
+    MOCK_NON_CONST_METHOD(loadEffect, 1, driver::RawSoundHandle(const std::string&));
+    MOCK_NON_CONST_METHOD(loadEffect, 2, driver::RawSoundHandle(const std::vector<char>&, const std::string&),
                           LoadEffectFromData);
-    MOCK_NON_CONST_METHOD(LoadMusic, 1, driver::RawSoundHandle(const std::string&));
-    MOCK_NON_CONST_METHOD(LoadMusic, 2, driver::RawSoundHandle(const std::vector<char>&, const std::string&),
+    MOCK_NON_CONST_METHOD(loadMusic, 1, driver::RawSoundHandle(const std::string&));
+    MOCK_NON_CONST_METHOD(loadMusic, 2, driver::RawSoundHandle(const std::vector<char>&, const std::string&),
                           LoadMusicFromData);
     MOCK_NON_CONST_METHOD(doPlayEffect, 3, int(driver::RawSoundHandle::DriverData, uint8_t, bool));
-    MOCK_NON_CONST_METHOD(PlayMusic, 2);
-    MOCK_NON_CONST_METHOD(StopMusic, 0);
+    MOCK_NON_CONST_METHOD(playMusic, 2);
+    MOCK_NON_CONST_METHOD(stopMusic, 0);
     MOCK_NON_CONST_METHOD(doStopEffect, 1, void(int));
     MOCK_NON_CONST_METHOD(isEffectPlaying, 1);
-    MOCK_NON_CONST_METHOD(ChangeVolume, 2);
+    MOCK_NON_CONST_METHOD(changeVolume, 2);
     MOCK_NON_CONST_METHOD(setMasterEffectVolume, 1);
     MOCK_NON_CONST_METHOD(setMusicVolume, 1);
     MOCK_NON_CONST_METHOD(doUnloadSound, 1, void(driver::RawSoundHandle sound));

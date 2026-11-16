@@ -43,9 +43,9 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
     Extent size(padding1.x + wareIconSize.x + (std::max((int)eH->getTeams().size(), 2) + 1) * txtBoxWidth + padding2.x,
                 padding1.y + teamRectHeight + ((int)eH->getGoodTypesToCollect().size() + 1) * wareIconSize.y
                   + extraSpacing * 2 + padding2.y);
-    this->Resize(size);
+    this->resize(size);
 
-    AddText(1, DrawPoint(padding1.x + wareIconSize.x, padding1.y + teamRectHeight), _("Player"), COLOR_GREEN,
+    addText(1, DrawPoint(padding1.x + wareIconSize.x, padding1.y + teamRectHeight), _("Player"), COLOR_GREEN,
             FontStyle::LEFT | FontStyle::BOTTOM, NormalFont);
 
     // determine team display order (main player team first)
@@ -72,14 +72,14 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
     {
         GoodType good = goodsToCollect[i];
 
-        AddImage(100 + i, curBoxPos + wareIconSize / 2, LOADER.getMapTexture(2298), _(WARE_NAMES[good]));
+        addImage(100 + i, curBoxPos + wareIconSize / 2, LOADER.getMapTexture(2298), _(WARE_NAMES[good]));
         const DrawPoint warePos = curBoxPos + wareIconSize / 2;
-        AddImage(200 + i, warePos, LOADER.getWareTex(good));
+        addImage(200 + i, warePos, LOADER.getWareTex(good));
 
         DrawPoint curTxtPos = curBoxPos + DrawPoint(wareIconSize.x, 0);
         for(unsigned j = 0; j < 1 + eH->getTeams().size(); j++)
         {
-            AddTextDeepening(300 + (MAX_PLAYERS + 2) * j + i, curTxtPos, Extent(txtBoxWidth, wareIconSize.y),
+            addTextDeepening(300 + (MAX_PLAYERS + 2) * j + i, curTxtPos, Extent(txtBoxWidth, wareIconSize.y),
                              TextureColor::Grey, "?", NormalFont, textcolor[j < 2 ? j : 2]);
             curTxtPos.x += txtBoxWidth;
         }
@@ -89,21 +89,21 @@ iwEconomicProgress::iwEconomicProgress(const GameWorldViewer& gwv)
     if(!eH->isInfinite())
     {
         // game progress display
-        AddText(2, DrawPoint(wareIconSize.x + extraSpacing + padding1.x, this->getSize().y - padding2.y),
+        addText(2, DrawPoint(wareIconSize.x + extraSpacing + padding1.x, this->getSize().y - padding2.y),
                 _("Time remaining:"), COLOR_ORANGE, FontStyle::LEFT | FontStyle::BOTTOM, NormalFont);
         txtRemainingTime =
-          AddText(3, DrawPoint(wareIconSize.x + extraSpacing + txtBoxWidth * 3, this->getSize().y - padding2.y), "%",
+          addText(3, DrawPoint(wareIconSize.x + extraSpacing + txtBoxWidth * 3, this->getSize().y - padding2.y), "%",
                   COLOR_ORANGE, FontStyle::RIGHT | FontStyle::BOTTOM, NormalFont);
     }
 
     // help button
-    AddImageButton(25, DrawPoint(padding1.x, this->getSize().y - wareIconSize.y - padding2.y), wareIconSize,
+    addImageButton(25, DrawPoint(padding1.x, this->getSize().y - wareIconSize.y - padding2.y), wareIconSize,
                    TextureColor::Grey, LOADER.getImageN("io", 225), _("Help"));
 }
 
 iwEconomicProgress::~iwEconomicProgress() = default;
 
-void iwEconomicProgress::DrawContent()
+void iwEconomicProgress::drawContent()
 {
     // draw team colors
     DrawPoint curTeamRectPos = getDrawPos() + DrawPoint(padding1.x + wareIconSize.x + txtBoxWidth, padding1.y);
@@ -117,7 +117,7 @@ void iwEconomicProgress::DrawContent()
             {
                 if(teamRectHeight - ypos < 2 * ystep)
                     ystep = teamRectHeight - ypos;
-                DrawRectangle(Rect(curTeamRectPos + DrawPoint(0, ypos), Extent(txtBoxWidth - 1, ystep)),
+                drawRectangle(Rect(curTeamRectPos + DrawPoint(0, ypos), Extent(txtBoxWidth - 1, ystep)),
                               gwv.getWorld().getPlayer(i).color);
                 ypos += ystep;
             }
@@ -133,7 +133,7 @@ void iwEconomicProgress::msgButtonClick(const unsigned ctrl_id)
         break;
         case 25: // help
         {
-            WINDOWMANAGER.ReplaceWindow(
+            WINDOWMANAGER.replaceWindow(
               std::make_unique<iwHelp>(_("This window shows the wares that should be collected for "
                                          "the economy mode. Displayed is the current inventory of "
                                          "the player, his team and after game end of the opponent "
@@ -155,7 +155,7 @@ void iwEconomicProgress::msgPaintBefore()
     RTTR_Assert(economyModeTeams.size() == teamOrder.size());
 
     // make sure the amounts are current
-    eH->UpdateAmounts();
+    eH->updateAmounts();
 
     // update table elements
     for(unsigned i = 0; i < eH->getGoodTypesToCollect().size(); i++)
@@ -193,10 +193,10 @@ void iwEconomicProgress::msgPaintBefore()
         // Refresh game progress tracker
         if(!eH->isOver())
         {
-            txtRemainingTime->setText(GAMECLIENT.FormatGFTime(eH->getEndFrame() - world.getEvMgr().getCurrentGF()));
+            txtRemainingTime->setText(GAMECLIENT.formatGFTime(eH->getEndFrame() - world.getEvMgr().getCurrentGF()));
         } else
         {
-            txtRemainingTime->setText(GAMECLIENT.FormatGFTime(0));
+            txtRemainingTime->setText(GAMECLIENT.formatGFTime(0));
         }
     }
 }

@@ -28,7 +28,7 @@ unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond)
     unsigned gfsExecuted = 0;
     while(!cond())
     {
-        const unsigned numGF = em.ExecuteNextEvent(endGf);
+        const unsigned numGF = em.executeNextEvent(endGf);
         if(numGF == 0)
             break;
         gfsExecuted += numGF;
@@ -138,7 +138,7 @@ public:
 
 protected:
     // LCOV_EXCL_START
-    void AltitudeChanged(MapPoint) override {}
-    void VisibilityChanged(MapPoint, unsigned, Visibility, Visibility) override {}
+    void altitudeChanged(MapPoint) override {}
+    void visibilityChanged(MapPoint, unsigned, Visibility, Visibility) override {}
     // LCOV_EXCL_STOP
 };

@@ -21,7 +21,7 @@ nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nob
 {}
 
 nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool()), wt(sgd.Pop<WareType>())
+    : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool()), wt(sgd.pop<WareType>())
 {}
 
 void nofCharburner::Serialize(SerializedGameData& sgd) const
@@ -29,15 +29,15 @@ void nofCharburner::Serialize(SerializedGameData& sgd) const
     nofFarmhand::Serialize(sgd);
 
     sgd.PushBool(harvest);
-    sgd.PushEnum<uint8_t>(wt);
+    sgd.pushEnum<uint8_t>(wt);
 }
 
 /// Malt den Arbeiter beim Arbeiten
-void nofCharburner::DrawWorking(DrawPoint drawPt)
+void nofCharburner::drawWorking(DrawPoint drawPt)
 {
     if(harvest)
     {
-        unsigned short now_id = GAMECLIENT.Interpolate(39, current_ev);
+        unsigned short now_id = GAMECLIENT.interpolate(39, current_ev);
 
         // Schaufel-Sound
         if(now_id == 6 || now_id == 18 || now_id == 30)
@@ -53,10 +53,10 @@ void nofCharburner::DrawWorking(DrawPoint drawPt)
             draw_id = 9 + 12 + (now_id - 36);
 
         LOADER.getPlayerImage("charburner_bobs", draw_id)
-          ->DrawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+          ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
     } else
-        LOADER.getPlayerImage("charburner_bobs", 1 + GAMECLIENT.Interpolate(18, current_ev) % 6)
-          ->DrawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+        LOADER.getPlayerImage("charburner_bobs", 1 + GAMECLIENT.interpolate(18, current_ev) % 6)
+          ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
 }
 
 #ifdef _MSC_VER
@@ -74,10 +74,10 @@ unsigned short nofCharburner::getCarryID() const
 #endif
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofCharburner::WorkStarted() {}
+void nofCharburner::workStarted() {}
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-void nofCharburner::WorkFinished()
+void nofCharburner::workFinished()
 {
     noBase* no = world->getNO(pos);
 
@@ -89,7 +89,7 @@ void nofCharburner::WorkFinished()
             // Then let's bring a coal to our house
             ware = GoodType::Coal;
         // One step further
-        static_cast<noCharburnerPile*>(no)->NextStep();
+        static_cast<noCharburnerPile*>(no)->nextStep();
         return;
     }
 
@@ -103,12 +103,12 @@ void nofCharburner::WorkFinished()
 
         if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
         {
-            world->DestroyNO(pos, false);
+            world->destroyNO(pos, false);
             // Plant charburner pile
             world->setNO(pos, new noCharburnerPile(pos));
 
             // BQ drumrum neu berechnen
-            world->RecalcBQAroundPointBig(pos);
+            world->recalcBQAroundPointBig(pos);
         }
     }
 }
@@ -130,7 +130,7 @@ nofFarmhand::PointQuality nofCharburner::getPointQuality(const MapPoint pt, cons
         if(pileState == noCharburnerPile::State::Wood)
         {
             // Only check for resources before going out
-            if(isBeforeWork && !workplace->WaresAvailable())
+            if(isBeforeWork && !workplace->waresAvailable())
                 return PointQuality::NotPossible;
             else
                 // Only second class, harvest all piles first before continue
@@ -144,7 +144,7 @@ nofFarmhand::PointQuality nofCharburner::getPointQuality(const MapPoint pt, cons
 
     // Try to "plant" a new pile
     // Enough wares when starting new work?
-    if(isBeforeWork && !workplace->WaresAvailable())
+    if(isBeforeWork && !workplace->waresAvailable())
         return PointQuality::NotPossible;
 
     // Der Platz muss frei sein
@@ -180,7 +180,7 @@ nofFarmhand::PointQuality nofCharburner::getPointQuality(const MapPoint pt, cons
 }
 
 /// Inform derived class about the start of the whole working process (at the beginning when walking out of the house)
-void nofCharburner::WalkingStarted()
+void nofCharburner::walkingStarted()
 {
     noBase* nob = world->getNO(dest);
     if(nob->getGOT() == GO_Type::Charburnerpile)
@@ -191,7 +191,7 @@ void nofCharburner::WalkingStarted()
     // Consume wares if we carry a ware
     if(!harvest)
     {
-        workplace->ConsumeWares();
+        workplace->consumeWares();
         // Dertermine ware which we should carry to the pile
         if(nob->getGOT() != GO_Type::Charburnerpile)
             wt = WareType::Wood;
@@ -201,14 +201,14 @@ void nofCharburner::WalkingStarted()
 }
 
 /// Draws the figure while returning home / entering the building (often carrying wares)
-void nofCharburner::DrawWalkingWithWare(DrawPoint drawPt)
+void nofCharburner::drawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "charburner_bobs", 200);
+    drawWalking(drawPt, "charburner_bobs", 200);
 }
 
 /// Draws the charburner while walking
 /// (overriding standard method of nofFarmhand)
-void nofCharburner::DrawOtherStates(DrawPoint drawPt)
+void nofCharburner::drawOtherStates(DrawPoint drawPt)
 {
     switch(state)
     {
@@ -218,19 +218,19 @@ void nofCharburner::DrawOtherStates(DrawPoint drawPt)
             if(!harvest)
             {
                 if(wt == WareType::Wood)
-                    DrawWalking(drawPt, "charburner_bobs", 102);
+                    drawWalking(drawPt, "charburner_bobs", 102);
                 else
-                    DrawWalking(drawPt, "charburner_bobs", 151);
+                    drawWalking(drawPt, "charburner_bobs", 151);
             } else
                 // Draw normal walking
-                DrawWalking(drawPt);
+                drawWalking(drawPt);
         }
         break;
         default: return;
     }
 }
 
-bool nofCharburner::AreWaresAvailable() const
+bool nofCharburner::areWaresAvailable() const
 {
     // Charburner doesn't need wares for harvesting!
     // -> Wares are considered when calling GetPointQuality!

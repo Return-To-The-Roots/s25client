@@ -26,7 +26,7 @@ struct ArmoredSoldierFixture : public WorldWithGCExecution3P
                 curWh->setRealReserve(getSoldierRank(soldier), 0);
                 curWh->setReserveVisual(getSoldierRank(soldier), 0);
             }
-            curWh->AddToInventory(soldiers, true);
+            curWh->addToInventory(soldiers, true);
         }
     }
 };
@@ -49,7 +49,7 @@ struct ArmorTradeFixture : public ArmoredSoldierFixture
         world.getPlayer(2).team = Team::Team2;
         for(unsigned i = 0; i < world.getNumPlayers(); i++)
         {
-            world.getPlayer(i).MakeStartPacts();
+            world.getPlayer(i).makeStartPacts();
             players[i] = &world.getPlayer(i);
         }
         BOOST_TEST_REQUIRE(players[1]->isAlly(0));
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(TradeArmoredFigures)
     testAfterLeaving(3);
 
     // Let caravan arrive (20GFs per node)
-    unsigned distance = world.CalcDistance(curWh->getPos(), players[0]->getHQPos()) + 2;
+    unsigned distance = world.calcDistance(curWh->getPos(), players[0]->getHQPos()) + 2;
     RTTR_SKIP_GFS(20 * distance);
 
     curWh = world.getSpecObj<nobBaseWarehouse>(players[0]->getHQPos());
@@ -200,7 +200,7 @@ BOOST_AUTO_TEST_CASE(ArmorTradeFail)
     // Add a ring of enemy owned land so they cannot pass
     for(const MapPoint& pt : world.getPointsInRadius(curWh->getPos(), 10))
     {
-        if(world.CalcDistance(pt, curWh->getPos()) >= 8)
+        if(world.calcDistance(pt, curWh->getPos()) >= 8)
             world.setOwner(pt, 2 + 1); // playerID = 2 -> Owner = +1
     }
 

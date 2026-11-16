@@ -69,34 +69,34 @@ private:
     /// For boat carriers: path to the shore
     std::vector<Direction> shore_path;
 
-    void GoalReached() override;
-    void Walked() override;
-    void AbrogateWorkplace() override;
+    void goalReached() override;
+    void walked() override;
+    void abrogateWorkplace() override;
     /// Make the carrier loose/destroy the ware if he has any
-    void LooseWare();
+    void looseWare();
 
-    void HandleDerivedEvent(unsigned id) override;
+    void handleDerivedEvent(unsigned id) override;
 
     /// Nach dem Tragen der Ware, guckt der Träger an beiden Flagge, obs Waren gibt, holt/trägt diese ggf oder geht
     /// ansonsten wieder in die Mitte
-    void LookForWares();
+    void lookForWares();
     /// Nimmt eine Ware auf an der aktuellen Flagge und dreht sich um, um sie zu tragen (fetch_dir ist die Richtung der
     /// Waren, die der Träger aufnehmen will)
-    void FetchWare(bool swap_wares);
+    void fetchWare(bool swap_wares);
 
     /// Prüft, ob die getragene Ware dann von dem Weg zum Gebäude will
-    bool WantInBuilding(bool* calculated);
+    bool wantInBuilding(bool* calculated);
 
     /// Für Produktivitätsmessungen: fängt an zu arbeiten
-    void StartWorking();
+    void startWorking();
     /// Für Produktivitätsmessungen: hört auf zu arbeiten
-    void StopWorking();
+    void stopWorking();
 
     /// Bestimmt neuen Animationszeitpunkt
     void setNewAnimationMoment();
 
     /// Boat carrier paddles to the coast after his road was destroyed
-    void WanderOnWater();
+    void wanderOnWater();
 
 public:
     nofCarrier(CarrierType ct, MapPoint pos, unsigned char player, RoadSegment* workplace, noRoadNode* goal);
@@ -107,7 +107,7 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    void Destroy() override;
+    void destroy() override;
 
     GO_Type getGOT() const final { return GO_Type::NofCarrier; }
 
@@ -118,25 +118,25 @@ public:
     /// Gibt Träger-Produktivität in % zurück
     unsigned getProductivity() const { return productivity; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Wird aufgerufen, wenn der Weg des Trägers abgerissen wurde
-    void LostWork();
+    void lostWork();
 
     /// Wird aufgerufen, wenn der Arbeitsplatz des Trägers durch eine Flagge geteilt wurde
     /// der Träger sucht sich damit einen der beiden als neuen Arbeitsplatz, geht zur Mitte und ruft einen neuen Träger
     /// für das 2. Wegstück
-    void RoadSplitted(RoadSegment* rs1, RoadSegment* rs2);
+    void roadSplitted(RoadSegment* rs1, RoadSegment* rs2);
 
     /// Sagt dem Träger Bescheid, dass es an einer Flagge noch eine Ware zu transportieren gibt
-    bool AddWareJob(const noRoadNode* rn);
+    bool addWareJob(const noRoadNode* rn);
     /// Das Gegnteil von AddWareJob: wenn eine Ware nicht mehr transportiert werden will, sagt sie dem Träger Bescheid,
     /// damit er nicht unnötig dort hinläuft zur Flagge
-    void RemoveWareJob();
+    void removeWareJob();
 
     /// Benachrichtigt den Träger, wenn an einer auf seinem Weg an einer Flagge wieder ein freier Platz ist
     /// gibt zurück, ob der Träger diesen freien Platz auch nutzen wird
-    bool SpaceAtFlag(bool flag);
+    bool spaceAtFlag(bool flag);
 
     /// Gibt erste Flagge des Arbeitsweges zurück, falls solch einer existiert
     noRoadNode* getFirstFlag() const;

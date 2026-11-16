@@ -54,9 +54,9 @@ public:
     void applyLegacyInexhaustibleMines();
 
     /// loads the saved addon configuration from the SETTINGS.
-    void LoadSettings();
+    void loadSettings();
     /// saves the current addon configuration to the SETTINGS.
-    void SaveSettings() const;
+    void saveSettings() const;
 
     /// Get current maximum rank for soldiers
     /// 0 = Private, 1 = Private First Class, ...

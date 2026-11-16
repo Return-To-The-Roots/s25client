@@ -15,21 +15,21 @@ BOOST_FIXTURE_TEST_CASE(WrapInfoVaryingLen, uiHelper::Fixture)
     LOADER.initResourceFolders();
     {
         rttr::test::LogAccessor logAcc;
-        BOOST_TEST(LOADER.LoadFonts());
+        BOOST_TEST(LOADER.loadFonts());
         logAcc.clearLog();
     }
     const auto& font = *SmallFont;
     std::string input = "a\naa\naaa\naaaa\naaaaa\naa";
     auto output = std::vector<std::string>{"a", "aa", "aaa", "aaaa", "aaaa", "a", "aa"};
-    glFont::WrapInfo wrapInfo = font.getWrapInfo(input, font.CharWidth('a') * 4, font.CharWidth('a') * 4);
+    glFont::WrapInfo wrapInfo = font.getWrapInfo(input, font.charWidth('a') * 4, font.charWidth('a') * 4);
     BOOST_TEST(wrapInfo.lines.size() == output.size());
-    BOOST_TEST(wrapInfo.CreateSingleStrings(input) == output, boost::test_tools::per_element{});
+    BOOST_TEST(wrapInfo.createSingleStrings(input) == output, boost::test_tools::per_element{});
 
     input = "a aa aaa aaaa aaaaa aa";
     output = std::vector<std::string>{"a aa", "aaa", "aaaa", "aaaa", "a aa"};
-    wrapInfo = font.getWrapInfo(input, font.CharWidth('a') * 4, font.CharWidth('a') * 4);
+    wrapInfo = font.getWrapInfo(input, font.charWidth('a') * 4, font.charWidth('a') * 4);
     BOOST_TEST(wrapInfo.lines.size() == output.size());
-    BOOST_TEST(wrapInfo.CreateSingleStrings(input) == output, boost::test_tools::per_element{});
+    BOOST_TEST(wrapInfo.createSingleStrings(input) == output, boost::test_tools::per_element{});
 }
 
 BOOST_FIXTURE_TEST_CASE(WrapInfoWithTrailingNewlines, uiHelper::Fixture)
@@ -38,7 +38,7 @@ BOOST_FIXTURE_TEST_CASE(WrapInfoWithTrailingNewlines, uiHelper::Fixture)
     const auto output = std::vector<std::string>{"a1", "b234", "", "c4124", "", "", ""};
     const glFont::WrapInfo wrapInfo = SmallFont->getWrapInfo(input, 1000, 1000);
     BOOST_TEST(wrapInfo.lines.size() == output.size());
-    BOOST_TEST(wrapInfo.CreateSingleStrings(input) == output, boost::test_tools::per_element{});
+    BOOST_TEST(wrapInfo.createSingleStrings(input) == output, boost::test_tools::per_element{});
 }
 
 BOOST_AUTO_TEST_SUITE_END()

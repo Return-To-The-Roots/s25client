@@ -24,10 +24,10 @@ public:
     ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                   const glFont* font, FontStyle format);
 
-    void Resize(const Extent& newSize) override;
-    void AddString(const std::string& str, unsigned color, bool scroll = true);
+    void resize(const Extent& newSize) override;
+    void addString(const std::string& str, unsigned color, bool scroll = true);
     /// Deletes all lines
-    void Clear();
+    void clear();
     unsigned getNumLines() const { return static_cast<unsigned>(lines.size()); }
     /// Gibt den index-ten Eintrag zurück
     const std::string& getLine(unsigned index) const { return lines[index].str; }
@@ -38,7 +38,7 @@ public:
     Extent getContentSize() const;
 
     /// Schaltet Box ein und aus
-    void ShowBackground(bool showBackground) { showBackground_ = showBackground; }
+    void showBackground(bool showBackground) { showBackground_ = showBackground; }
     /// (Dis-)allows a scrollbar. If scrollbar is disabled, text will be restricted by the current height and succeeding
     /// lines won't be shown
     void setScrollBarAllowed(bool allowed);
@@ -50,7 +50,7 @@ public:
     bool msgMouseMove(const MouseCoords& mc) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
     struct Line
@@ -77,6 +77,6 @@ private:
     /// Width of content as last calculated or 0
     mutable unsigned cachedContentWidth;
 
-    void RecalcVisibleLines();
-    void RecalcWrappedLines();
+    void recalcVisibleLines();
+    void recalcWrappedLines();
 };

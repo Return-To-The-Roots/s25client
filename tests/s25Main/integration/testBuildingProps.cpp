@@ -23,7 +23,7 @@ BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)
     {
         if(!BuildingProperties::isValid(bldType))
             continue;
-        noBuilding* bld = BuildingFactory::CreateBuilding(world, bldType, bldPos, 0, Nation::Romans);
+        noBuilding* bld = BuildingFactory::createBuilding(world, bldType, bldPos, 0, Nation::Romans);
         BOOST_TEST_REQUIRE(bld);
         if(BuildingProperties::isMilitary(bldType))
             BOOST_TEST_REQUIRE(dynamic_cast<nobMilitary*>(bld));
@@ -37,8 +37,8 @@ BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)
             BOOST_TEST_REQUIRE(dynamic_cast<nobUsual*>(bld)); // At least a usual
         if(BuildingProperties::isUsual(bldType))
             BOOST_TEST_REQUIRE(dynamic_cast<nobUsual*>(bld));
-        world.DestroyNO(bldPos);
+        world.destroyNO(bldPos);
         // Destroy fire
-        world.DestroyNO(bldPos);
+        world.destroyNO(bldPos);
     }
 }

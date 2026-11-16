@@ -18,8 +18,8 @@ protected:
     void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
 
 private:
-    void AdjustExpeditionButton(bool flip);
-    void AdjustExplorationExpeditionButton(bool flip);
+    void adjustExpeditionButton(bool flip);
+    void adjustExplorationExpeditionButton(bool flip);
 
     unsigned grpIdExpedition;
 };

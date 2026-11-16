@@ -24,7 +24,7 @@ class SwitchOnStart : public ClientInterface
 {
 public:
     SwitchOnStart() { GAMECLIENT.setInterface(this); }
-    ~SwitchOnStart() override { GAMECLIENT.RemoveInterface(this); }
+    ~SwitchOnStart() override { GAMECLIENT.removeInterface(this); }
 
     void CI_GameLoading(std::shared_ptr<Game> game) override
     {
@@ -51,7 +51,7 @@ std::vector<AI::Info> ParseAIOptions(const std::vector<std::string>& aiOptions)
     return aiInfos;
 }
 
-bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::vector<std::string>& ais)
+bool quickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::vector<std::string>& ais)
 {
     if(!exists(mapOrReplayPath))
     {
@@ -65,7 +65,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     if(loader.getPlaylist())
         MUSICPLAYER.setPlaylist(std::move(*loader.getPlaylist()));
     if(SETTINGS.sound.musicEnabled)
-        MUSICPLAYER.Play();
+        MUSICPLAYER.play();
 
     // An AI-battle is a single-player game.
     const bool isSinglePlayer = !ais.empty();
@@ -87,16 +87,16 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
 
     WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
-    if((extension == ".sav" && GAMECLIENT.HostGame(csi, {mapOrReplayPath, MapType::Savegame}))
+    if((extension == ".sav" && GAMECLIENT.hostGame(csi, {mapOrReplayPath, MapType::Savegame}))
        || ((extension == ".swd" || extension == ".wld")
-           && GAMECLIENT.HostGame(csi, {mapOrReplayPath, MapType::OldMap})))
+           && GAMECLIENT.hostGame(csi, {mapOrReplayPath, MapType::OldMap})))
     {
         GAMECLIENT.setAIBattlePlayers(std::move(aiInfos));
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
         return true;
     } else
     {
         SwitchOnStart switchOnStart;
-        return GAMECLIENT.StartReplay(mapOrReplayPath);
+        return GAMECLIENT.startReplay(mapOrReplayPath);
     }
 }

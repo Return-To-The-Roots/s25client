@@ -12,9 +12,9 @@ ctrlImage::ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, ITexture
 
 ctrlImage::~ctrlImage() = default;
 
-void ctrlImage::Draw_()
+void ctrlImage::drawImpl()
 {
-    DrawImage(Rect(getDrawPos(), getImageRect().getSize()));
+    drawImage(Rect(getDrawPos(), getImageRect().getSize()));
 }
 
 bool ctrlImage::msgMouseMove(const MouseCoords& mc)
@@ -22,9 +22,9 @@ bool ctrlImage::msgMouseMove(const MouseCoords& mc)
     if(getImage())
     {
         if(isMouseOver(mc.pos))
-            ShowTooltip();
+            showTooltip();
         else
-            HideTooltip();
+            hideTooltip();
     }
 
     return false;

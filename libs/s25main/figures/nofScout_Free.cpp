@@ -25,16 +25,16 @@ void nofScout_Free::Serialize(SerializedGameData& sgd) const
 }
 
 nofScout_Free::nofScout_Free(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFlagWorker(sgd, obj_id), nextPos(sgd.PopMapPoint()), rest_way(sgd.PopUnsignedInt())
+    : nofFlagWorker(sgd, obj_id), nextPos(sgd.popMapPoint()), rest_way(sgd.PopUnsignedInt())
 {}
 
-void nofScout_Free::Draw(DrawPoint drawPt)
+void nofScout_Free::draw(DrawPoint drawPt)
 {
     // normales Laufen zeichnen
-    DrawWalking(drawPt);
+    drawWalking(drawPt);
 }
 
-void nofScout_Free::GoalReached()
+void nofScout_Free::goalReached()
 {
     /// Bestimmte Anzahl an Punkten abklappern, leicht variieren
     rest_way = 80 + RANDOM_RAND(20);
@@ -42,22 +42,22 @@ void nofScout_Free::GoalReached()
     state = State::ScoutScouting;
 
     // Loslegen
-    GoToNewNode();
+    goToNewNode();
 }
 
-void nofScout_Free::Walked()
+void nofScout_Free::walked()
 {
     switch(state)
     {
         default: break;
-        case State::GoToFlag: GoToFlag(); break;
-        case State::ScoutScouting: Scout(); break;
+        case State::GoToFlag: goToFlag(); break;
+        case State::ScoutScouting: scout(); break;
     }
 }
 
-void nofScout_Free::HandleDerivedEvent(const unsigned /*id*/) {}
+void nofScout_Free::handleDerivedEvent(const unsigned /*id*/) {}
 
-void nofScout_Free::LostWork()
+void nofScout_Free::lostWork()
 {
     flag = nullptr;
 
@@ -67,14 +67,14 @@ void nofScout_Free::LostWork()
         // Wenn wir noch hingehen, dann zurückgehen
         case State::FigureWork:
         {
-            GoHome();
+            goHome();
         }
         break;
         case State::GoToFlag:
         case State::ScoutScouting:
         {
             // dann sofort rumirren, wenn wir zur Flagge gehen
-            StartWandering();
+            startWandering();
             state = State::FigureWork;
         }
         break;
@@ -82,14 +82,14 @@ void nofScout_Free::LostWork()
 }
 
 /// Erkundet (quasi ein Umherirren)
-void nofScout_Free::Scout()
+void nofScout_Free::scout()
 {
     // Erkundet er noch, ist aber schon seine maximale Wegstrecke abgelaufen?
     if(--rest_way == 0)
     {
         // Wieder zur Flagge zurückgehen
         state = State::GoToFlag;
-        GoToFlag();
+        goToFlag();
         return;
     }
 
@@ -97,19 +97,19 @@ void nofScout_Free::Scout()
     if(pos == nextPos)
     {
         // Nächsten Punkt suchen
-        GoToNewNode();
+        goToNewNode();
     } else
     {
         // Weg suchen
-        const auto dir = world->FindHumanPath(pos, nextPos, 30);
+        const auto dir = world->findHumanPath(pos, nextPos, 30);
 
         // Wenns keinen gibt, neuen suchen, ansonsten hinlaufen
         if(dir)
-            StartWalking(*dir);
+            startWalking(*dir);
         else
         {
             // Neuen Punkt suchen
-            GoToNewNode();
+            goToNewNode();
         }
     }
 }
@@ -126,13 +126,13 @@ struct IsScoutable
     bool operator()(const MapPoint& pt) const
     {
         // Liegt Punkt im Nebel und für Figuren begehbar?
-        return world.CalcVisiblityWithAllies(pt, player) != Visibility::Visible
+        return world.calcVisiblityWithAllies(pt, player) != Visibility::Visible
                && PathConditionHuman(world).isNodeOk(pt);
     }
 };
 } // namespace
 
-void nofScout_Free::GoToNewNode()
+void nofScout_Free::goToNewNode()
 {
     std::vector<MapPoint> available_points =
       world->GetMatchingPointsInRadius<-1>(flag->getPos(), SCOUT_RANGE, IsScoutable(player, *world));
@@ -141,19 +141,19 @@ void nofScout_Free::GoToNewNode()
     {
         // Is there a path to this point and is the point also not to far away from the flag?
         // (Second check avoids running around mountains with a very far way back)
-        if(world->FindHumanPath(pos, pt, SCOUT_RANGE * 2)
-           && world->FindHumanPath(flag->getPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4))
+        if(world->findHumanPath(pos, pt, SCOUT_RANGE * 2)
+           && world->findHumanPath(flag->getPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4))
         {
             // Take it
             nextPos = pt;
-            Scout();
+            scout();
             return;
         }
     }
 
     // Nothing found -> Go back
     state = State::GoToFlag;
-    GoToFlag();
+    goToFlag();
 }
 
 /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)

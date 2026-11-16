@@ -256,12 +256,12 @@ int main(int argc, char** argv)
         HeadlessGame game(ggs, mapPath, ais, opts.lua_path ? RTTRCONFIG.ExpandPath(*opts.lua_path) : bfs::path{},
                           teams);
         if(opts.replay_path)
-            game.RecordReplay(RTTRCONFIG.ExpandPath(*opts.replay_path), opts.random_init);
+            game.recordReplay(RTTRCONFIG.ExpandPath(*opts.replay_path), opts.random_init);
 
-        game.Run(opts.maxGF);
-        game.Close();
+        game.run(opts.maxGF);
+        game.close();
         if(opts.savegame_path)
-            game.SaveGame(RTTRCONFIG.ExpandPath(*opts.savegame_path));
+            game.saveGame(RTTRCONFIG.ExpandPath(*opts.savegame_path));
     } catch(const std::exception& e)
     {
         bnw::cerr << e.what() << std::endl;

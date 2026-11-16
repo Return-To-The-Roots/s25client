@@ -24,19 +24,19 @@ void nofPlaner::Serialize(SerializedGameData& sgd) const
 {
     noFigure::Serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(state);
-    sgd.PushObject(building_site, true);
-    sgd.PushEnum<uint8_t>(pd);
+    sgd.pushEnum<uint8_t>(state);
+    sgd.pushObject(building_site, true);
+    sgd.pushEnum<uint8_t>(pd);
 }
 
 nofPlaner::nofPlaner(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
 {
-    state = sgd.Pop<PlanerState>();
-    building_site = sgd.PopObject<noBuildingSite>(GO_Type::Buildingsite);
-    pd = sgd.Pop<PlaningDir>();
+    state = sgd.pop<PlanerState>();
+    building_site = sgd.popObject<noBuildingSite>(GO_Type::Buildingsite);
+    pd = sgd.pop<PlaningDir>();
 }
 
-void nofPlaner::GoalReached()
+void nofPlaner::goalReached()
 {
     state = PlanerState::Walking;
 
@@ -44,16 +44,16 @@ void nofPlaner::GoalReached()
     pd = (RANDOM_RAND(2) == 0) ? (PlaningDir::Clockwise) : (PlaningDir::Counterclockwise);
 
     // Je nachdem erst nach rechts oder links gehen
-    StartWalking((pd == PlaningDir::Clockwise) ? Direction::SouthWest : Direction::East);
+    startWalking((pd == PlaningDir::Clockwise) ? Direction::SouthWest : Direction::East);
 }
 
-void nofPlaner::Walked()
+void nofPlaner::walked()
 {
     /// Zur Baustelle zurückgelaufen? (=fertig)
     if(pos == building_site->getPos())
     {
         // Baustelle Bescheid sagen
-        building_site->PlaningFinished();
+        building_site->planingFinished();
 
         state = PlanerState::FigureWork;
 
@@ -63,59 +63,59 @@ void nofPlaner::Walked()
         cur_rs = world->getSpecObj<noRoadNode>(pos)->getRoute(Direction::SouthEast);
         building_site = nullptr;
 
-        GoHome();
-        StartWalking(Direction::SouthEast);
+        goHome();
+        startWalking(Direction::SouthEast);
     } else
     {
         /// Anfangen zu arbeiten
-        current_ev = getEvMgr().AddEvent(this, JOB_CONSTS[Job::Planer].work_length, 1);
+        current_ev = getEvMgr().addEvent(this, JOB_CONSTS[Job::Planer].work_length, 1);
         state = PlanerState::Planing;
     }
 }
 
-void nofPlaner::AbrogateWorkplace()
+void nofPlaner::abrogateWorkplace()
 {
     if(building_site)
     {
         state = PlanerState::FigureWork;
-        building_site->Abrogate();
+        building_site->abrogate();
         building_site = nullptr;
     }
 }
 
-void nofPlaner::LostWork()
+void nofPlaner::lostWork()
 {
     building_site = nullptr;
 
     if(state == PlanerState::FigureWork)
-        GoHome();
+        goHome();
     else
     {
         // Event ggf. abmelden
         if(state == PlanerState::Planing)
         {
-            getEvMgr().RemoveEvent(current_ev);
+            getEvMgr().removeEvent(current_ev);
             /// Sounds abmelden
             world->getSoundMgr().stopSounds(*this);
         }
 
-        StartWandering();
+        startWandering();
         // wenn wir schon laufen, nicht nochmal laufen!
         if(state != PlanerState::Walking)
-            Wander();
+            wander();
 
         state = PlanerState::FigureWork;
     }
 }
 
-void nofPlaner::Draw(DrawPoint drawPt)
+void nofPlaner::draw(DrawPoint drawPt)
 {
     switch(state)
     {
         case PlanerState::FigureWork:
         case PlanerState::Walking:
         {
-            DrawWalkingBobJobs(drawPt, Job::Planer);
+            drawWalkingBobJobs(drawPt, Job::Planer);
         }
         break;
         case PlanerState::Planing:
@@ -123,7 +123,7 @@ void nofPlaner::Draw(DrawPoint drawPt)
             // 41
 
             /// Animation des Planierers
-            unsigned now_id = GAMECLIENT.Interpolate(69, current_ev);
+            unsigned now_id = GAMECLIENT.interpolate(69, current_ev);
 
             // spezielle Animation am Ende
             const std::array<unsigned, 21> ANIMATION = {273, 273, 273, 273, 273, 274, 274, 275, 276, 276, 276,
@@ -139,7 +139,7 @@ void nofPlaner::Draw(DrawPoint drawPt)
             else
                 bobId = 253 + now_id - 55;
             LOADER.getPlayerImage("rom_bobs", bobId)
-              ->DrawFull(drawPt, COLOR_WHITE, world->getPlayer(building_site->getPlayer()).color);
+              ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(building_site->getPlayer()).color);
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)
@@ -152,13 +152,13 @@ void nofPlaner::Draw(DrawPoint drawPt)
     }
 }
 
-void nofPlaner::HandleDerivedEvent(const unsigned id)
+void nofPlaner::handleDerivedEvent(const unsigned id)
 {
     if(id == 1)
     {
         // Planieren (falls Baustelle noch existiert)
         if(building_site)
-            world->ChangeAltitude(pos, world->getNode(building_site->getPos()).altitude);
+            world->changeAltitude(pos, world->getNode(building_site->getPos()).altitude);
         /// Sounds abmelden
         world->getSoundMgr().stopSounds(*this);
 
@@ -170,17 +170,17 @@ void nofPlaner::HandleDerivedEvent(const unsigned id)
         // Das erste Mal gelaufen?
         if((pd == PlaningDir::Clockwise && curDir == Direction::SouthWest)
            || (pd == PlaningDir::Counterclockwise && curDir == Direction::East))
-            StartWalking(Direction::NorthWest);
+            startWalking(Direction::NorthWest);
         // Fertig -> zur Baustelle zurücklaufen
         else if(pd == PlaningDir::Clockwise && curDir == Direction::SouthEast)
-            StartWalking(Direction::West);
+            startWalking(Direction::West);
         else if(pd == PlaningDir::Counterclockwise && curDir == Direction::SouthEast)
-            StartWalking(Direction::NorthEast);
+            startWalking(Direction::NorthEast);
 
         // In nächste Richtung gehen
         else if(pd == PlaningDir::Clockwise)
-            StartWalking(curDir + 1u);
+            startWalking(curDir + 1u);
         else
-            StartWalking(curDir - 1u);
+            startWalking(curDir - 1u);
     }
 }

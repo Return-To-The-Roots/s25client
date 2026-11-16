@@ -16,16 +16,16 @@ private:
     bool harvest;
 
     /// Malt den Arbeiter beim Arbeiten
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short getCarryID() const override;
 
     /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-    void WorkStarted() override;
+    void workStarted() override;
     /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-    void WorkFinished() override;
+    void workFinished() override;
     /// Abgeleitete Klasse informieren, wenn Arbeiten abgebrochen werden müssen
-    void WorkAborted() override;
+    void workAborted() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
     PointQuality getPointQuality(MapPoint pt, bool isBeforeWork) const override;

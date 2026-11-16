@@ -79,7 +79,7 @@ public:
     // Grundlegende Initialisierungen
     void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>(0)) override;
     // Remaining initialization after loading (BQ...)
-    void InitAfterLoad();
+    void initAfterLoad();
 
     GameInterface* getGameInterface() { return gi; }
     const GameInterface* getGameInterface() const { return gi; }
@@ -93,7 +93,7 @@ public:
     /// Should only be used for the points between the 2 flags of a road
     bool isRoadAvailable(bool boat_road, MapPoint pt) const;
     /// Check if this road already exists completely
-    bool RoadAlreadyBuilt(bool boat_road, MapPoint start, const std::vector<Direction>& route);
+    bool roadAlreadyBuilt(bool boat_road, MapPoint start, const std::vector<Direction>& route);
     bool isOnRoad(const MapPoint& pt) const;
     /// Check if a flag is at a neighbour node
     bool isFlagAround(const MapPoint& pt) const;
@@ -102,7 +102,7 @@ public:
     bool isAnyNeighborOwned(const MapPoint& pt) const;
 
     /// Berechnet BQ bei einer gebauten Stra�e
-    void RecalcBQForRoad(MapPoint pt);
+    void recalcBQForRoad(MapPoint pt);
     /// Pr�ft, ob sich in unmittelbarer N�he (im Radius von 4) Milit�rgeb�ude befinden
     bool isMilitaryBuildingNearNode(MapPoint nPt, unsigned char player) const;
     /// Return true if there is a military building or building site on the node
@@ -111,18 +111,18 @@ public:
     bool isMilitaryBuildingOnNode(MapPoint pt, bool attackBldsOnly) const;
     /// Erstellt eine Liste mit allen Milit�rgeb�uden in der Umgebung, radius bestimmt wie viele K�stchen nach einer
     /// Richtung im Umkreis
-    sortedMilitaryBlds LookForMilitaryBuildings(MapPoint pt, unsigned short radius) const;
+    sortedMilitaryBlds lookForMilitaryBuildings(MapPoint pt, unsigned short radius) const;
 
     /// Finds a path for figures. Returns first direction to walk in if found
-    helpers::OptionalEnum<Direction> FindHumanPath(MapPoint start, MapPoint dest, unsigned max_route = 0xFFFFFFFF,
+    helpers::OptionalEnum<Direction> findHumanPath(MapPoint start, MapPoint dest, unsigned max_route = 0xFFFFFFFF,
                                                    bool random_route = false, unsigned* length = nullptr,
                                                    std::vector<Direction>* route = nullptr) const;
     /// Find path for ships to a specific harbor and see. Return true on success
     /// If starting point equals the coastal point of target harbor, set length 0, clear route and return true.
-    bool FindShipPathToHarbor(MapPoint start, HarborId harborId, SeaId seaId, std::vector<Direction>* route,
+    bool findShipPathToHarbor(MapPoint start, HarborId harborId, SeaId seaId, std::vector<Direction>* route,
                               unsigned* length) const;
     /// Find path for ships with a limited distance. Return true on success
-    bool FindShipPath(MapPoint start, MapPoint dest, unsigned maxDistance, std::vector<Direction>* route,
+    bool findShipPath(MapPoint start, MapPoint dest, unsigned maxDistance, std::vector<Direction>* route,
                       unsigned* length) const;
     RoadPathFinder& getRoadPathFinder() const { return *roadPathFinder; }
     FreePathFinder& getFreePathFinder() const { return *freePathFinder; }
@@ -138,12 +138,12 @@ public:
     Position getNodePos(MapPoint pt) const;
 
     /// Berechnet Bauqualitäten an Punkt x;y und den ersten Kreis darum neu
-    void RecalcBQAroundPoint(MapPoint pt);
+    void recalcBQAroundPoint(MapPoint pt);
     /// Berechnet Bauqualitäten wie bei letzterer Funktion, bloß noch den 2. Kreis um x;y herum
-    void RecalcBQAroundPointBig(MapPoint pt);
+    void recalcBQAroundPointBig(MapPoint pt);
 
     /// Ermittelt Sichtbarkeit eines Punktes auch unter Einbeziehung der Verbündeten des jeweiligen Spielers
-    Visibility CalcVisiblityWithAllies(MapPoint pt, unsigned char player) const;
+    Visibility calcVisiblityWithAllies(MapPoint pt, unsigned char player) const;
 
     /// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
     bool isHarborPointFree(HarborId harborId, unsigned char player) const;
@@ -154,7 +154,7 @@ public:
     HarborId getNextFreeHarborPoint(MapPoint pt, HarborId originHarborId, const ShipDirection& dir,
                                     unsigned char player) const;
     /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
-    unsigned CalcDistanceToNearestHarbor(MapPoint pos) const;
+    unsigned calcDistanceToNearestHarbor(MapPoint pos) const;
     /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
     bool isAHarborInSeaAttackDistance(MapPoint pos) const;
 
@@ -222,7 +222,7 @@ public:
     unsigned getNumSoldiersForSeaAttackAtSea(unsigned char player_attacker, SeaId sea, bool returnCount = true) const;
 
     /// Recalculates the BQ for the given point
-    void RecalcBQ(MapPoint pt);
+    void recalcBQ(MapPoint pt);
 
     void setComputerBarrier(const MapPoint& pt, unsigned radius);
     bool isInsideComputerBarrier(const MapPoint& pt) const;
@@ -233,9 +233,9 @@ public:
 
 protected:
     /// Called when the visibility of point changed for a player
-    void VisibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;
+    void visibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;
     /// Called, when the altitude of a point was changed
-    void AltitudeChanged(MapPoint pt) override;
+    void altitudeChanged(MapPoint pt) override;
 
 private:
     /// Returns the harbor ID of the next matching harbor in the given direction (0 = None)

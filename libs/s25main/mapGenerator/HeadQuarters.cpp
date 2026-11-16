@@ -14,7 +14,7 @@ std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
     std::set<MapPoint, MapPointLess> visited;
     std::vector<MapPoint> connectedArea;
 
-    auto partiallyBuildable = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, isBuildableLand); };
+    auto partiallyBuildable = [&map](const MapPoint& pt) { return map.textureMap.any(pt, isBuildableLand); };
 
     auto partiallyConnected = [&map, &partiallyBuildable](const MapPoint& pt) {
         return helpers::contains_if(map.getTextures().getNeighbours(pt), partiallyBuildable);
@@ -37,12 +37,12 @@ std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
     // added before due to allowing tiny rivers to be part of
     // connected areas
 
-    helpers::erase_if(connectedArea, [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsWater); });
+    helpers::erase_if(connectedArea, [&map](const MapPoint& pt) { return map.textureMap.any(pt, IsWater); });
 
     return connectedArea;
 }
 
-void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistance distance, int retries)
+void placeHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistance distance, int retries)
 {
     auto maxRetries = retries;
     auto success = false;
@@ -64,7 +64,7 @@ void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistanc
                 break;
             }
 
-            auto hq = retries == maxRetries ? possiblePositions.front() : rnd.RandomItem(possiblePositions);
+            auto hq = retries == maxRetries ? possiblePositions.front() : rnd.randomItem(possiblePositions);
 
             map.hqPositions.push_back(hq);
         }
@@ -75,7 +75,7 @@ void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistanc
     if(!success)
         throw std::runtime_error("Could not find any valid HQ position!");
     for(const MapPoint hqPos : map.hqPositions)
-        FlattenForCastleBuilding(map.z, hqPos);
+        flattenForCastleBuilding(map.z, hqPos);
 }
 
 } // namespace rttr::mapGenerator

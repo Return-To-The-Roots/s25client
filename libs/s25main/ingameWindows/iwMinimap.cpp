@@ -30,33 +30,33 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
                    LOADER.getImageN("resource", 41)),
       extended(SETTINGS.ingame.minimapExtended)
 {
-    AddCtrl(std::make_unique<ctrlIngameMinimap>(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE),
+    addCtrl(std::make_unique<ctrlIngameMinimap>(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE),
                                                 Extent::all(WINDOW_MAP_SPACE), minimap, gwv));
 
     // Land, Häuser, Straßen an/aus
     DrawPoint curPos(contentOffset.x + WINDOW_MAP_SPACE, 0);
     for(unsigned i = 0; i < 3; ++i)
     {
-        AddImageButton(i + 1, curPos, BUTTON_SIZE, TextureColor::Grey, LOADER.getImageN("io", 85 + i));
+        addImageButton(i + 1, curPos, BUTTON_SIZE, TextureColor::Grey, LOADER.getImageN("io", 85 + i));
         curPos.x += BUTTON_SIZE.x;
     }
 
     // Fenster vergrößern/verkleinern
-    AddImageButton(4, DrawPoint(0, 0), BUTTON_SIZE, TextureColor::Grey, LOADER.getImageN("io", 109));
+    addImageButton(4, DrawPoint(0, 0), BUTTON_SIZE, TextureColor::Grey, LOADER.getImageN("io", 109));
 
-    Resize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
+    resize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
 }
 
 /// Verändert die Größe des Fensters und positioniert alle Controls etc. neu
-void iwMinimap::Resize(const Extent& newSize)
+void iwMinimap::resize(const Extent& newSize)
 {
-    IngameWindow::Resize(newSize);
+    IngameWindow::resize(newSize);
     auto* im = getCtrl<ctrlIngameMinimap>(0);
 
-    im->Resize(newSize - contentOffset - contentOffsetEnd);
+    im->resize(newSize - contentOffset - contentOffsetEnd);
 
     // Control kürzen in der Höhe
-    im->RemoveBoundingBox(Extent(BUTTON_SIZE.x * 4 + WINDOW_MAP_SPACE * 2, 0));
+    im->removeBoundingBox(Extent(BUTTON_SIZE.x * 4 + WINDOW_MAP_SPACE * 2, 0));
 
     // Fensterbreite anpassen
     setIwSize(im->getSize() + Extent(0, WINDOW_MAP_SPACE + BUTTON_MAP_SPACE + BUTTON_SIZE.y + BUTTON_WINDOW_SPACE));
@@ -82,16 +82,16 @@ void iwMinimap::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 1: getCtrl<ctrlIngameMinimap>(0)->ToggleTerritory(); break;
-        case 2: getCtrl<ctrlIngameMinimap>(0)->ToggleHouses(); break;
-        case 3: getCtrl<ctrlIngameMinimap>(0)->ToggleRoads(); break;
+        case 1: getCtrl<ctrlIngameMinimap>(0)->toggleTerritory(); break;
+        case 2: getCtrl<ctrlIngameMinimap>(0)->toggleHouses(); break;
+        case 3: getCtrl<ctrlIngameMinimap>(0)->toggleRoads(); break;
         case 4:
         {
             // Fenster vergrößern/verkleinern
             this->extended = !extended;
             SETTINGS.ingame.minimapExtended = extended;
 
-            Resize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
+            resize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
         }
         break;
     }

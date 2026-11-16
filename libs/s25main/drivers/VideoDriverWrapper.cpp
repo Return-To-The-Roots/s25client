@@ -36,15 +36,15 @@ VideoDriverWrapper::VideoDriverWrapper()
 
 VideoDriverWrapper::~VideoDriverWrapper()
 {
-    CleanUp();
-    UnloadDriver();
+    cleanUp();
+    unloadDriver();
 }
 
-bool VideoDriverWrapper::Initialize()
+bool VideoDriverWrapper::initialize()
 {
-    if(!videodriver || !videodriver->Initialize())
+    if(!videodriver || !videodriver->initialize())
     {
-        UnloadDriver();
+        unloadDriver();
         return false;
     }
 
@@ -56,16 +56,16 @@ bool VideoDriverWrapper::Initialize()
     return true;
 }
 
-bool VideoDriverWrapper::LoadDriver(IVideoDriver* existingDriver)
+bool VideoDriverWrapper::loadDriver(IVideoDriver* existingDriver)
 {
-    UnloadDriver();
+    unloadDriver();
     videodriver = Handle(existingDriver, [](IVideoDriver* p) { delete p; });
-    return Initialize();
+    return initialize();
 }
 
-bool VideoDriverWrapper::LoadDriver(std::string& preference)
+bool VideoDriverWrapper::loadDriver(std::string& preference)
 {
-    UnloadDriver();
+    unloadDriver();
     // DLL laden
     if(!driver_wrapper.Load(drivers::DriverType::Video, preference))
         return false;
@@ -75,17 +75,17 @@ bool VideoDriverWrapper::LoadDriver(std::string& preference)
     RTTR_Assert(createVideoInstance && freeVideoInstance);
 
     videodriver = Handle(createVideoInstance(&WINDOWMANAGER), freeVideoInstance);
-    return Initialize();
+    return initialize();
 }
 
-void VideoDriverWrapper::UnloadDriver()
+void VideoDriverWrapper::unloadDriver()
 {
     videodriver.reset();
-    driver_wrapper.Unload();
+    driver_wrapper.unload();
     renderer_.reset();
 }
 
-bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode displayMode)
+bool VideoDriverWrapper::createScreen(const VideoMode size, const DisplayMode displayMode)
 {
     if(!videodriver)
     {
@@ -93,7 +93,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode di
         return false;
     }
 
-    if(!videodriver->CreateScreen(rttr::version::getTitle(), size, displayMode))
+    if(!videodriver->createScreen(rttr::version::getTitle(), size, displayMode))
     {
         s25util::fatal_error("Could not create window!");
         return false;
@@ -101,16 +101,16 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode di
 
     // DriverWrapper Initialisieren
     // Extensions laden
-    if(!LoadAllExtensions())
+    if(!loadAllExtensions())
     {
         s25util::fatal_error("Failed to initialize the OpenGL context!");
         return false;
     }
 
-    RenewViewport();
+    renewViewport();
 
     // Buffer swappen um den leeren Buffer darzustellen
-    SwapBuffers();
+    swapBuffers();
 
     // WindowManager informieren
     WINDOWMANAGER.msgScreenResize(getRenderSize());
@@ -118,7 +118,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode di
     return true;
 }
 
-bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const DisplayMode displayMode)
+bool VideoDriverWrapper::resizeScreen(const VideoMode size, const DisplayMode displayMode)
 {
     if(!videodriver)
     {
@@ -126,7 +126,7 @@ bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const DisplayMode di
         return false;
     }
 
-    const bool result = videodriver->ResizeScreen(size, displayMode);
+    const bool result = videodriver->resizeScreen(size, displayMode);
 #ifdef _WIN32
     if(videodriver->getDisplayMode() != DisplayMode::Fullscreen)
     {
@@ -138,11 +138,11 @@ bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const DisplayMode di
             ShowWindow((HWND)getMapPointer(), SW_RESTORE);
     }
 #endif
-    WINDOWMANAGER.WindowResized();
+    WINDOWMANAGER.windowResized();
     return result;
 }
 
-bool VideoDriverWrapper::DestroyScreen()
+bool VideoDriverWrapper::destroyScreen()
 {
     if(!videodriver)
     {
@@ -152,19 +152,19 @@ bool VideoDriverWrapper::DestroyScreen()
 
     LOG.write("Clearing textures: ");
     unsigned ladezeit = getTickCount();
-    CleanUp();
+    cleanUp();
     LOG.write("Finished in %dms\n") % (getTickCount() - ladezeit);
 
     // Videotreiber zurücksetzen
-    videodriver->DestroyScreen();
+    videodriver->destroyScreen();
 
     return true;
 }
 
-void VideoDriverWrapper::ShowErrorMessage(const std::string& title, const std::string& message)
+void VideoDriverWrapper::showErrorMessage(const std::string& title, const std::string& message)
 {
     if(videodriver)
-        videodriver->ShowErrorMessage(title, message);
+        videodriver->showErrorMessage(title, message);
 }
 
 void VideoDriverWrapper::setTargetFramerate(int target)
@@ -179,7 +179,7 @@ unsigned VideoDriverWrapper::getFPS() const
     return frameCtr_->getFrameRate();
 }
 
-void VideoDriverWrapper::CleanUp()
+void VideoDriverWrapper::cleanUp()
 {
     if(!texture_list.empty())
     {
@@ -188,7 +188,7 @@ void VideoDriverWrapper::CleanUp()
     }
 }
 
-unsigned VideoDriverWrapper::GenerateTexture()
+unsigned VideoDriverWrapper::generateTexture()
 {
     GLuint newTexture = 0;
     glGenTextures(1, &newTexture);
@@ -202,7 +202,7 @@ unsigned VideoDriverWrapper::GenerateTexture()
     return newTexture;
 }
 
-void VideoDriverWrapper::BindTexture(unsigned t)
+void VideoDriverWrapper::bindTexture(unsigned t)
 {
     if(t != texture_current)
     {
@@ -211,7 +211,7 @@ void VideoDriverWrapper::BindTexture(unsigned t)
     }
 }
 
-void VideoDriverWrapper::DeleteTexture(unsigned t)
+void VideoDriverWrapper::deleteTexture(unsigned t)
 {
     if(!t)
         return;
@@ -232,7 +232,7 @@ KeyEvent VideoDriverWrapper::getModKeyState() const
     return KeyEvent();
 }
 
-void VideoDriverWrapper::SwapBuffers()
+void VideoDriverWrapper::swapBuffers()
 {
     if(!videodriver)
     {
@@ -240,18 +240,18 @@ void VideoDriverWrapper::SwapBuffers()
         return;
     }
     frameLimiter_->sleepTillNextFrame(FrameCounter::clock::now());
-    videodriver->SwapBuffers();
+    videodriver->swapBuffers();
     FrameCounter::clock::time_point now = FrameCounter::clock::now();
     frameLimiter_->update(now);
     frameCtr_->update(now);
 }
 
-void VideoDriverWrapper::ClearScreen()
+void VideoDriverWrapper::clearScreen()
 {
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-bool VideoDriverWrapper::Run()
+bool VideoDriverWrapper::run()
 {
     if(!videodriver)
     {
@@ -259,7 +259,7 @@ bool VideoDriverWrapper::Run()
         return false;
     }
 
-    return videodriver->MessageLoop();
+    return videodriver->messageLoop();
 }
 
 Extent VideoDriverWrapper::calcPreferredTextureSize(const Extent& minSize) const
@@ -274,7 +274,7 @@ bool VideoDriverWrapper::setHwVSync(bool enabled)
     return wglSwapIntervalEXT(enabled ? 1 : 0) != 0;
 }
 
-void VideoDriverWrapper::RenewViewport()
+void VideoDriverWrapper::renewViewport()
 {
     if(!videodriver->isOpenGL() || !renderer_)
         return;
@@ -328,10 +328,10 @@ void VideoDriverWrapper::RenewViewport()
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    ClearScreen();
+    clearScreen();
 }
 
-bool VideoDriverWrapper::LoadAllExtensions()
+bool VideoDriverWrapper::loadAllExtensions()
 {
     if(videodriver->isOpenGL())
         renderer_ = std::make_unique<OpenGLRenderer>();
@@ -392,7 +392,7 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
 Position VideoDriverWrapper::getMousePos() const
 {
     if(!videodriver)
-        return Position::Invalid();
+        return Position::invalid();
     return videodriver->getMousePos();
 }
 
@@ -428,12 +428,12 @@ void VideoDriverWrapper::setMousePos(const Position& newPos)
     videodriver->setMousePos(newPos);
 }
 
-std::set<VideoMode> VideoDriverWrapper::ListVideoModes() const
+std::set<VideoMode> VideoDriverWrapper::listVideoModes() const
 {
     if(!videodriver)
         return {};
 
-    const auto videoModes = videodriver->ListVideoModes();
+    const auto videoModes = videodriver->listVideoModes();
     std::set<VideoMode> result;
     // Keep only modes larger than the minimum
     std::copy_if(videoModes.begin(), videoModes.end(), std::inserter(result, result.end()),
@@ -457,7 +457,7 @@ std::set<VideoMode> VideoDriverWrapper::getDefaultWindowSizes() const
       VideoMode(1920, 1080)
     };
     // clang-format on
-    std::set<VideoMode> windowSizes = ListVideoModes();
+    std::set<VideoMode> windowSizes = listVideoModes();
     windowSizes.insert(defaultWindowSizes.begin(), defaultWindowSizes.end());
     return windowSizes;
 }

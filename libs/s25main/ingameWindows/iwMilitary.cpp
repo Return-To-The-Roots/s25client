@@ -35,49 +35,49 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
     constexpr Extent progPadding(4, 4);
     constexpr unsigned progSpacing = 6;
     DrawPoint curPos((getSize().x - progSize.x) / 2, 25); // Same space left and right
-    AddProgress(ID_Offset, curPos, progSize, TextureColor::Grey, 119, 120, MILITARY_SETTINGS_SCALE[0], "", progPadding,
+    addProgress(ID_Offset, curPos, progSize, TextureColor::Grey, 119, 120, MILITARY_SETTINGS_SCALE[0], "", progPadding,
                 0, _("Fewer recruits"), _("More recruits")); /* pitch: progPadding */
     curPos.y += progSize.y + progSpacing;
-    AddProgress(ID_Offset + 1, curPos, progSize, TextureColor::Grey, 121, 122, MILITARY_SETTINGS_SCALE[1], "",
+    addProgress(ID_Offset + 1, curPos, progSize, TextureColor::Grey, 121, 122, MILITARY_SETTINGS_SCALE[1], "",
                 progPadding, 0, _("Weak defense"), _("Strong defense"));
     curPos.y += progSize.y + progSpacing;
-    auto* ctrl = AddProgress(ID_Offset + 2, curPos, progSize, TextureColor::Grey, 123, 124, MILITARY_SETTINGS_SCALE[2],
+    auto* ctrl = addProgress(ID_Offset + 2, curPos, progSize, TextureColor::Grey, 123, 124, MILITARY_SETTINGS_SCALE[2],
                              "", progPadding, 0, _("Fewer defenders"), _("More defenders"));
     // Hide defender setting if changing defender behavior is disabled
     if(gwv.getWorld().getGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 1)
         ctrl->setVisible(false);
     else
         curPos.y += progSize.y + progSpacing;
-    AddProgress(ID_Offset + 3, curPos, progSize, TextureColor::Grey, 209, 210, MILITARY_SETTINGS_SCALE[3], "",
+    addProgress(ID_Offset + 3, curPos, progSize, TextureColor::Grey, 209, 210, MILITARY_SETTINGS_SCALE[3], "",
                 progPadding, 0, _("Less attackers"), _("More attackers"));
     curPos.y += progSize.y + progSpacing;
-    AddProgress(ID_Offset + 4, curPos, progSize, TextureColor::Grey, 129, 130, MILITARY_SETTINGS_SCALE[4], "",
+    addProgress(ID_Offset + 4, curPos, progSize, TextureColor::Grey, 129, 130, MILITARY_SETTINGS_SCALE[4], "",
                 progPadding, 0, _("Interior"), _("Interior"));
     curPos.y += progSize.y + progSpacing;
-    AddProgress(ID_Offset + 5, curPos, progSize, TextureColor::Grey, 127, 128, MILITARY_SETTINGS_SCALE[5], "",
+    addProgress(ID_Offset + 5, curPos, progSize, TextureColor::Grey, 127, 128, MILITARY_SETTINGS_SCALE[5], "",
                 progPadding, 0, _("Center of country"), _("Center of country"));
     curPos.y += progSize.y + progSpacing;
-    ctrl = AddProgress(ID_Offset + 6, curPos, progSize, TextureColor::Grey, 1000, 1001, MILITARY_SETTINGS_SCALE[6], "",
+    ctrl = addProgress(ID_Offset + 6, curPos, progSize, TextureColor::Grey, 1000, 1001, MILITARY_SETTINGS_SCALE[6], "",
                        progPadding, 0, _("Near harbor points"), _("Near harbor points"));
     // Hide changing harbor area if sea attacks are disabled
     if(!gwv.getWorld().getGGS().isEnabled(AddonId::SEA_ATTACK))
         ctrl->setVisible(false);
     else
         curPos.y += progSize.y + progSpacing;
-    AddProgress(ID_Offset + 7, curPos, progSize, TextureColor::Grey, 125, 126, MILITARY_SETTINGS_SCALE[7], "",
+    addProgress(ID_Offset + 7, curPos, progSize, TextureColor::Grey, 125, 126, MILITARY_SETTINGS_SCALE[7], "",
                 progPadding, 0, _("Border areas"), _("Border areas"));
 
     // Buttons at bottom
     constexpr Extent buttonSize(30, 32);
     curPos.y = getRightBottomBoundary().y - buttonSize.y - 5;
-    AddImageButton(ID_btHelp, curPos, buttonSize, TextureColor::Grey, LOADER.getImageN("io", 225), _("Help"));
+    addImageButton(ID_btHelp, curPos, buttonSize, TextureColor::Grey, LOADER.getImageN("io", 225), _("Help"));
     curPos.x += progSize.x - buttonSize.x;
-    AddImageButton(ID_btDefault, curPos, buttonSize, TextureColor::Grey, LOADER.getImageN("io", 191), _("Default"));
+    addImageButton(ID_btDefault, curPos, buttonSize, TextureColor::Grey, LOADER.getImageN("io", 191), _("Default"));
 
-    iwMilitary::UpdateSettings();
+    iwMilitary::updateSettings();
 }
 
-void iwMilitary::TransmitSettings()
+void iwMilitary::transmitSettings()
 {
     if(GAMECLIENT.isReplayModeOn())
         return;
@@ -102,17 +102,17 @@ void iwMilitary::msgProgressChange(const unsigned /*ctrl_id*/, const unsigned sh
     settings_changed = true;
 }
 
-void iwMilitary::UpdateSettings(const MilitarySettings& military_settings)
+void iwMilitary::updateSettings(const MilitarySettings& military_settings)
 {
     if(GAMECLIENT.isReplayModeOn())
-        GAMECLIENT.ResetVisualSettings();
+        GAMECLIENT.resetVisualSettings();
     for(unsigned i = 0; i < military_settings.size(); ++i)
         getCtrl<ctrlProgress>(ID_Offset + i)->setPosition(military_settings[i]);
 }
 
-void iwMilitary::UpdateSettings()
+void iwMilitary::updateSettings()
 {
-    UpdateSettings(GAMECLIENT.visual_settings.military_settings);
+    updateSettings(GAMECLIENT.visual_settings.military_settings);
 }
 
 void iwMilitary::msgButtonClick(const unsigned ctrl_id)
@@ -122,7 +122,7 @@ void iwMilitary::msgButtonClick(const unsigned ctrl_id)
         default: return;
         case ID_btHelp:
         {
-            WINDOWMANAGER.ReplaceWindow(
+            WINDOWMANAGER.replaceWindow(
               std::make_unique<iwHelp>(_("This is where you can make adjustments to all military matters. "
                                          "The upper value corresponds to the recruiting rate of your army. "
                                          "The higher it is, the more inhabitants are recruited as soldiers. "
@@ -137,7 +137,7 @@ void iwMilitary::msgButtonClick(const unsigned ctrl_id)
         break;
         case ID_btDefault:
         {
-            UpdateSettings(GAMECLIENT.default_settings.military_settings);
+            updateSettings(GAMECLIENT.default_settings.military_settings);
             settings_changed = true;
         }
         break;

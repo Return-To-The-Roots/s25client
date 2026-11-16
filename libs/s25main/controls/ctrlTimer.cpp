@@ -13,13 +13,13 @@ ctrlTimer::ctrlTimer(Window* parent, unsigned id, std::chrono::milliseconds time
 /**
  *  start the timer
  */
-void ctrlTimer::Start(std::chrono::milliseconds timeout)
+void ctrlTimer::start(std::chrono::milliseconds timeout)
 {
     timeout_ = timeout;
-    Start();
+    start();
 }
 
-void ctrlTimer::Start()
+void ctrlTimer::start()
 {
     timer_.restart();
 }
@@ -27,7 +27,7 @@ void ctrlTimer::Start()
 /**
  *  stop the timer
  */
-void ctrlTimer::Stop()
+void ctrlTimer::stop()
 {
     timer_.stop();
 }

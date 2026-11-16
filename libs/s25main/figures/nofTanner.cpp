@@ -18,16 +18,16 @@ nofTanner::nofTanner(const MapPoint pos, const unsigned char player, nobUsual* w
 
 nofTanner::nofTanner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofTanner::DrawWorking(DrawPoint drawPt)
+void nofTanner::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{28, -14}, {28, -8}, {-14, -22}, {-5, -25}, {17, -35}}};
 
-    const unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
+    const unsigned now_id = GAMECLIENT.interpolate(136, current_ev);
 
     LOADER
       .getPlayerImage("leather_bobs",
                       leatheraddon::bobIndex[leatheraddon::BobType::TanneryWorkWindowAnimation] + (now_id) % 8)
-      ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
+      ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     last_id = now_id;
 }
@@ -46,12 +46,12 @@ unsigned short nofTanner::getCarryID() const
 #    pragma warning(pop)
 #endif
 
-void nofTanner::DrawWalkingWithWare(DrawPoint drawPt)
+void nofTanner::drawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::TannerCarryingLeatherInOut]);
+    drawWalking(drawPt, "leather_bobs", leatheraddon::bobIndex[leatheraddon::BobType::TannerCarryingLeatherInOut]);
 }
 
-helpers::OptionalEnum<GoodType> nofTanner::ProduceWare()
+helpers::OptionalEnum<GoodType> nofTanner::produceWare()
 {
     return GoodType::Leather;
 }

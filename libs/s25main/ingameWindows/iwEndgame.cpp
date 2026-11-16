@@ -14,11 +14,11 @@ iwEndgame::iwEndgame()
                    LOADER.getImageN("resource", 41))
 {
     // Ok
-    AddImageButton(0, DrawPoint(16, 24), Extent(71, 57), TextureColor::Green2, LOADER.getImageN("io", 32)); //-V525
+    addImageButton(0, DrawPoint(16, 24), Extent(71, 57), TextureColor::Green2, LOADER.getImageN("io", 32)); //-V525
     // Abbrechen
-    AddImageButton(1, DrawPoint(88, 24), Extent(71, 57), TextureColor::Red1, LOADER.getImageN("io", 40));
+    addImageButton(1, DrawPoint(88, 24), Extent(71, 57), TextureColor::Red1, LOADER.getImageN("io", 40));
     // Ok + Speichern
-    AddImageButton(2, DrawPoint(160, 24), Extent(65, 57), TextureColor::Grey, LOADER.getImageN("io", 47));
+    addImageButton(2, DrawPoint(160, 24), Extent(65, 57), TextureColor::Grey, LOADER.getImageN("io", 47));
 }
 
 void iwEndgame::msgButtonClick(const unsigned ctrl_id)
@@ -27,17 +27,17 @@ void iwEndgame::msgButtonClick(const unsigned ctrl_id)
     {
         case 0: // OK
         {
-            GAMEMANAGER.ShowMenu();
+            GAMEMANAGER.showMenu();
         }
         break;
         case 1: // Abbrechen
         {
-            Close();
+            close();
         }
         break;
         case 2: // OK + Speichern
         {
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwSave>());
         }
         break;
     }

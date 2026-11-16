@@ -11,7 +11,7 @@
 PostManager::PostManager() = default;
 PostManager::~PostManager() = default;
 
-PostBox& PostManager::AddPostBox(unsigned player)
+PostBox& PostManager::addPostBox(unsigned player)
 {
     if(player >= postBoxes.size())
         throw std::out_of_range("Invalid player for new postbox");
@@ -26,16 +26,16 @@ PostBox* PostManager::getPostBox(unsigned player) const
     return (player < postBoxes.size()) ? postBoxes[player].get() : nullptr;
 }
 
-void PostManager::RemovePostBox(unsigned player)
+void PostManager::removePostBox(unsigned player)
 {
     postBoxes[player].reset();
 }
 
-void PostManager::SendMsg(unsigned player, std::unique_ptr<PostMsg> msg) const
+void PostManager::sendMsg(unsigned player, std::unique_ptr<PostMsg> msg) const
 {
     PostBox* box = getPostBox(player);
     if(box)
-        box->AddMsg(std::move(msg));
+        box->addMsg(std::move(msg));
 }
 
 void PostManager::setMissionGoal(unsigned player, const std::string& newGoal) const

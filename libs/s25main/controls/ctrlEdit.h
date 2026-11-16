@@ -50,22 +50,22 @@ public:
     void setNotify(bool notify = true) { this->notify_ = notify; }
     void setType(EditType type) { this->editType_ = type; }
 
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
 
     bool msgLeftDown(const MouseCoords& mc) override;
     bool msgKeyDown(const KeyEvent& ke) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
-    void AddChar(char32_t c);
-    void RemoveChar();
-    void Notify();
-    void UpdateInternalText();
+    void addChar(char32_t c);
+    void removeChar();
+    void notify();
+    void updateInternalText();
 
-    void CursorLeft();
-    void CursorRight();
+    void cursorLeft();
+    void cursorRight();
 
     unsigned short maxLength_;
     ctrlTextDeepening* txtCtrl;

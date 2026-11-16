@@ -16,14 +16,14 @@ Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDe
     : textureMap(TextureMap(worldDesc, landscape, size)), name("Random"), author("Auto"), height(0, maxHeight),
       players(players), size(size)
 {
-    z.Resize(size);
-    objectTypes.Resize(size, libsiedler2::OT_Empty);
-    objectInfos.Resize(size, libsiedler2::OI_Empty);
-    resources.Resize(size, libsiedler2::R_None);
-    animals.Resize(size, libsiedler2::Animal::None);
+    z.resize(size);
+    objectTypes.resize(size, libsiedler2::OT_Empty);
+    objectInfos.resize(size, libsiedler2::OI_Empty);
+    resources.resize(size, libsiedler2::R_None);
+    animals.resize(size, libsiedler2::Animal::None);
 }
 
-libsiedler2::Archiv Map::CreateArchiv() const
+libsiedler2::Archiv Map::createArchiv() const
 {
     // create header information for the archiv
     auto header = std::make_unique<libsiedler2::ArchivItem_Map_Header>();
@@ -36,7 +36,7 @@ libsiedler2::Archiv Map::CreateArchiv() const
 
     if(players != hqPositions.size())
         throw std::logic_error("Not all players have an HQ set");
-    RTTR_Assert(!helpers::contains(hqPositions, MapPoint::Invalid()));
+    RTTR_Assert(!helpers::contains(hqPositions, MapPoint::invalid()));
     // First players go into the header
     const unsigned numPlayersInHeader =
       std::min(static_cast<unsigned>(header->maxPlayers), static_cast<unsigned>(hqPositions.size()));

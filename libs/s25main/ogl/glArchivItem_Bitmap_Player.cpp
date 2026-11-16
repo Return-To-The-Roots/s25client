@@ -16,38 +16,38 @@ struct GL_RGBAColor
 };
 } // namespace
 
-Extent glArchivItem_Bitmap_Player::CalcTextureSize() const
+Extent glArchivItem_Bitmap_Player::calcTextureSize() const
 {
     // We have the texture 2 times: one with non-player colors and one with them
     return VIDEODRIVER.calcPreferredTextureSize(Extent(getSize().x * 2, getSize().y));
 }
 
-void glArchivItem_Bitmap_Player::DrawFull(const Rect& destArea, unsigned color, unsigned player_color)
+void glArchivItem_Bitmap_Player::drawFull(const Rect& destArea, unsigned color, unsigned player_color)
 {
-    Draw(destArea, Rect(Position::all(0), getSize()), color, player_color);
+    draw(destArea, Rect(Position::all(0), getSize()), color, player_color);
 }
 
-void glArchivItem_Bitmap_Player::DrawFull(const DrawPoint& dst, unsigned color, unsigned player_color)
+void glArchivItem_Bitmap_Player::drawFull(const DrawPoint& dst, unsigned color, unsigned player_color)
 {
-    DrawFull(Rect(dst, getSize()), color, player_color);
+    drawFull(Rect(dst, getSize()), color, player_color);
 }
 
-void glArchivItem_Bitmap_Player::DrawFull(const Position& dstPos, unsigned color)
+void glArchivItem_Bitmap_Player::drawFull(const Position& dstPos, unsigned color)
 {
-    DrawFull(dstPos, color, COLOR_WHITE);
+    drawFull(dstPos, color, COLOR_WHITE);
 }
 
 void glArchivItem_Bitmap_Player::drawForPlayer(const DrawPoint& dst, unsigned playerColor)
 {
-    DrawFull(dst, COLOR_WHITE, playerColor);
+    drawFull(dst, COLOR_WHITE, playerColor);
 }
 
-void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color /*= COLOR_WHITE*/)
+void glArchivItem_Bitmap_Player::draw(Rect dstArea, Rect srcArea, unsigned color /*= COLOR_WHITE*/)
 {
-    Draw(dstArea, srcArea, color, COLOR_WHITE);
+    draw(dstArea, srcArea, color, COLOR_WHITE);
 }
 
-void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color /*= COLOR_WHITE*/,
+void glArchivItem_Bitmap_Player::draw(Rect dstArea, Rect srcArea, unsigned color /*= COLOR_WHITE*/,
                                       unsigned player_color /*= COLOR_WHITE*/)
 {
     if(getTexture() == 0)
@@ -110,12 +110,12 @@ void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color
     glVertexPointer(2, GL_FLOAT, 0, vertices.data());
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords.data());
     glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors.data());
-    VIDEODRIVER.BindTexture(getTexture());
+    VIDEODRIVER.bindTexture(getTexture());
     glDrawArrays(GL_QUADS, 0, 8);
     glDisableClientState(GL_COLOR_ARRAY);
 }
 
-void glArchivItem_Bitmap_Player::FillTexture()
+void glArchivItem_Bitmap_Player::fillTexture()
 {
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
     // damit man per OpenGL einfärben kann!

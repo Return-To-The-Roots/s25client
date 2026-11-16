@@ -64,27 +64,27 @@ private:
 
     /// Sum up all forms of the given good in the inventory (tools, weapons and beer are also counted in the hands of
     /// workers and soldiers)
-    unsigned SumUpGood(GoodType good, const Inventory& Inventory);
+    unsigned sumUpGood(GoodType good, const Inventory& Inventory);
 
     /// Determine the teams for the economy mode (only called at game start)
-    void DetermineTeams();
+    void determineTeams();
 
 public:
     EconomyModeHandler(unsigned endFrame);
 
     EconomyModeHandler(SerializedGameData& sgd, unsigned objId);
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Event-Handler
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 
     /// Return vector of the teams (and their collected amounts)
     const std::vector<EconTeam>& getTeams() const { return economyModeTeams; }
 
     /// Method to update the ware trackers
-    void UpdateAmounts();
+    void updateAmounts();
 
     /// Get the amounts collected by a player
     unsigned getAmount(unsigned goodNumber, unsigned playerId) const

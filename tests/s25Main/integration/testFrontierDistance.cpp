@@ -48,12 +48,12 @@ struct FrontierWorld : public WorldFixture<T_WorldCreator, 2, T_width, T_height>
             BOOST_TEST_REQUIRE(milBld0Pos.y == milBld1Pos.y);
         }
         // Destroy HQs so only buildings are checked
-        world.DestroyNO(p0.getHQPos());
-        world.DestroyNO(p1.getHQPos());
+        world.destroyNO(p0.getHQPos());
+        world.destroyNO(p1.getHQPos());
         milBld0 = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Barracks, milBld0Pos, 0, Nation::Romans));
+          BuildingFactory::createBuilding(world, BuildingType::Barracks, milBld0Pos, 0, Nation::Romans));
         milBld1 = dynamic_cast<nobMilitary*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milBld1Pos, 1, Nation::Vikings));
+          BuildingFactory::createBuilding(world, BuildingType::Watchtower, milBld1Pos, 1, Nation::Vikings));
     }
 };
 using FrontierWorldSmall = FrontierWorld<34u, 20u>;
@@ -85,8 +85,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
     for(int i = 0; i <= 1; i++)
     {
         this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, i); // addon is active on second run
-        world.getPlayer(0).RecalcMilitaryFlags();
-        world.getPlayer(1).RecalcMilitaryFlags();
+        world.getPlayer(0).recalcMilitaryFlags();
+        world.getPlayer(1).recalcMilitaryFlags();
 
         FrontierDistance distance0 = milBld0->getFrontierDistance();
         FrontierDistance distance1 = milBld1->getFrontierDistance();
@@ -123,8 +123,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
         for(int i = 0; i <= 1; i++)
         {
             this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, i); // addon is active on second run
-            world.getPlayer(0).RecalcMilitaryFlags();
-            world.getPlayer(1).RecalcMilitaryFlags();
+            world.getPlayer(0).recalcMilitaryFlags();
+            world.getPlayer(1).recalcMilitaryFlags();
 
             FrontierDistance distance0 = milBld0->getFrontierDistance();
             FrontierDistance distance1 = milBld1->getFrontierDistance();
@@ -160,8 +160,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
     for(int i = 0; i <= 1; i++)
     {
         this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, i); // addon is active on second run
-        world.getPlayer(0).RecalcMilitaryFlags();
-        world.getPlayer(1).RecalcMilitaryFlags();
+        world.getPlayer(0).recalcMilitaryFlags();
+        world.getPlayer(1).recalcMilitaryFlags();
 
         FrontierDistance distance0 = milBld0->getFrontierDistance();
         FrontierDistance distance1 = milBld1->getFrontierDistance();
@@ -195,8 +195,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
     for(int i = 0; i <= 1; i++)
     {
         this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, i); // addon is active on second run
-        world.getPlayer(0).RecalcMilitaryFlags();
-        world.getPlayer(1).RecalcMilitaryFlags();
+        world.getPlayer(0).recalcMilitaryFlags();
+        world.getPlayer(1).recalcMilitaryFlags();
 
         FrontierDistance distance0 = milBld0->getFrontierDistance();
         FrontierDistance distance1 = milBld1->getFrontierDistance();
@@ -210,14 +210,14 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceHarbor, FrontierWorldSea)
 {
     // With sea attacks
     this->ggs.setSelection(AddonId::SEA_ATTACK, 0);
-    milBld0->LookForEnemyBuildings(milBld1);
+    milBld0->lookForEnemyBuildings(milBld1);
     BOOST_TEST(milBld0->getFrontierDistance() == FrontierDistance::Harbor);
     this->ggs.setSelection(AddonId::SEA_ATTACK, 1);
-    milBld0->LookForEnemyBuildings(milBld1);
+    milBld0->lookForEnemyBuildings(milBld1);
     BOOST_TEST(milBld0->getFrontierDistance() == FrontierDistance::Harbor);
     // With sea attacks disabled
     this->ggs.setSelection(AddonId::SEA_ATTACK, 2);
-    milBld0->LookForEnemyBuildings(milBld1);
+    milBld0->lookForEnemyBuildings(milBld1);
     BOOST_TEST(milBld0->getFrontierDistance() == FrontierDistance::Far);
 }
 
@@ -247,8 +247,8 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
     for(int i = 0; i <= 1; i++)
     {
         this->ggs.setSelection(AddonId::FRONTIER_DISTANCE_REACHABLE, i); // addon is active on second run
-        world.getPlayer(0).RecalcMilitaryFlags();
-        world.getPlayer(1).RecalcMilitaryFlags();
+        world.getPlayer(0).recalcMilitaryFlags();
+        world.getPlayer(1).recalcMilitaryFlags();
 
         FrontierDistance distance0 = milBld0->getFrontierDistance();
         FrontierDistance distance1 = milBld1->getFrontierDistance();
@@ -332,18 +332,18 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
 
     // side of p1 outside the bottle neck, this building will cause the bug
     MapPoint p1Far(middle + 5, 30);
-    BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, p1Far, p1.getPlayerId(), Nation::Romans);
+    BuildingFactory::createBuilding(world, BuildingType::Watchtower, p1Far, p1.getPlayerId(), Nation::Romans);
 
     // p1 s building, which should cause a frontier distance "near"
     MapPoint p1Near(middle + 5, 15);
     auto* milBld1 = dynamic_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, p1Near, p1.getPlayerId(), Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Watchtower, p1Near, p1.getPlayerId(), Nation::Romans));
 
     // p0 s building, should be near, like p1 s but, will be far cause p1Far cant be reached (patch is longer then 40
     // units). It will override the NEAR-Distance from P1Near, when evaluating P1Far
     MapPoint p0Near(middle - 5, 15);
     auto* milBld0 = dynamic_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, p0Near, p0.getPlayerId(), Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Watchtower, p0Near, p0.getPlayerId(), Nation::Romans));
 
     FrontierDistance distance0 = milBld0->getFrontierDistance();
     FrontierDistance distance1 = milBld1->getFrontierDistance();
@@ -370,33 +370,33 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceReachabilityConsidersStaticObjectBlocker
         node.t2 = tWater;
     }
 
-    BOOST_TEST_REQUIRE(DoesReachablePathExist(world, startPt, endPt, maxPathLen));
+    BOOST_TEST_REQUIRE(doesReachablePathExist(world, startPt, endPt, maxPathLen));
 
     for(const unsigned x : helpers::range<MapCoord>(startPt.x + 1, endPt.x))
     {
         const MapPoint passablePt(x, corridorY);
-        world.DestroyNO(passablePt, false);
+        world.destroyNO(passablePt, false);
         world.setNO(passablePt, new noStaticObject(passablePt, 0, 0, 0));
     }
 
-    BOOST_TEST_REQUIRE(DoesReachablePathExist(world, startPt, endPt, maxPathLen));
+    BOOST_TEST_REQUIRE(doesReachablePathExist(world, startPt, endPt, maxPathLen));
 
     for(const unsigned x : helpers::range<MapCoord>(startPt.x + 1, endPt.x))
     {
         const MapPoint passablePt(x, corridorY);
-        world.DestroyNO(passablePt, false);
+        world.destroyNO(passablePt, false);
         world.setNO(passablePt, new noEnvObject(passablePt, 0, 0));
     }
 
-    BOOST_TEST_REQUIRE(DoesReachablePathExist(world, startPt, endPt, maxPathLen));
+    BOOST_TEST_REQUIRE(doesReachablePathExist(world, startPt, endPt, maxPathLen));
 
     for(const unsigned x : helpers::range<MapCoord>(startPt.x + 1, endPt.x))
     {
         const MapPoint blockerPt(x, corridorY);
-        world.DestroyNO(blockerPt, false);
+        world.destroyNO(blockerPt, false);
         world.setNO(blockerPt, new noStaticObject(blockerPt, 0, 0, 1));
     }
 
-    BOOST_TEST_REQUIRE(!DoesReachablePathExist(world, startPt, endPt, maxPathLen));
+    BOOST_TEST_REQUIRE(!doesReachablePathExist(world, startPt, endPt, maxPathLen));
 }
 BOOST_AUTO_TEST_SUITE_END()

@@ -24,7 +24,7 @@ struct FarmerFixture : public WorldFixture<CreateEmptyWorld, 1>
         addStartResources();
         farmPt = world.getPlayer(0).getHQPos() + MapPoint(5, 0);
         farm = dynamic_cast<nobUsual*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::Farm, farmPt, 0, Nation::Romans));
+          BuildingFactory::createBuilding(world, BuildingType::Farm, farmPt, 0, Nation::Romans));
         BOOST_TEST_REQUIRE(farm);
         world.BuildRoad(0, false, world.getNeighbour(farmPt, Direction::SouthEast),
                         std::vector<Direction>(5, Direction::West));
@@ -44,9 +44,9 @@ BOOST_FIXTURE_TEST_CASE(ForesterAvoidsPotentialFarmFieldSpots, FarmerFixture)
     const MapPoint fieldPt = world.getNeighbour2(farmPt, 0);
     BOOST_TEST_REQUIRE(isPointAvailable(*farmer, fieldPt));
 
-    const MapPoint foresterPt = world.MakeMapPoint(world.getPlayer(0).getHQPos() - Position(5, 0));
+    const MapPoint foresterPt = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(5, 0));
     auto* foresterBuilding = dynamic_cast<nobUsual*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Forester, foresterPt, 0, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Forester, foresterPt, 0, Nation::Romans));
     BOOST_TEST_REQUIRE(foresterBuilding);
 
     nofForester foresterWorker(world.getNeighbour(foresterPt, Direction::SouthEast), 0, foresterBuilding);
@@ -107,7 +107,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
     {
         // Let the farmer pick a field
         RTTR_EXEC_TILL(150, farm->is_working);
-        MapPoint newField = MapPoint::Invalid();
+        MapPoint newField = MapPoint::invalid();
         // Find field, only these 3 remaining
         for(unsigned dir = 8; dir < 11; dir++)
         {

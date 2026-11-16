@@ -39,7 +39,7 @@ void FreePathFinder::Init(const MapExtent& mapSize)
     }
 }
 
-void FreePathFinder::IncreaseCurrentVisit()
+void FreePathFinder::increaseCurrentVisit()
 {
     // if the counter reaches its maxium, tidy up
     if(currentVisit == std::numeric_limits<unsigned>::max())
@@ -59,7 +59,7 @@ void FreePathFinder::IncreaseCurrentVisit()
 }
 
 /// Pathfinder ( A* ), O(v lg v) --> Normal terrain (ignoring roads) for road building and free walking jobs
-bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const MapPoint dest, const bool randomRoute,
+bool FreePathFinder::findPathAlternatingConditions(const MapPoint start, const MapPoint dest, const bool randomRoute,
                                                    const unsigned maxLength, std::vector<Direction>* route,
                                                    unsigned* length, Direction* firstDir, FP_Node_OK_Callback IsNodeOK,
                                                    FP_Node_OK_Callback IsNodeOKAlternate,
@@ -83,7 +83,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     }
 
     // increase currentVisit, so we don't have to clear the visited-states at every run
-    IncreaseCurrentVisit();
+    increaseCurrentVisit();
 
     std::list<PathfindingPoint> todo;
     const unsigned destId = gwb_.getIdx(dest);
@@ -93,7 +93,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
 
     // Add start node
     unsigned startId = gwb_.getIdx(start);
-    todo.push_back(PathfindingPoint(startId, gwb_.CalcDistance(start, dest), 0));
+    todo.push_back(PathfindingPoint(startId, gwb_.calcDistance(start, dest), 0));
     // And init it
     nodes[startId].prevEven = INVALID_PREV;
     nodes[startId].lastVisitedEven = currentVisit;
@@ -212,13 +212,13 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                     }
                     bool tooClose =
                       helpers::contains_if(evenLocationsOnRoute, [this, neighbourPos](const MapPoint& it) {
-                          return gwb_.CalcDistance(neighbourPos, it) < 2;
+                          return gwb_.calcDistance(neighbourPos, it) < 2;
                       });
                     if(tooClose)
                         continue;
-                    if(gwb_.CalcDistance(neighbourPos, start) < 2)
+                    if(gwb_.calcDistance(neighbourPos, start) < 2)
                         continue;
-                    if(gwb_.CalcDistance(neighbourPos, dest) < 2)
+                    if(gwb_.calcDistance(neighbourPos, dest) < 2)
                         continue;
                 }
             }
@@ -246,7 +246,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                 nodes[nbId].prevEven = bestId;
             }
 
-            todo.push_back(PathfindingPoint(nbId, gwb_.CalcDistance(neighbourPos, dest), way));
+            todo.push_back(PathfindingPoint(nbId, gwb_.calcDistance(neighbourPos, dest), way));
             // pf_nodes[xaid].it_p = ret.first;
         }
     }

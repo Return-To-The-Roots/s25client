@@ -63,7 +63,7 @@ helpers::OptionalEnum<GoodType> GetNoOutputFallbackGood(const GlobalGameSettings
     if(graniteFallbackChance > 0)
     {
         if(graniteFallbackChance == MAX_PRODUCTION_PERCENT
-           || static_cast<unsigned>(RANDOM.Rand(RANDOM_CONTEXT2(objId), MAX_PRODUCTION_PERCENT))
+           || static_cast<unsigned>(RANDOM.rand(RANDOM_CONTEXT2(objId), MAX_PRODUCTION_PERCENT))
                 < graniteFallbackChance)
             return GoodType::Stones;
 
@@ -88,7 +88,7 @@ void ReduceS4LikeResource(GameWorld& world, const std::vector<MapPoint>& resourc
     {
         if(world.getNode(pt).resources.getAmount() > S4LIKE_MIN_RESOURCE_AMOUNT)
         {
-            world.ReduceResource(pt);
+            world.reduceResource(pt);
             return;
         }
     }
@@ -101,7 +101,7 @@ nofMiner::nofMiner(const MapPoint pos, const unsigned char player, nobUsual* wor
 
 nofMiner::nofMiner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofMiner::DrawWorking(DrawPoint drawPt)
+void nofMiner::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<std::array<DrawPoint, 4>, Nation>
       offsets = // work animation offset per nation and (granite, coal, iron, gold)
@@ -115,13 +115,13 @@ void nofMiner::DrawWorking(DrawPoint drawPt)
     const unsigned mineIdx = rttr::enum_cast(workplace->getBuildingType()) - rttr::enum_cast(BuildingType::GraniteMine);
     RTTR_Assert(mineIdx < offsets.size());
 
-    unsigned now_id = GAMECLIENT.Interpolate(160, current_ev);
+    unsigned now_id = GAMECLIENT.interpolate(160, current_ev);
     unsigned texture;
     if(workplace->getNation() == Nation::Romans)
         texture = 92 + now_id % 8;
     else
         texture = 1799 + now_id % 4;
-    LOADER.getPlayerImage("rom_bobs", texture)->DrawFull(drawPt + offsets[workplace->getNation()][mineIdx]);
+    LOADER.getPlayerImage("rom_bobs", texture)->drawFull(drawPt + offsets[workplace->getNation()][mineIdx]);
 
     if(now_id % 8 == 3)
     {
@@ -141,7 +141,7 @@ unsigned short nofMiner::getCarryID() const
     }
 }
 
-helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
+helpers::OptionalEnum<GoodType> nofMiner::produceWare()
 {
     const GlobalGameSettings& settings = world->getGGS();
     const MineResourceBehavior behavior = getMineResourceBehavior(settings, workplace->getBuildingType());
@@ -163,40 +163,40 @@ helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
     return getMineOutput(workplace->getBuildingType());
 }
 
-bool nofMiner::AreWaresAvailable() const
+bool nofMiner::areWaresAvailable() const
 {
-    if(!nofWorkman::AreWaresAvailable())
+    if(!nofWorkman::areWaresAvailable())
         return false;
 
     const MineResourceBehavior behavior = getMineResourceBehavior(world->getGGS(), workplace->getBuildingType());
     if(behavior == MineResourceBehavior::WorkEverywhere)
         return true;
 
-    const bool hasResources = FindPointWithResource(getRequiredResType()).isValid();
+    const bool hasResources = findPointWithResource(getRequiredResType()).isValid();
     if(!hasResources)
-        workplace->OnOutOfResources();
+        workplace->onOutOfResources();
     return hasResources;
 }
 
-bool nofMiner::StartWorking()
+bool nofMiner::startWorking()
 {
     const GlobalGameSettings& settings = world->getGGS();
     const MineResourceBehavior behavior = getMineResourceBehavior(settings, workplace->getBuildingType());
     if(behavior == MineResourceBehavior::WorkEverywhere)
-        return nofWorkman::StartWorking();
+        return nofWorkman::startWorking();
 
-    const MapPoint resPt = FindPointWithResource(getRequiredResType());
+    const MapPoint resPt = findPointWithResource(getRequiredResType());
     if(!resPt.isValid())
     {
-        workplace->OnOutOfResources();
+        workplace->onOutOfResources();
         return false;
     }
 
     if(behavior != MineResourceBehavior::S4LikeExhaustion
        && isMineResourceDepletable(settings, workplace->getBuildingType()))
-        world->ReduceResource(resPt);
+        world->reduceResource(resPt);
 
-    return nofWorkman::StartWorking();
+    return nofWorkman::startWorking();
 }
 
 ResourceType nofMiner::getRequiredResType() const

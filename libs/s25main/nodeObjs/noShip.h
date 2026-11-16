@@ -79,9 +79,9 @@ class noShip : public noMovable
 
 private:
     /// entscheidet, was nach einem gefahrenen Abschnitt weiter zu tun ist
-    void Driven();
+    void driven();
     /// Fängt an zu fahren
-    void StartDriving(Direction dir);
+    void startDriving(Direction dir);
 
     void handleStateGoToHarbor();
     void handleStateExpeditionDriving();
@@ -99,33 +99,33 @@ private:
     };
 
     /// Fährt weiter zu einem Hafen
-    Result DriveToHarbour();
+    Result driveToHarbour();
     /// Fährt weiter zu Hafenbauplatz
-    Result DriveToHarbourPlace();
+    Result driveToHarbourPlace();
 
     /// Zeichnet das Schiff stehend mit oder ohne Waren
-    void DrawFixed(DrawPoint drawPt, bool draw_wares);
+    void drawFixed(DrawPoint drawPt, bool draw_wares);
     /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
-    void DrawDriving(DrawPoint& drawPt);
+    void drawDriving(DrawPoint& drawPt);
     /// Zeichnet normales Fahren auf dem Meer mit Gütern
-    void DrawDrivingWithWares(DrawPoint& drawPt);
+    void drawDrivingWithWares(DrawPoint& drawPt);
 
     /// Startet die eigentliche Transportaktion, nachdem das Schiff beladen wurde
-    void StartTransport();
+    void startTransport();
 
     /// Startet Schiffs-Angreiff
-    void StartSeaAttack();
+    void startSeaAttack();
 
     /// Fängt an mit idlen und setzt nötigen Sachen auf nullptr
-    void StartIdling();
+    void startIdling();
 
     /// Fängt an zu einem Hafen zu fahren (berechnet Route usw.)
-    void StartDrivingToHarborPlace();
+    void startDrivingToHarborPlace();
 
     /// Looks for a harbour to unload the goods (e.g if old one was destroyed)
-    void FindUnloadGoal(State newState);
+    void findUnloadGoal(State newState);
     /// Aborts a sea attack (in case harbor was not found anymore)
-    void AbortSeaAttack();
+    void abortSeaAttack();
 
 public:
     noShip(MapPoint pos, unsigned char player);
@@ -134,14 +134,14 @@ public:
     ~noShip() override;
 
     void Serialize(SerializedGameData& sgd) const override;
-    void Destroy() override;
+    void destroy() override;
 
     GO_Type getGOT() const final { return GO_Type::Ship; }
 
     // An x,y zeichnen
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
     // Benachrichtigen, wenn neuer gf erreicht wurde
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 
     /// Gibt den Besitzer zurück
     unsigned char getPlayerId() const { return ownerId_; }
@@ -190,38 +190,38 @@ public:
     HarborId getHomeHarbor() const;
 
     /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
-    void GoToHarbor(const nobHarborBuilding& hb, const std::vector<Direction>& route);
+    void goToHarbor(const nobHarborBuilding& hb, const std::vector<Direction>& route);
     /// Startet eine Expedition
-    void StartExpedition(HarborId homeHarborId);
+    void startExpedition(HarborId homeHarborId);
     /// Startet eine Erkundungs-Expedition
-    void StartExplorationExpedition(HarborId homeHarborId);
+    void startExplorationExpedition(HarborId homeHarborId);
     /// Weist das Schiff an, in einer bestimmten Richtung die Expedition fortzusetzen
-    void ContinueExpedition(ShipDirection dir);
+    void continueExpedition(ShipDirection dir);
     /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
     /// Hafen zurückzukehren
     void CancelExpedition();
     /// Weist das Schiff an, seine Erkundungs-Expedition fortzusetzen
-    void ContinueExplorationExpedition();
+    void continueExplorationExpedition();
     /// Gibt zurück, ob das Schiff jetzt in der Lage wäre, eine Kolonie zu gründen
     bool isAbleToFoundColony() const;
     /// Weist das Schiff an, an der aktuellen Position einen Hafen zu gründen
-    void FoundColony();
+    void foundColony();
     /// Return true, if the ship is driving to this harbor as its final destination (free for new orders)
     bool isGoingToHarbor(const nobHarborBuilding& hb) const;
 
     /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
-    void PrepareTransport(HarborId homeHarborId, MapPoint goal, std::list<std::unique_ptr<noFigure>> figures,
+    void prepareTransport(HarborId homeHarborId, MapPoint goal, std::list<std::unique_ptr<noFigure>> figures,
                           std::list<std::unique_ptr<Ware>> wares);
 
     /// Belädt das Schiff mit Schiffs-Angreifern
-    void PrepareSeaAttack(HarborId homeHarborId, MapPoint goal, std::vector<std::unique_ptr<nofAttacker>> attackers);
+    void prepareSeaAttack(HarborId homeHarborId, MapPoint goal, std::vector<std::unique_ptr<nofAttacker>> attackers);
     /// Sagt Bescheid, dass ein Schiffsangreifer nicht mehr mit nach Hause fahren will
-    void SeaAttackerWishesNoReturn();
+    void seaAttackerWishesNoReturn();
     /// Schiffs-Angreifer sind nach dem Angriff wieder zurückgekehrt
-    void AddReturnedAttacker(std::unique_ptr<nofAttacker> attacker);
+    void addReturnedAttacker(std::unique_ptr<nofAttacker> attacker);
 
     /// Sagt dem Schiff, das ein bestimmter Hafen zerstört wurde
-    void HarborDestroyed(nobHarborBuilding* hb);
+    void harborDestroyed(nobHarborBuilding* hb);
     /// Sagt dem Schiff, dass ein neuer Hafen erbaut wurde
-    void NewHarborBuilt(nobHarborBuilding* hb);
+    void newHarborBuilt(nobHarborBuilding* hb);
 };

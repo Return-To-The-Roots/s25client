@@ -19,7 +19,7 @@ DiplomacyPostQuestion::DiplomacyPostQuestion(unsigned sendFrame, PactType pact, 
         text += _("Duration: Forever");
     else
         text += boost::str(boost::format(_("Duration: %d GF (%s)")) % duration
-                           % GAMECLIENT.FormatGFTime(static_cast<unsigned>(duration)));
+                           % GAMECLIENT.formatGFTime(static_cast<unsigned>(duration)));
 
     setText(text);
 }

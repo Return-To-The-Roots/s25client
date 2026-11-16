@@ -21,20 +21,20 @@ public:
     ~ctrlList() override;
 
     /// Change size
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
 
     /// Add item to listbox.
-    void AddItem(const std::string& text);
+    void addItem(const std::string& text);
     /// Change text of an item.
     void setItemText(unsigned id, const std::string& text);
-    void DeleteAllItems();
+    void deleteAllItems();
     const std::string& getItemText(unsigned line) const;
     /// Get the value of the currently selected item
     const std::string& getSelItemText() const;
     /// Exchange the text of 2 items
     void Swap(unsigned first, unsigned second);
     /// Deletes an item. If the deleted item is selected then the selection is cleared.
-    void Remove(unsigned index);
+    void remove(unsigned index);
 
     unsigned getNumLines() const { return static_cast<unsigned>(lines.size()); }
     const std::optional<unsigned>& getSelection() const { return selection_; };
@@ -48,7 +48,7 @@ public:
     bool msgWheelDown(const MouseCoords& mc) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
     std::optional<unsigned> getItemFromPos(const Position& pos) const;

@@ -15,5 +15,5 @@ public:
                        unsigned fillColor);
 
 protected:
-    void DrawContent() const override;
+    void drawContent() const override;
 };

@@ -23,7 +23,7 @@ public:
     static const std::array<BuildingType, 30> allIcons;
 
 private:
-    void UpdatePercents();
+    void updatePercents();
     void msgPaintAfter() override;
 
     void setBuildingOrder();

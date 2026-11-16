@@ -20,7 +20,7 @@ unsigned getIslandSize(const MapExtent& size);
 unsigned getSmoothRadius(const MapExtent& size);
 unsigned getSmoothIterations(const MapExtent& size);
 
-void SmoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range);
+void smoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range);
 
 class RandomMap
 {
@@ -30,18 +30,18 @@ private:
     Texturizer texturizer_;
     MapSettings settings_;
 
-    std::vector<River> CreateRivers(MapPoint source = MapPoint::Invalid());
-    void CreateFreeIslands(unsigned waterNodes);
-    void CreateMixedMap();
-    void CreateLandMap();
-    void CreateWaterMap();
+    std::vector<River> createRivers(MapPoint source = MapPoint::invalid());
+    void createFreeIslands(unsigned waterNodes);
+    void createMixedMap();
+    void createLandMap();
+    void createWaterMap();
 
 public:
     RandomMap(RandomUtility& rnd, Map& map);
-    void Create(const MapSettings& settings);
+    void create(const MapSettings& settings);
 };
 
-Map GenerateRandomMap(RandomUtility& rnd, const WorldDescription& worldDesc, const MapSettings& settings);
-void CreateRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings);
+Map generateRandomMap(RandomUtility& rnd, const WorldDescription& worldDesc, const MapSettings& settings);
+void createRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings);
 
 } // namespace rttr::mapGenerator

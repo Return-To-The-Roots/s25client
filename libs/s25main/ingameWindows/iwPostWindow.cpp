@@ -55,58 +55,58 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
       gwv(gwv), postBox(postBox), showAll(true), curCategory(PostCategory::General), curMsg(nullptr),
       lastHasMissionGoal(true)
 {
-    AddImageButton(ID_SHOW_ALL, DrawPoint(18, 25), Extent(35, 35), TextureColor::Grey,
+    addImageButton(ID_SHOW_ALL, DrawPoint(18, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.getImageN("io", 190)); // Viewer: 191 - Papier
-    AddImageButton(ID_SHOW_MIL, DrawPoint(56, 25), Extent(35, 35), TextureColor::Grey,
+    addImageButton(ID_SHOW_MIL, DrawPoint(56, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.getImageN("io", 30)); // Viewer:  31 - Soldat
-    AddImageButton(ID_SHOW_GEO, DrawPoint(91, 25), Extent(35, 35), TextureColor::Grey,
+    addImageButton(ID_SHOW_GEO, DrawPoint(91, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.getImageN("io", 20)); // Viewer:  21 - Geologe
-    AddImageButton(ID_SHOW_ECO, DrawPoint(126, 25), Extent(35, 35), TextureColor::Grey,
+    addImageButton(ID_SHOW_ECO, DrawPoint(126, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.getImageN("io", 28)); // Viewer:  29 - Wage
-    AddImageButton(ID_SHOW_GEN, DrawPoint(161, 25), Extent(35, 35), TextureColor::Grey,
+    addImageButton(ID_SHOW_GEN, DrawPoint(161, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.getImageN("io", 189)); // Viewer: 190 - Neue Nachricht
-    AddImageButton(ID_SHOW_GOAL, DrawPoint(199, 25), Extent(35, 35), TextureColor::Grey,
+    addImageButton(ID_SHOW_GOAL, DrawPoint(199, 25), Extent(35, 35), TextureColor::Grey,
                    LOADER.getImageN("io", 79)); // Viewer:  80 - Notiz
-    AddImage(0, DrawPoint(126, 151), LOADER.getImageN("io", 228));
-    AddImageButton(ID_HELP, DrawPoint(18, 242), Extent(30, 35), TextureColor::Grey,
+    addImage(0, DrawPoint(126, 151), LOADER.getImageN("io", 228));
+    addImageButton(ID_HELP, DrawPoint(18, 242), Extent(30, 35), TextureColor::Grey,
                    LOADER.getImageN("io", 225)); // Viewer: 226 - Hilfe
-    AddImageButton(ID_GO_START, DrawPoint(51, 246), Extent(30, 26), TextureColor::Grey,
+    addImageButton(ID_GO_START, DrawPoint(51, 246), Extent(30, 26), TextureColor::Grey,
                    LOADER.getImageN("io", 102)); // Viewer: 103 - Schnell zurück
-    AddImageButton(ID_GO_BACK, DrawPoint(81, 246), Extent(30, 26), TextureColor::Grey,
+    addImageButton(ID_GO_BACK, DrawPoint(81, 246), Extent(30, 26), TextureColor::Grey,
                    LOADER.getImageN("io", 103)); // Viewer: 104 - Zurück
-    AddImageButton(ID_GO_FWD, DrawPoint(111, 246), Extent(30, 26), TextureColor::Grey,
+    addImageButton(ID_GO_FWD, DrawPoint(111, 246), Extent(30, 26), TextureColor::Grey,
                    LOADER.getImageN("io", 104)); // Viewer: 105 - Vor
-    AddImageButton(ID_GO_END, DrawPoint(141, 246), Extent(30, 26), TextureColor::Grey,
+    addImageButton(ID_GO_END, DrawPoint(141, 246), Extent(30, 26), TextureColor::Grey,
                    LOADER.getImageN("io", 105)); // Viewer: 106 - Schnell vor
 
     // Goto, nur sichtbar wenn Nachricht mit Koordinaten da
-    AddImageButton(ID_GOTO, DrawPoint(181, 246), Extent(30, 26), TextureColor::Grey, LOADER.getImageN("io", 107))
+    addImageButton(ID_GOTO, DrawPoint(181, 246), Extent(30, 26), TextureColor::Grey, LOADER.getImageN("io", 107))
       ->setVisible(false);
     // Mülleimer, nur sichtbar, wenn Nachricht da
-    AddImageButton(ID_DELETE, DrawPoint(211, 246), Extent(30, 26), TextureColor::Grey, LOADER.getImageN("io", 106))
+    addImageButton(ID_DELETE, DrawPoint(211, 246), Extent(30, 26), TextureColor::Grey, LOADER.getImageN("io", 106))
       ->setVisible(false);
 
-    AddText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), FontStyle::CENTER | FontStyle::BOTTOM,
+    addText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), FontStyle::CENTER | FontStyle::BOTTOM,
             SmallFont)
       ->setVisible(false);
 
-    AddImage(ID_IMG, DrawPoint(127, 155), LOADER.getImageN("io", 225));
+    addImage(ID_IMG, DrawPoint(127, 155), LOADER.getImageN("io", 225));
 
     // Multiline-Teil mit drei leeren Zeilen erzeugen
-    ctrlMultiline* text = AddMultiline(ID_TEXT, DrawPoint(126, 141), Extent(200, 0), TextureColor::Invisible,
+    ctrlMultiline* text = addMultiline(ID_TEXT, DrawPoint(126, 141), Extent(200, 0), TextureColor::Invisible,
                                        NormalFont, FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE);
     text->setNumVisibleLines(4);
-    text->ShowBackground(false);
+    text->showBackground(false);
 
     // Button with OK and deny sign (tick and cross) for contracts
-    AddImageButton(ID_ACCEPT, DrawPoint(87, 185), Extent(30, 26), TextureColor::Green1, LOADER.getImageN("io", 32))
+    addImageButton(ID_ACCEPT, DrawPoint(87, 185), Extent(30, 26), TextureColor::Green1, LOADER.getImageN("io", 32))
       ->setVisible(false);
-    AddImageButton(ID_DENY, DrawPoint(137, 185), Extent(30, 26), TextureColor::Red1, LOADER.getImageN("io", 40))
+    addImageButton(ID_DENY, DrawPoint(137, 185), Extent(30, 26), TextureColor::Red1, LOADER.getImageN("io", 40))
       ->setVisible(false);
 
-    FilterMessages();
+    filterMessages();
     curMsgId = curMsgIdxs.size();
-    DisplayPostMessage();
+    displayPostMessage();
 }
 
 void iwPostWindow::msgButtonClick(const unsigned ctrl_id)
@@ -114,66 +114,66 @@ void iwPostWindow::msgButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case ID_HELP:
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwHelp>(
+            WINDOWMANAGER.replaceWindow(std::make_unique<iwHelp>(
               _("All important messages are collected in this window and "
                 "sorted into groups. If this window is not open, the dove "
                 "symbol at the bottom of the screen indicates the arrival of a new message.")));
             break;
         case ID_SHOW_ALL:
             showAll = true;
-            FilterMessages();
+            filterMessages();
             curMsgId = curMsgIdxs.size();
-            DisplayPostMessage();
+            displayPostMessage();
             break;
         case ID_SHOW_GOAL:
             if(!postBox.getCurrentMissionGoal().empty())
-                WINDOWMANAGER.Show(std::make_unique<iwMissionStatement>(_("Diary"), postBox.getCurrentMissionGoal(),
+                WINDOWMANAGER.show(std::make_unique<iwMissionStatement>(_("Diary"), postBox.getCurrentMissionGoal(),
                                                                         false, iwMissionStatement::IM_AVATAR9));
             break;
-        case ID_SHOW_MIL: SwitchCategory(PostCategory::Military); break;
-        case ID_SHOW_GEO: SwitchCategory(PostCategory::Geologist); break;
-        case ID_SHOW_ECO: SwitchCategory(PostCategory::Economy); break;
-        case ID_SHOW_GEN: SwitchCategory(PostCategory::General); break;
+        case ID_SHOW_MIL: switchCategory(PostCategory::Military); break;
+        case ID_SHOW_GEO: switchCategory(PostCategory::Geologist); break;
+        case ID_SHOW_ECO: switchCategory(PostCategory::Economy); break;
+        case ID_SHOW_GEN: switchCategory(PostCategory::General); break;
         case ID_GO_START:
             // To oldest
             curMsgId = 0;
-            DisplayPostMessage();
+            displayPostMessage();
             break;
         case ID_GO_BACK:
             // Back
             curMsgId = (curMsgId > 0) ? curMsgId - 1 : 0;
-            DisplayPostMessage();
+            displayPostMessage();
             break;
         case ID_GO_FWD:
             // Forward
             ++curMsgId;
-            DisplayPostMessage();
+            displayPostMessage();
             break;
         case ID_GO_END:
             // To newest
             curMsgId = postBox.getNumMsgs();
-            DisplayPostMessage();
+            displayPostMessage();
             break;
         case ID_GOTO:
         {
             // Goto
-            if(!ValidateMessages())
+            if(!validateMessages())
                 return;
             if(curMsg && curMsg->getPos().isValid())
-                gwv.MoveToMapPt(curMsg->getPos());
+                gwv.moveToMapPt(curMsg->getPos());
         }
         break;
 
         case ID_DELETE: // Delete
         {
-            if(!ValidateMessages() || !curMsg)
+            if(!validateMessages() || !curMsg)
                 return;
-            postBox.DeleteMsg(curMsg);
+            postBox.deleteMsg(curMsg);
             break;
         }
         case ID_DENY: // Cross (Deny)
         {
-            if(!ValidateMessages() || !curMsg)
+            if(!validateMessages() || !curMsg)
                 return;
             const auto* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(curMsg);
             if(dcurMsg)
@@ -181,7 +181,7 @@ void iwPostWindow::msgButtonClick(const unsigned ctrl_id)
                 // If it is a question about a new contract, tell the other player we denied it
                 if(dcurMsg->isAccept())
                     if(GAMECLIENT.CancelPact(dcurMsg->getPactType(), dcurMsg->getPlayerId()))
-                        postBox.DeleteMsg(curMsg);
+                        postBox.deleteMsg(curMsg);
             }
         }
         break;
@@ -189,7 +189,7 @@ void iwPostWindow::msgButtonClick(const unsigned ctrl_id)
         // Haken-Button ("Ja")
         case ID_ACCEPT:
         {
-            if(!ValidateMessages())
+            if(!validateMessages())
                 return;
             const auto* dcurMsg = dynamic_cast<const DiplomacyPostQuestion*>(getMsg(curMsgId));
             if(dcurMsg)
@@ -202,7 +202,7 @@ void iwPostWindow::msgButtonClick(const unsigned ctrl_id)
                 else
                     success = GAMECLIENT.CancelPact(dcurMsg->getPactType(), dcurMsg->getPlayerId());
                 if(success)
-                    postBox.DeleteMsg(dcurMsg);
+                    postBox.deleteMsg(dcurMsg);
             }
         }
         break;
@@ -212,7 +212,7 @@ void iwPostWindow::msgButtonClick(const unsigned ctrl_id)
 void iwPostWindow::msgPaintBefore()
 {
     IngameWindow::msgPaintBefore();
-    ValidateMessages();
+    validateMessages();
     if(lastHasMissionGoal != !postBox.getCurrentMissionGoal().empty())
     {
         lastHasMissionGoal = !postBox.getCurrentMissionGoal().empty();
@@ -253,7 +253,7 @@ bool iwPostWindow::msgKeyDown(const KeyEvent& ke)
 }
 
 // Zeigt Nachricht an, passt Steuerelemente an
-void iwPostWindow::DisplayPostMessage()
+void iwPostWindow::displayPostMessage()
 {
     const DrawPoint imgBottomCenter(127, 210); //-V821
     // todo: koordinaten abschmecken
@@ -288,7 +288,7 @@ void iwPostWindow::DisplayPostMessage()
     // We have a message, display its status...
     std::stringstream ss;
     ss << _("Message") << " " << curMsgId + 1 << "/" << size << " - " << _("Time") << ": "
-       << GAMECLIENT.FormatGFTime(curMsg->getSendFrame());
+       << GAMECLIENT.formatGFTime(curMsg->getSendFrame());
     getCtrl<ctrlText>(ID_INFO)->setText(ss.str());
     getCtrl<ctrlText>(ID_INFO)->setVisible(true);
     // ...and delete button
@@ -323,11 +323,11 @@ void iwPostWindow::DisplayPostMessage()
 void iwPostWindow::setMessageText(const std::string& message)
 {
     auto* text = getCtrl<ctrlMultiline>(ID_TEXT);
-    text->Clear();
-    text->AddString(message, COLOR_WINDOWBROWN);
+    text->clear();
+    text->addString(message, COLOR_WINDOWBROWN);
 }
 
-void iwPostWindow::FilterMessages()
+void iwPostWindow::filterMessages()
 {
     curMsgIdxs.clear();
     lastMsgCt = postBox.getNumMsgs();
@@ -345,17 +345,17 @@ void iwPostWindow::FilterMessages()
     }
 }
 
-bool iwPostWindow::ValidateMessages()
+bool iwPostWindow::validateMessages()
 {
     if(lastMsgCt == postBox.getNumMsgs() && getMsg(curMsgId) == curMsg)
         return true;
     // Messages have changed -> Update filter
-    FilterMessages();
+    filterMessages();
     if(!curMsg)
     {
         // No last message? Display oldest
         curMsgId = 0;
-        DisplayPostMessage();
+        displayPostMessage();
         return false;
     } else
     {
@@ -366,12 +366,12 @@ bool iwPostWindow::ValidateMessages()
             if(postBox.getMsg(i - 1) == curMsg)
             {
                 curMsgId = i - 1;
-                DisplayPostMessage();
+                displayPostMessage();
                 return true;
             }
         }
         // Display next valid one
-        DisplayPostMessage();
+        displayPostMessage();
         return false;
     }
 }
@@ -384,11 +384,11 @@ const PostMsg* iwPostWindow::getMsg(unsigned id) const
         return nullptr;
 }
 
-void iwPostWindow::SwitchCategory(PostCategory cat)
+void iwPostWindow::switchCategory(PostCategory cat)
 {
     showAll = false;
     curCategory = cat;
-    FilterMessages();
+    filterMessages();
     curMsgId = curMsgIdxs.size();
-    DisplayPostMessage();
+    displayPostMessage();
 }

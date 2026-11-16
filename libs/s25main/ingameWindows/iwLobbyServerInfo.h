@@ -16,7 +16,7 @@ public:
 
     void setServerId(unsigned serverId);
     unsigned getServerId() const { return serverId_; }
-    void UpdateServerInfo();
+    void updateServerInfo();
 
 protected:
     void msgTimer(unsigned ctrl_id) override;

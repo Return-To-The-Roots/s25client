@@ -24,18 +24,18 @@ public:
 
     unsigned getMaxNumPlayers() const override;
     JoinPlayerInfo& getJoinPlayer(unsigned playerIdx) override;
-    void CloseSlot(unsigned playerIdx) override;
+    void closeSlot(unsigned playerIdx) override;
     void setPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) override;
-    void TogglePlayerState(unsigned playerIdx);
+    void togglePlayerState(unsigned playerIdx);
     void setName(unsigned playerIdx, const std::string& name) override;
     void setPortrait(unsigned playerIdx, unsigned portraitIndex) override;
     void setColor(unsigned playerIdx, unsigned newColor) override;
     void setTeam(unsigned playerIdx, Team newTeam) override;
     void setNation(unsigned playerIdx, Nation newNation) override;
     const GlobalGameSettings& getGGS() const override;
-    void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) override;
-    void SwapPlayers(unsigned player1, unsigned player2);
-    void StartCountdown(unsigned numSecs);
+    void changeGlobalGameSettings(const GlobalGameSettings& ggs) override;
+    void swapPlayers(unsigned player1, unsigned player2);
+    void startCountdown(unsigned numSecs);
     void cancelCountdown();
-    void RemoveLuaScript();
+    void removeLuaScript();
 };

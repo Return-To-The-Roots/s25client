@@ -25,18 +25,18 @@ public:
 
     void setPadding(const Extent& padding);
     /// Größe ändern
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
     void setMapSize(const Extent& newMapSize);
 
     /// Liefert für einen gegebenen Map-Punkt die Pixel-Koordinaten relativ zur Bounding-Box
-    DrawPoint CalcMapCoord(MapPoint pt) const;
+    DrawPoint calcMapCoord(MapPoint pt) const;
 
     /// Verkleinert Minimap soweit es geht (entfernt Bounding-Box)
-    void RemoveBoundingBox(const Extent& minSize);
+    void removeBoundingBox(const Extent& minSize);
 
 protected:
     /// Zeichnet die Minimap an sich
-    void DrawMap(Minimap& map) const;
+    void drawMap(Minimap& map) const;
 
     /// Real size of the minimap (gets scaled with retained aspect ratio)
     Extent drawnMapSize;

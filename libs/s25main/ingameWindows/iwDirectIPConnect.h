@@ -17,7 +17,7 @@ private:
 public:
     iwDirectIPConnect(ServerType serverType);
     /// Connects to the given server or fills in the info if it has a password
-    void Connect(const std::string& hostOrIp, unsigned short port, bool isIPv6, bool hasPwd);
+    void connect(const std::string& hostOrIp, unsigned short port, bool isIPv6, bool hasPwd);
 
 private:
     void setStatus(const std::string& text, unsigned color);

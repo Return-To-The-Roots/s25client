@@ -67,9 +67,9 @@ bool CreateEmptyWorld::operator()(GameWorld& world) const
             }
             curPt.y += playerDist.y;
         }
-        BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
+        BOOST_TEST_REQUIRE(MapLoader::placeHQs(world, hqPositions, false));
     }
-    world.InitAfterLoad();
+    world.initAfterLoad();
     return true;
 }
 

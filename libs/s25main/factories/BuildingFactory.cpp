@@ -13,7 +13,7 @@
 #include "buildings/nobUsual.h"
 #include "world/GameWorldBase.h"
 
-noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& world, const BuildingType type, const MapPoint pt,
+noBuilding* BuildingFactory::createBuilding(GameWorldBase& world, const BuildingType type, const MapPoint pt,
                                             const unsigned char player, const Nation nation)
 {
     noBuilding* bld;
@@ -32,7 +32,7 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& world, const Building
     }
     world.setNO(pt, bld);
     // Don't do this in ctor as building might not be fully initialized yet
-    world.getPlayer(player).AddBuilding(bld, type);
+    world.getPlayer(player).addBuilding(bld, type);
 
     return bld;
 }

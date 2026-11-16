@@ -72,7 +72,7 @@ void makeWorldMineable(GameWorld& world)
         node.t1 = node.t2 = mineableTerrain;
         node.resources = Resource();
     }
-    world.InitAfterLoad();
+    world.initAfterLoad();
 }
 
 // Mark every node as a usable, owned, reachable build spot so the AI's position search only depends on the
@@ -93,8 +93,8 @@ struct MockAI final : public AIPlayer
 {
     MockAI(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIPlayer(playerId, gwb, level) {}
     // LCOV_EXCL_START
-    void RunGF(unsigned /*gf*/, bool /*gfisnwf*/) override {}
-    void OnChatMessage(unsigned /*sendPlayerId*/, ChatDestination, const std::string& /*msg*/) override {}
+    void runGF(unsigned /*gf*/, bool /*gfisnwf*/) override {}
+    void onChatMessage(unsigned /*sendPlayerId*/, ChatDestination, const std::string& /*msg*/) override {}
     // LCOV_EXCL_STOP
 };
 } // namespace
@@ -111,10 +111,10 @@ BOOST_FIXTURE_TEST_CASE(PlayerHasBld_IsCorrect, EmptyWorldFixture1P)
     MapPoint pos = player.getHQPos();
     for(const auto bld : {BuildingType::Woodcutter, BuildingType::Barracks, BuildingType::Storehouse})
     {
-        pos = world.MakeMapPoint(pos + Position(2, 0));
+        pos = world.makeMapPoint(pos + Position(2, 0));
         BOOST_TEST_INFO(bld);
         BOOST_TEST(!playerHasBld(player, bld));
-        BuildingFactory::CreateBuilding(world, bld, pos, player.getPlayerId(), Nation::Romans);
+        BuildingFactory::createBuilding(world, bld, pos, player.getPlayerId(), Nation::Romans);
         BOOST_TEST_INFO(bld);
         BOOST_TEST(playerHasBld(player, bld));
     }
@@ -123,9 +123,9 @@ BOOST_FIXTURE_TEST_CASE(PlayerHasBld_IsCorrect, EmptyWorldFixture1P)
 BOOST_FIXTURE_TEST_CASE(AIChat, EmptyWorldFixture2P)
 {
     MockAI ai(1, world, AI::Level::Easy);
-    ai.getAIInterface().Chat("Hello players!");
-    ai.getAIInterface().Chat("2nd Message!", ChatDestination::Allies);
-    const auto msgs = ai.getAIInterface().FetchChatMessages();
+    ai.getAIInterface().chat("Hello players!");
+    ai.getAIInterface().chat("2nd Message!", ChatDestination::Allies);
+    const auto msgs = ai.getAIInterface().fetchChatMessages();
     BOOST_TEST_REQUIRE(msgs.size() == 2u);
     BOOST_TEST(msgs[0]->player == 1u);
     BOOST_TEST(msgs[0]->destination == ChatDestination::All);
@@ -134,12 +134,12 @@ BOOST_FIXTURE_TEST_CASE(AIChat, EmptyWorldFixture2P)
     BOOST_TEST(msgs[1]->destination == ChatDestination::Allies);
     BOOST_TEST(msgs[1]->text == "2nd Message!");
     // Messages cleared by first call
-    BOOST_TEST(ai.getAIInterface().FetchChatMessages().empty());
+    BOOST_TEST(ai.getAIInterface().fetchChatMessages().empty());
     // Can readd
     const auto dest = rttr::test::randomEnum<ChatDestination>();
-    ai.getAIInterface().Chat("Hello again!", dest);
+    ai.getAIInterface().chat("Hello again!", dest);
     // Iterate just like in ExecuteNWF function
-    for(auto& msg : ai.getAIInterface().FetchChatMessages())
+    for(auto& msg : ai.getAIInterface().fetchChatMessages())
     {
         BOOST_TEST(msg->player == 1u);
         BOOST_TEST(msg->destination == dest);
@@ -149,7 +149,7 @@ BOOST_FIXTURE_TEST_CASE(AIChat, EmptyWorldFixture2P)
 
 BOOST_FIXTURE_TEST_CASE(MineResourceRatingAccountsForS4LikeExhaustion, EmptyWorldFixture1P)
 {
-    const MapPoint resourcePos = world.MakeMapPoint(world.getPlayer(0).getHQPos() + Position(2, 0));
+    const MapPoint resourcePos = world.makeMapPoint(world.getPlayer(0).getHQPos() + Position(2, 0));
     world.getNodeWriteable(resourcePos).resources = Resource(ResourceType::Coal, 1);
 
     MockAI ai(0, world, AI::Level::Easy);
@@ -182,15 +182,15 @@ BOOST_FIXTURE_TEST_CASE(MineWorkEverywhereAffectsMatchingResourceOnly, EmptyWorl
     // The HQ is the only guaranteed reachable/owned starting spot, so searches are centered on it.
     const MapPoint searchCenter = world.getPlayer(0).getHQPos();
     // The only iron deposit sits well outside the search radius below, so default iron mining has no reachable spot.
-    const MapPoint ironPos = world.MakeMapPoint(searchCenter + Position(8, 0));
+    const MapPoint ironPos = world.makeMapPoint(searchCenter + Position(8, 0));
     world.getNodeWriteable(ironPos).resources = Resource(ResourceType::Iron, 4);
 
     // WorkEverywhere coal treats any mineable node as a coal spot, even one that actually holds an iron deposit.
     BOOST_TEST(ai.getAIInterface().getResourceRating(ironPos, AIResource::Coal)
                == static_cast<int>(RES_RADIUS[AIResource::Coal]));
     // So coal finds a spot right around the HQ, while default iron finds none because its only deposit is out of range.
-    BOOST_TEST(ai.FindBestPosition(searchCenter, AIResource::Coal, BuildingQuality::Mine, 5).isValid());
-    BOOST_TEST(!ai.FindBestPosition(searchCenter, AIResource::Ironore, BuildingQuality::Mine, 5).isValid());
+    BOOST_TEST(ai.findBestPosition(searchCenter, AIResource::Coal, BuildingQuality::Mine, 5).isValid());
+    BOOST_TEST(!ai.findBestPosition(searchCenter, AIResource::Ironore, BuildingQuality::Mine, 5).isValid());
 }
 
 BOOST_FIXTURE_TEST_CASE(GraniteMineResourceBehaviorAffectsAIMineSearch, EmptyWorldFixture1P)
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineResourceBehaviorAffectsAIMineSearch, EmptyWor
         ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(behavior));
         AIJH::AIPlayerJH ai(0, world, AI::Level::Hard);
         initAIJhNodes(ai, world, 0);
-        return ai.FindBestPosition(searchCenter, res, BuildingQuality::Mine, 5).isValid();
+        return ai.findBestPosition(searchCenter, res, BuildingQuality::Mine, 5).isValid();
     };
 
     // Default: No resources, no spot.
@@ -235,12 +235,12 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         if(pt.x % 4 == 0 && pt.y % 2 == 0 && world.getNode(pt).bq == BuildingQuality::Castle
-           && world.CalcDistance(pt, hqPos) > 6)
+           && world.calcDistance(pt, hqPos) > 6)
             world.setNO(pt, new noTree(pt, 0, 3));
     }
-    world.InitAfterLoad();
+    world.initAfterLoad();
 
-    auto ai = AIFactory::Create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
+    auto ai = AIFactory::create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
     const AIJH::AIPlayerJH& aijh = static_cast<AIJH::AIPlayerJH&>(*ai);
 
     const auto assertBqEqualOnWholeMap = [this, &aijh](const unsigned lineNr) {
@@ -253,7 +253,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     };
     const auto assertBqEqualAround = [this, &aijh](const unsigned lineNr, MapPoint pt, unsigned radius) {
         BOOST_TEST_CONTEXT("Line #" << lineNr)
-        world.CheckPointsInRadius(
+        world.checkPointsInRadius(
           pt, radius,
           [&](const MapPoint curPt, unsigned) {
               BOOST_TEST_INFO(curPt);
@@ -266,8 +266,8 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     // 100GFs for initialization
     for(unsigned gf = 0; gf < 100; ++gf)
     {
-        em.ExecuteNextGF();
-        ai->RunGF(em.getCurrentGF(), true);
+        em.executeNextGF();
+        ai->runGF(em.getCurrentGF(), true);
     }
     assertBqEqualOnWholeMap(__LINE__);
 
@@ -282,54 +282,54 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     {
         this->SetFlag(flagPos);
         BOOST_TEST_REQUIRE(world.getSpecObj<noFlag>(flagPos));
-        em.ExecuteNextGF();
-        ai->RunGF(em.getCurrentGF(), true);
+        em.executeNextGF();
+        ai->runGF(em.getCurrentGF(), true);
         assertBqEqualAround(__LINE__, flagPos, 3);
 
         this->DestroyFlag(flagPos);
         BOOST_TEST_REQUIRE(!world.getSpecObj<noFlag>(flagPos));
-        em.ExecuteNextGF();
-        ai->RunGF(em.getCurrentGF(), true);
+        em.executeNextGF();
+        ai->runGF(em.getCurrentGF(), true);
         assertBqEqualAround(__LINE__, flagPos, 3);
     }
 
     // Build road
-    const MapPoint flagPos = world.MakeMapPoint(world.getNeighbour(hqPos, Direction::SouthEast) + Position(4, 0));
+    const MapPoint flagPos = world.makeMapPoint(world.getNeighbour(hqPos, Direction::SouthEast) + Position(4, 0));
     this->BuildRoad(world.getNeighbour(hqPos, Direction::SouthEast), false, std::vector<Direction>(4, Direction::East));
     BOOST_TEST_REQUIRE(world.getSpecObj<noFlag>(flagPos)->getRoute(Direction::West));
-    em.ExecuteNextGF();
-    ai->RunGF(em.getCurrentGF(), true);
+    em.executeNextGF();
+    ai->runGF(em.getCurrentGF(), true);
     assertBqEqualAround(__LINE__, flagPos, 6);
 
     // Destroy road and flag
     this->DestroyFlag(flagPos);
-    em.ExecuteNextGF();
-    ai->RunGF(em.getCurrentGF(), true);
+    em.executeNextGF();
+    ai->runGF(em.getCurrentGF(), true);
     assertBqEqualAround(__LINE__, flagPos, 6);
 
     // Build building
-    const MapPoint bldPos = world.MakeMapPoint(hqPos + Position(5, 0));
+    const MapPoint bldPos = world.makeMapPoint(hqPos + Position(5, 0));
     this->SetBuildingSite(bldPos, BuildingType::Barracks);
     BOOST_TEST_REQUIRE(world.getSpecObj<noBuildingSite>(bldPos));
-    em.ExecuteNextGF();
-    ai->RunGF(em.getCurrentGF(), true);
+    em.executeNextGF();
+    ai->runGF(em.getCurrentGF(), true);
     assertBqEqualAround(__LINE__, bldPos, 6);
 
     this->BuildRoad(world.getNeighbour(bldPos, Direction::SouthEast), false,
                     std::vector<Direction>(5, Direction::West));
-    em.ExecuteNextGF();
-    ai->RunGF(em.getCurrentGF(), true);
+    em.executeNextGF();
+    ai->runGF(em.getCurrentGF(), true);
     RTTR_EXEC_TILL(2000, world.getSpecObj<noBuilding>(bldPos));
-    em.ExecuteNextGF();
-    ai->RunGF(em.getCurrentGF(), false);
+    em.executeNextGF();
+    ai->runGF(em.getCurrentGF(), false);
     assertBqEqualOnWholeMap(__LINE__);
 
     // Gain land
     const nobMilitary* bld = world.getSpecObj<nobMilitary>(bldPos);
     for(unsigned i = 0; i < 500; i++)
     {
-        em.ExecuteNextGF();
-        ai->RunGF(em.getCurrentGF(), false);
+        em.executeNextGF();
+        ai->runGF(em.getCurrentGF(), false);
         if(bld->getNumTroops() > 0u)
             break;
     }
@@ -344,7 +344,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
         if(world.isBorderNode(pt, curPlayer + 1))
         {
             borderNodes.push_back(pt);
-            world.CheckPointsInRadius(
+            world.checkPointsInRadius(
               pt, 1,
               [&outerBoundaryNodes, &world = this->world, curPlayer = this->curPlayer](const MapPoint curPt, unsigned) {
                   if(world.getNode(curPt).owner != curPlayer + 1)
@@ -357,31 +357,31 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     // Once to outside
     for(const MapPoint pt : outerBoundaryNodes)
         world.setOwner(pt, curPlayer + 1);
-    world.RecalcBorderStones(Position(0, 0), Extent(world.getSize()));
+    world.recalcBorderStones(Position(0, 0), Extent(world.getSize()));
     for(const MapPoint pt : outerBoundaryNodes)
         world.getNotifications().publish(NodeNote(NodeNote::Owner, pt));
-    em.ExecuteNextGF();
-    ai->RunGF(em.getCurrentGF(), false);
+    em.executeNextGF();
+    ai->runGF(em.getCurrentGF(), false);
     assertBqEqualOnWholeMap(__LINE__);
 
     // And back
     for(const MapPoint pt : outerBoundaryNodes)
         world.setOwner(pt, 0);
-    world.RecalcBorderStones(Position(0, 0), Extent(world.getSize()));
+    world.recalcBorderStones(Position(0, 0), Extent(world.getSize()));
     for(const MapPoint pt : outerBoundaryNodes)
         world.getNotifications().publish(NodeNote(NodeNote::Owner, pt));
-    em.ExecuteNextGF();
-    ai->RunGF(em.getCurrentGF(), false);
+    em.executeNextGF();
+    ai->runGF(em.getCurrentGF(), false);
     assertBqEqualOnWholeMap(__LINE__);
 
     // And once to inside
     for(const MapPoint pt : borderNodes)
         world.setOwner(pt, 0);
-    world.RecalcBorderStones(Position(0, 0), Extent(world.getSize()));
+    world.recalcBorderStones(Position(0, 0), Extent(world.getSize()));
     for(const MapPoint pt : borderNodes)
         world.getNotifications().publish(NodeNote(NodeNote::Owner, pt));
-    em.ExecuteNextGF();
-    ai->RunGF(em.getCurrentGF(), false);
+    em.executeNextGF();
+    ai->runGF(em.getCurrentGF(), false);
     assertBqEqualOnWholeMap(__LINE__);
 }
 
@@ -393,22 +393,22 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
         if(!world.getNode(pt).obj)
             world.setNO(pt, new noTree(pt, 0, 3));
     }
-    world.InitAfterLoad();
+    world.initAfterLoad();
 
     const GamePlayer& player = world.getPlayer(curPlayer);
-    auto ai = AIFactory::Create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
+    auto ai = AIFactory::create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
     // Build a woodcutter, sawmill and forester at some point
     for(unsigned gf = 0; gf < 2000;)
     {
         std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
         for(unsigned i = 0; i < 5; i++, gf++)
         {
-            em.ExecuteNextGF();
-            ai->RunGF(em.getCurrentGF(), i == 0);
+            em.executeNextGF();
+            ai->runGF(em.getCurrentGF(), i == 0);
         }
         for(gc::GameCommandPtr& gc : aiGcs)
         {
-            gc->Execute(world, curPlayer);
+            gc->execute(world, curPlayer);
         }
         if(playerHasBld(player, BuildingType::Sawmill) && playerHasBld(player, BuildingType::Woodcutter)
            && playerHasBld(player, BuildingType::Forester))
@@ -426,7 +426,7 @@ void forceExpansion(const GamePlayer& player, GameWorld& world)
     for(unsigned y = 0; y < world.getHeight(); y += 2)
     {
         for(unsigned x = 0; x < world.getWidth(); x += 2)
-            world.ChangeAltitude(MapPoint(x, y), 13);
+            world.changeAltitude(MapPoint(x, y), 13);
     }
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
@@ -437,18 +437,18 @@ void forceExpansion(const GamePlayer& player, GameWorld& world)
 void runUntilMilitaryBuildingSiteFound(TestEventManager& em, unsigned curPlayer, GameWorld& world,
                                        const std::list<noBuildingSite*>& bldSites)
 {
-    auto ai = AIFactory::Create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
+    auto ai = AIFactory::create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
     for(unsigned gf = 0; gf < 2000;)
     {
         std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
         for(unsigned i = 0; i < 5; i++, gf++)
         {
-            em.ExecuteNextGF();
-            ai->RunGF(em.getCurrentGF(), i == 0);
+            em.executeNextGF();
+            ai->runGF(em.getCurrentGF(), i == 0);
         }
         for(gc::GameCommandPtr& gc : aiGcs)
         {
-            gc->Execute(world, curPlayer);
+            gc->execute(world, curPlayer);
         }
         if(containsBldType(bldSites, BuildingType::Barracks) || containsBldType(bldSites, BuildingType::Guardhouse))
             break;
@@ -502,7 +502,7 @@ BOOST_FIXTURE_TEST_CASE(DoBuildMilitaryBuildingsOutsideComputerBarrier, BiggerWo
       (containsBldType(bldSites, BuildingType::Barracks) || containsBldType(bldSites, BuildingType::Guardhouse)));
 
     for(noBuildingSite* bldSite : bldSites)
-        BOOST_TEST_REQUIRE(!world.CheckPointsInRadius(
+        BOOST_TEST_REQUIRE(!world.checkPointsInRadius(
           barrierPt, radius,
           [bldSite](const MapPoint& pt, unsigned) {
               const auto type = bldSite->getBuildingType();

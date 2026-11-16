@@ -77,7 +77,7 @@ public:
     iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos,
              Params params, bool military_buildings);
 
-    void Close() override;
+    void close() override;
 
     /// Gibt zurück, auf welchen Punkt es sich bezieht
     const MapPoint& getSelectedPt() const { return selectedPt; }
@@ -97,10 +97,10 @@ private:
     inline void msgButtonClickTabWatch(unsigned ctrl_id);
     inline void msgButtonClickTabCheat(unsigned ctrl_id);
 
-    void DisableMousePosResetOnClose();
+    void disableMousePosResetOnClose();
 
     /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
-    void AddAttackControls(ctrlGroup* group, unsigned attackers_count);
-    void AddUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);
-    bool DoUpgradeRoad();
+    void addAttackControls(ctrlGroup* group, unsigned attackers_count);
+    void addUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);
+    bool doUpgradeRoad();
 };

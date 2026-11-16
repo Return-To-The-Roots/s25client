@@ -23,12 +23,12 @@ class nofCharburner : public nofFarmhand
     friend constexpr auto maxEnumValue(WareType) { return WareType::Grain; }
 
 private:
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Has no ID in jobs.bob or carrier.bob
     [[noreturn]] unsigned short getCarryID() const override;
 
-    void WorkStarted() override;
-    void WorkFinished() override;
+    void workStarted() override;
+    void workFinished() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
     PointQuality getPointQuality(MapPoint pt, bool isBeforeWork) const override;
@@ -36,16 +36,16 @@ private:
 
     /// Inform derived class about the start of the whole working process (at the beginning when walking out of the
     /// house)
-    void WalkingStarted() override;
+    void walkingStarted() override;
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
-    void DrawWalkingWithWare(DrawPoint drawPt) override;
+    void drawWalkingWithWare(DrawPoint drawPt) override;
     /// Draws the charburner while walking
     /// (overriding standard method of nofFarmhand)
-    void DrawOtherStates(DrawPoint drawPt) override;
+    void drawOtherStates(DrawPoint drawPt) override;
 
 protected:
-    bool AreWaresAvailable() const override;
+    bool areWaresAvailable() const override;
 
 public:
     nofCharburner(MapPoint pos, unsigned char player, nobUsual* workplace);

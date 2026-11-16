@@ -22,12 +22,12 @@ public:
     unsigned getModulationColor() const { return modulationColor_; }
 
     /// Swap the images of those controls
-    void SwapImage(ctrlBaseImage& other);
+    void swapImage(ctrlBaseImage& other);
     Rect getImageRect() const;
 
     /// Draw the image on specified rectangular area. The image is centered inside dstArea and cropped to its size.
-    void DrawImage(const Rect& dstArea) const;
-    void DrawImage(const Rect& dstArea, unsigned color) const;
+    void drawImage(const Rect& dstArea) const;
+    void drawImage(const Rect& dstArea, unsigned color) const;
 
 private:
     ITexture* img_;

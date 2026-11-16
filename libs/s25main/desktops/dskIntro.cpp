@@ -17,9 +17,9 @@
 dskIntro::dskIntro() : Desktop(LOADER.getImageN("menu", 0))
 {
     // "Zurück"
-    AddTextButton(0, DrawPoint(300, 550), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
+    addTextButton(0, DrawPoint(300, 550), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
 
-    AddImage(11, DrawPoint(20, 20), LOADER.getImageN("logo", 0));
+    addImage(11, DrawPoint(20, 20), LOADER.getImageN("logo", 0));
 }
 
 void dskIntro::msgButtonClick(const unsigned ctrl_id)

@@ -8,7 +8,7 @@
 
 ctrlBaseImage::ctrlBaseImage(ITexture* img /*= nullptr*/) : img_(img), modulationColor_(COLOR_WHITE) {}
 
-void ctrlBaseImage::SwapImage(ctrlBaseImage& other)
+void ctrlBaseImage::swapImage(ctrlBaseImage& other)
 {
     std::swap(img_, other.img_);
 }
@@ -20,12 +20,12 @@ Rect ctrlBaseImage::getImageRect() const
     return Rect(-img_->getOrigin(), img_->getSize());
 }
 
-void ctrlBaseImage::DrawImage(const Rect& dstArea) const
+void ctrlBaseImage::drawImage(const Rect& dstArea) const
 {
-    DrawImage(dstArea, modulationColor_);
+    drawImage(dstArea, modulationColor_);
 }
 
-void ctrlBaseImage::DrawImage(const Rect& dstArea, unsigned color) const
+void ctrlBaseImage::drawImage(const Rect& dstArea, unsigned color) const
 {
     if(img_ == nullptr)
         return;
@@ -59,5 +59,5 @@ void ctrlBaseImage::DrawImage(const Rect& dstArea, unsigned color) const
         dst.bottom -= halfDelta;
     }
 
-    img_->Draw(dst, srcArea, color);
+    img_->draw(dst, srcArea, color);
 }

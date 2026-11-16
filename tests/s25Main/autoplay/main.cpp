@@ -45,7 +45,7 @@ static void playReplay(const boost::filesystem::path& replayPath)
     HeadlessReplay replay(replayPath);
 
     const Timer timer(true);
-    replay.Run();
+    replay.run();
     const auto duration = std::chrono::duration_cast<std::chrono::duration<float>>(timer.getElapsed());
     std::cout << "Replay " << replayPath.filename() << " took " << helpers::withUnit(duration) << std::endl;
 

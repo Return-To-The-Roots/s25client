@@ -13,12 +13,12 @@ class DataChangedObservable
     std::list<IDataChangedListener*> listeners;
 
 public:
-    void AddListener(IDataChangedListener* listener);
-    void RemoveListener(IDataChangedListener* listener);
+    void addListener(IDataChangedListener* listener);
+    void removeListener(IDataChangedListener* listener);
 
 protected:
     virtual ~DataChangedObservable();
     /// Notifies all registered listeners
     /// ID=0 means, this is removed and should no longer be referenced
-    void NotifyListeners(unsigned changeId);
+    void notifyListeners(unsigned changeId);
 };

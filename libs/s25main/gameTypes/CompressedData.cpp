@@ -11,7 +11,7 @@
 #include <cmath>
 #include <stdexcept>
 
-bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, unsigned* checksum) const
+bool CompressedData::decompressToFile(const boost::filesystem::path& filePath, unsigned* checksum) const
 {
     boost::nowide::ofstream file(filePath, std::ios::binary);
 
@@ -32,7 +32,7 @@ bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, u
         }
 
         if(checksum)
-            *checksum = CalcChecksumOfBuffer(uncompressedData);
+            *checksum = calcChecksumOfBuffer(uncompressedData);
     } catch(const std::runtime_error& err)
     {
         LOG.write("FATAL ERROR: %1%\n") % err.what();
@@ -42,7 +42,7 @@ bool CompressedData::DecompressToFile(const boost::filesystem::path& filePath, u
     return true;
 }
 
-bool CompressedData::CompressFromFile(const boost::filesystem::path& filePath, unsigned* checksum /* = nullptr */)
+bool CompressedData::compressFromFile(const boost::filesystem::path& filePath, unsigned* checksum /* = nullptr */)
 {
     boost::nowide::ifstream file(filePath, std::ios::binary | std::ios::ate);
     uncompressedLength = static_cast<unsigned>(file.tellg());
@@ -65,7 +65,7 @@ bool CompressedData::CompressFromFile(const boost::filesystem::path& filePath, u
     }
 
     if(checksum)
-        *checksum = CalcChecksumOfBuffer(uncompressedData);
+        *checksum = calcChecksumOfBuffer(uncompressedData);
     return true;
 }
 

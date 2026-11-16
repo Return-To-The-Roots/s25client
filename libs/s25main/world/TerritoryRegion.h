@@ -27,18 +27,18 @@ public:
     static bool isPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, MapPoint pt);
 
     /// Adds the territory of the building
-    void CalcTerritoryOfBuilding(const noBaseBuilding& building);
+    void calcTerritoryOfBuilding(const noBaseBuilding& building);
 
     unsigned getIdx(const Position& pt) const;
     Position getPosFromMapPos(const MapPoint& pt) const;
     /// Return the owner of the point from this region (pt is relative to startPt)
     uint8_t getOwner(const Position& pt) const { return getNode(pt).owner; }
     /// Return the owner. If the point is outside the region return owner from map
-    uint8_t SafeGetOwner(const Position& pt) const;
+    uint8_t safeGetOwner(const Position& pt) const;
     void setOwner(const Position& pt, uint8_t owner) { getNode(pt).owner = owner; }
     /// Return true, if all points surrounding the given point (relative to map origin!!!) have the same owner
     /// Direction exceptDir will not be checked
-    bool WillBePlayerTerritory(const Position& mapPos, uint8_t owner, Direction exceptDir);
+    bool willBePlayerTerritory(const Position& mapPos, uint8_t owner, Direction exceptDir);
 
     /// Start position (inclusive)
     const Position startPt;
@@ -60,14 +60,14 @@ private:
     /// Check whether the point is part of the polygon
     static bool isPointInPolygon(const std::vector<Position>& polygon, const Position& pt);
     /// Check and set if a point belongs to the player, when a military bld in the given radius is added
-    void AdjustNode(MapPoint pt, uint8_t player, uint16_t radius, const std::vector<MapPoint>* allowedArea);
+    void adjustNode(MapPoint pt, uint8_t player, uint16_t radius, const std::vector<MapPoint>* allowedArea);
     TRNode& getNode(const Position& pt) { return nodes[getIdx(pt)]; }
     const TRNode& getNode(const Position& pt) const { return nodes[getIdx(pt)]; }
     /// Return a pointer to the node, if it is inside this region
-    TRNode* TryGetNode(const MapPoint& pt);
-    TRNode* TryGetNode(Position realPt);
-    const TRNode* TryGetNode(Position realPt) const;
-    bool AdjustCoords(Position& pt) const;
+    TRNode* tryGetNode(const MapPoint& pt);
+    TRNode* tryGetNode(Position realPt);
+    const TRNode* tryGetNode(Position realPt) const;
+    bool adjustCoords(Position& pt) const;
 
     const GameWorldBase& world;
     std::vector<TRNode> nodes;

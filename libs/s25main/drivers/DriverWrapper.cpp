@@ -35,7 +35,7 @@ namespace drivers {
 DriverWrapper::DriverWrapper() = default;
 DriverWrapper::~DriverWrapper() = default;
 
-void DriverWrapper::Unload()
+void DriverWrapper::unload()
 {
     dll.unload();
 }
@@ -43,10 +43,10 @@ void DriverWrapper::Unload()
 bool DriverWrapper::Load(const DriverType dt, std::string& preference)
 {
     // ggf. aufräumen vorher
-    Unload();
+    unload();
 
     /// Verfügbare Treiber auflisten
-    std::vector<DriverItem> drivers = LoadDriverList(dt);
+    std::vector<DriverItem> drivers = loadDriverList(dt);
 
     LOG.write("%u %s drivers found!\n") % drivers.size() % getName(dt);
 
@@ -84,7 +84,7 @@ bool DriverWrapper::isLoaded() const
     return dll.is_loaded();
 }
 
-bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError)
+bool DriverWrapper::checkLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError)
 {
     auto dll = tryLoadLibrary(path);
 
@@ -128,7 +128,7 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
     return true;
 }
 
-std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const DriverType dt)
+std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const DriverType dt)
 {
     std::vector<DriverItem> driver_list;
 
@@ -165,7 +165,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
             continue;
 #endif
         std::string nameOrError;
-        if(!CheckLibrary(path, dt, nameOrError))
+        if(!checkLibrary(path, dt, nameOrError))
             LOG.write(_("Skipping %s: %s\n")) % path % nameOrError;
         else
             driver_list.push_back(DriverItem(path, nameOrError));

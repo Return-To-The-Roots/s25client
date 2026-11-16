@@ -41,13 +41,13 @@ class noAnimal : public noMovable
 
 private:
     /// entscheidet, was nach einem gelaufenen Abschnitt weiter zu tun ist
-    void Walked();
+    void walked();
     /// Sucht eine Richtung, in die das Tier gehen kann
-    helpers::OptionalEnum<Direction> FindDir();
+    helpers::OptionalEnum<Direction> findDir();
     /// Fängt an zu laufen
-    void StartWalking(Direction dir);
+    void startWalking(Direction dir);
     /// Sucht eine neue Richtung und läuft in diese, ansonsten stirbt es
-    void StandardWalking();
+    void standardWalking();
 
 public:
     noAnimal(Species species, MapPoint pos);
@@ -56,47 +56,47 @@ public:
     ~noAnimal() override = default;
 
     void Serialize(SerializedGameData& sgd) const override;
-    void Destroy() override
+    void destroy() override
     {
         RTTR_Assert(!hunter);
         RTTR_Assert(!skinner);
-        noMovable::Destroy();
+        noMovable::destroy();
     }
 
     GO_Type getGOT() const final { return GO_Type::Animal; }
     Species getSpecies() const { return species; }
 
     // An x,y zeichnen
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
     // Benachrichtigen, wenn neuer gf erreicht wurde
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 
     /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugefügt wurde
-    void StartLiving();
+    void startLiving();
 
     bool canBeSkinned() const;
     bool isGettingSkinned() const;
-    void BeginSkinning(nofSkinner* skinner);
-    void StopSkinning();
-    void Skinned();
+    void beginSkinning(nofSkinner* skinner);
+    void stopSkinning();
+    void skinned();
 
     /// Kann das Tier noch vom Jäger gejagt werden?
     bool canHunted() const;
     bool isHunted() const;
 
     /// Ein Jäger geht das Tier jagen
-    void BeginHunting(nofHunter* hunter);
+    void beginHunting(nofHunter* hunter);
     /// Ein Jäger ist in der Nähe vom Tier und will es abschießen --> Tier muss stillhalten
     /// gibt die Koordinaten seines (späteren) Standorts zurück
-    MapPoint HunterIsNear();
+    MapPoint hunterIsNear();
     /// Ein Jäger kann doch nicht mehr zum Tier kommen --> kann wieder normal weiterlaufen
-    void StopHunting();
+    void stopHunting();
 
     /// Steht das Tier schon schön ruhig, damit der Jäger es erschießen kann?
     bool isReadyForShooting() const { return (state == State::WaitingForHunter); }
     bool isGettingReadyForShooting() const { return (state == State::WalkingUntilWaitingForHunter); }
     /// Tier soll sterben - erstmal nur Leiche liegen lassen
-    void Die();
+    void die();
     /// Tier wurde vom Jäger ausgenommen und muss sofort verschwinden
-    void Eviscerated();
+    void eviscerated();
 };

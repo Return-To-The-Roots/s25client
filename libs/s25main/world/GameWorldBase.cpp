@@ -43,10 +43,10 @@ void GameWorldBase::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
     freePathFinder->Init(mapSize);
 }
 
-void GameWorldBase::InitAfterLoad()
+void GameWorldBase::initAfterLoad()
 {
     RTTR_FOREACH_PT(MapPoint, getSize())
-        RecalcBQ(pt);
+        recalcBQ(pt);
 }
 
 GamePlayer& GameWorldBase::getPlayer(const unsigned id)
@@ -149,7 +149,7 @@ bool GameWorldBase::isRoadAvailable(const bool boat_road, const MapPoint pt) con
     return true;
 }
 
-bool GameWorldBase::RoadAlreadyBuilt(const bool /*boat_road*/, const MapPoint start,
+bool GameWorldBase::roadAlreadyBuilt(const bool /*boat_road*/, const MapPoint start,
                                      const std::vector<Direction>& route)
 {
     MapPoint tmp(start);
@@ -197,12 +197,12 @@ bool GameWorldBase::isAnyNeighborOwned(const MapPoint& pt) const
     return false;
 }
 
-void GameWorldBase::RecalcBQForRoad(const MapPoint pt)
+void GameWorldBase::recalcBQForRoad(const MapPoint pt)
 {
-    RecalcBQ(pt);
+    recalcBQ(pt);
 
     for(const Direction dir : {Direction::East, Direction::SouthEast, Direction::SouthWest})
-        RecalcBQ(getNeighbour(pt, dir));
+        recalcBQ(getNeighbour(pt, dir));
 }
 
 namespace {
@@ -215,7 +215,7 @@ bool IsMilBldOfOwner(const GameWorldBase& gwb, MapPoint pt, unsigned char owner)
 bool GameWorldBase::isMilitaryBuildingNearNode(const MapPoint nPt, const unsigned char player) const
 {
     // Im Umkreis von 4 Punkten ein Militärgebäude suchen
-    return CheckPointsInRadius(
+    return checkPointsInRadius(
       nPt, 4, [this, player](auto pt, auto) { return IsMilBldOfOwner(*this, pt, player + 1); }, false);
 }
 
@@ -235,7 +235,7 @@ bool GameWorldBase::isMilitaryBuildingOnNode(const MapPoint pt, bool attackBldsO
     return false;
 }
 
-sortedMilitaryBlds GameWorldBase::LookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const
+sortedMilitaryBlds GameWorldBase::lookForMilitaryBuildings(const MapPoint pt, unsigned short radius) const
 {
     return militarySquares.getBuildingsInRange(pt, radius);
 }
@@ -283,35 +283,35 @@ Position GameWorldBase::getNodePos(const MapPoint pt) const
     return ::getNodePos(pt, getNode(pt).altitude);
 }
 
-void GameWorldBase::VisibilityChanged(const MapPoint pt, unsigned player, Visibility /*oldVis*/, Visibility /*newVis*/)
+void GameWorldBase::visibilityChanged(const MapPoint pt, unsigned player, Visibility /*oldVis*/, Visibility /*newVis*/)
 {
     getNotifications().publish(PlayerNodeNote(PlayerNodeNote::Visibility, pt, player));
 }
 
 /// Verändert die Höhe eines Punktes und die damit verbundenen Schatten
-void GameWorldBase::AltitudeChanged(const MapPoint pt)
+void GameWorldBase::altitudeChanged(const MapPoint pt)
 {
-    RecalcBQAroundPointBig(pt);
+    recalcBQAroundPointBig(pt);
     getNotifications().publish(NodeNote(NodeNote::Altitude, pt));
 }
 
-void GameWorldBase::RecalcBQAroundPoint(const MapPoint pt)
+void GameWorldBase::recalcBQAroundPoint(const MapPoint pt)
 {
-    RecalcBQ(pt);
+    recalcBQ(pt);
     for(const MapPoint nb : getNeighbours(pt))
-        RecalcBQ(nb);
+        recalcBQ(nb);
 }
 
-void GameWorldBase::RecalcBQAroundPointBig(const MapPoint pt)
+void GameWorldBase::recalcBQAroundPointBig(const MapPoint pt)
 {
     // Point and radius 1
-    RecalcBQAroundPoint(pt);
+    recalcBQAroundPoint(pt);
     // And radius 2
     for(unsigned i = 0; i < 12; ++i)
-        RecalcBQ(getNeighbour2(pt, i));
+        recalcBQ(getNeighbour2(pt, i));
 }
 
-Visibility GameWorldBase::CalcVisiblityWithAllies(const MapPoint pt, const unsigned char player) const
+Visibility GameWorldBase::calcVisiblityWithAllies(const MapPoint pt, const unsigned char player) const
 {
     const MapNode& node = getNode(pt);
     Visibility best_visibility = node.fow[player].visibility;
@@ -409,7 +409,7 @@ bool GameWorldBase::isHarborPointFree(const HarborId harborId, const unsigned ch
     MapPoint flagPos = getNeighbour(hbPos, Direction::SouthEast);
     if(getNode(hbPos).owner != player + 1 || getNode(flagPos).owner != player + 1)
     {
-        if(CheckPointsInRadius(hbPos, 4, IsPointOwnerDifferent(*this, player), false))
+        if(checkPointsInRadius(hbPos, 4, IsPointOwnerDifferent(*this, player), false))
             return false;
     }
 
@@ -425,11 +425,11 @@ HarborId GameWorldBase::getNextFreeHarborPoint(const MapPoint pt, const HarborId
 }
 
 /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
-unsigned GameWorldBase::CalcDistanceToNearestHarbor(const MapPoint pos) const
+unsigned GameWorldBase::calcDistanceToNearestHarbor(const MapPoint pos) const
 {
     unsigned min_distance = std::numeric_limits<unsigned>::max();
     for(const auto i : helpers::idRange<HarborId>(getNumHarborPoints()))
-        min_distance = std::min(min_distance, this->CalcDistance(pos, getHarborPoint(i)));
+        min_distance = std::min(min_distance, this->calcDistance(pos, getHarborPoint(i)));
 
     return min_distance;
 }
@@ -439,9 +439,9 @@ bool GameWorldBase::isAHarborInSeaAttackDistance(const MapPoint pos) const
 {
     for(const auto i : helpers::idRange<HarborId>(getNumHarborPoints()))
     {
-        if(CalcDistance(pos, getHarborPoint(i)) < SEAATTACK_DISTANCE)
+        if(calcDistance(pos, getHarborPoint(i)) < SEAATTACK_DISTANCE)
         {
-            if(FindHumanPath(pos, getHarborPoint(i), SEAATTACK_DISTANCE))
+            if(findHumanPath(pos, getHarborPoint(i), SEAATTACK_DISTANCE))
                 return true;
         }
     }
@@ -461,7 +461,7 @@ std::vector<HarborId> GameWorldBase::getUsableTargetHarborsForAttack(const MapPo
     {
         const MapPoint harborPt = getHarborPoint(curHbId);
 
-        if(CalcDistance(harborPt, targetPt) > SEAATTACK_DISTANCE)
+        if(calcDistance(harborPt, targetPt) > SEAATTACK_DISTANCE)
             continue;
 
         // Not attacking this harbor and harbors block?
@@ -495,7 +495,7 @@ std::vector<HarborId> GameWorldBase::getUsableTargetHarborsForAttack(const MapPo
 
             // Can figures reach flag from coast
             const MapPoint coastalPt = getCoastalPoint(curHbId, seaId);
-            if((flagPt == coastalPt) || FindHumanPath(flagPt, coastalPt, SEAATTACK_DISTANCE))
+            if((flagPt == coastalPt) || findHumanPath(flagPt, coastalPt, SEAATTACK_DISTANCE))
             {
                 use_seas.at(seaId.value() - 1) = true;
                 if(!harborinlist)
@@ -522,7 +522,7 @@ std::vector<SeaId> GameWorldBase::getFilteredSeaIDsForAttack(const MapPoint targ
     {
         const MapPoint harborPt = getHarborPoint(curHbId);
 
-        if(CalcDistance(harborPt, targetPt) > SEAATTACK_DISTANCE)
+        if(calcDistance(harborPt, targetPt) > SEAATTACK_DISTANCE)
             continue;
 
         // Not attacking this harbor and harbors block?
@@ -558,7 +558,7 @@ std::vector<SeaId> GameWorldBase::getFilteredSeaIDsForAttack(const MapPoint targ
 
             // Can figures reach flag from coast
             MapPoint coastalPt = getCoastalPoint(curHbId, seaId);
-            if((flagPt == coastalPt) || FindHumanPath(flagPt, coastalPt, SEAATTACK_DISTANCE))
+            if((flagPt == coastalPt) || findHumanPath(flagPt, coastalPt, SEAATTACK_DISTANCE))
             {
                 confirmedSeaIds.push_back(seaId);
                 // all sea ids confirmed? return without changes
@@ -580,10 +580,10 @@ std::vector<HarborId> GameWorldBase::getHarborPointsAroundMilitaryBuilding(const
     {
         const MapPoint harborPt = getHarborPoint(i);
 
-        if(CalcDistance(harborPt, pt) <= SEAATTACK_DISTANCE)
+        if(calcDistance(harborPt, pt) <= SEAATTACK_DISTANCE)
         {
             // Wird ein Weg vom Militärgebäude zum Hafen gefunden bzw. Ziel = Hafen?
-            if(pt == harborPt || FindHumanPath(pt, harborPt, SEAATTACK_DISTANCE))
+            if(pt == harborPt || findHumanPath(pt, harborPt, SEAATTACK_DISTANCE))
                 harbor_points.push_back(i);
         }
     }
@@ -712,7 +712,7 @@ GameWorldBase::getSoldiersForSeaAttack(const unsigned char player_attacker, cons
     return attackers;
 }
 
-void GameWorldBase::RecalcBQ(const MapPoint pt)
+void GameWorldBase::recalcBQ(const MapPoint pt)
 {
     BQCalculator calcBQ(*this);
     if(setBQ(pt, calcBQ(pt, [this](auto pt) { return this->isOnRoad(pt); })))

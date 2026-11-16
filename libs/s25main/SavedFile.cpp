@@ -34,7 +34,7 @@ uint8_t SavedFile::getMajorVersion() const
     return majorVersion_.value();
 }
 
-void SavedFile::WriteFileHeader(BinaryFile& file) const
+void SavedFile::writeFileHeader(BinaryFile& file) const
 {
     // Signature
     const std::string signature = getSignature();
@@ -44,7 +44,7 @@ void SavedFile::WriteFileHeader(BinaryFile& file) const
     file.WriteUnsignedChar(getLatestMinorVersion());
 }
 
-void SavedFile::WriteExtHeader(BinaryFile& file, const std::string& mapName)
+void SavedFile::writeExtHeader(BinaryFile& file, const std::string& mapName)
 {
     // Store data in struct
     saveTime_ = s25util::Time::CurrentTime();
@@ -60,7 +60,7 @@ void SavedFile::WriteExtHeader(BinaryFile& file, const std::string& mapName)
         file.WriteShortString(name);
 }
 
-bool SavedFile::ReadFileHeader(BinaryFile& file)
+bool SavedFile::readFileHeader(BinaryFile& file)
 {
     lastErrorMsg.clear();
 
@@ -103,7 +103,7 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
     return true;
 }
 
-bool SavedFile::ReadExtHeader(BinaryFile& file)
+bool SavedFile::readExtHeader(BinaryFile& file)
 {
     file.ReadRawData(revision.data(), revision.size());
     file.ReadRawData(&saveTime_, sizeof(saveTime_));
@@ -115,23 +115,23 @@ bool SavedFile::ReadExtHeader(BinaryFile& file)
     return true;
 }
 
-void SavedFile::WriteAllHeaderData(BinaryFile& file, const std::string& mapName)
+void SavedFile::writeAllHeaderData(BinaryFile& file, const std::string& mapName)
 {
     // Versionszeug schreiben
-    WriteFileHeader(file);
-    WriteExtHeader(file, mapName);
+    writeFileHeader(file);
+    writeExtHeader(file, mapName);
 }
 
-bool SavedFile::ReadAllHeaderData(BinaryFile& file)
+bool SavedFile::readAllHeaderData(BinaryFile& file)
 {
-    if(!ReadFileHeader(file))
+    if(!readFileHeader(file))
         return false;
-    if(!ReadExtHeader(file))
+    if(!readExtHeader(file))
         return false;
     return true;
 }
 
-void SavedFile::WritePlayerData(BinaryFile& file)
+void SavedFile::writePlayerData(BinaryFile& file)
 {
     Serializer ser;
     ser.PushUnsignedChar(players.size());
@@ -141,9 +141,9 @@ void SavedFile::WritePlayerData(BinaryFile& file)
     ser.WriteToFile(file);
 }
 
-void SavedFile::ReadPlayerData(BinaryFile& file)
+void SavedFile::readPlayerData(BinaryFile& file)
 {
-    ClearPlayers();
+    clearPlayers();
     Serializer ser;
     ser.ReadFromFile(file);
     const unsigned playerCt = ser.PopUnsignedChar();
@@ -162,14 +162,14 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
             player.team = Team(rttr::enum_cast(player.team) - 3); // Was random team 2-4
         else if(player.team == Team::Random)
             player.team = Team::Team1; // Was random team 1
-        AddPlayer(player);
+        addPlayer(player);
     }
 }
 
 /**
  *  schreibt die GlobalGameSettings in die Datei.
  */
-void SavedFile::WriteGGS(BinaryFile& file) const
+void SavedFile::writeGGS(BinaryFile& file) const
 {
     Serializer ser;
     ggs.Serialize(ser);
@@ -179,7 +179,7 @@ void SavedFile::WriteGGS(BinaryFile& file) const
 /**
  *  liest die GlobalGameSettings aus der Datei.
  */
-void SavedFile::ReadGGS(BinaryFile& file)
+void SavedFile::readGGS(BinaryFile& file)
 {
     Serializer ser;
     ser.ReadFromFile(file);
@@ -196,14 +196,14 @@ unsigned SavedFile::getNumPlayers()
     return players.size();
 }
 
-void SavedFile::AddPlayer(const BasePlayerInfo& player)
+void SavedFile::addPlayer(const BasePlayerInfo& player)
 {
     players.push_back(player);
     if(player.isUsed())
         playerNames_.push_back(player.name);
 }
 
-void SavedFile::ClearPlayers()
+void SavedFile::clearPlayers()
 {
     players.clear();
     playerNames_.clear();

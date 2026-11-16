@@ -62,7 +62,7 @@ class noTree : public noCoordBase
 
 private:
     /// "Produziert" ein Tier
-    void ProduceAnimal();
+    void produceAnimal();
 
 public:
     noTree(MapPoint pos, unsigned char type, unsigned char size);
@@ -70,31 +70,31 @@ public:
 
     ~noTree() override;
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::Tree; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 
     BlockingManner getBM() const override { return BlockingManner::Tree; }
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-    std::unique_ptr<FOWObject> CreateFOWObject() const override;
+    std::unique_ptr<FOWObject> createFOWObject() const override;
     /// Can this tree(type) produce wood?
-    bool ProducesWood() const { return type != 5; }
+    bool producesWood() const { return type != 5; }
     /// Return if this tree is fully grown
     bool isFullyGrown() const { return size == 3; }
 
     /// Vom Holzfäller aufgerufen: Wenn der Holzfäller anfängt und der Baum dann in einer bestimmten Zeit umfallen soll
-    void FallSoon();
+    void fallSoon();
     /// Vom Holzfäller aufgerufen: Der Holzfäller hat seine Arbeit unterbrochen und der Baum soll doch nicht umfallen
-    void DontFall();
+    void dontFall();
 
     /// Setzt Draw-Counter auf 0
-    static void ResetDrawCounter() { DRAW_COUNTER = 0; }
+    static void resetDrawCounter() { DRAW_COUNTER = 0; }
     /// Liest Draw-Counter aus
-    static unsigned short QueryDrawCounter() { return DRAW_COUNTER; }
+    static unsigned short queryDrawCounter() { return DRAW_COUNTER; }
 };

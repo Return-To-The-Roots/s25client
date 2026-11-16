@@ -48,16 +48,16 @@ public:
     Replay();
     ~Replay() override;
 
-    void Close();
+    void close();
 
     std::string getSignature() const override;
     uint8_t getLatestMinorVersion() const override;
     uint8_t getLatestMajorVersion() const override;
 
     /// Opens the replay for recording
-    bool StartRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo, unsigned randomSeed);
+    bool startRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo, unsigned randomSeed);
     /// Stop recording. Will compress the data and return true if that succeeded. The file will be closed in any case
-    bool StopRecording();
+    bool stopRecording();
 
     /// Is the replay in the state for accepting commands to record
     bool isRecording() const { return isRecording_ && file_.IsOpen(); }
@@ -66,21 +66,21 @@ public:
     const boost::filesystem::path& getPath() const;
 
     /// Load the header (containing map and player names)
-    bool LoadHeader(const boost::filesystem::path& filepath);
+    bool loadHeader(const boost::filesystem::path& filepath);
     /// Load the remaining data into the mapInfo
     bool LoadGameData(MapInfo& mapInfo);
 
     /// Record a chat message
-    void AddChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str);
+    void addChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str);
     /// Record game commands (player actions)
-    void AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds);
+    void addGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds);
 
     /// Read the next GameFrame to which the following replay command applies if there are any left
-    std::optional<unsigned> ReadGF();
-    boost_variant2<ChatCommand, GameCommand> ReadCommand();
+    std::optional<unsigned> readGF();
+    boost_variant2<ChatCommand, GameCommand> readCommand();
 
     /// Update the (currently) last GameFrame in the file
-    void UpdateLastGF(unsigned last_gf);
+    void updateLastGF(unsigned last_gf);
 
     unsigned getSeed() const { return randomSeed_; }
     unsigned getLastGF() const { return lastGF_; }

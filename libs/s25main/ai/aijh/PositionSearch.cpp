@@ -10,7 +10,7 @@ AIJH::PositionSearch::PositionSearch(const AIPlayerJH& player, const MapPoint pt
                                      BuildingType bld, bool searchGlobalOptimum /*= false*/)
     : startPt(pt), res(res), minimum(minimum), size(BUILDING_SIZE[bld]), bld(bld),
       searchGlobalOptimum(searchGlobalOptimum), nodesPerStep(25), // TODO: Make it depend on something...
-      resultPt(MapPoint::Invalid()), resultValue(0)
+      resultPt(MapPoint::invalid()), resultValue(0)
 {
     tested.resize(prodOfComponents(player.getWorld().getSize()));
 

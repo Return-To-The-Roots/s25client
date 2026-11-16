@@ -97,7 +97,7 @@ public:
     virtual void Serialize(Serializer& ser) const;
 
     /// Execute this GameCommand
-    virtual void Execute(GameWorld& world, uint8_t playerId) = 0;
+    virtual void execute(GameWorld& world, uint8_t playerId) = 0;
 
 protected:
     GameCommand(const GCType gcType) : gcType(gcType), refCounter_(0) {}

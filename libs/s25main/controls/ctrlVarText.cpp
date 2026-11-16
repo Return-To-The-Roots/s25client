@@ -31,7 +31,7 @@ Rect ctrlVarText::getBoundaryRect() const
     return font->getBounds(getDrawPos(), getFormatedText(), format_);
 }
 
-void ctrlVarText::Draw_()
+void ctrlVarText::drawImpl()
 {
-    font->Draw(getDrawPos(), getFormatedText(), format_, color_);
+    font->draw(getDrawPos(), getFormatedText(), format_, color_);
 }

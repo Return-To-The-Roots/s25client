@@ -27,7 +27,7 @@ public:
     void setNation(lua::SafeEnum<Nation> nat);
     void setTeam(lua::SafeEnum<Team> team);
     void setColor(unsigned colorOrIdx);
-    void Close();
+    void close();
     void setAI(unsigned level);
     void setName(const std::string& name);
     void setPortrait(unsigned int portraitIndex);

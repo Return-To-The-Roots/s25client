@@ -70,7 +70,7 @@ glFont::glFont(const libsiedler2::ArchivItem_Font& font) : maxCharSize(font.getD
 
         CharInfo ci(curPos, std::min<unsigned short>(maxCharSize.x + 2, c->getWidth()));
 
-        AddCharInfo(i, ci);
+        addCharInfo(i, ci);
         curPos.x += maxCharSize.x + spacing.x * 2;
         ++numChars;
     }
@@ -79,9 +79,9 @@ glFont::glFont(const libsiedler2::ArchivItem_Font& font) : maxCharSize(font.getD
     fontWithOutline->create(bufferWithOutline);
 
     // Set the placeholder for non-existent glyphs. Use '?' (should always be possible)
-    if(CharExist(0xFFFD))
+    if(charExist(0xFFFD))
         placeHolder = getCharInfo(0xFFFD);
-    else if(CharExist('?'))
+    else if(charExist('?'))
         placeHolder = getCharInfo('?');
     else
         throw std::runtime_error("Cannot find '?' glyph in font. What shall I use as fallback?");
@@ -96,7 +96,7 @@ glFont::glFont(const libsiedler2::ArchivItem_Font& font) : maxCharSize(font.getD
     }
 }
 
-bool glFont::CharExist(char32_t c) const
+bool glFont::charExist(char32_t c) const
 {
     if(c < asciiMapping.size())
         return asciiMapping[c].first;
@@ -118,7 +118,7 @@ const glFont::CharInfo& glFont::getCharInfo(char32_t c) const
     return placeHolder;
 }
 
-void glFont::AddCharInfo(char32_t c, const CharInfo& info)
+void glFont::addCharInfo(char32_t c, const CharInfo& info)
 {
     if(c < asciiMapping.size())
         asciiMapping[c] = std::make_pair(true, info);
@@ -129,7 +129,7 @@ void glFont::AddCharInfo(char32_t c, const CharInfo& info)
 /**
  *  @brief fügt ein einzelnes Zeichen zur Zeichenliste hinzu
  */
-inline void glFont::DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const
+inline void glFont::drawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const
 {
     CharInfo ci = getCharInfo(curChar);
 
@@ -169,7 +169,7 @@ inline void glFont::DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint
  *  @param[in] maxWidth maximale Länge
  *  @param     end      Suffix for displaying a truncation of the text (...)
  */
-void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short maxWidth,
+void glFont::draw(DrawPoint pos, const std::string& text, FontStyle format, unsigned color, unsigned short maxWidth,
                   const std::string& end) const
 {
     RTTR_Assert(s25util::isValidUTF8(text));
@@ -222,7 +222,7 @@ void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsi
     for(auto it = text.begin(); it != itEnd;)
     {
         const utf::code_point curChar = utf8::decode(it, itEnd);
-        DrawChar(curChar, texList, pos);
+        drawChar(curChar, texList, pos);
     }
 
     if(drawEnd)
@@ -230,7 +230,7 @@ void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsi
         for(auto it = end.begin(); it != end.end();)
         {
             const utf::code_point curChar = utf8::decode(it, end.end());
-            DrawChar(curChar, texList, pos);
+            drawChar(curChar, texList, pos);
         }
     }
 
@@ -250,7 +250,7 @@ void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsi
 
     glVertexPointer(2, GL_FLOAT, 0, texList.vertices.data());
     glTexCoordPointer(2, GL_FLOAT, 0, texList.texCoords.data());
-    VIDEODRIVER.BindTexture(texture);
+    VIDEODRIVER.bindTexture(texture);
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, texList.vertices.size());
 }
@@ -264,7 +264,7 @@ unsigned glFont::getWidthInternal(const std::string::const_iterator& begin, cons
     {
         const auto itCurChar = it;
         const utf::code_point curChar = utf8::decode(it, end);
-        const unsigned cw = CharWidth(curChar);
+        const unsigned cw = charWidth(curChar);
         // If we limit the width and the text will be longer, stop before it
         // Do not stop if this is the first char
         if(T_limitWidth && curLen != 0 && curLen + cw > maxWidth)
@@ -310,7 +310,7 @@ Rect glFont::getBounds(DrawPoint pos, const std::string& text, FontStyle format)
     return result;
 }
 
-std::vector<std::string> glFont::WrapInfo::CreateSingleStrings(const std::string& text) const
+std::vector<std::string> glFont::WrapInfo::createSingleStrings(const std::string& text) const
 {
     std::vector<std::string> destStrings;
     destStrings.reserve(lines.size());
@@ -344,7 +344,7 @@ glFont::WrapInfo glFont::getWrapInfo(const std::string& text, const unsigned sho
     auto itWordStart = it;
     auto itLineStart = it;
 
-    const unsigned spaceWidth = CharWidth(' ');
+    const unsigned spaceWidth = charWidth(' ');
 
     const auto makeLineRange = [&text, &itLineStart](const auto& itLineEnd) {
         return WrapInfo::LineRange{static_cast<unsigned>(itLineStart - text.begin()),
@@ -378,7 +378,7 @@ glFont::WrapInfo glFont::getWrapInfo(const std::string& text, const unsigned sho
                     for(auto itWord = itWordStart; itWord != itCurChar;)
                     {
                         const auto itPotentialBreak = itWord;
-                        const utf::code_point letter_width = CharWidth(utf8::decode(itWord, itEnd));
+                        const utf::code_point letter_width = charWidth(utf8::decode(itWord, itEnd));
 
                         // Can we fit the letter onto current line?
                         if(line_width + letter_width <= curMaxLineWidth)
@@ -419,7 +419,7 @@ glFont::WrapInfo glFont::getWrapInfo(const std::string& text, const unsigned sho
         } else
         {
             // Some char -> Add its width
-            word_width += CharWidth(curChar);
+            word_width += charWidth(curChar);
         }
     }
     for(auto& line : wi.lines)

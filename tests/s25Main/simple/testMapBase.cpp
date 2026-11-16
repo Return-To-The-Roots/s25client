@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(getAllNeighboursUnion)
 BOOST_AUTO_TEST_CASE(NeighbourPts)
 {
     MapBase world;
-    world.Resize(MapExtent(20, 30));
+    world.resize(MapExtent(20, 30));
 
     /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
     Modifications for the dirs: */
@@ -86,19 +86,19 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
             const Position targetPointRaw = pt + (isEvenRow ? evenPtMod : oddPtMod)[dir];
             const MapPoint targetPoint((targetPointRaw.x + world.getWidth()) % world.getWidth(),
                                        (targetPointRaw.y + world.getHeight()) % world.getHeight());
-            BOOST_TEST_REQUIRE(world.CalcDistance(pt, targetPoint) == 1u);
+            BOOST_TEST_REQUIRE(world.calcDistance(pt, targetPoint) == 1u);
 
             BOOST_TEST_REQUIRE(world.getNeighbour(pt, dir) == targetPoint);
             // Consistency check: The inverse must also match
             BOOST_TEST_REQUIRE(world.getNeighbour(targetPoint, Direction(dir + 3)) == pt);
             // Also the global function must return the same:
             BOOST_TEST_REQUIRE(::getNeighbour(Position(pt), dir) == targetPointRaw);
-            BOOST_TEST_REQUIRE(world.MakeMapPoint(::getNeighbour(Position(pt), dir)) == targetPoint);
+            BOOST_TEST_REQUIRE(world.makeMapPoint(::getNeighbour(Position(pt), dir)) == targetPoint);
         }
 
         // Neighbour 2 -> Radius 2, right circle
         MapPoint curTargetPoint = world.getNeighbour(world.getNeighbour(pt, Direction::West), Direction::West);
-        BOOST_TEST_REQUIRE(world.CalcDistance(pt, curTargetPoint) == 2u);
+        BOOST_TEST_REQUIRE(world.calcDistance(pt, curTargetPoint) == 2u);
         BOOST_TEST_REQUIRE(world.getNeighbour2(pt, 0) == curTargetPoint);
         // We now go 2 steps in each direction to describe the circle
         // (Note: Could iterator over directions, but to easily identify errors and make intentions clear we do it
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
         for(unsigned j = 1; j < 12; j++)
         {
             curTargetPoint = world.getNeighbour(curTargetPoint, steps.at(j - 1));
-            BOOST_TEST_REQUIRE(world.CalcDistance(pt, curTargetPoint) == 2u);
+            BOOST_TEST_REQUIRE(world.calcDistance(pt, curTargetPoint) == 2u);
             BOOST_TEST_REQUIRE(world.getNeighbour2(pt, j) == curTargetPoint);
         }
 
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
         for(unsigned j = 0; j < 12; j++)
             BOOST_TEST_REQUIRE(radiusPts[j + 7] == world.getNeighbour2(pt, j));
         for(unsigned j = 0; j < 18; j++)
-            BOOST_TEST_REQUIRE(world.CalcDistance(pt, radiusPts[j + 19]) == 3u);
+            BOOST_TEST_REQUIRE(world.calcDistance(pt, radiusPts[j + 19]) == 3u);
 
         const helpers::EnumArray<MapPoint, Direction> neighbours = world.getNeighbours(pt);
         for(const auto dir : helpers::EnumRange<Direction>{})
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
 BOOST_AUTO_TEST_CASE(GetMatchingPointsInRadius)
 {
     MapBase world;
-    world.Resize(MapExtent(20, 30));
+    world.resize(MapExtent(20, 30));
     const MapPoint center = rttr::test::randomPoint<MapPoint>(0, 19);
     const std::vector<MapPoint> oddPts =
       world.GetMatchingPointsInRadius(center, 5, [](const MapPoint pt) { return pt.x % 2 == 1; });
@@ -156,14 +156,14 @@ BOOST_AUTO_TEST_CASE(getIdx)
 {
     MapBase world;
     // Small world
-    world.Resize(MapExtent(100, 50));
+    world.resize(MapExtent(100, 50));
     BOOST_TEST_REQUIRE(world.getIdx(MapPoint(0, 0)) == 0u);
     BOOST_TEST_REQUIRE(world.getIdx(MapPoint(99, 0)) == 99u);
     BOOST_TEST_REQUIRE(world.getIdx(MapPoint(0, 1)) == 100u);
     BOOST_TEST_REQUIRE(world.getIdx(MapPoint(1, 1)) == 101u);
     BOOST_TEST_REQUIRE(world.getIdx(MapPoint(99, 49)) == 50u * 100u - 1u);
     // Big world.
-    world.Resize(MapExtent(MAX_MAP_SIZE, MAX_MAP_SIZE - 2));
+    world.resize(MapExtent(MAX_MAP_SIZE, MAX_MAP_SIZE - 2));
     BOOST_TEST_REQUIRE(world.getIdx(MapPoint(0, 0)) == 0u);
     BOOST_TEST_REQUIRE(world.getIdx(MapPoint(MAX_MAP_SIZE - 1, 0)) == MAX_MAP_SIZE - 1);
     BOOST_TEST_REQUIRE(world.getIdx(MapPoint(0, 1)) == MAX_MAP_SIZE);

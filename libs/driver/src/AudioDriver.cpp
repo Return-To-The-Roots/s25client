@@ -25,7 +25,7 @@ AudioDriver::~AudioDriver()
     RTTR_Assert(loadedSounds_.empty());
 }
 
-void AudioDriver::CleanUp()
+void AudioDriver::cleanUp()
 {
     const auto soundsCopy = loadedSounds_;
     for(const auto& sound : soundsCopy)
@@ -33,7 +33,7 @@ void AudioDriver::CleanUp()
     initialized = false;
 }
 
-EffectPlayId AudioDriver::PlayEffect(const RawSoundHandle& sound, uint8_t volume, bool loop)
+EffectPlayId AudioDriver::playEffect(const RawSoundHandle& sound, uint8_t volume, bool loop)
 {
     if(!sound.getDriverData())
         return EffectPlayId::Invalid;
@@ -44,18 +44,18 @@ EffectPlayId AudioDriver::PlayEffect(const RawSoundHandle& sound, uint8_t volume
     const int channel = doPlayEffect(sound.getDriverData(), volume, loop);
     if(channel < 0 || static_cast<unsigned>(channel) >= channels_.size())
         return EffectPlayId::Invalid;
-    const EffectPlayId newId = GeneratePlayID();
+    const EffectPlayId newId = generatePlayID();
     channels_[channel] = newId;
     return newId;
 }
 
-void AudioDriver::StopEffect(EffectPlayId play_id)
+void AudioDriver::stopEffect(EffectPlayId play_id)
 {
     const int channel = getEffectChannel(play_id);
     if(channel >= 0)
     {
         doStopEffect(channel);
-        RemoveEffect(play_id);
+        removeEffect(play_id);
     }
 }
 
@@ -95,7 +95,7 @@ int AudioDriver::getEffectChannel(EffectPlayId playId) const
     return (it == channels_.end()) ? -1 : static_cast<int>(std::distance(channels_.begin(), it));
 }
 
-void AudioDriver::RemoveEffect(EffectPlayId playId)
+void AudioDriver::removeEffect(EffectPlayId playId)
 {
     int channel = getEffectChannel(playId);
     if(channel >= 0)
@@ -110,7 +110,7 @@ RawSoundHandle AudioDriver::createRawSoundHandle(RawSoundHandle::DriverData driv
     return handle;
 }
 
-EffectPlayId AudioDriver::GeneratePlayID()
+EffectPlayId AudioDriver::generatePlayID()
 {
     using intType = std::underlying_type_t<EffectPlayId>;
 

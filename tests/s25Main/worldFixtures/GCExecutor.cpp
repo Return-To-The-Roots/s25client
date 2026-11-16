@@ -3,7 +3,7 @@
 #include "world/GameWorld.h"
 #include "gameTypes/GameTypesOutput.h"
 
-void GCExecutor::BuildRoadForBlds(const MapPoint bldPosFrom, const MapPoint bldPosTo)
+void GCExecutor::buildRoadForBlds(const MapPoint bldPosFrom, const MapPoint bldPosTo)
 {
     auto& world = getWorld();
     const MapPoint start = world.getNeighbour(bldPosFrom, Direction::SouthEast);

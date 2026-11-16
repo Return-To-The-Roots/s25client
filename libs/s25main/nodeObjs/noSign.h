@@ -20,7 +20,7 @@ public:
     GO_Type getGOT() const final { return GO_Type::Sign; }
 
     /// An x,y zeichnen.
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Return the resources found, as drawn on the sign.
     Resource getResource() const { return resource; }

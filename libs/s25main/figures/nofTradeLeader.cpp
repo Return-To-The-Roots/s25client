@@ -26,8 +26,8 @@ nofTradeLeader::nofTradeLeader(const MapPoint pos, const unsigned char player, T
 {}
 
 nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), tr(sgd, *world, player), successor(sgd.PopObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
-      homePos(sgd.PopMapPoint()), goalPos(sgd.PopMapPoint())
+    : noFigure(sgd, obj_id), tr(sgd, *world, player), successor(sgd.popObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
+      homePos(sgd.popMapPoint()), goalPos(sgd.popMapPoint())
 {}
 
 void nofTradeLeader::Serialize(SerializedGameData& sgd) const
@@ -36,12 +36,12 @@ void nofTradeLeader::Serialize(SerializedGameData& sgd) const
 
     tr.Serialize(sgd);
 
-    sgd.PushObject(successor, true);
+    sgd.pushObject(successor, true);
     helpers::pushPoint(sgd, homePos);
     helpers::pushPoint(sgd, goalPos);
 }
 
-void nofTradeLeader::GoalReached()
+void nofTradeLeader::goalReached()
 {
     noBase* nob = world->getNO(goalPos);
     auto* targetWarehouse = checkedCast<nobBaseWarehouse*>(nob);
@@ -60,18 +60,18 @@ void nofTradeLeader::GoalReached()
         std::string waresName = _(!goodType ? JOB_NAMES[jobType] : WARE_NAMES[*goodType]);
         std::string text = str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares
                                % waresName % owner.name);
-        SendPostMessage(targetWarehouse->getPlayer(),
+        sendPostMessage(targetWarehouse->getPlayer(),
                         std::make_unique<PostMsgWithBuilding>(getEvMgr().getCurrentGF(), text, PostCategory::Economy,
                                                               *targetWarehouse));
-        successor->AddNextDir(TradeDirection::ReachedGoal);
+        successor->addNextDir(TradeDirection::ReachedGoal);
         successor = nullptr;
     }
 
-    world->getPlayer(targetWarehouse->getPlayer()).IncreaseInventoryJob(this->getJobType(), 1);
-    targetWarehouse->AddFigure(world->RemoveFigure(pos, *this));
+    world->getPlayer(targetWarehouse->getPlayer()).increaseInventoryJob(this->getJobType(), 1);
+    targetWarehouse->addFigure(world->RemoveFigure(pos, *this));
 }
 
-void nofTradeLeader::Walked()
+void nofTradeLeader::walked()
 {
     noBase* nob = world->getNO(goalPos);
 
@@ -79,51 +79,51 @@ void nofTradeLeader::Walked()
     if(nob->getType() != NodalObjectType::Building
        || !BuildingProperties::isWareHouse(static_cast<noBuilding*>(nob)->getBuildingType()))
     {
-        if(TryToGoHome())
-            Walked();
+        if(tryToGoHome())
+            walked();
         else
         {
             cancelTradeCaravane();
-            WanderFailedTrade();
+            wanderFailedTrade();
         }
     } else if(pos == goalPos)
-        GoalReached();
+        goalReached();
     else
     {
         RTTR_Assert(pos == tr.getCurPos());
         auto next_dir = tr.getNextDir();
         if(!next_dir)
         {
-            if(TryToGoHome())
-                Walked();
+            if(tryToGoHome())
+                walked();
             else
             {
                 cancelTradeCaravane();
-                WanderFailedTrade();
+                wanderFailedTrade();
             }
         } else
         {
             if(*next_dir == TradeDirection::ReachedGoal)
                 next_dir = TradeDirection(Direction::NorthWest); // Walk into building
-            StartWalking(toDirection(*next_dir));
+            startWalking(toDirection(*next_dir));
             if(successor)
-                successor->AddNextDir(*next_dir);
+                successor->addNextDir(*next_dir);
         }
     }
 }
 
-void nofTradeLeader::HandleDerivedEvent(const unsigned /*id*/) {}
-void nofTradeLeader::AbrogateWorkplace() {}
+void nofTradeLeader::handleDerivedEvent(const unsigned /*id*/) {}
+void nofTradeLeader::abrogateWorkplace() {}
 
-void nofTradeLeader::Draw(DrawPoint drawPt)
+void nofTradeLeader::draw(DrawPoint drawPt)
 {
-    DrawWalkingBobJobs(drawPt, Job::Scout);
+    drawWalkingBobJobs(drawPt, Job::Scout);
 }
 
-void nofTradeLeader::LostWork() {}
+void nofTradeLeader::lostWork() {}
 
 /// Tries to go to the home ware house, otherwise start wandering
-bool nofTradeLeader::TryToGoHome()
+bool nofTradeLeader::tryToGoHome()
 {
     if(goalPos == homePos)
         return false; // Already going home
@@ -138,7 +138,7 @@ bool nofTradeLeader::TryToGoHome()
 
     // Find a way back home
     MapPoint homeFlagPos = world->getNeighbour(homePos, Direction::SouthEast);
-    tr.AssignNewGoal(this->getPos(), homeFlagPos);
+    tr.assignNewGoal(this->getPos(), homeFlagPos);
     return tr.isValid();
 }
 

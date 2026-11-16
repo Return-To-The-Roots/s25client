@@ -37,18 +37,18 @@ dskSinglePlayer::dskSinglePlayer()
 {
     RTTR_Assert(dskMenuBase::ID_FIRST_FREE <= 3);
 
-    AddTextButton(3, DrawPoint(115, 180), Extent(220, 22), TextureColor::Green2, _("Resume last game"), NormalFont);
-    AddTextButton(7, DrawPoint(115, 210), Extent(220, 22), TextureColor::Green2, _("Load game"), NormalFont);
+    addTextButton(3, DrawPoint(115, 180), Extent(220, 22), TextureColor::Green2, _("Resume last game"), NormalFont);
+    addTextButton(7, DrawPoint(115, 210), Extent(220, 22), TextureColor::Green2, _("Load game"), NormalFont);
 
-    AddTextButton(5, DrawPoint(115, 250), Extent(220, 22), TextureColor::Green2, std::string(_("Campaigns")),
+    addTextButton(5, DrawPoint(115, 250), Extent(220, 22), TextureColor::Green2, std::string(_("Campaigns")),
                   NormalFont);
-    AddTextButton(6, DrawPoint(115, 280), Extent(220, 22), TextureColor::Green2, _("Unlimited Play"), NormalFont);
+    addTextButton(6, DrawPoint(115, 280), Extent(220, 22), TextureColor::Green2, _("Unlimited Play"), NormalFont);
 
-    AddTextButton(4, DrawPoint(115, 320), Extent(220, 22), TextureColor::Green2, _("Play Replay"), NormalFont);
+    addTextButton(4, DrawPoint(115, 320), Extent(220, 22), TextureColor::Green2, _("Play Replay"), NormalFont);
 
-    AddTextButton(8, DrawPoint(115, 390), Extent(220, 22), TextureColor::Red1, _("Back"), NormalFont);
+    addTextButton(8, DrawPoint(115, 390), Extent(220, 22), TextureColor::Red1, _("Back"), NormalFont);
 
-    AddImage(11, DrawPoint(20, 20), LOADER.getImageN("logo", 0));
+    addImage(11, DrawPoint(20, 20), LOADER.getImageN("logo", 0));
 }
 
 void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
@@ -88,22 +88,22 @@ void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
 
                 WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
 
-                if(GAMECLIENT.HostGame(csi, {mostRecentFilepath, MapType::Savegame}))
-                    WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
+                if(GAMECLIENT.hostGame(csi, {mostRecentFilepath, MapType::Savegame}))
+                    WINDOWMANAGER.showAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
                 else
                 {
-                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"),
+                    WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"),
                                                                   _("The specified file couldn't be loaded!"), nullptr,
                                                                   MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
                 }
             } else
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"),
+                WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), _("The specified file couldn't be loaded!"),
                                                               nullptr, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
         }
         break;
         case 4: // "Replay abspielen"
         {
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwPlayReplay>());
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwPlayReplay>());
         }
         break;
         case 5: // "Kampagne"
@@ -113,12 +113,12 @@ void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
         break;
         case 6: // "Freies Spiel"
         {
-            PrepareSinglePlayerServer();
+            prepareSinglePlayerServer();
         }
         break;
         case 7: // "Spiel laden"
         {
-            PrepareLoadGame();
+            prepareLoadGame();
         }
         break;
         case 8: // "Zurück"
@@ -129,15 +129,15 @@ void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
     }
 }
 
-void dskSinglePlayer::PrepareSinglePlayerServer()
+void dskSinglePlayer::prepareSinglePlayerServer()
 {
     WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(createLocalGameInfo(_("Unlimited Play"))));
 }
 
-void dskSinglePlayer::PrepareLoadGame()
+void dskSinglePlayer::prepareLoadGame()
 {
     CreateServerInfo csi = createLocalGameInfo(_("Unlimited Play"));
 
     WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
-    WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwLoad>(csi));
+    WINDOWMANAGER.showAfterSwitch(std::make_unique<iwLoad>(csi));
 }

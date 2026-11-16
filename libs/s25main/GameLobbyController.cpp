@@ -25,7 +25,7 @@ JoinPlayerInfo& GameLobbyController::getJoinPlayer(unsigned playerIdx)
     return lobby->getPlayer(playerIdx);
 }
 
-void GameLobbyController::CloseSlot(unsigned playerIdx)
+void GameLobbyController::closeSlot(unsigned playerIdx)
 {
     setPlayerState(playerIdx, PlayerState::Locked, AI::Info());
 }
@@ -35,7 +35,7 @@ void GameLobbyController::setPlayerState(unsigned playerIdx, PlayerState state, 
     mainPlayer_.sendMsgAsync(new GameMessage_Player_State(playerIdx, state, aiInfo));
 }
 
-void GameLobbyController::TogglePlayerState(unsigned playerIdx)
+void GameLobbyController::togglePlayerState(unsigned playerIdx)
 {
     const JoinPlayerInfo& player = lobby->getPlayer(playerIdx);
 
@@ -92,19 +92,19 @@ const GlobalGameSettings& GameLobbyController::getGGS() const
     return lobby->getSettings();
 }
 
-void GameLobbyController::ChangeGlobalGameSettings(const GlobalGameSettings& ggs)
+void GameLobbyController::changeGlobalGameSettings(const GlobalGameSettings& ggs)
 {
     // Already change this here or future changes will be ignored before the server acknowledges the change
     lobby->getSettings() = ggs;
     mainPlayer_.sendMsgAsync(new GameMessage_GGSChange(ggs));
 }
 
-void GameLobbyController::SwapPlayers(unsigned player1, unsigned player2)
+void GameLobbyController::swapPlayers(unsigned player1, unsigned player2)
 {
     mainPlayer_.sendMsgAsync(new GameMessage_Player_Swap(player1, player2));
 }
 
-void GameLobbyController::StartCountdown(unsigned numSecs)
+void GameLobbyController::startCountdown(unsigned numSecs)
 {
     mainPlayer_.sendMsgAsync(new GameMessage_Countdown(numSecs));
 }
@@ -114,7 +114,7 @@ void GameLobbyController::cancelCountdown()
     mainPlayer_.sendMsgAsync(new GameMessage_CancelCountdown());
 }
 
-void GameLobbyController::RemoveLuaScript()
+void GameLobbyController::removeLuaScript()
 {
     mainPlayer_.sendMsgAsync(new GameMessage_RemoveLua());
 }

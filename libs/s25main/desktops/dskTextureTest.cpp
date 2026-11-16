@@ -29,10 +29,10 @@ enum
 
 dskTextureTest::dskTextureTest()
 {
-    AddText(ID_txtTitle, DrawPoint(300, 20), "Test screen for textures", COLOR_ORANGE, FontStyle::CENTER, LargeFont);
-    AddComboBox(ID_cbTexture, DrawPoint(630, 50), Extent(100, 22), TextureColor::Green2, NormalFont, 100);
+    addText(ID_txtTitle, DrawPoint(300, 20), "Test screen for textures", COLOR_ORANGE, FontStyle::CENTER, LargeFont);
+    addComboBox(ID_cbTexture, DrawPoint(630, 50), Extent(100, 22), TextureColor::Green2, NormalFont, 100);
     Load();
-    AddTextButton(ID_btBack, DrawPoint(630, 565), Extent(150, 22), TextureColor::Red1, _("Back"), NormalFont);
+    addTextButton(ID_btBack, DrawPoint(630, 565), Extent(150, 22), TextureColor::Red1, _("Back"), NormalFont);
 }
 
 dskTextureTest::~dskTextureTest() = default;
@@ -43,7 +43,7 @@ void dskTextureTest::Load()
     GameDataLoader gdLoader(newDesc);
     if(!gdLoader.Load())
     {
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(_("Error"), "Failed to load game data!", nullptr,
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwMsgbox>(_("Error"), "Failed to load game data!", nullptr,
                                                                  MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
         return;
     }
@@ -51,9 +51,9 @@ void dskTextureTest::Load()
 
     auto* cb = getCtrl<ctrlComboBox>(ID_cbTexture);
     const unsigned selection = cb->getSelection().value_or(0);
-    cb->DeleteAllItems();
+    cb->deleteAllItems();
     for(const auto& t : desc.terrain)
-        cb->AddItem(t.name);
+        cb->addItem(t.name);
     cb->setSelection(selection);
     msgComboSelectItem(ID_cbTexture, selection);
 }
@@ -67,7 +67,7 @@ void dskTextureTest::msgComboSelectItem(const unsigned ctrl_id, const unsigned s
     LOADER.Load(RTTRCONFIG.ExpandPath(cur.texturePath));
     const auto textureName = ResourceId::make(bfs::path(cur.texturePath));
     glArchivItem_Bitmap* texBmp = LOADER.getImageN(textureName, 0);
-    curTexture = LOADER.ExtractTexture(*texBmp, cur.posInTexture);
+    curTexture = LOADER.extractTexture(*texBmp, cur.posInTexture);
 }
 
 void dskTextureTest::msgButtonClick(const unsigned /*ctrl_id*/)
@@ -83,8 +83,8 @@ void dskTextureTest::msgPaintAfter()
     dskMenuBase::msgPaintAfter();
     if(!curTexture)
         return;
-    DrawRectangle(Rect(0, 50, 800, 550), COLOR_BLACK);
-    VIDEODRIVER.BindTexture(curTexture->getTexture());
+    drawRectangle(Rect(0, 50, 800, 550), COLOR_BLACK);
+    VIDEODRIVER.bindTexture(curTexture->getTexture());
     const TerrainDesc& cur = desc.get(curTerrainIdx);
     Position texOrigin = cur.posInTexture.getOrigin();
     PointF texSize(curTexture->getTexSize());

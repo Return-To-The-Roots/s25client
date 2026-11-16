@@ -28,7 +28,7 @@ enum class Cursor : unsigned
     Hand = 30,
     Scroll = 32,
     Moon = 33,
-    Remove = 34
+    remove = 34
 };
 
 /// Verwaltet alle (offenen) Fenster bzw Desktops samt ihren Controls und Messages
@@ -40,51 +40,51 @@ public:
 
     WindowManager();
     ~WindowManager();
-    void CleanUp();
+    void cleanUp();
 
     /// Zeichnet Desktop und alle Fenster.
-    void Draw();
+    void draw();
     /// liefert ob der aktuelle Desktop den Focus besitzt oder nicht.
     bool isDesktopActive() const;
 
     /// schickt eine Nachricht an das aktive Fenster bzw den aktiven Desktop.
     /// Sendet eine Tastaturnachricht an die Steuerelemente.
-    void RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
+    void relayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
     /// Sendet eine Mausnachricht weiter an alle Steuerelemente
-    void RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc, Window* window = nullptr);
+    void relayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc, Window* window = nullptr);
 
     /// Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
-    IngameWindow& DoShow(std::unique_ptr<IngameWindow> window, bool mouse = false);
+    IngameWindow& doShow(std::unique_ptr<IngameWindow> window, bool mouse = false);
     template<typename T>
-    T& Show(std::unique_ptr<T> window, bool mouse = false)
+    T& show(std::unique_ptr<T> window, bool mouse = false)
     {
-        return static_cast<T&>(DoShow(std::move(window), mouse));
+        return static_cast<T&>(doShow(std::move(window), mouse));
     }
     template<typename T>
-    T& ReplaceWindow(std::unique_ptr<T> window)
+    T& replaceWindow(std::unique_ptr<T> window)
     {
-        auto* oldWnd = FindNonModalWindow(window->getID());
+        auto* oldWnd = findNonModalWindow(window->getID());
         if(oldWnd)
-            oldWnd->Close();
-        return Show(std::move(window));
+            oldWnd->close();
+        return show(std::move(window));
     }
     template<typename T>
-    T* ToggleWindow(std::unique_ptr<T> window)
+    T* toggleWindow(std::unique_ptr<T> window)
     {
-        auto* oldWnd = FindNonModalWindow(window->getID());
+        auto* oldWnd = findNonModalWindow(window->getID());
         if(oldWnd)
         {
-            oldWnd->Close();
+            oldWnd->close();
             return nullptr;
         } else
-            return &Show(std::move(window));
+            return &show(std::move(window));
     }
     /// Registers a window to be shown after a desktop switch
-    IngameWindow* ShowAfterSwitch(std::unique_ptr<IngameWindow> window);
+    IngameWindow* showAfterSwitch(std::unique_ptr<IngameWindow> window);
     /// Sucht ein Fenster mit der entsprechenden Fenster-ID und schließt es (falls es so eins gibt)
-    void Close(unsigned id);
+    void close(unsigned id);
     /// Close the window right away and free it.
-    void CloseNow(IngameWindow* window);
+    void closeNow(IngameWindow* window);
     /// merkt einen Desktop zum Wechsel vor.
     Desktop* Switch(std::unique_ptr<Desktop> desktop);
     /// Process press of left mouse button
@@ -114,15 +114,15 @@ public:
     void setToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent = false);
 
     /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
-    void WindowResized() override;
+    void windowResized() override;
     /// Verarbeitung Spielfenstergröße verändert (vom Spiel aus)
     // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empfängt
     void msgScreenResize(const Extent& newSize);
 
     /// Return the window currently on the top (probably active)
     IngameWindow* getTopMostWindow() const;
-    IngameWindow* FindWindowAtPos(const Position& pos) const;
-    IngameWindow* FindNonModalWindow(unsigned id) const;
+    IngameWindow* findWindowAtPos(const Position& pos) const;
+    IngameWindow* findNonModalWindow(unsigned id) const;
 
     Desktop* getCurrentDesktop() { return curDesktop.get(); }
     /// Makes the given window (desktop or ingame window) active and all others inactive
@@ -142,16 +142,16 @@ private:
     /// Get the active window (desktop or ingame window)
     Window* getActiveWindow() const;
 
-    void DrawCursor();
-    void DrawToolTip();
+    void drawCursor();
+    void drawToolTip();
 
-    void TakeScreenshot() const;
+    void takeScreenshot() const;
     /// wechselt einen Desktop
-    void DoDesktopSwitch();
+    void doDesktopSwitch();
     /// Actually close all ingame windows marked for closing
-    void CloseMarkedIngameWnds();
+    void closeMarkedIngameWnds();
     /// Close the window and remove it from the window list
-    void DoClose(IngameWindow* window);
+    void doClose(IngameWindow* window);
 
     Cursor cursor_;
     std::unique_ptr<Desktop> curDesktop;  /// aktueller Desktop

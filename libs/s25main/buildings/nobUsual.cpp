@@ -42,19 +42,19 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
     orderedWares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
 
     // Tür aufmachen,bis Gebäude besetzt ist
-    OpenDoor();
+    openDoor();
 
     GamePlayer& owner = world->getPlayer(player);
     // New building gets half the average productivity from all buildings of the same type
-    productivity = owner.getBuildingRegister().CalcAverageProductivity(type) / 2u;
+    productivity = owner.getBuildingRegister().calcAverageProductivity(type) / 2u;
     // Set last productivities to current to avoid resetting it on first recalculation event
     std::fill(lastProductivities.begin(), lastProductivities.end(), productivity);
 }
 
 nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
-    : noBuilding(sgd, obj_id), worker(sgd.PopObject<nofBuildingWorker>()), productivity(sgd.PopUnsignedShort()),
+    : noBuilding(sgd, obj_id), worker(sgd.popObject<nofBuildingWorker>()), productivity(sgd.PopUnsignedShort()),
       disableProduction(sgd.PopBool()), disableProductionVirtual(disableProduction),
-      lastOrderedWare(sgd.PopUnsignedChar()), orderware_ev(sgd.PopEvent()), productivity_ev(sgd.PopEvent()),
+      lastOrderedWare(sgd.PopUnsignedChar()), orderware_ev(sgd.popEvent()), productivity_ev(sgd.popEvent()),
       numGfNotWorking(sgd.PopUnsignedShort()), sinceNotWorking(sgd.PopUnsignedInt()),
       outOfRessourcesMsgSent(sgd.PopBool()), is_working(sgd.PopBool())
 {
@@ -63,7 +63,7 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
     orderedWares.resize(BLD_WORK_DESC[bldType_].waresNeeded.size());
 
     for(std::list<Ware*>& orderedWare : orderedWares)
-        sgd.PopObjectContainer(orderedWare, GO_Type::Ware);
+        sgd.popObjectContainer(orderedWare, GO_Type::Ware);
     helpers::popContainer(sgd, lastProductivities);
 }
 
@@ -71,12 +71,12 @@ void nobUsual::Serialize(SerializedGameData& sgd) const
 {
     noBuilding::Serialize(sgd);
 
-    sgd.PushObject(worker);
+    sgd.pushObject(worker);
     sgd.PushUnsignedShort(productivity);
     sgd.PushBool(disableProduction);
     sgd.PushUnsignedChar(lastOrderedWare);
-    sgd.PushEvent(orderware_ev);
-    sgd.PushEvent(productivity_ev);
+    sgd.pushEvent(orderware_ev);
+    sgd.pushEvent(productivity_ev);
     sgd.PushUnsignedShort(numGfNotWorking);
     sgd.PushUnsignedInt(sinceNotWorking);
     sgd.PushBool(outOfRessourcesMsgSent);
@@ -84,7 +84,7 @@ void nobUsual::Serialize(SerializedGameData& sgd) const
 
     helpers::pushContainer(sgd, numWares);
     for(const std::list<Ware*>& orderedWare : orderedWares)
-        sgd.PushObjectContainer(orderedWare, true);
+        sgd.pushObjectContainer(orderedWare, true);
     helpers::pushContainer(sgd, lastProductivities);
 }
 
@@ -95,40 +95,40 @@ void nobUsual::DestroyBuilding()
     // Arbeiter Bescheid sagen
     if(worker)
     {
-        worker->LostWork();
+        worker->lostWork();
         worker = nullptr;
     } else
-        world->getPlayer(player).JobNotWanted(this);
+        world->getPlayer(player).jobNotWanted(this);
 
     // Bestellte Waren Bescheid sagen
     for(std::list<Ware*>& orderedWare : orderedWares)
     {
         for(Ware* ware : orderedWare)
-            WareNotNeeded(ware);
+            wareNotNeeded(ware);
         orderedWare.clear();
     }
 
     // Events löschen
-    getEvMgr().RemoveEvent(orderware_ev);
-    getEvMgr().RemoveEvent(productivity_ev);
+    getEvMgr().removeEvent(orderware_ev);
+    getEvMgr().removeEvent(productivity_ev);
 
     // Inventur entsprechend verringern wegen den Waren, die vernichtetet werden
     for(unsigned i = 0; i < BLD_WORK_DESC[bldType_].waresNeeded.size(); ++i)
     {
         const GoodType ware = BLD_WORK_DESC[bldType_].waresNeeded[i];
         RTTR_Assert(ware != GoodType::Nothing);
-        world->getPlayer(player).DecreaseInventoryWare(ware, numWares[i]);
+        world->getPlayer(player).decreaseInventoryWare(ware, numWares[i]);
     }
 }
 
-void nobUsual::Draw(DrawPoint drawPt)
+void nobUsual::draw(DrawPoint drawPt)
 {
     // Gebäude an sich zeichnen
-    DrawBaseBuilding(drawPt);
+    drawBaseBuilding(drawPt);
 
     // Wenn Produktion gestoppt ist, Schild außen am Gebäude zeichnen zeichnen
     if(disableProductionVirtual)
-        LOADER.getMapTexture(46)->DrawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
+        LOADER.getMapTexture(46)->drawFull(drawPt + BUILDING_SIGN_CONSTS[nation][bldType_]);
 
     // Rauch zeichnen
 
@@ -139,7 +139,7 @@ void nobUsual::Draw(DrawPoint drawPt)
         LOADER
           .getMapTexture(692 + BUILDING_SMOKE_CONSTS[nation][bldType_].type * 8
                          + GAMECLIENT.getGlobalAnimation(8, 5, 2, (getX() + getY()) * 100))
-          ->DrawFull(drawPt + BUILDING_SMOKE_CONSTS[nation][bldType_].offset, 0x99EEEEEE);
+          ->drawFull(drawPt + BUILDING_SMOKE_CONSTS[nation][bldType_].offset, 0x99EEEEEE);
     }
 
     // TODO: zusätzliche Dinge wie Mühlenräder, Schweinchen etc bei bestimmten Gebäuden zeichnen
@@ -148,9 +148,9 @@ void nobUsual::Draw(DrawPoint drawPt)
     if(bldType_ == BuildingType::Mill && !is_working)
     {
         // Flügel der Mühle
-        LOADER.getNationImage(nation, 250 + 5 * 49)->DrawFull(drawPt);
+        LOADER.getNationImage(nation, 250 + 5 * 49)->drawFull(drawPt);
         // Schatten der Flügel
-        LOADER.getNationImage(nation, 250 + 5 * 49 + 1)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getNationImage(nation, 250 + 5 * 49 + 1)->drawFull(drawPt, COLOR_SHADOW);
     }
     // Esel in den Kammer bei Eselzucht zeichnen
     else if(bldType_ == BuildingType::DonkeyBreeder)
@@ -178,13 +178,13 @@ void nobUsual::Draw(DrawPoint drawPt)
         {
             unsigned animationFrame = DONKEY_ANIMATION[GAMECLIENT.getGlobalAnimation(
               DONKEY_ANIMATION.size(), 5, 2, getX() * (player + 2) + getY() * i)];
-            LOADER.getMapTexture(2180 + animationFrame)->DrawFull(drawPt + DONKEY_OFFSETS[nation][i]);
+            LOADER.getMapTexture(2180 + animationFrame)->drawFull(drawPt + DONKEY_OFFSETS[nation][i]);
         }
     }
     // Bei Katapulthaus Katapult oben auf dem Dach zeichnen, falls er nicht "arbeitet"
     else if(bldType_ == BuildingType::Catapult && !is_working)
     {
-        LOADER.getPlayerImage("rom_bobs", 1776)->DrawFull(drawPt - DrawPoint(7, 19));
+        LOADER.getPlayerImage("rom_bobs", 1776)->drawFull(drawPt - DrawPoint(7, 19));
     }
 
     // Bei Schweinefarm Schweinchen auf dem Hof zeichnen
@@ -201,9 +201,9 @@ void nobUsual::Draw(DrawPoint drawPt)
         }};
 
         /// Großes Schwein zeichnen
-        LOADER.getMapTexture(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][0], COLOR_SHADOW);
+        LOADER.getMapTexture(2160)->drawFull(drawPt + PIG_POSITIONS[nation][0], COLOR_SHADOW);
         LOADER.getMapTexture(2100 + GAMECLIENT.getGlobalAnimation(12, 3, 1, getX() + getY() + getObjId()))
-          ->DrawFull(drawPt + PIG_POSITIONS[nation][0]);
+          ->drawFull(drawPt + PIG_POSITIONS[nation][0]);
 
         // Die 4 kleinen Schweinchen, je nach Produktivität
         for(unsigned i = 1; i < std::min(unsigned(productivity) / 20u + 1u, 5u); ++i)
@@ -215,13 +215,13 @@ void nobUsual::Draw(DrawPoint drawPt)
               2, 0, 0, 2, 2, 0, 1, 0, 3, 1, 2, 0, 1, 2, 2, 0, 0, 0, 3, 0, 2, 0, 3, 0, 3, 0, 1, 1, 0, 3, 0};
             const unsigned short animpos =
               GAMECLIENT.getGlobalAnimation(63 * 12, 63 * 4 - i * 5, 1, 183 * i + getX() * getObjId() + getY() * i);
-            LOADER.getMapTexture(2160)->DrawFull(drawPt + PIG_POSITIONS[nation][i], COLOR_SHADOW);
+            LOADER.getMapTexture(2160)->drawFull(drawPt + PIG_POSITIONS[nation][i], COLOR_SHADOW);
             LOADER.getMapTexture(2112 + smallpig_animations[animpos / 12] * 12 + animpos % 12)
-              ->DrawFull(drawPt + PIG_POSITIONS[nation][i]);
+              ->drawFull(drawPt + PIG_POSITIONS[nation][i]);
         }
 
         // Ggf. Sounds abspielen (oink oink), da soll sich der Schweinezüchter drum kümmen
-        dynamic_cast<nofPigbreeder*>(worker)->MakePigSounds(); //-V522
+        dynamic_cast<nofPigbreeder*>(worker)->makePigSounds(); //-V522
     }
     // Bei nubischen Bergwerken das Feuer vor dem Bergwerk zeichnen
     else if(BuildingProperties::isMine(bldType_) && worker && nation == Nation::Africans)
@@ -236,15 +236,15 @@ void nobUsual::Draw(DrawPoint drawPt)
             default: RTTR_Assert_Msg(false, "Not a mine");
         }
         LOADER.getMapTexture(740 + GAMECLIENT.getGlobalAnimation(8, 5, 2, getObjId() + getX() + getY()))
-          ->DrawFull(drawPt + offset);
+          ->drawFull(drawPt + offset);
     }
 }
 
-void nobUsual::HandleEvent(const unsigned id)
+void nobUsual::handleEvent(const unsigned id)
 {
     if(id)
     {
-        const unsigned short currentProductivity = CalcCurrentProductivity();
+        const unsigned short currentProductivity = calcCurrentProductivity();
         // Sum over all last productivities and current (as start value)
         productivity = std::accumulate(lastProductivities.begin(), lastProductivities.end(), currentProductivity);
         // And average over those N+1 values
@@ -255,7 +255,7 @@ void nobUsual::HandleEvent(const unsigned id)
         lastProductivities.front() = currentProductivity;
 
         // Add next event
-        productivity_ev = getEvMgr().AddEvent(this, numProductivityGFs, 1);
+        productivity_ev = getEvMgr().addEvent(this, numProductivityGFs, 1);
     } else
     {
         // Ware bestellen (falls noch Platz ist) und nicht an Betriebe, die stillgelegt wurden!
@@ -268,7 +268,7 @@ void nobUsual::HandleEvent(const unsigned id)
 
             if(numWares[lastOrderedWare] + orderedWares[lastOrderedWare].size() < wareSpaces)
             {
-                Ware* w = world->getPlayer(player).OrderWare(workDesc.waresNeeded[lastOrderedWare], *this);
+                Ware* w = world->getPlayer(player).orderWare(workDesc.waresNeeded[lastOrderedWare], *this);
                 if(w)
                     RTTR_Assert(helpers::contains(orderedWares[lastOrderedWare], w));
             }
@@ -279,11 +279,11 @@ void nobUsual::HandleEvent(const unsigned id)
         }
 
         // Nach ner bestimmten Zeit dann nächste Ware holen
-        orderware_ev = getEvMgr().AddEvent(this, 210);
+        orderware_ev = getEvMgr().addEvent(this, 210);
     }
 }
 
-void nobUsual::AddWare(std::unique_ptr<Ware> ware)
+void nobUsual::addWare(std::unique_ptr<Ware> ware)
 {
     // Gucken, um was für einen Warentyp es sich handelt und dann dort hinzufügen
     const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
@@ -299,23 +299,23 @@ void nobUsual::AddWare(std::unique_ptr<Ware> ware)
     }
 
     // Ware vernichten
-    world->getPlayer(player).RemoveWare(*ware);
+    world->getPlayer(player).removeWare(*ware);
 
     // Arbeiter Bescheid sagen, dass es neue Waren gibt
     if(worker)
-        worker->GotWareOrProductionAllowed();
+        worker->gotWareOrProductionAllowed();
 }
 
-bool nobUsual::FreePlaceAtFlag()
+bool nobUsual::freePlaceAtFlag()
 {
     // Arbeiter Bescheid sagen, falls es noch keinen gibt, brauch keine Ware rausgetragen werden
     if(worker)
-        return worker->FreePlaceAtFlag();
+        return worker->freePlaceAtFlag();
     else
         return false;
 }
 
-void nobUsual::WareLost(Ware& ware)
+void nobUsual::wareLost(Ware& ware)
 {
     // Ware konnte nicht kommen --> raus damit
     const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
@@ -330,16 +330,16 @@ void nobUsual::WareLost(Ware& ware)
     }
 }
 
-void nobUsual::GotWorker(Job /*job*/, noFigure& worker)
+void nobUsual::gotWorker(Job /*job*/, noFigure& worker)
 {
     this->worker = checkedCast<nofBuildingWorker*>(&worker);
 
     if(!BLD_WORK_DESC[bldType_].waresNeeded.empty())
         // erste Ware bestellen
-        HandleEvent(0);
+        handleEvent(0);
 }
 
-void nobUsual::WorkerLost()
+void nobUsual::workerLost()
 {
     // Check if worker is or was here (e.g. hunter could currently be outside)
     if(hasWorker())
@@ -347,20 +347,20 @@ void nobUsual::WorkerLost()
         // If we have a worker, we must be producing something
         RTTR_Assert(productivity_ev);
         // Open the door till we get a new worker
-        OpenDoor();
+        openDoor();
     }
     // Produktivitätsevent ggf. abmelden
-    getEvMgr().RemoveEvent(productivity_ev);
+    getEvMgr().removeEvent(productivity_ev);
 
     // Waren-Bestell-Event abmelden
-    getEvMgr().RemoveEvent(orderware_ev);
+    getEvMgr().removeEvent(orderware_ev);
 
     // neuen Arbeiter bestellen
     worker = nullptr;
-    world->getPlayer(player).AddJobWanted(BLD_WORK_DESC[bldType_].job.value(), this);
+    world->getPlayer(player).addJobWanted(BLD_WORK_DESC[bldType_].job.value(), this);
 }
 
-bool nobUsual::WaresAvailable()
+bool nobUsual::waresAvailable()
 {
     const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
     if(workDesc.useOneWareEach)
@@ -386,7 +386,7 @@ bool nobUsual::WaresAvailable()
     }
 }
 
-void nobUsual::ConsumeWares()
+void nobUsual::consumeWares()
 {
     const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
     unsigned numWaresNeeded = workDesc.waresNeeded.size();
@@ -418,12 +418,12 @@ void nobUsual::ConsumeWares()
         // Bestand verringern
         --numWares[wareIdxToUse];
         // Inventur entsprechend verringern
-        owner.DecreaseInventoryWare(workDesc.waresNeeded[wareIdxToUse], 1);
+        owner.decreaseInventoryWare(workDesc.waresNeeded[wareIdxToUse], 1);
 
         // try to get ware from warehouses
         if(numWares[wareIdxToUse] < 2)
         {
-            Ware* w = world->getPlayer(player).OrderWare(workDesc.waresNeeded[wareIdxToUse], *this);
+            Ware* w = world->getPlayer(player).orderWare(workDesc.waresNeeded[wareIdxToUse], *this);
             if(w)
                 RTTR_Assert(helpers::contains(orderedWares[wareIdxToUse], w));
         }
@@ -432,7 +432,7 @@ void nobUsual::ConsumeWares()
     }
 }
 
-unsigned nobUsual::CalcDistributionPoints(const GoodType type)
+unsigned nobUsual::calcDistributionPoints(const GoodType type)
 {
     // No production -> nothing needed
     if(disableProduction)
@@ -468,7 +468,7 @@ unsigned nobUsual::CalcDistributionPoints(const GoodType type)
     return points;
 }
 
-void nobUsual::TakeWare(Ware* ware)
+void nobUsual::takeWare(Ware* ware)
 {
     // Ware in die Bestellliste aufnehmen
     const BldWorkDescription& workDesc = BLD_WORK_DESC[bldType_];
@@ -483,14 +483,14 @@ void nobUsual::TakeWare(Ware* ware)
     }
 }
 
-bool nobUsual::AreThereAnyOrderedWares() const
+bool nobUsual::areThereAnyOrderedWares() const
 {
     return helpers::contains_if(orderedWares, [](const auto& wareList) { return !wareList.empty(); });
 }
 
-void nobUsual::WorkerArrived()
+void nobUsual::workerArrived()
 {
-    productivity_ev = getEvMgr().AddEvent(this, numProductivityGFs, 1);
+    productivity_ev = getEvMgr().addEvent(this, numProductivityGFs, 1);
 }
 
 void nobUsual::SetProductionEnabled(const bool enabled)
@@ -508,12 +508,12 @@ void nobUsual::SetProductionEnabled(const bool enabled)
         // Wenn sie deaktiviert wurde, dem Arbeiter Bescheid sagen, damit er entsprechend stoppt, falls er schon
         // auf die Arbeit warteet
         if(worker)
-            worker->ProductionStopped();
+            worker->productionStopped();
     } else
     {
         // Wenn sie wieder aktiviert wurde, evtl wieder mit arbeiten anfangen, falls es einen Arbeiter gibt
         if(worker)
-            worker->GotWareOrProductionAllowed();
+            worker->gotWareOrProductionAllowed();
     }
 }
 
@@ -533,7 +533,7 @@ unsigned short nobUsual::getProductivity() const
       (static_cast<unsigned>(productivity) * getS4LikeMineProductionChance(resourceAmount)) / 100u);
 }
 
-void nobUsual::OnOutOfResources()
+void nobUsual::onOutOfResources()
 {
     // Post verschicken, keine Rohstoffe mehr da
     if(outOfRessourcesMsgSent)
@@ -554,7 +554,7 @@ void nobUsual::OnOutOfResources()
     else
         return;
 
-    SendPostMessage(
+    sendPostMessage(
       player, std::make_unique<PostMsgWithBuilding>(getEvMgr().getCurrentGF(), error, PostCategory::Economy, *this));
     world->getNotifications().publish(BuildingNote(BuildingNote::NoRessources, player, getPos(), getBuildingType()));
 
@@ -564,14 +564,14 @@ void nobUsual::OnOutOfResources()
     }
 }
 
-void nobUsual::StartNotWorking()
+void nobUsual::startNotWorking()
 {
     // If we haven't stopped working already, then this is the GF since we are not working anymore
     if(sinceNotWorking == isWorkingMarker)
         sinceNotWorking = getEvMgr().getCurrentGF();
 }
 
-void nobUsual::StopNotWorking()
+void nobUsual::stopNotWorking()
 {
     // Record the number of GFs we haven't worked, if any
     if(sinceNotWorking != isWorkingMarker)
@@ -581,7 +581,7 @@ void nobUsual::StopNotWorking()
     }
 }
 
-unsigned short nobUsual::CalcCurrentProductivity()
+unsigned short nobUsual::calcCurrentProductivity()
 {
     if(outOfRessourcesMsgSent)
         return 0;

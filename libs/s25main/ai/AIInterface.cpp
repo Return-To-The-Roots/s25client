@@ -113,7 +113,7 @@ AISurfaceResource AIInterface::getSurfaceResource(const MapPoint pt) const
         if(no == NodalObjectType::Tree)
         {
             // exclude pineapple because it's not a real tree
-            if(static_cast<const noTree*>(node.obj)->ProducesWood())
+            if(static_cast<const noTree*>(node.obj)->producesWood())
                 return AISurfaceResource::Wood;
             else
                 return AISurfaceResource::Blocked;
@@ -203,7 +203,7 @@ bool AIInterface::isMineResourceWorkEverywhere(const AIResource res) const
            && getMineResourceBehavior(gwb.getGGS(), *mineBuildingType) == MineResourceBehavior::WorkEverywhere;
 }
 
-int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction,
+int AIInterface::calcResourceValue(const MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction,
                                    int lastval) const
 {
     const unsigned resRadius = RES_RADIUS[res];
@@ -261,16 +261,16 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::O
     // lastval);
 }
 
-bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route /*= nullptr*/,
+bool AIInterface::findFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route /*= nullptr*/,
                                          unsigned* length /*= nullptr*/) const
 {
     bool boat = false;
-    return gwb.getFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, nullptr,
+    return gwb.getFreePathFinder().findPathAlternatingConditions(start, target, false, 100, route, length, nullptr,
                                                                  IsPointOK_RoadPath, IsPointOK_RoadPathEvenStep,
                                                                  nullptr, (void*)&boat);
 }
 
-bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2) const
+bool AIInterface::calcBQSumDifference(const MapPoint pt1, const MapPoint pt2) const
 {
     return getBuildingQuality(pt2) < getBuildingQuality(pt1);
 }
@@ -285,13 +285,13 @@ BuildingQuality AIInterface::getBuildingQualityAnyOwner(const MapPoint pt) const
     return gwb.getNode(pt).bq;
 }
 
-bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const
+bool AIInterface::findPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const
 {
     if(length)
-        return gwb.getRoadPathFinder().FindPath(start, target, false, std::numeric_limits<unsigned>::max(), nullptr,
+        return gwb.getRoadPathFinder().findPath(start, target, false, std::numeric_limits<unsigned>::max(), nullptr,
                                                 length);
     else
-        return gwb.getRoadPathFinder().PathExists(start, target, false);
+        return gwb.getRoadPathFinder().pathExists(start, target, false);
 }
 
 const nobHQ* AIInterface::getHeadquarter() const
@@ -303,14 +303,14 @@ bool AIInterface::isBuildingNearby(BuildingType bldType, const MapPoint pt, unsi
 {
     for(const nobUsual* bld : getBuildings(bldType))
     {
-        if(gwb.CalcDistance(pt, bld->getPos()) <= maxDistance)
+        if(gwb.calcDistance(pt, bld->getPos()) <= maxDistance)
             return true;
     }
     for(const noBuildingSite* bldSite : getBuildingSites())
     {
         if(bldSite->getBuildingType() == bldType)
         {
-            if(gwb.CalcDistance(pt, bldSite->getPos()) <= maxDistance)
+            if(gwb.calcDistance(pt, bldSite->getPos()) <= maxDistance)
                 return true;
         }
     }
@@ -322,7 +322,7 @@ bool AIInterface::isHarborPosClose(const MapPoint pt, unsigned maxDistance, bool
     for(const auto id : helpers::idRange<HarborId>(gwb.getNumHarborPoints()))
     {
         const MapPoint harborPoint = gwb.getHarborPoint(id);
-        if(gwb.CalcDistance(pt, harborPoint) <= maxDistance && helpers::contains(usableHarbors_, id))
+        if(gwb.calcDistance(pt, harborPoint) <= maxDistance && helpers::contains(usableHarbors_, id))
         {
             if(!onlyempty || !isBuildingOnNode(harborPoint, BuildingType::HarborBuilding))
                 return true;
@@ -368,12 +368,12 @@ bool AIInterface::CallSpecialist(const noFlag* flag, Job job)
     return CallSpecialist(flag->getPos(), job);
 }
 
-void AIInterface::Chat(const std::string& message, ChatDestination destination)
+void AIInterface::chat(const std::string& message, ChatDestination destination)
 {
     pendingChatMsgs_.push_back(std::make_unique<GameMessage_Chat>(playerID_, destination, message));
 }
 
-std::vector<std::unique_ptr<GameMessage_Chat>> AIInterface::FetchChatMessages()
+std::vector<std::unique_ptr<GameMessage_Chat>> AIInterface::fetchChatMessages()
 {
     std::vector<std::unique_ptr<GameMessage_Chat>> tmp;
     std::swap(tmp, pendingChatMsgs_);

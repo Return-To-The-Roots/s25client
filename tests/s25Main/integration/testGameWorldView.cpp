@@ -35,7 +35,7 @@ BOOST_FIXTURE_TEST_CASE(HasCorrectDrawCoords, EmptyWorldFixture1P)
     const auto origLastPt = view.getLastPt();
     auto newOffset = rttr::test::randomPoint<DrawPoint>(100, 200);
     BOOST_TEST_REQUIRE(view.getOffset() == DrawPoint(0, 0));
-    view.MoveTo(newOffset);
+    view.moveTo(newOffset);
     BOOST_TEST_REQUIRE(view.getOffset() == newOffset);
     const auto offsetFirstPt = view.getFirstPt();
     const auto offsetLastPt = view.getLastPt();
@@ -46,7 +46,7 @@ BOOST_FIXTURE_TEST_CASE(HasCorrectDrawCoords, EmptyWorldFixture1P)
     // Relative move
     {
         const auto offset = rttr::test::randomPoint<Position>(-100, 70); // Smallish max offset to not exceed map size
-        view.MoveBy(offset);
+        view.moveBy(offset);
         BOOST_TEST_REQUIRE(view.getOffset() == newOffset + offset);
     }
 
@@ -54,26 +54,26 @@ BOOST_FIXTURE_TEST_CASE(HasCorrectDrawCoords, EmptyWorldFixture1P)
     {
         const DrawPoint drawSize(world.getSize() * DrawPoint(TR_W, TR_H));
         // Absolute
-        view.MoveTo(newOffset + drawSize);
+        view.moveTo(newOffset + drawSize);
         BOOST_TEST_REQUIRE(view.getOffset() == newOffset);
         // Relative +-
-        view.MoveBy(drawSize);
+        view.moveBy(drawSize);
         BOOST_TEST_REQUIRE(view.getOffset() == newOffset);
-        view.MoveBy(drawSize);
+        view.moveBy(drawSize);
         BOOST_TEST_REQUIRE(view.getOffset() == newOffset);
         // Absolute by multiples of the size
         const auto offset = rttr::test::randomPoint<Position>(1, 10);
-        view.MoveTo(newOffset + (drawSize * rttr::test::randomPoint<Position>(2, 5)) + offset);
+        view.moveTo(newOffset + (drawSize * rttr::test::randomPoint<Position>(2, 5)) + offset);
         BOOST_TEST_REQUIRE(view.getOffset() == newOffset + offset);
     }
 
     // Move back to start restores first/last points
-    view.MoveTo({0, 0});
+    view.moveTo({0, 0});
     BOOST_TEST_REQUIRE(view.getOffset() == DrawPoint(0, 0));
     BOOST_TEST(view.getFirstPt() == origFirstPt);
     BOOST_TEST(view.getLastPt() == origLastPt);
     // Relative move also updates first/last point
-    view.MoveBy(newOffset);
+    view.moveBy(newOffset);
     BOOST_TEST_REQUIRE(view.getOffset() == newOffset);
     BOOST_TEST(view.getFirstPt() == offsetFirstPt);
     BOOST_TEST(view.getLastPt() == offsetLastPt);
@@ -99,8 +99,8 @@ BOOST_FIXTURE_TEST_CASE(GetsCorrectMaxHeight, EmptyWorldFixture1P)
         BOOST_TEST(view2.getLastPt().y > view.getLastPt().y); // Should have increased due to higher altitude
 
         // React on height changes, at least after moves
-        world.ChangeAltitude(MapPoint(0, 0), newMaxHeight);
-        view.MoveBy(DrawPoint(0, 0)); // no-op move
+        world.changeAltitude(MapPoint(0, 0), newMaxHeight);
+        view.moveBy(DrawPoint(0, 0)); // no-op move
         BOOST_TEST(gwv.getMaxNodeAltitude() == newMaxHeight);
         BOOST_TEST(view.getFirstPt() == view2.getFirstPt());
         BOOST_TEST(view.getLastPt() == view2.getLastPt());

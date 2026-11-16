@@ -19,7 +19,7 @@ iwPleaseWait::iwPleaseWait()
                    LOADER.getImageN("resource", 41), true, CloseBehavior::Custom)
 {
     WINDOWMANAGER.setCursor(Cursor::Moon);
-    AddText(0, getSize() / 2, _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, NormalFont);
+    addText(0, getSize() / 2, _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, NormalFont);
 }
 
 iwPleaseWait::~iwPleaseWait()

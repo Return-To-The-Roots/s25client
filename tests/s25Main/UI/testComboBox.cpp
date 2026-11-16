@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(ItemHandling)
     REQUIRE(cb->getNumItems() == 0);
     REQUIRE(!cb->getSelection());
 
-    cb->AddItem("text");
+    cb->addItem("text");
     REQUIRE(cb->getNumItems() == 1);
     REQUIRE(!cb->getSelection());
     REQUIRE(cb->getText(0) == "text");
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(ItemHandling)
     for(int i = 0; i < 10; i++)
     {
         lines.emplace_back(randString());
-        cb->AddItem(lines.back());
+        cb->addItem(lines.back());
         REQUIRE(cb->getNumItems() == lines.size());
         REQUIRE(cb->getSelection() == 0u);
     }
@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(ItemHandling)
         REQUIRE(cb->getSelection() == sel);
     }
 
-    cb->DeleteAllItems();
+    cb->deleteAllItems();
     REQUIRE(cb->getNumItems() == 0);
     REQUIRE(!cb->getSelection());
 }
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
 
     for(int i = 0; i < 3; i++)
     {
-        cb->AddItem(randString());
+        cb->addItem(randString());
     }
     REQUIRE(!cb->getSelection());
     mock::sequence s;
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(ListRemove)
     for(int i = 0; i < 10; i++)
     {
         lines.emplace_back(randString());
-        list->AddItem(lines.back());
+        list->addItem(lines.back());
         REQUIRE(list->getNumLines() == lines.size());
         REQUIRE(!list->getSelection());
     }
@@ -128,18 +128,18 @@ BOOST_AUTO_TEST_CASE(ListRemove)
     REQUIRE(list->getSelection() == 4u);
     REQUIRE(list->getSelItemText() == lines[4]);
     // To big
-    list->Remove(10);
+    list->remove(10);
     REQUIRE(list->getNumLines() == lines.size());
     REQUIRE(list->getSelItemText() == lines[4]);
     // Remove after selected. Selection remains
-    list->Remove(5);
+    list->remove(5);
     REQUIRE(list->getNumLines() == lines.size() - 1);
     REQUIRE(list->getSelItemText() == lines[4]);
     lines.erase(lines.begin() + 5);
     // Remove all before. Selection remains
     for(int i = 1; i <= 4; i++)
     {
-        list->Remove(randomValue(0, 4 - i));
+        list->remove(randomValue(0, 4 - i));
         REQUIRE(list->getNumLines() == lines.size() - i);
         REQUIRE(list->getSelItemText() == lines[4]);
     }
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_CASE(ListRemove)
     REQUIRE(list->getNumLines() == 5);
     REQUIRE(list->getSelection() == 0u);
     MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->getID(), 0).in(s);
-    list->Remove(0);
+    list->remove(0);
     REQUIRE(list->getNumLines() == 4);
     REQUIRE(list->getSelection() == 0u);
     REQUIRE(list->getSelItemText() == lines[1]);
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(ListRemove)
     MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->getID(), 2).in(s);
     MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->getID(), 2).in(s);
     list->setSelection(2);
-    list->Remove(2);
+    list->remove(2);
     REQUIRE(list->getNumLines() == 3);
     REQUIRE(list->getSelection() == 2u);
     REQUIRE(list->getSelItemText() == lines[3]);
@@ -167,13 +167,13 @@ BOOST_AUTO_TEST_CASE(ListRemove)
     // For last pos previous is selected
     list->setSelection(list->getNumLines() - 1);
     MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->getID(), 1).in(s);
-    list->Remove(list->getNumLines() - 1);
+    list->remove(list->getNumLines() - 1);
     REQUIRE(list->getNumLines() == 2);
     REQUIRE(list->getSelection() == 1u);
     REQUIRE(list->getSelItemText() == lines[lines.size() - 2]);
     // Removing all sets selection to -1
-    list->Remove(0);
-    list->Remove(0);
+    list->remove(0);
+    list->remove(0);
     REQUIRE(list->getNumLines() == 0);
     REQUIRE(!list->getSelection());
     REQUIRE(list->getSelItemText() == "");

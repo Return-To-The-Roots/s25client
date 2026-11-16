@@ -31,22 +31,22 @@ void LuaPlayer::Register(kaguya::State& state)
 {
     LuaPlayerBase::Register(state);
     state["Player"].setClass(kaguya::UserdataMetatable<LuaPlayer, LuaPlayerBase>()
-                               .addFunction("EnableBuilding", &LuaPlayer::EnableBuilding)
-                               .addFunction("DisableBuilding", &LuaPlayer::DisableBuilding)
-                               .addFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
-                               .addFunction("DisableAllBuildings", &LuaPlayer::DisableAllBuildings)
+                               .addFunction("EnableBuilding", &LuaPlayer::enableBuilding)
+                               .addFunction("DisableBuilding", &LuaPlayer::disableBuilding)
+                               .addFunction("EnableAllBuildings", &LuaPlayer::enableAllBuildings)
+                               .addFunction("DisableAllBuildings", &LuaPlayer::disableAllBuildings)
                                .addFunction("SetRestrictedArea", &LuaPlayer::setRestrictedArea)
                                .addFunction("IsInRestrictedArea", &LuaPlayer::isInRestrictedArea)
-                               .addFunction("ClearResources", &LuaPlayer::ClearResources)
-                               .addFunction("AddWares", &LuaPlayer::AddWares)
-                               .addFunction("AddPeople", &LuaPlayer::AddPeople)
+                               .addFunction("ClearResources", &LuaPlayer::clearResources)
+                               .addFunction("AddWares", &LuaPlayer::addWares)
+                               .addFunction("AddPeople", &LuaPlayer::addPeople)
                                .addFunction("GetNumBuildings", &LuaPlayer::getNumBuildings)
                                .addFunction("GetNumBuildingSites", &LuaPlayer::getNumBuildingSites)
                                .addFunction("GetNumWares", &LuaPlayer::getNumWares)
                                .addFunction("GetNumPeople", &LuaPlayer::getNumPeople)
                                .addFunction("GetStatisticsValue", &LuaPlayer::getStatisticsValue)
-                               .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
-                               .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
+                               .addFunction("AIConstructionOrder", &LuaPlayer::aIConstructionOrder)
+                               .addFunction("ModifyHQ", &LuaPlayer::modifyHQ)
                                .addFunction("GetHQPos", &LuaPlayer::getHQPos)
                                .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
                                .addFunction("Surrender", &LuaPlayer::Surrender)
@@ -61,33 +61,33 @@ void LuaPlayer::Register(kaguya::State& state)
                                .addFunction("GetPeopleCount", &LuaPlayer::getNumPeople));
 }
 
-void LuaPlayer::EnableBuilding(lua::SafeEnum<BuildingType> bld, bool notify)
+void LuaPlayer::enableBuilding(lua::SafeEnum<BuildingType> bld, bool notify)
 {
-    player.EnableBuilding(bld);
+    player.enableBuilding(bld);
     if(notify)
     {
-        player.SendPostMessage(
+        player.sendPostMessage(
           std::make_unique<PostMsgWithBuilding>(player.getGameWorld().getEvMgr().getCurrentGF(),
                                                 std::string(_("New building type:")) + "\n" + _(BUILDING_NAMES[bld]),
                                                 PostCategory::General, bld, player.nation));
     }
 }
 
-void LuaPlayer::DisableBuilding(lua::SafeEnum<BuildingType> bld)
+void LuaPlayer::disableBuilding(lua::SafeEnum<BuildingType> bld)
 {
-    player.DisableBuilding(bld);
+    player.disableBuilding(bld);
 }
 
-void LuaPlayer::EnableAllBuildings()
+void LuaPlayer::enableAllBuildings()
 {
     for(const auto bld : helpers::enumRange<BuildingType>())
-        player.EnableBuilding(bld);
+        player.enableBuilding(bld);
 }
 
-void LuaPlayer::DisableAllBuildings()
+void LuaPlayer::disableAllBuildings()
 {
     for(const auto bld : helpers::enumRange<BuildingType>())
-        player.DisableBuilding(bld);
+        player.disableBuilding(bld);
 }
 
 void LuaPlayer::setRestrictedArea(kaguya::VariadicArgType inPoints)
@@ -173,14 +173,14 @@ bool LuaPlayer::isInRestrictedArea(unsigned x, unsigned y) const
     return TerritoryRegion::isPointValid(world.getSize(), player.getRestrictedArea(), MapPoint(x, y));
 }
 
-void LuaPlayer::ClearResources()
+void LuaPlayer::clearResources()
 {
     const std::list<nobBaseWarehouse*> warehouses = player.getBuildingRegister().getStorehouses();
     for(auto* warehouse : warehouses)
-        warehouse->Clear();
+        warehouse->clear();
 }
 
-bool LuaPlayer::AddWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& wares)
+bool LuaPlayer::addWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& wares)
 {
     nobBaseWarehouse* warehouse = player.getFirstWH();
 
@@ -191,11 +191,11 @@ bool LuaPlayer::AddWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& ware
     for(const auto& ware : wares)
         counts[ware.first] += ware.second;
 
-    warehouse->AddToInventory(counts, true);
+    warehouse->addToInventory(counts, true);
     return true;
 }
 
-bool LuaPlayer::AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
+bool LuaPlayer::addPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
 {
     nobBaseWarehouse* warehouse = player.getFirstWH();
 
@@ -215,7 +215,7 @@ bool LuaPlayer::AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
             counts[it.first] += it.second;
     }
 
-    warehouse->AddToInventory(counts, true);
+    warehouse->addToInventory(counts, true);
     return true;
 }
 
@@ -244,7 +244,7 @@ unsigned LuaPlayer::getStatisticsValue(lua::SafeEnum<StatisticType> stat) const
     return player.getStatisticCurrentValue(stat);
 }
 
-bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld)
+bool LuaPlayer::aIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld)
 {
     // Only for actual AIs
     if(!player.isUsed() || player.isHuman())
@@ -256,7 +256,7 @@ bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<Buildi
     return true;
 }
 
-void LuaPlayer::ModifyHQ(bool isTent)
+void LuaPlayer::modifyHQ(bool isTent)
 {
     player.setHQIsTent(isTent);
 }
@@ -270,7 +270,7 @@ void LuaPlayer::Surrender(bool destroyBlds)
 {
     player.Surrender();
     if(destroyBlds)
-        player.getGameWorld().Armageddon(player.getPlayerId());
+        player.getGameWorld().armageddon(player.getPlayerId());
 }
 
 std::pair<unsigned, unsigned> LuaPlayer::getHQPos() const

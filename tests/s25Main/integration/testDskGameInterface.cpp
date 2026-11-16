@@ -51,7 +51,7 @@ struct GameInterfaceFixture : uiHelper::Fixture
     {
         gameDesktop = static_cast<dskGameInterfaceMock*>(
           WINDOWMANAGER.Switch(std::make_unique<dskGameInterfaceMock>(worldFixture.game)));
-        WINDOWMANAGER.Draw();
+        WINDOWMANAGER.draw();
         view = &gameDesktop->getView();
     }
 };
@@ -150,7 +150,7 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
         BOOST_TEST_REQUIRE(view->getOffset() == pos);
         // Closing it doesn't either
         WINDOWMANAGER.msgKeyDown(key);
-        WINDOWMANAGER.Draw();
+        WINDOWMANAGER.draw();
         BOOST_TEST_REQUIRE(gameDesktop->IsActive());
         BOOST_TEST_REQUIRE(!WINDOWMANAGER.getTopMostWindow());
         BOOST_TEST_REQUIRE(WINDOWMANAGER.getCursor() == Cursor::Scroll);
@@ -175,7 +175,7 @@ BOOST_FIXTURE_TEST_CASE(ScrollingWhileRoadBuilding, GameInterfaceFixture)
     const int acceleration = 2;
     MapPoint hqPos = worldFixture.world.getPlayer(0).getFirstWH()->getFlagPos(); //-V522
     gameDesktop->GI_StartRoadBuilding(hqPos, false);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.getCursor() == Cursor::Remove);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getCursor() == Cursor::remove);
     Position startPos(10, 15);
     MouseCoords mouse(startPos);
     mouse.rdown = true;
@@ -190,9 +190,9 @@ BOOST_FIXTURE_TEST_CASE(ScrollingWhileRoadBuilding, GameInterfaceFixture)
     BOOST_TEST_REQUIRE(view->getOffset() == pos);
     mouse.rdown = false;
     WINDOWMANAGER.msgRightUp(mouse);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.getCursor() == Cursor::Remove);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getCursor() == Cursor::remove);
     BOOST_TEST_REQUIRE(view->getOffset() == pos);
-    checkNotScrolling(*view, Cursor::Remove);
+    checkNotScrolling(*view, Cursor::remove);
 
     // left click also stops scrolling
     mouse.rdown = true;
@@ -208,9 +208,9 @@ BOOST_FIXTURE_TEST_CASE(ScrollingWhileRoadBuilding, GameInterfaceFixture)
     WINDOWMANAGER.msgLeftDown(mouse);
     mouse.ldown = false;
     WINDOWMANAGER.msgLeftUp(mouse);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.getCursor() == Cursor::Remove);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getCursor() == Cursor::remove);
     BOOST_TEST_REQUIRE(view->getOffset() == pos);
-    checkNotScrolling(*view, Cursor::Remove);
+    checkNotScrolling(*view, Cursor::remove);
 }
 
 BOOST_FIXTURE_TEST_CASE(ScrollingWithCtrl, GameInterfaceFixture)
@@ -237,12 +237,12 @@ BOOST_FIXTURE_TEST_CASE(ScrollingWithCtrl, GameInterfaceFixture)
 
 BOOST_FIXTURE_TEST_CASE(IwActionClose, GameInterfaceFixture)
 {
-    gameDesktop->ShowActionWindow(iwAction::Tabs{}, MapPoint(0, 1), DrawPoint(42, 37), false);
-    WINDOWMANAGER.Draw();
+    gameDesktop->showActionWindow(iwAction::Tabs{}, MapPoint(0, 1), DrawPoint(42, 37), false);
+    WINDOWMANAGER.draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow());
     BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == gameDesktop->actionwindow);
-    WINDOWMANAGER.getTopMostWindow()->Close();
-    WINDOWMANAGER.Draw();
+    WINDOWMANAGER.getTopMostWindow()->close();
+    WINDOWMANAGER.draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == nullptr);
     BOOST_TEST_REQUIRE(gameDesktop->actionwindow == nullptr);
 }

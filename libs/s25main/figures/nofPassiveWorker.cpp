@@ -16,24 +16,24 @@ nofPassiveWorker::nofPassiveWorker(SerializedGameData& sgd, const unsigned obj_i
 
 /// von noFigure aufgerufen
 // wenn man gelaufen ist
-void nofPassiveWorker::Walked() {}
+void nofPassiveWorker::walked() {}
 
 // wenn das Ziel erreicht wurde
-void nofPassiveWorker::GoalReached()
+void nofPassiveWorker::goalReached()
 {
     // Mich hier einquartieren
     auto* wh = world->getSpecObj<nobBaseWarehouse>(pos);
     RTTR_Assert(wh);
-    wh->AddFigure(world->RemoveFigure(pos, *this));
+    wh->addFigure(world->RemoveFigure(pos, *this));
 }
 
-void nofPassiveWorker::AbrogateWorkplace() {}
+void nofPassiveWorker::abrogateWorkplace() {}
 
 /// Zeichnen
-void nofPassiveWorker::Draw(DrawPoint drawPt)
+void nofPassiveWorker::draw(DrawPoint drawPt)
 {
-    DrawWalking(drawPt);
+    drawWalking(drawPt);
 }
 
 /// Für alle restlichen Events, die nicht von noFigure behandelt werden
-void nofPassiveWorker::HandleDerivedEvent(const unsigned /*id*/) {}
+void nofPassiveWorker::handleDerivedEvent(const unsigned /*id*/) {}

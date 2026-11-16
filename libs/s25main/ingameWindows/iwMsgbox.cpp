@@ -44,15 +44,15 @@ void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigne
 {
     glArchivItem_Bitmap* icon = LOADER.getImageN(iconFile, iconIdx);
     if(icon)
-        AddImage(ID_ICON, contentOffset + DrawPoint(30, 20), icon);
+        addImage(ID_ICON, contentOffset + DrawPoint(30, 20), icon);
     int textX = icon ? icon->getWidth() - icon->getNx() + getCtrl<Window>(ID_ICON)->getPos().x : contentOffset.x;
     textX += paddingX;
     Extent txtSize = Extent(std::max<int>(minTextWidth, getRightBottomBoundary().x - textX - paddingX), maxTextHeight);
     ctrlMultiline* multiline =
-      AddMultiline(ID_TEXT, DrawPoint(textX, contentOffset.y + 5), txtSize, TextureColor::Green2, NormalFont);
-    multiline->ShowBackground(false);
-    multiline->AddString(text, COLOR_YELLOW);
-    multiline->Resize(multiline->getContentSize());
+      addMultiline(ID_TEXT, DrawPoint(textX, contentOffset.y + 5), txtSize, TextureColor::Green2, NormalFont);
+    multiline->showBackground(false);
+    multiline->addString(text, COLOR_YELLOW);
+    multiline->resize(multiline->getContentSize());
     // 10 padding, button/button padding
     Extent newIwSize(multiline->getPos() + multiline->getSize() + Extent(paddingX, 10 + btSize.y * 2));
     // Increase window size if required
@@ -63,26 +63,26 @@ void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigne
     switch(button)
     {
         case MsgboxButton::Ok:
-            AddButton(ID_BT_0, getSize().x / 2 - 45, _("OK"), TextureColor::Green2);
+            addButton(ID_BT_0, getSize().x / 2 - 45, _("OK"), TextureColor::Green2);
             defaultBt = 0;
             break;
 
         case MsgboxButton::OkCancel:
-            AddButton(ID_BT_0, getSize().x / 2 - 3 - 90, _("OK"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, getSize().x / 2 + 3, _("Cancel"), TextureColor::Red1);
+            addButton(ID_BT_0, getSize().x / 2 - 3 - 90, _("OK"), TextureColor::Green2);
+            addButton(ID_BT_0 + 1, getSize().x / 2 + 3, _("Cancel"), TextureColor::Red1);
             defaultBt = 1;
             break;
 
         case MsgboxButton::YesNo:
-            AddButton(ID_BT_0, getSize().x / 2 - 3 - 90, _("Yes"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, getSize().x / 2 + 3, _("No"), TextureColor::Red1);
+            addButton(ID_BT_0, getSize().x / 2 - 3 - 90, _("Yes"), TextureColor::Green2);
+            addButton(ID_BT_0 + 1, getSize().x / 2 + 3, _("No"), TextureColor::Red1);
             defaultBt = 1;
             break;
 
         case MsgboxButton::YesNoCancel:
-            AddButton(ID_BT_0, getSize().x / 2 - 45 - 6 - 90, _("Yes"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, getSize().x / 2 - 45, _("No"), TextureColor::Red1);
-            AddButton(ID_BT_0 + 2, getSize().x / 2 + 45 + 6, _("Cancel"), TextureColor::Grey);
+            addButton(ID_BT_0, getSize().x / 2 - 45 - 6 - 90, _("Yes"), TextureColor::Green2);
+            addButton(ID_BT_0 + 1, getSize().x / 2 - 45, _("No"), TextureColor::Red1);
+            addButton(ID_BT_0 + 2, getSize().x / 2 + 45 + 6, _("Cancel"), TextureColor::Grey);
             defaultBt = 2;
             break;
     }
@@ -94,7 +94,7 @@ void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigne
 
 iwMsgbox::~iwMsgbox() = default;
 
-void iwMsgbox::MoveIcon(const DrawPoint& pos)
+void iwMsgbox::moveIcon(const DrawPoint& pos)
 {
     auto* icon = getCtrl<ctrlImage>(ID_ICON);
     if(icon)
@@ -134,8 +134,8 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
         }
         auto* multiline = getCtrl<ctrlMultiline>(ID_TEXT);
         multiline->setPos(textPos);
-        multiline->Resize(textMaxSize);
-        multiline->Resize(multiline->getContentSize());
+        multiline->resize(textMaxSize);
+        multiline->resize(multiline->getContentSize());
 
         DrawPoint newSize = iconPos + DrawPoint(iconImg->getSize());
         newSize = elMax(newSize, multiline->getPos() + DrawPoint(multiline->getSize()) + DrawPoint::all(paddingX));
@@ -148,7 +148,7 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
             if(bt)
                 bt->setPos(bt->getPos() + btMoveDelta);
         }
-        Resize(Extent(newSize));
+        resize(Extent(newSize));
     }
 }
 
@@ -162,10 +162,10 @@ void iwMsgbox::msgButtonClick(const unsigned ctrl_id)
 {
     if(msgHandler_)
         msgHandler_->msgMsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - ID_BT_0]);
-    Close();
+    close();
 }
 
-void iwMsgbox::AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc)
+void iwMsgbox::addButton(unsigned short id, int x, const std::string& text, const TextureColor tc)
 {
-    AddTextButton(id, DrawPoint(x, getRightBottomBoundary().y - btSize.y * 2), btSize, tc, text, NormalFont);
+    addTextButton(id, DrawPoint(x, getRightBottomBoundary().y - btSize.y * 2), btSize, tc, text, NormalFont);
 }

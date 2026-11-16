@@ -31,10 +31,10 @@ public:
     GameObject& operator=(const GameObject&) = delete;
 
     /// Handle destruction before deleting the instance
-    virtual void Destroy() = 0;
+    virtual void destroy() = 0;
 
     /// Called for each expiring event (i.e. target GF reached) that this instance has registered
-    virtual void HandleEvent(unsigned /*id*/) {}
+    virtual void handleEvent(unsigned /*id*/) {}
 
     /// Return the unique ID of an object. Always non-zero!
     unsigned getObjId() const { return objId; }
@@ -42,13 +42,13 @@ public:
     virtual void Serialize(SerializedGameData& sgd) const = 0;
     virtual GO_Type getGOT() const = 0;
 
-    virtual std::string ToString() const;
+    virtual std::string toString() const;
 
 protected:
     // Following are some "sandbox methods". They avoid dependencies of subclasses to commonly used functions
     static EventManager& getEvMgr();
     /// Send the msg to given player
-    static void SendPostMessage(unsigned player, std::unique_ptr<PostMsg> msg);
+    static void sendPostMessage(unsigned player, std::unique_ptr<PostMsg> msg);
 
 private:
     unsigned objId; /// unique ID
@@ -56,21 +56,21 @@ private:
     // Static members
 public:
     /// Set the currently active world for all game objects
-    static void AttachWorld(GameWorld* gameWorld);
+    static void attachWorld(GameWorld* gameWorld);
     /// Remove the world from all game objects
-    static void DetachWorld(GameWorld* gameWorld);
+    static void detachWorld(GameWorld* gameWorld);
     /// Return the number of objects alive
     static unsigned getNumObjs() { return objCounter_; }
     /// Return ID counter, i.e. the last object ID used
     static unsigned getObjIDCounter() { return objIdCounter_; }
     /// Reset the object counter and the object ID counter to 0
-    static void ResetCounters()
+    static void resetCounters()
     {
         objIdCounter_ = 0;
         objCounter_ = 0;
     }
     /// Set the objIdCounter to the given value and resets the object counter to 1 (noNodeObj)
-    static void ResetCounters(unsigned objIdCounter)
+    static void resetCounters(unsigned objIdCounter)
     {
         objIdCounter_ = objIdCounter;
         objCounter_ = 1;
@@ -89,13 +89,13 @@ private:
 template<typename T>
 void destroyAndDelete(T*& obj)
 {
-    obj->Destroy();
+    obj->destroy();
     deletePtr(obj);
 }
 /// Same but for smart pointers
 template<typename T>
 void destroyAndDelete(T& obj)
 {
-    obj->Destroy();
+    obj->destroy();
     obj.reset();
 }

@@ -233,15 +233,15 @@ glArchivItem_Bitmap_Player* Loader::getMapPlayerImage(unsigned nr)
  *
  *  @return @p true on success, @p false on error.
  */
-bool Loader::LoadFilesAtStart()
+bool Loader::loadFilesAtStart()
 {
     namespace res = s25::resources;
     // Palettes
-    if(!LoadFiles({res::pal5, res::pal6, res::pal7, res::paletti0, res::paletti1, res::paletti8})
+    if(!loadFiles({res::pal5, res::pal6, res::pal7, res::paletti0, res::paletti1, res::paletti8})
        || !Load(ResourceId("colors")))
         return false;
 
-    if(!LoadFonts())
+    if(!loadFonts())
         return false;
 
     std::vector<std::string> files = {res::resource,
@@ -259,16 +259,16 @@ bool Loader::LoadFilesAtStart()
             files.push_back((loadScreenFolders[1] / filename).string());
     }
 
-    if(!LoadFiles(files))
+    if(!loadFiles(files))
         return false;
 
-    if(!LoadSounds())
+    if(!loadSounds())
         return false;
 
-    return LoadResources({"io_new", "client", "languages", "logo", "menu", "rttr"});
+    return loadResources({"io_new", "client", "languages", "logo", "menu", "rttr"});
 }
 
-bool Loader::LoadSounds()
+bool Loader::loadSounds()
 {
     if(!Load(config_.ExpandPath(s25::files::soundOrig)))
         return false;
@@ -315,7 +315,7 @@ bool Loader::LoadSounds()
     return true;
 }
 
-bool Loader::LoadFonts()
+bool Loader::loadFonts()
 {
     if(!Load(ResourceId("fonts"), getPaletteN("pal5")))
         return false;
@@ -334,7 +334,7 @@ bool Loader::LoadFonts()
     return true;
 }
 
-void Loader::LoadDummyGUIFiles()
+void Loader::loadDummyGUIFiles()
 {
     // Palettes
     {
@@ -402,7 +402,7 @@ void Loader::LoadDummyGUIFiles()
     }
 }
 
-void Loader::LoadDummyMapFiles()
+void Loader::loadDummyMapFiles()
 {
     libsiedler2::Archiv& map = files_["map_0_z"].archive;
     if(!map.empty())
@@ -444,7 +444,7 @@ void Loader::LoadDummyMapFiles()
     }
 }
 
-void Loader::LoadDummySoundFiles()
+void Loader::loadDummySoundFiles()
 {
     libsiedler2::Archiv& archive = files_["sound"].archive;
     archive.alloc(116);
@@ -498,7 +498,7 @@ NationResourcesSource getNationResourcesSource(const Nation nation, bool isWinte
  *
  *  @return @p true on success
  */
-bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations,
+bool Loader::loadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations,
                              const std::vector<AddonId>& enabledAddons)
 {
     initResourceFolders(nations, enabledAddons);
@@ -510,7 +510,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
     const libsiedler2::ArchivItem_Palette* pal5 = getPaletteN("pal5");
 
-    if(!LoadFiles(files) || !Load(ResourceId("map_new"), pal5))
+    if(!loadFiles(files) || !Load(ResourceId("map_new"), pal5))
         return false;
 
     // Load nation building and icon graphics
@@ -525,13 +525,13 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     }
 
     // TODO: Move to addon folder and make it overwrite existing file
-    if(!LoadResources({"charburner", "charburner_bobs"}))
+    if(!loadResources({"charburner", "charburner_bobs"}))
         return false;
 
-    if(!LoadResources({"wine_bobs"}))
+    if(!loadResources({"wine_bobs"}))
         return false;
 
-    if(!LoadResources({"leather_bobs"}))
+    if(!loadResources({"leather_bobs"}))
         return false;
 
     const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
@@ -544,7 +544,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     return true;
 }
 
-bool Loader::LoadFiles(const std::vector<std::string>& files)
+bool Loader::loadFiles(const std::vector<std::string>& files)
 {
     const libsiedler2::ArchivItem_Palette* pal5 = getPaletteN("pal5");
     // load the files
@@ -561,7 +561,7 @@ bool Loader::LoadFiles(const std::vector<std::string>& files)
     return true;
 }
 
-bool Loader::LoadResources(const std::vector<ResourceId>& resources)
+bool Loader::loadResources(const std::vector<ResourceId>& resources)
 {
     const libsiedler2::ArchivItem_Palette* pal5 = getPaletteN("pal5");
     for(const ResourceId& curResource : resources)
@@ -1022,7 +1022,7 @@ void Loader::fillCaches()
 /**
  *  Extrahiert eine Textur aus den Daten.
  */
-std::unique_ptr<glArchivItem_Bitmap> Loader::ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect)
+std::unique_ptr<glArchivItem_Bitmap> Loader::extractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect)
 {
     Extent texSize = rect.getSize();
     if(texSize.x == 0 && rect.right < srcImg.getWidth())
@@ -1045,7 +1045,7 @@ std::unique_ptr<glArchivItem_Bitmap> Loader::ExtractTexture(const glArchivItem_B
 /**
  *  Extrahiert mehrere (animierte) Texturen aus den Daten.
  */
-std::unique_ptr<libsiedler2::Archiv> Loader::ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect,
+std::unique_ptr<libsiedler2::Archiv> Loader::extractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect,
                                                                     uint8_t start_index, uint8_t color_count)
 {
     Extent texSize = rect.getSize();
@@ -1108,7 +1108,7 @@ bool Loader::Load(libsiedler2::Archiv& archive, const ResourceId& resId, const l
 }
 
 template<typename T>
-bool Loader::LoadImpl(const T& resIdOrPath, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::loadImpl(const T& resIdOrPath, const libsiedler2::ArchivItem_Palette* palette)
 {
     const auto resolvedFile = archiveLocator_->resolve(resIdOrPath);
     if(!resolvedFile)
@@ -1136,12 +1136,12 @@ bool Loader::LoadImpl(const T& resIdOrPath, const libsiedler2::ArchivItem_Palett
 
 bool Loader::Load(const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette)
 {
-    return LoadImpl(path, palette);
+    return loadImpl(path, palette);
 }
 
 bool Loader::Load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette)
 {
-    return LoadImpl(resId, palette);
+    return loadImpl(resId, palette);
 }
 
 void addDefaultResourceFolders(const RttrConfig& config, ArchiveLocator& locator,

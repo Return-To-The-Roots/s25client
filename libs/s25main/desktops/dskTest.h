@@ -17,7 +17,7 @@ public:
     void msgButtonClick(unsigned ctrl_id) override;
     bool msgRightUp(const MouseCoords& mc) override;
 
-    void ToggleCtrlVisibility();
+    void toggleCtrlVisibility();
 
     bool msgKeyDown(const KeyEvent& ke) override;
 

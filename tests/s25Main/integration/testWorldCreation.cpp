@@ -23,11 +23,11 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldFixtureEmpty1P)
     for(MapPoint pt : ownerPts)
     {
         // This should be ensured by `GetPointsInRadius`
-        BOOST_TEST_REQUIRE(world.CalcDistance(pt, hqPos) <= HQ_RADIUS);
+        BOOST_TEST_REQUIRE(world.calcDistance(pt, hqPos) <= HQ_RADIUS);
         // We must own this point
         BOOST_TEST_REQUIRE(world.getNode(pt).owner == 1);
         // Points at radius are border nodes, others player territory
-        if(world.CalcDistance(pt, hqPos) == HQ_RADIUS)
+        if(world.calcDistance(pt, hqPos) == HQ_RADIUS)
             BOOST_TEST_REQUIRE(world.isBorderNode(pt, 1));
         else
             BOOST_TEST_REQUIRE(world.isPlayerTerritory(pt));

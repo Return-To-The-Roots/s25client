@@ -23,8 +23,8 @@ public:
 
 protected:
     /// zeichnet das Fenster.
-    void Draw_() override;
-    void DrawContent() const override;
+    void drawImpl() override;
+    void drawContent() const override;
     bool msgMouseMove(const MouseCoords& mc) override;
 
     const BuildingType type; /// der GebäudeType des Icons.

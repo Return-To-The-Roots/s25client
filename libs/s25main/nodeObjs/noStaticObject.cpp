@@ -31,7 +31,7 @@ noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned s
         for(const Direction dir : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
             MapPoint nb = world->getNeighbour(pos, dir);
-            world->DestroyNO(nb, false);
+            world->destroyNO(nb, false);
             world->setNO(nb, new noExtension(this));
         }
     }
@@ -50,16 +50,16 @@ void noStaticObject::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(size);
 }
 
-void noStaticObject::Destroy()
+void noStaticObject::destroy()
 {
     // waren wir ein "Schloss" Objekt?
     if(getSize() == 2)
     {
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
-            world->DestroyNO(world->getNeighbour(pos, i));
+            world->destroyNO(world->getNeighbour(pos, i));
     }
 
-    noCoordBase::Destroy();
+    noCoordBase::destroy();
 }
 
 BlockingManner noStaticObject::getBM() const
@@ -73,7 +73,7 @@ BlockingManner noStaticObject::getBM() const
  *  @param[in] id Nr der Grafik
  *  @param[in] file Nr der Datei (0xFFFF map_?_z.lst, 0-5 mis?bobs.lst)
  */
-void noStaticObject::Draw(DrawPoint drawPt)
+void noStaticObject::draw(DrawPoint drawPt)
 {
     if(isAnimated() || !textures.bmp)
     {
@@ -82,11 +82,11 @@ void noStaticObject::Draw(DrawPoint drawPt)
     }
 
     // Bild zeichnen
-    textures.bmp->DrawFull(drawPt);
+    textures.bmp->drawFull(drawPt);
 
     // Schatten zeichnen
     if(textures.shadow)
-        textures.shadow->DrawFull(drawPt, COLOR_SHADOW);
+        textures.shadow->drawFull(drawPt, COLOR_SHADOW);
 }
 
 noStaticObject::Textures noStaticObject::getTextures(unsigned short file, unsigned short id)

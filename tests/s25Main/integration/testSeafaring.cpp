@@ -62,10 +62,10 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     const SeaId seaId(1);
     const HarborId hbId(1);
     const MapPoint hbPos = world.getHarborPoint(hbId);
-    BOOST_TEST_REQUIRE(world.CalcDistance(hqPos, hbPos) < HQ_RADIUS);
+    BOOST_TEST_REQUIRE(world.calcDistance(hqPos, hbPos) < HQ_RADIUS);
 
     auto* harbor = dynamic_cast<nobHarborBuilding*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(harbor);
     BOOST_TEST_REQUIRE(world.isHarborAtSea(hbId, seaId));
     BOOST_TEST_REQUIRE(buildings.getHarbors().size() == 1u); //-V807
@@ -87,7 +87,7 @@ BOOST_FIXTURE_TEST_CASE(ShipConnections, SmallSeaWorld)
     const auto createHarbor = [this, &curPlayer](HarborId hbId) -> nobHarborBuilding& {
         MapPoint hbPos = world.getHarborPoint(hbId);
         auto* harbor = static_cast<nobHarborBuilding*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
+          BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
         BOOST_TEST_REQUIRE(harbor);
         return *harbor;
     };
@@ -147,7 +147,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     const MapPoint shipyardPos(hqPos.x + 3, hqPos.y - 5);
 
     auto* harbor = dynamic_cast<nobHarborBuilding*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(harbor);
     std::vector<Direction> road = FindRoadPath(hqFlagPos, world.getNeighbour(hbPos, Direction::SouthEast), world);
     BOOST_TEST_REQUIRE(!road.empty());
@@ -160,7 +160,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     }
     BOOST_TEST_REQUIRE(world.GetBQ(shipyardPos, curPlayer) == BuildingQuality::Castle);
     auto* shipYard = dynamic_cast<nobShipYard*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Shipyard, shipyardPos, curPlayer, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Shipyard, shipyardPos, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(shipYard);
     road = FindRoadPath(hqFlagPos, world.getNeighbour(shipyardPos, Direction::SouthEast), world);
     BOOST_TEST_REQUIRE(!road.empty());
@@ -177,9 +177,9 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     this->SetShipYardMode(shipyardPos, true);
     BOOST_TEST_REQUIRE(shipYard->getMode() == nobShipYard::Mode::Ships);
 
-    world.getPostMgr().AddPostBox(curPlayer);
+    world.getPostMgr().addPostBox(curPlayer);
     PostBox& postBox = *world.getPostMgr().getPostBox(curPlayer);
-    postBox.Clear();
+    postBox.clear();
     // Ship building takes 10 steps with ~500 GFs each. +600 GF to let wares and people reach the site
     RTTR_EXEC_TILL(5600, postBox.getNumMsgs() > 0);
     // There should be a msg telling the player about the new ship
@@ -208,13 +208,13 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         const MapPoint hqPos = player.getHQPos();
         const MapPoint hqFlagPos = world.getNeighbour(hqPos, Direction::SouthEast);
         const MapPoint hbPos = world.getHarborPoint(HarborId(T_hbId));
-        world.getPostMgr().AddPostBox(curPlayer);
+        world.getPostMgr().addPostBox(curPlayer);
         postBox = world.getPostMgr().getPostBox(curPlayer);
 
         auto* harbor = dynamic_cast<nobHarborBuilding*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
+          BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
         BOOST_TEST_REQUIRE(harbor);
-        world.RecalcBQAroundPointBig(hbPos);
+        world.recalcBQAroundPointBig(hbPos);
         std::vector<Direction> road = FindRoadPath(hqFlagPos, world.getNeighbour(hbPos, Direction::SouthEast), world);
         BOOST_TEST_REQUIRE(!road.empty());
         this->BuildRoad(hqFlagPos, false, road);
@@ -229,11 +229,11 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
         if(!world.isSeaPoint(shipPos))
             shipPos.y += 6;
         BOOST_TEST_REQUIRE(world.isSeaPoint(shipPos));
-        auto& ship = world.AddFigure(shipPos, std::make_unique<noShip>(shipPos, curPlayer));
-        player.RegisterShip(ship);
+        auto& ship = world.addFigure(shipPos, std::make_unique<noShip>(shipPos, curPlayer));
+        player.registerShip(ship);
 
         BOOST_TEST_REQUIRE(player.getNumShips() == 1u);
-        postBox->Clear();
+        postBox->clear();
         initGameRNG();
     }
 
@@ -296,8 +296,8 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     // Team visibility, so set one to own team
     world.getPlayer(curPlayer).team = Team::Team1;
     world.getPlayer(1).team = Team::Team1;
-    world.getPlayer(curPlayer).MakeStartPacts();
-    world.getPlayer(1).MakeStartPacts();
+    world.getPlayer(curPlayer).makeStartPacts();
+    world.getPlayer(1).makeStartPacts();
     world.getNodeWriteable(world.getHarborPoint(HarborId(3))).fow[1].visibility = Visibility::Visible;
     HarborId targetHbId(8);
 
@@ -310,22 +310,22 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_TEST_REQUIRE(ship.getHomeHarbor() == hbId);
     BOOST_TEST_REQUIRE(ship.getTargetHarbor() == targetHbId);
 
-    unsigned distance = world.CalcDistance(hbPos, world.getHarborPoint(targetHbId));
+    unsigned distance = world.calcDistance(hbPos, world.getHarborPoint(targetHbId));
     // Let the ship scout the harbor
     RTTR_EXEC_TILL(distance * 2 * 20, !ship.isMoving());
     BOOST_TEST_REQUIRE(ship.isOnExplorationExpedition());
-    BOOST_TEST_REQUIRE(world.CalcDistance(world.getHarborPoint(targetHbId), ship.getPos()) <= 2u);
+    BOOST_TEST_REQUIRE(world.calcDistance(world.getHarborPoint(targetHbId), ship.getPos()) <= 2u);
     // Now the ship waits and will select the next harbor. We allow another one:
     HarborId nextHbId(6);
     world.getNodeWriteable(world.getHarborPoint(nextHbId)).fow[curPlayer].visibility = Visibility::FogOfWar;
     RTTR_EXEC_TILL(350, ship.isMoving());
     BOOST_TEST_REQUIRE(ship.getHomeHarbor() == hbId);
     BOOST_TEST_REQUIRE(ship.getTargetHarbor() == nextHbId);
-    distance = world.CalcDistance(ship.getPos(), world.getHarborPoint(nextHbId));
+    distance = world.calcDistance(ship.getPos(), world.getHarborPoint(nextHbId));
     // Let the ship scout the harbor
     RTTR_EXEC_TILL(distance * 2 * 20, !ship.isMoving());
     BOOST_TEST_REQUIRE(ship.isOnExplorationExpedition());
-    BOOST_TEST_REQUIRE(world.CalcDistance(world.getHarborPoint(nextHbId), ship.getPos()) <= 2u);
+    BOOST_TEST_REQUIRE(world.calcDistance(world.getHarborPoint(nextHbId), ship.getPos()) <= 2u);
 
     // Now disallow the first harbor so ship returns home
     world.getNodeWriteable(world.getHarborPoint(targetHbId)).fow[curPlayer].visibility = Visibility::Visible;
@@ -334,7 +334,7 @@ BOOST_FIXTURE_TEST_CASE(ExplorationExpedition, ShipReadyFixture<>)
     BOOST_TEST_REQUIRE(ship.getHomeHarbor() == hbId);
     BOOST_TEST_REQUIRE(ship.getTargetHarbor() == hbId);
 
-    distance = world.CalcDistance(ship.getPos(), world.getHarborPoint(hbId));
+    distance = world.calcDistance(ship.getPos(), world.getHarborPoint(hbId));
     // And at some time it should return home
     RTTR_EXEC_TILL(distance * 2 * 20 + 200, ship.isIdling());
     const SeaId seaId(1);
@@ -363,8 +363,8 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     // We want the ship to only scout unexplored harbors, so set all but one to visible
     world.getPlayer(curPlayer).team = Team::Team1;
     world.getPlayer(1).team = Team::Team1;
-    world.getPlayer(curPlayer).MakeStartPacts();
-    world.getPlayer(1).MakeStartPacts();
+    world.getPlayer(curPlayer).makeStartPacts();
+    world.getPlayer(1).makeStartPacts();
 
     world.getNodeWriteable(world.getHarborPoint(HarborId(6))).fow[1].visibility = Visibility::Visible;
     world.getNodeWriteable(world.getHarborPoint(HarborId(3))).fow[1].visibility = Visibility::Visible;
@@ -386,13 +386,13 @@ BOOST_FIXTURE_TEST_CASE(DestroyHomeOnExplExp, ShipReadyFixture<2>)
     world.getNodeWriteable(world.getHarborPoint(targetHbId)).fow[1].visibility = Visibility::Visible;
 
     // Destroy home harbor
-    world.DestroyNO(hbPos);
+    world.destroyNO(hbPos);
     RTTR_EXEC_TILL(2000, ship.isLost());
     BOOST_TEST_REQUIRE(!ship.isMoving());
 
     MapPoint newHbPos = world.getHarborPoint(HarborId(6));
     auto* newHarbor = dynamic_cast<nobHarborBuilding*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, newHbPos, curPlayer, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, newHbPos, curPlayer, Nation::Romans));
 
     BOOST_TEST_REQUIRE(!ship.isLost());
     BOOST_TEST_REQUIRE(ship.isMoving());
@@ -456,11 +456,11 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_TEST_REQUIRE(msg->getPos() == ship.getPos()); //-V522
 
     // Harbor pos taken by other player
-    this->TravelToNextSpot(ShipDirection::SouthEast, player.getShipID(ship));
+    this->travelToNextSpot(ShipDirection::SouthEast, player.getShipID(ship));
     BOOST_TEST_REQUIRE(ship.isWaitingForExpeditionInstructions());
 
     // Last free one (far south -> North is closer)
-    this->TravelToNextSpot(ShipDirection::North, player.getShipID(ship));
+    this->travelToNextSpot(ShipDirection::North, player.getShipID(ship));
     BOOST_TEST_REQUIRE(!ship.isWaitingForExpeditionInstructions());
     BOOST_TEST_REQUIRE(ship.isMoving());
 
@@ -468,7 +468,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     RTTR_EXEC_TILL_CT_GF(1000, ship.isWaitingForExpeditionInstructions(), gfsToDest);
     HarborId hbId(8);
     BOOST_TEST_REQUIRE(ship.getCurrentHarbor() == hbId);
-    BOOST_TEST_REQUIRE(world.CalcDistance(ship.getPos(), world.getHarborPoint(hbId)) == 1u);
+    BOOST_TEST_REQUIRE(world.calcDistance(ship.getPos(), world.getHarborPoint(hbId)) == 1u);
 
     // Cancel expedition -> Ship is going back to harbor
     this->CancelExpedition(player.getShipID(ship));
@@ -485,23 +485,23 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_TEST_REQUIRE(ship.getCurrentHarbor() == harbor.getHarborPosID());
 
     // Try to found colony -> Fail
-    this->FoundColony(player.getShipID(ship));
+    this->foundColony(player.getShipID(ship));
     BOOST_TEST_REQUIRE(ship.isWaitingForExpeditionInstructions());
     // Go back to free spot
-    this->TravelToNextSpot(ShipDirection::North, player.getShipID(ship));
+    this->travelToNextSpot(ShipDirection::North, player.getShipID(ship));
     BOOST_TEST_REQUIRE(!ship.isWaitingForExpeditionInstructions());
     for(unsigned gf = 0; gf < 2; gf++)
     {
         // Send commands that should be ignored as ship is not expecting them
-        this->FoundColony(player.getShipID(ship));
+        this->foundColony(player.getShipID(ship));
         BOOST_TEST_REQUIRE(ship.isMoving());
-        this->TravelToNextSpot(ShipDirection::South, player.getShipID(ship));
+        this->travelToNextSpot(ShipDirection::South, player.getShipID(ship));
         this->CancelExpedition(player.getShipID(ship));
         BOOST_TEST_REQUIRE(ship.isMoving());
-        this->em.ExecuteNextGF();
+        this->em.executeNextGF();
     }
     // Go to destination
-    postBox->Clear();
+    postBox->clear();
     RTTR_SKIP_GFS(gfsToDest);
     BOOST_TEST_REQUIRE(ship.isWaitingForExpeditionInstructions());
     // This should again trigger a message
@@ -509,7 +509,7 @@ BOOST_FIXTURE_TEST_CASE(Expedition, ShipReadyFixture<>)
     BOOST_TEST_REQUIRE(msg);
     BOOST_TEST_REQUIRE(msg->getPos() == ship.getPos());
     // And now we can found a new colony
-    this->FoundColony(player.getShipID(ship));
+    this->foundColony(player.getShipID(ship));
     // Ship is free again
     BOOST_TEST_REQUIRE(ship.isIdling());
     const noBuildingSite* newHarbor = world.getSpecObj<noBuildingSite>(world.getHarborPoint(hbId));
@@ -533,7 +533,7 @@ BOOST_FIXTURE_TEST_CASE(LongDistanceTravel, ShipReadyFixtureBig)
     // Make sure that the other harbor is far away
     BOOST_TEST_REQUIRE(world.getMinHarborDistance(harbor.getHarborPosID(), targetHbId) > 600u);
     // Add some scouts
-    harbor.AddToInventory(PeopleCounts::make(Job::Scout, 20), true);
+    harbor.addToInventory(PeopleCounts::make(Job::Scout, 20), true);
     // We want the ship to only scout unexplored harbors, so set all but one to visible
     for(const auto i : helpers::idRange<HarborId>(world.getNumHarborPoints()))
         world.getNodeWriteable(world.getHarborPoint(i)).fow[curPlayer].visibility = Visibility::Visible;
@@ -565,12 +565,12 @@ public:
     {
         MapPoint hbPos = world.getHarborPoint(hbPosId);
         auto* harbor = static_cast<nobHarborBuilding*>(
-          BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
+          BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
         BOOST_TEST_REQUIRE(harbor);
         GoodsAndPeopleCounts goods;
         goods[GoodType::Wood] = 10;
         goods[Job::Woodcutter] = 10;
-        harbor->AddToInventory(goods, true);
+        harbor->addToInventory(goods, true);
         return *harbor;
     }
 
@@ -581,10 +581,10 @@ public:
         createHarbor(HarborId(2));
 
         MapPoint hbPos = world.getHarborPoint(HarborId(1));
-        MapPoint shipPos = world.MakeMapPoint(hbPos - Position(2, 0));
+        MapPoint shipPos = world.makeMapPoint(hbPos - Position(2, 0));
         BOOST_TEST_REQUIRE(world.isSeaPoint(shipPos));
-        auto& ship = world.AddFigure(shipPos, std::make_unique<noShip>(shipPos, curPlayer));
-        player.RegisterShip(ship);
+        auto& ship = world.addFigure(shipPos, std::make_unique<noShip>(shipPos, curPlayer));
+        player.registerShip(ship);
 
         BOOST_TEST_REQUIRE(player.getNumShips() == 1u);
     }
@@ -592,9 +592,9 @@ public:
 
 void destroyBldAndFire(GameWorldBase& world, const MapPoint& pos)
 {
-    world.DestroyNO(pos);
+    world.destroyNO(pos);
     // Remove fire
-    world.DestroyNO(pos);
+    world.destroyNO(pos);
     // Remove burned wh if existing
     for(noBase& fig : world.getFigures(pos))
     {
@@ -602,15 +602,15 @@ void destroyBldAndFire(GameWorldBase& world, const MapPoint& pos)
         {
             // Remove go-out event (not automatically done as the burned wh is never removed)
             const GameEvent* ev = static_cast<TestEventManager&>(world.getEvMgr()).getObjEvents(fig).front();
-            world.getEvMgr().RemoveEvent(ev);
-            world.RemoveFigure(pos, fig)->Destroy();
+            world.getEvMgr().removeEvent(ev);
+            world.RemoveFigure(pos, fig)->destroy();
             break;
         }
     }
 }
 } // namespace
 
-BOOST_FIXTURE_TEST_CASE(HarborDestroyed, ShipAndHarborsReadyFixture<1>)
+BOOST_FIXTURE_TEST_CASE(harborDestroyed, ShipAndHarborsReadyFixture<1>)
 {
     const GamePlayer& player = world.getPlayer(curPlayer);
     const noShip& ship = *player.getShipByID(0);
@@ -760,7 +760,7 @@ BOOST_FIXTURE_TEST_CASE(IncreasedPathLengthWhenHarborDestroyed, ShipReadyFixture
             node.t1 = node.t2 = t;
         }
     }
-    MapLoader::InitSeasAndHarbors(world);
+    MapLoader::initSeasAndHarbors(world);
     // Harbors unchanged
     BOOST_TEST_REQUIRE(world.getHarborPointID(hbTopPos) == hbIdTop);
     BOOST_TEST_REQUIRE(world.getHarborPointID(hbLeftPos) == hbIdLeft);
@@ -773,9 +773,9 @@ BOOST_FIXTURE_TEST_CASE(IncreasedPathLengthWhenHarborDestroyed, ShipReadyFixture
 
     // Start shipment to left harbor
     nobHarborBuilding& topHarbor = *player.getBuildingRegister().getHarbors().front();
-    BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbLeftPos, curPlayer, Nation::Romans);
+    BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, hbLeftPos, curPlayer, Nation::Romans);
 
-    topHarbor.AddToInventory(GoodCounts::make(GoodType::Wood, 10), true);
+    topHarbor.addToInventory(GoodCounts::make(GoodType::Wood, 10), true);
     SetInventorySetting(hbLeftPos, GoodType::Wood, EInventorySetting::Collect);
 
     RTTR_EXEC_TILL(90, ship.isLoading());
@@ -786,7 +786,7 @@ BOOST_FIXTURE_TEST_CASE(IncreasedPathLengthWhenHarborDestroyed, ShipReadyFixture
 
     // Wait till ship is close to left harbor
     constexpr auto extraDist = 16u; // Choosen to be larger than a magic number used as tolerance
-    RTTR_EXEC_TILL(2000, world.CalcDistance(ship.getPos(), leftCoastPt) < extraDist * 2);
+    RTTR_EXEC_TILL(2000, world.calcDistance(ship.getPos(), leftCoastPt) < extraDist * 2);
 
     // Destroy home so it cannot go back, then target harbor
     destroyBldAndFire(world, hbTopPos);
@@ -798,13 +798,13 @@ BOOST_FIXTURE_TEST_CASE(IncreasedPathLengthWhenHarborDestroyed, ShipReadyFixture
     // Building harbor at right makes ship go there even though distance is (too) long
     unsigned len;
     BOOST_TEST_REQUIRE(
-      world.FindShipPath(ship.getPos(), world.getCoastalPoint(hbIdRight, seaId), unsigned(-1), nullptr, &len));
+      world.findShipPath(ship.getPos(), world.getCoastalPoint(hbIdRight, seaId), unsigned(-1), nullptr, &len));
     const auto hbDistance = world.getMinHarborDistance(hbIdLeft, hbIdRight);
     // Reproducer requires the path to be longer than the direct distance and other connections
     BOOST_TEST_REQUIRE(len > hbDistance + extraDist);
     BOOST_TEST_REQUIRE(hbDistance > world.getMinHarborDistance(hbIdRight, hbIdTop));
     BOOST_TEST_REQUIRE(hbDistance > world.getMinHarborDistance(hbIdRight, hbIdBottom));
-    BuildingFactory::CreateBuilding(world, BuildingType::HarborBuilding, hbRightPos, curPlayer, Nation::Romans);
+    BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, hbRightPos, curPlayer, Nation::Romans);
     BOOST_TEST_REQUIRE(ship.isMoving());
     BOOST_TEST_REQUIRE(ship.getHomeHarbor() == hbIdRight);
     BOOST_TEST_REQUIRE(ship.getTargetHarbor() == hbIdRight);
@@ -833,19 +833,19 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
     BOOST_TEST_REQUIRE(harbors.size() >= 2u);
     nobHarborBuilding& harbor1 = *harbors.front();
     nobHarborBuilding& harbor2 = **(++harbors.begin());
-    auto* wh = static_cast<nobBaseWarehouse*>(BuildingFactory::CreateBuilding(
+    auto* wh = static_cast<nobBaseWarehouse*>(BuildingFactory::createBuilding(
       world, BuildingType::Storehouse, harbor2.getPos() + MapPoint(2, 0), curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(wh);
-    BuildRoadForBlds(harbor2.getPos(), wh->getPos());
+    buildRoadForBlds(harbor2.getPos(), wh->getPos());
     constexpr auto goodType = GoodType::Wood;
 
     // Sanity check: Move from harbor1 to wh (over harbor2)
     auto ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
     auto* warePtr = ware.get();
-    ware->Carry(harbor1);
+    ware->carry(harbor1);
     auto numVisWaresBefore = harbor1.getNumVisualWares(goodType);
     auto numRealWaresBefore = harbor1.getNumRealWares(goodType);
-    harbor1.AddWare(std::move(ware));
+    harbor1.addWare(std::move(ware));
     BOOST_TEST(harbor1.getNumVisualWares(goodType) == numVisWaresBefore + 1u);
     // Wares that will be moved out are only in visual count
     BOOST_TEST(harbor1.getNumRealWares(goodType) == numRealWaresBefore);
@@ -861,10 +861,10 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
             DestroyRoad(harbor2.getFlagPos(), d);
     }
     ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
-    ware->Carry(harbor1);
+    ware->carry(harbor1);
     numVisWaresBefore = harbor1.getNumVisualWares(goodType);
     numRealWaresBefore = harbor1.getNumRealWares(goodType);
-    harbor1.AddWare(std::move(ware));
+    harbor1.addWare(std::move(ware));
     BOOST_TEST(harbor1.getNumVisualWares(goodType) == numVisWaresBefore + 1u);
     BOOST_TEST(harbor1.getNumRealWares(goodType) == numRealWaresBefore + 1u);
     BOOST_TEST(MockWare::destroyed);
@@ -872,11 +872,11 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
     // Same but disallow harbor as goal -> Find another storehouse
     SetInventorySetting(harbor1.getPos(), goodType, EInventorySetting::Stop);
     ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
-    ware->Carry(harbor1);
+    ware->carry(harbor1);
     warePtr = ware.get();
     numVisWaresBefore = harbor1.getNumVisualWares(goodType);
     numRealWaresBefore = harbor1.getNumRealWares(goodType);
-    harbor1.AddWare(std::move(ware));
+    harbor1.addWare(std::move(ware));
     BOOST_TEST(harbor1.getNumVisualWares(goodType) == numVisWaresBefore + 1u);
     BOOST_TEST(harbor1.getNumRealWares(goodType) == numRealWaresBefore);
     BOOST_TEST_REQUIRE(!MockWare::destroyed);
@@ -885,10 +885,10 @@ BOOST_FIXTURE_TEST_CASE(AddWareWithUnreachableGoalToHarbor, ShipAndHarborsReadyF
     // If no other storehouse is available take it anyway
     SetInventorySetting(harbor2.getPos(), goodType, EInventorySetting::Stop);
     ware = std::make_unique<MockWare>(goodType, wh, &harbor1);
-    ware->Carry(harbor1);
+    ware->carry(harbor1);
     numVisWaresBefore = harbor1.getNumVisualWares(goodType);
     numRealWaresBefore = harbor1.getNumRealWares(goodType);
-    harbor1.AddWare(std::move(ware));
+    harbor1.addWare(std::move(ware));
     BOOST_TEST(harbor1.getNumVisualWares(goodType) == numVisWaresBefore + 1u);
     BOOST_TEST(harbor1.getNumRealWares(goodType) == numRealWaresBefore + 1u);
     BOOST_TEST(MockWare::destroyed);
@@ -904,7 +904,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
     expWares[Job::Builder] = 1;
     expWares[GoodType::Boards] = 20;
     expWares[GoodType::Stones] = 20;
-    homeHarbor.AddToInventory(expWares, true);
+    homeHarbor.addToInventory(expWares, true);
 
     /* A ship might get stuck when targeting a harbor (2) SE of the current harbor (1): Issue #1784
        Harbors are at NE coast of island, (1) directly at sea, (2) one node inland:
@@ -919,7 +919,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
     // Put the harbors up into the sea so we can control the coastal point
     const MapPoint harborPos = homeHbPos + MapPoint(7, -3);                       // (1)
     const MapPoint nbHbPos = world.getNeighbour(harborPos, Direction::SouthEast); // (2)
-    const MapPoint otherHbPos = world.MakeMapPoint(homeHbPos - Point(3, 0));      // Unrelated harbor
+    const MapPoint otherHbPos = world.makeMapPoint(homeHbPos - Point(3, 0));      // Unrelated harbor
     const std::vector<MapPoint> harborPoints = {harborPos, nbHbPos, otherHbPos};
     for(const MapPoint p : harborPoints)
         world.getNodeWriteable(p).bq = BuildingQuality::Harbor;
@@ -942,7 +942,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
         auto& node = world.getNodeWriteable(world.getNeighbour(coastPoint, Direction::NorthWest));
         node.t1 = GetLandTerrain(world.getDescription());
     }
-    MapLoader::InitSeasAndHarbors(world, harborPoints);
+    MapLoader::initSeasAndHarbors(world, harborPoints);
 
     const auto harborId = world.getHarborPointID(harborPos);
     const auto nbHbId = world.getHarborPointID(nbHbPos);
@@ -960,7 +960,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
     // Wait till ship has loaded wares and is ready
     RTTR_EXEC_TILL(500, ship.isWaitingForExpeditionInstructions());
 
-    this->TravelToNextSpot(this->GetShipDir(ship, harborId), player.getShipID(ship));
+    this->travelToNextSpot(this->GetShipDir(ship, harborId), player.getShipID(ship));
     BOOST_TEST_REQUIRE(!ship.isWaitingForExpeditionInstructions());
     BOOST_TEST_REQUIRE(ship.isMoving());
     BOOST_TEST_REQUIRE(ship.getTargetHarbor() == harborId);
@@ -968,7 +968,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
     RTTR_EXEC_TILL(500, ship.isWaitingForExpeditionInstructions());
     BOOST_TEST_REQUIRE(ship.getPos() == coastPoint);
 
-    this->TravelToNextSpot(this->GetShipDir(ship, nbHbId), player.getShipID(ship));
+    this->travelToNextSpot(this->GetShipDir(ship, nbHbId), player.getShipID(ship));
     BOOST_TEST_REQUIRE(ship.getTargetHarbor() == nbHbId);
     // Already there
     BOOST_TEST(ship.isWaitingForExpeditionInstructions());
@@ -979,7 +979,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
     BOOST_TEST_REQUIRE(otherHarborId.isValid());
     // Precondition that any ship dir will be found
     BOOST_TEST_REQUIRE(world.isHarborAtSea(otherHarborId, seaId));
-    this->TravelToNextSpot(this->GetShipDir(ship, otherHarborId), player.getShipID(ship));
+    this->travelToNextSpot(this->GetShipDir(ship, otherHarborId), player.getShipID(ship));
     BOOST_TEST_REQUIRE(ship.getTargetHarbor() == otherHarborId);
     // Moving
     BOOST_TEST_REQUIRE(ship.isMoving());

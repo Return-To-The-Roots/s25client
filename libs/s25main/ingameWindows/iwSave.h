@@ -16,11 +16,11 @@ public:
 
 protected:
     /// Re-fill the table with existing files
-    void RefreshTable();
+    void refreshTable();
 
 private:
     /// Save or load the currently selected file
-    virtual void SaveLoad() = 0;
+    virtual void saveLoad() = 0;
 
     void msgEditEnter(unsigned ctrl_id) override;
     void msgButtonClick(unsigned ctrl_id) override;
@@ -34,7 +34,7 @@ public:
 
 private:
     // Save game
-    void SaveLoad() override;
+    void saveLoad() override;
 
     void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
 };
@@ -51,5 +51,5 @@ private:
     void msgTableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
     // Load game
-    void SaveLoad() override;
+    void saveLoad() override;
 };

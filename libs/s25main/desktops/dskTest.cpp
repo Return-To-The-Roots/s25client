@@ -42,7 +42,7 @@ enum
 
 dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
 {
-    AddText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, FontStyle::CENTER,
+    addText(ID_txtTitle, DrawPoint(300, 20), _("Internal test screen for developers"), COLOR_ORANGE, FontStyle::CENTER,
             LargeFont);
     std::array<TextureColor, 4> textures = {
       {TextureColor::Green1, TextureColor::Green2, TextureColor::Red1, TextureColor::Grey}};
@@ -51,18 +51,18 @@ dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
     unsigned curId = ID_grpBtStart;
     for(unsigned i = 0; i < textures.size(); i++)
     {
-        AddText(curId, DrawPoint(10, yPos + 3), labels.at(i), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+        addText(curId, DrawPoint(10, yPos + 3), labels.at(i), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
         ctrlButton* bt;
-        bt = AddTextButton(curId + 1, DrawPoint(120, yPos), Extent(95, 22), textures[i], "Nothing", NormalFont);
+        bt = addTextButton(curId + 1, DrawPoint(120, yPos), Extent(95, 22), textures[i], "Nothing", NormalFont);
         bt->setIlluminated(false);
         bt->setBorder(false);
-        bt = AddTextButton(curId + 2, DrawPoint(220, yPos), Extent(95, 22), textures[i], "Illuminated", NormalFont);
+        bt = addTextButton(curId + 2, DrawPoint(220, yPos), Extent(95, 22), textures[i], "Illuminated", NormalFont);
         bt->setIlluminated(true);
         bt->setBorder(false);
-        bt = AddTextButton(curId + 3, DrawPoint(320, yPos), Extent(95, 22), textures[i], "Border", NormalFont);
+        bt = addTextButton(curId + 3, DrawPoint(320, yPos), Extent(95, 22), textures[i], "Border", NormalFont);
         bt->setIlluminated(false);
         bt->setBorder(true);
-        bt = AddTextButton(curId + 4, DrawPoint(420, yPos), Extent(95, 22), textures[i], "Both", NormalFont);
+        bt = addTextButton(curId + 4, DrawPoint(420, yPos), Extent(95, 22), textures[i], "Both", NormalFont);
         bt->setIlluminated(true);
         bt->setBorder(true);
         curId += 5;
@@ -71,38 +71,38 @@ dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
     RTTR_Assert(curId == ID_grpBtEnd);
 
     DrawPoint btPos(10, yPos);
-    ctrlButton* bt = AddTextButton(ID_btAniBg, btPos, Extent(700, 40), TextureColor::Green2, "", NormalFont);
+    ctrlButton* bt = addTextButton(ID_btAniBg, btPos, Extent(700, 40), TextureColor::Green2, "", NormalFont);
     bt->setBorder(false);
     bt->setEnabled(false);
-    bt = AddTextButton(ID_btAni, btPos + DrawPoint(0, 5), Extent(30, 30), TextureColor::Red1, "", NormalFont);
+    bt = addTextButton(ID_btAni, btPos + DrawPoint(0, 5), Extent(30, 30), TextureColor::Red1, "", NormalFont);
     bt->setBorder(false);
     bt->setEnabled(false);
     bt->setIlluminated(true);
 
     btPos.y += 45;
-    AddEdit(ID_edtTest, btPos, Extent(150, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
+    addEdit(ID_edtTest, btPos, Extent(150, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
     btPos.x += 170;
-    ctrlComboBox* cb = AddComboBox(ID_cbTxtSize, btPos, Extent(100, 22), TextureColor::Green2, NormalFont, 100);
-    cb->AddItem("Small Font");
-    cb->AddItem("Medium Font");
-    cb->AddItem("Large Font");
+    ctrlComboBox* cb = addComboBox(ID_cbTxtSize, btPos, Extent(100, 22), TextureColor::Green2, NormalFont, 100);
+    cb->addItem("Small Font");
+    cb->addItem("Medium Font");
+    cb->addItem("Large Font");
     cb->setSelection(0);
     btPos.x += 110;
     btPos.y += 11;
-    AddText(ID_txtTest, btPos, "Enter something", COLOR_YELLOW, FontStyle::VCENTER, SmallFont);
+    addText(ID_txtTest, btPos, "Enter something", COLOR_YELLOW, FontStyle::VCENTER, SmallFont);
 
-    AddTextButton(ID_btDisable, DrawPoint(10, 540), Extent(150, 22), TextureColor::Green1, "Enable/Disable buttons",
+    addTextButton(ID_btDisable, DrawPoint(10, 540), Extent(150, 22), TextureColor::Green1, "Enable/Disable buttons",
                   NormalFont);
-    AddTextButton(ID_btAnimate, DrawPoint(165, 540), Extent(80, 22), TextureColor::Green1, "Animate", NormalFont);
-    AddTextButton(ID_btAnimateRepeat, DrawPoint(250, 540), Extent(110, 22), TextureColor::Green1, "Animate-Repeat",
+    addTextButton(ID_btAnimate, DrawPoint(165, 540), Extent(80, 22), TextureColor::Green1, "Animate", NormalFont);
+    addTextButton(ID_btAnimateRepeat, DrawPoint(250, 540), Extent(110, 22), TextureColor::Green1, "Animate-Repeat",
                   NormalFont);
-    AddTextButton(ID_btAnimateOscillate, DrawPoint(365, 540), Extent(110, 22), TextureColor::Green1,
+    addTextButton(ID_btAnimateOscillate, DrawPoint(365, 540), Extent(110, 22), TextureColor::Green1,
                   "Animate-Oscillate", NormalFont);
-    AddTextButton(ID_btHideCtrls, DrawPoint(480, 540), Extent(140, 22), TextureColor::Green1, "Hide all elements (H)",
+    addTextButton(ID_btHideCtrls, DrawPoint(480, 540), Extent(140, 22), TextureColor::Green1, "Hide all elements (H)",
                   NormalFont);
-    AddTextButton(ID_btTextureTest, DrawPoint(625, 540), Extent(90, 22), TextureColor::Green1, "Texture test",
+    addTextButton(ID_btTextureTest, DrawPoint(625, 540), Extent(90, 22), TextureColor::Green1, "Texture test",
                   NormalFont);
-    AddTextButton(ID_btShowBenchmark, DrawPoint(720, 540), Extent(80, 22), TextureColor::Green1, "Benchmark",
+    addTextButton(ID_btShowBenchmark, DrawPoint(720, 540), Extent(80, 22), TextureColor::Green1, "Benchmark",
                   NormalFont);
 }
 
@@ -164,7 +164,7 @@ void dskTest::msgButtonClick(const unsigned ctrl_id)
             getAnimationManager().addAnimation(new BlinkButtonAnim(getCtrl<ctrlButton>(ctrl_id)));
             break;
         }
-        case ID_btHideCtrls: ToggleCtrlVisibility();
+        case ID_btHideCtrls: toggleCtrlVisibility();
     }
 }
 
@@ -182,7 +182,7 @@ bool dskTest::msgRightUp(const MouseCoords& mc)
     return dskMenuBase::msgRightUp(mc);
 }
 
-void dskTest::ToggleCtrlVisibility()
+void dskTest::toggleCtrlVisibility()
 {
     for(int i = ID_txtTitle; i <= ID_btHideCtrls; i++)
     {
@@ -195,7 +195,7 @@ void dskTest::ToggleCtrlVisibility()
 bool dskTest::msgKeyDown(const KeyEvent& ke)
 {
     if(ke.kt == KeyType::Char && ke.c == 'h')
-        ToggleCtrlVisibility();
+        toggleCtrlVisibility();
     else if(ke.kt == KeyType::Left)
     {
         curBGIdx = (curBGIdx > 0) ? curBGIdx - 1 : LOAD_SCREENS.size() - 1;

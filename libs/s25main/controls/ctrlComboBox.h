@@ -15,12 +15,12 @@ public:
     ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                  const glFont* font, unsigned short max_list_height, bool readonly);
 
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
 
     bool isReadOnly() const { return readonly; }
 
-    void AddItem(const std::string& text);
-    void DeleteAllItems();
+    void addItem(const std::string& text);
+    void deleteAllItems();
     /// Set selection to an item if within bounds. Does not trigger a notification.
     void setSelection(unsigned selection);
     const std::optional<unsigned>& getSelection() const { return getCtrl<ctrlList>(0)->getSelection(); };
@@ -40,9 +40,9 @@ public:
     void msgListSelectItem(unsigned ctrl_id, int selection) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
     /// Show or hide the list.
-    void ShowList(bool show);
+    void showList(bool show);
     Rect getFullDrawRect(const ctrlList* list);
 
 private:

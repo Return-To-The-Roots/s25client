@@ -27,23 +27,23 @@ namespace {
 
 BuildingPlanner::BuildingPlanner(const AIPlayerJH& aijh) : buildingsWanted(), expansionRequired(false)
 {
-    RefreshBuildingNums(aijh);
-    InitBuildingsWanted(aijh);
-    UpdateBuildingsWanted(aijh);
+    refreshBuildingNums(aijh);
+    initBuildingsWanted(aijh);
+    updateBuildingsWanted(aijh);
 }
 
-void BuildingPlanner::Update(unsigned gf, AIPlayerJH& aijh)
+void BuildingPlanner::update(unsigned gf, AIPlayerJH& aijh)
 {
-    RefreshBuildingNums(aijh);
-    expansionRequired = CalcIsExpansionRequired(aijh, gf > 500 && gf % 500 == 0);
+    refreshBuildingNums(aijh);
+    expansionRequired = calcIsExpansionRequired(aijh, gf > 500 && gf % 500 == 0);
 }
 
-void BuildingPlanner::RefreshBuildingNums(const AIPlayerJH& aijh)
+void BuildingPlanner::refreshBuildingNums(const AIPlayerJH& aijh)
 {
     buildingNums = aijh.player.getBuildingRegister().getBuildingNums();
 }
 
-bool BuildingPlanner::CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const
+bool BuildingPlanner::calcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const
 {
     if(!expansionRequired && !recalc)
         return false;
@@ -66,11 +66,11 @@ bool BuildingPlanner::CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) con
         for(const noBuilding* bld : blds)
         {
             if(!hasWood)
-                hasWood = aijh.FindPositionForBuildingAround(BuildingType::Woodcutter, bld->getPos()).isValid();
+                hasWood = aijh.findPositionForBuildingAround(BuildingType::Woodcutter, bld->getPos()).isValid();
             if(!hasBoards)
-                hasBoards = aijh.FindPositionForBuildingAround(BuildingType::Sawmill, bld->getPos()).isValid();
+                hasBoards = aijh.findPositionForBuildingAround(BuildingType::Sawmill, bld->getPos()).isValid();
             if(!hasStone)
-                hasStone = aijh.FindPositionForBuildingAround(BuildingType::Quarry, bld->getPos()).isValid();
+                hasStone = aijh.findPositionForBuildingAround(BuildingType::Quarry, bld->getPos()).isValid();
         }
         return !(hasWood && hasBoards && hasStone);
     }
@@ -103,7 +103,7 @@ unsigned BuildingPlanner::getNumMilitaryBldSites() const
     return result;
 }
 
-void BuildingPlanner::InitBuildingsWanted(const AIPlayerJH& aijh)
+void BuildingPlanner::initBuildingsWanted(const AIPlayerJH& aijh)
 {
     std::fill(buildingsWanted.begin(), buildingsWanted.end(), 0u);
     buildingsWanted[BuildingType::Forester] = 1;
@@ -128,7 +128,7 @@ void BuildingPlanner::InitBuildingsWanted(const AIPlayerJH& aijh)
     }
 }
 
-void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
+void BuildingPlanner::updateBuildingsWanted(const AIPlayerJH& aijh)
 {
     // no military buildings -> usually start only
     const unsigned numMilitaryBlds = aijh.player.getBuildingRegister().getMilitaryBuildings().size();
@@ -345,7 +345,7 @@ void BuildingPlanner::UpdateBuildingsWanted(const AIPlayerJH& aijh)
                     buildingsWanted[BuildingType::Charburner] = std::min(1, resourcelimit);
             }
             if(getNumBuildings(BuildingType::Quarry) + 1 < buildingsWanted[BuildingType::Quarry]
-               && aijh.AmountInStorage(GoodType::Stones) < 100) // no quarry and low stones -> try granitemines.
+               && aijh.amountInStorage(GoodType::Stones) < 100) // no quarry and low stones -> try granitemines.
             {
                 if(inventory.people[Job::Miner] > 6)
                 {
@@ -377,7 +377,7 @@ int BuildingPlanner::getNumAdditionalBuildingsWanted(BuildingType type) const
     return static_cast<int>(buildingsWanted[type]) - static_cast<int>(getNumBuildings(type));
 }
 
-bool BuildingPlanner::WantMoreMilitaryBlds(const AIPlayerJH& aijh) const
+bool BuildingPlanner::wantMoreMilitaryBlds(const AIPlayerJH& aijh) const
 {
     if(getNumMilitaryBldSites() >= getNumMilitaryBlds() + 3)
         return false;

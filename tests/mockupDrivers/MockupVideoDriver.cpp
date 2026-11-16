@@ -23,7 +23,7 @@ const char* MockupVideoDriver::getName() const
     return "Mockup Video Driver";
 }
 
-bool MockupVideoDriver::Initialize()
+bool MockupVideoDriver::initialize()
 {
     if(initialized)
         return true;
@@ -31,20 +31,20 @@ bool MockupVideoDriver::Initialize()
     return true;
 }
 
-bool MockupVideoDriver::CreateScreen(const std::string&, const VideoMode newSize, DisplayMode displayMode)
+bool MockupVideoDriver::createScreen(const std::string&, const VideoMode newSize, DisplayMode displayMode)
 {
-    ResizeScreen(newSize, displayMode);
+    resizeScreen(newSize, displayMode);
     return true;
 }
 
-bool MockupVideoDriver::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
+bool MockupVideoDriver::resizeScreen(const VideoMode newSize, DisplayMode displayMode)
 {
     setNewSize(newSize, Extent(newSize.width, newSize.height));
     displayMode_ = displayMode;
     return true;
 }
 
-bool MockupVideoDriver::MessageLoop()
+bool MockupVideoDriver::messageLoop()
 {
     return true;
 }
@@ -64,7 +64,7 @@ OpenGL_Loader_Proc MockupVideoDriver::getLoaderFunction() const
     return dummyLoader;
 }
 
-std::vector<VideoMode> MockupVideoDriver::ListVideoModes() const
+std::vector<VideoMode> MockupVideoDriver::listVideoModes() const
 {
     return video_modes_;
 }
@@ -84,7 +84,7 @@ void* MockupVideoDriver::getMapPointer() const
     return nullptr;
 }
 
-void MockupVideoDriver::ShowErrorMessage(const std::string& title, const std::string& message)
+void MockupVideoDriver::showErrorMessage(const std::string& title, const std::string& message)
 {
     std::cerr << title << ": " << message << std::endl;
 }

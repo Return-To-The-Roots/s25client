@@ -20,14 +20,14 @@ nofLeatherWorker::nofLeatherWorker(const MapPoint pos, const unsigned char playe
 
 nofLeatherWorker::nofLeatherWorker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofLeatherWorker::DrawWorking(DrawPoint drawPt)
+void nofLeatherWorker::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{11, -41}, {21, -20}, {21, -17}, {24, -13}, {22, -14}}};
 
-    const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
+    const unsigned now_id = GAMECLIENT.interpolate(230, current_ev);
 
     LOADER.getPlayerImage("leather_bobs", bobIndex[BobType::LeatherworksWorkWindowAnimation] + (now_id % 23))
-      ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
+      ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     // hammer sound
     if(now_id % 23 == 3 || now_id % 23 == 7)
@@ -61,12 +61,12 @@ unsigned short nofLeatherWorker::getCarryID() const
 #    pragma warning(pop)
 #endif
 
-void nofLeatherWorker::DrawWalkingWithWare(DrawPoint drawPt)
+void nofLeatherWorker::drawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "leather_bobs", bobIndex[BobType::LeatherworkerCarryingArmorInOut]);
+    drawWalking(drawPt, "leather_bobs", bobIndex[BobType::LeatherworkerCarryingArmorInOut]);
 }
 
-helpers::OptionalEnum<GoodType> nofLeatherWorker::ProduceWare()
+helpers::OptionalEnum<GoodType> nofLeatherWorker::produceWare()
 {
     return GoodType::Armor;
 }

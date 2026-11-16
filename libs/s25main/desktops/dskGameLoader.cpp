@@ -31,12 +31,12 @@ dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
     WINDOWMANAGER.setCursor(Cursor::None);
 
     using namespace std::chrono_literals;
-    AddTimer(1, 50ms);
+    addTimer(1, 50ms);
 
-    AddText(10, DrawPoint(800 / 2, 600 - 50), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    addText(10, DrawPoint(800 / 2, 600 - 50), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     for(unsigned i = 0; i < 8; ++i)
-        AddText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, FontStyle{}, LargeFont);
+        addText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, FontStyle{}, LargeFont);
 
     LOBBYCLIENT.AddListener(this);
     GAMECLIENT.setInterface(this);
@@ -46,14 +46,14 @@ dskGameLoader::~dskGameLoader()
 {
     WINDOWMANAGER.setCursor();
     LOBBYCLIENT.RemoveListener(this);
-    GAMECLIENT.RemoveInterface(this);
+    GAMECLIENT.removeInterface(this);
 }
 
 void dskGameLoader::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
     if(msgbox_id == 0) // Verbindung zu Server verloren?
     {
-        GAMECLIENT.Stop();
+        GAMECLIENT.stop();
 
         if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
@@ -71,7 +71,7 @@ void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
     using namespace std::chrono_literals;
     const auto interval = 50ms;
 
-    timer->Stop();
+    timer->stop();
 
     switch(position)
     {
@@ -94,7 +94,7 @@ void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
             loader_.initTextures();
             if(!loader_.loadTextures())
             {
-                ShowErrorMsg(_("Failed to load game resources"));
+                showErrorMsg(_("Failed to load game resources"));
                 return; // Don't restart timer!
             }
 
@@ -109,13 +109,13 @@ void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
                                                                    GAMECLIENT.getPlayerId());
             } catch(const std::runtime_error& e)
             {
-                ShowErrorMsg(std::string(_("Failed to init GUI: ")) + e.what());
+                showErrorMsg(std::string(_("Failed to init GUI: ")) + e.what());
                 return;
             }
             // TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
 
             // We are done, wait for others
-            GAMECLIENT.GameLoaded();
+            GAMECLIENT.gameLoaded();
 
             text->setText(_("World was put together and glued..."));
             break;
@@ -127,17 +127,17 @@ void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
     }
 
     ++position;
-    timer->Start(interval);
+    timer->start(interval);
 }
 
-void dskGameLoader::ShowErrorMsg(const std::string& error)
+void dskGameLoader::showErrorMsg(const std::string& error)
 {
     auto wnd = std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0);
     if(IsActive())
-        WINDOWMANAGER.Show(std::move(wnd));
+        WINDOWMANAGER.show(std::move(wnd));
     else
-        WINDOWMANAGER.ShowAfterSwitch(std::move(wnd));
-    getCtrl<ctrlTimer>(1)->Stop();
+        WINDOWMANAGER.showAfterSwitch(std::move(wnd));
+    getCtrl<ctrlTimer>(1)->stop();
 }
 
 /**
@@ -145,7 +145,7 @@ void dskGameLoader::ShowErrorMsg(const std::string& error)
  */
 void dskGameLoader::LC_Status_Error(const std::string& error)
 {
-    ShowErrorMsg(error);
+    showErrorMsg(error);
 }
 
 void dskGameLoader::CI_GameStarted()
@@ -156,5 +156,5 @@ void dskGameLoader::CI_GameStarted()
 
 void dskGameLoader::CI_Error(const ClientError ce)
 {
-    ShowErrorMsg(ClientErrorToStr(ce));
+    showErrorMsg(clientErrorToStr(ce));
 }

@@ -34,7 +34,7 @@ public:
     RoadSegment(SerializedGameData& sgd, unsigned obj_id);
 
     /// zerstört das Objekt.
-    void Destroy() override;
+    void destroy() override;
     /// serialisiert das Objekt.
     void Serialize(SerializedGameData& sgd) const override;
     /// liefert den GO-Type.
@@ -69,9 +69,9 @@ public:
     /// haben wir den Carrier "nr"?
     bool hasCarrier(unsigned char nr) const { return (carriers_[nr] != nullptr); }
     /// Braucht die Straße einen Esel? Nur wenn sie auch einen Träger schon hat!
-    bool NeedDonkey() const { return (rt == RoadType::Donkey && carriers_[0] && !carriers_[1]); }
+    bool needDonkey() const { return (rt == RoadType::Donkey && carriers_[0] && !carriers_[1]); }
     /// Hat einen Esel als Arbeiter dazubekommen.
-    void GotDonkey(nofCarrier* donkey)
+    void gotDonkey(nofCarrier* donkey)
     {
         RTTR_Assert(!carriers_[1]);
         carriers_[1] = donkey;
@@ -89,19 +89,19 @@ public:
     }
 
     /// zerteilt die Straße in 2 Teile.
-    void SplitRoad(noFlag* splitflag);
+    void splitRoad(noFlag* splitflag);
     /// Überprüft ob es an den Flaggen noch Waren zu tragen gibt für den Träger.
-    bool AreWareJobs(bool flag, CarrierType ct, bool take_ware_immediately) const;
+    bool areWareJobs(bool flag, CarrierType ct, bool take_ware_immediately) const;
     /// Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.
-    void AddWareJob(const noRoadNode* rn);
+    void addWareJob(const noRoadNode* rn);
     /// Eine Ware will nicht mehr befördert werden.
-    void WareJobRemoved(const noFigure* exception);
+    void wareJobRemoved(const noFigure* exception);
     /// Baut die Straße zu einer Eselstraße aus.
-    void UpgradeDonkeyRoad();
+    void upgradeDonkeyRoad();
     /// Soll versuchen einen Esel zu bekommen.
-    void TryGetDonkey();
+    void tryGetDonkey();
     /// Ein Träger muss kündigen, aus welchen Gründen auch immer.
-    void CarrierAbrogated(nofCarrier* carrier);
+    void carrierAbrogated(nofCarrier* carrier);
     /// given a flag returns the flag at the other end
     const noFlag& getOtherFlag(const noFlag& flag) const;
     /// given a flag returns last direction of the route towards the other flag

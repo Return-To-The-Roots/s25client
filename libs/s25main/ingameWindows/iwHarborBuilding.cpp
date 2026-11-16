@@ -16,24 +16,24 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
     setTitle(_("Harbor building"));
 
     // Zusätzliche Hafenseite
-    ctrlGroup& harbor_page = AddPage();
+    ctrlGroup& harbor_page = addPage();
     grpIdExpedition = harbor_page.getID();
 
     // "Expedition"-Überschrift
-    harbor_page.AddText(0, DrawPoint(83, 70), _("Expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
+    harbor_page.addText(0, DrawPoint(83, 70), _("Expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(1, DrawPoint(65, 100), Extent(30, 30), TextureColor::Grey, LOADER.getImageN("io", 176),
+    harbor_page.addImageButton(1, DrawPoint(65, 100), Extent(30, 30), TextureColor::Grey, LOADER.getImageN("io", 176),
                                _("Start expedition"));
-    AdjustExpeditionButton(false);
+    adjustExpeditionButton(false);
 
     // "Expedition"-Überschrift
-    harbor_page.AddText(2, DrawPoint(83, 140), _("Exploration expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
+    harbor_page.addText(2, DrawPoint(83, 140), _("Exploration expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(3, DrawPoint(65, 170), Extent(30, 30), TextureColor::Grey, LOADER.getImageN("io", 176),
+    harbor_page.addImageButton(3, DrawPoint(65, 170), Extent(30, 30), TextureColor::Grey, LOADER.getImageN("io", 176),
                                _("Start exporation expedition"));
-    AdjustExplorationExpeditionButton(false);
+    adjustExplorationExpeditionButton(false);
 }
 
 /**
@@ -41,7 +41,7 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
  *
  *  falls @p flip gesetzt, dann umgekehrt einfärben
  */
-void iwHarborBuilding::AdjustExpeditionButton(bool flip)
+void iwHarborBuilding::adjustExpeditionButton(bool flip)
 {
     auto* button = getCtrl<ctrlGroup>(grpIdExpedition)->getCtrl<ctrlImageButton>(1);
 
@@ -68,7 +68,7 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
  *
  *  falls @p flip gesetzt, dann umgekehrt einfärben
  */
-void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
+void iwHarborBuilding::adjustExplorationExpeditionButton(bool flip)
 {
     auto* button = getCtrl<ctrlGroup>(grpIdExpedition)->getCtrl<ctrlImageButton>(3);
 
@@ -100,13 +100,13 @@ void iwHarborBuilding::msgGroupButtonClick(const unsigned group_id, const unsign
                 // Entsprechenden GC senden
                 if(GAMECLIENT.StartStopExpedition(wh->getPos(),
                                                   !static_cast<const nobHarborBuilding*>(wh)->isExpeditionActive()))
-                    AdjustExpeditionButton(true);
+                    adjustExpeditionButton(true);
                 break;
             case 3: // Expedition starten
                 // Entsprechenden GC senden
                 if(GAMECLIENT.StartStopExplorationExpedition(
                      wh->getPos(), !static_cast<const nobHarborBuilding*>(wh)->isExplorationExpeditionActive()))
-                    AdjustExplorationExpeditionButton(true);
+                    adjustExplorationExpeditionButton(true);
                 break;
         }
     }

@@ -17,7 +17,7 @@ public:
 
 protected:
     /// Zeichenmethode.
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
     TextureColor tc;

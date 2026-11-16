@@ -15,13 +15,13 @@ nobTemple::nobTemple(const MapPoint pos, const unsigned char player, const Natio
 {}
 
 nobTemple::nobTemple(SerializedGameData& sgd, const unsigned obj_id)
-    : nobUsual(sgd, obj_id), productionMode(sgd.Pop<ProductionMode>())
+    : nobUsual(sgd, obj_id), productionMode(sgd.pop<ProductionMode>())
 {}
 
 void nobTemple::Serialize(SerializedGameData& sgd) const
 {
     nobUsual::Serialize(sgd);
-    sgd.PushEnum<uint8_t>(productionMode);
+    sgd.pushEnum<uint8_t>(productionMode);
 }
 
 void nobTemple::setProductionMode(ProductionMode newProductionMode)

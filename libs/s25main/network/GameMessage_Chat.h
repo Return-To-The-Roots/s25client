@@ -22,5 +22,5 @@ public:
 
     void Serialize(Serializer& ser) const override;
     void Deserialize(Serializer& ser) override;
-    bool Run(GameMessageInterface* callback) const override;
+    bool runGame(GameMessageInterface* callback) const override;
 };

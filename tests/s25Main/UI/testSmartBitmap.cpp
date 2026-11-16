@@ -351,7 +351,7 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
     }
 }
 
-BOOST_AUTO_TEST_CASE(DrawPercent)
+BOOST_AUTO_TEST_CASE(drawPercent)
 {
     // Make sure that test passes across different image heights, including some random ones
     auto sizes =

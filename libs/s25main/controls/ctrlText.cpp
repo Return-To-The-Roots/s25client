@@ -40,8 +40,8 @@ Rect ctrlText::getBoundaryRect() const
     }
 }
 
-void ctrlText::Draw_()
+void ctrlText::drawImpl()
 {
     if(!text.empty())
-        font->Draw(getDrawPos(), text, format_, color_, maxWidth_);
+        font->draw(getDrawPos(), text, format_, color_, maxWidth_);
 }

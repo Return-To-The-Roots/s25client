@@ -15,5 +15,5 @@ public:
                     unsigned fillColor, const std::string& tooltip);
 
 protected:
-    void DrawContent() const override;
+    void drawContent() const override;
 };

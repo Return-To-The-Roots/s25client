@@ -16,7 +16,7 @@
 
 class VideoWinAPI final : public VideoDriver
 {
-    void CleanUp();
+    void cleanUp();
 
 public:
     VideoWinAPI(VideoDriverLoaderInterface* CallBack);
@@ -26,25 +26,25 @@ public:
     const char* getName() const override;
 
     /// Initialize the driver, return true on success
-    bool Initialize() override;
+    bool initialize() override;
 
     /// Create window/rendering context with given title, size and display mode, return true on success
-    bool CreateScreen(const std::string& title, const VideoMode newSize, DisplayMode displayMode) override;
+    bool createScreen(const std::string& title, const VideoMode newSize, DisplayMode displayMode) override;
 
     /// Change window/resolution, return true on success
-    bool ResizeScreen(VideoMode newSize, DisplayMode displayMode) override;
+    bool resizeScreen(VideoMode newSize, DisplayMode displayMode) override;
 
     /// Close window
-    void DestroyScreen() override;
+    void destroyScreen() override;
 
     /// Swap OpenGL buffers
-    bool SwapBuffers() override;
+    bool swapBuffers() override;
 
     /// Process messages/events, return false when the application should quit
-    bool MessageLoop() override;
+    bool messageLoop() override;
 
     /// Popup Window
-    void ShowErrorMessage(const std::string& title, const std::string& message) override;
+    void showErrorMessage(const std::string& title, const std::string& message) override;
 
     /// Return the current tick count (time since epoch in ms)
     unsigned long getTickCount() const override;
@@ -53,7 +53,7 @@ public:
     OpenGL_Loader_Proc getLoaderFunction() const override;
 
     /// Return supported resolutions
-    std::vector<VideoMode> ListVideoModes() const override;
+    std::vector<VideoMode> listVideoModes() const override;
 
     /// Set position of the mouse cursor in screen coordinates
     void setMousePos(Position pos) override;
@@ -69,21 +69,21 @@ private:
     std::pair<DWORD, DWORD> getStyleFlags(DisplayMode mode) const;
     /// Calculate the rect for the window of the requested size at the display mode
     /// Returns the final rect (position&size) for the window and the possibly adjusted size of the render region
-    std::pair<Rect, VideoMode> CalculateWindowRect(DisplayMode mode, VideoMode requestedSize) const;
-    bool RegisterAndCreateWindow(const std::string& title, VideoMode wndSize, DisplayMode displayMode);
-    bool InitOGL();
-    static bool MakeFullscreen(VideoMode resolution);
+    std::pair<Rect, VideoMode> calculateWindowRect(DisplayMode mode, VideoMode requestedSize) const;
+    bool registerAndCreateWindow(const std::string& title, VideoMode wndSize, DisplayMode displayMode);
+    bool initOGL();
+    static bool makeFullscreen(VideoMode resolution);
     VideoMode getDesktopSize(VideoMode fallback) const;
 
     /// Callback for pressed character keys
-    void OnWMChar(unsigned c, bool disablepaste = false, LPARAM lParam = 0);
-    void OnWMKeyDown(unsigned c, LPARAM lParam = 0);
+    void onWMChar(unsigned c, bool disablepaste = false, LPARAM lParam = 0);
+    void onWMKeyDown(unsigned c, LPARAM lParam = 0);
 
     /// Handle paste from clipboard (CTRL+V)
-    void OnWMPaste();
+    void onWMPaste();
 
     /// Window callback function
-    static LRESULT CALLBACK WindowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
+    static LRESULT CALLBACK windowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
     int mouse_z;     /// Scrolling position for mouse wheel.

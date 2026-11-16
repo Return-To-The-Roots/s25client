@@ -39,34 +39,34 @@ private:
     /// Wie viele Bauschritte noch verfügbar sind, bis der nächste Rohstoff geholt werden muss
     unsigned char building_steps_available;
 
-    void GoalReached() override;
-    void Walked() override;
-    void AbrogateWorkplace() override;
-    void HandleDerivedEvent(unsigned id) override;
+    void goalReached() override;
+    void walked() override;
+    void abrogateWorkplace() override;
+    void handleDerivedEvent(unsigned id) override;
 
     /// In neue Richtung laufen (Freewalk)
-    void StartFreewalk();
+    void startFreewalk();
     /// "Frisst" eine passende Ware (falls vorhanden, gibt true in dem Fall zurück!) von der Baustelle, d.h nimmt sie in
     /// die Hand und erhöht die building_steps_avaible
-    bool ChooseWare();
+    bool chooseWare();
 
 public:
     nofBuilder(MapPoint pos, unsigned char player, noBuildingSite* building_site);
     nofBuilder(SerializedGameData& sgd, unsigned obj_id);
     nofBuilder(const nofBuilder&) = delete;
 
-    void Destroy() override
+    void destroy() override
     {
         RTTR_Assert(!building_site);
-        noFigure::Destroy();
+        noFigure::destroy();
     }
 
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::NofBuilder; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     // Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
-    void LostWork();
+    void lostWork();
 };

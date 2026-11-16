@@ -30,7 +30,7 @@ class iwMusicPlayer final : public IngameWindow
 
 public:
     iwMusicPlayer();
-    void Close() override;
+    void close() override;
 
 private:
     /// Get the full path to a playlist by its name
@@ -42,13 +42,13 @@ private:
     void setRandomPlayback(bool random_playback);
 
     /// Fill combobox with all playlists and selects given entry if present
-    void UpdatePlaylistCombo(const std::string& highlight_entry);
+    void updatePlaylistCombo(const std::string& highlight_entry);
 
-    bool SaveCurrentPlaylist();
-    void UpdateFromPlaylist(const Playlist&);
+    bool saveCurrentPlaylist();
+    void updateFromPlaylist(const Playlist&);
     // Enable/Disable buttons for changing playlist contents
-    void UpdateSaveChangeButtonsState();
-    Playlist MakePlaylist();
+    void updateSaveChangeButtonsState();
+    Playlist makePlaylist();
 
     void msgListChooseItem(unsigned ctrl_id, unsigned selection) override;
     void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;

@@ -30,26 +30,26 @@ iwConnecting::iwConnecting(ServerType serverType, std::unique_ptr<ILobbyClient> 
 {
     WINDOWMANAGER.setCursor(Cursor::Moon);
 
-    AddText(ID_txtStatus, DrawPoint(150, 30), _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-    AddPercent(ID_prgLoad, DrawPoint(20, 50), Extent(260, 26), TextureColor::Grey, COLOR_YELLOW, SmallFont,
+    addText(ID_txtStatus, DrawPoint(150, 30), _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    addPercent(ID_prgLoad, DrawPoint(20, 50), Extent(260, 26), TextureColor::Grey, COLOR_YELLOW, SmallFont,
                &downloadProgress_)
       ->setVisible(false);
-    AddTextButton(ID_btAbort, DrawPoint(87, 80), Extent(125, 22), TextureColor::Red1, _("Abort"), NormalFont);
+    addTextButton(ID_btAbort, DrawPoint(87, 80), Extent(125, 22), TextureColor::Red1, _("Abort"), NormalFont);
 
     GAMECLIENT.setInterface(this);
 }
 
-void iwConnecting::Close()
+void iwConnecting::close()
 {
-    IngameWindow::Close();
+    IngameWindow::close();
     WINDOWMANAGER.setCursor();
-    GAMECLIENT.RemoveInterface(this);
+    GAMECLIENT.removeInterface(this);
 }
 
 void iwConnecting::msgButtonClick(unsigned ctrlId)
 {
     RTTR_Assert(ctrlId == ID_btAbort);
-    GAMECLIENT.Stop();
+    GAMECLIENT.stop();
     CI_Error(ClientError::ConnectionLost);
 }
 
@@ -57,11 +57,11 @@ void iwConnecting::CI_Error(const ClientError ce)
 {
     if(onError.empty())
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), nullptr, MsgboxButton::Ok,
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), clientErrorToStr(ce), nullptr, MsgboxButton::Ok,
                                                       MsgboxIcon::ExclamationRed, 0));
     } else
         onError(ce);
-    Close();
+    close();
 }
 
 void iwConnecting::CI_NextConnectState(const ConnectState cs)
@@ -85,7 +85,7 @@ void iwConnecting::CI_NextConnectState(const ConnectState cs)
         case ConnectState::Finished:
             WINDOWMANAGER.Switch(std::make_unique<dskGameLobby>(serverType_, GAMECLIENT.getGameLobby(),
                                                                 GAMECLIENT.getPlayerId(), std::move(lobbyClient_)));
-            Close();
+            close();
             break;
     }
 }

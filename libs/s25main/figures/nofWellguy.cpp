@@ -21,7 +21,7 @@ nofWellguy::nofWellguy(const MapPoint pos, const unsigned char player, nobUsual*
 
 nofWellguy::nofWellguy(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofWellguy::DrawWorking(DrawPoint drawPt)
+void nofWellguy::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{-20, 17}, {-18, 17}, {-20, 13}, {-20, 15}, {-18, 17}}};
 
@@ -45,7 +45,7 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     }};
 
     unsigned max_id = 112;
-    unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
+    unsigned now_id = GAMECLIENT.interpolate(max_id, current_ev);
     const Nation wpNation = workplace->getNation();
     unsigned plColor = world->getPlayer(player).color;
 
@@ -57,13 +57,13 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     if(now_id < 2) // laufen 1
     {
         if(wpNation == Nation::Romans)
-            LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::Well].door.drawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][0], now_id % 8)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     } else if(now_id < 4) // laufen 2
     {
         if(wpNation == Nation::Romans)
-            LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::Well].door.drawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][1], now_id % 8)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     } else if(now_id < 8) // laufen 3
@@ -73,18 +73,18 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     } else if(now_id < 16) // eimer runter lassen
     {
         if(now_id == 8)
-            LOADER.getPlayerImage("rom_bobs", 346)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+            LOADER.getPlayerImage("rom_bobs", 346)->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
         else
             LOADER.getPlayerImage("rom_bobs", 346 + (now_id % 8) - 1)
-              ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+              ->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
     } else if(now_id < max_id - 16) // kurbeln
     {
         LOADER.getPlayerImage("rom_bobs", 330 + (now_id % 8))
-          ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+          ->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
     } else if(now_id < max_id - 8) // eimer rauf kurbeln
     {
         LOADER.getPlayerImage("rom_bobs", 338 + (now_id % 8))
-          ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+          ->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
     } else if(now_id < max_id - 4) // laufen 3
     {
         LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][3], now_id % 8)
@@ -92,13 +92,13 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     } else if(now_id < max_id - 2) // laufen 2
     {
         if(wpNation == Nation::Romans)
-            LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::Well].door.drawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][4], now_id % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     } else // laufen 1
     {
         if(wpNation == Nation::Romans)
-            LOADER.building_cache[wpNation][BuildingType::Well].door.DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::Well].door.drawFull(drawPt);
         LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][5], now_id % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     }
@@ -110,29 +110,29 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     }
 }
 
-helpers::OptionalEnum<GoodType> nofWellguy::ProduceWare()
+helpers::OptionalEnum<GoodType> nofWellguy::produceWare()
 {
     return GoodType::Water;
 }
 
-bool nofWellguy::AreWaresAvailable() const
+bool nofWellguy::areWaresAvailable() const
 {
     // Check for water
-    const bool hasWater = FindPointWithResource(ResourceType::Water).isValid();
+    const bool hasWater = findPointWithResource(ResourceType::Water).isValid();
     if(!hasWater)
-        workplace->OnOutOfResources();
+        workplace->onOutOfResources();
     return hasWater;
 }
 
-bool nofWellguy::StartWorking()
+bool nofWellguy::startWorking()
 {
-    MapPoint resPt = FindPointWithResource(ResourceType::Water);
+    MapPoint resPt = findPointWithResource(ResourceType::Water);
     if(!resPt.isValid())
     {
-        workplace->OnOutOfResources();
+        workplace->onOutOfResources();
         return false;
     }
     if(world->getGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 2)
-        world->ReduceResource(resPt);
-    return nofWorkman::StartWorking();
+        world->reduceResource(resPt);
+    return nofWorkman::startWorking();
 }

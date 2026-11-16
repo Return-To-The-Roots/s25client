@@ -25,5 +25,5 @@ public:
 
     virtual void msgKeyDown(const KeyEvent& ke) = 0;
 
-    virtual void WindowResized() = 0;
+    virtual void windowResized() = 0;
 };

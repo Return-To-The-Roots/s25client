@@ -38,7 +38,7 @@ unsigned char TerrainData::getTextureIdentifier(TerrainType t)
     throw std::logic_error("Invalid parameters given");
 }
 
-TerrainType TerrainData::MapIdx2Terrain(unsigned char mapIdx)
+TerrainType TerrainData::mapIdx2Terrain(unsigned char mapIdx)
 {
     // Unset bit 0x40 (harbour) and 0x80 (unknown)
     mapIdx &= ~(0x40 | 0x80);
@@ -464,7 +464,7 @@ const std::array<int, NUM_TTS>& TerrainData::getEdgePrios(Landscape landsCape)
     }
 }
 
-void TerrainData::PrintEdgePrios()
+void TerrainData::printEdgePrios()
 {
     for(int lt = 0; lt < NUM_LTS; ++lt)
     {

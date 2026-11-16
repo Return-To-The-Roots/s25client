@@ -22,7 +22,7 @@ const helpers::EnumArray<unsigned, ChatDestination> CD_COLORS = {{0, COLOR_WHITE
 Messenger::~Messenger() = default;
 
 /// Zeit, die
-void Messenger::Draw()
+void Messenger::draw()
 {
     const unsigned curTime = VIDEODRIVER.getTickCount();
     DrawPoint textPos(20, 100);
@@ -43,16 +43,16 @@ void Messenger::Draw()
         std::string cd_str = (it->cd == ChatDestination::System) ? "" : _(CD_STRINGS[it->cd]);
 
         DrawPoint curTextPos(textPos);
-        LargeFont->Draw(curTextPos, it->author, FontStyle::LEFT, SetAlpha(it->color_author, transparency));
+        LargeFont->draw(curTextPos, it->author, FontStyle::LEFT, SetAlpha(it->color_author, transparency));
         curTextPos.x += LargeFont->getWidth(it->author);
-        LargeFont->Draw(curTextPos, cd_str, FontStyle::LEFT, SetAlpha(CD_COLORS[it->cd], transparency));
+        LargeFont->draw(curTextPos, cd_str, FontStyle::LEFT, SetAlpha(CD_COLORS[it->cd], transparency));
         curTextPos.x += LargeFont->getWidth(cd_str);
-        LargeFont->Draw(curTextPos, it->msg, FontStyle::LEFT, SetAlpha(it->color_msg, transparency));
+        LargeFont->draw(curTextPos, it->msg, FontStyle::LEFT, SetAlpha(it->color_msg, transparency));
         ++it;
     }
 }
 
-void Messenger::AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd,
+void Messenger::addMessage(const std::string& author, const unsigned color_author, const ChatDestination cd,
                            const std::string& msg, const unsigned color_msg)
 {
     if(!author.empty())
@@ -68,7 +68,7 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
                              VIDEODRIVER.getRenderSize().x - 60);
 
     // Message-Strings erzeugen aus den WrapInfo
-    std::vector<std::string> strings = wi.CreateSingleStrings(msg);
+    std::vector<std::string> strings = wi.createSingleStrings(msg);
 
     for(unsigned i = 0; i < strings.size(); ++i)
     {

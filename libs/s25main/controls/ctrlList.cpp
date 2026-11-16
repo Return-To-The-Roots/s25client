@@ -14,12 +14,12 @@ ctrlList::ctrlList(Window* parent, unsigned id, const DrawPoint& pos, const Exte
 {
     pagesize = (getSize().y - 4) / font->getHeight();
 
-    AddScrollBar(0, DrawPoint(getSize().x - 20, 0), Extent(20, getSize().y), 20, tc, pagesize);
+    addScrollBar(0, DrawPoint(getSize().x - 20, 0), Extent(20, getSize().y), 20, tc, pagesize);
 }
 
 ctrlList::~ctrlList()
 {
-    DeleteAllItems();
+    deleteAllItems();
 }
 
 void ctrlList::setSelection(const std::optional<unsigned>& selection)
@@ -41,11 +41,11 @@ bool ctrlList::msgMouseMove(const MouseCoords& mc)
     if(mouseover_)
     {
         const std::string itemTxt = getItemText(*mouseover_);
-        tooltip_.ShowTooltip((font->getWidth(itemTxt) > getListDrawArea().getSize().x) ? itemTxt : "");
+        tooltip_.showTooltip((font->getWidth(itemTxt) > getListDrawArea().getSize().x) ? itemTxt : "");
         return true;
     }
 
-    tooltip_.HideTooltip();
+    tooltip_.hideTooltip();
 
     // Für die Scrollbar weiterleiten
     return scrollbar->msgMouseMove(mc);
@@ -58,7 +58,7 @@ bool ctrlList::msgLeftDown(const MouseCoords& mc)
     const auto itemIdx = getItemFromPos(mc.pos);
     if(itemIdx)
     {
-        tooltip_.HideTooltip();
+        tooltip_.hideTooltip();
         setSelection(*itemIdx);
         return true;
     }
@@ -74,7 +74,7 @@ bool ctrlList::msgRightDown(const MouseCoords& mc)
     auto itemIdx = getItemFromPos(mc.pos);
     if(itemIdx)
     {
-        tooltip_.HideTooltip();
+        tooltip_.hideTooltip();
         setSelection(*itemIdx);
         return true;
     }
@@ -107,7 +107,7 @@ bool ctrlList::msgWheelUp(const MouseCoords& mc)
     if(IsPointInRect(mc.pos, getFullDrawArea()))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
-        scrollbar->Scroll(-1);
+        scrollbar->scroll(-1);
         return true;
     }
 
@@ -120,23 +120,23 @@ bool ctrlList::msgWheelDown(const MouseCoords& mc)
     if(IsPointInRect(mc.pos, getFullDrawArea()))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
-        scrollbar->Scroll(+1);
+        scrollbar->scroll(+1);
         return true;
     }
 
     return false;
 }
 
-void ctrlList::Draw_()
+void ctrlList::drawImpl()
 {
     if(lines.empty())
         return;
 
     // Box malen
-    Draw3D(Rect(getDrawPos(), getSize()), tc, false);
+    draw3D(Rect(getDrawPos(), getSize()), tc, false);
 
     // Scrolleiste zeichnen
-    Window::Draw_();
+    Window::drawImpl();
 
     // Wieviele Linien anzeigen?
     const unsigned show_lines = (pagesize > lines.size() ? unsigned(lines.size()) : pagesize);
@@ -148,16 +148,16 @@ void ctrlList::Draw_()
     {
         // Schwarze Markierung, wenn die Maus drauf ist
         if(i + scrollbarPos == mouseover_)
-            DrawRectangle(Rect(curPos, Extent(getSize().x - 22, font->getHeight())), 0x80000000);
+            drawRectangle(Rect(curPos, Extent(getSize().x - 22, font->getHeight())), 0x80000000);
 
         // Text an sich
-        font->Draw(curPos, lines[i + scrollbarPos], FontStyle{},
+        font->draw(curPos, lines[i + scrollbarPos], FontStyle{},
                    (selection_ == i + scrollbarPos ? 0xFFFFAA00 : COLOR_YELLOW), getSize().x - 22);
         curPos.y += font->getHeight();
     }
 }
 
-void ctrlList::AddItem(const std::string& text)
+void ctrlList::addItem(const std::string& text)
 {
     // lines-Array ggf vergrößern
     lines.push_back(text);
@@ -170,7 +170,7 @@ void ctrlList::setItemText(const unsigned id, const std::string& text)
     lines.at(id) = text;
 }
 
-void ctrlList::DeleteAllItems()
+void ctrlList::deleteAllItems()
 {
     lines.clear();
     selection_ = std::nullopt;
@@ -191,11 +191,11 @@ const std::string& ctrlList::getSelItemText() const
         return EMPTY;
 }
 
-void ctrlList::Resize(const Extent& newSize)
+void ctrlList::resize(const Extent& newSize)
 {
     auto* scrollbar = getCtrl<ctrlScrollBar>(0);
     scrollbar->setPos(DrawPoint(newSize.x - 20, 0));
-    scrollbar->Resize(Extent(20, newSize.y));
+    scrollbar->resize(Extent(20, newSize.y));
 
     pagesize = (newSize.y - 4) / font->getHeight();
 
@@ -207,7 +207,7 @@ void ctrlList::Resize(const Extent& newSize)
         while(lines.size() - scrollbar->getScrollPos() < pagesize && scrollbar->getScrollPos() > 0)
             scrollbar->setScrollPos(scrollbar->getScrollPos() - 1);
 
-    Window::Resize(newSize);
+    Window::resize(newSize);
 }
 
 void ctrlList::Swap(unsigned first, unsigned second)
@@ -222,7 +222,7 @@ void ctrlList::Swap(unsigned first, unsigned second)
     std::swap(lines[first], lines[second]);
 }
 
-void ctrlList::Remove(const unsigned index)
+void ctrlList::remove(const unsigned index)
 {
     if(index < lines.size())
     {

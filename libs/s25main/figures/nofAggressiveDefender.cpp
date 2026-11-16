@@ -17,7 +17,7 @@ nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned 
       attacker(&attacker), attacked_goal(attacker.getAttackedGoal())
 {
     // Notify building to protect
-    attacked_goal->LinkAggressiveDefender(*this);
+    attacked_goal->linkAggressiveDefender(*this);
 }
 
 nofAggressiveDefender::nofAggressiveDefender(const nofPassiveSoldier& other, nofAttacker& attacker)
@@ -25,16 +25,16 @@ nofAggressiveDefender::nofAggressiveDefender(const nofPassiveSoldier& other, nof
       attacked_goal(attacker.getAttackedGoal())
 {
     // Notify building to protect
-    attacked_goal->LinkAggressiveDefender(*this);
+    attacked_goal->linkAggressiveDefender(*this);
 }
 
 nofAggressiveDefender::~nofAggressiveDefender() = default;
 
-void nofAggressiveDefender::Destroy()
+void nofAggressiveDefender::destroy()
 {
     RTTR_Assert(!attacker);
     RTTR_Assert(!attacked_goal);
-    nofActiveSoldier::Destroy();
+    nofActiveSoldier::destroy();
 }
 
 void nofAggressiveDefender::Serialize(SerializedGameData& sgd) const
@@ -43,8 +43,8 @@ void nofAggressiveDefender::Serialize(SerializedGameData& sgd) const
 
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {
-        sgd.PushObject(attacker, true);
-        sgd.PushObject(attacked_goal);
+        sgd.pushObject(attacker, true);
+        sgd.pushObject(attacked_goal);
     }
 }
 
@@ -53,8 +53,8 @@ nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsi
 {
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {
-        attacker = sgd.PopObject<nofAttacker>(GO_Type::NofAttacker);
-        attacked_goal = sgd.PopObject<nobBaseMilitary>();
+        attacker = sgd.popObject<nofAttacker>(GO_Type::NofAttacker);
+        attacked_goal = sgd.popObject<nobBaseMilitary>();
     } else
     {
         attacker = nullptr;
@@ -62,83 +62,83 @@ nofAggressiveDefender::nofAggressiveDefender(SerializedGameData& sgd, const unsi
     }
 }
 
-void nofAggressiveDefender::Walked()
+void nofAggressiveDefender::walked()
 {
     if(state == SoldierState::AggressivedefendingWalkingToAggressor)
-        MissAggressiveDefendingWalk();
+        missAggressiveDefendingWalk();
     else
-        nofActiveSoldier::Walked();
+        nofActiveSoldier::walked();
 }
 
-void nofAggressiveDefender::HomeDestroyed()
+void nofAggressiveDefender::homeDestroyed()
 {
     homeBld = nullptr;
 }
 
-void nofAggressiveDefender::HomeDestroyedAtBegin()
+void nofAggressiveDefender::homeDestroyedAtBegin()
 {
     homeBld = nullptr;
 
     // angegriffenem Gebäude Bescheid sagen, dass wir doch nicht mehr kommen
-    InformTargetsAboutCancelling();
+    informTargetsAboutCancelling();
 
     state = SoldierState::FigureWork;
 
     // Rumirren
-    StartWandering();
-    StartWalking(RANDOM_ENUM(Direction));
+    startWandering();
+    startWalking(RANDOM_ENUM(Direction));
 }
 
 void nofAggressiveDefender::cancelAtAttackedBld()
 {
     if(attacked_goal)
     {
-        attacked_goal->UnlinkAggressiveDefender(*this);
+        attacked_goal->unlinkAggressiveDefender(*this);
         attacked_goal = nullptr;
     }
 }
 
-void nofAggressiveDefender::WonFighting()
+void nofAggressiveDefender::wonFighting()
 {
     // addon BattlefieldPromotion active? -> increase rank!
     if(world->getGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
-        IncreaseRank();
+        increaseRank();
 
     // Ist evtl. unser Heimatgebäude zerstört?
     if(!homeBld)
     {
         // Ziel Bescheid sagen
-        InformTargetsAboutCancelling();
+        informTargetsAboutCancelling();
 
         // Rumirren
         state = SoldierState::FigureWork;
-        StartWandering();
-        Wander();
+        startWandering();
+        wander();
 
         return;
     }
 
     // Continue walking to our attacker
-    MissAggressiveDefendingContinueWalking();
+    missAggressiveDefendingContinueWalking();
 }
 
-void nofAggressiveDefender::LostFighting()
+void nofAggressiveDefender::lostFighting()
 {
     // Meinem zu Hause Bescheid sagen, dass ich nicht mehr lebe (damit neue Truppen reinkönnen),
     // falls es noch existiert
-    AbrogateWorkplace();
+    abrogateWorkplace();
 
     // Ziel Bescheid sagen, das ich verteidigt hatte
-    InformTargetsAboutCancelling();
+    informTargetsAboutCancelling();
 }
 
-void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
+void nofAggressiveDefender::missionAggressiveDefendingLookForNewAggressor()
 {
     RTTR_Assert(!attacker);
     // Wenns das Zielgebäude nich mehr gibt, gleich nach Hause gehen!
     if(!attacked_goal)
     {
-        ReturnHomeMissionAggressiveDefending();
+        returnHomeMissionAggressiveDefending();
         return;
     }
 
@@ -147,19 +147,19 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
     state = SoldierState::AggressivedefendingWalkingToAggressor;
 
     // nach anderen suchen, die in meiner Nähe sind und mich evtl noch mit denen kloppen
-    attacker = attacked_goal->FindAggressor(*this);
+    attacker = attacked_goal->findAggressor(*this);
     if(attacker)
     {
         // zum Angreifer gehen und mit ihm kämpfen
-        MissAggressiveDefendingWalk();
+        missAggressiveDefendingWalk();
     } else
     {
         // keiner will mehr mit mir kämpfen, dann geh ich halt wieder nach Hause
-        ReturnHomeMissionAggressiveDefending();
+        returnHomeMissionAggressiveDefending();
     }
 }
 
-void nofAggressiveDefender::AttackedGoalDestroyed()
+void nofAggressiveDefender::attackedGoalDestroyed()
 {
     cancelAtAttacker();
     attacked_goal = nullptr;
@@ -169,35 +169,35 @@ void nofAggressiveDefender::AttackedGoalDestroyed()
         ReturnHome();*/
 }
 
-void nofAggressiveDefender::MissAggressiveDefendingContinueWalking()
+void nofAggressiveDefender::missAggressiveDefendingContinueWalking()
 {
     state = SoldierState::AggressivedefendingWalkingToAggressor;
-    MissAggressiveDefendingWalk();
+    missAggressiveDefendingWalk();
 }
 
-void nofAggressiveDefender::MissAggressiveDefendingWalk()
+void nofAggressiveDefender::missAggressiveDefendingWalk()
 {
     if(!homeBld)
     {
         // Home destroyed so abort and wander around
-        InformTargetsAboutCancelling();
+        informTargetsAboutCancelling();
         state = SoldierState::FigureWork;
-        StartWandering();
-        Wander();
+        startWandering();
+        wander();
         return;
     }
 
     if(!attacked_goal)
     {
         // Similar when the defended building is gone
-        ReturnHomeMissionAggressiveDefending();
+        returnHomeMissionAggressiveDefending();
         return;
     }
 
     if(!attacker)
     {
         // Search for a new attacker if lost
-        MissionAggressiveDefendingLookForNewAggressor();
+        missionAggressiveDefendingLookForNewAggressor();
         return;
     }
 
@@ -206,12 +206,12 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     {
         // Look for a new one
         cancelAtAttacker();
-        MissionAggressiveDefendingLookForNewAggressor();
+        missionAggressiveDefendingLookForNewAggressor();
         return;
     }
 
     // Look for enemies
-    if(TryFightingNearbyEnemy())
+    if(tryFightingNearbyEnemy())
     {
         // Enemy found -> abort, because nofActiveSoldier handles all things now
         // Note it is ok, if the enemy is our attacker.
@@ -223,37 +223,37 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     RTTR_Assert(pos != attacker->getPos()); // If so, why was it not found?
 
     // Calc next walking direction
-    const auto dir = world->FindHumanPath(pos, attacker->getPos(), 100, true);
+    const auto dir = world->findHumanPath(pos, attacker->getPos(), 100, true);
 
     if(dir)
     {
         // Continue walking towards him
-        StartWalking(*dir);
+        startWalking(*dir);
     } else
     {
         // No route found
         // Look for new attacker
         cancelAtAttacker();
-        MissionAggressiveDefendingLookForNewAggressor();
+        missionAggressiveDefendingLookForNewAggressor();
     }
 }
 
-void nofAggressiveDefender::ReturnHomeMissionAggressiveDefending()
+void nofAggressiveDefender::returnHomeMissionAggressiveDefending()
 {
-    InformTargetsAboutCancelling();
-    ReturnHome();
+    informTargetsAboutCancelling();
+    returnHome();
 }
 
-void nofAggressiveDefender::AttackerLost()
+void nofAggressiveDefender::attackerLost()
 {
     RTTR_Assert(attacker);
     attacker = nullptr;
     // TODO(Replay) When still in leave queue abort to avoid going out and right back
 }
 
-void nofAggressiveDefender::InformTargetsAboutCancelling()
+void nofAggressiveDefender::informTargetsAboutCancelling()
 {
-    nofActiveSoldier::InformTargetsAboutCancelling();
+    nofActiveSoldier::informTargetsAboutCancelling();
     cancelAtAttacker();
     cancelAtAttackedBld();
 }
@@ -263,12 +263,12 @@ void nofAggressiveDefender::cancelAtAttacker()
     if(attacker)
     {
         RTTR_Assert(attacker->getHuntingDefender() == this);
-        attacker->AggressiveDefenderLost();
+        attacker->aggressiveDefenderLost();
         attacker = nullptr;
     }
 }
 
-nofActiveSoldier::SoldierState nofAggressiveDefender::FreeFightAborted()
+nofActiveSoldier::SoldierState nofAggressiveDefender::freeFightAborted()
 {
     // Continue with normal walking towards our goal
     return SoldierState::AggressivedefendingWalkingToAggressor;

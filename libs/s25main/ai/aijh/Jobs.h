@@ -44,7 +44,7 @@ class AIJob
 public:
     AIJob(AIPlayerJH& aijh);
     virtual ~AIJob() = default;
-    virtual void ExecuteJob() = 0;
+    virtual void executeJob() = 0;
     JobState getState() const { return state; }
     void setState(JobState s) { state = s; }
 
@@ -56,7 +56,7 @@ protected:
 class JobWithTarget
 {
 public:
-    JobWithTarget() : target(MapPoint::Invalid()) {}
+    JobWithTarget() : target(MapPoint::invalid()) {}
     MapPoint getTarget() const { return target; }
     void setTarget(MapPoint newTarget) { target = newTarget; }
 
@@ -71,7 +71,7 @@ public:
         : AIJob(aijh), type(type), around(around), searchMode(searchMode)
     {}
 
-    void ExecuteJob() override;
+    void executeJob() override;
     BuildingType getType() const { return type; }
     MapPoint getAround() const { return around; }
 
@@ -81,16 +81,16 @@ private:
     SearchMode searchMode;
     std::vector<Direction> route;
 
-    void TryToBuild();
-    void BuildMainRoad();
-    void TryToBuildSecondaryRoad();
+    void tryToBuild();
+    void buildMainRoad();
+    void tryToBuildSecondaryRoad();
 };
 
 class ConnectJob : public AIJob, public JobWithTarget
 {
 public:
     ConnectJob(AIPlayerJH& aijh, MapPoint flagPos) : AIJob(aijh), flagPos(flagPos) {}
-    void ExecuteJob() override;
+    void executeJob() override;
     MapPoint getFlag() const { return flagPos; }
 
 private:
@@ -103,7 +103,7 @@ class EventJob : public AIJob
 public:
     EventJob(AIPlayerJH& aijh, std::unique_ptr<AIEvent::Base> ev);
     ~EventJob() override;
-    void ExecuteJob() override;
+    void executeJob() override;
     const AIEvent::Base& getEvent() const { return *ev; }
 
 private:
@@ -115,7 +115,7 @@ class SearchJob : public AIJob
 public:
     SearchJob(AIPlayerJH& aijh, PositionSearch* search) : AIJob(aijh), search(search) {}
     ~SearchJob() override;
-    void ExecuteJob() override;
+    void executeJob() override;
 
 private:
     PositionSearch* search;

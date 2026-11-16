@@ -18,10 +18,10 @@ noRoadNode::noRoadNode(const NodalObjectType nop, const MapPoint pos, const unsi
 
 noRoadNode::~noRoadNode() = default;
 
-void noRoadNode::Destroy()
+void noRoadNode::destroy()
 {
-    DestroyAllRoads();
-    noCoordBase::Destroy();
+    destroyAllRoads();
+    noCoordBase::destroy();
 }
 
 void noRoadNode::Serialize(SerializedGameData& sgd) const
@@ -37,11 +37,11 @@ void noRoadNode::Serialize(SerializedGameData& sgd) const
         // -> initialize routes for flag with nullptr
         // -> RoadSegment will set these later
         for([[maybe_unused]] const auto i : helpers::EnumRange<Direction>{})
-            sgd.PushObject(static_cast<GameObject*>(nullptr), true);
+            sgd.pushObject(static_cast<GameObject*>(nullptr), true);
     } else
     {
         for(const auto dir : helpers::EnumRange<Direction>{})
-            sgd.PushObject(routes[dir], true);
+            sgd.pushObject(routes[dir], true);
     }
 }
 
@@ -50,7 +50,7 @@ noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id)
 {
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        routes[dir] = sgd.PopObject<RoadSegment>(GO_Type::Roadsegment);
+        routes[dir] = sgd.popObject<RoadSegment>(GO_Type::Roadsegment);
     }
 
     last_visit = 0;
@@ -59,7 +59,7 @@ noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id)
 void noRoadNode::UpgradeRoad(const Direction dir) const
 {
     if(getRoute(dir))
-        getRoute(dir)->UpgradeDonkeyRoad();
+        getRoute(dir)->upgradeDonkeyRoad();
 }
 
 void noRoadNode::DestroyRoad(const Direction dir)
@@ -71,7 +71,7 @@ void noRoadNode::DestroyRoad(const Direction dir)
     for(unsigned z = 0; z < route->GetLength(); ++z)
     {
         world->setPointRoad(t, route->getRoute(z), PointRoad::None);
-        world->RecalcBQForRoad(t);
+        world->recalcBQForRoad(t);
         t = world->getNeighbour(t, route->getRoute(z));
     }
 
@@ -93,15 +93,15 @@ void noRoadNode::DestroyRoad(const Direction dir)
 
     setRoute(dir, nullptr);
 
-    route->Destroy();
+    route->destroy();
     delete route;
 
     // Spieler Bescheid sagen
-    world->getPlayer(player).RoadDestroyed();
+    world->getPlayer(player).roadDestroyed();
 }
 
 /// Vernichtet Alle Straße um diesen Knoten
-void noRoadNode::DestroyAllRoads()
+void noRoadNode::destroyAllRoads()
 {
     // Alle Straßen um mich herum zerstören
     for(const auto dir : helpers::EnumRange<Direction>{})

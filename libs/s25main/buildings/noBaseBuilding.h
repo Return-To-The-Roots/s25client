@@ -29,9 +29,9 @@ protected:
     int door_point_y;
 
     /// Ware Bescheid sagen, dass sie nicht mehr hierher kommen brauch
-    void WareNotNeeded(Ware* ware);
+    void wareNotNeeded(Ware* ware);
     /// Zerstört Anbauten, falls es sich um ein großes Gebäude handelt (wo es diese auch gibt)
-    void DestroyBuildingExtensions();
+    void destroyBuildingExtensions();
 
 public:
     noBaseBuilding(NodalObjectType nop, BuildingType type, MapPoint pos, unsigned char player);
@@ -39,11 +39,11 @@ public:
 
     ~noBaseBuilding() override;
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Eine bestellte Ware konnte doch nicht kommen
-    virtual void WareLost(Ware& ware) = 0;
+    virtual void wareLost(Ware& ware) = 0;
 
     BuildingQuality getSize() const;
     BuildingType getBuildingType() const { return bldType_; }
@@ -69,9 +69,9 @@ public:
     /*/// Gibt die Warenverteilungspunkte zurück (bei 0 wurde kein Weg gefunden)
     virtual unsigned CalcDistributionPoints(noRoadNode * start,const GoodType type) = 0;*/
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
-    virtual void TakeWare(Ware* ware) = 0;
+    virtual void takeWare(Ware* ware) = 0;
     /// Wird aufgerufen, wenn ein bestimmter Arbeiter für das hier gerufen wurde
-    virtual void GotWorker(Job /*job*/, noFigure& /*worker*/){};
+    virtual void gotWorker(Job /*job*/, noFigure& /*worker*/){};
 
     /// Gibt ein Bild zurück für das normale Gebäude
     ITexture& getBuildingImage() const;

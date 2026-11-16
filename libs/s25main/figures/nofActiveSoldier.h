@@ -59,40 +59,40 @@ private:
 
 protected:
     /// Start returning home
-    void ReturnHome();
+    void returnHome();
     /// Walking home, called after each walking step
-    void WalkingHome();
+    void walkingHome();
 
     /// Examine hostile people on roads and expels them
-    void ExpelEnemies() const;
+    void expelEnemies() const;
 
     /// Handle walking for nofActiveSoldier specific states
-    void Walked() override;
+    void walked() override;
 
     /// Look for a nearby enemy which wants to fight with this soldier.
     /// Return true if one was found and we are going to fight him.
-    bool TryFightingNearbyEnemy(const std::optional<unsigned char>& excludedOwner = std::nullopt);
+    bool tryFightingNearbyEnemy(const std::optional<unsigned char>& excludedOwner = std::nullopt);
     /// Inform this soldier that another soldier starts meeting him
-    void MeetEnemy(nofActiveSoldier& other, MapPoint figh_spot);
+    void meetEnemy(nofActiveSoldier& other, MapPoint figh_spot);
     /// Handle state "meet enemy" after each walking step
-    void MeetingEnemy();
+    void meetingEnemy();
     /// Look for an appropriate fighting spot between the two soldiers
     /// Return true on success
     std::optional<MapPoint> getFightSpotNear(const nofActiveSoldier& other);
     /// increase rank if possible
-    void IncreaseRank();
+    void increaseRank();
     /// Notify that a free fight (somewhere at the map, not the one at the building flag) cannot be started
     /// Return state that is able to handle the next walk event
-    virtual SoldierState FreeFightAborted() = 0;
+    virtual SoldierState freeFightAborted() = 0;
 
 private:
     /// Soldier reached his military building
-    void GoalReached() override;
+    void goalReached() override;
 
     /// Get how much of the map/FoW the soldier discovers
     unsigned getVisualRange() const override;
     /// Abort a free fight (somewhere at the map, not the one at the building flag) that cannot be started
-    void AbortFreeFight();
+    void abortFreeFight();
 
 public:
     nofActiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank,
@@ -101,40 +101,40 @@ public:
     nofActiveSoldier(SerializedGameData& sgd, unsigned obj_id);
     nofActiveSoldier(const nofActiveSoldier&) = delete;
 
-    void Destroy() override
+    void destroy() override
     {
         RTTR_Assert(!enemy);
-        nofSoldier::Destroy();
+        nofSoldier::destroy();
     }
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Draw soldier (for all types of soldiers done by this base class!)
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Inform the different things that we are not coming anymore
-    virtual void InformTargetsAboutCancelling();
+    virtual void informTargetsAboutCancelling();
     /// Is called when our home military building was destroyed
-    virtual void HomeDestroyed() = 0;
+    virtual void homeDestroyed() = 0;
     /// When the soldier is still hanging in the going-out waiting queue in the home military building
-    virtual void HomeDestroyedAtBegin() = 0;
+    virtual void homeDestroyedAtBegin() = 0;
     /// Takes a hit from another soldier. Reduces hitpoints by one
-    void TakeHit();
+    void takeHit();
     /// When a fight was won
-    virtual void WonFighting() = 0;
+    virtual void wonFighting() = 0;
     /// When a fight was lost
-    virtual void LostFighting() = 0;
+    virtual void lostFighting() = 0;
 
     /// Determine if this soldier is ready for a spontaneous  fight
     bool isReadyForFight() const;
     /// Inform a waiting soldier about the start of a fight
-    void FightingStarted();
+    void fightingStarted();
 
     /// Get the current state
     SoldierState getState() const { return state; }
     /// Set the home (building) to nullptr
     /// e.g. after the soldier was removed from the homes list but it was not destroyed
-    void ResetHome() { homeBld = nullptr; }
-    void FightVsDefenderStarted() { state = SoldierState::AttackingFightingVsDefender; }
+    void resetHome() { homeBld = nullptr; }
+    void fightVsDefenderStarted() { state = SoldierState::AttackingFightingVsDefender; }
 
     // For debugging
     const nofActiveSoldier* getEnemy() const { return enemy; }

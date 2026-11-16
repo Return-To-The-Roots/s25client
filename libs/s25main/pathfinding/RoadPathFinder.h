@@ -31,7 +31,7 @@ public:
     /// @param length If != nullptr will receive the final costs
     /// @param firstDir If != nullptr will receive the first direction to travel
     /// @param firstNodePos If != nullptr will receive the position of the first node
-    bool FindPath(const noRoadNode& start, const noRoadNode& goal, bool wareMode,
+    bool findPath(const noRoadNode& start, const noRoadNode& goal, bool wareMode,
                   unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* forbidden = nullptr,
                   unsigned* length = nullptr, RoadPathDirection* firstDir = nullptr, MapPoint* firstNodePos = nullptr);
 
@@ -40,12 +40,12 @@ public:
     /// @param allowWaterRoads True to allow boat roads (mostly: Ware=true, Person=false)
     /// @param max Maximum costs allowed (Usually makes pathfinding faster)
     /// @param forbidden RoadSegment that will be ignored
-    bool PathExists(const noRoadNode& start, const noRoadNode& goal, bool allowWaterRoads,
+    bool pathExists(const noRoadNode& start, const noRoadNode& goal, bool allowWaterRoads,
                     unsigned max = std::numeric_limits<unsigned>::max(), const RoadSegment* forbidden = nullptr);
 
 private:
     template<class T_AdditionalCosts, class T_SegmentConstraints>
-    bool FindPathImpl(const noRoadNode& start, const noRoadNode& goal, unsigned max, T_AdditionalCosts addCosts,
+    bool findPathImpl(const noRoadNode& start, const noRoadNode& goal, unsigned max, T_AdditionalCosts addCosts,
                       T_SegmentConstraints isSegmentAllowed, unsigned* length = nullptr,
                       RoadPathDirection* firstDir = nullptr, MapPoint* firstNodePos = nullptr);
 };

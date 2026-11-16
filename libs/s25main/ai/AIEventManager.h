@@ -16,9 +16,9 @@ class AIEventManager
 public:
     AIEventManager();
     ~AIEventManager();
-    void AddAIEvent(std::unique_ptr<AIEvent::Base> ev);
+    void addAIEvent(std::unique_ptr<AIEvent::Base> ev);
     std::unique_ptr<AIEvent::Base> getEvent();
-    bool EventAvailable() const { return !events.empty(); }
+    bool eventAvailable() const { return !events.empty(); }
     unsigned getEventNum() const { return events.size(); }
 
 protected:

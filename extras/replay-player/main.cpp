@@ -115,7 +115,7 @@ int main(int argc, char** argv)
             lastReportGF = stats.currentGF;
         };
 
-        replay.Run([&](const HeadlessReplay&) {
+        replay.run([&](const HeadlessReplay&) {
             const auto now = std::chrono::steady_clock::now();
             if(now >= nextReport)
             {

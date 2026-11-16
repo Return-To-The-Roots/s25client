@@ -25,19 +25,19 @@ public:
     boost::ptr_vector<AIPlayer> aiPlayers_;
 
     /// Does the remaining initializations for starting the game
-    void Start(bool startFromSave);
-    void RunGF();
+    void start(bool startFromSave);
+    void runGF();
     bool isStarted() const { return started_; }
     bool isGameFinished() const { return finished_; }
     AIPlayer* getAIPlayer(unsigned id);
-    void AddAIPlayer(std::unique_ptr<AIPlayer> newAI);
+    void addAIPlayer(std::unique_ptr<AIPlayer> newAI);
     void setLua(std::unique_ptr<LuaInterfaceGame> newLua);
 
 private:
     /// Updates the statistics
-    void StatisticStep();
+    void statisticStep();
     /// Check if the objective was reached (if set)
-    void CheckObjective();
+    void checkObjective();
 
     bool started_, finished_;
     std::unique_ptr<LuaInterfaceGame> lua;

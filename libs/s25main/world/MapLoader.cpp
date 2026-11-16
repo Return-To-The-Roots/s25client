@@ -53,15 +53,15 @@ bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration explora
       world_.getDescription().landscapes.find([gfxSet](const LandscapeDesc& l) { return l.s2Id == gfxSet; });
     world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), lt); //-V807
 
-    if(!InitNodes(map, exploration))
+    if(!initNodes(map, exploration))
         return false;
-    PlaceObjects(map);
-    PlaceAnimals(map);
-    if(!InitSeasAndHarbors(world_))
+    placeObjects(map);
+    placeAnimals(map);
+    if(!initSeasAndHarbors(world_))
         return false;
 
     /// Schatten
-    InitShadows(world_);
+    initShadows(world_);
 
     // If we have explored FoW, create the FoW objects
     if(exploration == Exploration::FogOfWarExplored)
@@ -83,29 +83,29 @@ bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
 
     if(!Load(map, world_.getGGS().exploration))
         return false;
-    if(!PlaceHQs())
+    if(!placeHQs())
         return false;
 
     return true;
 }
 
-bool MapLoader::LoadLuaScript(Game& game, ILocalGameState& localgameState, const boost::filesystem::path& luaFilePath)
+bool MapLoader::loadLuaScript(Game& game, ILocalGameState& localgameState, const boost::filesystem::path& luaFilePath)
 {
     if(!bfs::exists(luaFilePath))
         return false;
     auto lua = std::make_unique<LuaInterfaceGame>(game, localgameState);
-    if(!lua->loadScript(luaFilePath) || !lua->CheckScriptVersion())
+    if(!lua->loadScript(luaFilePath) || !lua->checkScriptVersion())
         return false;
     game.setLua(std::move(lua));
     return true;
 }
 
-bool MapLoader::PlaceHQs(bool addStartWares)
+bool MapLoader::placeHQs(bool addStartWares)
 {
     std::vector<MapPoint> hqPositions = hqPositions_;
     if(world_.getGGS().randomStartPosition)
         RANDOM_SHUFFLE2(hqPositions, 0);
-    return PlaceHQs(world_, hqPositions, addStartWares);
+    return placeHQs(world_, hqPositions, addStartWares);
 }
 
 void MapLoader::setupResources(GameWorldBase& world, const bool fixFish)
@@ -120,13 +120,13 @@ void MapLoader::setupResources(GameWorldBase& world, const bool fixFish)
         case 3: target = ResourceType::Coal; break;
         case 4: target = ResourceType::Granite; break;
     }
-    ConvertMineResourceTypes(world, ResourceType::Gold, target);
-    PlaceAndFixWater(world);
+    convertMineResourceTypes(world, ResourceType::Gold, target);
+    placeAndFixWater(world);
     if(fixFish)
-        RemoveUnusableFishResources(world);
+        removeUnusableFishResources(world);
 }
 
-void MapLoader::ConvertMineResourceTypes(GameWorldBase& world, ResourceType from, ResourceType to)
+void MapLoader::convertMineResourceTypes(GameWorldBase& world, ResourceType from, ResourceType to)
 {
     // LOG.write(("Convert map resources from %i to %i\n", from, to);
     if(from == to)
@@ -145,7 +145,7 @@ void MapLoader::ConvertMineResourceTypes(GameWorldBase& world, ResourceType from
     }
 }
 
-void MapLoader::PlaceAndFixWater(GameWorldBase& world)
+void MapLoader::placeAndFixWater(GameWorldBase& world)
 {
     const bool waterEverywhere = world.getGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 1;
 
@@ -182,7 +182,7 @@ void MapLoader::PlaceAndFixWater(GameWorldBase& world)
     }
 }
 
-void MapLoader::RemoveUnusableFishResources(GameWorldBase& world)
+void MapLoader::removeUnusableFishResources(GameWorldBase& world)
 {
     const auto isWaterPoint = [&world](const MapPoint nb) { return world.isWaterPoint(nb); };
     for(const MapCoord y : helpers::range(world.getHeight()))
@@ -207,10 +207,10 @@ void MapLoader::RemoveUnusableFishResources(GameWorldBase& world)
     }
 }
 
-void MapLoader::InitShadows(World& world)
+void MapLoader::initShadows(World& world)
 {
     RTTR_FOREACH_PT(MapPoint, world.getSize())
-        world.RecalcShadow(pt);
+        world.recalcShadow(pt);
 }
 
 void MapLoader::setMapExplored(World& world)
@@ -222,7 +222,7 @@ void MapLoader::setMapExplored(World& world)
         {
             // If we have FoW here, save it
             if(world.getNode(pt).fow[i].visibility == Visibility::FogOfWar)
-                world.SaveFOWNode(pt, i, 0);
+                world.saveFOWNode(pt, i, 0);
         }
     }
 }
@@ -234,7 +234,7 @@ DescIdx<TerrainDesc> MapLoader::getTerrainFromS2(uint8_t s2Id) const
     });
 }
 
-bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration exploration)
+bool MapLoader::initNodes(const libsiedler2::ArchivItem_Map& map, Exploration exploration)
 {
     using libsiedler2::MapLayer;
     // Init node data (everything except the objects, figures and BQ)
@@ -303,7 +303,7 @@ bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration ex
     return true;
 }
 
-void MapLoader::PlaceObjects(const libsiedler2::ArchivItem_Map& map)
+void MapLoader::placeObjects(const libsiedler2::ArchivItem_Map& map)
 {
     hqPositions_.clear();
 
@@ -321,7 +321,7 @@ void MapLoader::PlaceObjects(const libsiedler2::ArchivItem_Map& map)
                 if(lc < MAX_PLAYERS)
                 {
                     while(hqPositions_.size() <= lc)
-                        hqPositions_.push_back(MapPoint::Invalid());
+                        hqPositions_.push_back(MapPoint::invalid());
                     hqPositions_[lc] = pt;
                 }
             }
@@ -465,7 +465,7 @@ void MapLoader::PlaceObjects(const libsiedler2::ArchivItem_Map& map)
     }
 }
 
-void MapLoader::PlaceAnimals(const libsiedler2::ArchivItem_Map& map)
+void MapLoader::placeAnimals(const libsiedler2::ArchivItem_Map& map)
 {
     // Tiere auslesen
     RTTR_FOREACH_PT(MapPoint, world_.getSize())
@@ -476,7 +476,7 @@ void MapLoader::PlaceAnimals(const libsiedler2::ArchivItem_Map& map)
         {
             // TODO: Which id is the polar bear?
             case 1:
-                species = (RANDOM.Rand(RANDOM_CONTEXT2(0), 2) == 0) ? Species::RabbitWhite : Species::RabbitGrey;
+                species = (RANDOM.rand(RANDOM_CONTEXT2(0), 2) == 0) ? Species::RabbitWhite : Species::RabbitGrey;
                 break; // Random rabbit
             case 2: species = Species::Fox; break;
             case 3: species = Species::Stag; break;
@@ -494,11 +494,11 @@ void MapLoader::PlaceAnimals(const libsiedler2::ArchivItem_Map& map)
                 continue;
         }
 
-        world_.AddFigure(pt, std::make_unique<noAnimal>(species, pt)).StartLiving();
+        world_.addFigure(pt, std::make_unique<noAnimal>(species, pt)).startLiving();
     }
 }
 
-bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions, const bool addStartWares)
+bool MapLoader::placeHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions, const bool addStartWares)
 {
     for(unsigned i = 0; i < world.getNumPlayers(); ++i)
     {
@@ -513,7 +513,7 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPo
             return false;
         }
 
-        auto* hq = checkedCast<nobHQ*>(BuildingFactory::CreateBuilding(world, BuildingType::Headquarters,
+        auto* hq = checkedCast<nobHQ*>(BuildingFactory::createBuilding(world, BuildingType::Headquarters,
                                                                        hqPositions[i], i, world.getPlayer(i).nation));
         if(addStartWares)
             hq->addStartWares();
@@ -521,7 +521,7 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPo
     return true;
 }
 
-bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors)
+bool MapLoader::initSeasAndHarbors(World& world, const std::vector<MapPoint>& additionalHarbors)
 {
     for(MapPoint pt : additionalHarbors)
         world.harborData.push_back(HarborPos(pt));
@@ -541,7 +541,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
         // Point is not yet assigned a sea but should be
         if(!world.getNode(pt).seaId && world.isSeaPoint(pt))
         {
-            const auto seaSize = MeasureSea(world, pt, curSeaId);
+            const auto seaSize = measureSea(world, pt, curSeaId);
             world.seas.push_back(World::Sea(seaSize));
             curSeaId = curSeaId.next();
         }
@@ -585,7 +585,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
     }
 
     // Calculate the neighbors and distances
-    CalcHarborPosNeighbors(world);
+    calcHarborPosNeighbors(world);
     return true;
 }
 
@@ -600,7 +600,7 @@ struct CalcHarborPosNeighborsNode
 };
 
 /// Calculate the distance from each harbor to the others
-void MapLoader::CalcHarborPosNeighbors(World& world)
+void MapLoader::calcHarborPosNeighbors(World& world)
 {
     for(HarborPos& harbor : world.harborData)
     {
@@ -727,7 +727,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
 
 /// Vermisst ein neues Weltmeer von einem Punkt aus, indem es alle mit diesem Punkt verbundenen
 /// Wasserpunkte mit der gleichen ID belegt und die Anzahl zur�ckgibt
-unsigned MapLoader::MeasureSea(World& world, const MapPoint start, SeaId seaId)
+unsigned MapLoader::measureSea(World& world, const MapPoint start, SeaId seaId)
 {
     // Breitensuche von diesem Punkt aus durchf�hren
     std::vector<bool> visited(world.getWidth() * world.getHeight(), false);

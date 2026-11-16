@@ -27,7 +27,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     GameDataLoader gdLoader(desc);
     if(!gdLoader.Load())
     {
-        Close();
+        close();
         return;
     }
 
@@ -39,99 +39,99 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     constexpr Extent buttonSize(100, 20);
 
     curPos.y += 30;
-    ctrlComboBox* combo = AddComboBox(ID_cbNumPlayers, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    ctrlComboBox* combo = addComboBox(ID_cbNumPlayers, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     for(unsigned n = 2; n <= MAX_PLAYERS; n++)
-        combo->AddItem(helpers::format(_("%1% players"), n));
+        combo->addItem(helpers::format(_("%1% players"), n));
 
     curPos.y += 30;
-    AddText(ID_txtMapStyle, curPos, _("Style"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(ID_txtMapStyle, curPos, _("Style"), COLOR_YELLOW, FontStyle{}, NormalFont);
     combo =
-      AddComboBox(ID_cbMapStyle, curPos + DrawPoint(100, -5), comboSizeSmall, TextureColor::Grey, NormalFont, 100);
-    combo->AddItem(_("Water"));
-    combo->AddItem(_("Land"));
-    combo->AddItem(_("Mixed"));
+      addComboBox(ID_cbMapStyle, curPos + DrawPoint(100, -5), comboSizeSmall, TextureColor::Grey, NormalFont, 100);
+    combo->addItem(_("Water"));
+    combo->addItem(_("Land"));
+    combo->addItem(_("Mixed"));
 
     curPos.y += 30;
-    AddText(ID_txtMapSize, curPos, _("Size"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(ID_txtMapSize, curPos, _("Size"), COLOR_YELLOW, FontStyle{}, NormalFont);
     auto* cbSizeX =
-      AddComboBox(ID_cbMapSizeX, curPos + DrawPoint(100, -5), Extent(50, 20), TextureColor::Grey, NormalFont, 200);
-    AddText(ID_txtMapSizeX, curPos + DrawPoint(160, 5), "x", COLOR_YELLOW, FontStyle::VCENTER, NormalFont);
+      addComboBox(ID_cbMapSizeX, curPos + DrawPoint(100, -5), Extent(50, 20), TextureColor::Grey, NormalFont, 200);
+    addText(ID_txtMapSizeX, curPos + DrawPoint(160, 5), "x", COLOR_YELLOW, FontStyle::VCENTER, NormalFont);
     auto* cbSizeY =
-      AddComboBox(ID_cbMapSizeY, curPos + DrawPoint(180, -5), Extent(50, 20), TextureColor::Grey, NormalFont, 200);
+      addComboBox(ID_cbMapSizeY, curPos + DrawPoint(180, -5), Extent(50, 20), TextureColor::Grey, NormalFont, 200);
     for(unsigned size = 32; size <= 320; size += 32)
     {
         const auto strSize = s25util::toStringClassic(size);
-        cbSizeX->AddItem(strSize);
-        cbSizeY->AddItem(strSize);
+        cbSizeX->addItem(strSize);
+        cbSizeY->addItem(strSize);
     }
 
     curPos.y += 30;
-    AddText(ID_txtLandscape, curPos, _("Landscape"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(ID_txtLandscape, curPos, _("Landscape"), COLOR_YELLOW, FontStyle{}, NormalFont);
     curPos.y += 20;
-    combo = AddComboBox(ID_cbMapType, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    combo = addComboBox(ID_cbMapType, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
     for(unsigned i = 0; i < desc.landscapes.size(); i++)
-        combo->AddItem(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
+        combo->addItem(_(desc.get(DescIdx<LandscapeDesc>(i)).name));
 
     curPos.y += 30;
-    AddText(ID_txtMountainDist, curPos, _("HQ distance to mountain"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(ID_txtMountainDist, curPos, _("HQ distance to mountain"), COLOR_YELLOW, FontStyle{}, NormalFont);
     curPos.y += 20;
-    combo = AddComboBox(ID_cbMountainDist, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
-    combo->AddItem(_("Close"));
-    combo->AddItem(_("Normal"));
-    combo->AddItem(_("Far"));
-    combo->AddItem(_("Very far"));
+    combo = addComboBox(ID_cbMountainDist, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    combo->addItem(_("Close"));
+    combo->addItem(_("Normal"));
+    combo->addItem(_("Far"));
+    combo->addItem(_("Very far"));
 
     curPos.y += 30;
-    AddText(ID_txtIslands, curPos, _("Islands"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(ID_txtIslands, curPos, _("Islands"), COLOR_YELLOW, FontStyle{}, NormalFont);
     curPos.y += 20;
-    combo = AddComboBox(ID_cbIslands, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
-    combo->AddItem(_("Few"));
-    combo->AddItem(_("Medium"));
-    combo->AddItem(_("Many"));
+    combo = addComboBox(ID_cbIslands, curPos, comboSize, TextureColor::Grey, NormalFont, 100);
+    combo->addItem(_("Few"));
+    combo->addItem(_("Medium"));
+    combo->addItem(_("Many"));
 
     constexpr int pgrOffset = 120;
     curPos.y += 35;
-    AddText(ID_txtGold, curPos, _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(ID_pgGoldRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    addText(ID_txtGold, curPos, _("Gold:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addProgress(ID_pgGoldRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(ID_txtIron, curPos, _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(ID_pgIronRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    addText(ID_txtIron, curPos, _("Iron:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addProgress(ID_pgIronRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(ID_txtCoal, curPos, _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(ID_pgCoalRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    addText(ID_txtCoal, curPos, _("Coal:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addProgress(ID_pgCoalRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(ID_txtGranite, curPos, _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(ID_pgGraniteRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    addText(ID_txtGranite, curPos, _("Granite:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addProgress(ID_pgGraniteRatio, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(ID_txtRivers, curPos, _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(ID_pgRivers, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    addText(ID_txtRivers, curPos, _("Rivers:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addProgress(ID_pgRivers, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(ID_txtTrees, curPos, _("Trees:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(ID_pgTrees, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    addText(ID_txtTrees, curPos, _("Trees:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addProgress(ID_pgTrees, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
-    AddText(ID_txtStonePiles, curPos, _("Stone piles:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddProgress(ID_pgStonePiles, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    addText(ID_txtStonePiles, curPos, _("Stone piles:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addProgress(ID_pgStonePiles, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
 
     curPos.y += 25;
-    AddTextButton(ID_btBack, curPos, buttonSize, TextureColor::Red1, _("Back"), NormalFont);
-    AddTextButton(ID_btApply, DrawPoint(130, curPos.y), buttonSize, TextureColor::Green2, _("Apply"), NormalFont);
+    addTextButton(ID_btBack, curPos, buttonSize, TextureColor::Red1, _("Back"), NormalFont);
+    addTextButton(ID_btApply, DrawPoint(130, curPos.y), buttonSize, TextureColor::Green2, _("Apply"), NormalFont);
 
-    Reset();
+    reset();
 }
 
 void iwMapGenerator::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btBack: Close(); break;
+        case ID_btBack: close(); break;
         case ID_btApply:
-            Apply();
-            Close();
+            apply();
+            close();
             break;
     }
 }
 
-void iwMapGenerator::Apply()
+void iwMapGenerator::apply()
 {
     mapSettings.numPlayers = getCtrl<ctrlComboBox>(ID_cbNumPlayers)->getSelection().value() + 2;
     mapSettings.ratioGold = getCtrl<ctrlProgress>(ID_pgGoldRatio)->getPosition();
@@ -170,7 +170,7 @@ void iwMapGenerator::Apply()
         mapSettings.type = DescIdx<LandscapeDesc>(*mapType);
 }
 
-void iwMapGenerator::Reset()
+void iwMapGenerator::reset()
 {
     getCtrl<ctrlComboBox>(ID_cbNumPlayers)
       ->setSelection(std::min(mapSettings.numPlayers, MAX_PLAYERS) - 2); // List starts at 2 players

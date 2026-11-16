@@ -14,5 +14,5 @@ void noCoordBase::Serialize(SerializedGameData& sgd) const
     helpers::pushPoint(sgd, pos);
 }
 
-noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id), pos(sgd.PopMapPoint())
+noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id), pos(sgd.popMapPoint())
 {}

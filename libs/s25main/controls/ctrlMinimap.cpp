@@ -36,9 +36,9 @@ void ctrlMinimap::setPadding(const Extent& padding)
     setMapSize(mapSize);
 }
 
-void ctrlMinimap::Resize(const Extent& newSize)
+void ctrlMinimap::resize(const Extent& newSize)
 {
-    Window::Resize(newSize);
+    Window::resize(newSize);
     setMapSize(mapSize);
 }
 
@@ -71,23 +71,23 @@ void ctrlMinimap::setMapSize(const Extent& newMapSize)
     }
 }
 
-DrawPoint ctrlMinimap::CalcMapCoord(MapPoint pt) const
+DrawPoint ctrlMinimap::calcMapCoord(MapPoint pt) const
 {
     DrawPoint result = getMapArea().getOrigin();
     result += DrawPoint(drawnMapSize * Extent(pt) / mapSize);
     return result;
 }
 
-void ctrlMinimap::DrawMap(Minimap& map) const
+void ctrlMinimap::drawMap(Minimap& map) const
 {
     // Map an sich zeichnen
-    map.Draw(getMapDrawArea());
+    map.draw(getMapDrawArea());
 }
 
-void ctrlMinimap::RemoveBoundingBox(const Extent& minSize)
+void ctrlMinimap::removeBoundingBox(const Extent& minSize)
 {
     Extent newSize = drawnMapSize + padding * 2u;
     newSize = elMax(newSize, minSize);
     padding = Extent(0, 0);
-    Resize(newSize);
+    resize(newSize);
 }

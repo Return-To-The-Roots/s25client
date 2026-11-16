@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     BOOST_TEST(wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->getPosition() == settings.stonePiles);
     wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->setPosition(expectedStonePiles);
     wnd.msgButtonClick(iwMapGenerator::ID_btApply);
-    BOOST_TEST(wnd.ShouldBeClosed());
+    BOOST_TEST(wnd.shouldBeClosed());
 
     BOOST_TEST(settings.numPlayers == expectedNumPlayers);
     BOOST_TEST(settings.type == DescIdx<LandscapeDesc>(expectedMapType));
@@ -149,9 +149,9 @@ BOOST_AUTO_TEST_CASE(ConnectWindow)
     const auto testHost = rttr::test::randString(10);
     const auto testPort = rttr::test::randomValue(10, 10000);
     const auto testIsIpv6 = rttr::test::randomBool();
-    wnd.Connect(testHost, testPort, testIsIpv6,
+    wnd.connect(testHost, testPort, testIsIpv6,
                 true); // When the server has a password, the window shouldn't initiate the connection process
-    BOOST_TEST_REQUIRE(!wnd.ShouldBeClosed()); // No error or anything, window still open
+    BOOST_TEST_REQUIRE(!wnd.shouldBeClosed()); // No error or anything, window still open
     // Fields filled and password field has focus
     BOOST_TEST(edtIp.getText() == testHost);
     BOOST_TEST(edtPort.getText() == s25util::toStringClassic(testPort));
@@ -193,10 +193,10 @@ BOOST_AUTO_TEST_CASE(ConnectingWindow)
             ci.CI_NextConnectState(st);
             BOOST_TEST(!progressBar.isVisible()); // Hidden again
         }
-        BOOST_TEST(!wnd.ShouldBeClosed());
+        BOOST_TEST(!wnd.shouldBeClosed());
         ci.CI_NextConnectState(ConnectState::Finished);
-        BOOST_TEST(wnd.ShouldBeClosed());
-        WINDOWMANAGER.Draw();
+        BOOST_TEST(wnd.shouldBeClosed());
+        WINDOWMANAGER.draw();
         BOOST_TEST((dynamic_cast<dskGameLobby*>(WINDOWMANAGER.getCurrentDesktop()) != nullptr));
     }
     {
@@ -206,13 +206,13 @@ BOOST_AUTO_TEST_CASE(ConnectingWindow)
         // CI_ERROR sends the onError signal and closes the window
         MOCK_EXPECT(onError).once().with(ClientError::ServerFull);
         ci.CI_Error(ClientError::ServerFull);
-        BOOST_TEST(wnd.ShouldBeClosed());
+        BOOST_TEST(wnd.shouldBeClosed());
     }
     {
         iwConnecting wnd(ServerType::Local, nullptr);
         // Clicking the button sends the onError signal (or if not set opens an error window) and closes the window
         wnd.msgButtonClick(wnd.getCtrls<ctrlButton>().at(0)->getID());
-        BOOST_TEST(wnd.ShouldBeClosed());
+        BOOST_TEST(wnd.shouldBeClosed());
         BOOST_TEST((dynamic_cast<iwMsgbox*>(WINDOWMANAGER.getTopMostWindow())));
     }
 }
@@ -295,7 +295,7 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             const MouseCoords evLDownInsideWindow = makeLeftDown(wnd.getPos() + wnd.getSize() / 2);
             const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
 
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             wnd.msgLeftDown(evLDownInsideWindow);
             wnd.msgMouseMove(evLDown);
             wnd.msgLeftUp(evLUp);
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             // Similar when moving out of the button
@@ -312,13 +312,13 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             wnd.msgMouseMove(evLDownInsideWindow);
             wnd.msgMouseMove(evLDown);
             wnd.msgLeftUp(evLUp);
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
 
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLUp);
-            BOOST_TEST(wnd.ShouldBeClosed());
+            BOOST_TEST(wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             BOOST_TEST(!settings.isOpen);
@@ -332,12 +332,12 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(wnd.getSize().x / 2, 4));
             const MouseCoords evLDblClick = makeLeftDblClick(evLDown.pos);
 
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLDblClick);
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             BOOST_TEST(settings.isOpen);
@@ -352,12 +352,12 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(wnd.getSize().x, 0) + DrawPoint(-4, 4));
             const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLUp);
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             BOOST_TEST(settings.isOpen);
@@ -377,12 +377,12 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(4, 4));
             const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLUp);
-            BOOST_TEST(wnd.ShouldBeClosed());
+            BOOST_TEST(wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             BOOST_TEST(!settings.isOpen);
@@ -396,12 +396,12 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(wnd.getSize().x / 2, 4));
             const MouseCoords evLDblClick = makeLeftDblClick(evLDown.pos);
 
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLDblClick);
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             BOOST_TEST(settings.isOpen);
@@ -417,12 +417,12 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(wnd.getSize().x, 0) + DrawPoint(-4, 4));
             const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(!wnd.isPinned());
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLUp);
-            BOOST_TEST(!wnd.ShouldBeClosed());
+            BOOST_TEST(!wnd.shouldBeClosed());
             BOOST_TEST(!wnd.isMinimized());
             BOOST_TEST(wnd.isPinned());
             BOOST_TEST(settings.isOpen);
@@ -453,7 +453,7 @@ void WindowPositioning_testOne(IngameWindow& wnd, const char* context, const std
 
 BOOST_AUTO_TEST_CASE(WindowPositioning)
 {
-    VIDEODRIVER.ResizeScreen(VideoMode(800, 600), DisplayMode::Windowed);
+    VIDEODRIVER.resizeScreen(VideoMode(800, 600), DisplayMode::Windowed);
 
     const auto renderSize = VIDEODRIVER.getRenderSize();
 
@@ -516,7 +516,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
         WindowPositioning_testOne(
           wnd, "Increase size, window connects with screen edges and should move",
           [&]() {
-              wnd.Resize(wndSizeL);
+              wnd.resize(wndSizeL);
               BOOST_TEST(wnd.getPos() == DrawPoint(renderSize - wndSizeL));
               BOOST_TEST(wnd.getPos() == settings.lastPos);
               BOOST_TEST(restorePos == settings.restorePos);
@@ -532,7 +532,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
         WindowPositioning_testOne(
           wnd, "Decrease size, window no longer connects with screen edges and should move to restorePos",
           [&]() {
-              wnd.Resize(wndSizeS);
+              wnd.resize(wndSizeS);
               BOOST_TEST(wnd.getPos() == restorePos);
               BOOST_TEST(wnd.getPos() == settings.lastPos);
               BOOST_TEST(restorePos == settings.restorePos);
@@ -571,7 +571,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
         WindowPositioning_testOne(
           wnd, "Increase size, window connects with screen edges and should move",
           [&]() {
-              wnd.Resize(wndSizeL);
+              wnd.resize(wndSizeL);
               BOOST_TEST(wnd.getPos() == DrawPoint(renderSize - wndSizeL));
               BOOST_TEST(wnd.getSize() == wndSizeL);
           },
@@ -583,7 +583,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
         WindowPositioning_testOne(
           wnd, "Decrease size, window no longer connects with screen edges and should move to restorePos",
           [&]() {
-              wnd.Resize(wndSizeS);
+              wnd.resize(wndSizeS);
               BOOST_TEST(wnd.getPos() == restorePos);
               BOOST_TEST(wnd.getSize() == wndSizeS);
           },
@@ -598,11 +598,11 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
 {
     SETTINGS.interface.windowSnapDistance = 10;
 
-    VIDEODRIVER.ResizeScreen(VideoMode(800, 600), DisplayMode::Windowed);
+    VIDEODRIVER.resizeScreen(VideoMode(800, 600), DisplayMode::Windowed);
 
-    auto& wnd1 = static_cast<IngameWindow&>(WINDOWMANAGER.Show(
+    auto& wnd1 = static_cast<IngameWindow&>(WINDOWMANAGER.show(
       std::make_unique<IngameWindow>(0, DrawPoint(0, 500), Extent(100, 100), "Test Window 1", nullptr)));
-    auto& wnd2 = static_cast<IngameWindow&>(WINDOWMANAGER.Show(
+    auto& wnd2 = static_cast<IngameWindow&>(WINDOWMANAGER.show(
       std::make_unique<IngameWindow>(0, DrawPoint(200, 480), Extent(100, 100), "Test Window 2", nullptr)));
 
     {
@@ -642,7 +642,7 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
 
     BOOST_TEST_CONTEXT("Snap to the closest window")
     {
-        auto& wnd3 = static_cast<IngameWindow&>(WINDOWMANAGER.Show(
+        auto& wnd3 = static_cast<IngameWindow&>(WINDOWMANAGER.show(
           std::make_unique<IngameWindow>(0, DrawPoint(200, 0), Extent(100, 100), "Test Window 3", nullptr)));
 
         const DrawPoint mousePosRel = DrawPoint(wnd3.getSize().x / 2, 4);

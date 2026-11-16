@@ -31,8 +31,8 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, cons
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
         fow[z].Serialize(sgd);
-    sgd.PushObject(obj);
-    sgd.PushObjectContainer(figures);
+    sgd.pushObject(obj);
+    sgd.pushObjectContainer(figures);
     sgd.PushUnsignedShort(seaId.value());
     sgd.PushUnsignedInt(harborId.value());
 }
@@ -66,12 +66,12 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
     owner = sgd.PopUnsignedChar();
     helpers::popContainer(sgd, boundary_stones);
     if(sgd.getGameDataVersion() < 9)
-        bq = sgd.Pop<BuildingQuality>();
+        bq = sgd.pop<BuildingQuality>();
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
         fow[z].Deserialize(sgd);
-    obj = sgd.PopObject<noBase>();
-    sgd.PopObjectContainer(figures);
+    obj = sgd.popObject<noBase>();
+    sgd.popObjectContainer(figures);
     seaId = SeaId(sgd.PopUnsignedShort());
     harborId = HarborId(sgd.PopUnsignedInt());
 }

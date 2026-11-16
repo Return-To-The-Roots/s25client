@@ -31,7 +31,7 @@ constexpr unsigned ARMOR_ENABLE_BUTTON_ID = 10 + NUM_SOLDIER_RANKS * 4 + 1;
 constexpr unsigned HEIGHT_OF_ROW = 38;
 
 iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobMilitary* const building)
-    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->getPos()), IngameWindow::posAtMouse, Extent(226, 194),
+    : IngameWindow(CGI_BUILDING + MapBase::createGUIID(building->getPos()), IngameWindow::posAtMouse, Extent(226, 194),
                    _(BUILDING_NAMES[building->getBuildingType()]), LOADER.getImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), building(building)
 {
@@ -48,38 +48,38 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
         btOffset += btOffsetLeatherAddon;
     }
 
-    Resize(Extent(226 + btOffset.x, 194 + btOffset.y));
+    resize(Extent(226 + btOffset.x, 194 + btOffset.y));
 
     // Schwert
-    AddImage(0, DrawPoint(28, 39), LOADER.getMapTexture(2298));
-    AddImage(1, DrawPoint(28, 39), LOADER.getWareTex(GoodType::Sword));
+    addImage(0, DrawPoint(28, 39), LOADER.getMapTexture(2298));
+    addImage(1, DrawPoint(28, 39), LOADER.getWareTex(GoodType::Sword));
 
     // Schild
-    AddImage(2, DrawPoint(196 + btOffset.x, 39), LOADER.getMapTexture(2298));
-    AddImage(3, DrawPoint(196 + btOffset.x, 39), LOADER.getWareTex(GoodType::ShieldRomans));
+    addImage(2, DrawPoint(196 + btOffset.x, 39), LOADER.getMapTexture(2298));
+    addImage(3, DrawPoint(196 + btOffset.x, 39), LOADER.getWareTex(GoodType::ShieldRomans));
 
     // Hilfe
-    AddImageButton(4, DrawPoint(16, btOffset.y + 147), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225),
+    addImageButton(4, DrawPoint(16, btOffset.y + 147), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225),
                    _("Help"));
     // Abreißen
-    AddImageButton(5, DrawPoint(50, btOffset.y + 147), Extent(34, 32), TextureColor::Grey, LOADER.getImageN("io", 23),
+    addImageButton(5, DrawPoint(50, btOffset.y + 147), Extent(34, 32), TextureColor::Grey, LOADER.getImageN("io", 23),
                    _("Demolish house"));
     // Gold an/aus (227,226)
-    AddImageButton(6, DrawPoint(90, btOffset.y + 147), Extent(32, 32), TextureColor::Grey,
+    addImageButton(6, DrawPoint(90, btOffset.y + 147), Extent(32, 32), TextureColor::Grey,
                    LOADER.getImageN("io", ((building->isGoldDisabledVirtual()) ? 226 : 227)), _("Gold delivery"));
     // "Gehe Zu Ort"
-    AddImageButton(7, DrawPoint(179 + btOffset.x, btOffset.y + 147), Extent(30, 32), TextureColor::Grey,
+    addImageButton(7, DrawPoint(179 + btOffset.x, btOffset.y + 147), Extent(30, 32), TextureColor::Grey,
                    LOADER.getImageN("io", 107), _("Go to place"));
 
     // Gebäudebild
-    AddImage(8, DrawPoint(117 + btOffset.x / 2, 114), &building->getBuildingImage());
+    addImage(8, DrawPoint(117 + btOffset.x / 2, 114), &building->getBuildingImage());
     // "Go to next" (building of same type)
-    AddImageButton(9, DrawPoint(179 + btOffset.x, btOffset.y + 115), Extent(30, 32), TextureColor::Grey,
+    addImageButton(9, DrawPoint(179 + btOffset.x, btOffset.y + 115), Extent(30, 32), TextureColor::Grey,
                    LOADER.getImageN("io_new", 11), _("Go to next military building"));
 
     if(leatheraddon::isAddonActive(gwv.getWorld()))
     {
-        AddImageButton(
+        addImageButton(
           ARMOR_ENABLE_BUTTON_ID, DrawPoint(126 + btOffsetLeatherAddon.x, btOffset.y + 147), Extent(32, 32),
           TextureColor::Grey,
           LOADER.getImageN("leather_bobs", leatheraddon::bobIndex[building->isArmorAllowedVirtual() ?
@@ -91,46 +91,46 @@ iwMilitaryBuilding::iwMilitaryBuilding(GameWorldView& gwv, GameCommandFactory& g
     if(addonStatusMilitaryControl == 1)
     {
         // Minimal troop controls
-        AddImageButton(10, DrawPoint(126, btOffset.y + 147), Extent(32, 32), TextureColor::Grey,
+        addImageButton(10, DrawPoint(126, btOffset.y + 147), Extent(32, 32), TextureColor::Grey,
                        LOADER.getImageN("io_new", 12), _("Send max rank soldiers to a warehouse"));
     } else if(addonStatusMilitaryControl == 2)
     {
         // Full troop controls
-        AddImageButton(10, DrawPoint(126, btOffset.y + 147), Extent(32, 32), TextureColor::Grey,
+        addImageButton(10, DrawPoint(126, btOffset.y + 147), Extent(32, 32), TextureColor::Grey,
                        LOADER.getImageN("io_new", 12), _("Send soldiers home"));
 
         const unsigned Y_SPACING = 30;
         for(unsigned i = 0; i < NUM_SOLDIER_RANKS; ++i)
         {
             // Minus
-            AddImageButton(11 + (4 * i), DrawPoint(69 + btOffset.x / 2, 136 + btOffsetLeatherAddon.y + Y_SPACING * i),
+            addImageButton(11 + (4 * i), DrawPoint(69 + btOffset.x / 2, 136 + btOffsetLeatherAddon.y + Y_SPACING * i),
                            Extent(24, 24), TextureColor::Red1, LOADER.getImageN("io", 139), _("Fewer"));
             // Background
-            AddImage(12 + (4 * i), DrawPoint(113 + btOffset.x / 2, 148 + btOffsetLeatherAddon.y + Y_SPACING * i),
+            addImage(12 + (4 * i), DrawPoint(113 + btOffset.x / 2, 148 + btOffsetLeatherAddon.y + Y_SPACING * i),
                      LOADER.getMapTexture(2298));
             // Rank image
-            AddImage(13 + (4 * i), DrawPoint(113 + btOffset.x / 2, 148 + btOffsetLeatherAddon.y + Y_SPACING * i),
+            addImage(13 + (4 * i), DrawPoint(113 + btOffset.x / 2, 148 + btOffsetLeatherAddon.y + Y_SPACING * i),
                      LOADER.getMapTexture(2321 + i));
             // Plus
-            AddImageButton(14 + (4 * i), DrawPoint(133 + btOffset.x / 2, 136 + btOffsetLeatherAddon.y + Y_SPACING * i),
+            addImageButton(14 + (4 * i), DrawPoint(133 + btOffset.x / 2, 136 + btOffsetLeatherAddon.y + Y_SPACING * i),
                            Extent(24, 24), TextureColor::Green2, LOADER.getImageN("io", 138), _("More"));
         }
     }
 }
 
-void iwMilitaryBuilding::DrawContent()
+void iwMilitaryBuilding::drawContent()
 {
     unsigned btOffsetY = 60;
 
     // Schwarzer Untergrund für Goldanzeige
     const unsigned maxCoinCt = building->getMaxCoinCt();
     DrawPoint goldPos = getDrawPos() + DrawPoint((getSize().x - 22 * maxCoinCt) / 2, btOffsetY);
-    DrawRectangle(Rect(goldPos, Extent(22 * maxCoinCt, 24)), 0x96000000);
+    drawRectangle(Rect(goldPos, Extent(22 * maxCoinCt, 24)), 0x96000000);
     // Gold
     goldPos += DrawPoint(12, 12);
     for(unsigned short i = 0; i < maxCoinCt; ++i)
     {
-        LOADER.getMapTexture(2278)->DrawFull(goldPos, (i >= building->getNumCoins() ? 0xFFA0A0A0 : 0xFFFFFFFF));
+        LOADER.getMapTexture(2278)->drawFull(goldPos, (i >= building->getNumCoins() ? 0xFFA0A0A0 : 0xFFFFFFFF));
         goldPos.x += 22;
     }
     btOffsetY += HEIGHT_OF_ROW;
@@ -143,12 +143,12 @@ void iwMilitaryBuilding::DrawContent()
         // Black background for armor display
         const unsigned maxArmorCt = building->getMaxArmorCt();
         DrawPoint armorPos = getDrawPos() + DrawPoint((getSize().x - 22 * maxArmorCt) / 2, btOffsetY);
-        DrawRectangle(Rect(armorPos, Extent(22 * maxArmorCt, 24)), 0x96000000);
+        drawRectangle(Rect(armorPos, Extent(22 * maxArmorCt, 24)), 0x96000000);
         // Armor
         armorPos += DrawPoint(12, 12);
         for(unsigned short i = 0; i < maxArmorCt; ++i)
         {
-            armorWareIcon->DrawFull(armorPos, (i >= building->getNumArmor() ? 0xFFA0A0A0 : 0xFFFFFFFF));
+            armorWareIcon->drawFull(armorPos, (i >= building->getNumArmor() ? 0xFFA0A0A0 : 0xFFFFFFFF));
             armorPos.x += 22;
         }
         btOffsetY += HEIGHT_OF_ROW;
@@ -171,15 +171,15 @@ void iwMilitaryBuilding::DrawContent()
     const unsigned maxSoldierCt = building->getMaxTroopsCt();
     DrawPoint troopsPos = getDrawPos() + DrawPoint((getSize().x - 22 * maxSoldierCt) / 2, btOffsetY);
     // Schwarzer Untergrund für Soldatenanzeige
-    DrawRectangle(Rect(troopsPos, Extent(22 * maxSoldierCt, 24)), 0x96000000);
+    drawRectangle(Rect(troopsPos, Extent(22 * maxSoldierCt, 24)), 0x96000000);
 
     // Soldaten zeichnen
     DrawPoint curTroopsPos = troopsPos + DrawPoint(12, 12);
     for(const auto* soldier : soldiers)
     {
         if(leatheraddon::isAddonActive(gwv.getWorld()) && soldier->hasArmor())
-            armorWareIcon->DrawFull(curTroopsPos, 0xFFA0A0A0);
-        LOADER.getMapTexture(2321 + soldier->getRank())->DrawFull(curTroopsPos);
+            armorWareIcon->drawFull(curTroopsPos, 0xFFA0A0A0);
+        LOADER.getMapTexture(2321 + soldier->getRank())->drawFull(curTroopsPos);
         curTroopsPos.x += 22;
     }
 
@@ -189,7 +189,7 @@ void iwMilitaryBuilding::DrawContent()
         DrawPoint healthPos = troopsPos - DrawPoint(0, 14);
 
         // black background for hitpoints
-        DrawRectangle(Rect(healthPos, Extent(22 * maxSoldierCt, 14)), 0x96000000);
+        drawRectangle(Rect(healthPos, Extent(22 * maxSoldierCt, 14)), 0x96000000);
 
         healthPos += DrawPoint(12, 2);
         for(const auto* soldier : soldiers)
@@ -206,11 +206,11 @@ void iwMilitaryBuilding::DrawContent()
                 else
                     hitpointsColour = COLOR_ORANGE;
             }
-            NormalFont->Draw(healthPos, std::to_string(hitpoints), FontStyle::CENTER, hitpointsColour);
+            NormalFont->draw(healthPos, std::to_string(hitpoints), FontStyle::CENTER, hitpointsColour);
             if(leatheraddon::isAddonActive(gwv.getWorld()) && soldier->hasArmor())
             {
-                SmallFont->Draw(healthPos + DrawPoint(7, 0), "+", FontStyle::CENTER, hitpointsColour);
-                SmallFont->Draw(healthPos + DrawPoint(10, 0), "1", FontStyle::CENTER, hitpointsColour);
+                SmallFont->draw(healthPos + DrawPoint(7, 0), "+", FontStyle::CENTER, hitpointsColour);
+                SmallFont->draw(healthPos + DrawPoint(10, 0), "1", FontStyle::CENTER, hitpointsColour);
             }
             healthPos.x += 22;
         }
@@ -221,7 +221,7 @@ void iwMilitaryBuilding::DrawContent()
     {
         const unsigned Y_SPACING = 30;
         for(unsigned i = 0; i < NUM_SOLDIER_RANKS; ++i)
-            NormalFont->Draw(getDrawPos() + DrawPoint(getSize().x / 2 - 12, btOffsetY + Y_SPACING * i),
+            NormalFont->draw(getDrawPos() + DrawPoint(getSize().x / 2 - 12, btOffsetY + Y_SPACING * i),
                              std::to_string(building->getTroopLimit(i)), FontStyle::LEFT, COLOR_YELLOW);
     }
 }
@@ -232,7 +232,7 @@ void iwMilitaryBuilding::msgButtonClick(const unsigned ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.ReplaceWindow(
+            WINDOWMANAGER.replaceWindow(
               std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[building->getBuildingType()])));
         }
         break;
@@ -242,12 +242,12 @@ void iwMilitaryBuilding::msgButtonClick(const unsigned ctrl_id)
             if(!building->isDemolitionAllowed())
             {
                 // Messagebox anzeigen
-                DemolitionNotAllowed(gwv.getWorld().getGGS());
+                demolitionNotAllowed(gwv.getWorld().getGGS());
             } else
             {
                 // Abreißen?
-                Close();
-                WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, building));
+                close();
+                WINDOWMANAGER.show(std::make_unique<iwDemolishBuilding>(gwv, building));
             }
         }
         break;
@@ -259,7 +259,7 @@ void iwMilitaryBuilding::msgButtonClick(const unsigned ctrl_id)
                 if(gcFactory.SetCoinsAllowed(building->getPos(), building->isGoldDisabledVirtual()))
                 {
                     // visuell anzeigen
-                    building->ToggleCoinsVirtual();
+                    building->toggleCoinsVirtual();
                     // anderes Bild auf dem Button
                     if(building->isGoldDisabledVirtual())
                         getCtrl<ctrlImageButton>(6)->setImage(LOADER.getImageN("io", 226));
@@ -271,7 +271,7 @@ void iwMilitaryBuilding::msgButtonClick(const unsigned ctrl_id)
         break;
         case 7: // "Gehe Zu Ort"
         {
-            gwv.MoveToMapPt(building->getPos());
+            gwv.moveToMapPt(building->getPos());
         }
         break;
         case 9: // go to next of same type
@@ -285,12 +285,12 @@ void iwMilitaryBuilding::msgButtonClick(const unsigned ctrl_id)
             {
                 // close old window, open new window (todo: only open if it isnt already open), move to location of next
                 // building
-                Close();
+                close();
                 ++it;
                 if(it == militaryBuildings.end()) // was last entry in list -> goto first
                     it = militaryBuildings.begin();
-                gwv.MoveToMapPt((*it)->getPos());
-                WINDOWMANAGER.ReplaceWindow(std::make_unique<iwMilitaryBuilding>(gwv, gcFactory, *it)).setPos(getPos());
+                gwv.moveToMapPt((*it)->getPos());
+                WINDOWMANAGER.replaceWindow(std::make_unique<iwMilitaryBuilding>(gwv, gcFactory, *it)).setPos(getPos());
                 break;
             }
         }
@@ -321,7 +321,7 @@ void iwMilitaryBuilding::msgButtonClick(const unsigned ctrl_id)
             {
                 if(gcFactory.SetArmorAllowed(building->getPos(), !building->isArmorAllowedVirtual()))
                 {
-                    building->ToggleArmorVirtual();
+                    building->toggleArmorVirtual();
                     getCtrl<ctrlImageButton>(ctrl_id)->setImage(LOADER.getImageN(
                       "leather_bobs", leatheraddon::bobIndex[building->isArmorAllowedVirtual() ?
                                                                leatheraddon::BobType::ArmorDeliverIcon :
@@ -354,7 +354,7 @@ void iwMilitaryBuilding::msgButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwMilitaryBuilding::DemolitionNotAllowed(const GlobalGameSettings& ggs)
+void iwMilitaryBuilding::demolitionNotAllowed(const GlobalGameSettings& ggs)
 {
     // Meldung auswählen, je nach Einstellung
     std::string msg;
@@ -365,6 +365,6 @@ void iwMilitaryBuilding::DemolitionNotAllowed(const GlobalGameSettings& ggs)
         case 2: msg = _("Demolition ist not allowed because the building is located in border area!"); break;
     }
 
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Demolition not possible"), msg, nullptr, MsgboxButton::Ok,
+    WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Demolition not possible"), msg, nullptr, MsgboxButton::Ok,
                                                   MsgboxIcon::ExclamationRed));
 }

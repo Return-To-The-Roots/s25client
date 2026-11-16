@@ -119,46 +119,46 @@ BOOST_FIXTURE_TEST_CASE(GetBuildingRadiusRespectsAddons, GameWorldViewFixture)
     BOOST_TEST(view.getBuildingRadius(BuildingType::Quarry) > defaultRadius);
 }
 
-BOOST_AUTO_TEST_CASE(SnapToNearestCopy)
+BOOST_AUTO_TEST_CASE(snapToNearestCopy)
 {
     const Extent mapSize(122, 84);
     const DrawPoint pt(37, 17);
     const DrawPoint ref(pt + mapSize / 5); // Close but not the same
 
     // Same point and reference -> no change
-    BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, pt, mapSize) == pt);
+    BOOST_TEST(GameWorldView::snapToNearestCopy(pt, pt, mapSize) == pt);
     // Fixed ref is close enough -> closest is already this point
-    BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, ref, mapSize) == pt);
+    BOOST_TEST(GameWorldView::snapToNearestCopy(pt, ref, mapSize) == pt);
     for(const auto offset : {// 1 map size right,left,top,bottom -> same offset for point
                              Offset(mapSize.x, 0), -Offset(mapSize.x, 0), -Offset(0, mapSize.y), Offset(0, mapSize.y),
                              // diagonal
                              Offset(mapSize), -Offset(mapSize)})
     {
-        BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, ref + offset, mapSize) == pt + offset);
+        BOOST_TEST(GameWorldView::snapToNearestCopy(pt, ref + offset, mapSize) == pt + offset);
         const Offset offset2 = offset + mapSize * 3; // Multiple map sizes
-        BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, ref + offset2, mapSize) == pt + offset2);
+        BOOST_TEST(GameWorldView::snapToNearestCopy(pt, ref + offset2, mapSize) == pt + offset2);
     }
 
     // Reference is exactly half a map size away -> point wraps to the other side
     const Extent halfMapSize = mapSize / 2u;
-    BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, pt - Offset(halfMapSize.x, 0), mapSize)
+    BOOST_TEST(GameWorldView::snapToNearestCopy(pt, pt - Offset(halfMapSize.x, 0), mapSize)
                == pt - Offset(mapSize.x, 0));
-    BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, pt + Offset(halfMapSize.x, 0), mapSize)
+    BOOST_TEST(GameWorldView::snapToNearestCopy(pt, pt + Offset(halfMapSize.x, 0), mapSize)
                == pt + Offset(mapSize.x, 0));
-    BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, pt - Offset(0, halfMapSize.y), mapSize)
+    BOOST_TEST(GameWorldView::snapToNearestCopy(pt, pt - Offset(0, halfMapSize.y), mapSize)
                == pt - Offset(0, mapSize.y));
-    BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, pt + Offset(0, halfMapSize.y), mapSize)
+    BOOST_TEST(GameWorldView::snapToNearestCopy(pt, pt + Offset(0, halfMapSize.y), mapSize)
                == pt + Offset(0, mapSize.y));
 
     // Reference at least half a map size to the left -> point wraps to the left
     const Offset offsetX = Offset(rttr::test::randomValue(mapSize.x / 2, mapSize.x), 0);
-    BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, pt - offsetX, mapSize) == pt - Offset(mapSize.x, 0));
+    BOOST_TEST(GameWorldView::snapToNearestCopy(pt, pt - offsetX, mapSize) == pt - Offset(mapSize.x, 0));
     // same for right
-    BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, pt + offsetX, mapSize) == pt + Offset(mapSize.x, 0));
+    BOOST_TEST(GameWorldView::snapToNearestCopy(pt, pt + offsetX, mapSize) == pt + Offset(mapSize.x, 0));
     const Offset offsetY = Offset(0, rttr::test::randomValue(mapSize.y / 2, mapSize.y));
     // And top/bottom
-    BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, pt - offsetY, mapSize) == pt - Offset(0, mapSize.y));
-    BOOST_TEST(GameWorldView::SnapToNearestCopy(pt, pt + offsetY, mapSize) == pt + Offset(0, mapSize.y));
+    BOOST_TEST(GameWorldView::snapToNearestCopy(pt, pt - offsetY, mapSize) == pt - Offset(0, mapSize.y));
+    BOOST_TEST(GameWorldView::snapToNearestCopy(pt, pt + offsetY, mapSize) == pt + Offset(0, mapSize.y));
 }
 
 BOOST_FIXTURE_TEST_CASE(TestUpdateRadiusPreview, GameWorldViewFixture)
@@ -189,7 +189,7 @@ BOOST_FIXTURE_TEST_CASE(TestUpdateRadiusPreview, GameWorldViewFixture)
     // No radius shown in tooltip when addon is disabled
     ggs.setSelection(AddonId::BUILDING_RADIUS, 0);
     {
-        auto& action = WINDOWMANAGER.Show(
+        auto& action = WINDOWMANAGER.show(
           std::make_unique<iwAction>(gi, view, tabs, selPt, DrawPoint(0, 0), iwAction::FlagType::Normal, true));
         icons = getIcons(action);
         const auto& findIcon = [&](BuildingType type) -> const ctrlBuildingIcon& {
@@ -203,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE(TestUpdateRadiusPreview, GameWorldViewFixture)
 
     // Enable addon and re-open iwAction
     ggs.setSelection(AddonId::BUILDING_RADIUS, 1);
-    auto& action = WINDOWMANAGER.Show(
+    auto& action = WINDOWMANAGER.show(
       std::make_unique<iwAction>(gi, view, tabs, selPt, DrawPoint(0, 0), iwAction::FlagType::Normal, true));
     icons = getIcons(action);
     BOOST_TEST(findIcon(BuildingType::Watchtower).getTooltip().find(_("Range:")) != std::string::npos);
@@ -235,7 +235,7 @@ BOOST_FIXTURE_TEST_CASE(TestUpdateRadiusPreview, GameWorldViewFixture)
     const auto& icon = findIcon(BuildingType::Watchtower);
     WINDOWMANAGER.msgMouseMove(MouseCoords(icon.getDrawPos() + DrawPoint(1, 1)));
     BOOST_TEST_REQUIRE(view.getRadiusPreview().has_value());
-    WINDOWMANAGER.CloseNow(&action);
+    WINDOWMANAGER.closeNow(&action);
     BOOST_TEST(!view.getRadiusPreview());
 }
 

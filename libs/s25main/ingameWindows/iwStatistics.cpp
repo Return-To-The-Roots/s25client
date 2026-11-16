@@ -118,62 +118,62 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
         RTTR_Assert(curPlayer.portraitIndex < Portraits.size());
         const auto& portrait = Portraits[curPlayer.portraitIndex];
         auto* btPortrait =
-          AddImageButton(ID_btPlayer_Start + i, curBtPos, playerBtSize, TextureColor::Green1,
+          addImageButton(ID_btPlayer_Start + i, curBtPos, playerBtSize, TextureColor::Green1,
                          LOADER.getImageN(portrait.resourceId, portrait.resourceIndex), curPlayer.name);
         curBtPos.x += playerBtSize.x;
         btPortrait->setBorder(false);
         btPortrait->setEnabled(showStatistic[i]);
     }
 
-    AddImage(ID_imgStatistic, DrawPoint(126, 165), LOADER.getImageN("io", 228));
+    addImage(ID_imgStatistic, DrawPoint(126, 165), LOADER.getImageN("io", 228));
 
     // Buttons for changing the statistic type shown
-    ctrlOptionGroup* statChanger = AddOptionGroup(ID_grpStatType, GroupSelectType::Illuminate);
-    statChanger->AddImageButton(ID_btTypeSize, DrawPoint(18, 250), Extent(26, 30), TextureColor::Grey,
+    ctrlOptionGroup* statChanger = addOptionGroup(ID_grpStatType, GroupSelectType::Illuminate);
+    statChanger->addImageButton(ID_btTypeSize, DrawPoint(18, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.getImageN("io", 167), _("Size of country"));
-    statChanger->AddImageButton(ID_btTypeBuildings, DrawPoint(45, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->addImageButton(ID_btTypeBuildings, DrawPoint(45, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.getImageN("io", 168), _("Buildings"));
-    statChanger->AddImageButton(ID_btTypeInhabitants, DrawPoint(72, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->addImageButton(ID_btTypeInhabitants, DrawPoint(72, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.getImageN("io", 169), _("Inhabitants"));
-    statChanger->AddImageButton(ID_btTypeMerchandise, DrawPoint(99, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->addImageButton(ID_btTypeMerchandise, DrawPoint(99, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.getImageN("io", 170), _("Merchandise"));
-    statChanger->AddImageButton(ID_btTypeMilitary, DrawPoint(126, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->addImageButton(ID_btTypeMilitary, DrawPoint(126, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.getImageN("io", 171), _("Military strength"));
-    statChanger->AddImageButton(ID_btTypeGold, DrawPoint(153, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->addImageButton(ID_btTypeGold, DrawPoint(153, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.getImageN("io", 172), _("Gold"));
-    statChanger->AddImageButton(ID_btTypeProductivity, DrawPoint(180, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->addImageButton(ID_btTypeProductivity, DrawPoint(180, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.getImageN("io", 173), _("Productivity"));
-    statChanger->AddImageButton(ID_btTypeVanquishedEnemies, DrawPoint(207, 250), Extent(26, 30), TextureColor::Grey,
+    statChanger->addImageButton(ID_btTypeVanquishedEnemies, DrawPoint(207, 250), Extent(26, 30), TextureColor::Grey,
                                 LOADER.getImageN("io", 217), _("Vanquished enemies"));
 
     // Buttons for duration
     constexpr Extent timeBtSize(43, 28);
-    ctrlOptionGroup* timeChanger = AddOptionGroup(ID_grpTime, GroupSelectType::Illuminate);
-    timeChanger->AddTextButton(ID_time15m, DrawPoint(51, 288), timeBtSize, TextureColor::Grey, _("15 m"), NormalFont);
-    timeChanger->AddTextButton(ID_time1h, DrawPoint(96, 288), timeBtSize, TextureColor::Grey, _("1 h"), NormalFont);
-    timeChanger->AddTextButton(ID_time4h, DrawPoint(141, 288), timeBtSize, TextureColor::Grey, _("4 h"), NormalFont);
-    timeChanger->AddTextButton(ID_time16h, DrawPoint(186, 288), timeBtSize, TextureColor::Grey, _("16 h"), NormalFont);
+    ctrlOptionGroup* timeChanger = addOptionGroup(ID_grpTime, GroupSelectType::Illuminate);
+    timeChanger->addTextButton(ID_time15m, DrawPoint(51, 288), timeBtSize, TextureColor::Grey, _("15 m"), NormalFont);
+    timeChanger->addTextButton(ID_time1h, DrawPoint(96, 288), timeBtSize, TextureColor::Grey, _("1 h"), NormalFont);
+    timeChanger->addTextButton(ID_time4h, DrawPoint(141, 288), timeBtSize, TextureColor::Grey, _("4 h"), NormalFont);
+    timeChanger->addTextButton(ID_time16h, DrawPoint(186, 288), timeBtSize, TextureColor::Grey, _("16 h"), NormalFont);
 
-    AddImageButton(ID_btHelp, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225),
+    addImageButton(ID_btHelp, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225),
                    _("Help"));
 
     const auto labelColor = MakeColor(255, 136, 96, 52);
     // Current header
-    headline = AddText(ID_txtHeader, DrawPoint(130, 120), _("Size of country"), labelColor,
+    headline = addText(ID_txtHeader, DrawPoint(130, 120), _("Size of country"), labelColor,
                        FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE, NormalFont);
 
     // Current maximum of y-axis
-    txtMaxValueY = AddText(ID_txtMaxY, DrawPoint(211, 125), "1", labelColor,
+    txtMaxValueY = addText(ID_txtMaxY, DrawPoint(211, 125), "1", labelColor,
                            FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
     // Current minimum of y-axis
-    txtMinValueY = AddText(ID_txtMinY, DrawPoint(211, 200), "0", labelColor,
+    txtMinValueY = addText(ID_txtMinY, DrawPoint(211, 200), "0", labelColor,
                            FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 
     // Time values on the x-axis
     for(const auto i : helpers::range(timeAnnotations.size()))
     {
-        timeAnnotations[i] = AddText(ID_txtXAxisValuesStart + i, DrawPoint(0, 0), "", labelColor,
+        timeAnnotations[i] = addText(ID_txtXAxisValuesStart + i, DrawPoint(0, 0), "", labelColor,
                                      FontStyle::CENTER | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
     }
 
@@ -196,7 +196,7 @@ void iwStatistics::msgButtonClick(const unsigned ctrl_id)
         showStatistic[playerIndex] = !showStatistic[playerIndex];
     else if(ctrl_id == ID_btHelp)
     {
-        WINDOWMANAGER.ReplaceWindow(
+        WINDOWMANAGER.replaceWindow(
           std::make_unique<iwHelp>(_("This window allows a direct comparison with the enemies. "
                                      "Factors such as the wealth, territorial area, inhabitants, "
                                      "etc. of all parties can be compared. This data can be shown "
@@ -258,18 +258,18 @@ void iwStatistics::msgOptionGroupChange(const unsigned ctrl_id, const unsigned s
     }
 }
 
-void iwStatistics::DrawContent()
+void iwStatistics::drawContent()
 {
     // Draw the alliances and the colored boxes under the portraits
-    DrawPlayerOverlays();
+    drawPlayerOverlays();
 
-    DrawAxis();
+    drawAxis();
 
     // Draw lines making up the statistic
-    DrawStatistic(currentView);
+    drawStatistic(currentView);
 }
 
-void iwStatistics::DrawPlayerOverlays()
+void iwStatistics::drawPlayerOverlays()
 {
     DrawPoint drawPt = getDrawPos() + playerButtonsCenterPos - DrawPoint(numPlayingPlayers * playerBtSize.x / 2, 0);
 
@@ -282,25 +282,25 @@ void iwStatistics::DrawPlayerOverlays()
         if(showStatistic[i])
         {
             // Draw the alliances at top of the player image
-            DrawPlayerAlliances(drawPt, player);
+            drawPlayerAlliances(drawPt, player);
             // Draw player boxes and player status at bottom
-            DrawPlayerBox(drawPt, player);
+            drawPlayerBox(drawPt, player);
         }
         drawPt.x += playerBtSize.x;
     }
 }
 
-void iwStatistics::DrawPlayerBox(DrawPoint const& drawPt, const GamePlayer& player)
+void iwStatistics::drawPlayerBox(DrawPoint const& drawPt, const GamePlayer& player)
 {
     auto const playerBoxRect = Rect(DrawPoint(drawPt.x, drawPt.y + 47), Extent(34, 12));
     auto const playerStatusPosition =
       DrawPoint(playerBoxRect.getOrigin() + playerBoxRect.getSize() / 2 + DrawPoint(0, 1));
-    DrawRectangle(playerBoxRect, player.color);
-    SmallFont->Draw(playerStatusPosition, getPlayerStatus(player), FontStyle::CENTER | FontStyle::VCENTER,
+    drawRectangle(playerBoxRect, player.color);
+    SmallFont->draw(playerStatusPosition, getPlayerStatus(player), FontStyle::CENTER | FontStyle::VCENTER,
                     COLOR_YELLOW);
 }
 
-void iwStatistics::DrawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer& player)
+void iwStatistics::drawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer& player)
 {
     constexpr unsigned spacingAllianceRects = 1;
     constexpr Extent allianceRectExtent(4, 6);
@@ -311,13 +311,13 @@ void iwStatistics::DrawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer
     {
         if(idxOther != player.getPlayerId() && player.isAlly(idxOther))
         {
-            DrawRectangle(Rect(pactPos, allianceRectExtent), gwv.getWorld().getPlayer(idxOther).color);
+            drawRectangle(Rect(pactPos, allianceRectExtent), gwv.getWorld().getPlayer(idxOther).color);
             pactPos.x += allianceRectOffset;
         }
     }
 }
 
-void iwStatistics::DrawStatistic(StatisticType type)
+void iwStatistics::drawStatistic(StatisticType type)
 {
     // Find min and max value
     unsigned max = 1;
@@ -371,13 +371,13 @@ void iwStatistics::DrawStatistic(StatisticType type)
             else
                 curPos.y -= (curStatVal * diagramSize.y) / max;
             if(i != 0)
-                DrawLine(curPos, previousPos, 2, playerColor);
+                drawLine(curPos, previousPos, 2, playerColor);
             previousPos = curPos;
         }
     }
 }
 
-void iwStatistics::DrawAxis()
+void iwStatistics::drawAxis()
 {
     const DrawPoint topLeft = getPos() + topLeftRel;
     const auto axisColor = MakeColor(255, 88, 44, 16);
@@ -385,14 +385,14 @@ void iwStatistics::DrawAxis()
     // X-axis, horizontal
     // slightly lower to see zero line, offset so it starts with last (leftmost) value of right-aligned graph
     const auto startPoint = topLeft + DrawPoint(stepX, diagramSize.y + 2);
-    DrawLine(startPoint, topLeft + diagramSize + DrawPoint(0, 2), 1, axisColor);
+    drawLine(startPoint, topLeft + diagramSize + DrawPoint(0, 2), 1, axisColor);
 
     // Y-axis, vertical
-    DrawLine(topLeft + DrawPoint(diagramSize.x, 0), topLeft + diagramSize + DrawPoint(0, 5), 1, axisColor);
+    drawLine(topLeft + DrawPoint(diagramSize.x, 0), topLeft + diagramSize + DrawPoint(0, 5), 1, axisColor);
 
     // Marks on y-axis
-    DrawLine(topLeft + DrawPoint(diagramSize.x - 3, 0), topLeft + DrawPoint(diagramSize.x + 4, 0), 1, axisColor);
-    DrawLine(topLeft + DrawPoint(diagramSize.x - 3, diagramSize.y / 2),
+    drawLine(topLeft + DrawPoint(diagramSize.x - 3, 0), topLeft + DrawPoint(diagramSize.x + 4, 0), 1, axisColor);
+    drawLine(topLeft + DrawPoint(diagramSize.x - 3, diagramSize.y / 2),
              topLeft + DrawPoint(diagramSize.x + 4, diagramSize.y / 2), 1, axisColor);
 
     // Marks on x-axis
@@ -401,7 +401,7 @@ void iwStatistics::DrawAxis()
         if(lbl->isVisible())
         {
             const auto lblPos = lbl->getDrawPos();
-            DrawLine(lblPos - DrawPoint(0, 4), lblPos - DrawPoint(0, 2), 1, axisColor);
+            drawLine(lblPos - DrawPoint(0, 4), lblPos - DrawPoint(0, 2), 1, axisColor);
         }
     }
 }

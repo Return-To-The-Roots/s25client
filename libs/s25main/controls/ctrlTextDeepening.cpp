@@ -13,7 +13,7 @@ ctrlTextDeepening::ctrlTextDeepening(Window* parent, unsigned id, DrawPoint pos,
 
 Rect ctrlTextDeepening::getBoundaryRect() const
 {
-    const Rect txtRect = font->getBounds(CalcTextPos(), text, style_);
+    const Rect txtRect = font->getBounds(calcTextPos(), text, style_);
     const Rect parentRect = ctrlDeepening::getBoundaryRect();
     Rect result;
     result.left = std::min(txtRect.left, parentRect.left);
@@ -23,7 +23,7 @@ Rect ctrlTextDeepening::getBoundaryRect() const
     return result;
 }
 
-DrawPoint ctrlTextDeepening::CalcTextPos() const
+DrawPoint ctrlTextDeepening::calcTextPos() const
 {
     DrawPoint pos = getDrawPos();
     if(style_.is(FontStyle::CENTER))
@@ -41,13 +41,13 @@ DrawPoint ctrlTextDeepening::CalcTextPos() const
     return pos;
 }
 
-void ctrlTextDeepening::ResizeForMaxChars(unsigned numChars)
+void ctrlTextDeepening::resizeForMaxChars(unsigned numChars)
 {
     const auto maxTextWidth = font->getDx() * numChars;
-    Resize(Extent(maxTextWidth + borderSize.x * 2, getSize().y));
+    resize(Extent(maxTextWidth + borderSize.x * 2, getSize().y));
 }
 
-void ctrlTextDeepening::DrawContent() const
+void ctrlTextDeepening::drawContent() const
 {
-    font->Draw(CalcTextPos(), text, style_, color_, getSize().x - 2 * ctrlTextDeepening::borderSize.x);
+    font->draw(calcTextPos(), text, style_, color_, getSize().x - 2 * ctrlTextDeepening::borderSize.x);
 }

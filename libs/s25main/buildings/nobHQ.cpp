@@ -20,15 +20,15 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     for(unsigned i = 0; i <= world->getGGS().getMaxMilitaryRank(); ++i)
     {
         reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = 1;
-        RefreshReserve(i);
+        refreshReserve(i);
     }
 
     // Evtl. liegen am Anfang Waffen im HQ, sodass rekrutiert werden muss
-    TryRecruiting();
+    tryRecruiting();
 
     // ins Militärquadrat einfügen
-    world->getMilitarySquares().Add(this);
-    world->RecalcTerritory(*this, TerritoryChangeReason::Build);
+    world->getMilitarySquares().add(this);
+    world->recalcTerritory(*this, TerritoryChangeReason::Build);
 }
 
 GoodsAndPeopleCounts nobHQ::getStartInventory(StartWares setting)
@@ -319,16 +319,16 @@ GoodsAndPeopleCounts nobHQ::getStartInventory(StartWares setting)
 
 void nobHQ::addStartWares()
 {
-    AddToInventory(getStartInventory(world->getGGS().startWares), true);
+    addToInventory(getStartInventory(world->getGGS().startWares), true);
 }
 
 void nobHQ::DestroyBuilding()
 {
     nobBaseWarehouse::DestroyBuilding();
     // Wieder aus dem Militärquadrat rauswerfen
-    world->getMilitarySquares().Remove(this);
+    world->getMilitarySquares().remove(this);
     // Recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
-    world->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
+    world->recalcTerritory(*this, TerritoryChangeReason::Destroyed);
 }
 
 void nobHQ::Serialize(SerializedGameData& sgd) const
@@ -339,16 +339,16 @@ void nobHQ::Serialize(SerializedGameData& sgd) const
 
 nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id), isTent_(sgd.PopBool())
 {
-    world->getMilitarySquares().Add(this);
+    world->getMilitarySquares().add(this);
 }
 
-void nobHQ::Draw(DrawPoint drawPt)
+void nobHQ::draw(DrawPoint drawPt)
 {
     if(isTent_)
         LOADER.building_cache[nation][BuildingType::Headquarters].skeleton.draw(drawPt);
     else
     {
-        DrawBaseBuilding(drawPt);
+        drawBaseBuilding(drawPt);
 
         // Draw at most 4 flags
         const unsigned numSoldiers =
@@ -364,7 +364,7 @@ void nobHQ::Draw(DrawPoint drawPt)
     }
 }
 
-void nobHQ::HandleEvent(const unsigned id)
+void nobHQ::handleEvent(const unsigned id)
 {
-    HandleBaseEvent(id);
+    handleBaseEvent(id);
 }

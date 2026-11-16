@@ -35,12 +35,12 @@ const std::string& AddonList::getOptionName(unsigned status) const
 AddonList::Gui::Gui(const AddonList& addon, Window& window, bool readonly)
     : AddonGui(addon, window, readonly),
       cb_(assertNonNull(
-        window.AddComboBox(2, DrawPoint(430, 0), Extent(220, 20), TextureColor::Grey, NormalFont, 100, readonly)))
+        window.addComboBox(2, DrawPoint(430, 0), Extent(220, 20), TextureColor::Grey, NormalFont, 100, readonly)))
 {
     for(const auto& option : addon.options)
-        cb_.AddItem(option);
+        cb_.addItem(option);
     if(readonly)
-        window.AddImage(3, cb_.getPos() - DrawPoint(1, 0), LOADER.getImageN("io_new", 14), _("Locked"));
+        window.addImage(3, cb_.getPos() - DrawPoint(1, 0), LOADER.getImageN("io_new", 14), _("Locked"));
 }
 
 void AddonList::Gui::setStatus(unsigned status)

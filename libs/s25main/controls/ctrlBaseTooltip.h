@@ -18,12 +18,12 @@ public:
     void setTooltip(const std::string& tooltip);
     const std::string& getTooltip() const { return tooltip_; }
     /// Swap the tooltips of those controls
-    void SwapTooltip(ctrlBaseTooltip& other);
+    void swapTooltip(ctrlBaseTooltip& other);
 
-    void ShowTooltip() const;
+    void showTooltip() const;
     /// Show a temporary tooltip
-    void ShowTooltip(const std::string& tooltip) const;
-    void HideTooltip() const;
+    void showTooltip(const std::string& tooltip) const;
+    void hideTooltip() const;
 
 protected:
     std::string tooltip_;

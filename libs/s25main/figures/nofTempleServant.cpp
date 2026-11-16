@@ -22,30 +22,30 @@ nofTempleServant::nofTempleServant(const MapPoint pos, const unsigned char playe
 {}
 
 nofTempleServant::nofTempleServant(SerializedGameData& sgd, const unsigned obj_id)
-    : nofWorkman(sgd, obj_id), currentProduction(sgd.Pop<GoodType>())
+    : nofWorkman(sgd, obj_id), currentProduction(sgd.pop<GoodType>())
 {}
 
 void nofTempleServant::Serialize(SerializedGameData& sgd) const
 {
     nofWorkman::Serialize(sgd);
-    sgd.PushEnum<uint8_t>(currentProduction);
+    sgd.pushEnum<uint8_t>(currentProduction);
 }
 
-void nofTempleServant::DrawWorking(DrawPoint drawPt)
+void nofTempleServant::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{26, -23}, {17, -40}, {4, 0}, {22, -25}, {20, -45}}};
 
-    const unsigned now_id = GAMECLIENT.Interpolate(82, current_ev);
+    const unsigned now_id = GAMECLIENT.interpolate(82, current_ev);
 
     if(now_id < 11) // servant pours wine into crucible(play once at start)
     {
         LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_START_ANIMATION] + now_id)
-          ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+          ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
                      world->getPlayer(workplace->getPlayer()).color);
     } else if(now_id < 77) // wine and food is burned (loop for duration)
     {
         LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_MAIN_ANIMATION] + (now_id + 1) % 6)
-          ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+          ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
                      world->getPlayer(workplace->getPlayer()).color);
 
         // Play sound burning
@@ -57,7 +57,7 @@ void nofTempleServant::DrawWorking(DrawPoint drawPt)
     } else // last loop of animation (play once at end)
     {
         LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_END_ANIMATION] + now_id - 77)
-          ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+          ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
                      world->getPlayer(workplace->getPlayer()).color);
     }
 
@@ -78,17 +78,17 @@ unsigned short nofTempleServant::getCarryID() const
 #    pragma warning(pop)
 #endif
 
-void nofTempleServant::DrawWalkingWithWare(DrawPoint drawPt)
+void nofTempleServant::drawWalkingWithWare(DrawPoint drawPt)
 {
     std::map<GoodType, BobTypes> goodTypeToTexture{{GoodType::Gold, BobTypes::TEMPLESERVANT_CARRYING_GOLD_IN_OUT},
                                                    {GoodType::IronOre, BobTypes::TEMPLESERVANT_CARRYING_IRON_IN_OUT},
                                                    {GoodType::Coal, BobTypes::TEMPLESERVANT_CARRYING_COAL_IN_OUT},
                                                    {GoodType::Stones, BobTypes::TEMPLESERVANT_CARRYING_STONE_IN_OUT}};
 
-    DrawWalking(drawPt, "wine_bobs", bobIndex[goodTypeToTexture[currentProduction]]);
+    drawWalking(drawPt, "wine_bobs", bobIndex[goodTypeToTexture[currentProduction]]);
 }
 
-helpers::OptionalEnum<GoodType> nofTempleServant::ProduceWare()
+helpers::OptionalEnum<GoodType> nofTempleServant::produceWare()
 {
     const auto productionMode = static_cast<nobTemple*>(workplace)->getProductionMode();
     switch(productionMode)

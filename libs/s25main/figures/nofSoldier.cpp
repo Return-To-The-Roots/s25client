@@ -31,7 +31,7 @@ void nofSoldier::Serialize(SerializedGameData& sgd) const
     noFigure::Serialize(sgd);
 
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
-        sgd.PushObject(homeBld);
+        sgd.pushObject(homeBld);
 
     sgd.PushUnsignedChar(hitpoints);
 }
@@ -41,26 +41,26 @@ nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigur
     RTTR_Assert(IsSoldier());
 
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
-        homeBld = sgd.PopObject<nobBaseMilitary>();
+        homeBld = sgd.popObject<nobBaseMilitary>();
     else
         homeBld = nullptr;
 
     hitpoints = sgd.PopUnsignedChar();
 }
 
-void nofSoldier::DrawSoldierWaiting(DrawPoint drawPt)
+void nofSoldier::drawSoldierWaiting(DrawPoint drawPt)
 {
     const GamePlayer& owner = world->getPlayer(player);
     LOADER.getBobSprite(owner.nation, job_, getCurMoveDir(), 2).drawForPlayer(drawPt, owner.color);
     if(hasArmor_)
-        this->DrawArmor(drawPt);
+        this->drawArmor(drawPt);
 }
 
-void nofSoldier::AbrogateWorkplace()
+void nofSoldier::abrogateWorkplace()
 {
     if(homeBld)
     {
-        homeBld->SoldierLost(this);
+        homeBld->soldierLost(this);
         homeBld = nullptr;
     }
 }

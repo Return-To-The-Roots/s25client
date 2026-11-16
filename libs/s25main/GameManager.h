@@ -20,20 +20,20 @@ public:
     GameManager(Log& log, Settings& settings, VideoDriverWrapper& videoDriver, AudioDriverWrapper& audioDriver,
                 WindowManager& windowManager);
 
-    bool Start();
-    void Stop();
-    bool Run();
+    bool start();
+    void stop();
+    bool run();
 
-    bool ShowMenu();
+    bool showMenu();
 
     /// Average FPS Zähler zurücksetzen.
-    void ResetAverageGFPS();
+    void resetAverageGFPS();
     FrameCounter::clock::duration getRuntime() { return gfCounter_.getCurIntervalLength(); }
     unsigned getNumFrames() { return gfCounter_.getCurNumFrames(); }
     unsigned getAverageGFPS() { return gfCounter_.getCurFrameRate(); }
 
 private:
-    bool ShowSplashscreen();
+    bool showSplashscreen();
 
     Log& log_;
     Settings& settings_;

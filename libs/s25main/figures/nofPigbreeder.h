@@ -13,11 +13,11 @@ class nobUsual;
 class nofPigbreeder : public nofWorkman
 {
     /// Zeichnet ihn beim Arbeiten
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short getCarryID() const override { return 73; }
     /// Der Arbeiter erzeugt eine Ware
-    helpers::OptionalEnum<GoodType> ProduceWare() override;
+    helpers::OptionalEnum<GoodType> produceWare() override;
 
 public:
     nofPigbreeder(MapPoint pos, unsigned char player, nobUsual* workplace);
@@ -26,5 +26,5 @@ public:
     GO_Type getGOT() const final { return GO_Type::NofPigbreeder; }
 
     /// Ggf. Schweinesounds abspielen
-    void MakePigSounds();
+    void makePigSounds();
 };

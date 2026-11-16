@@ -25,13 +25,13 @@ Game::Game(GlobalGameSettings settings, std::unique_ptr<EventManager> em, const 
 
 Game::~Game() = default;
 
-void Game::Start(bool startFromSave)
+void Game::start(bool startFromSave)
 {
     if(started_)
         return;
     started_ = true;
     if(startFromSave)
-        CheckObjective();
+        checkObjective();
     else
     {
         if(ggs_.objective == GameObjective::EconomyMode)
@@ -40,13 +40,13 @@ void Game::Start(bool startFromSave)
             world_.setEconHandler(
               std::make_unique<EconomyModeHandler>(duration_to_gfs(AddonEconomyModeGameLengthList[selection])));
         }
-        StatisticStep();
+        statisticStep();
     }
     if(world_.hasLua())
-        world_.getLua().EventStart(!startFromSave);
+        world_.getLua().eventStart(!startFromSave);
 }
 
-void Game::AddAIPlayer(std::unique_ptr<AIPlayer> newAI)
+void Game::addAIPlayer(std::unique_ptr<AIPlayer> newAI)
 {
     aiPlayers_.push_back(std::move(newAI));
 }
@@ -70,42 +70,42 @@ unsigned getNumAlivePlayers(const GameWorldBase& world)
 }
 } // namespace
 
-void Game::RunGF()
+void Game::runGF()
 {
     unsigned numPlayersAlive = getNumAlivePlayers(world_);
     //  EventManager Bescheid sagen
-    em_->ExecuteNextGF();
+    em_->executeNextGF();
     // Notfallprogramm durchlaufen lassen
     for(GamePlayer& player : world_.getPlayers())
     {
         if(player.isUsed())
         {
             // Auf Notfall testen (Wenige Bretter/Steine und keine Holzindustrie)
-            player.TestForEmergencyProgramm();
-            player.TestPacts();
+            player.testForEmergencyProgramm();
+            player.testPacts();
         }
     }
 
     if(world_.hasLua())
-        world_.getLua().EventGameFrame(em_->getCurrentGF());
+        world_.getLua().eventGameFrame(em_->getCurrentGF());
     // Update statistic every 30 seconds
     constexpr auto GFsIn30s = static_cast<unsigned>(duration_to_gfs(30s));
     if(em_->getCurrentGF() % GFsIn30s == 0)
-        StatisticStep();
+        statisticStep();
     // If some players got defeated check objective
     if(getNumAlivePlayers(world_) < numPlayersAlive)
-        CheckObjective();
+        checkObjective();
 }
 
-void Game::StatisticStep()
+void Game::statisticStep()
 {
     for(auto& player : world_.getPlayers())
-        player.StatisticStep();
+        player.statisticStep();
 
-    CheckObjective();
+    checkObjective();
 }
 
-void Game::CheckObjective()
+void Game::checkObjective()
 {
     // Check objective if there is one
     if(finished_ || (ggs_.objective != GameObjective::Conquer3_4 && ggs_.objective != GameObjective::TotalDomination))

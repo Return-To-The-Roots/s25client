@@ -75,7 +75,7 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
       gwv(gwv), gcFactory(gcFactory)
 {
     setBuildingOrder();
-    Resize(iconSpacing * Extent(4, helpers::divCeil(bts.size(), 4) + 1) + bldContentOffset);
+    resize(iconSpacing * Extent(4, helpers::divCeil(bts.size(), 4) + 1) + bldContentOffset);
 
     const Nation playerNation = gwv.getViewer().getPlayer().nation;
     // Symbole für die einzelnen Gebäude erstellen
@@ -88,14 +88,14 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 
             Extent btSize = Extent(32, 32);
             DrawPoint btPos = bldContentOffset - btSize / 2 + iconSpacing * DrawPoint(x, y);
-            AddImageButton(ID_BuildingsStart + y * 4 + x, btPos, btSize, TextureColor::Grey,
+            addImageButton(ID_BuildingsStart + y * 4 + x, btPos, btSize, TextureColor::Grey,
                            LOADER.getNationIcon(playerNation, bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 
     // "Help" button
     Extent btSize = Extent(30, 32);
-    AddImageButton(ID_Help, getFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
+    addImageButton(ID_Help, getFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
                    LOADER.getImageN("io", 225), _("Help"));
 }
 
@@ -118,7 +118,7 @@ void iwBuildings::msgPaintAfter()
                 break;
 
             fmt % bc.buildings[bts[y * 4 + x]] % bc.buildingSites[bts[y * 4 + x]];
-            NormalFont->Draw(curPos, fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
+            NormalFont->draw(curPos, fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
             curPos.x += iconSpacing.x;
         }
         rowPos.y += iconSpacing.y;
@@ -129,7 +129,7 @@ void iwBuildings::msgButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_Help) // Help button
     {
-        WINDOWMANAGER.ReplaceWindow(
+        WINDOWMANAGER.replaceWindow(
           std::make_unique<iwHelp>(_("The building statistics window gives you an insight into "
                                      "the number of buildings you have, by type. The number on "
                                      "the left is the total number of this type of building "
@@ -144,28 +144,28 @@ void iwBuildings::msgButtonClick(const unsigned ctrl_id)
 
     BuildingType bldType = bts[ctrl_id - ID_BuildingsStart];
     if(BuildingProperties::isMilitary(bldType))
-        GoToFirstMatching<iwMilitaryBuilding>(bldType, buildingRegister.getMilitaryBuildings());
+        goToFirstMatching<iwMilitaryBuilding>(bldType, buildingRegister.getMilitaryBuildings());
     else if(bldType == BuildingType::HarborBuilding)
-        GoToFirstMatching<iwHarborBuilding>(bldType, buildingRegister.getHarbors());
+        goToFirstMatching<iwHarborBuilding>(bldType, buildingRegister.getHarbors());
     else if(BuildingProperties::isWareHouse(bldType))
-        GoToFirstMatching<iwBaseWarehouse>(bldType, buildingRegister.getStorehouses());
+        goToFirstMatching<iwBaseWarehouse>(bldType, buildingRegister.getStorehouses());
     else if(bldType == BuildingType::Temple)
-        GoToFirstMatching<iwTempleBuilding>(bldType, buildingRegister.getBuildings(bldType));
+        goToFirstMatching<iwTempleBuilding>(bldType, buildingRegister.getBuildings(bldType));
     else
-        GoToFirstMatching<iwBuilding>(bldType, buildingRegister.getBuildings(bldType));
+        goToFirstMatching<iwBuilding>(bldType, buildingRegister.getBuildings(bldType));
 }
 
 template<class T_Window, class T_Building>
-void iwBuildings::GoToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds)
+void iwBuildings::goToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds)
 {
     for(T_Building* bld : blds)
     {
         if(bld->getBuildingType() == bldType)
         {
-            gwv.MoveToMapPt(bld->getPos());
+            gwv.moveToMapPt(bld->getPos());
             auto nextscrn = std::make_unique<T_Window>(gwv, gcFactory, static_cast<T_Building*>(bld));
             nextscrn->setPos(getPos());
-            WINDOWMANAGER.ReplaceWindow(std::move(nextscrn));
+            WINDOWMANAGER.replaceWindow(std::move(nextscrn));
             return;
         }
     }

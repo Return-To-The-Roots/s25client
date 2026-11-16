@@ -17,7 +17,7 @@ class MapInfo
 public:
     MapInfo();
     ~MapInfo();
-    void Clear();
+    void clear();
 
     /// Return true if the currently present data sizes (compressed and uncompressed) are valid (especially fit into
     /// uint32)

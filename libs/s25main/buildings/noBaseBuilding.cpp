@@ -29,7 +29,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
     // Evtl Flagge setzen, wenn noch keine da ist
     if(world->getNO(flagPt)->getType() != NodalObjectType::Flag)
     {
-        world->DestroyNO(flagPt, false);
+        world->destroyNO(flagPt, false);
         world->setNO(flagPt, new noFlag(flagPt, player));
     }
 
@@ -73,7 +73,7 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
                     continue;
             }
 
-            world->DestroyNO(neighbor, false);
+            world->destroyNO(neighbor, false);
             world->setNO(neighbor, new noExtension(this));
         }
     }
@@ -81,16 +81,16 @@ noBaseBuilding::noBaseBuilding(const NodalObjectType nop, const BuildingType typ
 
 noBaseBuilding::~noBaseBuilding() = default;
 
-void noBaseBuilding::Destroy()
+void noBaseBuilding::destroy()
 {
-    DestroyAllRoads();
+    destroyAllRoads();
     world->getNotifications().publish(BuildingNote(BuildingNote::Destroyed, player, pos, bldType_));
 
     if(world->getGameInterface())
         world->getGameInterface()->GI_UpdateMinimap(pos);
 
     // evtl Anbauten wieder abreißen
-    DestroyBuildingExtensions();
+    destroyBuildingExtensions();
 
     // Baukosten zurückerstatten (nicht bei Baustellen)
     const GlobalGameSettings& settings = world->getGGS();
@@ -126,15 +126,15 @@ void noBaseBuilding::Destroy()
                 {
                     // Ware erzeugen
                     auto ware = std::make_unique<Ware>(goods[which], nullptr, flag);
-                    ware->WaitAtFlag(*flag);
+                    ware->waitAtFlag(*flag);
                     // Inventur anpassen
-                    world->getPlayer(player).IncreaseInventoryWare(goods[which], 1);
+                    world->getPlayer(player).increaseInventoryWare(goods[which], 1);
                     // Abnehmer für Ware finden
-                    ware->setGoal(world->getPlayer(player).FindClientForWare(*ware));
+                    ware->setGoal(world->getPlayer(player).findClientForWare(*ware));
                     // Ware soll ihren weiteren Weg berechnen
-                    ware->RecalcRoute();
+                    ware->recalcRoute();
                     // Ware ablegen
-                    flag->AddWare(std::move(ware));
+                    flag->addWare(std::move(ware));
 
                     if(!which)
                         --boards;
@@ -147,21 +147,21 @@ void noBaseBuilding::Destroy()
         }
     }
 
-    noRoadNode::Destroy();
+    noRoadNode::destroy();
 }
 
 void noBaseBuilding::Serialize(SerializedGameData& sgd) const
 {
     noRoadNode::Serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(bldType_);
-    sgd.PushEnum<uint8_t>(nation);
+    sgd.pushEnum<uint8_t>(bldType_);
+    sgd.pushEnum<uint8_t>(nation);
     sgd.PushSignedInt(door_point_x);
     sgd.PushSignedInt(door_point_y);
 }
 
 noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id)
-    : noRoadNode(sgd, obj_id), bldType_(sgd.Pop<BuildingType>()), nation(sgd.Pop<Nation>()),
+    : noRoadNode(sgd, obj_id), bldType_(sgd.pop<BuildingType>()), nation(sgd.pop<Nation>()),
       door_point_x(sgd.PopSignedInt()), door_point_y(sgd.PopSignedInt())
 {}
 
@@ -224,7 +224,7 @@ bool noBaseBuilding::isConnected() const
     return false;
 }
 
-void noBaseBuilding::WareNotNeeded(Ware* ware)
+void noBaseBuilding::wareNotNeeded(Ware* ware)
 {
     if(!ware)
     {
@@ -236,13 +236,13 @@ void noBaseBuilding::WareNotNeeded(Ware* ware)
     if(ware->isWaitingInWarehouse())
     {
         // Bestellung im Lagerhaus stornieren
-        world->getPlayer(player).RemoveWare(*ware);
+        world->getPlayer(player).removeWare(*ware);
         static_cast<nobBaseWarehouse*>(ware->getLocation())->cancelWare(ware);
     } else
-        ware->GoalDestroyed();
+        ware->goalDestroyed();
 }
 
-void noBaseBuilding::DestroyBuildingExtensions()
+void noBaseBuilding::destroyBuildingExtensions()
 {
     // Nur bei großen Gebäuden gibts diese Anbauten
     if(getSize() == BuildingQuality::Castle || getSize() == BuildingQuality::Harbor)
@@ -251,7 +251,7 @@ void noBaseBuilding::DestroyBuildingExtensions()
         {
             const MapPoint neighbor = world->getNeighbour(pos, i);
             if(world->getNO(neighbor)->getType() == NodalObjectType::Extension)
-                world->DestroyNO(neighbor);
+                world->destroyNO(neighbor);
         }
     }
 }

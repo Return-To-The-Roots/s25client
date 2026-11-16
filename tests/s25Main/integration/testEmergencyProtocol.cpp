@@ -14,16 +14,16 @@ struct EmergencyFixture : public WorldWithGCExecution1P
     nobHQ* hq = world.getPlayer(0).getHQ();
     EmergencyFixture()
     {
-        hq->AddToInventory(hq->getStartInventory(StartWares::VLow), true);
+        hq->addToInventory(hq->getStartInventory(StartWares::VLow), true);
         MapPoint pos;
 
         pos = hqPos + MapPoint(3, 0);
         world.SetBuildingSite(BuildingType::Farm, pos, 0);
-        BuildRoadForBlds(pos, hqPos);
+        buildRoadForBlds(pos, hqPos);
 
         pos = hqPos + MapPoint(-3, 0);
         world.SetBuildingSite(BuildingType::Farm, pos, 0);
-        BuildRoadForBlds(pos, hqPos);
+        buildRoadForBlds(pos, hqPos);
 
         // wait until emergency protocol should be activated
         RTTR_EXEC_TILL(500, hq->getInventory()[GoodType::Boards] == 10);
@@ -43,11 +43,11 @@ BOOST_AUTO_TEST_CASE(CanBuildWoodcutterAndSawmill)
 {
     const MapPoint posWoodcutter = hqPos + MapPoint(-1, 2);
     world.SetBuildingSite(BuildingType::Woodcutter, posWoodcutter, 0);
-    BuildRoadForBlds(posWoodcutter, hqPos);
+    buildRoadForBlds(posWoodcutter, hqPos);
 
     const MapPoint posSawmill = hqPos + MapPoint(-2, 4);
     world.SetBuildingSite(BuildingType::Sawmill, posSawmill, 0);
-    BuildRoadForBlds(posSawmill, hqPos);
+    buildRoadForBlds(posSawmill, hqPos);
 
     // check if inventory boards are given out
     RTTR_EXEC_TILL(200, hq->getInventory()[GoodType::Boards] < 10);
@@ -62,7 +62,7 @@ BOOST_FIXTURE_TEST_CASE(CannotBuildOtherBuldings, EmergencyFixture)
     const MapPoint pos = hqPos + MapPoint(-3, 0);
     world.SetBuildingSite(BuildingType::Watchtower, pos, 0);
 
-    BuildRoadForBlds(pos, hqPos);
+    buildRoadForBlds(pos, hqPos);
 
     // No boards are carried out to the farms or watchtower due to emergency protocol
     RTTR_SKIP_GFS(500);

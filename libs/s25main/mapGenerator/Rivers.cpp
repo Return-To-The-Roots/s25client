@@ -8,7 +8,7 @@
 
 namespace rttr::mapGenerator {
 
-River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
+River createStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
                    unsigned splitRate)
 {
     const MapExtent& size = map.size;
@@ -46,15 +46,15 @@ River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Directi
 
         while(currentDir == lastDir || helpers::contains(exlcuded, currentDir))
         {
-            currentDir = lastDir + (rnd.ByChance(50) ? 5 : 1);
+            currentDir = lastDir + (rnd.byChance(50) ? 5 : 1);
         }
 
         currentNode = map.getTextures().getNeighbour(currentNode, lastDir);
 
-        if(rnd.ByChance(splitRate))
+        if(rnd.byChance(splitRate))
         {
-            auto splitDirection = direction + (rnd.ByChance(50) ? 5 : 1);
-            auto anotherRivers = CreateStream(rnd, map, currentNode, splitDirection, length / 2, splitRate / 2);
+            auto splitDirection = direction + (rnd.byChance(50) ? 5 : 1);
+            auto anotherRivers = createStream(rnd, map, currentNode, splitDirection, length / 2, splitRate / 2);
 
             for(const MapPoint& node : anotherRivers)
             {

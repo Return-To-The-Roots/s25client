@@ -29,14 +29,14 @@ private:
 
     helpers::EnumArray<bool, ResourceType> resAlreadyFound;
 
-    void GoalReached() override;
-    void Walked() override;
-    void HandleDerivedEvent(unsigned id) override;
+    void goalReached() override;
+    void walked() override;
+    void handleDerivedEvent(unsigned id) override;
 
     /// Kann man an diesem Punkt ein Schild aufstellen?
     bool isNodeGood(MapPoint pt) const;
     /// Sucht im Umkreis von der Flagge neue Punkte wo man graben könnte
-    void LookForNewNodes();
+    void lookForNewNodes();
     /// Checks if the node is valid as a new target
     inline bool isValidTargetNode(MapPoint pt) const;
     /// Searches for a new point to go to. Returns the direction to walk in if any point was found, else sets node_goal
@@ -44,7 +44,7 @@ private:
     helpers::OptionalEnum<Direction> getNextNode();
     /// Sucht sich einen neuen Punkt und geht dorthin oder geht wieder nach Hause wenn alle Schilder aufgestellt wurden
     /// oder es keinen Punkt mehr gibt
-    void GoToNextNode();
+    void goToNextNode();
     /// Setzt das Schild, wenn noch was frei ist
     void setSign(Resource resources);
 
@@ -58,8 +58,8 @@ public:
 
     GO_Type getGOT() const final { return GO_Type::NofGeologist; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-    void LostWork() override;
+    void lostWork() override;
 };

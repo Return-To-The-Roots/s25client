@@ -48,7 +48,7 @@ public:
     AISurfaceResource getSurfaceResource(MapPoint pt) const;
     /// Calculate the surface resource value on a given spot (wood/ stones/ farmland)
     /// when given a direction and lastvalue the calculation will be much faster O(n) vs O(n^2)
-    int CalcResourceValue(MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction = std::nullopt,
+    int calcResourceValue(MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction = std::nullopt,
                           int lastval = 0xffff) const;
     /// Calculate the resource value for a given point
     int getResourceRating(MapPoint pt, AIResource res) const;
@@ -79,18 +79,18 @@ public:
     /// Test whether the ai player can see a point
     bool isVisible(const MapPoint pt) const
     {
-        return gwb.CalcVisiblityWithAllies(pt, playerID_) == Visibility::Visible;
+        return gwb.calcVisiblityWithAllies(pt, playerID_) == Visibility::Visible;
     }
     /// Return true when the building quality at the 2nd point is lower than the bq on the first point
-    bool CalcBQSumDifference(MapPoint pt1, MapPoint pt2) const;
+    bool calcBQSumDifference(MapPoint pt1, MapPoint pt2) const;
     /// Return building quality on a given spot
     BuildingQuality getBuildingQuality(MapPoint pt) const;
     BuildingQuality getBuildingQualityAnyOwner(MapPoint pt) const;
     /// Tries to find a free path for a road and return length and the route
-    bool FindFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route = nullptr,
+    bool findFreePathForNewRoad(MapPoint start, MapPoint target, std::vector<Direction>* route = nullptr,
                                 unsigned* length = nullptr) const;
     /// Tries to find a route from start to target, returning length of that route if it exists
-    bool FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length = nullptr) const;
+    bool findPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length = nullptr) const;
     /// Checks if it is allowed to build catapults
     bool canBuildCatapult() const { return player_.canBuildCatapult(); }
     /// checks if the player is allowed to build the building type (lua maybe later addon?)
@@ -99,11 +99,11 @@ public:
     bool isPlayerAttackable(unsigned char playerID) const { return player_.isAttackable(playerID); }
     /// player.FindWarehouse
     template<class T_IsWarehouseGood>
-    nobBaseWarehouse* FindWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh,
+    nobBaseWarehouse* findWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh,
                                     bool use_boat_roads, unsigned* length = nullptr,
                                     const RoadSegment* forbidden = nullptr) const
     {
-        return player_.FindWarehouse(start, isWarehouseGood, to_wh, use_boat_roads, length, forbidden);
+        return player_.findWarehouse(start, isWarehouseGood, to_wh, use_boat_roads, length, forbidden);
     }
     /// Return the headquarter of the player (or null if destroyed)
     const nobHQ* getHeadquarter() const;
@@ -167,14 +167,14 @@ public:
     bool StartStopExpedition(const nobHarborBuilding* hb, bool start);
     using GameCommandFactory::StartStopExpedition;
 
-    bool FoundColony(const noShip& ship) { return FoundColony(getShipID(ship)); }
-    using GameCommandFactory::FoundColony;
+    bool foundColony(const noShip& ship) { return foundColony(getShipID(ship)); }
+    using GameCommandFactory::foundColony;
 
-    bool TravelToNextSpot(ShipDirection direction, const noShip& ship)
+    bool travelToNextSpot(ShipDirection direction, const noShip& ship)
     {
-        return TravelToNextSpot(direction, getShipID(ship));
+        return travelToNextSpot(direction, getShipID(ship));
     }
-    using GameCommandFactory::TravelToNextSpot;
+    using GameCommandFactory::travelToNextSpot;
 
     bool CancelExpedition(const noShip& ship) { return CancelExpedition(getShipID(ship)); }
     using GameCommandFactory::CancelExpedition;
@@ -192,15 +192,15 @@ public:
     using GameCommandFactory::CallSpecialist;
 
     /// Sends a chat messsage to all players
-    void Chat(const std::string& message, ChatDestination destination = ChatDestination::All);
+    void chat(const std::string& message, ChatDestination destination = ChatDestination::All);
 
-    std::vector<std::unique_ptr<GameMessage_Chat>> FetchChatMessages();
+    std::vector<std::unique_ptr<GameMessage_Chat>> fetchChatMessages();
 
     /// Pointer to GameWorld, containing all information about the world
     const GameWorldBase& gwb;
 
 private:
-    bool AddGC(gc::GameCommandPtr gc) override
+    bool addGC(gc::GameCommandPtr gc) override
     {
         gcs.push_back(gc);
         return true;

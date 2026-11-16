@@ -37,13 +37,13 @@ public:
 
     ~noGrainfield() override;
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::Grainfield; }
 
-    void Draw(DrawPoint drawPt) override;
-    void HandleEvent(unsigned id) override;
+    void draw(DrawPoint drawPt) override;
+    void handleEvent(unsigned id) override;
 
     BlockingManner getBM() const override { return BlockingManner::FlagsAround; }
 
@@ -54,7 +54,7 @@ public:
     unsigned getHarvestMapLstID() const { return 532 + type * 5 + 4; }
 
     /// Bauer beginnt dieses Feld abzuernten
-    void BeginHarvesting();
+    void beginHarvesting();
     /// Bauer wird beim Abernten unterbrochen
-    void EndHarvesting();
+    void endHarvesting();
 };

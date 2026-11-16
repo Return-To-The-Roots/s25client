@@ -27,16 +27,16 @@ void initGUITests()
     if(!dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.getDriver()))
     {
         rttr::test::LogAccessor logAcc;
-        VIDEODRIVER.LoadDriver(new MockupVideoDriver(&WINDOWMANAGER));
+        VIDEODRIVER.loadDriver(new MockupVideoDriver(&WINDOWMANAGER));
         RTTR_REQUIRE_LOG_CONTAINS("Mockup Video Driver", false);
-        VIDEODRIVER.CreateScreen(VideoMode(800, 600), DisplayMode::Windowed);
+        VIDEODRIVER.createScreen(VideoMode(800, 600), DisplayMode::Windowed);
         BOOST_TEST_CHECKPOINT("Load dummy files");
-        LOADER.LoadDummyGUIFiles();
-        LOADER.LoadDummySoundFiles();
+        LOADER.loadDummyGUIFiles();
+        LOADER.loadDummySoundFiles();
         BOOST_TEST_CHECKPOINT("Switch to Desktop");
         WINDOWMANAGER.Switch(std::make_unique<DummyDesktop>());
         BOOST_TEST_CHECKPOINT("Dummy Draw");
-        WINDOWMANAGER.Draw();
+        WINDOWMANAGER.draw();
         logAcc.clearLog();
     }
     // Don't try to play sounds
@@ -61,7 +61,7 @@ Fixture::~Fixture()
     {
         // Switch back to new, empty desktop to clean up active windows
         WINDOWMANAGER.Switch(std::make_unique<DummyDesktop>());
-        WINDOWMANAGER.Draw();
+        WINDOWMANAGER.draw();
     }
 }
 

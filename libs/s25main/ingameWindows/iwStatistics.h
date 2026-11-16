@@ -33,13 +33,13 @@ private:
     unsigned numPlayingPlayers;
 
     void msgButtonClick(unsigned ctrl_id) override;
-    void DrawContent() override;
+    void drawContent() override;
     void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
-    void DrawPlayerBox(DrawPoint const& drawPt, const GamePlayer& player);
-    void DrawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer& player);
-    void DrawPlayerOverlays();
-    void DrawStatistic(StatisticType type);
-    void DrawAxis();
+    void drawPlayerBox(DrawPoint const& drawPt, const GamePlayer& player);
+    void drawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer& player);
+    void drawPlayerOverlays();
+    void drawStatistic(StatisticType type);
+    void drawAxis();
 
     void updateTimeAxisLabels();
 };

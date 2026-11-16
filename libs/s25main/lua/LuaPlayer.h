@@ -35,22 +35,22 @@ public:
     LuaPlayer(Game& game, GamePlayer& player) : game(game), player(player) {}
     static void Register(kaguya::State& state);
 
-    void EnableBuilding(lua::SafeEnum<BuildingType> bld, bool notify);
-    void DisableBuilding(lua::SafeEnum<BuildingType> bld);
-    void EnableAllBuildings();
-    void DisableAllBuildings();
+    void enableBuilding(lua::SafeEnum<BuildingType> bld, bool notify);
+    void disableBuilding(lua::SafeEnum<BuildingType> bld);
+    void enableAllBuildings();
+    void disableAllBuildings();
     void setRestrictedArea(kaguya::VariadicArgType inPoints);
     bool isInRestrictedArea(unsigned x, unsigned y) const;
-    void ClearResources();
-    bool AddWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& wares);
-    bool AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people);
+    void clearResources();
+    bool addWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& wares);
+    bool addPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people);
     unsigned getNumBuildings(lua::SafeEnum<BuildingType> bld) const;
     unsigned getNumBuildingSites(lua::SafeEnum<BuildingType> bld) const;
     unsigned getNumWares(lua::SafeEnum<GoodType> ware) const;
     unsigned getNumPeople(lua::SafeEnum<Job> job) const;
     unsigned getStatisticsValue(lua::SafeEnum<StatisticType> stat) const;
-    bool AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld);
-    void ModifyHQ(bool isTent);
+    bool aIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld);
+    void modifyHQ(bool isTent);
     bool IsDefeated() const;
     void Surrender(bool destroyBlds);
     std::pair<unsigned, unsigned> getHQPos() const;

@@ -12,20 +12,20 @@
 
 noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NodalObjectType::Environment, pos), type(0)
 {
-    current_event = getEvMgr().AddEvent(this, 15000 + RANDOM_RAND(10000));
+    current_event = getEvMgr().addEvent(this, 15000 + RANDOM_RAND(10000));
 }
 
 noSkeleton::~noSkeleton() = default;
 
-void noSkeleton::Destroy()
+void noSkeleton::destroy()
 {
     // Remove from map if still present
     if(world->getNode(pos).obj == this)
         world->setNO(pos, nullptr);
 
-    getEvMgr().RemoveEvent(current_event);
+    getEvMgr().removeEvent(current_event);
 
-    noCoordBase::Destroy();
+    noCoordBase::destroy();
 }
 
 void noSkeleton::Serialize(SerializedGameData& sgd) const
@@ -33,31 +33,31 @@ void noSkeleton::Serialize(SerializedGameData& sgd) const
     noCoordBase::Serialize(sgd);
 
     sgd.PushUnsignedChar(type);
-    sgd.PushEvent(current_event);
+    sgd.pushEvent(current_event);
 }
 
 noSkeleton::noSkeleton(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), current_event(sgd.PopEvent())
+    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), current_event(sgd.popEvent())
 {}
 
-void noSkeleton::Draw(DrawPoint drawPt)
+void noSkeleton::draw(DrawPoint drawPt)
 {
-    LOADER.getMapTexture(547 + type)->DrawFull(drawPt);
+    LOADER.getMapTexture(547 + type)->drawFull(drawPt);
 }
 
-void noSkeleton::HandleEvent(const unsigned /*id*/)
+void noSkeleton::handleEvent(const unsigned /*id*/)
 {
     if(!type)
     {
         // weiter verwesen, dann später sterben nach ner zufälligen Zeit
         type = 1;
-        current_event = getEvMgr().AddEvent(this, 10000 + RANDOM_RAND(10000));
+        current_event = getEvMgr().addEvent(this, 10000 + RANDOM_RAND(10000));
     } else
     {
         // Remove from map and destroy
         RTTR_Assert(world->getNode(pos).obj == this);
         world->setNO(pos, nullptr);
-        getEvMgr().AddToKillList(this);
+        getEvMgr().addToKillList(this);
         current_event = nullptr;
     }
 }

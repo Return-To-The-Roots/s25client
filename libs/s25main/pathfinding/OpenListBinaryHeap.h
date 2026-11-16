@@ -53,10 +53,10 @@ public:
     void rearrange(T* el) { decreasedKey(el); }
 
 protected:
-    static size_type NoPos() { return std::numeric_limits<size_type>::max(); }
-    static size_type ParentPos(size_type pos) { return (pos - 1) / 2; }
-    static size_type LeftChildPos(size_type pos) { return (2 * pos) + 1; }
-    static size_type RightChildPos(size_type pos) { return (2 * pos) + 2; }
+    static size_type noPos() { return std::numeric_limits<size_type>::max(); }
+    static size_type parentPos(size_type pos) { return (pos - 1) / 2; }
+    static size_type leftChildPos(size_type pos) { return (2 * pos) + 1; }
+    static size_type rightChildPos(size_type pos) { return (2 * pos) + 2; }
 
     bool isHeap() const;
     bool arePositionsValid() const;
@@ -85,8 +85,8 @@ bool OpenListBinaryHeap<T, T_GetKey>::isHeap() const
     size_type size = this->size();
     for(size_type i = 0; i < size; i++)
     {
-        const size_type left = LeftChildPos(i);
-        const size_type right = RightChildPos(i);
+        const size_type left = leftChildPos(i);
+        const size_type right = rightChildPos(i);
         // If child exist, parent must be "less" than child
         if(left < size && getKey(left) < getKey(i))
             return false;
@@ -131,13 +131,13 @@ inline void OpenListBinaryHeap<T, T_GetKey>::decreasedKey(T* el)
     RTTR_Assert(i < this->size());
     while(i > 0)
     {
-        const unsigned parentPos = ParentPos(i);
-        if(elVal >= this->elements[parentPos].key)
+        const unsigned parent = parentPos(i);
+        if(elVal >= this->elements[parent].key)
             break;
         using std::swap;
-        getPos(this->elements[parentPos].el) = i;
-        swap(this->elements[parentPos], this->elements[i]);
-        i = parentPos;
+        getPos(this->elements[parent].el) = i;
+        swap(this->elements[parent], this->elements[i]);
+        i = parent;
     }
     getPos(el) = i;
     RTTR_VALIDATE_HEAP();
@@ -170,10 +170,10 @@ inline T* OpenListBinaryHeap<T, T_GetKey>::pop()
     do
     {
         // Now check if the heap condition is violated for the current position
-        const size_type left = LeftChildPos(i);
+        const size_type left = leftChildPos(i);
         if(left >= size)
             break; // No child? -> All ok
-        const size_type right = RightChildPos(i);
+        const size_type right = rightChildPos(i);
         const unsigned leftVal = this->elements[left].key;
         if(leftVal < el.key) // left < i
         {

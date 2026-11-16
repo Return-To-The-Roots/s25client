@@ -6,16 +6,16 @@
 
 #include <boost/filesystem/path.hpp>
 
-uint32_t CalcChecksumOfFile(const boost::filesystem::path& path);
-uint32_t CalcChecksumOfBuffer(const uint8_t* buffer, size_t size);
+uint32_t calcChecksumOfFile(const boost::filesystem::path& path);
+uint32_t calcChecksumOfBuffer(const uint8_t* buffer, size_t size);
 
-inline uint32_t CalcChecksumOfBuffer(const char* buffer, size_t size)
+inline uint32_t calcChecksumOfBuffer(const char* buffer, size_t size)
 {
-    return CalcChecksumOfBuffer(reinterpret_cast<const uint8_t*>(buffer), size);
+    return calcChecksumOfBuffer(reinterpret_cast<const uint8_t*>(buffer), size);
 }
 
 template<typename T>
-inline uint32_t CalcChecksumOfBuffer(const T& buffer)
+inline uint32_t calcChecksumOfBuffer(const T& buffer)
 {
-    return CalcChecksumOfBuffer(buffer.data(), buffer.size());
+    return calcChecksumOfBuffer(buffer.data(), buffer.size());
 }

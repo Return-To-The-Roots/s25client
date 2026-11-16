@@ -22,7 +22,7 @@ namespace {
 
 MOCK_BASE_CLASS(MockGCFactory, GameCommandFactory)
 {
-    MOCK_METHOD(AddGC, 1, bool(gc::GameCommandPtr gc)); // LCOV_EXCL_LINE
+    MOCK_METHOD(addGC, 1, bool(gc::GameCommandPtr gc)); // LCOV_EXCL_LINE
 };
 
 constexpr auto numPlayers = 3;
@@ -178,7 +178,7 @@ BOOST_FIXTURE_TEST_CASE(AllBuildingsAreEnabled_WhenCheatModeIsOn, CheatsFixture)
     cheats.toggleCheatMode();
     GamePlayer& p1 = world.getPlayer(0);
     const auto bld = BuildingType::Brewery;
-    p1.DisableBuilding(bld);
+    p1.disableBuilding(bld);
     BOOST_TEST_REQUIRE(p1.isBuildingEnabled(bld) == false);
     cheats.toggleAllBuildingsEnabled();
     BOOST_TEST_REQUIRE(p1.isBuildingEnabled(bld) == true);

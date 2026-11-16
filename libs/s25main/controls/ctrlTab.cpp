@@ -20,40 +20,40 @@ void ctrlTab::msgButtonClick(const unsigned ctrl_id)
 
 bool ctrlTab::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftDown, mc);
+    return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
 bool ctrlTab::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
 bool ctrlTab::msgWheelUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgWheelUp, mc);
+    return relayMouseMessage(&Window::msgWheelUp, mc);
 }
 
 bool ctrlTab::msgWheelDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgWheelDown, mc);
+    return relayMouseMessage(&Window::msgWheelDown, mc);
 }
 
 bool ctrlTab::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgMouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }
 
 /**
  *  fügt eine Tab hinzu.
  */
-ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned id)
+ctrlGroup* ctrlTab::addTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned id)
 {
     if(tab_count < tabs.size())
     {
-        if(AddImageButton(tab_count, DrawPoint(36 * tab_count, 0), Extent(36, 45), TextureColor::Red1, image, tooltip))
+        if(addImageButton(tab_count, DrawPoint(36 * tab_count, 0), Extent(36, 45), TextureColor::Red1, image, tooltip))
         {
             tabs[tab_count++] = id;
-            ctrlGroup* group = AddGroup(tabs.size() + 1 + id);
+            ctrlGroup* group = addGroup(tabs.size() + 1 + id);
             group->setVisible(false);
 
             return group;
@@ -66,10 +66,10 @@ ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& toolti
 /**
  *  löscht alle Tabs.
  */
-void ctrlTab::DeleteAllTabs()
+void ctrlTab::deleteAllTabs()
 {
     for(unsigned i = 0; i < tab_count; ++i)
-        DeleteCtrl(i);
+        deleteCtrl(i);
 
     tab_selection = 0;
     tab_count = 0;
@@ -121,20 +121,20 @@ ctrlGroup* ctrlTab::getGroup(const unsigned tab_id)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-void ctrlTab::Draw_()
+void ctrlTab::drawImpl()
 {
-    Window::Draw_();
+    Window::drawImpl();
 
     // TODO: What is this really?
     int headerSize = tab_count * 36;
-    LOADER.getImageN("io", 3)->DrawPart(
+    LOADER.getImageN("io", 3)->drawPart(
       Rect(getDrawPos() + DrawPoint(headerSize, 0), Extent(getSize().x - headerSize, 45)));
 
-    Draw3D(Rect(getDrawPos() + DrawPoint(0, 32), Extent(getSize().x, 13)), TextureColor::Green1, true);
+    draw3D(Rect(getDrawPos() + DrawPoint(0, 32), Extent(getSize().x, 13)), TextureColor::Green1, true);
 
     auto* button = getCtrl<ctrlButton>(tab_selection);
     if(button)
-        button->Draw();
+        button->draw();
 }
 
 void ctrlTab::msgGroupButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)

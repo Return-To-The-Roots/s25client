@@ -134,7 +134,7 @@ struct Rep<std::chrono::duration<T, U>>
     using type = T;
 };
 
-BOOST_AUTO_TEST_CASE_TEMPLATE(Interpolate, T, TimeTypes)
+BOOST_AUTO_TEST_CASE_TEMPLATE(interpolate, T, TimeTypes)
 {
     using RepT = typename Rep<T>::type;
     using rttr::test::randomValue;

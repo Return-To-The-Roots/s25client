@@ -76,7 +76,7 @@ bool GameLoader::loadTextures()
     }
 
     const LandscapeDesc& lt = game->world_.getDescription().get(game->world_.GetLandscapeType());
-    if(!loader.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, usedNations, enabledAddons) || !loader.LoadFiles(textures))
+    if(!loader.loadFilesAtGame(lt.mapGfxPath, lt.isWinter, usedNations, enabledAddons) || !loader.loadFiles(textures))
         return false;
 
     loader.fillCaches();

@@ -10,14 +10,14 @@
 #include <stdexcept>
 #include <string>
 
-unsigned MapBase::CreateGUIID(MapPoint pt)
+unsigned MapBase::createGUIID(MapPoint pt)
 {
     return pt.y * MAX_MAP_SIZE + pt.x;
 }
 
 MapBase::MapBase() : size_(MapExtent::all(0)) {}
 
-void MapBase::Resize(const MapExtent& newSize)
+void MapBase::resize(const MapExtent& newSize)
 {
     // Odd heights make the map impossible (map wraps around so start and end must match)
     // For width it is technically possible to have odd sizes so we don't check this
@@ -85,7 +85,7 @@ MapPoint MapBase::getNeighbour(const MapPoint pt, const Direction dir) const
 
 MapPoint MapBase::getNeighbour2(const MapPoint pt, unsigned dir) const
 {
-    return MakeMapPoint(::getNeighbour2(Position(pt), dir));
+    return makeMapPoint(::getNeighbour2(Position(pt), dir));
 }
 
 std::vector<MapPoint> MapBase::getAllNeighboursUnion(const std::vector<MapPoint>& points) const
@@ -118,7 +118,7 @@ helpers::EnumArray<MapPoint, Direction> MapBase::getNeighbours(const MapPoint pt
             MapPoint(!isEvenRow ? pt.x : xminus1, yplus1)};
 }
 
-unsigned MapBase::CalcDistance(const Position& p1, const Position& p2) const
+unsigned MapBase::calcDistance(const Position& p1, const Position& p2) const
 {
     int dx = ((p1.x - p2.x) * 2) + (p1.y & 1) - (p2.y & 1);
     int dy = std::abs(p1.y - p2.y) * 2;
@@ -137,9 +137,9 @@ unsigned MapBase::CalcDistance(const Position& p1, const Position& p2) const
     return ((dy + (dx > 0 ? dx : 0)) / 2);
 }
 
-unsigned MapBase::CalcMaxDistance() const
+unsigned MapBase::calcMaxDistance() const
 {
-    return CalcDistance(MapPoint::all(0), MapPoint(size_.x / 2, size_.y / 2));
+    return calcDistance(MapPoint::all(0), MapPoint(size_.x / 2, size_.y / 2));
 }
 
 ShipDirection MapBase::GetShipDir(MapPoint fromPt, MapPoint toPt) const
@@ -189,7 +189,7 @@ ShipDirection MapBase::GetShipDir(MapPoint fromPt, MapPoint toPt) const
     }
 }
 
-MapPoint MapBase::MakeMapPoint(Position pt) const
+MapPoint MapBase::makeMapPoint(Position pt) const
 {
-    return ::MakeMapPoint(pt, size_);
+    return ::makeMapPoint(pt, size_);
 }

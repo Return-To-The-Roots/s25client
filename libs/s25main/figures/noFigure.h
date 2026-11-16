@@ -111,36 +111,36 @@ protected:
 
 private:
     /// abgeleitete Klassen informieren, wenn ...
-    virtual void GoalReached() = 0; // das Ziel erreicht wurde
-    virtual void Walked() = 0;      // man gelaufen ist
+    virtual void goalReached() = 0; // das Ziel erreicht wurde
+    virtual void walked() = 0;      // man gelaufen ist
 
     /// Für alle restlichen Events, die nicht von noFigure behandelt werden
-    virtual void HandleDerivedEvent(unsigned id) = 0;
+    virtual void handleDerivedEvent(unsigned id) = 0;
 
     /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
     virtual unsigned getVisualRange() const;
 
     /// Unterfunktion von Wander --> zur Flagge irren
-    void WanderToFlag();
+    void wanderToFlag();
     /// Unterfunktion von Wander --> zur Flagge irren
     // void WanderToFlagFailedTrade();
 
     /// Sichtbarkeiten berechnen für Figuren mit Sichtradius (Soldaten, Erkunder) vor dem Laufen
-    void CalcVisibilities(MapPoint pt);
+    void calcVisibilities(MapPoint pt);
 
 protected:
     /// In aktueller Richtung ein Stück zurcklegen
-    void WalkFigure();
+    void walkFigure();
     /// Schatten der Figur malen
-    void DrawShadow(DrawPoint drawPt, unsigned char anistep, Direction dir);
+    void drawShadow(DrawPoint drawPt, unsigned char anistep, Direction dir);
 
     /// Herumirren
-    void Wander();
+    void wander();
 
     /// Herumirren after failed traderoute
-    void WanderFailedTrade();
+    void wanderFailedTrade();
 
-    virtual void AbrogateWorkplace() = 0;
+    virtual void abrogateWorkplace() = 0;
 
 public:
     /// Konstruktor für Figuren, die auf dem Wegenetz starten
@@ -150,10 +150,10 @@ public:
 
     noFigure(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 
     /// Ziel setzen
     void setGoalTonullptr() { goal_ = nullptr; }
@@ -168,80 +168,80 @@ public:
     const RoadSegment* getCurrentRoad() const { return cur_rs; }
     bool isWandering() const { return fs == FigureState::Wander; }
     /// Tut was, nachdem er rausgehen soll
-    void ActAtFirst();
+    void actAtFirst();
     /// Legt die Anfangsdaten für das Laufen auf Wegen fest
-    void InitializeRoadWalking(const RoadSegment* road, unsigned short rs_pos, bool rs_dir);
+    void initializeRoadWalking(const RoadSegment* road, unsigned short rs_pos, bool rs_dir);
     /// Gibt Job-Typ zurück
     Job getJobType() const { return job_; }
     /// Returns true if this is a soldier (they get some special handling at some points)
     bool IsSoldier() const;
 
-    unsigned CalcWalkAnimationFrame() const;
-    DrawPoint InterpolateWalkDrawPos(DrawPoint drawPt) const;
+    unsigned calcWalkAnimationFrame() const;
+    DrawPoint interpolateWalkDrawPos(DrawPoint drawPt) const;
 
     /// Draw the current walk animation frame from "carrier.bob"
-    void DrawWalkingCarrier(DrawPoint drawPt, helpers::OptionalEnum<GoodType> ware, bool fat);
+    void drawWalkingCarrier(DrawPoint drawPt, helpers::OptionalEnum<GoodType> ware, bool fat);
     /// Draw the current walk animation frame from "jobs.bob"
-    void DrawWalkingBobJobs(DrawPoint drawPt, Job job);
+    void drawWalkingBobJobs(DrawPoint drawPt, Job job);
     /// Draw the current walk animation frame using the start index into the given file
-    void DrawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat);
+    void drawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat);
     /// Draw the current walk animation frame using the start index into the given LST archive
     /// See @ref calcWalkFrameIndex
-    void DrawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id);
+    void drawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id);
     /// Draw the current walk animation for this figure
-    void DrawWalking(DrawPoint drawPt);
-    void DrawArmor(DrawPoint drawPt);
+    void drawWalking(DrawPoint drawPt);
+    void drawArmor(DrawPoint drawPt);
     /// Interpoliert die Positon zwischen zwei Knotenpunkten
-    DrawPoint CalcFigurRelative() const;
+    DrawPoint calcFigurRelative() const;
     /// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)
-    void StartWalking(Direction dir);
+    void startWalking(Direction dir);
     /// Starts walking in a random dir and returns whether this was possible
-    bool WalkInRandomDir();
+    bool walkInRandomDir();
     /// Umherirren starten (frei rumlaufen)
-    void StartWandering(unsigned burned_wh_id = 0xFFFFFFFF);
+    void startWandering(unsigned burned_wh_id = 0xFFFFFFFF);
     /// Auf Straßen(!) nach Hause laufen
-    void GoHome(noRoadNode* goal = nullptr);
+    void goHome(noRoadNode* goal = nullptr);
     /// Aktuellen Weg, auf dem er läuft, fr ungültig erklären
-    void CutCurrentRoad() { cur_rs = nullptr; }
+    void cutCurrentRoad() { cur_rs = nullptr; }
     /// Auf Straßen zur Zielflagge laufen
-    void WalkToGoal();
+    void walkToGoal();
     /// Gibt die Straße zurück, auf der man gerade läuft
     const RoadSegment* getCurrentRoad() { return cur_rs; }
     /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde, setzt vorraus, dass die Figur auf der geteilten
     /// Straße läuft!
-    void CorrectSplitData(const RoadSegment* rs2);
+    void correctSplitData(const RoadSegment* rs2);
     /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
     virtual void correctSplitDataDerived();
     /// Lässt die Figur sterben (löst sich auf und hinterlässt ggf. Leiche)
-    void Die();
+    void die();
     /// Removes the figure from the players inventory (e.g. when it does not exist anymore)
-    void RemoveFromInventory();
+    void removeFromInventory();
 
     /// Lässt die Figur sterben (löst sich auf und hinterlässt ggf. Leiche) - does not reduce good counts because for
     /// trade routes they have been reduced already.
-    void DieFailedTrade();
+    void dieFailedTrade();
     /// Mitglied von nem Lagerhaus(Lagerhausarbeiter, die die Träger-Bestände nicht beeinflussen?)
     /// Kann außer bei WarehouseWorker die Default-Definition gelassen werden
-    virtual bool MemberOfWarehouse() const { return false; }
+    virtual bool memberOfWarehouse() const { return false; }
 
     /// Ein Punkt neben der Figur wurde freigegeben --> wenn sie deswegen angehalten ist, kann sie weiterlaufen
-    void NodeFreed(MapPoint pt);
+    void nodeFreed(MapPoint pt);
 
     /// Wartet sie auf einen freien Platz?
     bool isWaitingForFreeNode() const { return waiting_for_free_node; }
     /// Stoppt, wenn er auf diesen Punkt zuläuft
-    void StopIfNecessary(MapPoint pt);
+    void stopIfNecessary(MapPoint pt);
 
     unsigned char getPlayer() const { return player; }
 
     bool isDoingJobWorks() const { return fs == FigureState::Job; }
 
-    void Abrogate(); // beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+    void abrogate(); // beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
 
     /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
-    void StartShipJourney();
+    void startShipJourney();
     /// Tells the figure it arrived at a harbor at the given position
-    void ArrivedByShip(MapPoint harborPos);
+    void arrivedByShip(MapPoint harborPos);
     /// Gibt zurück, ob die Figur auf Straßen läuft zu ihrem Arbeitsplatz o.Ä.
     bool isWalkingOnRoad() const
     {
@@ -258,7 +258,7 @@ public:
     /// Returns (maybe new) destination harbor ((0,0) if he doesn't go by ship)
     /// and also the new direction it wants to travel which can be the (otherwise invalid) SHIP_DIR if the figure stays
     /// on board
-    MapPoint ExamineRouteBeforeShipping(RoadPathDirection& newDir);
+    MapPoint examineRouteBeforeShipping(RoadPathDirection& newDir);
 
 private:
     /// Calculate the index of the current frame for a figure walking in the given direction

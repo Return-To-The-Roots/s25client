@@ -12,7 +12,7 @@ class LuaInterfaceGameBase : public LuaInterfaceBase
 public:
     static void Register(kaguya::State& state);
 
-    bool CheckScriptVersion();
+    bool checkScriptVersion();
 
     /// Return version of the interface. Changes here reflect breaking changes
     static unsigned getVersion();
@@ -28,11 +28,11 @@ protected:
     unsigned getLocalPlayerIdx() const;
     /// Show a message box with given title and text.
     /// If isError is true, a red exclamation mark is shown, otherwise a green one is shown
-    void MsgBox(const std::string& title, const std::string& msg, bool isError);
-    void MsgBox2(const std::string& title, const std::string& msg) { MsgBox(title, msg, false); }
+    void msgBox(const std::string& title, const std::string& msg, bool isError);
+    void msgBox2(const std::string& title, const std::string& msg) { msgBox(title, msg, false); }
     /// Shows a message with a custom icon. Image with iconIdx must exist in iconFile and iconFile must be loaded!
-    void MsgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx);
-    void MsgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx,
+    void msgBoxEx(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx);
+    void msgBoxEx2(const std::string& title, const std::string& msg, const std::string& iconFile, unsigned iconIdx,
                    int iconX, int iconY);
 
 private:

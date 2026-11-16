@@ -26,11 +26,11 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     const Extent buttonSize(100, 22);
 
     const unsigned short maxTextWidth = getIwSize().x - imgSize.x - textSpace - imgSpace;
-    ctrlMultiline* text = AddMultiline(0, contentOffset + DrawPoint::all(textSpace),
+    ctrlMultiline* text = addMultiline(0, contentOffset + DrawPoint::all(textSpace),
                                        Extent(maxTextWidth, getIwSize().y), TextureColor::Green2, NormalFont);
-    text->ShowBackground(false);
-    text->AddString(content, COLOR_YELLOW, false);
-    text->Resize(text->getContentSize());
+    text->showBackground(false);
+    text->addString(content, COLOR_YELLOW, false);
+    text->resize(text->getContentSize());
 
     // set window width to our determined max width
     Extent newIwSize = text->getSize() + Extent::all(textSpace) + Extent(imgSize.x + imgSpace, buttonSize.y + 2);
@@ -38,14 +38,14 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     newIwSize.y = std::max(newIwSize.y, imgSize.y + minImgSpaceTop) + buttonSpace;
     setIwSize(newIwSize);
 
-    AddTextButton(1,
+    addTextButton(1,
                   DrawPoint((getSize().x - buttonSize.x) / 2, getRightBottomBoundary().y - buttonSpace - buttonSize.y),
                   buttonSize, TextureColor::Grey, _("Continue"), NormalFont);
     if(img)
     {
         DrawPoint imgPos =
           getRightBottomBoundary() + img->getOrigin() - DrawPoint(imgSize) - DrawPoint(imgSpaceRight, buttonSpace);
-        AddImage(2, imgPos, img);
+        addImage(2, imgPos, img);
     }
 }
 
@@ -53,7 +53,7 @@ void iwMissionStatement::msgButtonClick(const unsigned /*ctrl_id*/)
 {
     if(pauseGame_ && GAMECLIENT.getState() != ClientState::Stopped)
         GAMECLIENT.setPause(false);
-    Close();
+    close();
 }
 
 void iwMissionStatement::setActive(bool activate)

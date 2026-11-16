@@ -73,27 +73,27 @@ class nobHarborBuilding : public nobBaseWarehouse
 
 private:
     /// Bestellt die zusätzlichen erforderlichen Waren für eine Expedition
-    void OrderExpeditionWares();
+    void orderExpeditionWares();
     /// Prüft, ob eine Expedition von den Waren her vollständig ist und ruft ggf. das Schiff
-    void CheckExpeditionReady();
+    void checkExpeditionReady();
     /// Prüft, ob eine Expedition von den Spähern her vollständig ist und ruft ggf. das Schiff
-    void CheckExplorationExpeditionReady();
+    void checkExplorationExpeditionReady();
     /// Gibt zurück, ob Expedition vollständig ist
     bool isExpeditionReady() const;
     /// Gibt zurück, ob Erkundungs-Expedition vollständig ist
     bool isExplorationExpeditionReady() const;
     /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
     /// (muss in dem Fall true zurückgeben)
-    bool UseWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuilding& goal) override;
+    bool useWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuilding& goal) override;
     /// Dasselbe für Menschen
-    bool UseFigureAtOnce(std::unique_ptr<noFigure>& fig, noRoadNode& goal) override;
+    bool useFigureAtOnce(std::unique_ptr<noFigure>& fig, noRoadNode& goal) override;
     /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
     void cancelFigure(noFigure* figure) override;
     /// Bestellt ein Schiff zum Hafen, sofern dies nötig ist
-    void OrderShip();
+    void orderShip();
 
     /// Stellt Verteidiger zur Verfügung
-    std::unique_ptr<nofDefender> ProvideDefender(nofAttacker& attacker) override;
+    std::unique_ptr<nofDefender> provideDefender(nofAttacker& attacker) override;
 
     friend class SerializedGameData;
     friend class BuildingFactory;
@@ -109,42 +109,42 @@ public:
     /// Serialisierung
     void Serialize(SerializedGameData& sgd) const override;
     GO_Type getGOT() const final { return GO_Type::NobHarborbuilding; }
-    void Draw(DrawPoint drawPt) override;
-    void HandleEvent(unsigned id) override;
+    void draw(DrawPoint drawPt) override;
+    void handleEvent(unsigned id) override;
 
     /// Eine bestellte Ware konnte doch nicht kommen
-    void WareLost(Ware& ware) override;
+    void wareLost(Ware& ware) override;
     /// Legt eine Ware im Lagerhaus ab
-    void AddWare(std::unique_ptr<Ware> ware) override;
+    void addWare(std::unique_ptr<Ware> ware) override;
     /// Eine Figur geht ins Lagerhaus
-    void AddFigure(std::unique_ptr<noFigure> figure, bool increase_visual_counts) override;
+    void addFigure(std::unique_ptr<noFigure> figure, bool increase_visual_counts) override;
     /// Berechnet Wichtigkeit einer neuen Ware für den Hafen (Waren werden für Expeditionen
     /// benötigt!)
-    unsigned CalcDistributionPoints(GoodType type) const;
+    unsigned calcDistributionPoints(GoodType type) const;
 
     /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
     std::unique_ptr<Ware> cancelWareForShip(Ware* ware);
 
     /// Startet eine Expedition
-    void StartExpedition();
-    void StopExpedition();
+    void startExpedition();
+    void stopExpedition();
 
     /// Startet eine Erkundungs-Expedition
-    void StartExplorationExpedition();
-    void StopExplorationExpedition();
+    void startExplorationExpedition();
+    void stopExplorationExpedition();
 
     /// Ist Expedition in Vorbereitung?
     bool isExpeditionActive() const { return expedition.active; }
     /// Ist Erkundungs-Expedition in Vorbereitung?
     bool isExplorationExpeditionActive() const { return exploration_expedition.active; }
     /// Schiff ist angekommen
-    void ShipArrived(noShip& ship);
+    void shipArrived(noShip& ship);
     /// Schiff konnte nicht mehr kommen
-    void ShipLost(noShip* ship);
+    void shipLost(noShip* ship);
 
     /// Abfangen, wenn ein Mann nicht mehr kommen kann --> könnte ein Bauarbeiter sein und
     /// wenn wir einen benötigen, müssen wir einen neuen bestellen
-    void RemoveDependentFigure(noFigure& figure) override;
+    void removeDependentFigure(noFigure& figure) override;
 
     /// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
     HarborId getHarborPosID() const;
@@ -160,12 +160,12 @@ public:
     std::vector<ShipConnection> getShipConnections() const;
 
     /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
-    void AddFigureForShip(std::unique_ptr<noFigure> fig, MapPoint dest);
+    void addFigureForShip(std::unique_ptr<noFigure> fig, MapPoint dest);
     /// Fügt eine Ware hinzu, die mit dem Schiff verschickt werden soll
-    void AddWareForShip(std::unique_ptr<Ware> ware);
+    void addWareForShip(std::unique_ptr<Ware> ware);
 
     /// A ware changed its route and doesn't want to use the ship anymore
-    void WareDontWantToTravelByShip(Ware* ware);
+    void wareDontWantToTravelByShip(Ware* ware);
 
     /// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden
     unsigned getNumNeededShips() const;
@@ -173,9 +173,9 @@ public:
     int getNeedForShip(unsigned ships_coming) const;
 
     /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
-    void ReceiveGoodsFromShip(std::list<std::unique_ptr<noFigure>>& figures, std::list<std::unique_ptr<Ware>>& wares);
+    void receiveGoodsFromShip(std::list<std::unique_ptr<noFigure>>& figures, std::list<std::unique_ptr<Ware>>& wares);
 
-    nofAggressiveDefender* SendAggressiveDefender(nofAttacker& attacker) override;
+    nofAggressiveDefender* sendAggressiveDefender(nofAttacker& attacker) override;
 
     struct SeaAttackerBuilding
     {
@@ -203,12 +203,12 @@ public:
     std::vector<SeaAttackerBuilding> getAttackerBuildingsForSeaIdAttack();
 
     /// Fügt einen Schiffs-Angreifer zum Hafen hinzu
-    void AddSeaAttacker(std::unique_ptr<nofAttacker> attacker);
+    void addSeaAttacker(std::unique_ptr<nofAttacker> attacker);
     /// Attacker does not want to attack anymore
     void cancelSeaAttacker(nofAttacker* attacker);
 
     /// People waiting for a ship have to examine their route if a road was destroyed
-    void ExamineShipRouteOfPeople();
+    void examineShipRouteOfPeople();
 
     /// Is the harbor just being destroyed right now?
     bool isBeingDestroyedNow() const;

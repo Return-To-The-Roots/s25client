@@ -19,15 +19,15 @@ private:
     const GameEvent* healing_event;
 
     /// Eventhandling
-    void HandleDerivedEvent(unsigned id) override;
+    void handleDerivedEvent(unsigned id) override;
 
     // informieren, wenn ...
-    void GoalReached() override; // das Ziel erreicht wurde
+    void goalReached() override; // das Ziel erreicht wurde
 
     /// wenn man gelaufen ist
-    [[noreturn]] void Walked() override;
+    [[noreturn]] void walked() override;
     /// Prüft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
-    void Heal();
+    void heal();
 
 public:
     nofPassiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* goal, nobMilitary* home, unsigned char rank);
@@ -36,23 +36,23 @@ public:
 
     ~nofPassiveSoldier() override;
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::NofPassivesoldier; }
 
     // Zeichnet den Soldaten
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Sagt einem in einem Militärgebäude sitzenden Soldaten, dass er raus nach Hause gehen soll
-    void LeaveBuilding();
+    void leaveBuilding();
 
     /// Befördert einen Soldaten
-    void Upgrade();
+    void upgrade();
 
     /// Soldat befindet sich auf dem Hinweg zum Militärgebäude und wird nich länger gebraucht
-    void NotNeeded();
+    void notNeeded();
     /// Tells the soldier it is not in its home building anymore (e.g. died, or converted to attacker)
-    void LeftBuilding() { homeBld = nullptr; }
+    void leftBuilding() { homeBld = nullptr; }
     nobMilitary* getHome() const;
 };

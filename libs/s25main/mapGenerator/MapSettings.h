@@ -39,7 +39,7 @@ enum class IslandAmount : uint8_t
 
 struct MapSettings
 {
-    void MakeValid();
+    void makeValid();
 
     std::string name, author;
     unsigned numPlayers = 2;

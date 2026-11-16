@@ -20,21 +20,21 @@ AudioDriverWrapper::AudioDriverWrapper() : audiodriver_(nullptr, nullptr) {}
 
 AudioDriverWrapper::~AudioDriverWrapper()
 {
-    UnloadDriver();
+    unloadDriver();
 }
 
 /// Spielt Midi ab
-void AudioDriverWrapper::PlayMusic(const SoundHandle& sound, int repeats)
+void AudioDriverWrapper::playMusic(const SoundHandle& sound, int repeats)
 {
     if(audiodriver_ && sound)
-        audiodriver_->PlayMusic(sound.getRawHandle(), repeats);
+        audiodriver_->playMusic(sound.getRawHandle(), repeats);
 }
 
 /// Stoppt die Musik.
-void AudioDriverWrapper::StopMusic()
+void AudioDriverWrapper::stopMusic()
 {
     if(audiodriver_)
-        audiodriver_->StopMusic();
+        audiodriver_->stopMusic();
 }
 
 /// Wird ein Sound (noch) abgespielt?
@@ -47,10 +47,10 @@ bool AudioDriverWrapper::isEffectPlaying(EffectPlayId play_id)
 }
 
 /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-void AudioDriverWrapper::ChangeVolume(EffectPlayId play_id, uint8_t volume)
+void AudioDriverWrapper::changeVolume(EffectPlayId play_id, uint8_t volume)
 {
     if(audiodriver_)
-        audiodriver_->ChangeVolume(play_id, volume);
+        audiodriver_->changeVolume(play_id, volume);
 }
 
 void AudioDriverWrapper::setMasterEffectVolume(uint8_t volume)
@@ -73,9 +73,9 @@ std::string AudioDriverWrapper::getName() const
 
 bool AudioDriverWrapper::Init()
 {
-    if(!audiodriver_ || !audiodriver_->Initialize())
+    if(!audiodriver_ || !audiodriver_->initialize())
     {
-        UnloadDriver();
+        unloadDriver();
         return false;
     }
 
@@ -84,13 +84,13 @@ bool AudioDriverWrapper::Init()
 }
 
 /// Lädt den Treiber
-bool AudioDriverWrapper::LoadDriver(std::unique_ptr<driver::IAudioDriver> audioDriver)
+bool AudioDriverWrapper::loadDriver(std::unique_ptr<driver::IAudioDriver> audioDriver)
 {
     audiodriver_ = Handle(audioDriver.release(), [](driver::IAudioDriver* p) { delete p; });
     return Init();
 }
 
-bool AudioDriverWrapper::LoadDriver(std::string& preference)
+bool AudioDriverWrapper::loadDriver(std::string& preference)
 {
     RTTR_Assert(!audiodriver_);
     // DLL laden
@@ -106,10 +106,10 @@ bool AudioDriverWrapper::LoadDriver(std::string& preference)
     return Init();
 }
 
-void AudioDriverWrapper::UnloadDriver()
+void AudioDriverWrapper::unloadDriver()
 {
     audiodriver_.reset();
-    driver_wrapper.Unload();
+    driver_wrapper.unload();
 }
 
 /**
@@ -117,15 +117,15 @@ void AudioDriverWrapper::UnloadDriver()
  *
  *  @return Sounddeskriptor bei Erfolg, @p nullptr bei Fehler
  */
-SoundHandle AudioDriverWrapper::LoadMusic(const std::string& filepath)
+SoundHandle AudioDriverWrapper::loadMusic(const std::string& filepath)
 {
     if(!audiodriver_)
         return SoundHandle();
 
-    return createSoundHandle(audiodriver_->LoadMusic(filepath));
+    return createSoundHandle(audiodriver_->loadMusic(filepath));
 }
 
-SoundHandle AudioDriverWrapper::LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv,
+SoundHandle AudioDriverWrapper::loadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv,
                                           const std::string& extension)
 {
     if(!audiodriver_)
@@ -133,18 +133,18 @@ SoundHandle AudioDriverWrapper::LoadMusic(const libsiedler2::ArchivItem_Sound& s
     ovectorstream tmp;
     if(soundArchiv.write(tmp) != 0)
         return SoundHandle();
-    return createSoundHandle(audiodriver_->LoadMusic(tmp.vector(), extension));
+    return createSoundHandle(audiodriver_->loadMusic(tmp.vector(), extension));
 }
 
-SoundHandle AudioDriverWrapper::LoadEffect(const std::string& filepath)
+SoundHandle AudioDriverWrapper::loadEffect(const std::string& filepath)
 {
     if(!audiodriver_)
         return SoundHandle();
 
-    return createSoundHandle(audiodriver_->LoadEffect(filepath));
+    return createSoundHandle(audiodriver_->loadEffect(filepath));
 }
 
-SoundHandle AudioDriverWrapper::LoadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv,
+SoundHandle AudioDriverWrapper::loadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv,
                                            const std::string& extension)
 {
     if(!audiodriver_)
@@ -152,28 +152,28 @@ SoundHandle AudioDriverWrapper::LoadEffect(const libsiedler2::ArchivItem_Sound& 
     ovectorstream tmp;
     if(soundArchiv.write(tmp) != 0)
         return SoundHandle();
-    return createSoundHandle(audiodriver_->LoadEffect(tmp.vector(), extension));
+    return createSoundHandle(audiodriver_->loadEffect(tmp.vector(), extension));
 }
 
-EffectPlayId AudioDriverWrapper::PlayEffect(const SoundHandle& sound, uint8_t volume, const bool loop)
+EffectPlayId AudioDriverWrapper::playEffect(const SoundHandle& sound, uint8_t volume, const bool loop)
 {
     if(!audiodriver_ || !sound)
         return EffectPlayId::Invalid;
 
-    return audiodriver_->PlayEffect(sound.getRawHandle(), volume, loop);
+    return audiodriver_->playEffect(sound.getRawHandle(), volume, loop);
 }
 
-void AudioDriverWrapper::StopEffect(EffectPlayId& playId)
+void AudioDriverWrapper::stopEffect(EffectPlayId& playId)
 {
     if(audiodriver_)
-        audiodriver_->StopEffect(playId);
+        audiodriver_->stopEffect(playId);
     playId = EffectPlayId::Invalid;
 }
 
 void AudioDriverWrapper::msgMusicFinished()
 {
     // MusicManager Bescheid sagen
-    MUSICPLAYER.MusicFinished();
+    MUSICPLAYER.musicFinished();
 }
 
 /// Wraps the raw handle inside an RAII wrapper

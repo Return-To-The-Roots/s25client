@@ -48,33 +48,33 @@ iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const u
                    LOADER.getImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
-    AddTable(ID_tblSaveGames, DrawPoint(20, 30), Extent(660, 300), TextureColor::Green2, NormalFont,
+    addTable(ID_tblSaveGames, DrawPoint(20, 30), Extent(660, 300), TextureColor::Green2, NormalFont,
              ctrlTable::Columns{{_("Filename"), 320, SRT::String},
                                 {_("Map"), 250, SRT::String},
                                 {_("Time"), 160, SRT::Date},
                                 {_("Game Time"), 115, SRT::Time},
                                 {}});
 
-    AddText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
+    addText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
             FontStyle::TOP, SmallFont)
       ->setMaxWidth(510);
     // maxLength 251 = 255 filename limit - 4 chars for ".sav"; just discourages absurdly long
     // input, isValidFileName() may still reject it since it counts bytes, not codepoints.
-    AddEdit(ID_edtFilename, DrawPoint(20, 350), Extent(510, 22), TextureColor::Green2, NormalFont, 251);
-    AddImageButton(ID_btSaveOrLoad, DrawPoint(540, 341), Extent(40, 40), TextureColor::Green2, btImg);
+    addEdit(ID_edtFilename, DrawPoint(20, 350), Extent(510, 22), TextureColor::Green2, NormalFont, 251);
+    addImageButton(ID_btSaveOrLoad, DrawPoint(540, 341), Extent(40, 40), TextureColor::Green2, btImg);
     // Initially fill the table
-    RefreshTable();
+    refreshTable();
 }
 
 void iwSaveLoad::msgEditEnter(const unsigned /*ctrl_id*/)
 {
-    SaveLoad();
+    saveLoad();
 }
 
 void iwSaveLoad::msgButtonClick(const unsigned ctrl_id)
 {
     RTTR_Assert(ctrl_id == ID_btSaveOrLoad);
-    SaveLoad();
+    saveLoad();
 }
 
 void iwSaveLoad::msgTableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& selection)
@@ -84,13 +84,13 @@ void iwSaveLoad::msgTableSelectItem(const unsigned /*ctrl_id*/, const std::optio
       ->setText(selection ? getCtrl<ctrlTable>(ID_tblSaveGames)->getItemText(*selection, 0) : "");
 }
 
-void iwSaveLoad::RefreshTable()
+void iwSaveLoad::refreshTable()
 {
     static bool loadedOnce = false;
 
     auto* table = getCtrl<ctrlTable>(ID_tblSaveGames);
 
-    table->DeleteAllItems();
+    table->deleteAllItems();
 
     std::vector<boost::filesystem::path> saveFiles = ListDir(RTTRCONFIG.ExpandPath(s25::folders::save), "sav");
     for(const auto& saveFile : saveFiles)
@@ -109,34 +109,34 @@ void iwSaveLoad::RefreshTable()
 
         const auto fileName = saveFile.stem().string();
         const std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.getSaveTime());
-        const std::string gameTime = GAMECLIENT.FormatGFTime(save.start_gf);
+        const std::string gameTime = GAMECLIENT.formatGFTime(save.start_gf);
 
-        table->AddRow({fileName, save.getMapName(), dateStr, gameTime, saveFile.string()});
+        table->addRow({fileName, save.getMapName(), dateStr, gameTime, saveFile.string()});
     }
 
     // Sort by time
-    table->SortRows(2, TableSortDir::Descending);
+    table->sortRows(2, TableSortDir::Descending);
     loadedOnce = true;
 }
 
-void iwSave::SaveLoad()
+void iwSave::saveLoad()
 {
     const auto fileNameResult = getCtrl<ctrlEdit>(ID_edtFilename)->getFileName(".sav");
     switch(fileNameResult.status)
     {
         case FileNameStatus::Empty:
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a filename."), this,
+            WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a filename."), this,
                                                           MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
             return;
         case FileNameStatus::Invalid:
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a valid filename."),
+            WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Invalid Filename"), _("Please enter a valid filename."),
                                                           this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
             return;
         case FileNameStatus::Valid: break;
     }
-    GAMECLIENT.SaveToFile(RTTRCONFIG.ExpandPath(s25::folders::save) / fileNameResult.name);
+    GAMECLIENT.saveToFile(RTTRCONFIG.ExpandPath(s25::folders::save) / fileNameResult.name);
 
-    RefreshTable();
+    refreshTable();
     getCtrl<ctrlEdit>(ID_edtFilename)->setText("");
 }
 
@@ -147,17 +147,17 @@ iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.getTextureN("io", 47), 30)
     DrawPoint pos(getSize().x / 2, fileNameEdit->getPos().y + fileNameEdit->getSize().y + 10);
 
     ctrlComboBox* combo =
-      AddComboBox(ID_cbAutoSaveInterval, pos, Extent(130, 22), TextureColor::Green2, NormalFont, 100);
+      addComboBox(ID_cbAutoSaveInterval, pos, Extent(130, 22), TextureColor::Green2, NormalFont, 100);
     pos += DrawPoint(-5, 11);
-    AddText(ID_txtAutoSave, pos, _("Auto-Save every:"), 0xFFFFFF00, FontStyle::RIGHT | FontStyle::VCENTER, NormalFont);
+    addText(ID_txtAutoSave, pos, _("Auto-Save every:"), 0xFFFFFF00, FontStyle::RIGHT | FontStyle::VCENTER, NormalFont);
 
     // Add intervals
-    combo->AddItem(_("Disabled"));
+    combo->addItem(_("Disabled"));
     for(const std::chrono::minutes interval : AUTO_SAVE_INTERVALS)
-        combo->AddItem((boost::format(_("%1% min")) % interval.count()).str());
+        combo->addItem((boost::format(_("%1% min")) % interval.count()).str());
     // Last entry is only for debugging
     if(SETTINGS.global.debugMode)
-        combo->AddItem(_("Every GF"));
+        combo->addItem(_("Every GF"));
 
     // Select interval
     combo->setSelection(0); // Use disabled by default and change if possible
@@ -193,29 +193,29 @@ void iwSave::msgComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selec
 
 iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(_("Load game!"), LOADER.getTextureN("io", 48)), csi(std::move(csi)) {}
 
-void iwLoad::SaveLoad()
+void iwLoad::saveLoad()
 {
     const auto* table = getCtrl<ctrlTable>(ID_tblSaveGames);
     if(!table->getSelection())
         return;
 
-    if(GAMECLIENT.HostGame(csi, {table->getItemText(*table->getSelection(), 4), MapType::Savegame}))
+    if(GAMECLIENT.hostGame(csi, {table->getItemText(*table->getSelection(), 4), MapType::Savegame}))
     {
         std::unique_ptr<ILobbyClient> lobbyClient;
         if(csi.type == ServerType::Lobby)
             lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
-        WINDOWMANAGER.Show(std::make_unique<iwConnecting>(csi.type, std::move(lobbyClient)));
+        WINDOWMANAGER.show(std::make_unique<iwConnecting>(csi.type, std::move(lobbyClient)));
     } else
     {
         if(LOBBYCLIENT.IsLoggedIn())
             WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
         else
-            Close();
+            close();
     }
 }
 
 /// Handle double click on the table
 void iwLoad::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
-    SaveLoad();
+    saveLoad();
 }

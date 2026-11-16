@@ -75,19 +75,19 @@ public:
     void initResourceFolders(const std::vector<Nation>& usedNations, const std::vector<AddonId>& enabledAddons);
 
     /// Load general files required also outside of games
-    bool LoadFilesAtStart();
-    bool LoadFonts();
+    bool loadFilesAtStart();
+    bool loadFonts();
     /// Load files required during a game
-    bool LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations,
+    bool loadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations,
                          const std::vector<AddonId>& enabledAddons);
     /// Load all given files with the default palette
-    bool LoadFiles(const std::vector<std::string>& files);
-    bool LoadResources(const std::vector<ResourceId>& resources);
+    bool loadFiles(const std::vector<std::string>& files);
+    bool loadResources(const std::vector<ResourceId>& resources);
 
     /// Creates archives with empty files for the GUI (for testing purposes)
-    void LoadDummyGUIFiles();
-    void LoadDummyMapFiles();
-    void LoadDummySoundFiles();
+    void loadDummyGUIFiles();
+    void loadDummyMapFiles();
+    void loadDummySoundFiles();
     /// Load a file and save it into the loader repo
     bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     bool Load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette = nullptr);
@@ -98,8 +98,8 @@ public:
               const libsiedler2::ArchivItem_Palette* palette = nullptr);
 
     void fillCaches();
-    static std::unique_ptr<glArchivItem_Bitmap> ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
-    static std::unique_ptr<libsiedler2::Archiv> ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg,
+    static std::unique_ptr<glArchivItem_Bitmap> extractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
+    static std::unique_ptr<libsiedler2::Archiv> extractAnimatedTexture(const glArchivItem_Bitmap& srcImg,
                                                                        const Rect& rect, uint8_t start_index,
                                                                        uint8_t color_count);
 
@@ -216,10 +216,10 @@ public:
 
 private:
     /// Load all sounds
-    bool LoadSounds();
+    bool loadSounds();
 
     template<typename T>
-    bool LoadImpl(const T& resIdOrPath, const libsiedler2::ArchivItem_Palette* palette);
+    bool loadImpl(const T& resIdOrPath, const libsiedler2::ArchivItem_Palette* palette);
 
     Log& logger_;
     const RttrConfig& config_;

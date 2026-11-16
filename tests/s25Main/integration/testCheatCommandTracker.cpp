@@ -20,7 +20,7 @@ struct StoreGCFactory : public GameCommandFactory
     std::vector<gc::GameCommandPtr> gcs;
 
 protected:
-    bool AddGC(gc::GameCommandPtr gc) override
+    bool addGC(gc::GameCommandPtr gc) override
     {
         gcs.push_back(gc);
         return true;

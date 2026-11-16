@@ -37,12 +37,12 @@ bool ctrlButton::msgMouseMove(const MouseCoords& mc)
         if(state != ButtonState::Pressed)
             state = ButtonState::Hover;
 
-        ShowTooltip();
+        showTooltip();
         return true;
     } else
     {
         state = ButtonState::Up;
-        HideTooltip();
+        hideTooltip();
         return false;
     }
 }
@@ -77,7 +77,7 @@ bool ctrlButton::msgLeftUp(const MouseCoords& mc)
 /**
  *  zeichnet das Fenster.
  */
-void ctrlButton::Draw_()
+void ctrlButton::drawImpl()
 {
     if(getSize().x == 0 || getSize().y == 0)
         return;
@@ -89,11 +89,11 @@ void ctrlButton::Draw_()
         bool isElevated = !isChecked && state != ButtonState::Pressed;
         bool isHighlighted = isEnabled && !isChecked && state == ButtonState::Hover;
         if(hasBorder)
-            Draw3D(getDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
+            draw3D(getDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
         else
-            Draw3DContent(getDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
+            draw3DContent(getDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
     }
 
     /// Inhalt malen (Text, Bilder usw.)
-    DrawContent();
+    drawContent();
 }

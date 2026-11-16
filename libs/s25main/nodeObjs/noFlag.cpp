@@ -35,7 +35,7 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player)
     noFlag* flag = world->getRoadFlag(pos, dir);
 
     if(flag && flag->getRoute(dir))
-        flag->getRoute(dir)->SplitRoad(this);
+        flag->getRoute(dir)->splitRoad(this);
 
     // auf Wasseranteile prüfen
     if(world->hasTerrain(pos, [](const auto& desc) { return desc.kind == TerrainKind::Water; }))
@@ -45,18 +45,18 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player)
 }
 
 noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
-    : noRoadNode(sgd, obj_id), ani_offset(rand() % 20000), flagtype(sgd.Pop<FlagType>())
+    : noRoadNode(sgd, obj_id), ani_offset(rand() % 20000), flagtype(sgd.pop<FlagType>())
 {
     if(sgd.getGameDataVersion() < 8)
     {
         for(unsigned i = 0; i < wares.max_size(); i++)
         {
-            auto* ware = sgd.PopObject<Ware>(GO_Type::Ware);
+            auto* ware = sgd.popObject<Ware>(GO_Type::Ware);
             if(ware)
                 wares.emplace_back(ware);
         }
     } else
-        sgd.PopObjectContainer(wares, GO_Type::Ware);
+        sgd.popObjectContainer(wares, GO_Type::Ware);
 
     // BWUs laden
     for(auto& bwu : bwus)
@@ -68,7 +68,7 @@ noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
 
 noFlag::~noFlag() = default;
 
-void noFlag::Destroy()
+void noFlag::destroy()
 {
     /// Da ist dann nichts
     world->setNO(pos, nullptr);
@@ -77,23 +77,23 @@ void noFlag::Destroy()
     for(auto& ware : wares)
     {
         // Inventur entsprechend verringern
-        ware->WareLost(player);
-        ware->Destroy();
+        ware->wareLost(player);
+        ware->destroy();
     }
     wares.clear();
 
     // Den Flag-Workern Bescheid sagen, die hier ggf. arbeiten
-    world->getPlayer(player).FlagDestroyed(this);
+    world->getPlayer(player).flagDestroyed(this);
 
-    noRoadNode::Destroy();
+    noRoadNode::destroy();
 }
 
 void noFlag::Serialize(SerializedGameData& sgd) const
 {
     noRoadNode::Serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(flagtype);
-    sgd.PushObjectContainer(wares, true);
+    sgd.pushEnum<uint8_t>(flagtype);
+    sgd.pushObjectContainer(wares, true);
 
     // BWUs speichern
     for(const auto& bwu : bwus)
@@ -103,7 +103,7 @@ void noFlag::Serialize(SerializedGameData& sgd) const
     }
 }
 
-void noFlag::Draw(DrawPoint drawPt)
+void noFlag::draw(DrawPoint drawPt)
 {
     // Positionen der Waren an der Flagge relativ zur Flagge
     static constexpr std::array<DrawPoint, 8> WARES_POS = {
@@ -117,7 +117,7 @@ void noFlag::Draw(DrawPoint drawPt)
     // Waren (von hinten anfangen zu zeichnen)
     for(unsigned i = wares.size(); i > 0; --i)
     {
-        LOADER.getWareStackTex(wares[i - 1]->type)->DrawFull(drawPt + WARES_POS[i - 1]);
+        LOADER.getWareStackTex(wares[i - 1]->type)->drawFull(drawPt + WARES_POS[i - 1]);
     }
 }
 
@@ -125,7 +125,7 @@ void noFlag::Draw(DrawPoint drawPt)
  *  Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung"
  *  für den Fog of War.
  */
-std::unique_ptr<FOWObject> noFlag::CreateFOWObject() const
+std::unique_ptr<FOWObject> noFlag::createFOWObject() const
 {
     const GamePlayer& owner = world->getPlayer(player);
     return std::make_unique<fowFlag>(owner.color, owner.nation, flagtype);
@@ -134,14 +134,14 @@ std::unique_ptr<FOWObject> noFlag::CreateFOWObject() const
 /**
  *  Legt eine Ware an der Flagge ab.
  */
-void noFlag::AddWare(std::unique_ptr<Ware> ware)
+void noFlag::addWare(std::unique_ptr<Ware> ware)
 {
     // First add ware, then tell carrier. So get the info from the ware first
     const RoadPathDirection nextDir = ware->getNextDir();
     wares.push_back(std::move(ware));
 
     if(nextDir != RoadPathDirection::None)
-        getRoute(toDirection(nextDir))->AddWareJob(this);
+        getRoute(toDirection(nextDir))->addWareJob(this);
 }
 
 /**
@@ -151,7 +151,7 @@ void noFlag::AddWare(std::unique_ptr<Ware> ware)
  * wenn swap_wares true ist, bedeutet dies, dass Waren nur ausgetauscht werden
  * und somit nicht die Träger benachrichtigt werden müssen.
  */
-std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swap_wares, const noFigure* const carrier)
+std::unique_ptr<Ware> noFlag::selectWare(const Direction roadDir, const bool swap_wares, const noFigure* const carrier)
 {
     // Index merken, damit wir die enstprechende Ware dann entfernen können
     int best_ware_index = -1;
@@ -182,7 +182,7 @@ std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swa
     }
 
     // ggf. anderen Trägern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
-    getRoute(roadDir)->WareJobRemoved(carrier);
+    getRoute(roadDir)->wareJobRemoved(carrier);
 
     if(!swap_wares && bestWare)
     {
@@ -201,7 +201,7 @@ std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swa
                 if(world->getSpecObj<noBase>(world->getNeighbour(pos, Direction::NorthWest))->getType()
                    == NodalObjectType::Building)
                 {
-                    if(world->getSpecObj<noBuilding>(world->getNeighbour(pos, Direction::NorthWest))->FreePlaceAtFlag())
+                    if(world->getSpecObj<noBuilding>(world->getNeighbour(pos, Direction::NorthWest))->freePlaceAtFlag())
                         break;
                 }
             } else
@@ -211,7 +211,7 @@ std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swa
                 {
                     if(route->hasCarrier(c))
                     {
-                        if(route->getCarrier(c)->SpaceAtFlag(this == route->getF2()))
+                        if(route->getCarrier(c)->spaceAtFlag(this == route->getF2()))
                             break;
                     }
                 }
@@ -265,13 +265,13 @@ unsigned noFlag::getPunishmentPoints(const Direction dir) const
 /**
  *  Zerstört evtl. vorhandenes Gebäude bzw. Baustelle vor der Flagge.
  */
-void noFlag::DestroyAttachedBuilding()
+void noFlag::destroyAttachedBuilding()
 {
     // Achtung es wird ein Feuer durch Destroy gesetzt, daher Objekt merken!
     noBase* no = world->getNO(world->getNeighbour(pos, Direction::NorthWest));
     if(no->getType() == NodalObjectType::Buildingsite || no->getType() == NodalObjectType::Building)
     {
-        no->Destroy();
+        no->destroy();
         delete no;
     }
 }
@@ -279,7 +279,7 @@ void noFlag::DestroyAttachedBuilding()
 /**
  *  Baut normale Flaggen zu "gloriösen" aus bei Eselstraßen.
  */
-void noFlag::Upgrade()
+void noFlag::upgrade()
 {
     if(flagtype == FlagType::Normal)
         flagtype = FlagType::Large;
@@ -288,7 +288,7 @@ void noFlag::Upgrade()
 /**
  *  Feind übernimmt die Flagge.
  */
-void noFlag::Capture(const unsigned char new_owner)
+void noFlag::capture(const unsigned char new_owner)
 {
     // Alle Straßen um mich herum zerstören bis auf die zum Gebäude
     for(const auto dir : helpers::EnumRange<Direction>{})
@@ -300,13 +300,13 @@ void noFlag::Capture(const unsigned char new_owner)
     // Waren vernichten
     for(auto& ware : wares)
     {
-        ware->WareLost(player);
-        ware->Destroy();
+        ware->wareLost(player);
+        ware->destroy();
     }
     wares.clear();
 
     // Unregister this flag in the players flags
-    world->getPlayer(player).FlagDestroyed(this);
+    world->getPlayer(player).flagDestroyed(this);
     this->player = new_owner;
 }
 
@@ -334,7 +334,7 @@ bool noFlag::isImpossibleForBWU(const unsigned bwu_id) const
 /**
  *  Hinzufügen, dass diese Flagge für eine bestimmte Lagerhausgruppe nicht zugänglich ist.
  */
-void noFlag::ImpossibleForBWU(const unsigned bwu_id)
+void noFlag::impossibleForBWU(const unsigned bwu_id)
 {
     // Evtl gibts BWU schon --> Dann einfach GF-Zahl aktualisieren
     for(auto& bwu : bwus)

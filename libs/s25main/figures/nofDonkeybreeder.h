@@ -20,11 +20,11 @@ public:
 
 private:
     /// Zeichnet ihn beim Arbeiten.
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Der Arbeiter erzeugt eine Ware.
-    helpers::OptionalEnum<GoodType> ProduceWare() override;
+    helpers::OptionalEnum<GoodType> produceWare() override;
     /// Wird aufgerufen, wenn er fertig mit arbeiten ist
-    void WorkFinished() override;
+    void workFinished() override;
 
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short getCarryID() const override { return 0; }

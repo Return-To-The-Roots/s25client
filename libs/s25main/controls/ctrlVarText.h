@@ -23,7 +23,7 @@ public:
     Rect getBoundaryRect() const override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
     FontStyle format_;
 };

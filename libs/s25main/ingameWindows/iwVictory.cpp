@@ -24,14 +24,14 @@ iwVictory::iwVictory(const std::vector<std::string>& winnerNames)
     : IngameWindow(CGI_VICTORY, IngameWindow::posLastOrCenter, Extent(240, 240), _("End of game"),
                    LOADER.getImageN("io", 5))
 {
-    AddText(ID_TITLE, DrawPoint(120, 40), winnerNames.size() > 1u ? _("The winners:") : _("The winner:"), COLOR_YELLOW,
+    addText(ID_TITLE, DrawPoint(120, 40), winnerNames.size() > 1u ? _("The winners:") : _("The winner:"), COLOR_YELLOW,
             FontStyle::CENTER, NormalFont);
-    auto* names = AddMultiline(ID_NAMES, DrawPoint(0, 70), Extent(800, 600), TextureColor::Invisible, NormalFont);
+    auto* names = addMultiline(ID_NAMES, DrawPoint(0, 70), Extent(800, 600), TextureColor::Invisible, NormalFont);
     names->setNumVisibleLines(winnerNames.size());
-    names->ShowBackground(false);
+    names->showBackground(false);
     names->setScrollBarAllowed(false);
     for(const auto& name : winnerNames)
-        names->AddString(name, COLOR_YELLOW);
+        names->addString(name, COLOR_YELLOW);
     const auto txtBounds = Rect(names->getPos(), names->getContentSize());
     Extent iwSize = getIwSize();
     if(iwSize.x + 20u < txtBounds.getSize().x)
@@ -42,9 +42,9 @@ iwVictory::iwVictory(const std::vector<std::string>& winnerNames)
         setIwSize(iwSize);
     names->setPos(DrawPoint((getSize().x - txtBounds.getSize().x) / 2, names->getPos().y));
     int btPosY = std::max(170, txtBounds.bottom + 20);
-    AddTextButton(ID_CONTINUE, DrawPoint(50, btPosY), Extent(140, 20), TextureColor::Grey, _("Continue game"),
+    addTextButton(ID_CONTINUE, DrawPoint(50, btPosY), Extent(140, 20), TextureColor::Grey, _("Continue game"),
                   NormalFont);
-    AddTextButton(ID_END_GAME, DrawPoint(50, btPosY + 25), Extent(140, 20), TextureColor::Red1, _("End game"),
+    addTextButton(ID_END_GAME, DrawPoint(50, btPosY + 25), Extent(140, 20), TextureColor::Red1, _("End game"),
                   NormalFont);
 }
 
@@ -52,10 +52,10 @@ void iwVictory::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_CONTINUE: Close(); break;
+        case ID_CONTINUE: close(); break;
         case ID_END_GAME:
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwEndgame>());
-            Close();
+            WINDOWMANAGER.replaceWindow(std::make_unique<iwEndgame>());
+            close();
             break;
     }
 }

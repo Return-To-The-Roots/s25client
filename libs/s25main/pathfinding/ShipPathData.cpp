@@ -89,7 +89,7 @@ void ShipPathData::initHarborConnections()
             const auto nbPoint = world_.getCoastalPoint(nb.id, nb.sea);
             const bool found =
               (startPoint == nbPoint)
-              || world_.FindShipPath(startPoint, nbPoint, nb.distance, &curConnections.back().route, &len);
+              || world_.findShipPath(startPoint, nbPoint, nb.distance, &curConnections.back().route, &len);
             RTTR_Assert(found);
             RTTR_Assert(len == nb.distance);
         }

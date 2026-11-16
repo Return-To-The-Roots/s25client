@@ -31,42 +31,42 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
                                  _("Building sequence"), LOADER.getImageN("io", 5)),
       gwv(gwv)
 {
-    ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TextureColor::Grey, NormalFont);
+    ctrlList* list = addList(0, DrawPoint(15, 60), Extent(150, 220), TextureColor::Grey, NormalFont);
 
     fillBuildOrder(GAMECLIENT.visual_settings.build_order);
 
     for(const auto buildOrder : pendingBuildOrder)
-        list->AddItem(_(BUILDING_NAMES[buildOrder])); //-V807
+        list->addItem(_(BUILDING_NAMES[buildOrder])); //-V807
 
     // Nach ganz oben
-    AddImageButton(1, DrawPoint(250, 194), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 215), _("Top"));
+    addImageButton(1, DrawPoint(250, 194), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 215), _("Top"));
     // Hoch
-    AddImageButton(2, DrawPoint(250, 216), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 33), _("Up"));
+    addImageButton(2, DrawPoint(250, 216), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 33), _("Up"));
     // Runter
-    AddImageButton(3, DrawPoint(250, 238), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 34), _("Down"));
+    addImageButton(3, DrawPoint(250, 238), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 34), _("Down"));
     // Nach ganz unten
-    AddImageButton(4, DrawPoint(250, 260), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 216),
+    addImageButton(4, DrawPoint(250, 260), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 216),
                    _("Bottom"));
 
     // Bild der Auswahl
-    AddImage(5, DrawPoint(240, 150), LOADER.getBuildingTex(gwv.getPlayer().nation, pendingBuildOrder[0]));
+    addImage(5, DrawPoint(240, 150), LOADER.getBuildingTex(gwv.getPlayer().nation, pendingBuildOrder[0]));
 
-    ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TextureColor::Grey, NormalFont, 100);
-    combo->AddItem(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
-    combo->AddItem(_("After the following order")); // "Nach folgender Reihenfolge"
+    ctrlComboBox* combo = addComboBox(6, DrawPoint(15, 30), Extent(290, 20), TextureColor::Grey, NormalFont, 100);
+    combo->addItem(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
+    combo->addItem(_("After the following order")); // "Nach folgender Reihenfolge"
 
     // Eintrag in Combobox auswählen
     useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
     combo->setSelection(useCustomBuildOrder ? 1 : 0);
 
     // Standard
-    AddImageButton(10, DrawPoint(200, 250), Extent(48, 30), TextureColor::Grey, LOADER.getImageN("io", 191),
+    addImageButton(10, DrawPoint(200, 250), Extent(48, 30), TextureColor::Grey, LOADER.getImageN("io", 191),
                    _("Default"));
 
     list->setSelection(0);
 }
 
-void iwBuildOrder::TransmitSettings()
+void iwBuildOrder::transmitSettings()
 {
     if(GAMECLIENT.isReplayModeOn())
         return;
@@ -201,11 +201,11 @@ void iwBuildOrder::msgButtonClick(const unsigned ctrl_id)
             fillBuildOrder(GAMECLIENT.default_settings.build_order);
 
             auto* list = getCtrl<ctrlList>(0);
-            list->DeleteAllItems();
+            list->deleteAllItems();
 
             // Liste füllen
             for(unsigned char i = 0; i < 31; ++i)
-                list->AddItem(_(BUILDING_NAMES[pendingBuildOrder[i]]));
+                list->addItem(_(BUILDING_NAMES[pendingBuildOrder[i]]));
             list->setSelection(0);
 
             getCtrl<ctrlImage>(5)->setImage(LOADER.getBuildingTex(gwv.getPlayer().nation, pendingBuildOrder[0]));
@@ -216,11 +216,11 @@ void iwBuildOrder::msgButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwBuildOrder::UpdateSettings()
+void iwBuildOrder::updateSettings()
 {
     if(GAMECLIENT.isReplayModeOn())
     {
-        gwv.getPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
+        gwv.getPlayer().fillVisualSettings(GAMECLIENT.visual_settings);
         fillBuildOrder(GAMECLIENT.visual_settings.build_order);
         useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
     }

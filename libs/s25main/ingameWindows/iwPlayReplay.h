@@ -17,8 +17,8 @@ public:
     void msgTableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
 private:
-    void PopulateTable();
+    void populateTable();
 
     /// Startet das Replay (aktuell ausgewählter Eintrag)
-    void StartReplay();
+    void startReplay();
 };

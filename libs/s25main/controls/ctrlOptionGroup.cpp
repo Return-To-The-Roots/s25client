@@ -22,7 +22,7 @@ void ctrlOptionGroup::setSelection(unsigned selection, bool notify)
         {
             case GroupSelectType::Illuminate: button->setIlluminated(false); break;
             case GroupSelectType::Check: button->setChecked(false); break;
-            case GroupSelectType::Show: button->setVisible(true); break;
+            case GroupSelectType::show: button->setVisible(true); break;
         }
     }
 
@@ -33,7 +33,7 @@ void ctrlOptionGroup::setSelection(unsigned selection, bool notify)
     {
         case GroupSelectType::Illuminate: button->setIlluminated(true); break;
         case GroupSelectType::Check: button->setChecked(true); break;
-        case GroupSelectType::Show: button->setVisible(false); break;
+        case GroupSelectType::show: button->setVisible(false); break;
     }
 
     this->selection_ = selection;
@@ -56,25 +56,25 @@ void ctrlOptionGroup::msgButtonClick(const unsigned ctrl_id)
 
 bool ctrlOptionGroup::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftDown, mc);
+    return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
 bool ctrlOptionGroup::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
 bool ctrlOptionGroup::msgWheelUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgWheelUp, mc);
+    return relayMouseMessage(&Window::msgWheelUp, mc);
 }
 
 bool ctrlOptionGroup::msgWheelDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgWheelDown, mc);
+    return relayMouseMessage(&Window::msgWheelDown, mc);
 }
 
 bool ctrlOptionGroup::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgMouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }

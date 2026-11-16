@@ -7,7 +7,7 @@
 
 ctrlBaseTooltip::~ctrlBaseTooltip()
 {
-    HideTooltip();
+    hideTooltip();
 }
 
 void ctrlBaseTooltip::setTooltip(const std::string& tooltip)
@@ -16,22 +16,22 @@ void ctrlBaseTooltip::setTooltip(const std::string& tooltip)
     WINDOWMANAGER.setToolTip(this, tooltip_, true);
 }
 
-void ctrlBaseTooltip::SwapTooltip(ctrlBaseTooltip& other)
+void ctrlBaseTooltip::swapTooltip(ctrlBaseTooltip& other)
 {
     std::swap(tooltip_, other.tooltip_);
 }
 
-void ctrlBaseTooltip::ShowTooltip() const
+void ctrlBaseTooltip::showTooltip() const
 {
-    ShowTooltip(tooltip_);
+    showTooltip(tooltip_);
 }
 
-void ctrlBaseTooltip::ShowTooltip(const std::string& tooltip) const
+void ctrlBaseTooltip::showTooltip(const std::string& tooltip) const
 {
     WINDOWMANAGER.setToolTip(this, tooltip);
 }
 
-void ctrlBaseTooltip::HideTooltip() const
+void ctrlBaseTooltip::hideTooltip() const
 {
     WINDOWMANAGER.setToolTip(this, "");
 }

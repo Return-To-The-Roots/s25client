@@ -381,7 +381,7 @@ BOOST_FIXTURE_TEST_CASE(PlayerEconomySettings, WorldWithGCExecution2P)
         const GamePlayer& player = world.getPlayer(curPlayer);
         // TODO: Use better getters once available
         VisualSettings outSettings;
-        player.FillVisualSettings(outSettings);
+        player.fillVisualSettings(outSettings);
         for(unsigned i = 0; i < inDist.size(); i++)
             BOOST_TEST_REQUIRE(outSettings.distribution[i] == inDist[i]);
         BOOST_TEST_REQUIRE(outSettings.useCustomBuildOrder == orderType);
@@ -477,7 +477,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     soldiers[Job::Sergeant] = 1;
     soldiers[Job::Officer] = 1;
     soldiers[Job::General] = 2;
-    wh->AddToInventory(soldiers, true);
+    wh->addToInventory(soldiers, true);
     // Don't keep any reserve
     for(unsigned i = 0; i <= this->ggs.getMaxMilitaryRank(); ++i)
         this->ChangeReserve(hqPos, i, 0);
@@ -485,7 +485,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
     this->ChangeMilitary(MILITARY_SETTINGS_SCALE);
     // Build a watchtower and connect it
     auto* bld = dynamic_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, milPt, curPlayer, player.nation));
+      BuildingFactory::createBuilding(world, BuildingType::Watchtower, milPt, curPlayer, player.nation));
     BOOST_TEST_REQUIRE(bld);
     this->BuildRoad(world.getNeighbour(hqPos, Direction::SouthEast), false,
                     std::vector<Direction>((milPt.x - hqPos.x), Direction::East));
@@ -590,7 +590,7 @@ void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodTyp
     // Build road and let worker leave
     worldFixture.BuildRoad(flagPt, false, std::vector<Direction>(3, Direction::West));
     for(unsigned i = 0; i < 30; i++)
-        worldFixture.em.ExecuteNextGF();
+        worldFixture.em.executeNextGF();
     BOOST_TEST_REQUIRE(wh->getLeavingFigures().empty());
 
     // Call one geologist to flag
@@ -637,7 +637,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
     auto* bld = dynamic_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, bldPt, curPlayer, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Watchtower, bldPt, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(bld);
     BOOST_TEST_REQUIRE(!bld->isGoldDisabled()); //-V522
 
@@ -664,7 +664,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeArmorAccept, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
     auto* bld = dynamic_cast<nobMilitary*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Watchtower, bldPt, curPlayer, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Watchtower, bldPt, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(bld);
     BOOST_TEST_REQUIRE(bld->isArmorAllowed()); //-V522
 
@@ -691,7 +691,7 @@ BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
 {
     const MapPoint bldPt = hqPos + MapPoint(3, 0);
     auto* bld = dynamic_cast<nobUsual*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Forester, bldPt, curPlayer, Nation::Romans));
+      BuildingFactory::createBuilding(world, BuildingType::Forester, bldPt, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(bld);
     BOOST_TEST_REQUIRE(!bld->isProductionDisabled()); //-V522
 
@@ -725,11 +725,11 @@ void InitPactsAndPost(GameWorldBase& world)
 {
     for(unsigned i = 0; i < world.getNumPlayers(); i++)
     {
-        world.getPlayer(i).MakeStartPacts();
+        world.getPlayer(i).makeStartPacts();
         PostBox& box = *world.getPostMgr().getPostBox(i);
         const unsigned numMsgs = box.getNumMsgs();
         for(unsigned j = 0; j < numMsgs; j++)
-            BOOST_TEST_REQUIRE(box.DeleteMsg(0u));
+            BOOST_TEST_REQUIRE(box.deleteMsg(0u));
         BOOST_TEST_REQUIRE(box.getNumMsgs() == 0u);
     }
 }
@@ -743,7 +743,7 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
     PostManager& postMgr = world.getPostMgr();
     // Add postbox for each player
     for(unsigned i = 0; i < world.getNumPlayers(); i++)
-        postMgr.AddPostBox(i);
+        postMgr.addPostBox(i);
     // Choose middle player so we can observe side effects and off-by-one errors
     curPlayer = 1;
 
@@ -822,24 +822,24 @@ BOOST_AUTO_TEST_CASE(InventorySettingType)
 
     // Reset and test toggle
     setting = InventorySetting();
-    setting.Toggle(EInventorySetting::Stop);
+    setting.toggle(EInventorySetting::Stop);
     BOOST_TEST_REQUIRE(setting == EInventorySetting::Stop);
-    setting.Toggle(EInventorySetting::Send);
+    setting.toggle(EInventorySetting::Send);
     // Both set
     BOOST_TEST_REQUIRE(setting.isSet(EInventorySetting::Stop));
     BOOST_TEST_REQUIRE(setting.isSet(EInventorySetting::Send));
     BOOST_TEST_REQUIRE(!setting.isSet(EInventorySetting::Collect));
 
     // Resets others
-    setting.Toggle(EInventorySetting::Collect);
+    setting.toggle(EInventorySetting::Collect);
     BOOST_TEST_REQUIRE(setting == EInventorySetting::Collect);
     // Resets collect
-    setting.Toggle(EInventorySetting::Stop);
+    setting.toggle(EInventorySetting::Stop);
     BOOST_TEST_REQUIRE(setting == EInventorySetting::Stop);
 
     // Enable send, disable stop
-    setting.Toggle(EInventorySetting::Send);
-    setting.Toggle(EInventorySetting::Stop);
+    setting.toggle(EInventorySetting::Send);
+    setting.toggle(EInventorySetting::Stop);
     BOOST_TEST_REQUIRE(setting == EInventorySetting::Send);
 }
 
@@ -860,15 +860,15 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
     InventorySetting expectedSetting;
     BOOST_TEST_REQUIRE(wh->getInventorySetting(GoodType::Boards) == expectedSetting); //-V522
     BOOST_TEST_REQUIRE(wh->getInventorySetting(Job::Private) == expectedSetting);
-    expectedSetting.Toggle(EInventorySetting::Stop);
-    expectedSetting.Toggle(EInventorySetting::Send);
+    expectedSetting.toggle(EInventorySetting::Stop);
+    expectedSetting.toggle(EInventorySetting::Send);
 
     this->SetInventorySetting(hqPos, GoodType::Boards, expectedSetting);
     BOOST_TEST_REQUIRE(wh->getInventorySetting(GoodType::Boards) == expectedSetting);
     this->SetInventorySetting(hqPos, Job::Private, expectedSetting);
     BOOST_TEST_REQUIRE(wh->getInventorySetting(Job::Private) == expectedSetting);
 
-    expectedSetting.Toggle(EInventorySetting::Collect);
+    expectedSetting.toggle(EInventorySetting::Collect);
     this->SetInventorySetting(hqPos, GoodType::Boards, expectedSetting);
     BOOST_TEST_REQUIRE(wh->getInventorySetting(GoodType::Boards) == expectedSetting);
     this->SetInventorySetting(hqPos, Job::Private, expectedSetting);
@@ -914,7 +914,7 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
 
     numWoodcutters = wh->getNumRealFigures(Job::Woodcutter);
     MapPoint whPos = hqPos + MapPoint(3, 0);
-    BuildingFactory::CreateBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Africans);
+    BuildingFactory::createBuilding(world, BuildingType::Storehouse, whPos, curPlayer, Nation::Africans);
     this->BuildRoad(wh->getFlagPos(), false, std::vector<Direction>(3, Direction::East));
     this->SetInventorySetting(hqPos, GoodType::Boards, EInventorySetting::Send);
     // Send some
@@ -938,7 +938,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     // Add enough soldiers per rank
     for(auto i : SOLDIER_JOBS)
         soldiers[i] = 50;
-    wh->AddToInventory(soldiers, true); //-V522
+    wh->addToInventory(soldiers, true); //-V522
 
     // Use more
     for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
@@ -974,7 +974,7 @@ BOOST_FIXTURE_TEST_CASE(ChangeReserveTest, WorldWithGCExecution2P)
     }
 }
 
-BOOST_FIXTURE_TEST_CASE(Armageddon, WorldWithGCExecution2P)
+BOOST_FIXTURE_TEST_CASE(armageddon, WorldWithGCExecution2P)
 {
     GamePlayer& player1 = world.getPlayer(0);
     GamePlayer& player2 = world.getPlayer(1);

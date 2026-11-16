@@ -17,9 +17,9 @@ public:
     ctrlTab(Window* parent, unsigned id, const DrawPoint& pos, unsigned short width);
 
     /// fügt eine Tab hinzu.
-    ctrlGroup* AddTab(glArchivItem_Bitmap* image, const std::string& tooltip, unsigned id);
+    ctrlGroup* addTab(glArchivItem_Bitmap* image, const std::string& tooltip, unsigned id);
     /// löscht alle Tabs.
-    void DeleteAllTabs();
+    void deleteAllTabs();
     /// aktiviert eine bestimmte Tabseite.
     void setSelection(unsigned short nr, bool notify = false);
     /// Gibt ID des aktuell gewählten Tabs zurück
@@ -54,7 +54,7 @@ public:
     bool msgMouseMove(const MouseCoords& mc) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
     unsigned short tab_count;

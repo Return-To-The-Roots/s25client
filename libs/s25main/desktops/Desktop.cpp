@@ -28,45 +28,45 @@ Desktop::Desktop(glArchivItem_Bitmap* background)
         VIDEODRIVER.setTargetFramerate(60);
     else
         VIDEODRIVER.setTargetFramerate(SETTINGS.video.framerate);
-    UpdateFps(VIDEODRIVER.getFPS());
+    updateFps(VIDEODRIVER.getFPS());
 }
 
 Desktop::~Desktop() = default;
 
-void Desktop::Draw_()
+void Desktop::drawImpl()
 {
     unsigned curFPS = VIDEODRIVER.getFPS();
     if(curFPS != lastFPS_)
-        UpdateFps(curFPS);
+        updateFps(curFPS);
 
     if(background)
-        background->DrawFull(getDrawRect());
+        background->drawFull(getDrawRect());
 
-    Window::Draw_();
+    Window::drawImpl();
 }
 
 void Desktop::msgScreenResize(const ScreenResizeEvent& sr)
 {
     Window::msgScreenResize(sr);
     // Resize to new screen size
-    Resize(sr.newSize);
+    resize(sr.newSize);
     auto* fpsDisplay = getCtrl<ctrlText>(fpsDisplayId);
     if(fpsDisplay)
-        fpsDisplay->setPos(Scale(fpsDisplayPos));
+        fpsDisplay->setPos(scale(fpsDisplayPos));
 }
 
 void Desktop::setFpsDisplay(bool show)
 {
     if(!show)
-        DeleteCtrl(fpsDisplayId);
+        deleteCtrl(fpsDisplayId);
     else if(!getCtrl<ctrlText>(fpsDisplayId) && SmallFont)
     {
-        AddText(fpsDisplayId, fpsDisplayPos, helpers::toString(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT,
+        addText(fpsDisplayId, fpsDisplayPos, helpers::toString(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT,
                 SmallFont);
     }
 }
 
-void Desktop::UpdateFps(unsigned newFps)
+void Desktop::updateFps(unsigned newFps)
 {
     auto* fpsDisplay = getCtrl<ctrlText>(fpsDisplayId);
     if(fpsDisplay)

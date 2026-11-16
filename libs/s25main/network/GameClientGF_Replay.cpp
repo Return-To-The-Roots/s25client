@@ -44,7 +44,7 @@ void GameClient::executeGameFrameReplay()
     }
 
     // Run game simulation
-    NextGF(result.executedGameCommands);
+    nextGF(result.executedGameCommands);
 
     // Check for game end
     if(curGF == replayinfo->replay.getLastGF())

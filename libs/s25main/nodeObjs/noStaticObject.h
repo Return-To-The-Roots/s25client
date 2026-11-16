@@ -20,7 +20,7 @@ public:
                    NodalObjectType type = NodalObjectType::Object);
     noStaticObject(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
     GO_Type getGOT() const override { return GO_Type::Staticobject; }
 
@@ -34,7 +34,7 @@ public:
     BlockingManner getBM() const override;
 
     /// zeichnet das Objekt.
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     static Textures getTextures(unsigned short file, unsigned short id);
     bool isAnimated() const;

@@ -17,7 +17,7 @@ class BuildingPlanner
 public:
     BuildingPlanner(const AIPlayerJH& aijh);
     /// Refresh the number of buildings by asking the GameClientPlayer
-    void Update(unsigned gf, AIPlayerJH& aijh);
+    void update(unsigned gf, AIPlayerJH& aijh);
 
     /// Return the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
     unsigned getNumBuildings(BuildingType type) const;
@@ -28,13 +28,13 @@ public:
     /// Get amount of construction sites of military buildings
     unsigned getNumMilitaryBldSites() const;
 
-    void InitBuildingsWanted(const AIPlayerJH& aijh);
-    void UpdateBuildingsWanted(const AIPlayerJH& aijh);
+    void initBuildingsWanted(const AIPlayerJH& aijh);
+    void updateBuildingsWanted(const AIPlayerJH& aijh);
 
     /// Return the number of buildings that we want to build of the current type
     int getNumAdditionalBuildingsWanted(BuildingType type) const;
     /// Checks whether the ai wants to construct more mil buildings atm
-    bool WantMoreMilitaryBlds(const AIPlayerJH& aijh) const;
+    bool wantMoreMilitaryBlds(const AIPlayerJH& aijh) const;
     bool isExpansionRequired() const { return expansionRequired; }
 
 private:
@@ -44,7 +44,7 @@ private:
     helpers::EnumArray<unsigned, BuildingType> buildingsWanted;
     bool expansionRequired;
 
-    void RefreshBuildingNums(const AIPlayerJH& aijh);
-    bool CalcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const;
+    void refreshBuildingNums(const AIPlayerJH& aijh);
+    bool calcIsExpansionRequired(AIPlayerJH& aijh, bool recalc) const;
 };
 } // namespace AIJH

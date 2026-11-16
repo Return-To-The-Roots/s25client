@@ -32,7 +32,7 @@ public:
                        libsiedler2::ArchivItem_Map* s2map);
 
     /// Zeichnet die MapPreview
-    void Draw_() override;
+    void drawImpl() override;
     Rect getBoundaryRect() const override;
 
     /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)

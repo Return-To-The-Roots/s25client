@@ -29,7 +29,7 @@ public:
     DummyEffect() : libsiedler2::ArchivItem(libsiedler2::BobType::Sound) {}
     RTTR_CLONEABLE(DummyEffect) // LCOV_EXCL_LINE
 protected:
-    SoundHandle Load() override { return AUDIODRIVER.LoadEffect("foo.wav"); }
+    SoundHandle Load() override { return AUDIODRIVER.loadEffect("foo.wav"); }
 };
 
 class DummyNO final : public noBase
@@ -37,8 +37,8 @@ class DummyNO final : public noBase
 public:
     DummyNO() : noBase(NodalObjectType::Animal) {}
     // LCOV_EXCL_START
-    void Draw(DrawPoint) override {}
-    void Destroy() override {}
+    void draw(DrawPoint) override {}
+    void destroy() override {}
     GO_Type getGOT() const override { return GO_Type::Animal; }
     // LCOV_EXCL_STOP
 };
@@ -60,7 +60,7 @@ struct LoadMockupAudioWithSounds : LoadMockupAudio
         sounds.alloc(115);
         for(int i = 50; i < 115; ++i)
             sounds.set(i, std::make_unique<DummyEffect>());
-        MOCK_EXPECT(audioDriverMock->LoadEffect).calls(makeDoLoad(driver::SoundType::Effect));
+        MOCK_EXPECT(audioDriverMock->loadEffect).calls(makeDoLoad(driver::SoundType::Effect));
         MOCK_EXPECT(audioDriverMock->doUnloadSound).calls(makeUnloadHandle(driver::SoundType::Effect));
     }
 };
@@ -137,14 +137,14 @@ BOOST_FIXTURE_TEST_CASE(OceanSounds, LoadMockupAudioWithSounds)
 
         // If already playing don't change it or play again, just adjust volume
         MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(true);
-        MOCK_EXPECT(audioDriverMock->ChangeVolume).once().with(mock::any, volume);
+        MOCK_EXPECT(audioDriverMock->changeVolume).once().with(mock::any, volume);
         manager.playOceanBrawling(10);
         mock::verify();
 
         // More water -> Sound gets louder
         MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(true);
         int oldVolume = volume;
-        MOCK_EXPECT(audioDriverMock->ChangeVolume).once().with(mock::any, mock::retrieve(volume));
+        MOCK_EXPECT(audioDriverMock->changeVolume).once().with(mock::any, mock::retrieve(volume));
         manager.playOceanBrawling(20);
         mock::verify();
         BOOST_TEST(volume > oldVolume);
@@ -152,7 +152,7 @@ BOOST_FIXTURE_TEST_CASE(OceanSounds, LoadMockupAudioWithSounds)
         // Max volume
         MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(true);
         oldVolume = volume;
-        MOCK_EXPECT(audioDriverMock->ChangeVolume).once().with(mock::any, mock::retrieve(volume));
+        MOCK_EXPECT(audioDriverMock->changeVolume).once().with(mock::any, mock::retrieve(volume));
         manager.playOceanBrawling(100);
         mock::verify();
         BOOST_TEST(volume > oldVolume);

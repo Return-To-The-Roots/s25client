@@ -58,8 +58,8 @@ public:
     unsigned getTexture() const { return texture; }
 
     void generateTexture();
-    void DrawFull(const Position& dstPos, unsigned color = 0xFFFFFFFF) override { draw(dstPos, color); }
-    void Draw(Rect dstArea, Rect srcArea, unsigned color = 0xFFFFFFFF) override;
+    void drawFull(const Position& dstPos, unsigned color = 0xFFFFFFFF) override { draw(dstPos, color); }
+    void draw(Rect dstArea, Rect srcArea, unsigned color = 0xFFFFFFFF) override;
     void drawRect(Rect dstArea, Rect srcArea, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
     void draw(DrawPoint drawPt, unsigned color = 0xFFFFFFFF, unsigned player_color = 0);
     void drawForPlayer(DrawPoint drawPt, unsigned player_color) { draw(drawPt, 0xFFFFFFFF, player_color); }

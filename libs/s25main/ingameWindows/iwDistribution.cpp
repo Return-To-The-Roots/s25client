@@ -33,12 +33,12 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
                                  _("Distribution of goods"), LOADER.getImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
-    CreateGroups();
+    createGroups();
 
-    Resize(Extent(groups.size() * TAB_ICON_SIZE + TAB_ICON_SIZE / 2 + 20, 312));
+    resize(Extent(groups.size() * TAB_ICON_SIZE + TAB_ICON_SIZE / 2 + 20, 312));
 
     // Tab Control
-    ctrlTab* tab = AddTabCtrl(0, DrawPoint(10, 20), groups.size() * TAB_ICON_SIZE + TAB_ICON_SIZE / 2);
+    ctrlTab* tab = addTabCtrl(0, DrawPoint(10, 20), groups.size() * TAB_ICON_SIZE + TAB_ICON_SIZE / 2);
     DrawPoint txtPos(getSize().x / 2, 60);
     DrawPoint progPos(PROGRESS_BORDER_DISTANCE - tab->getPos().x, txtPos.y);
     const Extent progSize(getSize().x - 2 * PROGRESS_BORDER_DISTANCE, 20);
@@ -46,15 +46,15 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     for(unsigned groupId = 0; groupId < groups.size(); groupId++)
     {
         const DistributionGroup& group = groups[groupId];
-        ctrlGroup* tabGrp = tab->AddTab(group.img, group.name, groupId);
+        ctrlGroup* tabGrp = tab->addTab(group.img, group.name, groupId);
         txtPos.y = progPos.y = 60;
         unsigned curId = 0;
         for(const auto& entry : group.entries)
         {
             unsigned txtId = group.entries.size() + curId;
-            tabGrp->AddText(txtId, txtPos, std::get<0>(entry), COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM,
+            tabGrp->addText(txtId, txtPos, std::get<0>(entry), COLOR_YELLOW, FontStyle::CENTER | FontStyle::BOTTOM,
                             SmallFont);
-            tabGrp->AddProgress(curId++, progPos, progSize, TextureColor::Grey, 139, 138, 10);
+            tabGrp->addProgress(curId++, progPos, progSize, TextureColor::Grey, 139, 138, 10);
             txtPos.y = progPos.y += progSize.y * 2;
         }
     }
@@ -64,16 +64,16 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
 
     const Extent btSize(32, 32);
     // "Help" button
-    AddImageButton(2, DrawPoint(15, getFullSize().y - 15 - btSize.y), btSize, TextureColor::Grey,
+    addImageButton(2, DrawPoint(15, getFullSize().y - 15 - btSize.y), btSize, TextureColor::Grey,
                    LOADER.getImageN("io", 225), _("Help"));
     // "Default" button
-    AddImageButton(10, getFullSize() - DrawPoint::all(15) - btSize, btSize, TextureColor::Grey,
+    addImageButton(10, getFullSize() - DrawPoint::all(15) - btSize, btSize, TextureColor::Grey,
                    LOADER.getImageN("io", 191), _("Default"));
 
-    iwDistribution::UpdateSettings();
+    iwDistribution::updateSettings();
 }
 
-void iwDistribution::TransmitSettings()
+void iwDistribution::transmitSettings()
 {
     if(GAMECLIENT.isReplayModeOn())
         return;
@@ -112,10 +112,10 @@ void iwDistribution::msgGroupProgressChange(const unsigned /*group_id*/, const u
     settings_changed = true;
 }
 
-void iwDistribution::UpdateSettings(const Distributions& distribution)
+void iwDistribution::updateSettings(const Distributions& distribution)
 {
     if(GAMECLIENT.isReplayModeOn())
-        gwv.getPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
+        gwv.getPlayer().fillVisualSettings(GAMECLIENT.visual_settings);
 
     for(unsigned g = 0; g < groups.size(); ++g)
     {
@@ -128,9 +128,9 @@ void iwDistribution::UpdateSettings(const Distributions& distribution)
     }
 }
 
-void iwDistribution::UpdateSettings()
+void iwDistribution::updateSettings()
 {
-    UpdateSettings(GAMECLIENT.visual_settings.distribution);
+    updateSettings(GAMECLIENT.visual_settings.distribution);
 }
 
 void iwDistribution::msgButtonClick(const unsigned ctrl_id)
@@ -143,7 +143,7 @@ void iwDistribution::msgButtonClick(const unsigned ctrl_id)
 
         case 2:
         {
-            WINDOWMANAGER.ReplaceWindow(
+            WINDOWMANAGER.replaceWindow(
               std::make_unique<iwHelp>(_("The priority of goods for the individual buildings can be set here. "
                                          "The higher the value, the quicker the required goods are delivered "
                                          "to the building concerned.")));
@@ -152,14 +152,14 @@ void iwDistribution::msgButtonClick(const unsigned ctrl_id)
         // Default button
         case 10:
         {
-            UpdateSettings(GAMECLIENT.default_settings.distribution);
+            updateSettings(GAMECLIENT.default_settings.distribution);
             settings_changed = true;
         }
         break;
     }
 }
 
-void iwDistribution::CreateGroups()
+void iwDistribution::createGroups()
 {
     if(!groups.empty())
         return;

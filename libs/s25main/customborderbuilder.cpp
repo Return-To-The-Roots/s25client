@@ -59,7 +59,7 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::Archiv& archiveInfo)
     // palette = dynamic_cast<glArchivItem_Bitmap_RLE*>(archiveInfo[4])->getPalette();
     // 640x480
     {
-        Bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[4]), tempBMP);
+        bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[4]), tempBMP);
         corners[0] = tempBMP.get(ImgPos(0, 0), Extent(584, 12));
         corners[1] = tempBMP.get(ImgPos(584, 0), Extent(56, 12));
         corners[2] = tempBMP.get(ImgPos(0, 468), Extent(202, 12));
@@ -76,7 +76,7 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::Archiv& archiveInfo)
     }
     // 800x600
     {
-        Bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[7]), tempBMP);
+        bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[7]), tempBMP);
         edgesTop[0] = tempBMP.get(ImgPos(584, 0), Extent(160, 12));
         edgesBottom[0] = tempBMP.get(ImgPos(508, 588), Extent(160, 12));
         edgesLeft[0] = tempBMP.get(ImgPos(0, 364), Extent(12, 120));
@@ -85,7 +85,7 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::Archiv& archiveInfo)
     }
     // 1024x768
     {
-        Bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[10]), tempBMP);
+        bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[10]), tempBMP);
         edgesTop[1] = tempBMP.get(ImgPos(644, 0), Extent(224, 12));
         edgesBottom[1] = tempBMP.get(ImgPos(668, 756), Extent(224, 12));
         edgesLeft[1] = tempBMP.get(ImgPos(0, 484), Extent(12, 168));
@@ -108,13 +108,13 @@ int CustomBorderBuilder::loadEdges(const libsiedler2::Archiv& archiveInfo)
     // 1280x1024 links
     {
         BdrBitmap pic1(Extent(640, 1024));
-        Bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[13]), pic1);
+        bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[13]), pic1);
         tempBMP.put(ImgPos(0, 0), pic1);
     }
     // und rechts
     {
         BdrBitmap pic2(Extent(640, 1024));
-        Bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[14]), pic2);
+        bitmap2BdrBitmap(dynamic_cast<const glArchivItem_Bitmap&>(*archiveInfo[14]), pic2);
         tempBMP.put(ImgPos(pic2.size.x, 0), pic2);
         edgesTop[2] = tempBMP.get(ImgPos(968, 0), Extent(256, 12));
         edgesBottom[2] = tempBMP.get(ImgPos(892, 1012), Extent(256, 12));
@@ -169,16 +169,16 @@ int CustomBorderBuilder::buildBorder(const Extent& size, std::array<glArchivItem
         toFillPixel = size.x - 640;
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesTop[i].size.x;
-        FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersTop,
+        findEdgeDistribution(toFillPixel, lengthEdge, countEdge);
+        writeEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersTop,
                               customEdges[0]);
         // untere Kante links
         emptyFromPixel.x = 202;
         toFillPixel = size.x / 2 - 320;
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesBottom[i].size.x;
-        FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom,
+        findEdgeDistribution(toFillPixel, lengthEdge, countEdge);
+        writeEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom,
                               customEdges[1]);
         // untere Kante rechts
         emptyFromPixel.x = size.x / 2 + 188;
@@ -186,24 +186,24 @@ int CustomBorderBuilder::buildBorder(const Extent& size, std::array<glArchivItem
                       - 320; // hier steht w - w/2 statt w/2, um den Rundungsfehler bei ungeraden w zu kompensieren
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesBottom[i].size.x;
-        FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom,
+        findEdgeDistribution(toFillPixel, lengthEdge, countEdge);
+        writeEdgeDistribution(emptyFromPixel, toFillPixel, false, lengthEdge, countEdge, edgesTop, fillersBottom,
                               customEdges[1]);
         // linke Kante
         emptyFromPixel = ImgPos(0, 352);
         toFillPixel = size.y - 480;
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesLeft[i].size.y;
-        FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesLeft, fillersLeft,
+        findEdgeDistribution(toFillPixel, lengthEdge, countEdge);
+        writeEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesLeft, fillersLeft,
                               customEdges[2]);
         // rechte Kante
         emptyFromPixel.y = 268;
         toFillPixel = size.y - 480;
         for(unsigned char i = 0; i < 3; i++)
             lengthEdge[i] = edgesRight[i].size.y;
-        FindEdgeDistribution(toFillPixel, lengthEdge, countEdge);
-        WriteEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesRight, fillersRight,
+        findEdgeDistribution(toFillPixel, lengthEdge, countEdge);
+        writeEdgeDistribution(emptyFromPixel, toFillPixel, true, lengthEdge, countEdge, edgesRight, fillersRight,
                               customEdges[3]);
     }
 
@@ -213,26 +213,26 @@ int CustomBorderBuilder::buildBorder(const Extent& size, std::array<glArchivItem
         glArchivItem_Bitmap* customEdgeBmp = new glArchivItem_Bitmap_Direct;
         customEdgeBmp->init(customEdges[i].size.x, customEdges[i].size.y, libsiedler2::TextureFormat::Paletted,
                             &palette);
-        BdrBitmap2Bitmap(customEdges[i], *customEdgeBmp);
+        bdrBitmap2Bitmap(customEdges[i], *customEdgeBmp);
         borderInfo[i] = customEdgeBmp;
     }
 
     return 0;
 }
 
-void CustomBorderBuilder::Bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmapRLE, BdrBitmap& bdrBitmap)
+void CustomBorderBuilder::bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmapRLE, BdrBitmap& bdrBitmap)
 {
     RTTR_FOREACH_PT(ImgPos, bitmapRLE.getSize())
         bdrBitmap.put(pt, bitmapRLE.getPixelClrIdx(pt.x, pt.y, &palette));
 }
 
-void CustomBorderBuilder::BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmapRLE)
+void CustomBorderBuilder::bdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmapRLE)
 {
     RTTR_FOREACH_PT(ImgPos, bdrBitmap.size)
         bitmapRLE.setPixel(pt.x, pt.y, bdrBitmap.get(pt));
 }
 
-void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths,
+void CustomBorderBuilder::findEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths,
                                                std::array<unsigned char, 3>& shouldCounts)
 {
     // Die should-Variablen speichern die bisher als am besten befundene Kombination; die would-Variablen die gerade zu
@@ -278,7 +278,7 @@ void CustomBorderBuilder::FindEdgeDistribution(unsigned toFill, std::array<unsig
 }
 
 template<size_t T_numEdges, size_t T_numFillers>
-void CustomBorderBuilder::WriteEdgeDistribution(const ImgPos& pos, const unsigned toFill,
+void CustomBorderBuilder::writeEdgeDistribution(const ImgPos& pos, const unsigned toFill,
                                                 const bool direction, // false = waagerecht, true = senkrecht
                                                 const std::array<unsigned short, 3>& edgeLengths,
                                                 std::array<unsigned char, 3>& edgeCounts,

@@ -33,16 +33,16 @@ bool ctrlCheck::msgMouseMove(const MouseCoords& mc)
 {
     if(isMouseOver(mc.pos))
     {
-        ShowTooltip();
+        showTooltip();
         return true;
     } else
     {
-        HideTooltip();
+        hideTooltip();
         return false;
     }
 }
 
-void ctrlCheck::Draw_()
+void ctrlCheck::drawImpl()
 {
     const unsigned short boxSize = 20;
     short spacing = (getSize().y - boxSize) / 2;
@@ -60,22 +60,22 @@ void ctrlCheck::Draw_()
     if(boxStartOffsetX < 0)
         boxStartOffsetX = 0;
 
-    Draw3D(drawRect, tc, false);
+    draw3D(drawRect, tc, false);
 
     if(drawText)
     {
         int availableWidth = boxStartOffsetX - 4;
         if(availableWidth < 0)
             availableWidth = 0;
-        font->Draw(drawRect.getOrigin() + DrawPoint(4, getSize().y / 2), text, FontStyle::VCENTER,
+        font->draw(drawRect.getOrigin() + DrawPoint(4, getSize().y / 2), text, FontStyle::VCENTER,
                    (check ? COLOR_YELLOW : 0xFFBBBBBB), availableWidth);
     }
 
     DrawPoint boxPos = drawRect.getOrigin() + DrawPoint(boxStartOffsetX, spacing);
 
     if(!readonly)
-        Draw3D(Rect(boxPos, Extent::all(boxSize)), tc, false);
+        draw3D(Rect(boxPos, Extent::all(boxSize)), tc, false);
 
     if(check)
-        LOADER.getImageN("io", 32)->DrawFull(boxPos + DrawPoint(boxSize, boxSize) / 2);
+        LOADER.getImageN("io", 32)->drawFull(boxPos + DrawPoint(boxSize, boxSize) / 2);
 }

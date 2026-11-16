@@ -27,7 +27,7 @@ GameObject::GameObject(SerializedGameData& sgd, const unsigned obj_id) : objId(o
 {
     // ein Objekt mehr
     ++objCounter_;
-    sgd.AddObject(this);
+    sgd.addObject(this);
 }
 
 GameObject::GameObject(const GameObject& go) : objId(go.objId)
@@ -36,7 +36,7 @@ GameObject::GameObject(const GameObject& go) : objId(go.objId)
     ++objCounter_;
 }
 
-void GameObject::Destroy() {}
+void GameObject::destroy() {}
 
 GameObject::~GameObject()
 {
@@ -51,23 +51,23 @@ EventManager& GameObject::getEvMgr()
     return world->getEvMgr();
 }
 
-void GameObject::SendPostMessage(unsigned player, std::unique_ptr<PostMsg> msg)
+void GameObject::sendPostMessage(unsigned player, std::unique_ptr<PostMsg> msg)
 {
-    world->getPostMgr().SendMsg(player, std::move(msg));
+    world->getPostMgr().sendMsg(player, std::move(msg));
 }
 
-void GameObject::DetachWorld(GameWorld* gameWorld)
+void GameObject::detachWorld(GameWorld* gameWorld)
 {
     if(world == gameWorld)
         world = nullptr;
 }
 
-void GameObject::AttachWorld(GameWorld* gameWorld)
+void GameObject::attachWorld(GameWorld* gameWorld)
 {
     world = gameWorld;
 }
 
-std::string GameObject::ToString() const
+std::string GameObject::toString() const
 {
     return "GameObject(" + std::to_string(objId) + ")";
 }

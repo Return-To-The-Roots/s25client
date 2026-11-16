@@ -62,10 +62,10 @@ class World : public MapBase
     WorldDescription description_;
 
     std::unique_ptr<noBase> noNodeObj;
-    void Resize(const MapExtent& newSize) override final;
-    noBase& AddFigureImpl(MapPoint pt, std::unique_ptr<noBase> fig);
+    void resize(const MapExtent& newSize) override final;
+    noBase& addFigureImpl(MapPoint pt, std::unique_ptr<noBase> fig);
     /// Implementation of RemoveFigure. Returned pointer must be wrapped in an owning pointer
-    noBase* RemoveFigureImpl(MapPoint pt, noBase& fig);
+    noBase* removeFigureImpl(MapPoint pt, noBase& fig);
 
 protected:
     /// harbor building sites created by ships
@@ -82,7 +82,7 @@ public:
     /// Initialize the world
     virtual void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt);
     /// Clean up (free objects and reset world to uninitialized state)
-    void Unload();
+    void unload();
 
     /// Return the type of the landscape
     DescIdx<LandscapeDesc> GetLandscapeType() const { return lt; }
@@ -97,14 +97,14 @@ public:
 
     // Add a figure to a node (taking ownership) and returns a reference to it
     template<typename T>
-    T& AddFigure(MapPoint pt, std::unique_ptr<T> fig)
+    T& addFigure(MapPoint pt, std::unique_ptr<T> fig)
     {
-        return static_cast<T&>(AddFigureImpl(pt, std::move(fig)));
+        return static_cast<T&>(addFigureImpl(pt, std::move(fig)));
     }
     template<typename T>
     std::unique_ptr<T> RemoveFigure(MapPoint pt, T& fig)
     {
-        return std::unique_ptr<T>(static_cast<T*>(RemoveFigureImpl(pt, fig)));
+        return std::unique_ptr<T>(static_cast<T*>(removeFigureImpl(pt, fig)));
     }
     template<typename T>
     std::unique_ptr<T> RemoveFigure(MapPoint pt, T*& fig) = delete;
@@ -117,10 +117,10 @@ public:
     void setNO(MapPoint pt, noBase* obj, bool replace = false);
     /// Destroys the object at the given node and removes it from the map. If checkExists is false than it is ok, if
     /// there is no obj
-    void DestroyNO(MapPoint pt, bool checkExists = true);
+    void destroyNO(MapPoint pt, bool checkExists = true);
     /// Return the game object type of the object at that point or GOT_NONE of there is none
     GO_Type getGOT(MapPoint pt) const;
-    void ReduceResource(MapPoint pt);
+    void reduceResource(MapPoint pt);
     void setResource(const MapPoint pt, Resource newResource) { getNodeInt(pt).resources = newResource; }
     void setOwner(const MapPoint pt, unsigned char newOwner) { getNodeInt(pt).owner = newOwner; }
     void setReserved(MapPoint pt, bool reserved);
@@ -128,10 +128,10 @@ public:
     /// fowTime is only used if visibility gets changed to FoW
     void setVisibility(MapPoint pt, unsigned char player, Visibility vis, unsigned fowTime = 0);
 
-    void ChangeAltitude(MapPoint pt, unsigned char altitude);
+    void changeAltitude(MapPoint pt, unsigned char altitude);
 
     // Make whole map visible with no additional checks or notices
-    void MakeWholeMapVisibleForAllPlayers();
+    void makeWholeMapVisibleForAllPlayers();
 
     /// Checks if the point completely belongs to a player (if false but point itself belongs to player then it is a
     /// border) if owner is != 0 it checks if the points specific ownership
@@ -140,7 +140,7 @@ public:
     /// Return the BQ for the given player at the point (including ownership constraints)
     BuildingQuality GetBQ(MapPoint pt, unsigned char player) const;
     /// Incorporates node ownership into the given BQ
-    BuildingQuality AdjustBQ(MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const;
+    BuildingQuality adjustBQ(MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const;
 
     /// Return the figures currently on the node
     auto getFigures(const MapPoint pt) const { return helpers::nonNullPtrSpan(getNode(pt).figures); }
@@ -165,7 +165,7 @@ public:
     helpers::EnumArray<DescIdx<TerrainDesc>, Direction> getTerrainsAround(MapPoint pt) const;
 
     /// Create the FOW-objects, -streets, etc for a point and player
-    void SaveFOWNode(MapPoint pt, unsigned player, unsigned curTime);
+    void saveFOWNode(MapPoint pt, unsigned player, unsigned curTime);
     unsigned getNumSeas() const { return seas.size(); }
     /// Return whether a node is inside a (shippable) sea (surrounded by shippable water)
     bool isSeaPoint(MapPoint pt) const;
@@ -232,8 +232,8 @@ public:
     PointRoad getPointFOWRoad(MapPoint pt, Direction dir, unsigned char viewing_player) const;
 
     /// Adds a catapult stone currently flying
-    void AddCatapultStone(CatapultStone* cs);
-    void RemoveCatapultStone(CatapultStone* cs);
+    void addCatapultStone(CatapultStone* cs);
+    void removeCatapultStone(CatapultStone* cs);
 
 protected:
     /// Internal method for access to nodes with write access
@@ -241,9 +241,9 @@ protected:
     MapNode& getNeighbourNodeInt(MapPoint pt, Direction dir);
 
     /// Notify derived classes of changed altitude
-    virtual void AltitudeChanged(MapPoint pt) = 0;
+    virtual void altitudeChanged(MapPoint pt) = 0;
     /// Notify derived classes of changed visibility
-    virtual void VisibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) = 0;
+    virtual void visibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) = 0;
     /// Sets the road for the given (road) direction
     void setRoad(MapPoint pt, RoadDir roadDir, PointRoad type);
     BoundaryStones& getBoundaryStones(const MapPoint pt) { return getNodeInt(pt).boundary_stones; }
@@ -251,7 +251,7 @@ protected:
     bool setBQ(MapPoint pt, BuildingQuality bq);
 
     /// Recalculates the shade of a point
-    void RecalcShadow(MapPoint pt);
+    void recalcShadow(MapPoint pt);
 };
 
 //////////////////////////////////////////////////////////////////////////

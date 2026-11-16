@@ -50,7 +50,7 @@ GameWorldView::GameWorldView(const GameWorldViewer& gwv, const Position& pos, co
       zoomFactor_(1.f), targetZoomFactor_(1.f), zoomSpeed_(0.f)
 {
     updateEffectiveZoomFactor();
-    MoveBy({0, 0});
+    moveBy({0, 0});
 }
 
 const GameWorldBase& GameWorldView::getWorld() const
@@ -95,7 +95,7 @@ void GameWorldView::setNextZoomFactor()
 
     zoomFactor_ = zoomFactor_ + zoomSpeed_;
     updateEffectiveZoomFactor();
-    CalcFxLx();
+    calcFxLx();
 }
 
 float GameWorldView::setZoomFactor(float zoomFactor, bool smoothTransition /* = true*/)
@@ -105,7 +105,7 @@ float GameWorldView::setZoomFactor(float zoomFactor, bool smoothTransition /* = 
     {
         zoomFactor_ = targetZoomFactor_;
         updateEffectiveZoomFactor();
-        CalcFxLx();
+        calcFxLx();
     }
     return targetZoomFactor_;
 }
@@ -115,7 +115,7 @@ float GameWorldView::getCurrentTargetZoomFactor() const
     return targetZoomFactor_;
 }
 
-Position GameWorldView::ViewPosToMap(Position pos) const
+Position GameWorldView::viewPosToMap(Position pos) const
 {
     pos -= origin_;
     if(effectiveZoomFactor_ != 1.f)
@@ -135,7 +135,7 @@ struct ObjectBetweenLines
     ObjectBetweenLines(noBase& obj, const DrawPoint& pos) : obj(obj), pos(pos) {}
 };
 
-void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water)
+void GameWorldView::draw(const RoadBuildState& rb, const MapPoint selected, bool drawMouse, unsigned* water)
 {
     setNextZoomFactor();
 
@@ -168,7 +168,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
     glTranslatef(static_cast<GLfloat>(-offset.x), static_cast<GLfloat>(-offset.y), 0.0f);
     const TerrainRenderer& terrainRenderer = gwv.getTerrainRenderer();
-    terrainRenderer.Draw(getFirstPt(), getLastPt(), gwv, water);
+    terrainRenderer.draw(getFirstPt(), getLastPt(), gwv, water);
     glTranslatef(static_cast<GLfloat>(offset.x), static_cast<GLfloat>(offset.y), 0.0f);
 
     const auto& world = getWorld();
@@ -182,7 +182,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
         for(const int x : helpers::range(firstPt.x, lastPt.x + 1))
         {
             Position curOffset;
-            const MapPoint curPt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
+            const MapPoint curPt = terrainRenderer.convertCoords(Position(x, y), &curOffset);
             const DrawPoint curPos = world.getNodePos(curPt) - offset + curOffset;
 
             Position mouseDist = mousePos - curPos;
@@ -196,23 +196,23 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
             const Visibility visibility = gwv.getVisibility(curPt);
 
-            DrawBoundaryStone(curPt, curPos, visibility);
+            drawBoundaryStone(curPt, curPos, visibility);
 
             if(visibility == Visibility::Visible)
             {
-                DrawObject(curPt, curPos);
-                DrawMovingFiguresFromBelow(terrainRenderer, Position(x, y), objsBetweenRows);
-                DrawFigures(curPt, curPos, objsBetweenRows);
+                drawObject(curPt, curPos);
+                drawMovingFiguresFromBelow(terrainRenderer, Position(x, y), objsBetweenRows);
+                drawFigures(curPt, curPos, objsBetweenRows);
 
                 if(show_bq)
-                    DrawConstructionAid(curPt, curPos);
+                    drawConstructionAid(curPt, curPos);
                 if(resourceRevealMode != Cheats::ResourceRevealMode::Nothing)
-                    DrawResource(curPt, curPos, resourceRevealMode);
+                    drawResource(curPt, curPos, resourceRevealMode);
             } else if(visibility == Visibility::FogOfWar)
             {
                 const FOWObject* fowobj = gwv.getYoungestFOWObject(MapPoint(curPt));
                 if(fowobj)
-                    fowobj->Draw(curPos);
+                    fowobj->draw(curPos);
             }
 
             for(IDrawNodeCallback* callback : drawNodeCallbacks)
@@ -221,27 +221,27 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
 
         // Draw objects that are between rows now
         for(auto& between_line : objsBetweenRows)
-            between_line.obj.Draw(between_line.pos);
+            between_line.obj.draw(between_line.pos);
     }
 
     if(show_names || show_productivity)
-        DrawNameProductivityOverlay(terrainRenderer);
+        drawNameProductivityOverlay(terrainRenderer);
 
     if(isBuildingRadiusEnabled_)
     {
         if(drawMouse)
-            UpdateRadiusPreviewForMousePos();
-        DrawRadiusOutline();
+            updateRadiusPreviewForMousePos();
+        drawRadiusOutline();
     }
 
-    DrawGUI(rb, terrainRenderer, selected, drawMouse);
+    drawGUI(rb, terrainRenderer, selected, drawMouse);
 
     // Draw catapult stones
     for(auto* catapult_stone : world.catapult_stones)
     {
         if(gwv.getVisibility(catapult_stone->dest_building) == Visibility::Visible
            || gwv.getVisibility(catapult_stone->dest_map) == Visibility::Visible)
-            catapult_stone->Draw(offset);
+            catapult_stone->draw(offset);
     }
 
     if(effectiveZoomFactor_ != 1.f) //-V550
@@ -255,7 +255,7 @@ void GameWorldView::Draw(const RoadBuildState& rb, const MapPoint selected, bool
     glScissor(0, 0, windowSize.width, windowSize.height);
 }
 
-void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer,
+void GameWorldView::drawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer,
                             const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
@@ -278,7 +278,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
         {
             // Coordinates transform
             Position curOffset;
-            MapPoint curPt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
+            MapPoint curPt = terrainRenderer.convertCoords(Position(x, y), &curOffset);
             Position curPos = getWorld().getNodePos(curPt) - offset + curOffset;
 
             /// Current point indicated by Mouse
@@ -299,12 +299,12 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                         default: break;
                     }
                 }
-                LOADER.getMapTexture(mid)->DrawFull(curPos);
+                LOADER.getMapTexture(mid)->drawFull(curPos);
             }
 
             // Currently selected point
             if(selectedPt == curPt)
-                LOADER.getMapTexture(20)->DrawFull(curPos);
+                LOADER.getMapTexture(20)->drawFull(curPos);
 
             // not building roads, no further action needed
             if(rb.mode == RoadBuildMode::Disabled)
@@ -318,7 +318,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             // highlight current route pt
             if(rb.point == curPt)
             {
-                LOADER.getMapTexture(21)->DrawFull(curPos);
+                LOADER.getMapTexture(21)->drawFull(curPos);
                 continue;
             }
 
@@ -335,7 +335,7 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             // render special icon for route revert
             if(!rb.route.empty() && road_points[rb.route.back() + 3u] == curPt)
             {
-                LOADER.getMapTexture(67)->DrawFull(curPos);
+                LOADER.getMapTexture(67)->drawFull(curPos);
                 continue;
             }
 
@@ -360,20 +360,20 @@ void GameWorldView::DrawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                     default: id = 60; break;
                 }
                 if(!targetFlag)
-                    LOADER.getMapTexture(id)->DrawFull(curPos);
+                    LOADER.getMapTexture(id)->drawFull(curPos);
                 else
                 {
                     DrawPoint lastPos = getWorld().getNodePos(rb.point) - offset + curOffset;
                     DrawPoint halfWayPos = (curPos + lastPos) / 2;
-                    LOADER.getMapTexture(id)->DrawFull(halfWayPos);
-                    LOADER.getMapTexture(20)->DrawFull(curPos);
+                    LOADER.getMapTexture(id)->drawFull(halfWayPos);
+                    LOADER.getMapTexture(20)->drawFull(curPos);
                 }
             }
         }
     }
 }
 
-void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer)
+void GameWorldView::drawNameProductivityOverlay(const TerrainRenderer& terrainRenderer)
 {
     const bool showEnemyProductivity =
       getWorld().getGameInterface()->GI_GetCheats().shouldShowEnemyProductivityOverlay();
@@ -386,7 +386,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
         {
             // Coordinate transform
             Position curOffset;
-            MapPoint pt = terrainRenderer.ConvertCoords(Position(x, y), &curOffset);
+            MapPoint pt = terrainRenderer.convertCoords(Position(x, y), &curOffset);
 
             const auto* no = getWorld().getSpecObj<noBaseBuilding>(pt);
             if(!no)
@@ -401,7 +401,7 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
                 if(!isAllVisible && gwv.getVisibility(pt, false) != Visibility::Visible)
                     continue;
                 if(attackAidImage && gwv.getNumSoldiersForAttack(pt) > 0)
-                    attackAidImage->DrawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
+                    attackAidImage->drawFull(curPos - DrawPoint(0, attackAidImage->getHeight()));
                 // Do not draw enemy productivity overlay unless the related cheat is on
                 if(!showEnemyProductivity)
                     continue;
@@ -411,19 +411,19 @@ void GameWorldView::DrawNameProductivityOverlay(const TerrainRenderer& terrainRe
             if(show_names)
             {
                 unsigned color = (no->getGOT() == GO_Type::Buildingsite) ? COLOR_GREY : COLOR_YELLOW;
-                SmallFont->Draw(curPos, _(BUILDING_NAMES[no->getBuildingType()]),
+                SmallFont->draw(curPos, _(BUILDING_NAMES[no->getBuildingType()]),
                                 FontStyle::CENTER | FontStyle::VCENTER, color);
                 curPos.y += SmallFont->getHeight();
             }
 
             // Draw productivity/soldiers
             if(show_productivity)
-                DrawProductivity(*no, curPos);
+                drawProductivity(*no, curPos);
         }
     }
 }
 
-void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos)
+void GameWorldView::drawProductivity(const noBaseBuilding& no, const DrawPoint& curPos)
 {
     const GO_Type got = no.getGOT();
     if(got == GO_Type::Buildingsite)
@@ -431,7 +431,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         unsigned color = COLOR_GREY;
 
         unsigned short p = static_cast<const noBuildingSite&>(no).getBuildProgress();
-        SmallFont->Draw(curPos, (boost::format("(%1% %%)") % p).str(), FontStyle::CENTER | FontStyle::VCENTER, color);
+        SmallFont->draw(curPos, (boost::format("(%1% %%)") % p).str(), FontStyle::CENTER | FontStyle::VCENTER, color);
     } else if(got == GO_Type::NobUsual || got == GO_Type::NobShipyard || got == GO_Type::NobTemple)
     {
         const auto& n = static_cast<const nobUsual&>(no);
@@ -457,7 +457,7 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
             else if(p >= 20)
                 color = COLOR_20_PERCENT;
         }
-        SmallFont->Draw(curPos, text, FontStyle::CENTER | FontStyle::VCENTER, color);
+        SmallFont->draw(curPos, text, FontStyle::CENTER | FontStyle::VCENTER, color);
     } else if(got == GO_Type::NobMilitary)
     {
         // Display amount of soldiers
@@ -468,12 +468,12 @@ void GameWorldView::DrawProductivity(const noBaseBuilding& no, const DrawPoint& 
         else
             sSoldiers = boost::str(boost::format(_("(%d soldiers)")) % soldiers_count);
 
-        SmallFont->Draw(curPos, sSoldiers, FontStyle::CENTER | FontStyle::VCENTER,
+        SmallFont->draw(curPos, sSoldiers, FontStyle::CENTER | FontStyle::VCENTER,
                         (soldiers_count > 0) ? COLOR_YELLOW : COLOR_RED);
     }
 }
 
-void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
+void GameWorldView::drawFigures(const MapPoint& pt, const DrawPoint& curPos,
                                 std::vector<ObjectBetweenLines>& objsBetweenRows) const
 {
     for(noBase& figure : getWorld().getFigures(pt))
@@ -489,11 +489,11 @@ void GameWorldView::DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
         } else if(figure.getGOT() == GO_Type::Ship)
             objsBetweenRows.push_back(ObjectBetweenLines(figure, curPos)); // TODO: Why special handling for ships?
         else
-            figure.Draw(curPos); // Draw normally
+            figure.draw(curPos); // Draw normally
     }
 }
 
-void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
+void GameWorldView::drawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
                                                std::vector<ObjectBetweenLines>& objsBetweenRows)
 {
     // First draw figures moving towards this point from below
@@ -502,7 +502,7 @@ void GameWorldView::DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRen
         // Get figures opposite the current dir and check if they are moving in this dir
         // Coordinates transform
         Position curOffset;
-        MapPoint curPt = terrainRenderer.ConvertCoords(getNeighbour(curPos, dir + 3u), &curOffset);
+        MapPoint curPt = terrainRenderer.convertCoords(getNeighbour(curPos, dir + 3u), &curOffset);
         Position figPos = getWorld().getNodePos(curPt) - offset + curOffset;
 
         for(noBase& figure : getWorld().getFigures(curPt))
@@ -525,7 +525,7 @@ constexpr auto getBqImgs()
     return imgs;
 }
 
-void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos)
+void GameWorldView::drawConstructionAid(const MapPoint& pt, const DrawPoint& curPos)
 {
     BuildingQuality bq = gwv.GetBQ(pt);
     if(bq != BuildingQuality::Nothing)
@@ -533,28 +533,28 @@ void GameWorldView::DrawConstructionAid(const MapPoint& pt, const DrawPoint& cur
         constexpr auto bqImgs = getBqImgs();
         auto* bm = LOADER.getMapTexture(bqImgs[bq]);
         // Draw building quality icon
-        bm->DrawFull(curPos);
+        bm->drawFull(curPos);
         // Show ability to construct military buildings
         if(getWorld().getGGS().isEnabled(AddonId::MILITARY_AID))
         {
             if(!getWorld().isMilitaryBuildingNearNode(pt, gwv.getPlayerId())
                && (bq == BuildingQuality::Hut || bq == BuildingQuality::House || bq == BuildingQuality::Castle
                    || bq == BuildingQuality::Harbor))
-                LOADER.getImageN("map_new", 20000)->DrawFull(curPos - DrawPoint(-1, bm->getSize().y + 5));
+                LOADER.getImageN("map_new", 20000)->drawFull(curPos - DrawPoint(-1, bm->getSize().y + 5));
         }
     }
 }
 
-void GameWorldView::DrawObject(const MapPoint& pt, const DrawPoint& curPos) const
+void GameWorldView::drawObject(const MapPoint& pt, const DrawPoint& curPos) const
 {
     noBase* obj = getWorld().getNode(pt).obj;
     if(!obj)
         return;
 
-    obj->Draw(curPos);
+    obj->draw(curPos);
 }
 
-void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis)
+void GameWorldView::drawBoundaryStone(const MapPoint& pt, const DrawPoint pos, Visibility vis)
 {
     if(vis == Visibility::Invisible)
         return;
@@ -571,7 +571,7 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
     const Nation nation = getWorld().getPlayer(owner - 1).nation;
     unsigned player_color = getWorld().getPlayer(owner - 1).color;
     if(isFoW)
-        player_color = CalcPlayerFOWDrawColor(player_color);
+        player_color = calcPlayerFOWDrawColor(player_color);
 
     const auto curVertexPos = gwv.getTerrainRenderer().getVertexPos(pt);
     for(const auto bPos : helpers::EnumRange<BorderStonePos>{})
@@ -589,7 +589,7 @@ void GameWorldView::DrawBoundaryStone(const MapPoint& pt, const DrawPoint pos, V
     }
 }
 
-void GameWorldView::DrawResource(const MapPoint& pt, DrawPoint curPos, const Cheats::ResourceRevealMode resRevealMode)
+void GameWorldView::drawResource(const MapPoint& pt, DrawPoint curPos, const Cheats::ResourceRevealMode resRevealMode)
 {
     using RRM = Cheats::ResourceRevealMode;
 
@@ -627,56 +627,56 @@ void GameWorldView::DrawResource(const MapPoint& pt, DrawPoint curPos, const Che
     {
         for([[maybe_unused]] const auto i : helpers::range(amount))
         {
-            bm->DrawFull(curPos);
+            bm->drawFull(curPos);
             curPos.y -= 4;
         }
     }
 }
 
-void GameWorldView::ToggleShowBQ()
+void GameWorldView::toggleShowBQ()
 {
     show_bq = !show_bq;
-    SaveIngameSettingsValues();
+    saveIngameSettingsValues();
     onHudSettingsChanged();
 }
 
-void GameWorldView::ToggleShowNames()
+void GameWorldView::toggleShowNames()
 {
     show_names = !show_names;
-    SaveIngameSettingsValues();
+    saveIngameSettingsValues();
     onHudSettingsChanged();
 }
 
-void GameWorldView::ToggleShowProductivity()
+void GameWorldView::toggleShowProductivity()
 {
     show_productivity = !show_productivity;
-    SaveIngameSettingsValues();
+    saveIngameSettingsValues();
     onHudSettingsChanged();
 }
 
-void GameWorldView::ToggleShowNamesAndProductivity()
+void GameWorldView::toggleShowNamesAndProductivity()
 {
     if(show_productivity && show_names)
         show_productivity = show_names = false;
     else
         show_productivity = show_names = true;
-    SaveIngameSettingsValues();
+    saveIngameSettingsValues();
     onHudSettingsChanged();
 }
 
-void GameWorldView::CopyHudSettingsTo(GameWorldView& other, bool copyBQ) const
+void GameWorldView::copyHudSettingsTo(GameWorldView& other, bool copyBQ) const
 {
     other.show_bq = (copyBQ ? show_bq : false);
     other.show_names = show_names;
     other.show_productivity = show_productivity;
 }
 
-void GameWorldView::MoveBy(const DrawPoint& numPixels)
+void GameWorldView::moveBy(const DrawPoint& numPixels)
 {
-    MoveTo(offset + numPixels);
+    moveTo(offset + numPixels);
 }
 
-void GameWorldView::MoveTo(const DrawPoint& newPos)
+void GameWorldView::moveTo(const DrawPoint& newPos)
 {
     offset = newPos;
     DrawPoint size(getWorld().getWidth() * TR_W, getWorld().getHeight() * TR_H);
@@ -691,10 +691,10 @@ void GameWorldView::MoveTo(const DrawPoint& newPos)
             offset.y += size.y;
     }
 
-    CalcFxLx();
+    calcFxLx();
 }
 
-void GameWorldView::MoveToMapPt(const MapPoint pt)
+void GameWorldView::moveToMapPt(const MapPoint pt)
 {
     if(!pt.isValid())
         return;
@@ -702,14 +702,14 @@ void GameWorldView::MoveToMapPt(const MapPoint pt)
     lastOffset = offset;
     Position nodePos = getWorld().getNodePos(pt);
 
-    MoveTo(nodePos - getSize() / 2u);
+    moveTo(nodePos - getSize() / 2u);
 }
 
-void GameWorldView::MoveToLastPosition()
+void GameWorldView::moveToLastPosition()
 {
     Position newLastOffset = offset;
 
-    MoveTo(lastOffset);
+    moveTo(lastOffset);
 
     lastOffset = newLastOffset;
 }
@@ -773,20 +773,20 @@ unsigned GameWorldView::getBuildingRadius(BuildingType bld) const
     BOOST_UNREACHABLE_RETURN(0); // LCOV_EXCL_LINE
 }
 
-void GameWorldView::AddDrawNodeCallback(IDrawNodeCallback* newCallback)
+void GameWorldView::addDrawNodeCallback(IDrawNodeCallback* newCallback)
 {
     RTTR_Assert(newCallback);
     drawNodeCallbacks.push_back(newCallback);
 }
 
-void GameWorldView::RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
+void GameWorldView::removeDrawNodeCallback(IDrawNodeCallback* callbackToRemove)
 {
     auto itPos = helpers::find(drawNodeCallbacks, callbackToRemove);
     RTTR_Assert(itPos != drawNodeCallbacks.end());
     drawNodeCallbacks.erase(itPos);
 }
 
-void GameWorldView::ShowRadiusPreview(MapPoint center, unsigned radius)
+void GameWorldView::showRadiusPreview(MapPoint center, unsigned radius)
 {
     if(radiusPreview_ && radiusPreview_->center == center && radiusPreview_->radius == radius)
         return;
@@ -799,7 +799,7 @@ void GameWorldView::ShowRadiusPreview(MapPoint center, unsigned radius)
     radiusPreview_ = RadiusPreview{center, radius, std::move(pts)};
 }
 
-DrawPoint GameWorldView::SnapToNearestCopy(const DrawPoint pt, const DrawPoint ref, const Extent mapSize)
+DrawPoint GameWorldView::snapToNearestCopy(const DrawPoint pt, const DrawPoint ref, const Extent mapSize)
 {
     // Find how many map sizes separate `pt` from `ref`, round to the nearest integer number of wraps.
     const auto k = PointF(ref - pt) / mapSize;
@@ -808,7 +808,7 @@ DrawPoint GameWorldView::SnapToNearestCopy(const DrawPoint pt, const DrawPoint r
     return pt + DrawPoint(kRounded) * mapSize;
 }
 
-void GameWorldView::DrawRadiusOutline()
+void GameWorldView::drawRadiusOutline()
 {
     if(!radiusPreview_)
         return;
@@ -826,12 +826,12 @@ void GameWorldView::DrawRadiusOutline()
 
     for(auto screenPt : radiusPreview_->outline)
     {
-        screenPt = SnapToNearestCopy(screenPt, centerScr, mapPxSize) - offset;
-        Window::DrawRectangle(Rect(screenPt - BORDER_SIZE / 2, BORDER_SIZE), BORDER_COLOR);
+        screenPt = snapToNearestCopy(screenPt, centerScr, mapPxSize) - offset;
+        Window::drawRectangle(Rect(screenPt - BORDER_SIZE / 2, BORDER_SIZE), BORDER_COLOR);
     }
 }
 
-void GameWorldView::UpdateRadiusPreviewForMousePos()
+void GameWorldView::updateRadiusPreviewForMousePos()
 {
     const auto& world = getWorld();
     std::optional<BuildingType> bldType;
@@ -858,14 +858,14 @@ void GameWorldView::UpdateRadiusPreviewForMousePos()
     {
         const unsigned bldRadius = getBuildingRadius(*bldType);
         if(bldRadius > 0)
-            ShowRadiusPreview(selPt, bldRadius);
+            showRadiusPreview(selPt, bldRadius);
         else
-            HideRadiusPreview();
+            hideRadiusPreview();
     } else
-        HideRadiusPreview();
+        hideRadiusPreview();
 }
 
-void GameWorldView::CalcFxLx()
+void GameWorldView::calcFxLx()
 {
     // Calc first and last point in map units (with 1 extra for incomplete triangles)
     firstPt.x = offset.x / TR_W - 1;
@@ -891,13 +891,13 @@ void GameWorldView::CalcFxLx()
     }
 }
 
-void GameWorldView::Resize(const Extent& newSize)
+void GameWorldView::resize(const Extent& newSize)
 {
     size_ = newSize;
-    CalcFxLx();
+    calcFxLx();
 }
 
-void GameWorldView::SaveIngameSettingsValues() const
+void GameWorldView::saveIngameSettingsValues() const
 {
     auto& ingameSettings = SETTINGS.ingame;
     ingameSettings.showBQ = show_bq;

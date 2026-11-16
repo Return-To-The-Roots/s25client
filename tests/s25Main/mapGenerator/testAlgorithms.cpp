@@ -37,18 +37,18 @@ BOOST_AUTO_TEST_CASE(UpdateDistances_updates_enqueued_elements_correctly)
     MapExtent size(8, 8);
     MapPoint reference(4, 7);
     NodeMapBase<unsigned> distances;
-    distances.Resize(size, unsigned(-1));
+    distances.resize(size, unsigned(-1));
     std::queue<MapPoint> queue;
     queue.push(reference);
     distances[reference] = 0;
 
-    UpdateDistances(distances, queue);
+    updateDistances(distances, queue);
 
     BOOST_TEST_REQUIRE(queue.empty());
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_TEST_REQUIRE(distances[pt] == distances.CalcDistance(pt, reference));
+        BOOST_TEST_REQUIRE(distances[pt] == distances.calcDistance(pt, reference));
     }
 }
 
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(Smooth_keeps_homogenous_map_unchanged)
     const int iterations = 2;
     const int expectedValue = 1;
 
-    nodes.Resize(size, expectedValue);
+    nodes.resize(size, expectedValue);
 
     Smooth(iterations, radius, nodes);
 
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(Smooth_interpolates_values_around_peak)
     const int iterations = 2;
     const int defaultValue = 1;
 
-    nodes.Resize(size, defaultValue);
+    nodes.resize(size, defaultValue);
     nodes[peak] = peakValue;
 
     Smooth(iterations, radius, nodes);
@@ -101,11 +101,11 @@ BOOST_AUTO_TEST_CASE(Scale_updates_minimum_and_maximum_values_correctly)
 {
     MapExtent size(16, 8);
     NodeMapBase<unsigned> values;
-    values.Resize(size, 8u);
+    values.resize(size, 8u);
     values[0] = 12; // max
     values[1] = 7;  // min
 
-    Scale(values, 0u, 20u);
+    scale(values, 0u, 20u);
 
     BOOST_TEST(values[0] == 20u);
     BOOST_TEST(values[1] == 0u);
@@ -115,9 +115,9 @@ BOOST_AUTO_TEST_CASE(Scale_keeps_equal_values_unchanged)
 {
     MapExtent size(16, 8);
     NodeMapBase<unsigned> values;
-    values.Resize(size, 8u);
+    values.resize(size, 8u);
 
-    Scale(values, 0u, 20u);
+    scale(values, 0u, 20u);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(Collect_returns_empty_for_negative_map_point)
     MapExtent size(16, 8);
     MapPoint negative(0, 0);
 
-    map.Resize(size, 1);
+    map.resize(size, 1);
     map[negative] = 0;
 
     auto result = Collect(map, negative, [&map](const MapPoint& p) { return map[p]; });
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(Collect_returns_all_map_points_for_entirely_positive_map)
     MapExtent size(16, 8);
     MapPoint point(0, 0);
 
-    map.Resize(size, 1);
+    map.resize(size, 1);
 
     auto result = Collect(map, point, [&map](const MapPoint& p) { return map[p]; });
 
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(Collect_returns_only_connected_positive_map_points)
 {
     NodeMapBase<int> map;
     MapExtent size(16, 16);
-    map.Resize(size, 0);
+    map.resize(size, 0);
 
     // positive area around target point
     MapPoint point(3, 4);
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
 {
     MapExtent size(8, 16);
     NodeMapBase<int> values;
-    values.Resize(size);
+    values.resize(size);
     for(int i = 0; i < size.x * size.y; i++)
     {
         values[i] = i;
@@ -287,7 +287,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
 {
     MapExtent size(8, 16);
     NodeMapBase<int> values;
-    values.Resize(size);
+    values.resize(size);
     for(int i = 0; i < size.x * size.y; i++)
     {
         values[i] = i;
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
 {
     MapExtent size(8, 8);
     NodeMapBase<int> values;
-    values.Resize(size);
+    values.resize(size);
     double coverage = 0.3;
     int minimum = 3;
     unsigned totalNodes = size.x * size.y;

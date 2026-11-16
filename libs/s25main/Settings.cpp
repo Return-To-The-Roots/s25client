@@ -77,10 +77,10 @@ bool checkPort(int port)
 
 Settings::Settings() //-V730
 {
-    LoadDefaults();
+    loadDefaults();
 }
 
-void Settings::LoadDefaults()
+void Settings::loadDefaults()
 {
     // global
     // {
@@ -166,10 +166,10 @@ void Settings::LoadDefaults()
     addons.configuration.clear();
     // }
 
-    LoadIngameDefaults();
+    loadIngameDefaults();
 }
 
-void Settings::LoadIngameDefaults()
+void Settings::loadIngameDefaults()
 {
     // ingame
     // {
@@ -361,18 +361,18 @@ void Settings::Load()
                                                            s25util::fromStringClassic<unsigned>(item->getText())));
         }
 
-        LoadIngame();
+        loadIngame();
         // }
     } catch(const std::runtime_error& e)
     {
         s25util::warning(std::string("Could not use settings from \"") + settingsPath.string()
                          + "\", using default values. Reason: " + e.what());
-        LoadDefaults();
-        Save();
+        loadDefaults();
+        save();
     }
 }
 
-void Settings::LoadIngame()
+void Settings::loadIngame()
 {
     libsiedler2::Archiv settingsIngame;
     const auto settingsPathIngame = RTTRCONFIG.ExpandPath(s25::resources::ingameOptions);
@@ -412,14 +412,14 @@ void Settings::LoadIngame()
     {
         s25util::warning(std::string("Could not use ingame settings from \"") + settingsPathIngame.string()
                          + "\", using default values. Reason: " + e.what());
-        LoadIngameDefaults();
-        SaveIngame();
+        loadIngameDefaults();
+        saveIngame();
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Routine for saving the configuration
-void Settings::Save()
+void Settings::save()
 {
     libsiedler2::Archiv settings;
     settings.alloc(SECTION_NAMES.size());
@@ -528,10 +528,10 @@ void Settings::Save()
     if(libsiedler2::Write(settingsPath, settings) == 0)
         bfs::permissions(settingsPath, bfs::owner_read | bfs::owner_write);
 
-    SaveIngame();
+    saveIngame();
 }
 
-void Settings::SaveIngame()
+void Settings::saveIngame()
 {
     libsiedler2::Archiv settingsIngame;
     settingsIngame.alloc(1 + persistentWindows.size());

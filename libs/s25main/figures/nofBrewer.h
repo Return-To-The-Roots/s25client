@@ -13,11 +13,11 @@ class nobUsual;
 class nofBrewer : public nofWorkman
 {
     /// Zeichnet ihn beim Arbeiten
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
     unsigned short getCarryID() const override { return 54; }
     /// Der Arbeiter erzeugt eine Ware
-    helpers::OptionalEnum<GoodType> ProduceWare() override;
+    helpers::OptionalEnum<GoodType> produceWare() override;
 
 public:
     nofBrewer(MapPoint pos, unsigned char player, nobUsual* workplace);

@@ -20,10 +20,10 @@ public:
 
 private:
     /// Update controls with given military settings
-    void UpdateSettings(const MilitarySettings& military_settings);
-    void UpdateSettings() override;
+    void updateSettings(const MilitarySettings& military_settings);
+    void updateSettings() override;
     /// Send changed values to client, if any have changed
-    void TransmitSettings() override;
+    void transmitSettings() override;
 
     void msgProgressChange(unsigned ctrl_id, unsigned short position) override;
     void msgButtonClick(unsigned ctrl_id) override;

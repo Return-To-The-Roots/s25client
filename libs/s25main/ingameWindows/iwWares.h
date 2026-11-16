@@ -25,7 +25,7 @@ protected:
     /// bestimmte Inventurseite zeigen.
     virtual void setPage(unsigned page);
     /// Add a new page and return it. ID will be in range 100+
-    ctrlGroup& AddPage();
+    ctrlGroup& addPage();
 
     void msgButtonClick(unsigned ctrl_id) override;
     void msgPaintBefore() override;

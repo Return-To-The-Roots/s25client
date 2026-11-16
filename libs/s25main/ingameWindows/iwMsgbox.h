@@ -29,12 +29,12 @@ public:
     ~iwMsgbox() override;
 
     /// Moves the icon to given position
-    void MoveIcon(const DrawPoint& pos);
+    void moveIcon(const DrawPoint& pos);
 
 private:
     void Init(const std::string& text, const ResourceId& iconFile, unsigned iconIdx);
 
-    void AddButton(unsigned short id, int x, const std::string& text, TextureColor tc);
+    void addButton(unsigned short id, int x, const std::string& text, TextureColor tc);
 
     void msgButtonClick(unsigned ctrl_id) override;
 };

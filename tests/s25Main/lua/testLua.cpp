@@ -92,20 +92,20 @@ BOOST_AUTO_TEST_CASE(BaseFunctions)
 
     // No getRequiredLuaVersion
     LuaInterfaceGameBase& lua = world.getLua();
-    BOOST_TEST_REQUIRE(!lua.CheckScriptVersion());
+    BOOST_TEST_REQUIRE(!lua.checkScriptVersion());
     BOOST_TEST_REQUIRE(getLog() != "");
     // Wrong version
     executeLua("function getRequiredLuaVersion()\n return 0\n end");
-    BOOST_TEST_REQUIRE(!lua.CheckScriptVersion());
+    BOOST_TEST_REQUIRE(!lua.checkScriptVersion());
     BOOST_TEST_REQUIRE(getLog() != "");
     executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end")
                % (LuaInterfaceGameBase::getVersion() + 1));
-    BOOST_TEST_REQUIRE(!lua.CheckScriptVersion());
+    BOOST_TEST_REQUIRE(!lua.checkScriptVersion());
     BOOST_TEST_REQUIRE(getLog() != "");
     // Correct version
     executeLua(boost::format("function getRequiredLuaVersion()\n return %1%\n end")
                % LuaInterfaceGameBase::getVersion());
-    BOOST_TEST_REQUIRE(lua.CheckScriptVersion());
+    BOOST_TEST_REQUIRE(lua.checkScriptVersion());
 
     BOOST_TEST(isLuaEqual("rttr:GetFeatureLevel()", s25util::toStringClassic(lua.getFeatureLevel())));
 
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
             inv[ConvertShields(rttr::test::randomEnum<GoodType>())] = rttr::test::randomValue(1u, 10u);
         }
         inv[Job::BoatCarrier] = 0;
-        hq->AddToInventory(inv, true);
+        hq->addToInventory(inv, true);
     }
 
     executeLua("rttr:ClearResources()");
@@ -200,24 +200,24 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
     for([[maybe_unused]] const auto i : helpers::range(2))
     {
         BOOST_TEST(isLuaEqual("rttr:GetGF()", s25util::toStringClassic(world.getEvMgr().getCurrentGF())));
-        world.getEvMgr().ExecuteNextGF();
+        world.getEvMgr().executeNextGF();
     }
 
     // Set player id
     MOCK_EXPECT(localGameState.getPlayerId).returns(1);
     // Send to other player
-    MOCK_EXPECT(localGameState.SystemChat).never();
+    MOCK_EXPECT(localGameState.systemChat).never();
     executeLua("rttr:Chat(0, 'Hello World')");
-    MOCK_VERIFY(localGameState.SystemChat);
-    MOCK_RESET(localGameState.SystemChat);
+    MOCK_VERIFY(localGameState.systemChat);
+    MOCK_RESET(localGameState.systemChat);
     // Send to this player and all
-    MOCK_EXPECT(localGameState.SystemChat).once().with("Hello World");
-    MOCK_EXPECT(localGameState.SystemChat).once().with("Hello All");
+    MOCK_EXPECT(localGameState.systemChat).once().with("Hello World");
+    MOCK_EXPECT(localGameState.systemChat).once().with("Hello All");
     executeLua("rttr:Chat(1, 'Hello World')");
     executeLua("rttr:Chat(-1, 'Hello All')");
-    MOCK_VERIFY(localGameState.SystemChat);
+    MOCK_VERIFY(localGameState.systemChat);
 
-    world.getPostMgr().AddPostBox(1);
+    world.getPostMgr().addPostBox(1);
     const PostBox& postBox = *world.getPostMgr().getPostBox(1);
     // Send to other player or invalid
     executeLua("rttr:PostMessage(0, 'Hello World')");
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
 
     executeLua("assert(rttr:GetWorld())");
 
-    MOCK_EXPECT(localGameState.FormatGFTime).once().with(1023u).returns("01:13:17");
+    MOCK_EXPECT(localGameState.formatGFTime).once().with(1023u).returns("01:13:17");
     BOOST_TEST(isLuaEqual("rttr:FormatNumGFs(1023)", "'01:13:17'"));
 }
 
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE(MissionGoal)
 {
     initWorld();
 
-    const PostBox& postBox = world.getPostMgr().AddPostBox(1);
+    const PostBox& postBox = world.getPostMgr().addPostBox(1);
     BOOST_TEST_REQUIRE(postBox.getCurrentMissionGoal().empty()); //-V807
 
     // Set goal for non-existing or other player
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_TEST_REQUIRE(!player.isBuildingEnabled(BuildingType::Woodcutter));
     BOOST_TEST_REQUIRE(!player.isBuildingEnabled(BuildingType::Fortress));
 
-    world.getPostMgr().AddPostBox(1);
+    world.getPostMgr().addPostBox(1);
     const PostBox& postBox = *world.getPostMgr().getPostBox(1);
     // Enable without notification
     executeLua("player:EnableBuilding(BLD_WOODCUTTER)");
@@ -481,11 +481,11 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     BOOST_TEST(isLuaEqual("hqY", s25util::toStringClassic(hq->getPos().y)));
 
     // Destroy players HQ
-    world.DestroyNO(hq->getPos());
+    world.destroyNO(hq->getPos());
     // HQ-Pos is invalid
     executeLua("hqX, hqY = player:GetHQPos()");
-    BOOST_TEST(isLuaEqual("hqX", s25util::toStringClassic(MapPoint::Invalid().x)));
-    BOOST_TEST(isLuaEqual("hqY", s25util::toStringClassic(MapPoint::Invalid().y)));
+    BOOST_TEST(isLuaEqual("hqX", s25util::toStringClassic(MapPoint::invalid().x)));
+    BOOST_TEST(isLuaEqual("hqY", s25util::toStringClassic(MapPoint::invalid().y)));
     // Adding wares/people returns false
     executeLua("assert(player:AddWares(wares) == false)");
     executeLua("assert(player:AddPeople(people) == false)");
@@ -574,7 +574,7 @@ BOOST_AUTO_TEST_CASE(World)
 {
     LogAccessor logAcc;
     initWorld();
-    LOADER.LoadDummyMapFiles();
+    LOADER.loadDummyMapFiles();
     executeLua("world = rttr:GetWorld()");
 
     const MapPoint envPt(15, 12);
@@ -586,7 +586,7 @@ BOOST_AUTO_TEST_CASE(World)
     BOOST_TEST(obj->getItemFile() == 0xFFFFu);
     // Replace and test wrap around (envPt2==envPt1)
     const Position envPt2(envPt.x + world.getWidth(), envPt.y - world.getHeight());
-    BOOST_TEST_REQUIRE(world.MakeMapPoint(envPt2) == envPt);
+    BOOST_TEST_REQUIRE(world.makeMapPoint(envPt2) == envPt);
     executeLua(boost::format("world:AddEnvObject(%1%, %2%, 1, 2)") % envPt2.x % envPt2.y);
     obj = world.getSpecObj<noEnvObject>(envPt);
     BOOST_TEST_REQUIRE(obj);
@@ -684,16 +684,16 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     const MapPoint pt1(3, 4), pt2(5, 1), pt3(7, 6);
     // All events need to work w/o having them
     LuaInterfaceGame& lua = world.getLua();
-    lua.EventStart(true);
+    lua.eventStart(true);
     Serializer serData;
     BOOST_TEST_REQUIRE(lua.Serialize(serData));
     BOOST_TEST_REQUIRE(serData.GetLength() == 0u);
     BOOST_TEST_REQUIRE(lua.Deserialize(serData));
-    lua.EventOccupied(1, pt1);
-    lua.EventAttack(0, 1, 5);
-    lua.EventExplored(1, pt2, 0);
-    lua.EventGameFrame(0);
-    lua.EventResourceFound(1, pt3, ResourceType::Gold, 1);
+    lua.eventOccupied(1, pt1);
+    lua.eventAttack(0, 1, 5);
+    lua.eventExplored(1, pt2, 0);
+    lua.eventGameFrame(0);
+    lua.eventResourceFound(1, pt3, ResourceType::Gold, 1);
     executeLua("function getResName(res)\n  if(res==RES_IRON) then return 'Iron' "
                "elseif(res==RES_GOLD) then return 'Gold' "
                "elseif(res==RES_COAL) then return 'Coal' "
@@ -702,9 +702,9 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
                "else assert(false)\n  end\n  end");
     executeLua("function onStart(isFirstStart)\n  rttr:Log('start: '..tostring(isFirstStart))\nend");
     clearLog();
-    lua.EventStart(true);
+    lua.eventStart(true);
     BOOST_TEST_REQUIRE(getLog() == "start: true\n");
-    lua.EventStart(false);
+    lua.eventStart(false);
     BOOST_TEST_REQUIRE(getLog() == "start: false\n");
 
     // Returning false should not save anything
@@ -762,37 +762,37 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     executeLua("function onExplored(player_id, x, y, owner)\n  rttr:Log('explored: '..player_id..'('..x..', "
                "'..y..')'..tostring(owner))\nend");
     // Owner == 0 -> No owner (nil in lua)
-    lua.EventExplored(0, pt2, 0);
+    lua.eventExplored(0, pt2, 0);
     BOOST_TEST_REQUIRE(getLog() == (boost::format("explored: %1%%2%%3%\n") % 0 % pt2 % "nil").str());
     // Else owner-1 = playerIdx
-    lua.EventExplored(0, pt2, 2);
+    lua.eventExplored(0, pt2, 2);
     BOOST_TEST_REQUIRE(getLog() == (boost::format("explored: %1%%2%%3%\n") % 0 % pt2 % 1).str());
 
     executeLua(
       "function onAttack(attacker_player_id, defender_player_id, attacker_count)\n"
       "  rttr:Log('attack: '..attacker_player_id..'->'..defender_player_id..' (Attacker: '..attacker_count..')')\nend");
-    lua.EventAttack(0, 1, 4);
+    lua.eventAttack(0, 1, 4);
     BOOST_TEST_REQUIRE(getLog() == (boost::format("attack: %1%->%2% (Attacker: %3%)\n") % 0 % 1 % 4).str());
 
     executeLua("function onGameFrame(gameframe_number)\n  rttr:Log('gf: '..gameframe_number)\nend");
-    lua.EventGameFrame(0);
+    lua.eventGameFrame(0);
     BOOST_TEST_REQUIRE(getLog() == "gf: 0\n");
-    lua.EventGameFrame(42);
+    lua.eventGameFrame(42);
     BOOST_TEST_REQUIRE(getLog() == "gf: 42\n");
 
     executeLua(
       "function onResourceFound(player_id, x, y, type, quantity)\n  rttr:Log('resFound: '..player_id..'('..x..', "
       "'..y..')'..getResName(type)..':'..quantity)\nend");
     boost::format resFmt("resFound: %1%%2%%3%:%4%\n");
-    lua.EventResourceFound(2, pt3, ResourceType::Iron, 1);
+    lua.eventResourceFound(2, pt3, ResourceType::Iron, 1);
     BOOST_TEST_REQUIRE(getLog() == (resFmt % 2 % pt3 % "Iron" % 1).str());
-    lua.EventResourceFound(2, pt3, ResourceType::Gold, 2);
+    lua.eventResourceFound(2, pt3, ResourceType::Gold, 2);
     BOOST_TEST_REQUIRE(getLog() == (resFmt % 2 % pt3 % "Gold" % 2).str());
-    lua.EventResourceFound(2, pt3, ResourceType::Coal, 3);
+    lua.eventResourceFound(2, pt3, ResourceType::Coal, 3);
     BOOST_TEST_REQUIRE(getLog() == (resFmt % 2 % pt3 % "Coal" % 3).str());
-    lua.EventResourceFound(2, pt3, ResourceType::Granite, 6);
+    lua.eventResourceFound(2, pt3, ResourceType::Granite, 6);
     BOOST_TEST_REQUIRE(getLog() == (resFmt % 2 % pt3 % "Granite" % 6).str());
-    lua.EventResourceFound(2, pt3, ResourceType::Water, 5);
+    lua.eventResourceFound(2, pt3, ResourceType::Water, 5);
     BOOST_TEST_REQUIRE(getLog() == (resFmt % 2 % pt3 % "Water" % 5).str());
 }
 
@@ -907,7 +907,7 @@ BOOST_AUTO_TEST_CASE(LuaPacts)
     BOOST_TEST_REQUIRE(player.isAttackable(1));
     BOOST_TEST_REQUIRE(getLog() == "Pact canceled\n");
 
-    const PostBox& postbox = world.getPostMgr().AddPostBox(0);
+    const PostBox& postbox = world.getPostMgr().addPostBox(0);
     // Suggest Pact from Lua
     executeLua("player:SuggestPact(0, TREATY_OF_ALLIANCE, DURATION_INFINITE)");
     game.executeAICommands();

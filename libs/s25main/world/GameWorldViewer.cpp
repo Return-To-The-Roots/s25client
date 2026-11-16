@@ -21,7 +21,7 @@
 
 GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb) : playerId_(playerId), gwb(gwb)
 {
-    InitVisualData();
+    initVisualData();
     maxNodeAltitude_ = 0;
     RTTR_FOREACH_PT(MapPoint, gwb.getSize())
     {
@@ -35,9 +35,9 @@ GameWorldViewer::GameWorldViewer(unsigned playerId, GameWorldBase& gwb) : player
     });
 }
 
-void GameWorldViewer::InitVisualData()
+void GameWorldViewer::initVisualData()
 {
-    visualNodes.Resize(gwb.getSize());
+    visualNodes.resize(gwb.getSize());
     RTTR_FOREACH_PT(MapPoint, gwb.getSize())
     {
         VisualMapNode& vNode = visualNodes[pt];
@@ -47,28 +47,28 @@ void GameWorldViewer::InitVisualData()
         std::fill(vNode.roads.begin(), vNode.roads.end(), PointRoad::None);
     }
     evRoadConstruction =
-      gwb.getNotifications().subscribe<RoadNote>([this](const RoadNote& note) { RoadConstructionEnded(note); });
+      gwb.getNotifications().subscribe<RoadNote>([this](const RoadNote& note) { roadConstructionEnded(note); });
     evBQChanged = gwb.getNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
         if(note.type == NodeNote::BQ)
-            RecalcBQ(note.pos);
+            recalcBQ(note.pos);
     });
 }
 
-void GameWorldViewer::InitTerrainRenderer()
+void GameWorldViewer::initTerrainRenderer()
 {
-    tr.GenerateOpenGL(*this);
+    tr.generateOpenGL(*this);
     // Notify renderer about altitude changes
     evAltitudeChanged = gwb.getNotifications().subscribe<NodeNote>([this](const NodeNote& note) {
         if(note.type == NodeNote::Altitude)
         {
             maxNodeAltitude_ = std::max(maxNodeAltitude_, gwb.getNode(note.pos).altitude);
-            tr.AltitudeChanged(note.pos, *this);
+            tr.altitudeChanged(note.pos, *this);
         }
     });
     // And visibility changes
     evVisibilityChanged = gwb.getNotifications().subscribe<PlayerNodeNote>([this](const PlayerNodeNote& note) {
         if(note.type == PlayerNodeNote::Visibility)
-            VisibilityChanged(note.pt, note.player);
+            visibilityChanged(note.pt, note.player);
     });
 }
 
@@ -97,7 +97,7 @@ unsigned GameWorldViewer::getNumSoldiersForAttack(const MapPoint pt) const
     // Militärgebäude in der Nähe finden
     unsigned total_count = 0;
 
-    sortedMilitaryBlds buildings = getWorld().LookForMilitaryBuildings(pt, 3);
+    sortedMilitaryBlds buildings = getWorld().lookForMilitaryBuildings(pt, 3);
     for(auto& building : buildings)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
@@ -110,14 +110,14 @@ unsigned GameWorldViewer::getNumSoldiersForAttack(const MapPoint pt) const
 
 BuildingQuality GameWorldViewer::GetBQ(const MapPoint& pt) const
 {
-    return getWorld().AdjustBQ(pt, playerId_, visualNodes[pt].bq);
+    return getWorld().adjustBQ(pt, playerId_, visualNodes[pt].bq);
 }
 
 Visibility GameWorldViewer::getVisibility(const MapPoint pt, const bool checkAllVisible) const
 {
     if(checkAllVisible && isAllVisible())
         return Visibility::Visible;
-    return getWorld().CalcVisiblityWithAllies(pt, playerId_);
+    return getWorld().calcVisiblityWithAllies(pt, playerId_);
 }
 
 bool GameWorldViewer::isAllVisible() const
@@ -156,9 +156,9 @@ MapPoint GameWorldViewer::getNeighbour(const MapPoint pt, const Direction dir) c
     return getWorld().getNeighbour(pt, dir);
 }
 
-void GameWorldViewer::RecalcAllColors()
+void GameWorldViewer::recalcAllColors()
 {
-    tr.UpdateAllColors(*this);
+    tr.updateAllColors(*this);
 }
 
 /// liefert sichtbare Straße, im FoW entsprechend die FoW-Straße
@@ -232,7 +232,7 @@ const noShip* GameWorldViewer::getShip(const MapPoint pt) const
         }
         return false;
     };
-    world.CheckPointsInRadius(pt, 1u, checkPointForShips, true);
+    world.checkPointsInRadius(pt, 1u, checkPointForShips, true);
 
     return resultShip;
 }
@@ -243,15 +243,15 @@ unsigned GameWorldViewer::getNumSoldiersForSeaAttack(const MapPoint pt) const
     return unsigned(getWorld().getSoldiersForSeaAttack(playerId_, pt).size());
 }
 
-void GameWorldViewer::ChangePlayer(unsigned player, bool updateVisualData /* = true*/)
+void GameWorldViewer::changePlayer(unsigned player, bool updateVisualData /* = true*/)
 {
     if(player == playerId_)
         return;
     playerId_ = player;
     if(updateVisualData)
     {
-        RecalcAllColors();
-        InitVisualData();
+        recalcAllColors();
+        initVisualData();
     }
 }
 
@@ -260,46 +260,46 @@ helpers::EnumArray<MapPoint, Direction> GameWorldViewer::getNeighbours(const Map
     return getWorld().getNeighbours(pt);
 }
 
-void GameWorldViewer::VisibilityChanged(const MapPoint& pt, unsigned player)
+void GameWorldViewer::visibilityChanged(const MapPoint& pt, unsigned player)
 {
     // If visibility changed for us, or our team mate if shared view is on -> Update renderer
     if(player == playerId_ || (getWorld().getGGS().teamView && getWorld().getPlayer(playerId_).isAlly(player)))
-        tr.VisibilityChanged(pt, *this);
+        tr.visibilityChanged(pt, *this);
 }
 
-void GameWorldViewer::RoadConstructionEnded(const RoadNote& note)
+void GameWorldViewer::roadConstructionEnded(const RoadNote& note)
 {
     if(note.player != playerId_
        || (note.type != RoadNote::Constructed && note.type != RoadNote::ConstructionFailed)) //-V560
         return;
     // Road construction command ended -> Remove visual overlay
-    RemoveVisualRoad(note.pos, note.route);
+    removeVisualRoad(note.pos, note.route);
 }
 
-void GameWorldViewer::RecalcBQ(const MapPoint& pt)
+void GameWorldViewer::recalcBQ(const MapPoint& pt)
 {
     BQCalculator calcBQ(getWorld());
     visualNodes[pt].bq = calcBQ(pt, [this](const MapPoint& pos) { return isOnRoad(pos); });
 }
 
-void GameWorldViewer::RecalcBQForRoad(const MapPoint& pt)
+void GameWorldViewer::recalcBQForRoad(const MapPoint& pt)
 {
-    RecalcBQ(pt);
+    recalcBQ(pt);
 
     for(const Direction dir : {Direction::East, Direction::SouthEast, Direction::SouthWest})
-        RecalcBQ(getNeighbour(pt, dir));
+        recalcBQ(getNeighbour(pt, dir));
 }
 
-void GameWorldViewer::RemoveVisualRoad(const MapPoint& start, const std::vector<Direction>& route)
+void GameWorldViewer::removeVisualRoad(const MapPoint& start, const std::vector<Direction>& route)
 {
     MapPoint curPt = start;
     for(auto i : route)
     {
         setVisiblePointRoad(curPt, i, PointRoad::None);
-        RecalcBQForRoad(curPt);
+        recalcBQForRoad(curPt);
         curPt = getWorld().getNeighbour(curPt, i);
     }
-    RecalcBQForRoad(curPt);
+    recalcBQForRoad(curPt);
 }
 
 bool GameWorldViewer::isRoadAvailable(bool isWaterRoad, const MapPoint& pt) const

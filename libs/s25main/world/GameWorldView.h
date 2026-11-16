@@ -100,30 +100,30 @@ public:
     void setNextZoomFactor();
 
     // Converts a view coordinate to map position
-    Position ViewPosToMap(Position pos) const;
+    Position viewPosToMap(Position pos) const;
 
     /// Show or hide construction aid
-    void ToggleShowBQ();
+    void toggleShowBQ();
     /// Show or hide building names
-    void ToggleShowNames();
+    void toggleShowNames();
     /// Show or hide productivity
-    void ToggleShowProductivity();
+    void toggleShowProductivity();
     /// Toggle names and productivity completely on or off
-    void ToggleShowNamesAndProductivity();
+    void toggleShowNamesAndProductivity();
 
     /// Copy visibility of HUD elements from this view to another
-    void CopyHudSettingsTo(GameWorldView& other, bool copyBQ) const;
+    void copyHudSettingsTo(GameWorldView& other, bool copyBQ) const;
 
-    void Draw(const RoadBuildState& rb, MapPoint selected, bool drawMouse, unsigned* water = nullptr);
+    void draw(const RoadBuildState& rb, MapPoint selected, bool drawMouse, unsigned* water = nullptr);
 
     /// Moves the map view by the given offset in pixels
-    void MoveBy(const DrawPoint& numPixels);
+    void moveBy(const DrawPoint& numPixels);
     /// Moves a position on the map in pixels
-    void MoveTo(const DrawPoint& newPos);
+    void moveTo(const DrawPoint& newPos);
     /// Zentriert den Bildschirm auf ein bestimmtes Map-Object
-    void MoveToMapPt(MapPoint pt);
+    void moveToMapPt(MapPoint pt);
     /// Springt zur letzten Position, bevor man "weggesprungen" ist
-    void MoveToLastPosition();
+    void moveToLastPosition();
 
     DrawPoint getOffset() const { return offset; }
 
@@ -131,21 +131,21 @@ public:
     unsigned getBuildingRadius(BuildingType bld) const;
 
     /// Add a debug node printer
-    void AddDrawNodeCallback(IDrawNodeCallback* newCallback);
-    void RemoveDrawNodeCallback(IDrawNodeCallback* callbackToRemove);
+    void addDrawNodeCallback(IDrawNodeCallback* newCallback);
+    void removeDrawNodeCallback(IDrawNodeCallback* callbackToRemove);
 
     /// Show a radius preview outline on the map
-    void ShowRadiusPreview(MapPoint center, unsigned radius);
-    void HideRadiusPreview() { radiusPreview_ = std::nullopt; }
+    void showRadiusPreview(MapPoint center, unsigned radius);
+    void hideRadiusPreview() { radiusPreview_ = std::nullopt; }
 
     /// Update radius preview based on which map node is selected
-    void UpdateRadiusPreviewForMousePos();
+    void updateRadiusPreviewForMousePos();
 
     /// Get radius preview currently shown
     [[nodiscard]] const std::optional<RadiusPreview>& getRadiusPreview() const noexcept { return radiusPreview_; }
 
     /// Snap a point to the nearest toroidal copy relative to a reference position, given the map size in pixels
-    static DrawPoint SnapToNearestCopy(DrawPoint pt, DrawPoint ref, Extent mapSize);
+    static DrawPoint snapToNearestCopy(DrawPoint pt, DrawPoint ref, Extent mapSize);
 
     /// Gibt selektierten Punkt zurück
     MapPoint getSelectedPt() const { return selPt; }
@@ -155,30 +155,30 @@ public:
     /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
     Position getLastPt() const { return lastPt; }
 
-    void Resize(const Extent& newSize);
+    void resize(const Extent& newSize);
 
     /// Triggered when visibility of HUD elements changes
     boost::signals2::signal<void()> onHudSettingsChanged;
 
 private:
-    void CalcFxLx();
-    void DrawBoundaryStone(const MapPoint& pt, DrawPoint pos, Visibility vis);
-    void DrawResource(const MapPoint& pt, DrawPoint curPos, Cheats::ResourceRevealMode resRevealMode);
-    void DrawObject(const MapPoint& pt, const DrawPoint& curPos) const;
-    void DrawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
-    void DrawFigures(const MapPoint& pt, const DrawPoint& curPos,
+    void calcFxLx();
+    void drawBoundaryStone(const MapPoint& pt, DrawPoint pos, Visibility vis);
+    void drawResource(const MapPoint& pt, DrawPoint curPos, Cheats::ResourceRevealMode resRevealMode);
+    void drawObject(const MapPoint& pt, const DrawPoint& curPos) const;
+    void drawConstructionAid(const MapPoint& pt, const DrawPoint& curPos);
+    void drawFigures(const MapPoint& pt, const DrawPoint& curPos,
                      std::vector<ObjectBetweenLines>& objsBetweenRows) const;
-    void DrawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
+    void drawMovingFiguresFromBelow(const TerrainRenderer& terrainRenderer, const DrawPoint& curPos,
                                     std::vector<ObjectBetweenLines>& objsBetweenRows);
 
-    void DrawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
-    void DrawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
-    void DrawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt,
+    void drawNameProductivityOverlay(const TerrainRenderer& terrainRenderer);
+    void drawProductivity(const noBaseBuilding& no, const DrawPoint& curPos);
+    void drawGUI(const RoadBuildState& rb, const TerrainRenderer& terrainRenderer, const MapPoint& selectedPt,
                  bool drawMouse);
 
     /// Draw a radius outline ring
-    void DrawRadiusOutline();
+    void drawRadiusOutline();
 
-    void SaveIngameSettingsValues() const;
+    void saveIngameSettingsValues() const;
     void updateEffectiveZoomFactor();
 };

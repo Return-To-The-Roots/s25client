@@ -93,7 +93,7 @@ void CheckPactState(const GameWorldBase& world, unsigned playerIdFrom, unsigned 
 BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P, *utf::depends_on("PactTestSuite/InitialPactStates"))
 {
     for(unsigned i = 0; i < world.getNumPlayers(); i++)
-        world.getPostMgr().AddPostBox(i);
+        world.getPostMgr().addPostBox(i);
     // Use middle player for off-by-one detection
     curPlayer = 1;
     GamePlayer& player1 = world.getPlayer(1);
@@ -149,7 +149,7 @@ struct PactCreatedFixture : public WorldWithGCExecution3P
     PactCreatedFixture()
     {
         for(unsigned i = 0; i < world.getNumPlayers(); i++)
-            world.getPostMgr().AddPostBox(i);
+            world.getPostMgr().addPostBox(i);
         // Use middle player for off-by-one detection
         curPlayer = 1;
         PostBox& postbox2 = *world.getPostMgr().getPostBox(2);
@@ -179,8 +179,8 @@ BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture, *utf::depends_on("
         this->AcceptPact(msg->getPactId(), PactType::NonAgressionPact, msg->getPlayerId());
         BOOST_TEST_REQUIRE(player1.getRemainingPactTime(PactType::NonAgressionPact, 2) == duration - i);
         // Advance 1 GF and test pacts
-        em.ExecuteNextGF();
-        player1.TestPacts();
+        em.executeNextGF();
+        player1.testPacts();
     }
     // On last GF the pact expired
     BOOST_TEST(player1.getRemainingPactTime(PactType::NonAgressionPact, 2) == 0u);
@@ -191,8 +191,8 @@ BOOST_FIXTURE_TEST_CASE(PactCanceling, PactCreatedFixture, *utf::depends_on("Pac
 {
     PostBox& postbox1 = *world.getPostMgr().getPostBox(1);
     PostBox& postbox2 = *world.getPostMgr().getPostBox(2);
-    postbox1.Clear();
-    postbox2.Clear();
+    postbox1.clear();
+    postbox2.clear();
 
     curPlayer = 2;
     this->CancelPact(PactType::NonAgressionPact, 1);
@@ -236,13 +236,13 @@ BOOST_FIXTURE_TEST_CASE(SuggestNewPactAfterExpiration, PactCreatedFixture,
 {
     GamePlayer& player1 = world.getPlayer(1);
     PostBox& postbox2 = *world.getPostMgr().getPostBox(2);
-    postbox2.Clear();
+    postbox2.clear();
 
     // Execute the GFs until the pact is expired
     for(unsigned i = 0; i < duration; i++)
     {
-        em.ExecuteNextGF();
-        player1.TestPacts();
+        em.executeNextGF();
+        player1.testPacts();
     }
 
     // On last GF the pact expired. Suggest new pact.

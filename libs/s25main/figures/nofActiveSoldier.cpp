@@ -28,18 +28,18 @@ void nofActiveSoldier::Serialize(SerializedGameData& sgd) const
 {
     nofSoldier::Serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(state);
-    sgd.PushObject(enemy);
+    sgd.pushEnum<uint8_t>(state);
+    sgd.pushObject(enemy);
     helpers::pushPoint(sgd, fightSpot_);
 }
 
 nofActiveSoldier::nofActiveSoldier(SerializedGameData& sgd, const unsigned obj_id)
-    : nofSoldier(sgd, obj_id), state(sgd.Pop<SoldierState>()), enemy(sgd.PopObject<nofActiveSoldier>())
+    : nofSoldier(sgd, obj_id), state(sgd.pop<SoldierState>()), enemy(sgd.popObject<nofActiveSoldier>())
 {
-    fightSpot_ = sgd.PopMapPoint();
+    fightSpot_ = sgd.popMapPoint();
 }
 
-void nofActiveSoldier::GoalReached()
+void nofActiveSoldier::goalReached()
 {
     // We reached the military building
     // Add myself to the building
@@ -59,24 +59,24 @@ void nofActiveSoldier::GoalReached()
             throw std::runtime_error("No building found for soldier");
         }
     }
-    homeBld->AddActiveSoldier(world->RemoveFigure(pos, *this));
+    homeBld->addActiveSoldier(world->RemoveFigure(pos, *this));
 }
 
-void nofActiveSoldier::ReturnHome()
+void nofActiveSoldier::returnHome()
 {
     state = SoldierState::WalkingHome;
-    WalkingHome();
+    walkingHome();
 }
 
-void nofActiveSoldier::WalkingHome()
+void nofActiveSoldier::walkingHome()
 {
     // Is our home military building destroyed?
     if(!homeBld)
     {
         // Start wandering around
         state = SoldierState::FigureWork;
-        StartWandering();
-        Wander();
+        startWandering();
+        wander();
 
         return;
     }
@@ -84,35 +84,35 @@ void nofActiveSoldier::WalkingHome()
     // Walking home to our military building
 
     if(getPos() == homeBld->getFlagPos())   // Are we already at the flag?
-        StartWalking(Direction::NorthWest); // Enter via the door
+        startWalking(Direction::NorthWest); // Enter via the door
     else if(getPos() == homeBld->getPos())  // or are we at the building
-        homeBld->AddActiveSoldier(world->RemoveFigure(pos, *this));
+        homeBld->addActiveSoldier(world->RemoveFigure(pos, *this));
     else
     {
-        const auto dir = world->FindHumanPath(pos, homeBld->getFlagPos(), 100);
+        const auto dir = world->findHumanPath(pos, homeBld->getFlagPos(), 100);
 
         if(dir)
         {
             // Find all sorts of enemies (attackers, aggressive defenders..) nearby
-            if(TryFightingNearbyEnemy())
+            if(tryFightingNearbyEnemy())
                 // Enemy found -> abort, because nofActiveSoldier handles all things now (inclusive one walking step)
                 return;
 
             // Start walking
-            StartWalking(*dir);
+            startWalking(*dir);
         } else
         {
             // Inform our home building that we're not coming anymore
-            Abrogate();
+            abrogate();
             // Start wandering around then
-            StartWandering();
+            startWandering();
             state = SoldierState::FigureWork;
-            Wander();
+            wander();
         }
     }
 }
 
-void nofActiveSoldier::Draw(DrawPoint drawPt)
+void nofActiveSoldier::draw(DrawPoint drawPt)
 {
     switch(state)
     {
@@ -122,7 +122,7 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
         case SoldierState::AttackingWaitingForDefender:
         case SoldierState::DefendingWaiting:
         {
-            DrawSoldierWaiting(drawPt);
+            drawSoldierWaiting(drawPt);
             break;
         }
         case SoldierState::FigureWork:
@@ -138,7 +138,7 @@ void nofActiveSoldier::Draw(DrawPoint drawPt)
         case SoldierState::SeaattackingGoToHarbor:
         case SoldierState::SeaattackingReturnToShip:
         {
-            DrawWalkingBobJobs(drawPt, job_);
+            drawWalkingBobJobs(drawPt, job_);
             break;
         }
     }
@@ -149,7 +149,7 @@ unsigned nofActiveSoldier::getVisualRange() const
     return VISUALRANGE_SOLDIER;
 }
 
-void nofActiveSoldier::ExpelEnemies() const
+void nofActiveSoldier::expelEnemies() const
 {
     // Collect the figures nearby
     std::vector<noFigure*> figures;
@@ -184,29 +184,29 @@ void nofActiveSoldier::ExpelEnemies() const
         if(!owner.isAlly(fig->getPlayer()) && !fig->IsSoldier() && fig->isWalkingOnRoad())
         {
             // Then he should start wandering around
-            fig->Abrogate();
-            fig->StartWandering();
+            fig->abrogate();
+            fig->startWandering();
             // Not walking? (Could be carriers who are waiting for wares on roads)
-            if(!fig->isMoving() && !fig->WalkInRandomDir())
+            if(!fig->isMoving() && !fig->walkInRandomDir())
             {
                 // No possible way found (unlikely but just in case)
-                fig->Die();
+                fig->die();
             }
         }
     }
 }
 
-void nofActiveSoldier::Walked()
+void nofActiveSoldier::walked()
 {
     switch(state)
     {
         default: return;
-        case SoldierState::WalkingHome: WalkingHome(); return;
-        case SoldierState::MeetEnemy: MeetingEnemy(); return;
+        case SoldierState::WalkingHome: walkingHome(); return;
+        case SoldierState::MeetEnemy: meetingEnemy(); return;
     }
 }
 
-bool nofActiveSoldier::TryFightingNearbyEnemy(const std::optional<unsigned char>& excludedOwner)
+bool nofActiveSoldier::tryFightingNearbyEnemy(const std::optional<unsigned char>& excludedOwner)
 {
     RTTR_Assert(enemy == nullptr);
     enemy = nullptr;
@@ -251,26 +251,26 @@ bool nofActiveSoldier::TryFightingNearbyEnemy(const std::optional<unsigned char>
 
     // We try to meet now
     state = SoldierState::MeetEnemy;
-    enemy->MeetEnemy(*this, fightSpot_);
+    enemy->meetEnemy(*this, fightSpot_);
 
     // Walk to him
-    MeetingEnemy();
+    meetingEnemy();
 
     return true;
 }
 
-void nofActiveSoldier::IncreaseRank()
+void nofActiveSoldier::increaseRank()
 {
     if(getRank() < world->getGGS().getMaxMilitaryRank())
     {
         // Promote and adjust inventory accordingly
-        world->getPlayer(player).DecreaseInventoryJob(job_, 1);
+        world->getPlayer(player).decreaseInventoryJob(job_, 1);
         job_ = Job(rttr::enum_cast(job_) + 1);
-        world->getPlayer(player).IncreaseInventoryJob(job_, 1);
+        world->getPlayer(player).increaseInventoryJob(job_, 1);
     }
 }
 
-void nofActiveSoldier::MeetingEnemy()
+void nofActiveSoldier::meetingEnemy()
 {
     // At this point we must still have an enemy which we were walking towards
     RTTR_Assert(enemy);
@@ -283,10 +283,10 @@ void nofActiveSoldier::MeetingEnemy()
         {
             RTTR_Assert(enemy->getPos() == fightSpot_);
             // Start fighting
-            world->AddFigure(pos, std::make_unique<noFighting>(*enemy, *this));
+            world->addFigure(pos, std::make_unique<noFighting>(*enemy, *this));
 
-            enemy->FightingStarted();
-            FightingStarted();
+            enemy->fightingStarted();
+            fightingStarted();
         } else
         {
             // Is fighting point still valid (there could e.g. be another fight already)
@@ -298,26 +298,26 @@ void nofActiveSoldier::MeetingEnemy()
                 state = SoldierState::WaitingForFight;
             } else
             {
-                AbortFreeFight();
-                Walked();
+                abortFreeFight();
+                walked();
             }
         }
     } else
     {
         // Not at the fighting spot yet, continue walking there
-        const auto dir = world->FindHumanPath(pos, fightSpot_, MAX_ATTACKING_RUN_DISTANCE);
+        const auto dir = world->findHumanPath(pos, fightSpot_, MAX_ATTACKING_RUN_DISTANCE);
         if(dir)
-            StartWalking(*dir);
+            startWalking(*dir);
         else
         {
             // No way from current location to fighting spot -> cancel fight
-            AbortFreeFight();
-            Walked();
+            abortFreeFight();
+            walked();
         }
     }
 }
 
-void nofActiveSoldier::AbortFreeFight()
+void nofActiveSoldier::abortFreeFight()
 {
     const bool enemyWasWaiting = enemy && enemy->state == SoldierState::WaitingForFight;
     auto* old_enemy = enemy;
@@ -328,30 +328,30 @@ void nofActiveSoldier::AbortFreeFight()
         enemy->enemy = nullptr;
         enemy = nullptr;
     }
-    state = FreeFightAborted();
+    state = freeFightAborted();
     if(old_enemy)
-        old_enemy->state = old_enemy->FreeFightAborted();
+        old_enemy->state = old_enemy->freeFightAborted();
     // Now the (possibly) 2 soldiers are in a state where they could even engage in another fight with each other
     if(enemyWasWaiting)
     {
         // Act as-if the enemy just arrived at his position so he'll start moving again if required
         RTTR_Assert(!old_enemy->isMoving());
-        old_enemy->Walked();
+        old_enemy->walked();
     }
 }
 
-void nofActiveSoldier::InformTargetsAboutCancelling()
+void nofActiveSoldier::informTargetsAboutCancelling()
 {
     if(enemy)
-        AbortFreeFight();
+        abortFreeFight();
 }
 
-void nofActiveSoldier::TakeHit()
+void nofActiveSoldier::takeHit()
 {
     if(hasArmor_)
     {
         hasArmor_ = false;
-        world->getPlayer(player).DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(getJobType()), 1);
+        world->getPlayer(player).decreaseInventoryJob(jobEnumToAmoredSoldierEnum(getJobType()), 1);
     } else
     {
         RTTR_Assert(hitpoints > 0u);
@@ -371,7 +371,7 @@ bool nofActiveSoldier::isReadyForFight() const
     }
 }
 
-void nofActiveSoldier::MeetEnemy(nofActiveSoldier& other, const MapPoint figh_spot)
+void nofActiveSoldier::meetEnemy(nofActiveSoldier& other, const MapPoint figh_spot)
 {
     enemy = &other;
     fightSpot_ = figh_spot;
@@ -381,7 +381,7 @@ void nofActiveSoldier::MeetEnemy(nofActiveSoldier& other, const MapPoint figh_sp
 
     // In some cases we have to start walking
     if(old_state == SoldierState::AttackingWaitingAroundBuilding)
-        MeetingEnemy();
+        meetingEnemy();
 }
 
 std::optional<MapPoint> nofActiveSoldier::getFightSpotNear(const nofActiveSoldier& other)
@@ -414,13 +414,13 @@ std::optional<MapPoint> nofActiveSoldier::getFightSpotNear(const nofActiveSoldie
         else
             middle.y += halfMapHeight;
     }
-    RTTR_Assert(world->CalcDistance(otherPos, middle) <= std::max<unsigned>(mapWidth, mapHeight) / 4u);
+    RTTR_Assert(world->calcDistance(otherPos, middle) <= std::max<unsigned>(mapWidth, mapHeight) / 4u);
 
     const auto isGoodFightingSpot = [world = this->world, pos = this->pos, this, &other](MapPoint pt) {
         return world->isValidPointForFighting(pt, *this, true)
-               && (pos == pt || world->FindHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false))
+               && (pos == pt || world->findHumanPath(pos, pt, MEET_FOR_FIGHT_DISTANCE * 2, false))
                && (other.getPos() == pt
-                   || world->FindHumanPath(other.getPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false));
+                   || world->findHumanPath(other.getPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false));
     };
     const std::vector<MapPoint> pts =
       world->GetMatchingPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, isGoodFightingSpot, true);
@@ -430,7 +430,7 @@ std::optional<MapPoint> nofActiveSoldier::getFightSpotNear(const nofActiveSoldie
         return pts.front();
 }
 
-void nofActiveSoldier::FightingStarted()
+void nofActiveSoldier::fightingStarted()
 {
     state = SoldierState::Fighting;
     enemy = nullptr;

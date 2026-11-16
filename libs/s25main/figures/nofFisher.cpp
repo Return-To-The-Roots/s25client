@@ -25,18 +25,18 @@ void nofFisher::Serialize(SerializedGameData& sgd) const
 {
     nofFarmhand::Serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(fishing_dir);
+    sgd.pushEnum<uint8_t>(fishing_dir);
     sgd.PushBool(successful);
 }
 
 nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFarmhand(sgd, obj_id), fishing_dir(sgd.Pop<Direction>()), successful(sgd.PopBool())
+    : nofFarmhand(sgd, obj_id), fishing_dir(sgd.pop<Direction>()), successful(sgd.PopBool())
 {}
 
 /// Malt den Arbeiter beim Arbeiten
-void nofFisher::DrawWorking(DrawPoint drawPt)
+void nofFisher::drawWorking(DrawPoint drawPt)
 {
-    unsigned short id = GAMECLIENT.Interpolate(232, current_ev);
+    unsigned short id = GAMECLIENT.interpolate(232, current_ev);
     unsigned short draw_id;
 
     if(id < 16)
@@ -80,8 +80,8 @@ void nofFisher::DrawWorking(DrawPoint drawPt)
         }
     }
 
-    LOADER.getPlayerImage("rom_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
-    DrawShadow(drawPt, 0, Direction(fishing_dir));
+    LOADER.getPlayerImage("rom_bobs", draw_id)->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+    drawShadow(drawPt, 0, Direction(fishing_dir));
 }
 
 unsigned short nofFisher::getCarryID() const
@@ -89,7 +89,7 @@ unsigned short nofFisher::getCarryID() const
     return 70;
 }
 
-void nofFisher::WorkStarted()
+void nofFisher::workStarted()
 {
     // Find a random neighbour point with fish
     unsigned fishAmount = 0;
@@ -109,10 +109,10 @@ void nofFisher::WorkStarted()
     successful = RANDOM_RAND(100) < probability;
     // On success remove the fish now to make it unavailable to others
     if(successful && !world->getGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
-        world->ReduceResource(world->getNeighbour(pos, fishing_dir));
+        world->reduceResource(world->getNeighbour(pos, fishing_dir));
 }
 
-void nofFisher::WorkFinished()
+void nofFisher::workFinished()
 {
     if(successful)
         ware = GoodType::Fish;

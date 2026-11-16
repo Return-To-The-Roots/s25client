@@ -137,23 +137,23 @@ ctrlTable::ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Ex
     line_count = (getSize().y - header_height - 2) / font->getHeight();
 
     // Scrollbar hinzufügen
-    AddScrollBar(0, DrawPoint(getSize().x - 20, 0), Extent(20, getSize().y), 20, tc, line_count);
+    addScrollBar(0, DrawPoint(getSize().x - 20, 0), Extent(20, getSize().y), 20, tc, line_count);
 
     for(unsigned i = 0; i < columns_.size(); ++i)
     {
-        AddTextButton(i + 1, DrawPoint(0, 0), Extent(0, header_height), tc, columns_[i].title, font);
+        addTextButton(i + 1, DrawPoint(0, 0), Extent(0, header_height), tc, columns_[i].title, font);
     }
 
-    ResetButtonWidths();
+    resetButtonWidths();
 }
 
 /**
  *  Größe verändern
  */
-void ctrlTable::Resize(const Extent& newSize)
+void ctrlTable::resize(const Extent& newSize)
 {
     const bool heightIncreased = newSize.y > getSize().y;
-    Window::Resize(newSize);
+    Window::resize(newSize);
     // Make header buttons keep their size
     for(unsigned i = 1; i <= columns_.size(); ++i)
         getCtrl<ctrlButton>(i)->setHeight(header_height);
@@ -162,7 +162,7 @@ void ctrlTable::Resize(const Extent& newSize)
 
     // changed height
 
-    scrollbar->Resize(Extent(20, newSize.y));
+    scrollbar->resize(Extent(20, newSize.y));
     scrollbar->setPos(DrawPoint(newSize.x - scrollbar->getSize().x, 0));
 
     line_count = (newSize.y - header_height - 2) / font->getHeight();
@@ -176,7 +176,7 @@ void ctrlTable::Resize(const Extent& newSize)
 
     // changed width
 
-    ResetButtonWidths();
+    resetButtonWidths();
     if(scrollbar->isVisible())
         msgScrollShow(0, true);
 }
@@ -184,7 +184,7 @@ void ctrlTable::Resize(const Extent& newSize)
 /**
  *  löscht alle Items.
  */
-void ctrlTable::DeleteAllItems()
+void ctrlTable::deleteAllItems()
 {
     rows_.clear();
 
@@ -221,7 +221,7 @@ void ctrlTable::setSelection(const std::optional<unsigned>& selection)
         getParent()->msgTableSelectItem(getID(), selection_);
 }
 
-void ctrlTable::AddRow(std::vector<std::string> row)
+void ctrlTable::addRow(std::vector<std::string> row)
 {
     // We use unsigned short when handling the row count
     if(rows_.size() == std::numeric_limits<unsigned short>::max())
@@ -237,7 +237,7 @@ void ctrlTable::AddRow(std::vector<std::string> row)
     getCtrl<ctrlScrollBar>(0)->setRange(getNumRows());
 }
 
-void ctrlTable::RemoveRow(unsigned rowIdx)
+void ctrlTable::removeRow(unsigned rowIdx)
 {
     if(rowIdx >= rows_.size())
         return;
@@ -278,7 +278,7 @@ const std::string& ctrlTable::getItemText(unsigned short row, unsigned short col
  *                         @p true  - A-Z,
  *                         @p false - Z-A
  */
-void ctrlTable::SortRows(unsigned column, const TableSortDir sortDir)
+void ctrlTable::sortRows(unsigned column, const TableSortDir sortDir)
 {
     sortDir_ = sortDir;
     sortColumn_ = column;
@@ -304,11 +304,11 @@ void ctrlTable::SortRows(unsigned column, const TableSortDir sortDir)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-void ctrlTable::Draw_()
+void ctrlTable::drawImpl()
 {
-    Draw3D(Rect(getDrawPos(), getSize()), tc, false);
+    draw3D(Rect(getDrawPos(), getSize()), tc, false);
 
-    Window::Draw_();
+    Window::drawImpl();
 
     const auto lines = static_cast<unsigned>(line_count > rows_.size() ? rows_.size() : line_count);
     const auto* scroll = getCtrl<ctrlScrollBar>(0);
@@ -321,7 +321,7 @@ void ctrlTable::Draw_()
         if(isSelected)
         {
             // durchsichtig schwarze Markierung malen
-            DrawRectangle(Rect(curPos, getSize().x - 4 - (scroll->isVisible() ? 24 : 0), font->getHeight()),
+            drawRectangle(Rect(curPos, getSize().x - 4 - (scroll->isVisible() ? 24 : 0), font->getHeight()),
                           0x80000000);
         }
 
@@ -332,7 +332,7 @@ void ctrlTable::Draw_()
                 continue;
 
             const auto* bt = getCtrl<ctrlButton>(c + 1);
-            font->Draw(colPos, rows_[curRow].columns[c], FontStyle{}, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW),
+            font->draw(colPos, rows_[curRow].columns[c], FontStyle{}, (isSelected ? 0xFFFFAA00 : COLOR_YELLOW),
                        bt->getSize().x, "");
             colPos.x += bt->getSize().x;
         }
@@ -344,7 +344,7 @@ void ctrlTable::msgButtonClick(const unsigned ctrl_id)
 {
     RTTR_Assert(ctrl_id > 0);
     const int column = ctrl_id - 1;
-    SortRows(column, column == getSortColumn() && getSortDirection() == TableSortDir::Ascending ?
+    sortRows(column, column == getSortColumn() && getSortDirection() == TableSortDir::Ascending ?
                        TableSortDir::Descending :
                        TableSortDir::Ascending);
     setSelection(selection_);
@@ -375,7 +375,7 @@ bool ctrlTable::msgLeftDown(const MouseCoords& mc)
 
         return true;
     } else
-        return RelayMouseMessage(&Window::msgLeftDown, mc);
+        return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
 bool ctrlTable::msgRightDown(const MouseCoords& mc)
@@ -388,7 +388,7 @@ bool ctrlTable::msgRightDown(const MouseCoords& mc)
 
         return true;
     } else
-        return RelayMouseMessage(&Window::msgRightDown, mc);
+        return relayMouseMessage(&Window::msgRightDown, mc);
 }
 
 std::optional<unsigned> ctrlTable::getSelectionFromMouse(const MouseCoords& mc) const
@@ -408,7 +408,7 @@ bool ctrlTable::msgWheelUp(const MouseCoords& mc)
     if(IsPointInRect(mc.pos, getFullDrawArea()))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
-        scrollbar->Scroll(-1);
+        scrollbar->scroll(-1);
         return true;
     } else
         return false;
@@ -419,7 +419,7 @@ bool ctrlTable::msgWheelDown(const MouseCoords& mc)
     if(IsPointInRect(mc.pos, getFullDrawArea()))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
-        scrollbar->Scroll(+1);
+        scrollbar->scroll(+1);
         return true;
     } else
         return false;
@@ -440,21 +440,21 @@ bool ctrlTable::msgLeftUp(const MouseCoords& mc)
             }
         }
     }
-    return RelayMouseMessage(&Window::msgLeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
 bool ctrlTable::msgMouseMove(const MouseCoords& mc)
 {
     // ButtonMessages weiterleiten
-    return RelayMouseMessage(&Window::msgMouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }
 
 void ctrlTable::msgScrollShow(const unsigned /*ctrl_id*/, const bool /*visible*/)
 {
-    ResetButtonWidths();
+    resetButtonWidths();
 }
 
-void ctrlTable::ResetButtonWidths()
+void ctrlTable::resetButtonWidths()
 {
     auto addColumnWidth = [](unsigned cur, const Column& c) { return cur + c.width; };
     const unsigned sumWidth = std::max(1u, std::accumulate(columns_.begin(), columns_.end(), 0u, addColumnWidth));

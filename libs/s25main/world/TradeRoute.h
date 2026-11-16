@@ -21,7 +21,7 @@ class TradeRoute
     MapPoint curPos;
     unsigned curRouteIdx;
 
-    helpers::OptionalEnum<TradeDirection> RecalcRoute();
+    helpers::OptionalEnum<TradeDirection> recalcRoute();
 
 public:
     TradeRoute(const GameWorld& world, unsigned char player, const MapPoint& start, const MapPoint& goal);
@@ -39,7 +39,7 @@ public:
     bool isValid() const { return !path.route.empty() || path.start == path.goal; }
 
     /// Assigns new start and goal positions and hence, a new route
-    void AssignNewGoal(const MapPoint& start, const MapPoint& newGoal);
+    void assignNewGoal(const MapPoint& start, const MapPoint& newGoal);
 
     const TradePath& getTradePath() const { return path; }
 };

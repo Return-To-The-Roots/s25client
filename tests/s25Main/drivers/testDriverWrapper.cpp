@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(GetDriverList)
 {
     for(auto type : {drivers::DriverType::Video, drivers::DriverType::Audio})
     {
-        const auto drivers = drivers::DriverWrapper::LoadDriverList(type);
+        const auto drivers = drivers::DriverWrapper::loadDriverList(type);
         BOOST_TEST(!drivers.empty());
         for(const auto& driver : drivers)
         {
@@ -23,29 +23,29 @@ BOOST_AUTO_TEST_CASE(GetDriverList)
 
 BOOST_AUTO_TEST_CASE(AllAudioDriversAreLoadable)
 {
-    const auto drivers = drivers::DriverWrapper::LoadDriverList(drivers::DriverType::Audio);
+    const auto drivers = drivers::DriverWrapper::loadDriverList(drivers::DriverType::Audio);
     for(const auto& driver : drivers)
     {
         std::string preference = driver.getName();
         BOOST_TEST_CHECKPOINT("Loading " << preference);
-        BOOST_TEST_REQUIRE(AUDIODRIVER.LoadDriver(preference));
+        BOOST_TEST_REQUIRE(AUDIODRIVER.loadDriver(preference));
         BOOST_TEST(preference == driver.getName());
         BOOST_TEST(AUDIODRIVER.getName() == driver.getName());
-        AUDIODRIVER.UnloadDriver();
+        AUDIODRIVER.unloadDriver();
     }
 }
 
 BOOST_AUTO_TEST_CASE(AllVideoDriversAreLoadable)
 {
-    const auto drivers = drivers::DriverWrapper::LoadDriverList(drivers::DriverType::Video);
+    const auto drivers = drivers::DriverWrapper::loadDriverList(drivers::DriverType::Video);
     for(const auto& driver : drivers)
     {
         std::string preference = driver.getName();
         BOOST_TEST_CHECKPOINT("Loading " << preference);
-        BOOST_TEST_REQUIRE(VIDEODRIVER.LoadDriver(preference));
+        BOOST_TEST_REQUIRE(VIDEODRIVER.loadDriver(preference));
         BOOST_TEST(preference == driver.getName());
         BOOST_TEST(VIDEODRIVER.getName() == driver.getName());
         BOOST_TEST(VIDEODRIVER.getDriver());
-        VIDEODRIVER.UnloadDriver();
+        VIDEODRIVER.unloadDriver();
     }
 }

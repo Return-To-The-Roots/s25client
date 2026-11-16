@@ -14,7 +14,7 @@ public:
     noShipBuildingSite(MapPoint pos, unsigned char player);
     noShipBuildingSite(SerializedGameData& sgd, unsigned obj_id);
     ~noShipBuildingSite() override;
-    void Destroy() override;
+    void destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
     GO_Type getGOT() const final { return GO_Type::Shipbuildingsite; }
 
@@ -22,12 +22,12 @@ public:
     unsigned char getPlayer() const { return player; }
 
     /// Das Schiff wird um eine Stufe weitergebaut
-    void MakeBuildStep();
+    void makeBuildStep();
 
     BlockingManner getBM() const override { return BlockingManner::Building; }
 
 protected:
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
 private:
     /// Spieler, dem dieses Schiff gehört

@@ -9,8 +9,8 @@ ctrlColorButton::ctrlColorButton(Window* parent, unsigned id, const DrawPoint& p
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseColor(fillColor)
 {}
 
-void ctrlColorButton::DrawContent() const
+void ctrlColorButton::drawContent() const
 {
     Extent rectSize = getSize() - Extent(6, 6);
-    DrawRectangle(Rect(getDrawPos() + DrawPoint(3, 3), rectSize), color_);
+    drawRectangle(Rect(getDrawPos() + DrawPoint(3, 3), rectSize), color_);
 }

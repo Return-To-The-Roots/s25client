@@ -6,9 +6,9 @@
 #include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
 
-void MusicItem::Play(int repeats)
+void MusicItem::play(int repeats)
 {
     if(!SETTINGS.sound.musicEnabled)
         return;
-    AUDIODRIVER.PlayMusic(getSoundHandle(), repeats);
+    AUDIODRIVER.playMusic(getSoundHandle(), repeats);
 }

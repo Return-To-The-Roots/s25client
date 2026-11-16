@@ -16,11 +16,11 @@ public:
     dskCampaignMissionSelection(CreateServerInfo csi, const CampaignDescription& campaign);
 
 private:
-    void UpdateMissionPage();
+    void updateMissionPage();
     void msgButtonClick(unsigned ctrl_id) override;
     void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
-    void StartServer(unsigned missionIdx);
-    void UpdateStateOfNavigationButtons();
+    void startServer(unsigned missionIdx);
+    void updateStateOfNavigationButtons();
     CreateServerInfo csi_;
     std::unique_ptr<CampaignDescription> campaign_;
     const unsigned missionsPerPage_;

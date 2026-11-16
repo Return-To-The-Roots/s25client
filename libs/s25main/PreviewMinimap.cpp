@@ -36,7 +36,7 @@ void PreviewMinimap::setMap(const libsiedler2::ArchivItem_Map& s2map)
     if(s2map.hasLayer(MapLayer::Shadows))
         shadows = s2map.getLayer(MapLayer::Shadows);
     else
-        CalcShadows(s2map.getLayer(MapLayer::Altitude));
+        calcShadows(s2map.getLayer(MapLayer::Altitude));
 
     WorldDescription worldDesc;
     GameDataLoader gdLoader(worldDesc);
@@ -52,19 +52,19 @@ void PreviewMinimap::setMap(const libsiedler2::ArchivItem_Map& s2map)
         }
     }
 
-    CreateMapTexture();
+    createMapTexture();
 }
 
-unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
+unsigned PreviewMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
 {
     unsigned color = 0;
     // Baum an dieser Stelle?
     unsigned char landscape_obj = objects[getMMIdx(pt)];
     if(landscape_obj >= 0xC4 && landscape_obj <= 0xC6)
-        color = VaryBrightness(TREE_COLOR, VARY_TREE_COLOR);
+        color = varyBrightness(TREE_COLOR, VARY_TREE_COLOR);
     // Granit an dieser Stelle?
     else if(landscape_obj == 0xCC || landscape_obj == 0xCD)
-        color = VaryBrightness(GRANITE_COLOR, VARY_GRANITE_COLOR);
+        color = varyBrightness(GRANITE_COLOR, VARY_GRANITE_COLOR);
     // Ansonsten die jeweilige Terrainfarbe nehmen
     else
     {
@@ -85,16 +85,16 @@ unsigned PreviewMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
     return color;
 }
 
-unsigned char PreviewMinimap::CalcShading(const MapPoint pt, const std::vector<unsigned char>& altitudes) const
+unsigned char PreviewMinimap::calcShading(const MapPoint pt, const std::vector<unsigned char>& altitudes) const
 {
     int altitude = altitudes[getMMIdx(pt)];
-    MapPoint tmp = MakeMapPoint(getNeighbour(Position(pt), Direction::NorthEast), getMapSize());
+    MapPoint tmp = makeMapPoint(getNeighbour(Position(pt), Direction::NorthEast), getMapSize());
     int A = altitudes[getMMIdx(tmp)] - altitude;
-    tmp = MakeMapPoint(getNeighbour2(Position(pt), 0), getMapSize());
+    tmp = makeMapPoint(getNeighbour2(Position(pt), 0), getMapSize());
     int B = altitudes[getMMIdx(tmp)] - altitude;
-    tmp = MakeMapPoint(getNeighbour(Position(pt), Direction::West), getMapSize());
+    tmp = makeMapPoint(getNeighbour(Position(pt), Direction::West), getMapSize());
     int C = altitudes[getMMIdx(tmp)] - altitude;
-    tmp = MakeMapPoint(getNeighbour2(Position(pt), 7), getMapSize());
+    tmp = makeMapPoint(getNeighbour2(Position(pt), 7), getMapSize());
     int D = altitudes[getMMIdx(tmp)] - altitude;
 
     int shadingS2 = 64 + 9 * A - 3 * B - 6 * C - 9 * D;
@@ -106,9 +106,9 @@ unsigned char PreviewMinimap::CalcShading(const MapPoint pt, const std::vector<u
     return shadingS2;
 }
 
-void PreviewMinimap::CalcShadows(const std::vector<unsigned char>& altitudes)
+void PreviewMinimap::calcShadows(const std::vector<unsigned char>& altitudes)
 {
     shadows.resize(altitudes.size());
     RTTR_FOREACH_PT(MapPoint, getMapSize())
-        shadows[getMMIdx(pt)] = CalcShading(pt, altitudes);
+        shadows[getMMIdx(pt)] = calcShading(pt, altitudes);
 }

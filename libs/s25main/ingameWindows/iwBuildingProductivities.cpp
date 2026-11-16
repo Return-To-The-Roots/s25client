@@ -64,7 +64,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
 {
     setBuildingOrder();
     const unsigned numRows = helpers::divCeil(usedIcons.size(), 2);
-    Resize(cellSize * Extent(2, numRows + 1) + bldProdContentOffset);
+    resize(cellSize * Extent(2, numRows + 1) + bldProdContentOffset);
 
     const Nation playerNation = player.nation;
     unsigned curIdx = 0;
@@ -79,17 +79,17 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
             const unsigned imgId = curIdx * 2;
             if(player.isBuildingEnabled(usedIcons[curIdx]))
             {
-                AddImage(imgId, imgPos, LOADER.getNationIcon(playerNation, usedIcons[curIdx]),
+                addImage(imgId, imgPos, LOADER.getNationIcon(playerNation, usedIcons[curIdx]),
                          _(BUILDING_NAMES[usedIcons[curIdx]]));
                 DrawPoint percentPos = curPos + DrawPoint(image_percent_x, 0);
-                AddPercent(imgId + 1, percentPos, percentSize, TextureColor::Grey, COLOR_YELLOW, SmallFont,
+                addPercent(imgId + 1, percentPos, percentSize, TextureColor::Grey, COLOR_YELLOW, SmallFont,
                            &percents[usedIcons[curIdx]]);
             } else
-                AddImage(imgId, imgPos, LOADER.getImageN("io", 188));
+                addImage(imgId, imgPos, LOADER.getImageN("io", 188));
         }
     }
 
-    UpdatePercents();
+    updatePercents();
 
     // Hilfe-Button
     // Original S2 does not have a Help button in this window. Add it if you have something to say.
@@ -98,13 +98,13 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     // _("Help"));
 }
 
-void iwBuildingProductivities::UpdatePercents()
+void iwBuildingProductivities::updatePercents()
 {
-    percents = player.getBuildingRegister().CalcProductivities();
+    percents = player.getBuildingRegister().calcProductivities();
 }
 
 void iwBuildingProductivities::msgPaintAfter()
 {
     IngameWindow::msgPaintAfter();
-    UpdatePercents();
+    updatePercents();
 }

@@ -24,25 +24,25 @@
 #include "gameData/const_gui_ids.h"
 
 iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
-    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(wh.getPos()), IngameWindow::posAtMouse, Extent(400, 194),
+    : IngameWindow(CGI_BUILDING + MapBase::createGUIID(wh.getPos()), IngameWindow::posAtMouse, Extent(400, 194),
                    _("Trade"), LOADER.getImageN("resource", 41)),
       wh(wh), gwv(gwv), gcFactory(gcFactory), possibleSrcWarehouses(gwv.getPlayer().getWarehousesForTrading(wh))
 {
     // Get title of the player
     setTitle((boost::format(_("Trade with %s")) % gwv.getWorld().getPlayer(wh.getPlayer()).name).str());
     // Gebäudebild und dessen Schatten
-    AddImage(0, DrawPoint(100, 144), &wh.getBuildingImage());
+    addImage(0, DrawPoint(100, 144), &wh.getBuildingImage());
 
     const unsigned left_column = 200;
 
-    AddComboBox(4, DrawPoint(left_column, 84), Extent(160, 18), TextureColor::Grey, NormalFont,
+    addComboBox(4, DrawPoint(left_column, 84), Extent(160, 18), TextureColor::Grey, NormalFont,
                 90); // Ware/Figure names
-    AddText(1, DrawPoint(left_column, 30), "Deal in:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
-    ctrlComboBox* box = this->AddComboBox(2, DrawPoint(left_column, 44), Extent(160, 18), TextureColor::Grey,
+    addText(1, DrawPoint(left_column, 30), "Deal in:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+    ctrlComboBox* box = this->addComboBox(2, DrawPoint(left_column, 44), Extent(160, 18), TextureColor::Grey,
                                           NormalFont, 200); // Ware or figure?
-    box->AddItem(_("Wares"));
-    box->AddItem(_("Settlers"));
-    AddText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+    box->addItem(_("Wares"));
+    box->addItem(_("Settlers"));
+    addText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
     // Create possible wares, figures
     for(const auto i : helpers::enumRange<GoodType>())
@@ -63,12 +63,12 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
         jobs.push_back(i);
     }
 
-    AddImage(5, DrawPoint(left_column + 20, 130), static_cast<ITexture*>(nullptr), _("Ware you like to trade"));
-    AddEdit(6, DrawPoint(left_column + 34, 120), Extent(39, 20), TextureColor::Grey, NormalFont)
+    addImage(5, DrawPoint(left_column + 20, 130), static_cast<ITexture*>(nullptr), _("Ware you like to trade"));
+    addEdit(6, DrawPoint(left_column + 34, 120), Extent(39, 20), TextureColor::Grey, NormalFont)
       ->setType(EditType::Number);
-    AddText(7, DrawPoint(left_column + 75, 125), "/ 20", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+    addText(7, DrawPoint(left_column + 75, 125), "/ 20", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
-    AddTextButton(8, DrawPoint(left_column, 150), Extent(150, 22), TextureColor::Green2, _("Send"), NormalFont);
+    addTextButton(8, DrawPoint(left_column, 150), Extent(150, 22), TextureColor::Green2, _("Send"), NormalFont);
 
     // Choose wares at first
     box->setSelection(0);
@@ -92,7 +92,7 @@ void iwTrade::msgButtonClick(const unsigned /*ctrl_id*/)
     if(!getCtrl<ctrlComboBox>(4)->getCtrl<ctrlList>(0)->isVisible() && helpers::fromString(number_str, 0) > 0)
     {
         if(gcFactory.TradeOverLand(wh.getPos(), what, helpers::fromString(number_str, 0)))
-            this->Close();
+            this->close();
     }
 }
 
@@ -104,18 +104,18 @@ void iwTrade::msgComboSelectItem(const unsigned ctrl_id, const unsigned selectio
         case 2:
         {
             auto* names = this->getCtrl<ctrlComboBox>(4);
-            names->DeleteAllItems();
+            names->deleteAllItems();
             if(selection == 0)
             {
                 // Add ware names
                 for(GoodType ware : wares)
-                    names->AddItem(_(WARE_NAMES[ware]));
+                    names->addItem(_(WARE_NAMES[ware]));
 
             } else
             {
                 // Add job names
                 for(Job job : jobs)
-                    names->AddItem(_(JOB_NAMES[job]));
+                    names->addItem(_(JOB_NAMES[job]));
             }
             names->setSelection(0);
             msgComboSelectItem(4, 0);

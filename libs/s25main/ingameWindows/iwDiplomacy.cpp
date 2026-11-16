@@ -47,9 +47,9 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
       gwv(gwv), gcFactory(gcFactory)
 {
     // "Header" der Tabelle
-    AddText(0, DrawPoint(LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS, HEADER_Y), _("Ping"), COLOR_YELLOW,
+    addText(0, DrawPoint(LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS, HEADER_Y), _("Ping"), COLOR_YELLOW,
             FontStyle::CENTER, NormalFont);
-    AddText(1, DrawPoint(LINE_DISTANCE_TO_MARGINS + TREATIES_POS, HEADER_Y), _("Treaties"), COLOR_YELLOW,
+    addText(1, DrawPoint(LINE_DISTANCE_TO_MARGINS + TREATIES_POS, HEADER_Y), _("Treaties"), COLOR_YELLOW,
             FontStyle::CENTER, NormalFont);
 
     DrawPoint curTxtPos(LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + CELL_HEIGHT / 2 - CELL_HEIGHT - SPACE_HEIGHT);
@@ -60,13 +60,13 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
         if(!player.isUsed())
             continue;
         // Einzelne Spielernamen
-        AddText(100 + i, curTxtPos, player.name, player.color, FontStyle::VCENTER, NormalFont);
+        addText(100 + i, curTxtPos, player.name, player.color, FontStyle::VCENTER, NormalFont);
 
         if(player.ps == PlayerState::Occupied)
         {
             // Ping
             DrawPoint pingPos(LINE_DISTANCE_TO_MARGINS + PING_FIELD_POS - PING_FIELD_SIZE.x / 2, curTxtPos.y);
-            AddTextDeepening(200 + i, pingPos, PING_FIELD_SIZE, TextureColor::Grey, "0", NormalFont, COLOR_YELLOW);
+            addTextDeepening(200 + i, pingPos, PING_FIELD_SIZE, TextureColor::Grey, "0", NormalFont, COLOR_YELLOW);
         }
 
         // An sich selber braucht man keine Bündnisse zu schließen
@@ -77,20 +77,20 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
         Extent btSize(40, 40);
         DrawPoint btPos(LINE_DISTANCE_TO_MARGINS + TREATIES_POS - TREATIE_BUTTON_SPACE / 2 - (image->getWidth() + 8),
                         curTxtPos.y - btSize.y / 2);
-        ctrlButton* button = AddImageButton(300 + i, btPos, btSize, TextureColor::Grey, image, _("Treaty of alliance"));
+        ctrlButton* button = addImageButton(300 + i, btPos, btSize, TextureColor::Grey, image, _("Treaty of alliance"));
 
         // Verbleibende Zeit unter dem Button
         DrawPoint remainingTimePos = button->getPos() + DrawPoint(btSize.x / 2, btSize.y + 4);
-        AddText(500 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
+        addText(500 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
 
         // Nichtangriffspakt
         image = LOADER.getImageN("io", 100);
         btPos.x = LINE_DISTANCE_TO_MARGINS + TREATIES_POS + TREATIE_BUTTON_SPACE / 2;
-        button = AddImageButton(400 + i, btPos, btSize, TextureColor::Grey, image, _("Non-aggression pact"));
+        button = addImageButton(400 + i, btPos, btSize, TextureColor::Grey, image, _("Non-aggression pact"));
 
         // Verbleibende Zeit unter dem Button
         remainingTimePos = button->getPos() + DrawPoint(btSize.x / 2, btSize.y + 4);
-        AddText(600 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
+        addText(600 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
     }
     // Farben festlegen
     msgPaintAfter();
@@ -108,7 +108,7 @@ void iwDiplomacy::msgPaintBefore()
     for(unsigned i = 0; i < gwv.getWorld().getNumPlayers(); ++i)
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
-        DrawRectangle(curRect, SetAlpha(gwv.getWorld().getPlayer(i).color, 0x40));
+        drawRectangle(curRect, SetAlpha(gwv.getWorld().getPlayer(i).color, 0x40));
         curRect.move(DrawPoint(0, CELL_HEIGHT + SPACE_HEIGHT));
 
         // Farben der Bündnis-Buttons setzen, je nachdem wie der Status ist
@@ -138,7 +138,7 @@ void iwDiplomacy::msgPaintBefore()
                 // Überhaupt ein Bündnis abgeschlossen und Bündnis nicht für die Ewigkeit?
                 if(duration > 0 && duration != DURATION_INFINITE)
                     // Dann entsprechende Zeit setzen
-                    getCtrl<ctrlText>(500 + z * 100 + i)->setText(GAMECLIENT.FormatGFTime(duration));
+                    getCtrl<ctrlText>(500 + z * 100 + i)->setText(GAMECLIENT.formatGFTime(duration));
                 else
                     // Ansonsten leer
                     getCtrl<ctrlText>(500 + z * 100 + i)->setText("");
@@ -151,7 +151,7 @@ void iwDiplomacy::msgButtonClick(const unsigned ctrl_id)
 {
     if(gwv.getWorld().getGGS().lockedTeams)
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(
           _("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), nullptr,
           MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
         return;
@@ -164,7 +164,7 @@ void iwDiplomacy::msgButtonClick(const unsigned ctrl_id)
         // Noch kein Bündnis abgeschlossen?
         if(gwv.getPlayer().getPactState(PactType::TreatyOfAlliance, playerId) == PactState::None)
             // Dann neues Bündnis vorschlagen
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSuggestPact>(PactType::TreatyOfAlliance,
+            WINDOWMANAGER.replaceWindow(std::make_unique<iwSuggestPact>(PactType::TreatyOfAlliance,
                                                                         gwv.getWorld().getPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
@@ -177,7 +177,7 @@ void iwDiplomacy::msgButtonClick(const unsigned ctrl_id)
         // Noch kein Bündnis abgeschlossen?
         if(gwv.getPlayer().getPactState(PactType::NonAgressionPact, playerId) == PactState::None)
             // Dann neues Bündnis vorschlagen
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSuggestPact>(PactType::NonAgressionPact,
+            WINDOWMANAGER.replaceWindow(std::make_unique<iwSuggestPact>(PactType::NonAgressionPact,
                                                                         gwv.getWorld().getPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
@@ -217,27 +217,27 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
 
     // Bild als Orientierung, welchen Vertrag wir gerade bearbeiten
     if(image)
-        this->AddImage(0, DrawPoint(55, 100), image);
+        this->addImage(0, DrawPoint(55, 100), image);
 
-    AddText(1, DrawPoint(100, 30), _("Contract type:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddText(2, DrawPoint(100, 45), _(PACT_NAMES[pt]), COLOR_GREEN, FontStyle{}, NormalFont);
-    AddText(3, DrawPoint(100, 70), _("To player:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddText(4, DrawPoint(100, 85), player.name, player.color, FontStyle{}, NormalFont);
-    AddText(5, DrawPoint(100, 110), _("Duration:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    ctrlComboBox* combo = AddComboBox(6, DrawPoint(100, 125), Extent(190, 22), TextureColor::Green2, NormalFont, 100);
+    addText(1, DrawPoint(100, 30), _("Contract type:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(2, DrawPoint(100, 45), _(PACT_NAMES[pt]), COLOR_GREEN, FontStyle{}, NormalFont);
+    addText(3, DrawPoint(100, 70), _("To player:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(4, DrawPoint(100, 85), player.name, player.color, FontStyle{}, NormalFont);
+    addText(5, DrawPoint(100, 110), _("Duration:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    ctrlComboBox* combo = addComboBox(6, DrawPoint(100, 125), Extent(190, 22), TextureColor::Green2, NormalFont, 100);
 
     // Zeiten zur Combobox hinzufügen
     for(unsigned i = 0; i < NUM_DURATIONS; ++i)
     {
-        combo->AddItem(helpers::format("%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i])));
+        combo->addItem(helpers::format("%s  (%s)", DURATION_NAMES[i], GAMECLIENT.formatGFTime(DURATIONS[i])));
     }
     // Erstes Item in der Combobox vorerst auswählen
     combo->setSelection(0);
 
     // Option "ewig" noch hinzufügen
-    combo->AddItem(_("Eternal"));
+    combo->addItem(_("Eternal"));
 
-    AddTextButton(7, DrawPoint(110, 170), Extent(100, 22), TextureColor::Green2, _("Confirm"), NormalFont);
+    addTextButton(7, DrawPoint(110, 170), Extent(100, 22), TextureColor::Green2, _("Confirm"), NormalFont);
 }
 
 void iwSuggestPact::msgButtonClick(const unsigned /*ctrl_id*/)
@@ -246,5 +246,5 @@ void iwSuggestPact::msgButtonClick(const unsigned /*ctrl_id*/)
     const unsigned selected_id = getCtrl<ctrlComboBox>(6)->getSelection().value();
     const unsigned duration = (selected_id == NUM_DURATIONS) ? DURATION_INFINITE : DURATIONS[selected_id];
     if(gcFactory.SuggestPact(player.getPlayerId(), this->pt, duration))
-        Close();
+        close();
 }

@@ -24,14 +24,14 @@ public:
     iwBaseWarehouse(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh);
     ~iwBaseWarehouse() override;
 
-    void OnChange(unsigned changeId) override;
+    void onChange(unsigned changeId) override;
 
 protected:
     /// Update displayed overlay (e.g. stop symbol) for the item at the current page
-    void UpdateOverlay(unsigned i);
+    void updateOverlay(unsigned i);
     /// Update displayed overlay (e.g. stop symbol) for the item of the given type
-    void UpdateOverlay(unsigned i, bool isWare);
-    void UpdateOverlays();
+    void updateOverlay(unsigned i, bool isWare);
+    void updateOverlays();
 
     void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void msgButtonClick(unsigned ctrl_id) override;

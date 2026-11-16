@@ -69,7 +69,7 @@ public:
     Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0));
     virtual ~Window();
     /// Draw all contained controls if the window is visible
-    void Draw();
+    void draw();
     /// Get the current position relative to the parent window
     DrawPoint getPos() const;
     /// Get the absolute position for drawing
@@ -82,24 +82,24 @@ public:
     /// (might be different to the draw rect if the window resizes according to content)
     virtual Rect getBoundaryRect() const;
     /// Change the size
-    virtual void Resize(const Extent& newSize) { size_ = newSize; }
+    virtual void resize(const Extent& newSize) { size_ = newSize; }
     /// Change only the width
-    void setWidth(unsigned width) { Resize(Extent(width, size_.y)); }
+    void setWidth(unsigned width) { resize(Extent(width, size_.y)); }
     /// Change only the height
-    void setHeight(unsigned height) { Resize(Extent(size_.x, height)); }
+    void setHeight(unsigned height) { resize(Extent(size_.x, height)); }
     /// Send a keyboard message to all controls, return true if handled
-    bool RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
+    bool relayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
     /// Send a mouse message to all controls, return true if handled
-    bool RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
+    bool relayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
     /// Make the window active or inactive. Inactive controls e.g. don't react to events
     virtual void setActive(bool activate = true);
     /// Activate/deactivate only the elements of the window
-    void ActivateControls(bool activate = true);
+    void activateControls(bool activate = true);
     /// Lock a region which won't react to mouse events anymore except for the given window/control.
     /// Only a single region can be locked per window.
-    void LockRegion(Window* window, const Rect& rect);
+    void lockRegion(Window* window, const Rect& rect);
     /// Release the region locked for the given window/control.
-    void FreeRegion(Window* window);
+    void freeRegion(Window* window);
     /// Check if the given point is in a region locked by any window other than exception
     bool isInLockedRegion(const Position& pos, const Window* exception = nullptr) const;
     /// Check if the mouse is hovering over this control, i.e. inside its boundary.
@@ -131,92 +131,92 @@ public:
     template<typename T>
     std::vector<const T*> getCtrls() const;
 
-    void DeleteCtrl(unsigned id);
+    void deleteCtrl(unsigned id);
 
     AnimationManager& getAnimationManager() { return animations_; }
 
     template<typename T>
-    T* AddCtrl(std::unique_ptr<T> ctrl);
+    T* addCtrl(std::unique_ptr<T> ctrl);
 
-    ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation,
+    ctrlBuildingIcon* addBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation,
                                       unsigned short size = 36, const std::string& tooltip = "");
-    ctrlButton* AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlButton* addTextButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                               const std::string& text, const glFont* font, const std::string& tooltip = "");
-    ctrlButton* AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlButton* addColorButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                unsigned fillColor, const std::string& tooltip = "");
-    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* image,
+    ctrlButton* addImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* image,
                                const std::string& tooltip = "");
-    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlButton* addImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                glArchivItem_Bitmap* image, const std::string& tooltip = "");
-    ctrlChat* AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
-    ctrlCheck* AddCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlChat* addChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
+    ctrlCheck* addCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                            const std::string& text, const glFont* font, bool readonly = false);
-    ctrlComboBox* AddComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlComboBox* addComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                               const glFont* font, unsigned short max_list_height, bool readonly = false);
-    ctrlDeepening* AddTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlDeepening* addTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                     const std::string& text, const glFont* font, unsigned color,
                                     FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
-    ctrlDeepening* AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlDeepening* addColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                      unsigned fillColor);
-    ctrlDeepening* AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlDeepening* addImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                      ITexture* image);
-    ctrlDeepening* AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlDeepening* addImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                      glArchivItem_Bitmap* image);
 
-    ctrlEdit* AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
+    ctrlEdit* addEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                       unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
-    ctrlGroup* AddGroup(unsigned id);
-    ctrlImage* AddImage(unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip = "");
-    ctrlImage* AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip = "");
-    ctrlList* AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
-    ctrlMultiline* AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlGroup* addGroup(unsigned id);
+    ctrlImage* addImage(unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip = "");
+    ctrlImage* addImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip = "");
+    ctrlList* addList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
+    ctrlMultiline* addMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                 const glFont* font, FontStyle format = {});
-    ctrlOptionGroup* AddOptionGroup(unsigned id, GroupSelectType select_type);
-    ctrlMultiSelectGroup* AddMultiSelectGroup(unsigned id, GroupSelectType select_type);
-    ctrlPercent* AddPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
+    ctrlOptionGroup* addOptionGroup(unsigned id, GroupSelectType select_type);
+    ctrlMultiSelectGroup* addMultiSelectGroup(unsigned id, GroupSelectType select_type);
+    ctrlPercent* addPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
                             const glFont* font, const unsigned short* percentage);
-    ctrlProgress* AddProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlProgress* addProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                               unsigned short button_minus, unsigned short button_plus, unsigned short maximum,
                               const std::string& tooltip = "", const Extent& padding = Extent(0, 0),
                               unsigned force_color = 0, const std::string& button_minus_tooltip = "",
                               const std::string& button_plus_tooltip = "");
-    ctrlScrollBar* AddScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
+    ctrlScrollBar* addScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
                                 TextureColor tc, unsigned short page_size);
-    ctrlTab* AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width);
-    ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
+    ctrlTab* addTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width);
+    ctrlTable* addTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                         std::vector<TableColumn> columns);
     /// Add text
     /// @param color    Text color (ARGB)
     /// @param format   can be a combination of FontStyle::LEFT/CENTER/RIGHT and FontStyle::TOP/VCENTER/BOTTOM and
     /// FontStyle::OUTLINE/NO_OUTLINE
     ///                 Alignment specifies how the position is treated, i.e. where relative to the text it will be.
-    ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
+    ctrlText* addText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
                       const glFont* font);
-    ctrlMapSelection* AddMapSelection(unsigned id, const DrawPoint& pos, const Extent& size,
+    ctrlMapSelection* addMapSelection(unsigned id, const DrawPoint& pos, const Extent& size,
                                       const SelectionMapInputData& inputData);
-    TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
+    TextFormatSetter addFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
                                       FontStyle format, const glFont* font);
-    ctrlTimer* AddTimer(unsigned id, std::chrono::milliseconds timeout);
+    ctrlTimer* addTimer(unsigned id, std::chrono::milliseconds timeout);
     /// Add a 3D text control with a variable text. The text is formatted like printf but with pointers
     /// to int (%d), unsigned (%u) or const char (%s) which must be valid for the lifetime of the var text!
-    ctrlVarDeepening* AddVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlVarDeepening* addVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                       const std::string& formatstr, const glFont* font, unsigned color,
                                       unsigned parameters, ...);
     /// Add a text control with a variable text. The text is formatted like printf but with pointers
     /// to int (%d), unsigned (%u) or const char (%s) which must be valid for the lifetime of the var text!
-    ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color,
+    ctrlVarText* addVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color,
                             FontStyle format, const glFont* font, unsigned parameters, ...);
-    ctrlPreviewMinimap* AddPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size,
+    ctrlPreviewMinimap* addPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size,
                                           libsiedler2::ArchivItem_Map* map);
 
     /// Draw a 3D rectangle (e.g. button)
-    static void Draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
+    static void draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
                        bool illuminated = false, unsigned contentColor = COLOR_WHITE);
-    static void Draw3DBorder(const Rect& rect, TextureColor tc, bool elevated);
-    static void Draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
+    static void draw3DBorder(const Rect& rect, TextureColor tc, bool elevated);
+    static void draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
                               bool illuminated = false, unsigned contentColor = COLOR_WHITE);
-    static void DrawRectangle(const Rect& rect, unsigned color);
-    static void DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsigned color);
+    static void drawRectangle(const Rect& rect, unsigned color);
+    static void drawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsigned color);
 
     // GUI-Notify-Messages
 
@@ -293,14 +293,14 @@ protected:
 
     /// Scale the value from the reference coordinates to current render size
     template<class T_Pt>
-    static T_Pt Scale(const T_Pt& pt);
+    static T_Pt scale(const T_Pt& pt);
     /// Scales the value when scale_ is true, else returns the value unchanged
     template<class T_Pt>
-    T_Pt ScaleIf(const T_Pt& pt) const;
+    T_Pt scaleIf(const T_Pt& pt) const;
     /// Set whether controls of this window shall be scaled
     void setScale(bool scale = true) { scale_ = scale; }
     /// Implementation of drawing the window, derived classes can override this to draw custom backgrounds or similar
-    virtual void Draw_();
+    virtual void drawImpl();
     /// Shall messages be relayed to the controls of this window?
     virtual bool isMessageRelayAllowed() const;
 
@@ -325,7 +325,7 @@ private:
 };
 
 template<typename T>
-T* Window::AddCtrl(std::unique_ptr<T> ctrl)
+T* Window::addCtrl(std::unique_ptr<T> ctrl)
 {
     RTTR_Assert(ctrl);
     RTTR_Assert(childIdToWnd_.find(ctrl->getID()) == childIdToWnd_.end());

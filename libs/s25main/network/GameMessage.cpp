@@ -10,7 +10,7 @@
 bool GameMessage::run(MessageInterface* callback, unsigned senderPlayerID)
 {
     this->senderPlayerID = senderPlayerID;
-    return Run(checkedCast<GameMessageInterface*>(callback));
+    return runGame(checkedCast<GameMessageInterface*>(callback));
 }
 
 Message* GameMessage::createGame(unsigned short id)

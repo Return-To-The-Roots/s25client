@@ -18,15 +18,15 @@ class nofScout_Free : public nofFlagWorker
     unsigned rest_way;
 
 private:
-    void GoalReached() override;
-    void Walked() override;
-    void HandleDerivedEvent(unsigned id) override;
+    void goalReached() override;
+    void walked() override;
+    void handleDerivedEvent(unsigned id) override;
 
     /// Erkundet (quasi ein Umherirren)
-    void Scout();
+    void scout();
 
     /// Sucht einen neuen Zielpunkt und geht zu diesen
-    void GoToNewNode();
+    void goToNewNode();
 
     /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
     unsigned getVisualRange() const override;
@@ -39,10 +39,10 @@ public:
 
     GO_Type getGOT() const final { return GO_Type::NofScoutFree; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-    void LostWork() override;
+    void lostWork() override;
 
     ///// Ist der Erkunder am erkunden (Sichtbereich um ihn herum)?
     // bool IsScouting() const { return (state == ScoutScouting || state == GoToFlag); }

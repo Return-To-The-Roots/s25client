@@ -34,7 +34,7 @@ noSign::noSign(SerializedGameData& sgd, const unsigned obj_id)
     : noDisappearingEnvObject(sgd, obj_id), resource(sgd.PopUnsignedChar())
 {}
 
-void noSign::Draw(DrawPoint drawPt)
+void noSign::draw(DrawPoint drawPt)
 {
     // Schild selbst
     unsigned imgId;
@@ -49,8 +49,8 @@ void noSign::Draw(DrawPoint drawPt)
         default: return;
     }
     imgId += std::min(resource.getAmount() / 3u, 2u);
-    LOADER.getMapTexture(imgId)->DrawFull(drawPt, getDrawColor());
+    LOADER.getMapTexture(imgId)->drawFull(drawPt, getDrawColor());
 
     // Schatten des Schildes
-    LOADER.getMapTexture(700)->DrawFull(drawPt, getDrawShadowColor());
+    LOADER.getMapTexture(700)->drawFull(drawPt, getDrawShadowColor());
 }

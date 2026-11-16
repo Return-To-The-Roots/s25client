@@ -62,10 +62,10 @@ EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), 
 
     // Schedule end game event and trust the event manager to keep track of it
     if(!isInfinite())
-        getEvMgr().AddEvent(this, endFrame);
+        getEvMgr().addEvent(this, endFrame);
 
     // Find and set up Teams and trackers
-    DetermineTeams();
+    determineTeams();
     amountsThePlayersCollected.resize(goodsToCollect.size());
     maxAmountsATeamCollected.resize(goodsToCollect.size());
 
@@ -103,7 +103,7 @@ EconomyModeHandler::EconomyModeHandler(SerializedGameData& sgd, unsigned objId)
     maxAmountsATeamCollected.resize(goodsToCollect.size());
 }
 
-void EconomyModeHandler::Destroy() {}
+void EconomyModeHandler::destroy() {}
 
 /// Serialisierungsfunktion
 void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
@@ -119,7 +119,7 @@ void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
     helpers::pushContainer(sgd, teamBitMasks);
 }
 
-void EconomyModeHandler::DetermineTeams()
+void EconomyModeHandler::determineTeams()
 {
     RTTR_Assert(economyModeTeams.empty());
     for(unsigned i = 0; i < world->getNumPlayers(); ++i)
@@ -153,7 +153,7 @@ void EconomyModeHandler::DetermineTeams()
     }
 }
 
-unsigned EconomyModeHandler::SumUpGood(GoodType good, const Inventory& Inventory)
+unsigned EconomyModeHandler::sumUpGood(GoodType good, const Inventory& Inventory)
 {
     unsigned retVal = Inventory.goods[good];
 
@@ -178,7 +178,7 @@ unsigned EconomyModeHandler::SumUpGood(GoodType good, const Inventory& Inventory
     return retVal;
 }
 
-void EconomyModeHandler::UpdateAmounts()
+void EconomyModeHandler::updateAmounts()
 {
     // Return if the game is over or we already updated the amounts this game frame
     if(isOver() || gfLastUpdated == getEvMgr().getCurrentGF())
@@ -193,7 +193,7 @@ void EconomyModeHandler::UpdateAmounts()
         Inventory playerInventory = player.getInventory();
         for(unsigned g = 0; g < goodsToCollect.size(); g++)
         {
-            amountsThePlayersCollected[g][i] = SumUpGood(goodsToCollect[g], playerInventory);
+            amountsThePlayersCollected[g][i] = sumUpGood(goodsToCollect[g], playerInventory);
         }
     }
 
@@ -238,7 +238,7 @@ void EconomyModeHandler::UpdateAmounts()
     gfLastUpdated = getEvMgr().getCurrentGF();
 }
 
-void EconomyModeHandler::HandleEvent(const unsigned)
+void EconomyModeHandler::handleEvent(const unsigned)
 {
     if(isOver())
     {
@@ -248,7 +248,7 @@ void EconomyModeHandler::HandleEvent(const unsigned)
     // Handle game end event
 
     // Update one last time
-    UpdateAmounts();
+    updateAmounts();
 
     // Determine bitmask of all players in teams with the most good type wins
     std::bitset<MAX_PLAYERS> bestMask;
@@ -272,7 +272,7 @@ void EconomyModeHandler::HandleEvent(const unsigned)
             }
         }
 
-    world->MakeWholeMapVisibleForAllPlayers();
+    world->makeWholeMapVisibleForAllPlayers();
     world->getGameInterface()->GI_UpdateMapVisibility();
 }
 

@@ -206,18 +206,18 @@ KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, setMis
 void LuaInterfaceGame::Register(kaguya::State& state)
 {
     state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceGameBase>()
-                                 .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
+                                 .addFunction("ClearResources", &LuaInterfaceGame::clearResources)
                                  .addFunction("GetGF", &LuaInterfaceGame::getGF)
-                                 .addFunction("FormatNumGFs", &LuaInterfaceGame::FormatNumGFs)
+                                 .addFunction("FormatNumGFs", &LuaInterfaceGame::formatNumGFs)
                                  .addFunction("GetGameFrame", &LuaInterfaceGame::getGF)
                                  .addFunction("GetNumPlayers", &LuaInterfaceGame::getNumPlayers)
-                                 .addFunction("Chat", &LuaInterfaceGame::Chat)
-                                 .addOverloadedFunctions("MissionStatement", &LuaInterfaceGame::MissionStatement,
-                                                         &LuaInterfaceGame::MissionStatement2,
-                                                         &LuaInterfaceGame::MissionStatement3)
+                                 .addFunction("Chat", &LuaInterfaceGame::chat)
+                                 .addOverloadedFunctions("MissionStatement", &LuaInterfaceGame::missionStatement,
+                                                         &LuaInterfaceGame::missionStatement2,
+                                                         &LuaInterfaceGame::missionStatement3)
                                  .addFunction("SetMissionGoal", SetMissionGoalWrapper())
-                                 .addFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
-                                 .addFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
+                                 .addFunction("PostMessage", &LuaInterfaceGame::postMessageLua)
+                                 .addFunction("PostMessageWithLocation", &LuaInterfaceGame::postMessageWithLocation)
                                  .addFunction("GetPlayer", &LuaInterfaceGame::getPlayer)
                                  .addFunction("GetWorld", &LuaInterfaceGame::getWorld)
                                  // Old name
@@ -259,10 +259,10 @@ bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
         return true;
 }
 
-void LuaInterfaceGame::ClearResources()
+void LuaInterfaceGame::clearResources()
 {
     for(unsigned p = 0; p < gw.getNumPlayers(); p++)
-        getPlayer(p).ClearResources();
+        getPlayer(p).clearResources();
 }
 
 unsigned LuaInterfaceGame::getGF() const
@@ -270,9 +270,9 @@ unsigned LuaInterfaceGame::getGF() const
     return gw.getEvMgr().getCurrentGF();
 }
 
-std::string LuaInterfaceGame::FormatNumGFs(unsigned numGFs) const
+std::string LuaInterfaceGame::formatNumGFs(unsigned numGFs) const
 {
-    return localGameState.FormatGFTime(numGFs);
+    return localGameState.formatGFTime(numGFs);
 }
 
 unsigned LuaInterfaceGame::getNumPlayers() const
@@ -280,32 +280,32 @@ unsigned LuaInterfaceGame::getNumPlayers() const
     return gw.getNumPlayers();
 }
 
-void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
+void LuaInterfaceGame::chat(int playerIdx, const std::string& msg)
 {
     if(playerIdx >= 0 && localGameState.getPlayerId() != unsigned(playerIdx))
         return;
 
-    localGameState.SystemChat(msg);
+    localGameState.systemChat(msg);
 }
 
-void LuaInterfaceGame::MissionStatement(int playerIdx, const std::string& title, const std::string& msg)
+void LuaInterfaceGame::missionStatement(int playerIdx, const std::string& title, const std::string& msg)
 {
-    MissionStatement2(playerIdx, title, msg, iwMissionStatement::IM_SWORDSMAN);
+    missionStatement2(playerIdx, title, msg, iwMissionStatement::IM_SWORDSMAN);
 }
 
-void LuaInterfaceGame::MissionStatement2(int playerIdx, const std::string& title, const std::string& msg,
+void LuaInterfaceGame::missionStatement2(int playerIdx, const std::string& title, const std::string& msg,
                                          unsigned imgIdx)
 {
-    MissionStatement3(playerIdx, title, msg, imgIdx, true);
+    missionStatement3(playerIdx, title, msg, imgIdx, true);
 }
 
-void LuaInterfaceGame::MissionStatement3(int playerIdx, const std::string& title, const std::string& msg,
+void LuaInterfaceGame::missionStatement3(int playerIdx, const std::string& title, const std::string& msg,
                                          unsigned imgIdx, bool pause)
 {
     if(playerIdx >= 0 && localGameState.getPlayerId() != unsigned(playerIdx))
         return;
 
-    WINDOWMANAGER.Show(std::make_unique<iwMissionStatement>(_(title), msg, gw.isSinglePlayer() && pause,
+    WINDOWMANAGER.show(std::make_unique<iwMissionStatement>(_(title), msg, gw.isSinglePlayer() && pause,
                                                             iwMissionStatement::HelpImage(imgIdx)));
 }
 
@@ -315,19 +315,19 @@ void LuaInterfaceGame::setMissionGoal(int playerIdx, const std::string& newGoal)
 }
 
 // Must not be PostMessage as this is a windows define :(
-void LuaInterfaceGame::PostMessageLua(int playerIdx, const std::string& msg)
+void LuaInterfaceGame::postMessageLua(int playerIdx, const std::string& msg)
 {
     lua::assertTrue(playerIdx >= 0, "Invalid player idx");
-    gw.getPostMgr().SendMsg(static_cast<unsigned>(playerIdx),
+    gw.getPostMgr().sendMsg(static_cast<unsigned>(playerIdx),
                             std::make_unique<PostMsg>(gw.getEvMgr().getCurrentGF(), msg, PostCategory::General));
 }
 
-void LuaInterfaceGame::PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y)
+void LuaInterfaceGame::postMessageWithLocation(int playerIdx, const std::string& msg, int x, int y)
 {
     lua::assertTrue(playerIdx >= 0, "Invalid player idx");
-    gw.getPostMgr().SendMsg(static_cast<unsigned>(playerIdx),
+    gw.getPostMgr().sendMsg(static_cast<unsigned>(playerIdx),
                             std::make_unique<PostMsg>(gw.getEvMgr().getCurrentGF(), msg, PostCategory::General,
-                                                      gw.MakeMapPoint(Position(x, y))));
+                                                      gw.makeMapPoint(Position(x, y))));
 }
 
 LuaPlayer LuaInterfaceGame::getPlayer(int playerIdx)
@@ -341,7 +341,7 @@ LuaWorld LuaInterfaceGame::getWorld()
     return LuaWorld(gw);
 }
 
-void LuaInterfaceGame::EventExplored(unsigned player, const MapPoint pt, unsigned char owner)
+void LuaInterfaceGame::eventExplored(unsigned player, const MapPoint pt, unsigned char owner)
 {
     kaguya::LuaRef onExplored = lua["onExplored"];
     if(onExplored.type() == LUA_TFUNCTION)
@@ -358,14 +358,14 @@ void LuaInterfaceGame::EventExplored(unsigned player, const MapPoint pt, unsigne
     }
 }
 
-void LuaInterfaceGame::EventOccupied(unsigned player, const MapPoint pt)
+void LuaInterfaceGame::eventOccupied(unsigned player, const MapPoint pt)
 {
     kaguya::LuaRef onOccupied = lua["onOccupied"];
     if(onOccupied.type() == LUA_TFUNCTION)
         onOccupied.call<void>(player, pt.x, pt.y);
 }
 
-void LuaInterfaceGame::EventAttack(unsigned char attackerPlayerId, unsigned char defenderPlayerId,
+void LuaInterfaceGame::eventAttack(unsigned char attackerPlayerId, unsigned char defenderPlayerId,
                                    unsigned attackerCount)
 {
     kaguya::LuaRef onAttack = lua["onAttack"];
@@ -373,21 +373,21 @@ void LuaInterfaceGame::EventAttack(unsigned char attackerPlayerId, unsigned char
         onAttack.call<void>(attackerPlayerId, defenderPlayerId, attackerCount);
 }
 
-void LuaInterfaceGame::EventStart(bool isFirstStart)
+void LuaInterfaceGame::eventStart(bool isFirstStart)
 {
     kaguya::LuaRef onStart = lua["onStart"];
     if(onStart.type() == LUA_TFUNCTION)
         onStart.call<void>(isFirstStart);
 }
 
-void LuaInterfaceGame::EventGameFrame(unsigned nr)
+void LuaInterfaceGame::eventGameFrame(unsigned nr)
 {
     kaguya::LuaRef onGameFrame = lua["onGameFrame"];
     if(onGameFrame.type() == LUA_TFUNCTION)
         onGameFrame.call<void>(nr);
 }
 
-void LuaInterfaceGame::EventResourceFound(unsigned char player, const MapPoint pt, ResourceType type,
+void LuaInterfaceGame::eventResourceFound(unsigned char player, const MapPoint pt, ResourceType type,
                                           unsigned char quantity)
 {
     kaguya::LuaRef onResourceFound = lua["onResourceFound"];
@@ -395,7 +395,7 @@ void LuaInterfaceGame::EventResourceFound(unsigned char player, const MapPoint p
         onResourceFound.call<void>(player, pt.x, pt.y, type, quantity);
 }
 
-bool LuaInterfaceGame::EventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId,
+bool LuaInterfaceGame::eventCancelPactRequest(PactType pt, unsigned char canceledByPlayerId,
                                               unsigned char targetPlayerId)
 {
     kaguya::LuaRef onPactCancel = lua["onCancelPactRequest"];
@@ -404,7 +404,7 @@ bool LuaInterfaceGame::EventCancelPactRequest(PactType pt, unsigned char cancele
     return true; // always accept pact cancel if there is no handler
 }
 
-void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId,
+void LuaInterfaceGame::eventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId,
                                         unsigned char targetPlayerId, const unsigned duration)
 {
     AIPlayer* ai = game.getAIPlayer(targetPlayerId);
@@ -423,7 +423,7 @@ void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggest
     }
 }
 
-void LuaInterfaceGame::EventPactCanceled(const PactType pt, unsigned char canceledByPlayerId,
+void LuaInterfaceGame::eventPactCanceled(const PactType pt, unsigned char canceledByPlayerId,
                                          unsigned char targetPlayerId)
 {
     kaguya::LuaRef onPactCanceled = lua["onPactCanceled"];
@@ -433,7 +433,7 @@ void LuaInterfaceGame::EventPactCanceled(const PactType pt, unsigned char cancel
     }
 }
 
-void LuaInterfaceGame::EventPactCreated(const PactType pt, unsigned char suggestedByPlayerId,
+void LuaInterfaceGame::eventPactCreated(const PactType pt, unsigned char suggestedByPlayerId,
                                         unsigned char targetPlayerId, const unsigned duration)
 {
     kaguya::LuaRef onPactCreated = lua["onPactCreated"];

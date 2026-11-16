@@ -29,7 +29,7 @@ public:
     GameWorldViewer(unsigned playerId, GameWorldBase& gwb);
 
     /// Init the terrain renderer. Must be done before first call to GetTerrainRenderer!
-    void InitTerrainRenderer();
+    void initTerrainRenderer();
 
     /// Return the world itself
     const GameWorldBase& getWorld() const { return gwb; }
@@ -52,7 +52,7 @@ public:
     /// Get BQ for this player
     BuildingQuality GetBQ(const MapPoint& pt) const;
     /// Recalculates the visual BQ when a road part is build at that point
-    void RecalcBQForRoad(const MapPoint& pt);
+    void recalcBQForRoad(const MapPoint& pt);
     /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
     /// If checkAllVisible is false then `IsAllVisible` is assumed to return false, else it is called to check
     Visibility getVisibility(MapPoint pt, bool checkAllVisible = true) const;
@@ -73,7 +73,7 @@ public:
     void setVisiblePointRoad(MapPoint pt, Direction dir, PointRoad type);
     bool isOnRoad(const MapPoint& pt) const;
     /// Remove a visual (not yet built) road
-    void RemoveVisualRoad(const MapPoint& start, const std::vector<Direction>& route);
+    void removeVisualRoad(const MapPoint& start, const std::vector<Direction>& route);
     /// Checks if the road can be build in the world and additonally if there is no virtual road at that point
     bool isRoadAvailable(bool isWaterRoad, const MapPoint& pt) const;
 
@@ -88,10 +88,10 @@ public:
     const noShip* getShip(MapPoint pt) const;
 
     /// Schattierungen (vor allem FoW) neu berechnen
-    void RecalcAllColors();
+    void recalcAllColors();
 
     /// Makes this a viewer for another player
-    void ChangePlayer(unsigned player, bool updateVisualData = true);
+    void changePlayer(unsigned player, bool updateVisualData = true);
 
     helpers::EnumArray<MapPoint, Direction> getNeighbours(MapPoint pt) const;
 
@@ -111,8 +111,8 @@ private:
     /// Max height of any node
     uint8_t maxNodeAltitude_ = 0;
 
-    void InitVisualData();
-    inline void VisibilityChanged(const MapPoint& pt, unsigned player);
-    inline void RoadConstructionEnded(const RoadNote& note);
-    void RecalcBQ(const MapPoint& pt);
+    void initVisualData();
+    inline void visibilityChanged(const MapPoint& pt, unsigned player);
+    inline void roadConstructionEnded(const RoadNote& note);
+    void recalcBQ(const MapPoint& pt);
 };

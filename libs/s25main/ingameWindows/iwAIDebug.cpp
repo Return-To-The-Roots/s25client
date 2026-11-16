@@ -60,13 +60,13 @@ public:
         {
             auto* img = bqImgs[ai->getAINode(pt).bq];
             if(img)
-                img->DrawFull(curPos);
+                img->drawFull(curPos);
         } else if(overlay == 2)
-            ticks[ai->getAINode(pt).reachable]->DrawFull(curPos);
+            ticks[ai->getAINode(pt).reachable]->drawFull(curPos);
         else if(overlay == 3)
-            ticks[ai->getAINode(pt).farmed]->DrawFull(curPos);
+            ticks[ai->getAINode(pt).farmed]->drawFull(curPos);
         else if(overlay < 13)
-            font.Draw(curPos, helpers::toString(ai->getResMapValue(pt, AIResource(overlay - 4))), FontStyle{},
+            font.draw(curPos, helpers::toString(ai->getResMapValue(pt, AIResource(overlay - 4))), FontStyle{},
                       COLOR_YELLOW);
     }
 };
@@ -85,35 +85,35 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
     // Wenn keine KI-Spieler, schließen
     if(ais_.empty())
     {
-        Close();
+        close();
         return;
     }
 
     ctrlComboBox* players =
-      AddComboBox(ID_CbPlayer, DrawPoint(15, 30), Extent(250, 20), TextureColor::Grey, NormalFont, 100);
+      addComboBox(ID_CbPlayer, DrawPoint(15, 30), Extent(250, 20), TextureColor::Grey, NormalFont, 100);
     for(const AIJH::AIPlayerJH* ai : ais_)
     {
-        players->AddItem(ai->getPlayerName());
+        players->addItem(ai->getPlayerName());
     }
 
     ctrlComboBox* overlays =
-      AddComboBox(ID_CbOverlay, DrawPoint(15, 60), Extent(250, 20), TextureColor::Grey, NormalFont, 100);
-    overlays->AddItem("None");
-    overlays->AddItem("BuildingQuality");
-    overlays->AddItem("Reachability");
-    overlays->AddItem("Farmed");
-    overlays->AddItem("Gold");
-    overlays->AddItem("Ironore");
-    overlays->AddItem("Coal");
-    overlays->AddItem("Granite");
-    overlays->AddItem("Fish");
-    overlays->AddItem("Wood");
-    overlays->AddItem("Stones");
-    overlays->AddItem("Plantspace");
-    overlays->AddItem("Borderland");
+      addComboBox(ID_CbOverlay, DrawPoint(15, 60), Extent(250, 20), TextureColor::Grey, NormalFont, 100);
+    overlays->addItem("None");
+    overlays->addItem("BuildingQuality");
+    overlays->addItem("Reachability");
+    overlays->addItem("Farmed");
+    overlays->addItem("Gold");
+    overlays->addItem("Ironore");
+    overlays->addItem("Coal");
+    overlays->addItem("Granite");
+    overlays->addItem("Fish");
+    overlays->addItem("Wood");
+    overlays->addItem("Stones");
+    overlays->addItem("Plantspace");
+    overlays->addItem("Borderland");
 
     // Show 7 lines of text and 1 empty line
-    text = AddMultiline(ID_Text, DrawPoint(15, 120), Extent(250, 8 * NormalFont->getHeight()), TextureColor::Grey,
+    text = addMultiline(ID_Text, DrawPoint(15, 120), Extent(250, 8 * NormalFont->getHeight()), TextureColor::Grey,
                         NormalFont, FontStyle::NO_OUTLINE);
 
     setIwSize(Extent(getIwSize().x, text->getPos().y + text->getSize().y));
@@ -121,14 +121,14 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
     players->setSelection(0);
     overlays->setSelection(0);
     printer = new DebugPrinter(ais_[0], 0);
-    gwv.AddDrawNodeCallback(printer);
+    gwv.addDrawNodeCallback(printer);
 }
 
 iwAIDebug::~iwAIDebug()
 {
     if(printer)
     {
-        gwv.RemoveDrawNodeCallback(printer);
+        gwv.removeDrawNodeCallback(printer);
         delete printer;
     }
 }
@@ -150,8 +150,8 @@ void iwAIDebug::msgPaintBefore()
     const AIJH::AIJob* currentJob = printer->ai->getCurrentJob();
     if(!currentJob)
     {
-        text->Clear();
-        text->AddString(_("No current job"), COLOR_YELLOW);
+        text->clear();
+        text->addString(_("No current job"), COLOR_YELLOW);
         return;
     }
 
@@ -213,6 +213,6 @@ void iwAIDebug::msgPaintBefore()
         default: ss << "Unknown status"; break;
     }
 
-    text->Clear();
-    text->AddString(ss.str(), COLOR_YELLOW);
+    text->clear();
+    text->addString(ss.str(), COLOR_YELLOW);
 }

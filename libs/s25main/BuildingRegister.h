@@ -24,12 +24,12 @@ public:
     // Deserialisieren
     void Deserialize(SerializedGameData& sgd);
     /// Compatibility with old savegames
-    void Deserialize2(SerializedGameData& sgd);
+    void deserialize2(SerializedGameData& sgd);
 
-    void Add(noBuildingSite* building_site);
-    void Remove(noBuildingSite* building_site);
-    void Add(noBuilding* bld, BuildingType bldType);
-    void Remove(noBuilding* bld, BuildingType bldType);
+    void add(noBuildingSite* building_site);
+    void remove(noBuildingSite* building_site);
+    void add(noBuilding* bld, BuildingType bldType);
+    void remove(noBuilding* bld, BuildingType bldType);
 
     const std::list<noBuildingSite*>& getBuildingSites() const { return building_sites; }
     const std::list<nobUsual*>& getBuildings(BuildingType type) const;
@@ -40,11 +40,11 @@ public:
     /// Liefert die Anzahl aller Gebäude einzeln
     BuildingCount getBuildingNums() const;
     /// Calculate and fill the average productivities for all buildings.
-    helpers::EnumArray<uint16_t, BuildingType> CalcProductivities() const;
+    helpers::EnumArray<uint16_t, BuildingType> calcProductivities() const;
     /// Calculate the average productivity for a building type
-    unsigned CalcAverageProductivity(BuildingType bldType) const;
+    unsigned calcAverageProductivity(BuildingType bldType) const;
     /// Calculate the average productivity for all buildings
-    unsigned short CalcAverageProductivity() const;
+    unsigned short calcAverageProductivity() const;
 
 private:
     std::list<noBuildingSite*> building_sites;

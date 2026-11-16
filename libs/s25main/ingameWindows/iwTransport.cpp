@@ -35,30 +35,30 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     if(leatheraddon::isAddonActive(gwv.getWorld()))
     {
         btOffsetY = 17;
-        Resize(Extent(166, 333 + btOffsetY));
+        resize(Extent(166, 333 + btOffsetY));
     }
 
-    AddImageButton(0, DrawPoint(18, 285 + btOffsetY), Extent(30, 30), TextureColor::Grey, LOADER.getImageN("io", 225),
+    addImageButton(0, DrawPoint(18, 285 + btOffsetY), Extent(30, 30), TextureColor::Grey, LOADER.getImageN("io", 225),
                    _("Help"));
 
     // Standard
-    AddImageButton(1, DrawPoint(60, 285 + btOffsetY), Extent(48, 30), TextureColor::Grey, LOADER.getImageN("io", 191),
+    addImageButton(1, DrawPoint(60, 285 + btOffsetY), Extent(48, 30), TextureColor::Grey, LOADER.getImageN("io", 191),
                    _("Default"));
     // ganz hoch
-    AddImageButton(2, DrawPoint(118, 235 + btOffsetY), Extent(30, 20), TextureColor::Grey, LOADER.getImageN("io", 215),
+    addImageButton(2, DrawPoint(118, 235 + btOffsetY), Extent(30, 20), TextureColor::Grey, LOADER.getImageN("io", 215),
                    _("Top"));
     // hoch
-    AddImageButton(3, DrawPoint(118, 255 + btOffsetY), Extent(30, 20), TextureColor::Grey, LOADER.getImageN("io", 33),
+    addImageButton(3, DrawPoint(118, 255 + btOffsetY), Extent(30, 20), TextureColor::Grey, LOADER.getImageN("io", 33),
                    _("Up"));
     // runter
-    AddImageButton(4, DrawPoint(118, 275 + btOffsetY), Extent(30, 20), TextureColor::Grey, LOADER.getImageN("io", 34),
+    addImageButton(4, DrawPoint(118, 275 + btOffsetY), Extent(30, 20), TextureColor::Grey, LOADER.getImageN("io", 34),
                    _("Down"));
     // ganz runter
-    AddImageButton(5, DrawPoint(118, 295 + btOffsetY), Extent(30, 20), TextureColor::Grey, LOADER.getImageN("io", 216),
+    addImageButton(5, DrawPoint(118, 295 + btOffsetY), Extent(30, 20), TextureColor::Grey, LOADER.getImageN("io", 216),
                    _("Bottom"));
 
     // Buttons der einzelnen Waren anlegen
-    ctrlOptionGroup* group = AddOptionGroup(6, GroupSelectType::Illuminate);
+    ctrlOptionGroup* group = addOptionGroup(6, GroupSelectType::Illuminate);
 
     auto getGoodTex = [](GoodType good) { return LOADER.getWareTex(good); };
     buttonData = {{{getGoodTex(GoodType::Coins), WARE_NAMES[GoodType::Coins]},
@@ -100,13 +100,13 @@ iwTransport::iwTransport(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
     // Einstellungen festlegen
     for(unsigned char i = 0; i < pendingOrder.size(); ++i)
     {
-        group->AddImageButton(i, BUTTON_POS[i], Extent(30, 30), TextureColor::Grey, buttonData[pendingOrder[i]].sprite,
+        group->addImageButton(i, BUTTON_POS[i], Extent(30, 30), TextureColor::Grey, buttonData[pendingOrder[i]].sprite,
                               _(buttonData[pendingOrder[i]].tooltip));
     }
     group->setSelection(0);
 }
 
-void iwTransport::TransmitSettings()
+void iwTransport::transmitSettings()
 {
     if(GAMECLIENT.isReplayModeOn())
         return;
@@ -142,7 +142,7 @@ void iwTransport::msgButtonClick(const unsigned ctrl_id)
     {
         case 0:
         {
-            WINDOWMANAGER.ReplaceWindow(
+            WINDOWMANAGER.replaceWindow(
               std::make_unique<iwHelp>(_("The transport priority of a type of merchandise can "
                                          "be determined here.The higher the priority of an item "
                                          "in the list, the quicker it is transported by helpers.")));
@@ -173,8 +173,8 @@ void iwTransport::msgButtonClick(const unsigned ctrl_id)
                 std::swap(pendingOrder[group->getSelection()], pendingOrder[group->getSelection() - 1]);
                 ctrlImageButton& btPrev = *group->getCtrl<ctrlImageButton>(group->getSelection() - 1);
                 ctrlImageButton& btNext = *group->getCtrl<ctrlImageButton>(group->getSelection());
-                btPrev.SwapImage(btNext);
-                btPrev.SwapTooltip(btNext);
+                btPrev.swapImage(btNext);
+                btPrev.swapTooltip(btNext);
                 group->setSelection(group->getSelection() - 1);
             }
 
@@ -191,8 +191,8 @@ void iwTransport::msgButtonClick(const unsigned ctrl_id)
                 std::swap(pendingOrder[group->getSelection()], pendingOrder[group->getSelection() - 1]);
                 ctrlImageButton& btPrev = *group->getCtrl<ctrlImageButton>(group->getSelection() - 1);
                 ctrlImageButton& btNext = *group->getCtrl<ctrlImageButton>(group->getSelection());
-                btPrev.SwapImage(btNext);
-                btPrev.SwapTooltip(btNext);
+                btPrev.swapImage(btNext);
+                btPrev.swapTooltip(btNext);
                 group->setSelection(group->getSelection() - 1);
             }
 
@@ -209,8 +209,8 @@ void iwTransport::msgButtonClick(const unsigned ctrl_id)
                 std::swap(pendingOrder[group->getSelection()], pendingOrder[group->getSelection() + 1]);
                 ctrlImageButton& btPrev = *group->getCtrl<ctrlImageButton>(group->getSelection());
                 ctrlImageButton& btNext = *group->getCtrl<ctrlImageButton>(group->getSelection() + 1);
-                btPrev.SwapImage(btNext);
-                btPrev.SwapTooltip(btNext);
+                btPrev.swapImage(btNext);
+                btPrev.swapTooltip(btNext);
                 group->setSelection(group->getSelection() + 1);
             }
 
@@ -227,8 +227,8 @@ void iwTransport::msgButtonClick(const unsigned ctrl_id)
                 std::swap(pendingOrder[group->getSelection()], pendingOrder[group->getSelection() + 1]);
                 ctrlImageButton& btPrev = *group->getCtrl<ctrlImageButton>(group->getSelection());
                 ctrlImageButton& btNext = *group->getCtrl<ctrlImageButton>(group->getSelection() + 1);
-                btPrev.SwapImage(btNext);
-                btPrev.SwapTooltip(btNext);
+                btPrev.swapImage(btNext);
+                btPrev.swapTooltip(btNext);
                 group->setSelection(group->getSelection() + 1);
             }
 
@@ -238,11 +238,11 @@ void iwTransport::msgButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwTransport::UpdateSettings()
+void iwTransport::updateSettings()
 {
     if(GAMECLIENT.isReplayModeOn())
     {
-        gwv.getPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
+        gwv.getPlayer().fillVisualSettings(GAMECLIENT.visual_settings);
         fillTransportOrder(GAMECLIENT.visual_settings.transport_order);
     }
     auto* group = getCtrl<ctrlOptionGroup>(6);

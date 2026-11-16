@@ -39,12 +39,12 @@ public:
         std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
         for(unsigned i = 0; i < 5; i++)
         {
-            em_->ExecuteNextGF();
-            ai->RunGF(em_->getCurrentGF(), i == 0);
+            em_->executeNextGF();
+            ai->runGF(em_->getCurrentGF(), i == 0);
         }
         for(gc::GameCommandPtr& gc : aiGcs)
         {
-            gc->Execute(world_, 1);
+            gc->execute(world_, 1);
         }
     }
 
@@ -96,13 +96,13 @@ public:
         std::vector<Nation> playerNations;
         playerNations.push_back(world.getPlayer(0).nation);
         playerNations.push_back(world.getPlayer(1).nation);
-        BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
+        BOOST_TEST_REQUIRE(MapLoader::placeHQs(world, hqPositions, false));
 
         for(unsigned id = 0; id < world.getNumPlayers(); id++)
         {
             GamePlayer& player = world.getPlayer(id);
             if(!player.isHuman() && player.isUsed())
-                game.AddAIPlayer(AIFactory::Create(world.getPlayer(id).aiInfo, id, world));
+                game.addAIPlayer(AIFactory::create(world.getPlayer(id).aiInfo, id, world));
         }
     }
 

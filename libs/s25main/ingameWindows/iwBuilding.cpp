@@ -30,18 +30,18 @@ const unsigned IODAT_BOAT_ID = 219;
 const unsigned IODAT_SHIP_ID = 218;
 
 iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building, Extent extent)
-    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(building->getPos()), IngameWindow::posAtMouse, extent,
+    : IngameWindow(CGI_BUILDING + MapBase::createGUIID(building->getPos()), IngameWindow::posAtMouse, extent,
                    _(BUILDING_NAMES[building->getBuildingType()]), LOADER.getImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory), building(building), productivity(building->getProductivity())
 {
     // Arbeitersymbol
-    AddImage(0, DrawPoint(28, 39), LOADER.getMapTexture(2298));
+    addImage(0, DrawPoint(28, 39), LOADER.getMapTexture(2298));
 
     if(const auto job = BLD_WORK_DESC[building->getBuildingType()].job)
-        AddImage(13, DrawPoint(28, 39), LOADER.getJobTex(*job));
+        addImage(13, DrawPoint(28, 39), LOADER.getJobTex(*job));
 
     // Gebäudesymbol
-    AddImage(1, DrawPoint(117, 114), &building->getBuildingImage());
+    addImage(1, DrawPoint(117, 114), &building->getBuildingImage());
 
     // Symbol der produzierten Ware (falls hier was produziert wird)
     const auto& producedWare = BLD_WORK_DESC[building->getBuildingType()].producedWare;
@@ -52,18 +52,18 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
       producedWare);
     if(tex)
     {
-        AddImage(2, DrawPoint(196, 39), LOADER.getMapTexture(2298));
-        AddImage(3, DrawPoint(196, 39), tex);
+        addImage(2, DrawPoint(196, 39), LOADER.getMapTexture(2298));
+        addImage(3, DrawPoint(196, 39), tex);
     }
 
     // Info
-    AddImageButton(4, DrawPoint(16, extent.y - 47), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225),
+    addImageButton(4, DrawPoint(16, extent.y - 47), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225),
                    _("Help"));
     // Abreißen
-    AddImageButton(5, DrawPoint(50, extent.y - 47), Extent(34, 32), TextureColor::Grey, LOADER.getImageN("io", 23),
+    addImageButton(5, DrawPoint(50, extent.y - 47), Extent(34, 32), TextureColor::Grey, LOADER.getImageN("io", 23),
                    _("Demolish house"));
     // Produktivität einstellen (196,197) (bei Spähturm ausblenden)
-    Window* enable_productivity = AddImageButton(
+    Window* enable_productivity = addImageButton(
       6, DrawPoint(90, extent.y - 47), Extent(34, 32), TextureColor::Grey,
       LOADER.getImageN("io", ((building->isProductionDisabledVirtual()) ? 197 : 196)), _("Production on/off"));
     if(building->getBuildingType() == BuildingType::LookoutTower)
@@ -74,25 +74,25 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
         // Jenachdem Boot oder Schiff anzeigen
         unsigned io_dat_id =
           (static_cast<nobShipYard*>(building)->getMode() == nobShipYard::Mode::Boats) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
-        AddImageButton(11, DrawPoint(130, extent.y - 47), Extent(43, 32), TextureColor::Grey,
+        addImageButton(11, DrawPoint(130, extent.y - 47), Extent(43, 32), TextureColor::Grey,
                        LOADER.getImageN("io", io_dat_id), _("Ships/Boats"));
     }
 
     // "Gehe Zum Ort"
-    AddImageButton(7, DrawPoint(179, extent.y - 47), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 107),
+    addImageButton(7, DrawPoint(179, extent.y - 47), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 107),
                    _("Go to place"));
 
     // Produktivitätsanzeige (bei Katapulten und Spähtürmen ausblenden)
     Window* productivity =
-      AddPercent(9, DrawPoint(59, 31), Extent(106, 16), TextureColor::Grey, 0xFFFFFF00, SmallFont, &this->productivity);
+      addPercent(9, DrawPoint(59, 31), Extent(106, 16), TextureColor::Grey, 0xFFFFFF00, SmallFont, &this->productivity);
     if(building->getBuildingType() == BuildingType::Catapult
        || building->getBuildingType() == BuildingType::LookoutTower)
         productivity->setVisible(false);
 
-    AddText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, FontStyle::CENTER, NormalFont);
+    addText(10, DrawPoint(113, 50), _("(House unoccupied)"), COLOR_RED, FontStyle::CENTER, NormalFont);
 
     // "Go to next" (building of same type)
-    AddImageButton(12, DrawPoint(179, extent.y - 79), Extent(30, 32), TextureColor::Grey,
+    addImageButton(12, DrawPoint(179, extent.y - 79), Extent(30, 32), TextureColor::Grey,
                    LOADER.getImageN("io_new", 11), _("Go to next building of same type"));
 }
 
@@ -114,14 +114,14 @@ void iwBuilding::msgPaintAfter()
         // Bei Bergwerken sieht die Nahrungsanzeige ein wenig anders aus (3x 2)
 
         // "Schwarzer Rahmen"
-        DrawRectangle(Rect(getDrawPos() + DrawPoint(40, 60), Extent(144, 24)), 0x80000000);
+        drawRectangle(Rect(getDrawPos() + DrawPoint(40, 60), Extent(144, 24)), 0x80000000);
         DrawPoint curPos = getDrawPos() + DrawPoint(52, 72);
         for(unsigned char i = 0; i < bldWorkDesk.waresNeeded.size(); ++i)
         {
             for(unsigned char z = 0; z < bldWorkDesk.numSpacesPerWare; ++z)
             {
                 LOADER.getWareTex(bldWorkDesk.waresNeeded[i])
-                  ->DrawFull(curPos, (z < building->getNumWares(i) ? 0xFFFFFFFF : 0xFF404040));
+                  ->drawFull(curPos, (z < building->getNumWares(i) ? 0xFFFFFFFF : 0xFF404040));
                 curPos.x += 24;
             }
         }
@@ -134,19 +134,19 @@ void iwBuilding::msgPaintAfter()
 
             // "Schwarzer Rahmen"
             DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
-            DrawRectangle(Rect(waresPos, Extent(24 * wares_count, 24)), 0x80000000);
+            drawRectangle(Rect(waresPos, Extent(24 * wares_count, 24)), 0x80000000);
             waresPos += DrawPoint(12, 12);
 
             for(unsigned char z = 0; z < wares_count; ++z)
             {
                 LOADER.getWareTex(bldWorkDesk.waresNeeded[i])
-                  ->DrawFull(waresPos, (z < building->getNumWares(i) ? COLOR_WHITE : 0xFF404040));
+                  ->drawFull(waresPos, (z < building->getNumWares(i) ? COLOR_WHITE : 0xFF404040));
                 waresPos.x += 24;
             }
 
             std::stringstream text;
             text << (unsigned)building->getNumWares(i) << "/" << wares_count;
-            NormalFont->Draw(curPos + DrawPoint(0, 12), text.str(), FontStyle::CENTER | FontStyle::VCENTER);
+            NormalFont->draw(curPos + DrawPoint(0, 12), text.str(), FontStyle::CENTER | FontStyle::VCENTER);
             curPos.y += 29;
         }
     }
@@ -158,15 +158,15 @@ void iwBuilding::msgButtonClick(const unsigned ctrl_id)
     {
         case 4: // Hilfe
         {
-            WINDOWMANAGER.ReplaceWindow(
+            WINDOWMANAGER.replaceWindow(
               std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[building->getBuildingType()])));
         }
         break;
         case 5: // Gebäude abbrennen
         {
             // Abreißen?
-            Close();
-            WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, building));
+            close();
+            WINDOWMANAGER.show(std::make_unique<iwDemolishBuilding>(gwv, building));
         }
         break;
         case 6:
@@ -176,7 +176,7 @@ void iwBuilding::msgButtonClick(const unsigned ctrl_id)
             if(gcFactory.SetProductionEnabled(building->getPos(), building->isProductionDisabledVirtual()))
             {
                 // visuell anzeigen, falls erfolgreich
-                building->ToggleProductionVirtual();
+                building->toggleProductionVirtual();
 
                 // anderes Bild auf dem Button
                 if(building->isProductionDisabledVirtual())
@@ -194,7 +194,7 @@ void iwBuilding::msgButtonClick(const unsigned ctrl_id)
         break;
         case 7: // "Gehe Zum Ort"
         {
-            gwv.MoveToMapPt(building->getPos());
+            gwv.moveToMapPt(building->getPos());
         }
         break;
         case 11: // Schiff/Boot umstellen bei Schiffsbauer
@@ -224,16 +224,16 @@ void iwBuilding::msgButtonClick(const unsigned ctrl_id)
             {
                 // close old window, open new window (todo: only open if it isnt already open), move to location of next
                 // building
-                Close();
+                close();
                 ++it;
                 if(it == buildings.end()) // was last entry in list -> goto first
                     it = buildings.begin();
-                gwv.MoveToMapPt((*it)->getPos());
+                gwv.moveToMapPt((*it)->getPos());
                 if(building->getBuildingType() == BuildingType::Temple)
-                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwTempleBuilding>(gwv, gcFactory, *it))
+                    WINDOWMANAGER.replaceWindow(std::make_unique<iwTempleBuilding>(gwv, gcFactory, *it))
                       .setPos(getPos());
                 else
-                    WINDOWMANAGER.ReplaceWindow(std::make_unique<iwBuilding>(gwv, gcFactory, *it)).setPos(getPos());
+                    WINDOWMANAGER.replaceWindow(std::make_unique<iwBuilding>(gwv, gcFactory, *it)).setPos(getPos());
                 break;
             }
         }

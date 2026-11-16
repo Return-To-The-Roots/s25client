@@ -5,12 +5,12 @@
 #include "world/TradePath.h"
 #include "SerializedGameData.h"
 
-TradePath::TradePath(SerializedGameData& sgd) : start(sgd.PopMapPoint()), goal(sgd.PopMapPoint())
+TradePath::TradePath(SerializedGameData& sgd) : start(sgd.popMapPoint()), goal(sgd.popMapPoint())
 {
     route.resize(sgd.PopUnsignedInt());
     for(Direction& dir : route)
     {
-        dir = sgd.Pop<Direction>();
+        dir = sgd.pop<Direction>();
     }
 }
 
@@ -21,6 +21,6 @@ void TradePath::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(route.size());
     for(const Direction& dir : route)
     {
-        sgd.PushEnum<uint8_t>(dir);
+        sgd.pushEnum<uint8_t>(dir);
     }
 }

@@ -12,7 +12,7 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, GroupSel
 /**
  *  Selektiert einen neuen Button aus der Gruppe.
  */
-void ctrlMultiSelectGroup::AddSelection(unsigned selection, bool notify)
+void ctrlMultiSelectGroup::addSelection(unsigned selection, bool notify)
 {
     // Neuen Button auswählen
     auto* button = getCtrl<ctrlButton>(selection);
@@ -21,7 +21,7 @@ void ctrlMultiSelectGroup::AddSelection(unsigned selection, bool notify)
     {
         case GroupSelectType::Illuminate: button->setIlluminated(true); break;
         case GroupSelectType::Check: button->setChecked(true); break;
-        case GroupSelectType::Show: button->setVisible(false); break;
+        case GroupSelectType::show: button->setVisible(false); break;
     }
 
     this->selectedItems_.insert(selection);
@@ -33,7 +33,7 @@ void ctrlMultiSelectGroup::AddSelection(unsigned selection, bool notify)
 /**
  *  Entfernt die Selektion eines Buttons aus der Gruppe.
  */
-void ctrlMultiSelectGroup::RemoveSelection(unsigned selection, bool notify)
+void ctrlMultiSelectGroup::removeSelection(unsigned selection, bool notify)
 {
     // Neuen Button auswählen
     auto* button = getCtrl<ctrlButton>(selection);
@@ -42,7 +42,7 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned selection, bool notify)
     {
         case GroupSelectType::Illuminate: button->setIlluminated(false); break;
         case GroupSelectType::Check: button->setChecked(false); break;
-        case GroupSelectType::Show: button->setVisible(true); break;
+        case GroupSelectType::show: button->setVisible(true); break;
     }
 
     this->selectedItems_.erase(selection);
@@ -54,12 +54,12 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned selection, bool notify)
 /**
  *  Wechselt zwischen selektiert/nicht selektiert
  */
-void ctrlMultiSelectGroup::ToggleSelection(unsigned selection, bool notify)
+void ctrlMultiSelectGroup::toggleSelection(unsigned selection, bool notify)
 {
     if(isSelected(selection))
-        RemoveSelection(selection, notify);
+        removeSelection(selection, notify);
     else
-        AddSelection(selection, notify);
+        addSelection(selection, notify);
 }
 
 bool ctrlMultiSelectGroup::isSelected(unsigned selection) const
@@ -69,30 +69,30 @@ bool ctrlMultiSelectGroup::isSelected(unsigned selection) const
 
 void ctrlMultiSelectGroup::msgButtonClick(const unsigned ctrl_id)
 {
-    ToggleSelection(ctrl_id, true);
+    toggleSelection(ctrl_id, true);
 }
 
 bool ctrlMultiSelectGroup::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftDown, mc);
+    return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
 bool ctrlMultiSelectGroup::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
 bool ctrlMultiSelectGroup::msgWheelUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgWheelUp, mc);
+    return relayMouseMessage(&Window::msgWheelUp, mc);
 }
 
 bool ctrlMultiSelectGroup::msgWheelDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgWheelDown, mc);
+    return relayMouseMessage(&Window::msgWheelDown, mc);
 }
 
 bool ctrlMultiSelectGroup::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgMouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }

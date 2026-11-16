@@ -24,21 +24,21 @@ public:
     /// Funktion zum Auslesen des Treibernamens.
     virtual const char* getName() const = 0;
 
-    virtual bool Initialize() = 0;
+    virtual bool initialize() = 0;
 
     /// Erstellt das Fenster mit entsprechenden Werten.
-    virtual bool CreateScreen(const std::string& title, VideoMode newSize, DisplayMode displayMode) = 0;
+    virtual bool createScreen(const std::string& title, VideoMode newSize, DisplayMode displayMode) = 0;
 
-    virtual bool ResizeScreen(VideoMode newSize, DisplayMode displayMode) = 0;
+    virtual bool resizeScreen(VideoMode newSize, DisplayMode displayMode) = 0;
 
     /// Schliesst das Fenster.
-    virtual void DestroyScreen() = 0;
+    virtual void destroyScreen() = 0;
 
     /// Wechselt die OpenGL-Puffer.
-    virtual bool SwapBuffers() = 0;
+    virtual bool swapBuffers() = 0;
 
     /// Die Nachrichtenschleife.
-    virtual bool MessageLoop() = 0;
+    virtual bool messageLoop() = 0;
 
     /// Return the current tick count (time since epoch in ms)
     virtual unsigned long getTickCount() const = 0;
@@ -46,7 +46,7 @@ public:
     /// Funktion zum Holen einer Subfunktion.
     virtual OpenGL_Loader_Proc getLoaderFunction() const = 0;
 
-    virtual std::vector<VideoMode> ListVideoModes() const = 0;
+    virtual std::vector<VideoMode> listVideoModes() const = 0;
 
     /// Funktion zum Auslesen der Mauskoordinaten.
     virtual Position getMousePos() const = 0;
@@ -90,7 +90,7 @@ public:
     virtual bool isOpenGL() const = 0;
 
     // Display the problem to the gamer
-    virtual void ShowErrorMessage(const std::string& title, const std::string& message) = 0;
+    virtual void showErrorMessage(const std::string& title, const std::string& message) = 0;
 };
 
 class VideoDriverLoaderInterface;

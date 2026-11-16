@@ -21,7 +21,7 @@ bool PlaceHarbor(MapPoint pt, GameWorldBase& world, std::vector<MapPoint>& harbo
     for(MapPoint curPt : pts)
     {
         // Harbor only at castles
-        world.RecalcBQ(curPt);
+        world.recalcBQ(curPt);
         if(world.getNode(curPt).bq != BuildingQuality::Castle)
             continue;
         // We must have a coast around
@@ -139,10 +139,10 @@ bool CreateSeaWorld::operator()(GameWorld& world) const
     BOOST_TEST_REQUIRE(PlaceHarbor(hqPositions[3] - MapPoint(0, landSize / 2), world, harbors));
     BOOST_TEST_REQUIRE(PlaceHarbor(hqPositions[3] + MapPoint(0, landSize / 2), world, harbors));
 
-    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
+    BOOST_TEST_REQUIRE(MapLoader::initSeasAndHarbors(world, harbors));
 
-    BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
-    world.InitAfterLoad();
+    BOOST_TEST_REQUIRE(MapLoader::placeHQs(world, hqPositions, false));
+    world.initAfterLoad();
 
     /* The HQs and harbor(ids) are here: (H=HQ, 1-8=harbor)
      * WWWWWWWWWWWWWWWWWWWWWWW
@@ -182,7 +182,7 @@ bool CreateWaterWorld::operator()(GameWorld& world) const
     std::vector<MapPoint> hqPositions;
     hqPositions.push_back(MapPoint(10, 10));
     if(world.getNumPlayers() > 1)
-        hqPositions.push_back(world.MakeMapPoint(hqPositions.front() + size_ / 2)); // LCOV_EXCL_LINE
+        hqPositions.push_back(world.makeMapPoint(hqPositions.front() + size_ / 2)); // LCOV_EXCL_LINE
     t = GetLandTerrain(world.getDescription(), ETerrain::Buildable);
     for(MapPoint hqPos : hqPositions)
     {
@@ -193,17 +193,17 @@ bool CreateWaterWorld::operator()(GameWorld& world) const
             node.t1 = node.t2 = t;
         }
     }
-    BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
+    BOOST_TEST_REQUIRE(MapLoader::placeHQs(world, hqPositions, false));
 
     std::vector<MapPoint> harbors;
     for(MapPoint hqPos : hqPositions)
     {
-        BOOST_TEST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos - Position(landRadius, 0)), world, harbors));
-        BOOST_TEST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos - Position(0, landRadius)), world, harbors));
-        BOOST_TEST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos + Position(landRadius, 0)), world, harbors));
-        BOOST_TEST_REQUIRE(PlaceHarbor(world.MakeMapPoint(hqPos + Position(0, landRadius)), world, harbors));
+        BOOST_TEST_REQUIRE(PlaceHarbor(world.makeMapPoint(hqPos - Position(landRadius, 0)), world, harbors));
+        BOOST_TEST_REQUIRE(PlaceHarbor(world.makeMapPoint(hqPos - Position(0, landRadius)), world, harbors));
+        BOOST_TEST_REQUIRE(PlaceHarbor(world.makeMapPoint(hqPos + Position(landRadius, 0)), world, harbors));
+        BOOST_TEST_REQUIRE(PlaceHarbor(world.makeMapPoint(hqPos + Position(0, landRadius)), world, harbors));
     }
     RTTR_Assert(harbors.size() == hqPositions.size() * 4u);
-    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, harbors));
+    BOOST_TEST_REQUIRE(MapLoader::initSeasAndHarbors(world, harbors));
     return true;
 }

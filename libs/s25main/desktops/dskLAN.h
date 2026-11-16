@@ -28,12 +28,12 @@ protected:
     /**
      * Connects to the currently selected game and returns true on success
      */
-    bool ConnectToSelectedGame();
+    bool connectToSelectedGame();
 
 private:
     LANDiscoveryClient discovery;
     std::vector<GameInfo> openGames;
 
-    void UpdateServerList();
-    void ReadOpenGames();
+    void updateServerList();
+    void readOpenGames();
 };

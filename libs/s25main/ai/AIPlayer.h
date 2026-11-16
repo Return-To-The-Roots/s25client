@@ -24,8 +24,8 @@ public:
     virtual ~AIPlayer() = default;
 
     /// Called for every GF
-    virtual void RunGF(unsigned gf, bool gfisnwf) = 0;
-    virtual void OnChatMessage(unsigned sendPlayerId, ChatDestination, const std::string& msg) = 0;
+    virtual void runGF(unsigned gf, bool gfisnwf) = 0;
+    virtual void onChatMessage(unsigned sendPlayerId, ChatDestination, const std::string& msg) = 0;
 
     const std::string& getPlayerName() const { return player.name; }
     unsigned char getPlayerId() const { return playerId; }

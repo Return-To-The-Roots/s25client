@@ -146,17 +146,17 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         lua = std::make_unique<LuaInterfaceSettings>(*lobbyController, GAMECLIENT);
         if(!lua->loadScript(GAMECLIENT.getLuaFilePath()))
         {
-            WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(
+            WINDOWMANAGER.showAfterSwitch(std::make_unique<iwMsgbox>(
               _("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,
               MsgboxButton::Ok, MsgboxIcon::ExclamationRed, ID_mbLuaLoadError));
             lua.reset();
-        } else if(!lua->CheckScriptVersion())
+        } else if(!lua->checkScriptVersion())
         {
-            WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMsgbox>(
+            WINDOWMANAGER.showAfterSwitch(std::make_unique<iwMsgbox>(
               _("Error"), _("Lua script uses a different version and cannot be used. Map might not work as expected!"),
               this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, ID_mbLuaVersionError));
             lua.reset();
-        } else if(!lua->EventSettingsInit(serverType == ServerType::Local, gameLobby_->isSavegame()))
+        } else if(!lua->eventSettingsInit(serverType == ServerType::Local, gameLobby_->isSavegame()))
         {
             // This should have been detected for the host so others won't even see the script
             RTTR_Assert(gameLobby_->isHost());
@@ -164,112 +164,112 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
             lua.reset();
         }
         if(!lua && gameLobby_->isHost())
-            lobbyController->RemoveLuaScript();
+            lobbyController->removeLuaScript();
     }
 
     const bool readonlySettings = !gameLobby_->isHost() || gameLobby_->isSavegame() || !isChangeAllowed("general");
     allowAddonChange = gameLobby_->isHost() && !gameLobby_->isSavegame()
                        && (isChangeAllowed("addonsAll") || isChangeAllowed("addonsSome"));
 
-    AddText(ID_txtGameName, DrawPoint(400, 5), GAMECLIENT.getGameName(), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    addText(ID_txtGameName, DrawPoint(400, 5), GAMECLIENT.getGameName(), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
-    AddText(ID_txtColName, DrawPoint(125, 40), _("Player Name"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-    AddText(ID_txtColRace, DrawPoint(262, 40), _("Race"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-    AddText(ID_txtColColor, DrawPoint(369, 40), _("Color"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-    AddText(ID_txtColTeam, DrawPoint(419, 40), _("Team"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    addText(ID_txtColName, DrawPoint(125, 40), _("Player Name"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    addText(ID_txtColRace, DrawPoint(262, 40), _("Race"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    addText(ID_txtColColor, DrawPoint(369, 40), _("Color"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    addText(ID_txtColTeam, DrawPoint(419, 40), _("Team"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
     if(!isSinglePlayer())
     {
-        AddText(ID_txtColReady, DrawPoint(479, 40), _("Ready?"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-        AddText(ID_txtColPing, DrawPoint(530, 40), _("Ping"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+        addText(ID_txtColReady, DrawPoint(479, 40), _("Ready?"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+        addText(ID_txtColPing, DrawPoint(530, 40), _("Ping"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     }
     if(gameLobby_->isHost() && !gameLobby_->isSavegame())
-        AddText(ID_txtColSwap, DrawPoint(0, 40), _("Swap"), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+        addText(ID_txtColSwap, DrawPoint(0, 40), _("Swap"), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
     if(gameLobby_->isSavegame())
-        AddText(ID_txtColPastPlayer, DrawPoint(645, 40), _("Past player"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+        addText(ID_txtColPastPlayer, DrawPoint(645, 40), _("Past player"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
     if(!isSinglePlayer())
     {
         // Enable lobby chat when we are logged in
         if(lobbyClient_ && lobbyClient_->IsLoggedIn())
         {
-            ctrlOptionGroup* chatTab = AddOptionGroup(ID_optChatTab, GroupSelectType::Check);
-            chatTab->AddTextButton(ID_btChatGame, DrawPoint(20, 320), Extent(178, 22), TextureColor::Green2,
+            ctrlOptionGroup* chatTab = addOptionGroup(ID_optChatTab, GroupSelectType::Check);
+            chatTab->addTextButton(ID_btChatGame, DrawPoint(20, 320), Extent(178, 22), TextureColor::Green2,
                                    _("Game Chat"), NormalFont);
-            chatTab->AddTextButton(ID_btChatLobby, DrawPoint(202, 320), Extent(178, 22), TextureColor::Green2,
+            chatTab->addTextButton(ID_btChatLobby, DrawPoint(202, 320), Extent(178, 22), TextureColor::Green2,
                                    _("Lobby Chat"), NormalFont);
             gameChat =
-              AddChatCtrl(ID_chatGame, DrawPoint(20, 345), Extent(360, 218 - 25), TextureColor::Grey, NormalFont);
+              addChatCtrl(ID_chatGame, DrawPoint(20, 345), Extent(360, 218 - 25), TextureColor::Grey, NormalFont);
             lobbyChat =
-              AddChatCtrl(ID_chatLobby, DrawPoint(20, 345), Extent(360, 218 - 25), TextureColor::Grey, NormalFont);
+              addChatCtrl(ID_chatLobby, DrawPoint(20, 345), Extent(360, 218 - 25), TextureColor::Grey, NormalFont);
             chatTab->setSelection(ID_btChatGame, true);
         } else
         {
-            gameChat = AddChatCtrl(ID_chatGame, DrawPoint(20, 320), Extent(360, 218), TextureColor::Grey, NormalFont);
+            gameChat = addChatCtrl(ID_chatGame, DrawPoint(20, 320), Extent(360, 218), TextureColor::Grey, NormalFont);
         }
-        AddEdit(ID_edtChatMsg, DrawPoint(20, 540), Extent(360, 22), TextureColor::Grey, NormalFont);
+        addEdit(ID_edtChatMsg, DrawPoint(20, 540), Extent(360, 22), TextureColor::Grey, NormalFont);
     }
 
-    AddTextButton(ID_btStartGame, DrawPoint(600, 560), Extent(180, 22), TextureColor::Green2,
+    addTextButton(ID_btStartGame, DrawPoint(600, 560), Extent(180, 22), TextureColor::Green2,
                   (gameLobby_->isHost() ? _("Start game") : _("Ready")), NormalFont);
 
-    AddTextButton(ID_btReturn, DrawPoint(400, 560), Extent(180, 22), TextureColor::Red1, _("Return"), NormalFont);
+    addTextButton(ID_btReturn, DrawPoint(400, 560), Extent(180, 22), TextureColor::Red1, _("Return"), NormalFont);
 
-    AddCheckBox(ID_chkLockTeams, DrawPoint(400, 460), Extent(180, 26), TextureColor::Grey, _("Lock teams:"), NormalFont,
+    addCheckBox(ID_chkLockTeams, DrawPoint(400, 460), Extent(180, 26), TextureColor::Grey, _("Lock teams:"), NormalFont,
                 readonlySettings);
-    AddCheckBox(ID_chkSharedView, DrawPoint(600, 460), Extent(180, 26), TextureColor::Grey, _("Shared team view"),
+    addCheckBox(ID_chkSharedView, DrawPoint(600, 460), Extent(180, 26), TextureColor::Grey, _("Shared team view"),
                 NormalFont, readonlySettings);
-    AddCheckBox(ID_chkRandomSpawn, DrawPoint(600, 430), Extent(180, 26), TextureColor::Grey,
+    addCheckBox(ID_chkRandomSpawn, DrawPoint(600, 430), Extent(180, 26), TextureColor::Grey,
                 _("Random start locations"), NormalFont, readonlySettings);
 
-    AddText(ID_txtAddons, DrawPoint(400, 499), _("Addons:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddTextButton(ID_btSettings, DrawPoint(600, 495), Extent(180, 22), TextureColor::Green2,
+    addText(ID_txtAddons, DrawPoint(400, 499), _("Addons:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addTextButton(ID_btSettings, DrawPoint(600, 495), Extent(180, 22), TextureColor::Green2,
                   allowAddonChange ? _("Change Settings...") : _("View Settings..."), NormalFont);
 
     ctrlComboBox* combo;
 
     // umgedrehte Reihenfolge, damit die Listen nicht dahinter sind
 
-    AddText(ID_txtExploration, DrawPoint(400, 405), _("Exploration:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = AddComboBox(ID_cbExploration, DrawPoint(600, 400), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
+    addText(ID_txtExploration, DrawPoint(400, 405), _("Exploration:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo = addComboBox(ID_cbExploration, DrawPoint(600, 400), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
                         readonlySettings);
-    combo->AddItem(_("Off (all visible)"));
-    combo->AddItem(_("Classic (Settlers 2)"));
-    combo->AddItem(_("Fog of War"));
-    combo->AddItem(_("FoW - all explored"));
+    combo->addItem(_("Off (all visible)"));
+    combo->addItem(_("Classic (Settlers 2)"));
+    combo->addItem(_("Fog of War"));
+    combo->addItem(_("FoW - all explored"));
 
-    AddText(ID_txtGoods, DrawPoint(400, 375), _("Goods at start:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = AddComboBox(ID_cbGoods, DrawPoint(600, 370), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
+    addText(ID_txtGoods, DrawPoint(400, 375), _("Goods at start:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo = addComboBox(ID_cbGoods, DrawPoint(600, 370), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
                         readonlySettings);
-    combo->AddItem(_("Very Low"));
-    combo->AddItem(_("Low"));
-    combo->AddItem(_("Normal"));
-    combo->AddItem(_("A lot"));
+    combo->addItem(_("Very Low"));
+    combo->addItem(_("Low"));
+    combo->addItem(_("Normal"));
+    combo->addItem(_("A lot"));
 
-    AddText(ID_txtGoals, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = AddComboBox(ID_cbGoals, DrawPoint(600, 340), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
+    addText(ID_txtGoals, DrawPoint(400, 345), _("Goals:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo = addComboBox(ID_cbGoals, DrawPoint(600, 340), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
                         readonlySettings);
-    combo->AddItem(_("None"));
-    combo->AddItem(_("Conquer 3/4 of map"));
-    combo->AddItem(_("Total domination"));
-    combo->AddItem(_("Economy mode"));
+    combo->addItem(_("None"));
+    combo->addItem(_("Conquer 3/4 of map"));
+    combo->addItem(_("Total domination"));
+    combo->addItem(_("Economy mode"));
 
     // Lobby game?
     if(lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
         // Then add tournament modes as possible "objectives"
         for(const auto duration : TOURNAMENT_MODES_DURATION)
-            combo->AddItem(helpers::format(_("Tournament: %u minutes"), duration / 1min));
+            combo->addItem(helpers::format(_("Tournament: %u minutes"), duration / 1min));
     }
 
-    AddText(ID_txtSpeed, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    combo = AddComboBox(ID_cbSpeed, DrawPoint(600, 310), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
+    addText(ID_txtSpeed, DrawPoint(400, 315), _("Speed:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    combo = addComboBox(ID_cbSpeed, DrawPoint(600, 310), Extent(180, 20), TextureColor::Grey, NormalFont, 100,
                         !gameLobby_->isHost());
-    combo->AddItem(_("Very slow"));
-    combo->AddItem(_("Slow"));
-    combo->AddItem(_("Normal"));
-    combo->AddItem(_("Fast"));
-    combo->AddItem(_("Very fast"));
+    combo->addItem(_("Very slow"));
+    combo->addItem(_("Slow"));
+    combo->addItem(_("Normal"));
+    combo->addItem(_("Fast"));
+    combo->addItem(_("Very fast"));
 
     // Karte laden, um Kartenvorschau anzuzeigen
     if(!gameLobby_->isSavegame())
@@ -277,9 +277,9 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         const bool isMapPreviewEnabled = !lua || lua->isMapPreviewEnabled();
         if(!isMapPreviewEnabled)
         {
-            AddTextDeepening(ID_txtNoPreview, DrawPoint(560, 40), Extent(220, 220), TextureColor::Grey, _("No preview"),
+            addTextDeepening(ID_txtNoPreview, DrawPoint(560, 40), Extent(220, 220), TextureColor::Grey, _("No preview"),
                              LargeFont, COLOR_YELLOW);
-            AddText(ID_txtMapName, DrawPoint(670, 40 + 220 + 10), _("Map: ") + GAMECLIENT.getMapTitle(), COLOR_YELLOW,
+            addText(ID_txtMapName, DrawPoint(670, 40 + 220 + 10), _("Map: ") + GAMECLIENT.getMapTitle(), COLOR_YELLOW,
                     FontStyle::CENTER, NormalFont);
         } else
         {
@@ -288,17 +288,17 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
             // Karteninformationen laden
             if(int ec = libsiedler2::loader::LoadMAP(GAMECLIENT.getMapPath(), mapArchiv))
             {
-                WINDOWMANAGER.ShowAfterSwitch(
+                WINDOWMANAGER.showAfterSwitch(
                   std::make_unique<iwMsgbox>(_("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec),
                                              this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, ID_mbMapLoadError));
             } else
             {
                 auto* map = static_cast<libsiedler2::ArchivItem_Map*>(mapArchiv.get(0));
-                ctrlPreviewMinimap* preview = AddPreviewMinimap(ID_miniMap, DrawPoint(560, 40), Extent(220, 220), map);
+                ctrlPreviewMinimap* preview = addPreviewMinimap(ID_miniMap, DrawPoint(560, 40), Extent(220, 220), map);
 
                 // Titel der Karte, Y-Position relativ je nach Höhe der Minimap festlegen, daher nochmals danach
                 // verschieben, da diese Position sonst skaliert wird!
-                ctrlText* text = AddText(ID_txtMapName, DrawPoint(670, 0), _("Map: ") + GAMECLIENT.getMapTitle(),
+                ctrlText* text = addText(ID_txtMapName, DrawPoint(670, 0), _("Map: ") + GAMECLIENT.getMapTitle(),
                                          COLOR_YELLOW, FontStyle::CENTER, NormalFont);
                 text->setPos(DrawPoint(text->getPos().x, preview->getPos().y + preview->getMapArea().bottom + 10));
             }
@@ -315,13 +315,13 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
             if(i < aiBattlePlayers.size())
                 lobbyController->setPlayerState(i, PlayerState::AI, aiBattlePlayers[i]);
             else
-                lobbyController->CloseSlot(i); // Close remaining slots
+                lobbyController->closeSlot(i); // Close remaining slots
         }
 
         // Set name of host to the corresponding AI for local player
         if(localPlayerId_ < aiBattlePlayers.size())
             lobbyController->setName(localPlayerId_,
-                                     JoinPlayerInfo::MakeAIName(aiBattlePlayers[localPlayerId_], localPlayerId_));
+                                     JoinPlayerInfo::makeAIName(aiBattlePlayers[localPlayerId_], localPlayerId_));
     } else if(isSinglePlayer() && !gameLobby_->isSavegame())
     {
         // Setze initial auf KI
@@ -334,7 +334,7 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
 
     // Alle Spielercontrols erstellen
     for(unsigned i = 0; i < gameLobby_->getNumPlayers(); i++)
-        UpdatePlayerRow(i);
+        updatePlayerRow(i);
     // swap buttons erstellen
     if(gameLobby_->isHost() && !gameLobby_->isSavegame() && isChangeAllowed("swapping"))
     {
@@ -342,7 +342,7 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
         {
             int rowPos = getCtrl<Window>(ID_grpPlayerStart + i)->getCtrl<Window>(ID_btPlayerState)->getPos().y;
             ctrlButton* bt =
-              AddTextButton(ID_btSwap + i, DrawPoint(5, 0), Extent(22, 22), TextureColor::Red1, _("-"), NormalFont);
+              addTextButton(ID_btSwap + i, DrawPoint(5, 0), Extent(22, 22), TextureColor::Red1, _("-"), NormalFont);
             bt->setPos(DrawPoint(bt->getPos().x, rowPos));
         }
     }
@@ -350,8 +350,8 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
 
     if(serverType == ServerType::Lobby && lobbyClient_ && lobbyClient_->IsLoggedIn())
     {
-        lobbyClient_->AddListener(this);
-        lobbyClient_->SendServerJoinRequest();
+        lobbyClient_->addListener(this);
+        lobbyClient_->sendServerJoinRequest();
     }
 
     GAMECLIENT.setInterface(this);
@@ -360,16 +360,16 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
 dskGameLobby::~dskGameLobby()
 {
     if(lobbyClient_)
-        lobbyClient_->RemoveListener(this);
-    GAMECLIENT.RemoveInterface(this);
+        lobbyClient_->removeListener(this);
+    GAMECLIENT.removeInterface(this);
 }
 
 /**
  *  Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
  */
-void dskGameLobby::Resize(const Extent& newSize)
+void dskGameLobby::resize(const Extent& newSize)
 {
-    Window::Resize(newSize);
+    Window::resize(newSize);
 
     // Text unter der PreviewMinimap verschieben, dessen Höhe von der Höhe der
     // PreviewMinimap abhängt, welche sich gerade geändert hat.
@@ -391,10 +391,10 @@ void dskGameLobby::setActive(bool activate /*= true*/)
         wasActivated = true;
         try
         {
-            lua->EventSettingsReady();
+            lua->eventSettingsReady();
         } catch(const LuaExecutionError&)
         {
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+            WINDOWMANAGER.show(std::make_unique<iwMsgbox>(
               _("Error"), _("Lua script was found but failed to load. Map might not work as expected!"), this,
               MsgboxButton::Ok, MsgboxIcon::ExclamationRed, ID_mbLuaLoadError));
             lua.reset();
@@ -402,7 +402,7 @@ void dskGameLobby::setActive(bool activate /*= true*/)
     }
 }
 
-void dskGameLobby::UpdatePlayerRow(const unsigned row)
+void dskGameLobby::updatePlayerRow(const unsigned row)
 {
     const JoinPlayerInfo& player = gameLobby_->getPlayer(row);
 
@@ -410,9 +410,9 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
     TextureColor tc = (row & 1 ? TextureColor::Grey : TextureColor::Green2);
 
     // Alle Controls erstmal zerstören (die ganze Gruppe)
-    DeleteCtrl(ID_grpPlayerStart + row);
+    deleteCtrl(ID_grpPlayerStart + row);
     // und neu erzeugen
-    ctrlGroup* group = AddGroup(ID_grpPlayerStart + row);
+    ctrlGroup* group = addGroup(ID_grpPlayerStart + row);
 
     std::string name;
     switch(player.ps)
@@ -436,9 +436,9 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
 
     // Spielername, beim Hosts Spielerbuttons, aber nich beim ihm selber, er kann sich ja nich selber kicken!
     if(gameLobby_->isHost() && !player.isHost && isChangeAllowed("playerState"))
-        group->AddTextButton(ID_btPlayerState, DrawPoint(30, cy), Extent(180, 22), tc, name, NormalFont);
+        group->addTextButton(ID_btPlayerState, DrawPoint(30, cy), Extent(180, 22), tc, name, NormalFont);
     else
-        group->AddTextDeepening(ID_btPlayerState, DrawPoint(30, cy), Extent(180, 22), tc, name, NormalFont,
+        group->addTextDeepening(ID_btPlayerState, DrawPoint(30, cy), Extent(180, 22), tc, name, NormalFont,
                                 COLOR_YELLOW);
     auto* text = group->getCtrl<ctrlBaseText>(ID_btPlayerState);
 
@@ -474,43 +474,43 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
         }
 
         if(allowNationChange)
-            group->AddTextButton(ID_btNation, DrawPoint(215, cy), Extent(95, 22), tc, _(NationNames[NATION_ORDER[0]]),
+            group->addTextButton(ID_btNation, DrawPoint(215, cy), Extent(95, 22), tc, _(NationNames[NATION_ORDER[0]]),
                                  NormalFont);
         else
-            group->AddTextDeepening(ID_btNation, DrawPoint(215, cy), Extent(95, 22), tc,
+            group->addTextDeepening(ID_btNation, DrawPoint(215, cy), Extent(95, 22), tc,
                                     _(NationNames[NATION_ORDER[0]]), NormalFont, COLOR_YELLOW);
 
         const auto& portrait = Portraits[player.portraitIndex];
         if(allowPortraitChange)
-            group->AddImageButton(ID_btPortrait, DrawPoint(315, cy), Extent(34, 22), tc,
+            group->addImageButton(ID_btPortrait, DrawPoint(315, cy), Extent(34, 22), tc,
                                   LOADER.getImageN(portrait.resourceId, portrait.resourceIndex), _(portrait.name));
         else
-            group->AddImageDeepening(ID_btPortrait, DrawPoint(315, cy), Extent(34, 22), tc,
+            group->addImageDeepening(ID_btPortrait, DrawPoint(315, cy), Extent(34, 22), tc,
                                      LOADER.getImageN(portrait.resourceId, portrait.resourceIndex));
 
         if(allowColorChange)
-            group->AddColorButton(ID_btColor, DrawPoint(354, cy), Extent(30, 22), tc, 0);
+            group->addColorButton(ID_btColor, DrawPoint(354, cy), Extent(30, 22), tc, 0);
         else
-            group->AddColorDeepening(ID_btColor, DrawPoint(354, cy), Extent(30, 22), tc, 0);
+            group->addColorDeepening(ID_btColor, DrawPoint(354, cy), Extent(30, 22), tc, 0);
 
         if(allowTeamChange)
-            group->AddTextButton(ID_btTeam, DrawPoint(394, cy), Extent(50, 22), tc, _("-"), NormalFont);
+            group->addTextButton(ID_btTeam, DrawPoint(394, cy), Extent(50, 22), tc, _("-"), NormalFont);
         else
-            group->AddTextDeepening(ID_btTeam, DrawPoint(394, cy), Extent(50, 22), tc, _("-"), NormalFont,
+            group->addTextDeepening(ID_btTeam, DrawPoint(394, cy), Extent(50, 22), tc, _("-"), NormalFont,
                                     COLOR_YELLOW);
 
         // Ready (not for AIs and Host)
         if(player.ps == PlayerState::Occupied && !player.isHost)
-            group->AddCheckBox(ID_chkReady, DrawPoint(464, cy), Extent(22, 22), tc, "", nullptr,
+            group->addCheckBox(ID_chkReady, DrawPoint(464, cy), Extent(22, 22), tc, "", nullptr,
                                (localPlayerId_ != row));
 
-        ctrlVarDeepening* ping = group->AddVarDeepening(ID_txtPing, DrawPoint(505, cy), Extent(50, 22), tc, _("%d"),
+        ctrlVarDeepening* ping = group->addVarDeepening(ID_txtPing, DrawPoint(505, cy), Extent(50, 22), tc, _("%d"),
                                                         NormalFont, COLOR_YELLOW, 1, &player.ping); //-V111
 
         // Move (not for Save games and Host)
         if(gameLobby_->isSavegame() && player.ps == PlayerState::Occupied)
         {
-            ctrlComboBox* combo = group->AddComboBox(ID_cbMove, DrawPoint(560, cy), Extent(160, 22), tc, NormalFont,
+            ctrlComboBox* combo = group->addComboBox(ID_cbMove, DrawPoint(560, cy), Extent(160, 22), tc, NormalFont,
                                                      150, !gameLobby_->isHost());
 
             // Mit den alten Namen füllen
@@ -518,7 +518,7 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
             {
                 if(!gameLobby_->getPlayer(i).originName.empty())
                 {
-                    combo->AddItem(gameLobby_->getPlayer(i).originName);
+                    combo->addItem(gameLobby_->getPlayer(i).originName);
                     if(i == row)
                         combo->setSelection(combo->getNumItems() - 1u);
                 }
@@ -530,12 +530,12 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
             ping->setVisible(false);
 
         // Fill fields
-        ChangeNation(row, player.nation);
-        ChangePortrait(row, player.portraitIndex);
-        ChangeTeam(row, player.team);
-        ChangePing(row);
-        ChangeReady(row, player.isReady);
-        ChangeColor(row, player.color);
+        changeNation(row, player.nation);
+        changePortrait(row, player.portraitIndex);
+        changeTeam(row, player.team);
+        changePing(row);
+        changeReady(row, player.isReady);
+        changeColor(row, player.color);
     }
     group->setActive(IsActive());
 }
@@ -560,7 +560,7 @@ void dskGameLobby::msgGroupButtonClick(const unsigned group_id, const unsigned c
         case ID_btPlayerState:
         {
             if(gameLobby_->isHost())
-                lobbyController->TogglePlayerState(playerId);
+                lobbyController->togglePlayerState(playerId);
         }
         break;
 
@@ -576,7 +576,7 @@ void dskGameLobby::msgGroupButtonClick(const unsigned group_id, const unsigned c
                     lobbyController->setNation(playerId, player.nation);
                 else
                     GAMECLIENT.commandSetNation(player.nation);
-                ChangeNation(playerId, player.nation);
+                changeNation(playerId, player.nation);
             }
         }
         break;
@@ -593,7 +593,7 @@ void dskGameLobby::msgGroupButtonClick(const unsigned group_id, const unsigned c
                     lobbyController->setPortrait(playerId, player.portraitIndex);
                 else
                     GAMECLIENT.commandSetPortrait(player.portraitIndex);
-                ChangePortrait(playerId, player.portraitIndex);
+                changePortrait(playerId, player.portraitIndex);
             }
         }
         break;
@@ -629,7 +629,7 @@ void dskGameLobby::msgGroupButtonClick(const unsigned group_id, const unsigned c
                     lobbyController->setColor(playerId, player.color);
                 else
                     GAMECLIENT.commandSetColor(player.color);
-                ChangeColor(playerId, player.color);
+                changeColor(playerId, player.color);
             }
 
             // Start-Farbe der Minimap ändern
@@ -648,7 +648,7 @@ void dskGameLobby::msgGroupButtonClick(const unsigned group_id, const unsigned c
                     lobbyController->setTeam(playerId, player.team);
                 else
                     GAMECLIENT.commandSetTeam(player.team);
-                ChangeTeam(playerId, player.team);
+                changeTeam(playerId, player.team);
             }
         }
         break;
@@ -685,10 +685,10 @@ void dskGameLobby::msgGroupComboSelectItem(const unsigned group_id, const unsign
     if(player2 < 0)
         LOG.write("dskHostGame: ERROR: Selected player not found, stop swapping!\n");
     else
-        lobbyController->SwapPlayers(playerId, static_cast<unsigned>(player2));
+        lobbyController->swapPlayers(playerId, static_cast<unsigned>(player2));
 }
 
-void dskGameLobby::GoBack()
+void dskGameLobby::goBack()
 {
     if(isSinglePlayer())
         WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
@@ -711,14 +711,14 @@ void dskGameLobby::msgButtonClick(const unsigned ctrl_id)
     {
         unsigned targetPlayer = ctrl_id - ID_btSwap;
         if(targetPlayer != localPlayerId_ && gameLobby_->isHost())
-            lobbyController->SwapPlayers(localPlayerId_, targetPlayer);
+            lobbyController->swapPlayers(localPlayerId_, targetPlayer);
         return;
     }
     switch(ctrl_id)
     {
         case ID_btReturn:
-            GAMECLIENT.Stop();
-            GoBack();
+            GAMECLIENT.stop();
+            goBack();
             break;
 
         case ID_btStartGame:
@@ -731,9 +731,9 @@ void dskGameLobby::msgButtonClick(const unsigned ctrl_id)
 
                 setPlayerReady(localPlayerId_, true);
                 if(lua)
-                    lua->EventPlayerReady(localPlayerId_);
+                    lua->eventPlayerReady(localPlayerId_);
                 if(ready->getText() == _("Start game"))
-                    lobbyController->StartCountdown(5);
+                    lobbyController->startCountdown(5);
                 else
                     lobbyController->cancelCountdown();
             } else
@@ -747,8 +747,8 @@ void dskGameLobby::msgButtonClick(const unsigned ctrl_id)
         break;
         case ID_btSettings: // Addons
         {
-            if(auto* wnd = WINDOWMANAGER.FindNonModalWindow(CGI_ADDONS))
-                wnd->Close();
+            if(auto* wnd = WINDOWMANAGER.findNonModalWindow(CGI_ADDONS))
+                wnd->close();
             else
             {
                 std::unique_ptr<iwAddons> w;
@@ -762,7 +762,7 @@ void dskGameLobby::msgButtonClick(const unsigned ctrl_id)
                     w = std::make_unique<iwAddons>(gameLobby_->getSettings(), this, AddonChangeAllowed::WhitelistOnly,
                                                    lua->getAllowedAddons());
                 }
-                WINDOWMANAGER.Show(std::move(w));
+                WINDOWMANAGER.show(std::move(w));
             }
         }
         break;
@@ -779,7 +779,7 @@ void dskGameLobby::msgEditEnter(const unsigned ctrl_id)
     if(gameChat->isVisible())
         GAMECLIENT.commandChat(msg, ChatDestination::All);
     else if(lobbyClient_ && lobbyClient_->IsLoggedIn() && lobbyChat->isVisible())
-        lobbyClient_->SendChat(msg);
+        lobbyClient_->sendChat(msg);
 }
 
 void dskGameLobby::CI_Countdown(unsigned remainingTimeInSec)
@@ -790,16 +790,16 @@ void dskGameLobby::CI_Countdown(unsigned remainingTimeInSec)
     if(!hasCountdown_)
     {
         const std::string startMsg = helpers::format(_("You have %u seconds until game starts"), remainingTimeInSec);
-        gameChat->AddMessage("", "", 0, startMsg, COLOR_RED);
-        gameChat->AddMessage("", "", 0, _("Don't forget to check the addon configuration!"), 0xFFFFDD00);
-        gameChat->AddMessage("", "", 0, "", 0xFFFFCC00);
+        gameChat->addMessage("", "", 0, startMsg, COLOR_RED);
+        gameChat->addMessage("", "", 0, _("Don't forget to check the addon configuration!"), 0xFFFFDD00);
+        gameChat->addMessage("", "", 0, "", 0xFFFFCC00);
         hasCountdown_ = true;
     }
 
     const std::string message =
       (remainingTimeInSec > 0) ? " " + std::to_string(remainingTimeInSec) : _("Starting game, please wait");
 
-    gameChat->AddMessage("", "", 0, message, 0xFFFFBB00);
+    gameChat->addMessage("", "", 0, message, 0xFFFFBB00);
 }
 
 void dskGameLobby::CI_CancelCountdown(bool error)
@@ -807,26 +807,26 @@ void dskGameLobby::CI_CancelCountdown(bool error)
     if(hasCountdown_)
     {
         hasCountdown_ = false;
-        gameChat->AddMessage("", "", 0xFFCC2222, _("Start aborted"), 0xFFFFCC00);
-        FlashGameChat();
+        gameChat->addMessage("", "", 0xFFCC2222, _("Start aborted"), 0xFFFFCC00);
+        flashGameChat();
     }
 
     if(gameLobby_->isHost())
     {
         if(error)
         {
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+            WINDOWMANAGER.show(std::make_unique<iwMsgbox>(
               _("Error"),
               _("Game can only be started as soon as everybody has a unique color,everyone is "
                 "ready and all free slots are closed."),
               this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, ID_mbStartErrror));
         }
 
-        ChangeReady(localPlayerId_, true);
+        changeReady(localPlayerId_, true);
     }
 }
 
-void dskGameLobby::FlashGameChat()
+void dskGameLobby::flashGameChat()
 {
     if(!gameChat->isVisible())
     {
@@ -844,15 +844,15 @@ void dskGameLobby::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         case ID_mbMapLoadError:
         case ID_mbError:
         {
-            GAMECLIENT.Stop();
+            GAMECLIENT.stop();
 
-            GoBack();
+            goBack();
         }
         break;
         case CGI_ADDONS: // addon-window applied settings?
         {
             if(mbr == MsgboxResult::Yes)
-                UpdateGGS();
+                updateGGS();
         }
         break;
         case ID_mbQuestionEconomy: // Economy Mode - change Addon Setttings
@@ -863,7 +863,7 @@ void dskGameLobby::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
                 gameLobby_->getSettings().setSelection(AddonId::NO_COINS_DEFAULT, true);
                 gameLobby_->getSettings().setSelection(AddonId::NO_ARMOR_DEFAULT, true);
                 gameLobby_->getSettings().setSelection(AddonId::LIMIT_CATAPULTS, 2);
-                UpdateGGS();
+                updateGGS();
             } else if(mbr == MsgboxResult::No)
             {
                 forceOptions = true;
@@ -898,7 +898,7 @@ void dskGameLobby::msgComboSelectItem(const unsigned ctrl_id, const unsigned /*s
         case ID_cbExploration:
         {
             // GameSettings wurden verändert, resetten
-            UpdateGGS();
+            updateGGS();
         }
         break;
     }
@@ -914,7 +914,7 @@ void dskGameLobby::msgCheckboxChange(const unsigned ctrl_id, const bool /*checke
         case ID_chkRandomSpawn:
         {
             // GameSettings wurden verändert, resetten
-            UpdateGGS();
+            updateGGS();
         }
         break;
     }
@@ -940,7 +940,7 @@ void dskGameLobby::msgOptionGroupChange(const unsigned ctrl_id, const unsigned s
     }
 }
 
-void dskGameLobby::UpdateGGS()
+void dskGameLobby::updateGGS()
 {
     RTTR_Assert(gameLobby_->isHost());
 
@@ -955,17 +955,17 @@ void dskGameLobby::UpdateGGS()
     ggs.randomStartPosition = getCtrl<ctrlCheck>(ID_chkRandomSpawn)->isChecked();
 
     // An Server übermitteln
-    lobbyController->ChangeGlobalGameSettings(ggs);
+    lobbyController->changeGlobalGameSettings(ggs);
 }
 
-void dskGameLobby::ChangeTeam(const unsigned player, const Team team)
+void dskGameLobby::changeTeam(const unsigned player, const Team team)
 {
     constexpr helpers::EnumArray<const char*, Team> teams = {"-", "?", "1", "2", "3", "4", "1-2", "1-3", "1-4"};
 
     getCtrl<ctrlGroup>(ID_grpPlayerStart + player)->getCtrl<ctrlBaseText>(ID_btTeam)->setText(teams[team]);
 }
 
-void dskGameLobby::ChangeReady(const unsigned player, const bool ready)
+void dskGameLobby::changeReady(const unsigned player, const bool ready)
 {
     auto* check = getCtrl<ctrlGroup>(ID_grpPlayerStart + player)->getCtrl<ctrlCheck>(ID_chkReady);
     if(check)
@@ -981,12 +981,12 @@ void dskGameLobby::ChangeReady(const unsigned player, const bool ready)
     }
 }
 
-void dskGameLobby::ChangeNation(const unsigned player, const Nation nation)
+void dskGameLobby::changeNation(const unsigned player, const Nation nation)
 {
     getCtrl<ctrlGroup>(ID_grpPlayerStart + player)->getCtrl<ctrlBaseText>(ID_btNation)->setText(_(NationNames[nation]));
 }
 
-void dskGameLobby::ChangePortrait(const unsigned player, const unsigned portraitIndex)
+void dskGameLobby::changePortrait(const unsigned player, const unsigned portraitIndex)
 {
     RTTR_Assert(portraitIndex < Portraits.size());
     const auto& portrait = Portraits[portraitIndex];
@@ -997,7 +997,7 @@ void dskGameLobby::ChangePortrait(const unsigned player, const unsigned portrait
         ctrlButton->setTooltip(_(portrait.name));
 }
 
-void dskGameLobby::ChangePing(unsigned playerId)
+void dskGameLobby::changePing(unsigned playerId)
 {
     unsigned color = COLOR_RED;
 
@@ -1011,7 +1011,7 @@ void dskGameLobby::ChangePing(unsigned playerId)
     getCtrl<ctrlGroup>(ID_grpPlayerStart + playerId)->getCtrl<ctrlVarDeepening>(ID_txtPing)->setTextColor(color);
 }
 
-void dskGameLobby::ChangeColor(const unsigned player, const unsigned color)
+void dskGameLobby::changeColor(const unsigned player, const unsigned color)
 {
     getCtrl<ctrlGroup>(ID_grpPlayerStart + player)->getCtrl<ctrlBaseColor>(ID_btColor)->setColor(color);
 
@@ -1031,22 +1031,22 @@ void dskGameLobby::setPlayerReady(unsigned char player, bool ready)
         gameLobby_->getPlayer(player).isReady = ready;
         GAMECLIENT.commandSetReady(ready);
     }
-    ChangeReady(player, ready);
+    changeReady(player, ready);
 }
 
 void dskGameLobby::CI_NewPlayer(const unsigned playerId)
 {
-    UpdatePlayerRow(playerId);
+    updatePlayerRow(playerId);
 
     if(lua && gameLobby_->isHost())
-        lua->EventPlayerJoined(playerId);
+        lua->eventPlayerJoined(playerId);
 }
 
 void dskGameLobby::CI_PlayerLeft(const unsigned playerId)
 {
-    UpdatePlayerRow(playerId);
+    updatePlayerRow(playerId);
     if(lua && gameLobby_->isHost())
-        lua->EventPlayerLeft(playerId);
+        lua->eventPlayerLeft(playerId);
 }
 
 void dskGameLobby::CI_GameLoading(std::shared_ptr<Game> game)
@@ -1056,21 +1056,21 @@ void dskGameLobby::CI_GameLoading(std::shared_ptr<Game> game)
 
 void dskGameLobby::CI_PlayerDataChanged(unsigned playerId)
 {
-    UpdatePlayerRow(playerId);
+    updatePlayerRow(playerId);
 }
 
 void dskGameLobby::CI_PingChanged(const unsigned playerId, const unsigned short /*ping*/)
 {
-    ChangePing(playerId);
+    changePing(playerId);
 }
 
 void dskGameLobby::CI_ReadyChanged(const unsigned playerId, const bool ready)
 {
-    ChangeReady(playerId, ready);
+    changeReady(playerId, ready);
     // Event only called for other players (host ready is done in start game)
     // Also only for host and non-savegames
     if(ready && lua && gameLobby_->isHost() && playerId != localPlayerId_)
-        lua->EventPlayerReady(playerId);
+        lua->eventPlayerReady(playerId);
 }
 
 void dskGameLobby::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
@@ -1080,8 +1080,8 @@ void dskGameLobby::CI_PlayersSwapped(const unsigned player1, const unsigned play
     else if(localPlayerId_ == player2)
         localPlayerId_ = player1;
     // Spieler wurden vertauscht, beide Reihen updaten
-    UpdatePlayerRow(player1);
-    UpdatePlayerRow(player2);
+    updatePlayerRow(player1);
+    updatePlayerRow(player2);
 }
 
 void dskGameLobby::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
@@ -1105,15 +1105,15 @@ void dskGameLobby::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/
     {
         std::string time = s25util::Time::FormatTime("(%H:%i:%s)");
 
-        gameChat->AddMessage(time, gameLobby_->getPlayer(playerId).name, gameLobby_->getPlayer(playerId).color, msg,
+        gameChat->addMessage(time, gameLobby_->getPlayer(playerId).name, gameLobby_->getPlayer(playerId).color, msg,
                              0xFFFFFF00); //-V810
-        FlashGameChat();
+        flashGameChat();
     }
 }
 
 void dskGameLobby::CI_Error(const ClientError ce)
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), this, MsgboxButton::Ok,
+    WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), clientErrorToStr(ce), this, MsgboxButton::Ok,
                                                   MsgboxIcon::ExclamationRed, ID_mbError));
 }
 
@@ -1122,7 +1122,7 @@ void dskGameLobby::CI_Error(const ClientError ce)
  */
 void dskGameLobby::LC_Status_Error(const std::string& error)
 {
-    WINDOWMANAGER.Show(
+    WINDOWMANAGER.show(
       std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, ID_mbError));
 }
 
@@ -1130,7 +1130,7 @@ void dskGameLobby::LC_Chat(const std::string& player, const std::string& text)
 {
     if(!lobbyChat)
         return;
-    lobbyChat->AddMessage("", player, ctrlChat::CalcUniqueColor(player), text, COLOR_YELLOW);
+    lobbyChat->addMessage("", player, ctrlChat::calcUniqueColor(player), text, COLOR_YELLOW);
     if(!lobbyChat->isVisible())
     {
         auto* tab = getCtrl<Window>(ID_optChatTab);
@@ -1147,7 +1147,7 @@ bool dskGameLobby::checkOptions()
     const GlobalGameSettings& ggs = gameLobby_->getSettings();
     if(ggs.objective == GameObjective::EconomyMode && !ggs.isEnabled(AddonId::PEACEFULMODE))
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(
           _("Economy mode"),
           _("You chose the economy mode. In economy mode the player or team that collects the most of certain goods "
             "wins (check the Economic progress window in game).\n\n"
@@ -1162,7 +1162,7 @@ bool dskGameLobby::checkOptions()
     } else if(ggs.isEnabled(AddonId::PEACEFULMODE)
               && (ggs.objective == GameObjective::Conquer3_4 || ggs.objective == GameObjective::TotalDomination))
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(
           _("Peaceful mode"),
           _("You chose a war based victory condition but peaceful mode is still active. Would you like to deactivate "
             "peaceful mode before you start? Choosing No will start the game, Yes will let you review the changes."),

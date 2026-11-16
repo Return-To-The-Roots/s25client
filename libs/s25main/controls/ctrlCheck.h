@@ -33,7 +33,7 @@ public:
     bool msgMouseMove(const MouseCoords& mc) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
     TextureColor tc;

@@ -20,7 +20,7 @@ nofBaker::nofBaker(const MapPoint pos, const unsigned char player, nobUsual* wor
 
 nofBaker::nofBaker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofBaker::DrawWorking(DrawPoint drawPt)
+void nofBaker::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> workOffset = {{{40, -4}, {-16, 8}, {-5, 9}, {-8, 7}, {-16, 8}}};
     constexpr helpers::EnumArray<std::array<DrawPoint, 8>, Nation> walkOffsets = {
@@ -42,7 +42,7 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
         Direction::NorthWest}}};
 
     unsigned max_id = 120;
-    unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
+    unsigned now_id = GAMECLIENT.interpolate(max_id, current_ev);
     const Nation wpNation = workplace->getNation();
     unsigned plColor = world->getPlayer(player).color;
 
@@ -53,13 +53,13 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 2) // hinauslaufen teil 1
     {
-        LOADER.building_cache[wpNation][BuildingType::Bakery].door.DrawFull(drawPt);
+        LOADER.building_cache[wpNation][BuildingType::Bakery].door.drawFull(drawPt);
         LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][0], now_id)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     }
     if((now_id >= 2) && (now_id < 4)) // hinauslaufen teil 2
     {
-        LOADER.building_cache[wpNation][BuildingType::Bakery].door.DrawFull(drawPt);
+        LOADER.building_cache[wpNation][BuildingType::Bakery].door.drawFull(drawPt);
         LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][1], now_id)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     }
@@ -71,7 +71,7 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     if((now_id >= 8) && (now_id < 16)) // brot in den ofen schieben
     {
         LOADER.getPlayerImage("rom_bobs", 182 + (now_id - 8))
-          ->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
+          ->drawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
 
         // "Brot-rein/raus"-Sound
         if((now_id % 8) == 4)
@@ -82,12 +82,12 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     }
     if((now_id >= 16) && (now_id < max_id - 16)) // warten
     {
-        LOADER.getPlayerImage("rom_bobs", 189)->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
+        LOADER.getPlayerImage("rom_bobs", 189)->drawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
     }
     if((now_id >= max_id - 16) && (now_id < max_id - 8)) // brot aus dem ofen holen
     {
         LOADER.getPlayerImage("rom_bobs", 182 + 7 - (now_id % 8))
-          ->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
+          ->drawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
 
         // "Brot-rein/raus"-Sound
         if((now_id % 8) == 4)
@@ -103,19 +103,19 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     }
     if((now_id >= max_id - 4) && (now_id < max_id - 2)) // reingehn teil 1
     {
-        LOADER.building_cache[wpNation][BuildingType::Bakery].door.DrawFull(drawPt);
+        LOADER.building_cache[wpNation][BuildingType::Bakery].door.drawFull(drawPt);
         LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][4], now_id % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     }
     if((now_id >= max_id - 2) && (now_id < max_id)) // reingehn teil 2
     {
-        LOADER.building_cache[wpNation][BuildingType::Bakery].door.DrawFull(drawPt);
+        LOADER.building_cache[wpNation][BuildingType::Bakery].door.drawFull(drawPt);
         LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][5], now_id % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     }
 }
 
-helpers::OptionalEnum<GoodType> nofBaker::ProduceWare()
+helpers::OptionalEnum<GoodType> nofBaker::produceWare()
 {
     return GoodType::Bread;
 }

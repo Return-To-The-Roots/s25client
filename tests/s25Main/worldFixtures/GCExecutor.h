@@ -15,7 +15,7 @@ public:
     GCExecutor() : curPlayer(0) {}
 
 protected:
-    bool AddGC(gc::GameCommandPtr gc) override
+    bool addGC(gc::GameCommandPtr gc) override
     {
         // Go through serialization to check if that works too
         gc::Deserializer ser;
@@ -27,12 +27,12 @@ protected:
         gc->Serialize(ser2);
         BOOST_TEST_REQUIRE(ser2.GetLength() == ser.GetLength());
         BOOST_TEST_REQUIRE(memcmp(ser2.GetData(), ser.GetData(), ser.GetLength()) == 0);
-        gc->Execute(getWorld(), curPlayer);
+        gc->execute(getWorld(), curPlayer);
         return true;
     }
 
     /// Constructs a road connecting 2 buildings and checks for success
-    void BuildRoadForBlds(MapPoint bldPosFrom, MapPoint bldPosTo);
+    void buildRoadForBlds(MapPoint bldPosFrom, MapPoint bldPosTo);
 
     virtual GameWorld& getWorld() = 0;
 };

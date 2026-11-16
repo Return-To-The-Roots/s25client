@@ -25,7 +25,7 @@ GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const boost::filesys
     Register(lua);
 
     lua["rttr"] = this;
-    lua["include"] = kaguya::function([this](const std::string& file) { Include(file); });
+    lua["include"] = kaguya::function([this](const std::string& file) { include(file); });
 }
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc)
@@ -44,9 +44,9 @@ bool GameDataLoader::Load()
 void GameDataLoader::Register(kaguya::State& state)
 {
     state["RTTRGameData"].setClass(kaguya::UserdataMetatable<GameDataLoader, LuaInterfaceBase>()
-                                     .addFunction("AddLandscape", &GameDataLoader::AddLandscape)
-                                     .addFunction("AddTerrainEdge", &GameDataLoader::AddTerrainEdge)
-                                     .addFunction("AddTerrain", &GameDataLoader::AddTerrain));
+                                     .addFunction("AddLandscape", &GameDataLoader::addLandscape)
+                                     .addFunction("AddTerrainEdge", &GameDataLoader::addTerrainEdge)
+                                     .addFunction("AddTerrain", &GameDataLoader::addTerrain));
 }
 
 class LuaIncludeError : public std::runtime_error
@@ -55,7 +55,7 @@ public:
     using std::runtime_error::runtime_error;
 };
 
-void GameDataLoader::Include(const std::string& filepath)
+void GameDataLoader::include(const std::string& filepath)
 {
     try
     {
@@ -96,17 +96,17 @@ void GameDataLoader::Include(const std::string& filepath)
     }
 }
 
-void GameDataLoader::AddLandscape(const kaguya::LuaTable& data)
+void GameDataLoader::addLandscape(const kaguya::LuaTable& data)
 {
     worldDesc_.landscapes.add(LandscapeDesc(data, worldDesc_));
 }
 
-void GameDataLoader::AddTerrainEdge(const kaguya::LuaTable& data)
+void GameDataLoader::addTerrainEdge(const kaguya::LuaTable& data)
 {
     worldDesc_.edges.add(EdgeDesc(data, worldDesc_));
 }
 
-void GameDataLoader::AddTerrain(const kaguya::LuaTable& data)
+void GameDataLoader::addTerrain(const kaguya::LuaTable& data)
 {
     worldDesc_.terrain.add(TerrainDesc(data, worldDesc_));
 }

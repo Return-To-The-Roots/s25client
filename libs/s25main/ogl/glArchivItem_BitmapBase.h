@@ -19,7 +19,7 @@ public:
     unsigned getTexture();
     unsigned getTextureNoCreate() const { return texture; }
     /// Löscht die GL-Textur (z.B fürs Neuerstellen)
-    void DeleteTexture();
+    void deleteTexture();
     /// Setzt den Texturfilter auf einen bestimmten Wert.
     virtual void setInterpolateTexture(bool interpolate);
 
@@ -30,7 +30,7 @@ public:
 
 private:
     /// Erzeugt die Textur.
-    void GenerateTexture();
+    void generateTexture();
 
     unsigned texture;         /// Das GL-Textur-Handle
     Extent textureSize_;      /// The size of the texture. Only valid when texture exists
@@ -40,9 +40,9 @@ protected:
     /// Returns the internal texure format
     int getInternalFormat() const;
     /// Fill a just generated texture (glTexImage2D calls)
-    virtual void FillTexture() = 0;
+    virtual void fillTexture() = 0;
     /// Calculate the actual texture size
-    virtual Extent CalcTextureSize() const = 0;
+    virtual Extent calcTextureSize() const = 0;
     /// Returns the currently set texture or 0 if none created
     unsigned getTexNoCreate() const { return texture; }
 };

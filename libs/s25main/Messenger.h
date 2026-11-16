@@ -27,7 +27,7 @@ class Messenger
 public:
     ~Messenger();
 
-    void Draw();
-    void AddMessage(const std::string& author, unsigned color_author, ChatDestination cd, const std::string& msg,
+    void draw();
+    void addMessage(const std::string& author, unsigned color_author, ChatDestination cd, const std::string& msg,
                     unsigned color_msg = COLOR_YELLOW);
 };

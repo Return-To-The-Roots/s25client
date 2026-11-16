@@ -25,8 +25,8 @@ public:
     dskLobby();
     ~dskLobby();
 
-    void UpdatePlayerList();
-    void UpdateServerList();
+    void updatePlayerList();
+    void updateServerList();
 
     void msgWindowClosed(IngameWindow& wnd) override;
 
@@ -51,5 +51,5 @@ protected:
     /**
      * Connects to the currently selected game and returns true on success
      */
-    bool ConnectToSelectedGame();
+    bool connectToSelectedGame();
 };

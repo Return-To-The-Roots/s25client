@@ -60,9 +60,9 @@ bool VideoDriver::isTouchEvent() const
     return mouse_xy.num_tfingers > 0;
 }
 
-VideoMode VideoDriver::FindClosestVideoMode(const VideoMode mode) const
+VideoMode VideoDriver::findClosestVideoMode(const VideoMode mode) const
 {
-    std::vector<VideoMode> avModes = ListVideoModes();
+    std::vector<VideoMode> avModes = listVideoModes();
     if(avModes.empty())
         throw std::runtime_error("No supported video modes found!");
     unsigned minSizeDiff = std::numeric_limits<unsigned>::max();
@@ -109,7 +109,7 @@ void VideoDriver::setGuiScalePercent(unsigned percent)
 
     guiScale_ = GuiScale(percent);
     scaledRenderSize_ = guiScale_.screenToView<Extent>(renderSize_);
-    CallBack->WindowResized();
+    CallBack->windowResized();
 
     // move cursor to new position in view space
     // must happen after window resize event to avoid drawing spurious hover events

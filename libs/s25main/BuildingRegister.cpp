@@ -19,21 +19,21 @@
 
 void BuildingRegister::Serialize(SerializedGameData& sgd) const
 {
-    sgd.PushObjectContainer(warehouses);
-    sgd.PushObjectContainer(harbors, true);
+    sgd.pushObjectContainer(warehouses);
+    sgd.pushObjectContainer(harbors, true);
     for(const auto bld : helpers::enumRange<BuildingType>())
     {
         if(BuildingProperties::isUsual(bld))
-            sgd.PushObjectContainer(buildings[bld], true);
+            sgd.pushObjectContainer(buildings[bld], true);
     }
-    sgd.PushObjectContainer(building_sites, true);
-    sgd.PushObjectContainer(military_buildings, true);
+    sgd.pushObjectContainer(building_sites, true);
+    sgd.pushObjectContainer(military_buildings, true);
 }
 
 void BuildingRegister::Deserialize(SerializedGameData& sgd)
 {
-    sgd.PopObjectContainer(warehouses);
-    sgd.PopObjectContainer(harbors, GO_Type::NobHarborbuilding);
+    sgd.popObjectContainer(warehouses);
+    sgd.popObjectContainer(harbors, GO_Type::NobHarborbuilding);
 
     if(sgd.getGameDataVersion() >= 6)
     {
@@ -46,36 +46,36 @@ void BuildingRegister::Deserialize(SerializedGameData& sgd)
                 continue;
 
             if(BuildingProperties::isUsual(bld))
-                sgd.PopObjectContainer(buildings[bld], GO_Type::NobUsual);
+                sgd.popObjectContainer(buildings[bld], GO_Type::NobUsual);
         }
-        sgd.PopObjectContainer(building_sites, GO_Type::Buildingsite);
-        sgd.PopObjectContainer(military_buildings, GO_Type::NobMilitary);
+        sgd.popObjectContainer(building_sites, GO_Type::Buildingsite);
+        sgd.popObjectContainer(military_buildings, GO_Type::NobMilitary);
     } else if(sgd.getGameDataVersion() >= 2)
-        Deserialize2(sgd);
+        deserialize2(sgd);
 }
 
-void BuildingRegister::Deserialize2(SerializedGameData& sgd)
+void BuildingRegister::deserialize2(SerializedGameData& sgd)
 {
     // Pop all buildings starting at the first usual building
     for(unsigned i = static_cast<uint8_t>(BuildingType::GraniteMine); i < helpers::NumEnumValues_v<BuildingType>; ++i)
-        sgd.PopObjectContainer(buildings[BuildingType(i)], GO_Type::NobUsual);
-    sgd.PopObjectContainer(building_sites, GO_Type::Buildingsite);
-    sgd.PopObjectContainer(military_buildings, GO_Type::NobMilitary);
+        sgd.popObjectContainer(buildings[BuildingType(i)], GO_Type::NobUsual);
+    sgd.popObjectContainer(building_sites, GO_Type::Buildingsite);
+    sgd.popObjectContainer(military_buildings, GO_Type::NobMilitary);
 }
 
-void BuildingRegister::Add(noBuildingSite* building_site)
+void BuildingRegister::add(noBuildingSite* building_site)
 {
     RTTR_Assert(!helpers::contains(building_sites, building_site));
     building_sites.push_back(building_site);
 }
 
-void BuildingRegister::Remove(noBuildingSite* building_site)
+void BuildingRegister::remove(noBuildingSite* building_site)
 {
     RTTR_Assert(helpers::contains(building_sites, building_site));
     building_sites.remove(building_site);
 }
 
-void BuildingRegister::Add(noBuilding* bld, BuildingType bldType)
+void BuildingRegister::add(noBuilding* bld, BuildingType bldType)
 {
     if(BuildingProperties::isMilitary(bldType))
     {
@@ -97,7 +97,7 @@ void BuildingRegister::Add(noBuilding* bld, BuildingType bldType)
     }
 }
 
-void BuildingRegister::Remove(noBuilding* bld, BuildingType bldType)
+void BuildingRegister::remove(noBuilding* bld, BuildingType bldType)
 {
     if(BuildingProperties::isMilitary(bldType))
     {
@@ -146,16 +146,16 @@ BuildingCount BuildingRegister::getBuildingNums() const
     return bc;
 }
 
-helpers::EnumArray<uint16_t, BuildingType> BuildingRegister::CalcProductivities() const
+helpers::EnumArray<uint16_t, BuildingType> BuildingRegister::calcProductivities() const
 {
     helpers::EnumArray<uint16_t, BuildingType> productivities;
 
     for(const auto bld : helpers::enumRange<BuildingType>())
-        productivities[bld] = static_cast<uint16_t>(CalcAverageProductivity(bld));
+        productivities[bld] = static_cast<uint16_t>(calcAverageProductivity(bld));
     return productivities;
 }
 
-unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
+unsigned BuildingRegister::calcAverageProductivity(BuildingType bldType) const
 {
     if(holds_alternative<std::nullopt_t>(BLD_WORK_DESC[bldType].producedWare))
         return 0;
@@ -171,7 +171,7 @@ unsigned BuildingRegister::CalcAverageProductivity(BuildingType bldType) const
     return productivity;
 }
 
-unsigned short BuildingRegister::CalcAverageProductivity() const
+unsigned short BuildingRegister::calcAverageProductivity() const
 {
     unsigned totalProductivity = 0;
     unsigned numBlds = 0;

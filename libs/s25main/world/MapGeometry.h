@@ -10,7 +10,7 @@
 
 Position getNeighbour(const Position& p, Direction dir);
 Position getNeighbour2(Position pt, unsigned dir);
-MapPoint MakeMapPoint(Position pt, const MapExtent& size);
+MapPoint makeMapPoint(Position pt, const MapExtent& size);
 /// Return the position of the node on a flat map
 Position getNodePos(MapPoint pt);
 Position getNodePos(Position pt);

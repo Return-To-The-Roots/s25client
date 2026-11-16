@@ -17,7 +17,7 @@ bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const
     {
         // Found an entry --> Check if the route is still valid
         MapPoint checkedGoal;
-        if(world.CheckTradeRoute(paths[entryIdx].path.start, paths[entryIdx].path.route, 0, player, &checkedGoal))
+        if(world.checkTradeRoute(paths[entryIdx].path.start, paths[entryIdx].path.route, 0, player, &checkedGoal))
         {
             RTTR_Assert(checkedGoal == start || checkedGoal == goal);
             paths[entryIdx].lastUse = world.getEvMgr().getCurrentGF();
@@ -32,7 +32,7 @@ bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const
     }
 
     std::vector<Direction> route;
-    if(!world.FindTradePath(start, goal, player, std::numeric_limits<unsigned>::max(), false, &route))
+    if(!world.findTradePath(start, goal, player, std::numeric_limits<unsigned>::max(), false, &route))
         return false;
 
     addEntry(TradePath(start, goal, std::move(route)), player);

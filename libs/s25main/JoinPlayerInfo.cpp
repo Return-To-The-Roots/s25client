@@ -25,7 +25,7 @@ void JoinPlayerInfo::Serialize(Serializer& ser) const
     ser.PushBool(isReady);
 }
 
-void JoinPlayerInfo::FixSwappedSaveSlot(JoinPlayerInfo& other)
+void JoinPlayerInfo::fixSwappedSaveSlot(JoinPlayerInfo& other)
 {
     // TODO: This has a code smell.
     // Probably some composition instead of inheritance required?
@@ -41,10 +41,10 @@ void JoinPlayerInfo::FixSwappedSaveSlot(JoinPlayerInfo& other)
 void JoinPlayerInfo::setAIName(unsigned playerId)
 {
     RTTR_Assert(ps == PlayerState::AI);
-    name = MakeAIName(aiInfo, playerId);
+    name = makeAIName(aiInfo, playerId);
 }
 
-std::string JoinPlayerInfo::MakeAIName(const AI::Info& aiInfo, unsigned playerId)
+std::string JoinPlayerInfo::makeAIName(const AI::Info& aiInfo, unsigned playerId)
 {
     std::string name =
       (boost::format((aiInfo.type == AI::Type::Dummy) ? _("Dummy %u") : _("Computer %u")) % playerId).str();

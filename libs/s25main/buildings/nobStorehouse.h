@@ -19,7 +19,7 @@ public:
     unsigned getMilitaryRadius() const override { return 0; }
     bool isAttackable(unsigned /*playerIdx*/) const override { return false; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 };

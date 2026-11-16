@@ -17,23 +17,23 @@ ctrlComboBox::ctrlComboBox(Window* parent, unsigned id, const DrawPoint& pos, co
     : Window(parent, id, pos, size), tc(tc), font(font), max_list_height(max_list_height), readonly(readonly),
       suppressSelectEvent(false)
 {
-    AddList(0, DrawPoint(0, size.y), Extent(size.x, 4), tc, font)->setVisible(false);
+    addList(0, DrawPoint(0, size.y), Extent(size.x, 4), tc, font)->setVisible(false);
 
     if(!readonly)
-        AddImageButton(1, DrawPoint(size.x - size.y, 0), Extent(size.y, size.y), tc, LOADER.getImageN("io", 34));
+        addImageButton(1, DrawPoint(size.x - size.y, 0), Extent(size.y, size.y), tc, LOADER.getImageN("io", 34));
 
-    Resize(size);
+    resize(size);
 }
 
-void ctrlComboBox::Resize(const Extent& newSize)
+void ctrlComboBox::resize(const Extent& newSize)
 {
-    Window::Resize(newSize);
+    Window::resize(newSize);
 
     auto* button = getCtrl<ctrlButton>(1);
     if(button)
     {
         button->setPos(DrawPoint(newSize.x - newSize.y, 0));
-        button->Resize(Extent(newSize.y, newSize.y));
+        button->resize(Extent(newSize.y, newSize.y));
     }
 
     auto* list = getCtrl<ctrlList>(0);
@@ -45,7 +45,7 @@ void ctrlComboBox::Resize(const Extent& newSize)
     {
         // zu große geworden?
         listSize.y += font->getHeight();
-        unsigned short scaledMaxHeight = ScaleIf(Extent(0, max_list_height)).y;
+        unsigned short scaledMaxHeight = scaleIf(Extent(0, max_list_height)).y;
 
         if(listSize.y > scaledMaxHeight)
         {
@@ -60,7 +60,7 @@ void ctrlComboBox::Resize(const Extent& newSize)
     }
 
     list->setPos(DrawPoint(0, newSize.y));
-    list->Resize(listSize);
+    list->resize(listSize);
 }
 
 std::optional<std::string> ctrlComboBox::getSelectedText() const
@@ -75,7 +75,7 @@ std::optional<std::string> ctrlComboBox::getSelectedText() const
 bool ctrlComboBox::msgMouseMove(const MouseCoords& mc)
 {
     // Für Button und Liste weiterleiten
-    return RelayMouseMessage(&Window::msgMouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }
 
 bool ctrlComboBox::msgLeftDown(const MouseCoords& mc)
@@ -86,25 +86,25 @@ bool ctrlComboBox::msgLeftDown(const MouseCoords& mc)
     if(!readonly && !IsPointInRect(mc.pos, getFullDrawRect(list)))
     {
         // Liste wieder ausblenden
-        ShowList(false);
+        showList(false);
         return false;
     }
 
     if(!readonly && IsPointInRect(mc.pos, getDrawRect()))
     {
         // Liste wieder ein/ausblenden
-        ShowList(!list->isVisible());
+        showList(!list->isVisible());
         return true;
     }
 
     // Für Button und Liste weiterleiten
-    return RelayMouseMessage(&Window::msgLeftDown, mc);
+    return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
 bool ctrlComboBox::msgLeftUp(const MouseCoords& mc)
 {
     // Für Button und Liste weiterleiten
-    return RelayMouseMessage(&Window::msgLeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
 bool ctrlComboBox::msgRightDown(const MouseCoords& mc)
@@ -112,13 +112,13 @@ bool ctrlComboBox::msgRightDown(const MouseCoords& mc)
     auto* list = getCtrl<ctrlList>(0);
 
     // Für Button und Liste weiterleiten (und danach erst schließen)
-    bool ret = RelayMouseMessage(&Window::msgRightDown, mc);
+    bool ret = relayMouseMessage(&Window::msgRightDown, mc);
 
     // Clicked on list -> close it
     if(!readonly && IsPointInRect(mc.pos, list->getDrawRect()))
     {
         // Liste wieder ausblenden
-        ShowList(false);
+        showList(false);
     }
 
     return ret;
@@ -131,7 +131,7 @@ bool ctrlComboBox::msgWheelUp(const MouseCoords& mc)
 
     auto* list = getCtrl<ctrlList>(0);
     if(list->isVisible() && IsPointInRect(mc.pos, list->getDrawRect()))
-        return RelayMouseMessage(&Window::msgWheelUp, mc);
+        return relayMouseMessage(&Window::msgWheelUp, mc);
 
     if(IsPointInRect(mc.pos, getDrawRect()))
     {
@@ -154,7 +154,7 @@ bool ctrlComboBox::msgWheelDown(const MouseCoords& mc)
     if(list->isVisible() && IsPointInRect(mc.pos, list->getDrawRect()))
     {
         // Scrolled in opened list ->
-        return RelayMouseMessage(&Window::msgWheelDown, mc);
+        return relayMouseMessage(&Window::msgWheelDown, mc);
     }
 
     if(IsPointInRect(mc.pos, getDrawRect()))
@@ -177,7 +177,7 @@ Rect ctrlComboBox::getFullDrawRect(const ctrlList* list)
 void ctrlComboBox::msgListSelectItem(unsigned, const int selection)
 {
     // Liste wieder ausblenden
-    ShowList(false);
+    showList(false);
 
     // ist in der Liste überhaupt was drin?
     if(selection >= 0 && !suppressSelectEvent)
@@ -187,16 +187,16 @@ void ctrlComboBox::msgListSelectItem(unsigned, const int selection)
     }
 }
 
-void ctrlComboBox::AddItem(const std::string& text)
+void ctrlComboBox::addItem(const std::string& text)
 {
-    getCtrl<ctrlList>(0)->AddItem(text);
-    Resize(getSize());
+    getCtrl<ctrlList>(0)->addItem(text);
+    resize(getSize());
 }
 
-void ctrlComboBox::DeleteAllItems()
+void ctrlComboBox::deleteAllItems()
 {
-    getCtrl<ctrlList>(0)->DeleteAllItems();
-    Resize(getSize());
+    getCtrl<ctrlList>(0)->deleteAllItems();
+    resize(getSize());
 }
 
 void ctrlComboBox::setSelection(unsigned selection)
@@ -207,33 +207,33 @@ void ctrlComboBox::setSelection(unsigned selection)
     suppressSelectEvent = false;
 }
 
-void ctrlComboBox::Draw_()
+void ctrlComboBox::drawImpl()
 {
     auto* liste = getCtrl<ctrlList>(0);
 
-    Draw3D(Rect(getDrawPos(), getSize()), tc, false);
+    draw3D(Rect(getDrawPos(), getSize()), tc, false);
 
     // Show selected item in the box
     if(liste->getNumLines() > 0)
     {
-        font->Draw(getDrawPos() + DrawPoint(2, getSize().y / 2), liste->getSelItemText(), FontStyle::VCENTER,
+        font->draw(getDrawPos() + DrawPoint(2, getSize().y / 2), liste->getSelItemText(), FontStyle::VCENTER,
                    COLOR_YELLOW, getSize().x - 2 - getSize().y, "");
     }
 
     // Draw button manually as we can't use DrawControls which would draw the list we do in Msg_PaintAfter
     auto* button = getCtrl<ctrlButton>(1);
     if(button)
-        button->Draw();
+        button->draw();
 }
 
 void ctrlComboBox::msgPaintAfter()
 {
     // Draw list now so it is on top of everything
-    getCtrl<ctrlList>(0)->Draw();
+    getCtrl<ctrlList>(0)->draw();
     Window::msgPaintAfter();
 }
 
-void ctrlComboBox::ShowList(bool show)
+void ctrlComboBox::showList(bool show)
 {
     auto* list = getCtrl<ctrlList>(0);
     if(list->isVisible() == show)
@@ -246,9 +246,9 @@ void ctrlComboBox::ShowList(bool show)
 
     // Lock/unlock region of extended list
     if(show)
-        getParent()->LockRegion(this, list->getDrawRect());
+        getParent()->lockRegion(this, list->getDrawRect());
     else
-        getParent()->FreeRegion(this);
+        getParent()->freeRegion(this);
 
-    LOADER.getSoundN("sound", 113)->Play(255, false);
+    LOADER.getSoundN("sound", 113)->play(255, false);
 }

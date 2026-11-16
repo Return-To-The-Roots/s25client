@@ -25,11 +25,11 @@ public:
 
     GO_Type getGOT() const final { return GO_Type::NobHq; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     unsigned getMilitaryRadius() const override { return HQ_RADIUS; }
 
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
     bool isTent() const { return isTent_; }
     void setIsTent(const bool isTent) { isTent_ = isTent; }
 

@@ -18,12 +18,12 @@ iwHelp::iwHelp(const std::string& content)
                    LOADER.getImageN("io", 1))
 {
     // Größe des Fensters und des Controls nach der Anzahl der Zeilen
-    ctrlMultiline* text = AddMultiline(2, DrawPoint(contentOffset), getIwSize(), TextureColor::Green1, NormalFont);
+    ctrlMultiline* text = addMultiline(2, DrawPoint(contentOffset), getIwSize(), TextureColor::Green1, NormalFont);
     text->setNumVisibleLines(MAX_LINES);
-    text->ShowBackground(false);
-    text->AddString(content, COLOR_YELLOW, false);
+    text->showBackground(false);
+    text->addString(content, COLOR_YELLOW, false);
     // Shrink to content
-    text->Resize(text->getContentSize());
+    text->resize(text->getContentSize());
     setIwSize(text->getSize());
-    MoveNextToMouse();
+    moveNextToMouse();
 }

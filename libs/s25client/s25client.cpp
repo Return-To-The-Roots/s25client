@@ -186,8 +186,8 @@ void handleException(void* pCtx = nullptr) noexcept
         if(shouldSendDebugData())
         {
             DebugInfo di;
-            di.SendReplay();
-            di.SendStackTrace(stacktrace);
+            di.sendReplay();
+            di.sendStackTrace(stacktrace);
         }
     } catch(...)
     { //-V565
@@ -215,10 +215,10 @@ LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
 void InstallSignalHandlers()
 {
 #ifdef _WIN32
-    SetConsoleCtrlHandler(ConsoleSignalHandler, TRUE);
+    SetConsoleCtrlHandler(consoleSignalHandler, TRUE);
 #else
     struct sigaction sa;
-    sa.sa_handler = ConsoleSignalHandler;
+    sa.sa_handler = consoleSignalHandler;
     sa.sa_flags = 0; // SA_RESTART would not allow to interrupt connect call;
     sigemptyset(&sa.sa_mask);
 
@@ -404,7 +404,7 @@ bool InitGame(GameManager& gameManager)
     }
 
     // Spiel starten
-    if(!gameManager.Start())
+    if(!gameManager.start())
     {
         s25util::error("Failed to start the game");
         return false;
@@ -456,13 +456,13 @@ int RunProgram(po::variables_map& options)
             if(options.count("ai"))
                 aiPlayers = options["ai"].as<std::vector<std::string>>();
 
-            if(!QuickStartGame(options["map"].as<std::string>(), aiPlayers))
+            if(!quickStartGame(options["map"].as<std::string>(), aiPlayers))
                 return 1;
         }
 
         // Hauptschleife
 
-        while(gameManager.Run())
+        while(gameManager.run())
         {
 #ifndef _WIN32
             killme = false;
@@ -470,7 +470,7 @@ int RunProgram(po::variables_map& options)
         }
 
         // Spiel beenden
-        gameManager.Stop();
+        gameManager.stop();
         libsiedler2::setAllocator(nullptr);
     } catch(const RTTR_AssertError& error)
     {

@@ -33,7 +33,7 @@ ctrlChat::ctrlChat(Window* parent, unsigned id, const DrawPoint& pos, const Exte
     page_size = (size.y - 4) / (font->getHeight() + 2);
 
     // Scrollbalken hinzufügen
-    AddScrollBar(0, DrawPoint(size.x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, size.y), SCROLLBAR_WIDTH, tc,
+    addScrollBar(0, DrawPoint(size.x - SCROLLBAR_WIDTH, 0), Extent(SCROLLBAR_WIDTH, size.y), SCROLLBAR_WIDTH, tc,
                  page_size);
 
     // Breite der Klammern <> um die Spielernamen berechnen
@@ -46,14 +46,14 @@ ctrlChat::~ctrlChat() = default;
 /**
  *  Größe ändern
  */
-void ctrlChat::Resize(const Extent& newSize)
+void ctrlChat::resize(const Extent& newSize)
 {
     const bool x_changed = (getSize().x != newSize.x && !chat_lines.empty());
-    Window::Resize(newSize);
+    Window::resize(newSize);
 
     auto* scroll = getCtrl<ctrlScrollBar>(0);
     scroll->setPos(DrawPoint(newSize.x - SCROLLBAR_WIDTH, 0));
-    scroll->Resize(Extent(SCROLLBAR_WIDTH, newSize.y));
+    scroll->resize(Extent(SCROLLBAR_WIDTH, newSize.y));
 
     // Remember some things
     const bool was_on_bottom = (scroll->getScrollPos() + page_size == chat_lines.size());
@@ -68,7 +68,7 @@ void ctrlChat::Resize(const Extent& newSize)
     {
         chat_lines.clear();
         for(unsigned short i = 0; i < raw_chat_lines.size(); ++i)
-            WrapLine(i);
+            wrapLine(i);
     }
 
     // Zeilen pro Seite festlegen errechnen
@@ -100,12 +100,12 @@ void ctrlChat::Resize(const Extent& newSize)
 /**
  *  Zeichnet das Chat-Control.
  */
-void ctrlChat::Draw_()
+void ctrlChat::drawImpl()
 {
     // Box malen
-    Draw3D(Rect(getDrawPos(), getSize()), tc, false);
+    draw3D(Rect(getDrawPos(), getSize()), tc, false);
 
-    Window::Draw_();
+    Window::drawImpl();
 
     // Wieviele Linien anzeigen?
     unsigned show_lines = (page_size > unsigned(chat_lines.size()) ? unsigned(chat_lines.size()) : page_size);
@@ -122,33 +122,33 @@ void ctrlChat::Draw_()
             // Zeit, Spieler und danach Textnachricht
             if(!line->time_string.empty())
             {
-                font->Draw(curTextPos, line->time_string, FontStyle{}, time_color);
+                font->draw(curTextPos, line->time_string, FontStyle{}, time_color);
                 curTextPos.x += font->getWidth(line->time_string);
             }
 
             if(!line->player.empty())
             {
                 // Klammer 1 (<)
-                font->Draw(curTextPos, "<", FontStyle{}, line->player_color);
+                font->draw(curTextPos, "<", FontStyle{}, line->player_color);
                 curTextPos.x += bracket1_size;
                 // Spielername
-                font->Draw(curTextPos, line->player, FontStyle{}, line->player_color);
+                font->draw(curTextPos, line->player, FontStyle{}, line->player_color);
                 curTextPos.x += font->getWidth(line->player);
                 // Klammer 2 (>)
-                font->Draw(curTextPos, "> ", FontStyle{}, line->player_color);
+                font->draw(curTextPos, "> ", FontStyle{}, line->player_color);
                 curTextPos.x += bracket2_size;
             }
         }
         visit(
           [this, curTextPos](const auto& line) { // Draw msg
-              this->font->Draw(curTextPos, line.msg, FontStyle{}, line.msg_color);
+              this->font->draw(curTextPos, line.msg, FontStyle{}, line.msg_color);
           },
           chat_lines[i + pos]);
         textPos.y += font->getHeight() + 2;
     }
 }
 
-void ctrlChat::WrapLine(unsigned short i)
+void ctrlChat::wrapLine(unsigned short i)
 {
     const RawChatLine& line = raw_chat_lines[i];
 
@@ -169,7 +169,7 @@ void ctrlChat::WrapLine(unsigned short i)
       font->getWrapInfo(line.msg, getSize().x - prefix_width - 2 - SCROLLBAR_WIDTH, getSize().x - 2 - SCROLLBAR_WIDTH);
 
     // Message-Strings erzeugen aus den WrapInfo
-    std::vector<std::string> strings = wi.CreateSingleStrings(line.msg);
+    std::vector<std::string> strings = wi.createSingleStrings(line.msg);
 
     // Zeilen hinzufügen
     for(unsigned i = 0; i < strings.size(); ++i)
@@ -186,7 +186,7 @@ void ctrlChat::WrapLine(unsigned short i)
     }
 }
 
-void ctrlChat::AddMessage(const std::string& time_string, const std::string& player, const unsigned player_color,
+void ctrlChat::addMessage(const std::string& time_string, const std::string& player, const unsigned player_color,
                           const std::string& msg, const unsigned msg_color)
 {
     RawChatLine line;
@@ -207,7 +207,7 @@ void ctrlChat::AddMessage(const std::string& time_string, const std::string& pla
     LOG.write("\n");
 
     // Umbrechen
-    WrapLine(raw_chat_lines.size() - 1);
+    wrapLine(raw_chat_lines.size() - 1);
 
     // Scrollbar Bescheid sagen
     auto* scrollbar = getCtrl<ctrlScrollBar>(0);
@@ -220,17 +220,17 @@ void ctrlChat::AddMessage(const std::string& time_string, const std::string& pla
 
 bool ctrlChat::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgMouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }
 
 bool ctrlChat::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftDown, mc);
+    return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
 bool ctrlChat::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::msgLeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
 bool ctrlChat::msgWheelUp(const MouseCoords& mc)
@@ -238,7 +238,7 @@ bool ctrlChat::msgWheelUp(const MouseCoords& mc)
     if(IsPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(2, 2), getSize() - Extent(2, 4))))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
-        scrollbar->Scroll(-3);
+        scrollbar->scroll(-3);
         return true;
     } else
         return false;
@@ -249,15 +249,15 @@ bool ctrlChat::msgWheelDown(const MouseCoords& mc)
     if(IsPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(2, 2), getSize() - Extent(2, 4))))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
-        scrollbar->Scroll(+3);
+        scrollbar->scroll(+3);
         return true;
     } else
         return false;
 }
 
-unsigned ctrlChat::CalcUniqueColor(const std::string& name)
+unsigned ctrlChat::calcUniqueColor(const std::string& name)
 {
-    unsigned checksum = CalcChecksumOfBuffer(name.c_str(), name.length()) * name.length();
+    unsigned checksum = calcChecksumOfBuffer(name.c_str(), name.length()) * name.length();
     unsigned color = checksum | (checksum << 12) | 0xff000000;
     return color;
 }

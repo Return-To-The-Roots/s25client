@@ -29,7 +29,7 @@ CampaignDataLoader::CampaignDataLoader(CampaignDescription& campaignDesc, const 
 
 CampaignDataLoader::~CampaignDataLoader() = default;
 
-bool CampaignDataLoader::CheckScriptVersion()
+bool CampaignDataLoader::checkScriptVersion()
 {
     kaguya::LuaRef func = lua["getRequiredLuaVersion"];
     if(func.type() == LUA_TFUNCTION)
@@ -57,7 +57,7 @@ bool CampaignDataLoader::Load()
         if(!loadScript(curFile_))
             return false;
 
-        if(!CheckScriptVersion())
+        if(!checkScriptVersion())
             throw std::runtime_error("Wrong lua script version.");
 
         kaguya::LuaRef entry = lua["campaign"];

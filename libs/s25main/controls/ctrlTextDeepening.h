@@ -19,12 +19,12 @@ public:
 
     Rect getBoundaryRect() const override;
     /// Changes width so at most this many chars can be shown
-    void ResizeForMaxChars(unsigned numChars);
+    void resizeForMaxChars(unsigned numChars);
 
 protected:
-    void DrawContent() const override;
+    void drawContent() const override;
 
 private:
-    DrawPoint CalcTextPos() const;
+    DrawPoint calcTextPos() const;
     FontStyle style_;
 };
