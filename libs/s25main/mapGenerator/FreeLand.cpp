@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "mapGenerator/FreeLand.h"
+#include "helpers/EnumRange.h"
 #include "helpers/containerUtils.h"
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/TextureHelper.h"
@@ -28,14 +29,14 @@ namespace {
     /// Number of neighbors within an area required for a node to be considered a gap of the area
     constexpr unsigned minGapNeighbors = 4;
 
-    void PlaceDecoration(Map& map, const MapPoint& pt, uint8_t index)
+    void placeDecoration(Map& map, const MapPoint& pt, uint8_t index)
     {
         map.objectTypes[pt] = OT_Decoration;
         map.objectInfos[pt] = index;
     }
 } // namespace
 
-Mountain CloseGaps(const MapExtent& size, const Mountain& area)
+Mountain closeGaps(const MapExtent& size, const Mountain& area)
 {
     NodeMapBase<uint8_t> neighbors;
     neighbors.Resize(size);
@@ -69,47 +70,47 @@ Mountain CloseGaps(const MapExtent& size, const Mountain& area)
     return closedArea;
 }
 
-LandFill SelectLandFill(RandomUtility& rnd, const LandFillAmounts& amounts, const LandFillAmounts& assigned)
+LandFill selectLandFill(RandomUtility& rnd, const LandFillAmounts& amounts, const LandFillAmounts& assigned)
 {
     const uint64_t totalAmount = std::accumulate(amounts.begin(), amounts.end(), uint64_t(0));
     const uint64_t totalAssigned = std::accumulate(assigned.begin(), assigned.end(), uint64_t(0));
 
-    if(totalAmount == 0 || (totalAssigned == 0 && amounts[static_cast<unsigned>(LandFill::Mountain)] > 0))
+    if(totalAmount == 0 || (totalAssigned == 0 && amounts[LandFill::Mountain] > 0))
         return LandFill::Mountain;
 
-    // A type is behind if its share of assigned nodes doesn't exceed its share of the amounts. This always applies to
-    // at least one of the types.
-    std::vector<unsigned> candidates;
+    // A type is behind if its share of assigned nodes doesn't exceed its share of the amounts.
+    // This always applies to at least one of the types.
+    std::vector<LandFill> candidates;
     unsigned candidateAmount = 0;
-    for(unsigned i = 0; i < numLandFills; i++)
+    for(const LandFill type : helpers::EnumRange<LandFill>())
     {
-        if(amounts[i] > 0 && assigned[i] * totalAmount <= totalAssigned * amounts[i])
+        if(amounts[type] > 0 && assigned[type] * totalAmount <= totalAssigned * amounts[type])
         {
-            candidates.push_back(i);
-            candidateAmount += amounts[i];
+            candidates.push_back(type);
+            candidateAmount += amounts[type];
         }
     }
 
     if(candidates.size() == 1)
-        return static_cast<LandFill>(candidates.front());
+        return candidates.front();
 
     unsigned value = rnd.RandomValue(1u, candidateAmount);
-    for(const unsigned candidate : candidates)
+    for(const LandFill candidate : candidates)
     {
         if(value <= amounts[candidate])
-            return static_cast<LandFill>(candidate);
+            return candidate;
         value -= amounts[candidate];
     }
 
-    return static_cast<LandFill>(candidates.back());
+    return candidates.back();
 }
 
-void RaiseDesertHill(Map& map, RandomUtility& rnd, const Mountain& area)
+void raiseDesertHill(Map& map, RandomUtility& rnd, const Mountain& area)
 {
     if(area.empty())
         return;
 
-    const auto footDistance = GetFootDistances(map.size, area);
+    const auto footDistance = getFootDistances(map.size, area);
     const unsigned maxDistance = GetMaximum(footDistance, area);
     // Small hills get less transitions to still contain some desert
     const unsigned transitions = std::min(desertTransitions, maxDistance);
@@ -153,18 +154,18 @@ void RaiseDesertHill(Map& map, RandomUtility& rnd, const Mountain& area)
 
         if((isCenter && !hasBones) || (isAroundCenter && rnd.ByChance(boneChance)))
         {
-            PlaceDecoration(map, pt, rnd.ByChance(50) ? OI_Bone1 : OI_Bone2);
+            placeDecoration(map, pt, rnd.ByChance(50) ? OI_Bone1 : OI_Bone2);
             hasBones = true;
         }
     }
 }
 
-void CreateSwamp(Map& map, RandomUtility& rnd, const Mountain& area)
+void createSwamp(Map& map, RandomUtility& rnd, const Mountain& area)
 {
     if(area.empty())
         return;
 
-    const auto swamp = map.textureMap.Find(IsImpassable);
+    const auto swamp = map.textureMap.Find(isImpassable);
     const uint8_t level = map.z[*std::min_element(
       area.begin(), area.end(), [&map](const MapPoint& lhs, const MapPoint& rhs) { return map.z[lhs] < map.z[rhs]; })];
 
@@ -201,12 +202,12 @@ void CreateSwamp(Map& map, RandomUtility& rnd, const Mountain& area)
 
         if(distance == 1 && map.objectTypes[pt] == libsiedler2::OT_Empty && rnd.ByChance(deadTreeChance))
         {
-            PlaceDecoration(map, pt, rnd.ByChance(50) ? OI_DeadTree : OI_DeadTreeTrunk);
+            placeDecoration(map, pt, rnd.ByChance(50) ? OI_DeadTree : OI_DeadTreeTrunk);
         }
     }
 }
 
-void SmoothDesertTransitions(Map& map)
+void smoothDesertTransitions(Map& map)
 {
     auto& textures = map.textureMap;
     const auto desert = textures.Find(IsCoastTerrain);
@@ -252,7 +253,7 @@ void SmoothDesertTransitions(Map& map)
         textures.Set(pt, desert);
 }
 
-std::vector<FilledArea> FillFreeLand(Map& map, RandomUtility& rnd, unsigned mountainLevel,
+std::vector<FilledArea> fillFreeLand(Map& map, RandomUtility& rnd, unsigned mountainLevel,
                                      const MountainSettings& settings, const LandFillAmounts& amounts)
 {
     std::vector<LandFill> types;
@@ -260,29 +261,29 @@ std::vector<FilledArea> FillFreeLand(Map& map, RandomUtility& rnd, unsigned moun
 
     // The type is required before the area is known as it has an impact on the size
     const auto getSize = [&](unsigned index) {
-        const LandFill type = SelectLandFill(rnd, amounts, assigned);
-        unsigned size = GetMountainSize(settings, index);
+        const LandFill type = selectLandFill(rnd, amounts, assigned);
+        unsigned size = getMountainSize(settings, index);
         if(type == LandFill::Swamp)
             size = std::max(size / 2, std::min(size, settings.minSize));
 
         types.push_back(type);
-        assigned[static_cast<unsigned>(type)] += size;
+        assigned[type] += size;
         return size;
     };
 
-    const auto areas = FindMountains(map, rnd, mountainLevel, settings.minFreeLand, getSize);
+    const auto areas = findMountains(map, rnd, mountainLevel, settings.minFreeLand, getSize);
 
     std::vector<FilledArea> filledAreas;
     for(unsigned i = 0; i < areas.size(); i++)
     {
         // Gaps would end up as pits within desert hills and as tiny islands within swamps
-        const Mountain area = types[i] == LandFill::Mountain ? areas[i] : CloseGaps(map.size, areas[i]);
+        const Mountain area = types[i] == LandFill::Mountain ? areas[i] : closeGaps(map.size, areas[i]);
 
         switch(types[i])
         {
-            case LandFill::Mountain: RaiseMountain(map, rnd, area); break;
-            case LandFill::Desert: RaiseDesertHill(map, rnd, area); break;
-            case LandFill::Swamp: CreateSwamp(map, rnd, area); break;
+            case LandFill::Mountain: raiseMountain(map, rnd, area); break;
+            case LandFill::Desert: raiseDesertHill(map, rnd, area); break;
+            case LandFill::Swamp: createSwamp(map, rnd, area); break;
         }
         filledAreas.push_back(FilledArea{types[i], area});
     }

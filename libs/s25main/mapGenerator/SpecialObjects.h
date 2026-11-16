@@ -69,54 +69,28 @@ constexpr uint8_t OI_Cross = 0x30;
 constexpr uint8_t OI_PileOfWood = 0x32;
 
 /// Checks whether the object is the centerpiece of a scene
-bool IsSpecialObject(uint8_t objectType, uint8_t objectInfo);
+bool isSpecialObject(uint8_t objectType, uint8_t objectInfo);
+
+/// Desired number of scenes for the map size. Only a few are placed to keep them special.
+unsigned getNumSpecialScenes(const MapExtent& size);
 
 /**
- * Computes the number of special scenes for a map. Only a few scenes are placed to keep them special.
- *
- * @param size size of the map
- *
- * @returns the desired number of scenes which grows with the size of the map.
+ * Searches for up to `number` centers of scenes. The middle of a scene needs buildable land without objects and keeps
+ * a distance to headquarters, harbors and other scenes. Does not modify the map.
  */
-unsigned GetNumSpecialScenes(const MapExtent& size);
+std::vector<MapPoint> findSceneSites(const Map& map, RandomUtility& rnd, unsigned number);
 
 /**
- * Searches for places for special scenes. The middle of a scene requires buildable land without any objects and keeps
- * a distance to headquarters, harbors and other scenes.
- *
- * @param map map to search for places (is not modified)
- * @param rnd random number generator
- * @param number desired number of scenes
- *
- * @returns the center of each scene - less than desired if the map doesn't provide enough suitable places.
+ * Creates a scene around the center: the type defines the objects and the ground, the style their arrangement.
+ * Only buildable land without objects is changed. The nodes of the scene are reserved to keep them free from trees and
+ * stone piles.
  */
-std::vector<MapPoint> FindSceneSites(const Map& map, RandomUtility& rnd, unsigned number);
+void createScene(Map& map, RandomUtility& rnd, const MapPoint& center, SceneType type, SceneStyle style);
 
 /**
- * Creates a scene around the specified center. The theme defines the special object, the objects around it and the
- * ground while the style defines how they are arranged. The ground blends into the surrounding land using intermediate
- * textures and hills rise smoothly. Only buildable land without objects is changed: water, mountains and other
- * landscapes in the outer part of a scene are left untouched. The nodes of the scene are reserved to keep them free
- * from random trees and stone piles.
- *
- * @param map reference to the map to place the scene on (manipulates textures, objects and z-values of the map)
- * @param rnd random number generator
- * @param center center of the scene which gets the special object
- * @param type theme of the scene
- * @param style layout of the scene
+ * Places a few scenes of mixed types and random styles on the map.
+ * Must be called once textures, headquarters and harbors are in place but before any other objects are added.
  */
-void CreateScene(Map& map, RandomUtility& rnd, const MapPoint& center, SceneType type, SceneStyle style);
-
-/**
- * Places a few special scenes on the map. The types of the scenes are mixed up and each scene gets a random
- * style. This function has to be called once
- * textures, headquarters and harbors are in place but before any other objects are added.
- *
- * @param map reference to the map to place the scenes on (manipulates textures, objects and z-values of the map)
- * @param rnd random number generator
- *
- * @returns the type and center of each new scene.
- */
-std::vector<Scene> AddSpecialScenes(Map& map, RandomUtility& rnd);
+std::vector<Scene> addSpecialScenes(Map& map, RandomUtility& rnd);
 
 } // namespace rttr::mapGenerator

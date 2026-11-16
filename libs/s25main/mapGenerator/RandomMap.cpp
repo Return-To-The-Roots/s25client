@@ -82,7 +82,7 @@ unsigned GetIslandSize(const MapExtent& size)
         return 1200;
 }
 
-unsigned GetMaxMountainSize(const MapExtent& size)
+unsigned getMaxMountainSize(const MapExtent& size)
 {
     const unsigned combinedSize = size.x * size.y;
     if(combinedSize <= 64 * 64)
@@ -97,7 +97,7 @@ unsigned GetMaxMountainSize(const MapExtent& size)
         return 1500;
 }
 
-unsigned GetMinFreeLand(unsigned mountainDistance, unsigned mountains)
+unsigned getMinFreeLand(unsigned mountainDistance, unsigned mountains)
 {
     constexpr unsigned minFreeLand = 4; // Headquarters and the transition textures around mountains need space
     const unsigned freeLandPercentage = 2 * (100 - std::min(mountains, 100u));
@@ -166,7 +166,7 @@ void RandomMap::Create(const MapSettings& settings)
     }
 
     if(settings_.specialObjects)
-        AddSpecialScenes(map_, rnd_);
+        addSpecialScenes(map_, rnd_);
 
     AddObjects(map_, rnd_, settings_);
     AddResources(map_, rnd_, settings_);
@@ -208,23 +208,23 @@ void RandomMap::CreateFreeIslands(unsigned waterNodes)
     }
 }
 
-void RandomMap::FillFreeLand(unsigned mountainLevel)
+void RandomMap::fillFreeLand(unsigned mountainLevel)
 {
     const LandFillAmounts amounts{settings_.mountains, settings_.desert, settings_.swamp};
     const unsigned totalAmount = settings_.mountains + settings_.desert + settings_.swamp;
     if(totalAmount == 0)
         return;
 
-    const auto freeLand = GetMinFreeLand(static_cast<unsigned>(settings_.mountainDistance), totalAmount);
+    const auto freeLand = getMinFreeLand(static_cast<unsigned>(settings_.mountainDistance), totalAmount);
     const auto minFreeLand = rnd_.RandomValue(freeLand, freeLand + 5u);
-    const auto maxMountainSize = GetMaxMountainSize(map_.size);
+    const auto maxMountainSize = getMaxMountainSize(map_.size);
     const auto maxSize = rnd_.RandomValue(maxMountainSize / 2, maxMountainSize);
 
-    rttr::mapGenerator::FillFreeLand(map_, rnd_, mountainLevel,
+    rttr::mapGenerator::fillFreeLand(map_, rnd_, mountainLevel,
                                      MountainSettings{minFreeLand, maxSize, maxMountainSize / 4}, amounts);
 }
 
-void RandomMap::AddTextures(unsigned mountainLevel)
+void RandomMap::addTextures(unsigned mountainLevel)
 {
     const NodeMapBase<TexturePair> textures = map_.getTextures();
 
@@ -239,7 +239,7 @@ void RandomMap::AddTextures(unsigned mountainLevel)
         }
     }
 
-    SmoothDesertTransitions(map_);
+    smoothDesertTransitions(map_);
 }
 
 void RandomMap::CreateMixedMap()
@@ -266,9 +266,9 @@ void RandomMap::CreateMixedMap()
 
     CreateFreeIslands(waterNodes);
 
-    FillFreeLand(mountainLevel);
+    fillFreeLand(mountainLevel);
 
-    AddTextures(mountainLevel);
+    addTextures(mountainLevel);
 
     PlaceHarbors(map_, rivers);
     PlaceHeadquarters(map_, rnd_, map_.players, settings_.mountainDistance);
@@ -312,9 +312,9 @@ void RandomMap::CreateWaterMap()
 
     const auto rivers = CreateRivers(center);
 
-    FillFreeLand(mountainLevel);
+    fillFreeLand(mountainLevel);
 
-    AddTextures(mountainLevel);
+    addTextures(mountainLevel);
 
     PlaceHarbors(map_, rivers);
 
@@ -338,9 +338,9 @@ void RandomMap::CreateLandMap()
     const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
     CreateRivers();
 
-    FillFreeLand(mountainLevel);
+    fillFreeLand(mountainLevel);
 
-    AddTextures(mountainLevel);
+    addTextures(mountainLevel);
 
     PlaceHeadquarters(map_, rnd_, map_.players, settings_.mountainDistance);
 }

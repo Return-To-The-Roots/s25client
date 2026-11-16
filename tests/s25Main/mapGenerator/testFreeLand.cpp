@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "PointOutput.h"
+#include "helpers/EnumRange.h"
 #include "mapGenFixtures.h"
 #include "mapGenerator/Algorithms.h"
 #include "mapGenerator/FreeLand.h"
@@ -20,11 +21,6 @@ constexpr uint8_t landHeight = 10;
 constexpr unsigned mountainLevel = 30;
 constexpr MountainSettings settings{3, 100, 25};
 constexpr unsigned numLandscapes = 3;
-
-unsigned idx(LandFill type)
-{
-    return static_cast<unsigned>(type);
-}
 
 struct FreeLandFixture : MapGenFixture
 {
@@ -75,36 +71,36 @@ unsigned countObjects(const Map& map, T_Predicate&& predicate)
 
 BOOST_FIXTURE_TEST_SUITE(FreeLandTests, FreeLandFixture)
 
-BOOST_AUTO_TEST_CASE(SelectLandFill_returns_mountain_without_any_amounts)
+BOOST_AUTO_TEST_CASE(selectLandFill_returns_mountain_without_any_amounts)
 {
     RandomUtility rnd(0);
 
-    BOOST_TEST((SelectLandFill(rnd, {0, 0, 0}, {0, 0, 0}) == LandFill::Mountain));
+    BOOST_TEST((selectLandFill(rnd, {0, 0, 0}, {0, 0, 0}) == LandFill::Mountain));
 }
 
-BOOST_AUTO_TEST_CASE(SelectLandFill_starts_with_mountain_if_desired)
+BOOST_AUTO_TEST_CASE(selectLandFill_starts_with_mountain_if_desired)
 {
     for(unsigned seed = 0; seed < 20; seed++)
     {
         RandomUtility rnd(seed);
-        BOOST_TEST_REQUIRE((SelectLandFill(rnd, {1, 100, 100}, {0, 0, 0}) == LandFill::Mountain));
+        BOOST_TEST_REQUIRE((selectLandFill(rnd, {1, 100, 100}, {0, 0, 0}) == LandFill::Mountain));
     }
 }
 
-BOOST_AUTO_TEST_CASE(SelectLandFill_returns_only_desired_types)
+BOOST_AUTO_TEST_CASE(selectLandFill_returns_only_desired_types)
 {
     RandomUtility rnd(0);
     LandFillAmounts assigned{};
 
     for(unsigned i = 0; i < 50; i++)
     {
-        const LandFill type = SelectLandFill(rnd, {0, 30, 0}, assigned);
+        const LandFill type = selectLandFill(rnd, {0, 30, 0}, assigned);
         BOOST_TEST_REQUIRE((type == LandFill::Desert));
-        assigned[idx(type)] += 10;
+        assigned[type] += 10;
     }
 }
 
-BOOST_AUTO_TEST_CASE(SelectLandFill_keeps_proportions_of_amounts)
+BOOST_AUTO_TEST_CASE(selectLandFill_keeps_proportions_of_amounts)
 {
     const LandFillAmounts amounts{50, 30, 20};
 
@@ -117,19 +113,20 @@ BOOST_AUTO_TEST_CASE(SelectLandFill_keeps_proportions_of_amounts)
         unsigned total = 0;
         for(unsigned size = 100; size > 40; size -= 5)
         {
-            assigned[idx(SelectLandFill(rnd, amounts, assigned))] += size;
+            assigned[selectLandFill(rnd, amounts, assigned)] += size;
             total += size;
         }
 
-        for(unsigned i = 0; i < numLandFills; i++)
+        for(const LandFill type : helpers::EnumRange<LandFill>())
         {
-            const int share = static_cast<int>(assigned[i] * 100 / total);
-            BOOST_TEST_REQUIRE(std::abs(share - static_cast<int>(amounts[i])) <= 15, "Type " << i << ": " << share);
+            const int share = static_cast<int>(assigned[type] * 100 / total);
+            BOOST_TEST_REQUIRE(std::abs(share - static_cast<int>(amounts[type])) <= 15,
+                               "Type " << rttr::enum_cast(type) << ": " << share);
         }
     }
 }
 
-BOOST_AUTO_TEST_CASE(SelectLandFill_varies_with_seed)
+BOOST_AUTO_TEST_CASE(selectLandFill_varies_with_seed)
 {
     const LandFillAmounts amounts{0, 50, 50};
     unsigned deserts = 0;
@@ -137,7 +134,7 @@ BOOST_AUTO_TEST_CASE(SelectLandFill_varies_with_seed)
     for(unsigned seed = 0; seed < 50; seed++)
     {
         RandomUtility rnd(seed);
-        if(SelectLandFill(rnd, amounts, {0, 0, 0}) == LandFill::Desert)
+        if(selectLandFill(rnd, amounts, {0, 0, 0}) == LandFill::Desert)
             deserts++;
     }
 
@@ -152,7 +149,7 @@ BOOST_AUTO_TEST_CASE(Swamp_and_desert_textures_exist_for_all_landscapes)
         landscape = DescIdx<LandscapeDesc>(i);
         const Map map = createMap(MapExtent(8, 8));
 
-        const auto swamp = map.textureMap.Find(IsImpassable);
+        const auto swamp = map.textureMap.Find(isImpassable);
         const auto desert = map.textureMap.Find(IsCoastTerrain);
 
         // The swamp and its equivalents share the same index in all landscapes
@@ -165,7 +162,7 @@ BOOST_AUTO_TEST_CASE(Swamp_and_desert_textures_exist_for_all_landscapes)
     }
 }
 
-BOOST_AUTO_TEST_CASE(RaiseDesertHill_is_lower_than_mountain_and_keeps_surroundings)
+BOOST_AUTO_TEST_CASE(raiseDesertHill_is_lower_than_mountain_and_keeps_surroundings)
 {
     Map hill = createLandMap(MapExtent(48, 48));
     Map mountain = createLandMap(MapExtent(48, 48));
@@ -173,8 +170,8 @@ BOOST_AUTO_TEST_CASE(RaiseDesertHill_is_lower_than_mountain_and_keeps_surroundin
     const Mountain area = createArea(hill, center, 10);
     RandomUtility rnd(0);
 
-    RaiseDesertHill(hill, rnd, area);
-    RaiseMountain(mountain, rnd, area);
+    raiseDesertHill(hill, rnd, area);
+    raiseMountain(mountain, rnd, area);
 
     BOOST_TEST(hill.z[center] > landHeight);
     BOOST_TEST(hill.z[center] < mountain.z[center]);
@@ -185,13 +182,13 @@ BOOST_AUTO_TEST_CASE(RaiseDesertHill_is_lower_than_mountain_and_keeps_surroundin
     }
 }
 
-BOOST_AUTO_TEST_CASE(RaiseDesertHill_rises_smoothly)
+BOOST_AUTO_TEST_CASE(raiseDesertHill_rises_smoothly)
 {
     Map map = createLandMap(MapExtent(48, 48));
     const Mountain area = createArea(map, MapPoint(24, 24), 10);
     RandomUtility rnd(0);
 
-    RaiseDesertHill(map, rnd, area);
+    raiseDesertHill(map, rnd, area);
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
@@ -205,7 +202,7 @@ BOOST_AUTO_TEST_CASE(RaiseDesertHill_rises_smoothly)
     }
 }
 
-BOOST_AUTO_TEST_CASE(RaiseDesertHill_applies_transitions_from_buildable_land_to_desert)
+BOOST_AUTO_TEST_CASE(raiseDesertHill_applies_transitions_from_buildable_land_to_desert)
 {
     for(unsigned i = 0; i < numLandscapes; i++)
     {
@@ -213,10 +210,10 @@ BOOST_AUTO_TEST_CASE(RaiseDesertHill_applies_transitions_from_buildable_land_to_
         Map map = createLandMap(MapExtent(48, 48));
         const MapPoint center(24, 24);
         const Mountain area = createArea(map, center, 8);
-        const auto footDistance = GetFootDistances(map.size, area);
+        const auto footDistance = getFootDistances(map.size, area);
         RandomUtility rnd(0);
 
-        RaiseDesertHill(map, rnd, area);
+        raiseDesertHill(map, rnd, area);
 
         auto transitions = map.textureMap.FindAll(IsBuildableCoast);
         map.textureMap.Sort(transitions, ByHumidity);
@@ -246,17 +243,17 @@ BOOST_AUTO_TEST_CASE(RaiseDesertHill_applies_transitions_from_buildable_land_to_
     }
 }
 
-BOOST_AUTO_TEST_CASE(RaiseDesertHill_places_bones_around_center_only)
+BOOST_AUTO_TEST_CASE(raiseDesertHill_places_bones_around_center_only)
 {
     for(unsigned seed = 0; seed < 10; seed++)
     {
         Map map = createLandMap(MapExtent(48, 48));
         const Mountain area = createArea(map, MapPoint(24, 24), 9);
-        const auto footDistance = GetFootDistances(map.size, area);
+        const auto footDistance = getFootDistances(map.size, area);
         const unsigned maxDistance = GetMaximum(footDistance, area);
         RandomUtility rnd(seed);
 
-        RaiseDesertHill(map, rnd, area);
+        raiseDesertHill(map, rnd, area);
 
         BOOST_TEST_REQUIRE(countObjects(map, [](const MapPoint&) { return true; }) > 0u);
         RTTR_FOREACH_PT(MapPoint, map.size)
@@ -271,26 +268,26 @@ BOOST_AUTO_TEST_CASE(RaiseDesertHill_places_bones_around_center_only)
     }
 }
 
-BOOST_AUTO_TEST_CASE(RaiseDesertHill_supports_tiny_areas)
+BOOST_AUTO_TEST_CASE(raiseDesertHill_supports_tiny_areas)
 {
     Map map = createLandMap(MapExtent(16, 16));
     const MapPoint center(8, 8);
     RandomUtility rnd(0);
 
-    RaiseDesertHill(map, rnd, Mountain{center});
-    RaiseDesertHill(map, rnd, Mountain{});
+    raiseDesertHill(map, rnd, Mountain{center});
+    raiseDesertHill(map, rnd, Mountain{});
 
     BOOST_TEST(map.textureMap.All(center, IsCoastTerrain));
     BOOST_TEST(map.objectTypes[center] == OT_Decoration);
 }
 
-BOOST_AUTO_TEST_CASE(RaiseDesertHill_does_not_exceed_maximum_height)
+BOOST_AUTO_TEST_CASE(raiseDesertHill_does_not_exceed_maximum_height)
 {
     Map map = createMap(MapExtent(32, 32));
     map.z.Resize(map.size, map.height.maximum - 1);
     RandomUtility rnd(0);
 
-    RaiseDesertHill(map, rnd, createArea(map, MapPoint(16, 16), 8));
+    raiseDesertHill(map, rnd, createArea(map, MapPoint(16, 16), 8));
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
@@ -298,7 +295,7 @@ BOOST_AUTO_TEST_CASE(RaiseDesertHill_does_not_exceed_maximum_height)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateSwamp_is_entirely_flat_and_impassable)
+BOOST_AUTO_TEST_CASE(createSwamp_is_entirely_flat_and_impassable)
 {
     for(unsigned i = 0; i < numLandscapes; i++)
     {
@@ -308,19 +305,19 @@ BOOST_AUTO_TEST_CASE(CreateSwamp_is_entirely_flat_and_impassable)
         const uint8_t lowest = map.z[MapPoint(12, 24)];
         RandomUtility rnd(0);
 
-        CreateSwamp(map, rnd, area);
+        createSwamp(map, rnd, area);
 
         for(const MapPoint& pt : area)
         {
             BOOST_TEST_REQUIRE(map.z[pt] == lowest, "At point " << pt);
-            BOOST_TEST_REQUIRE(map.textureMap.All(pt, IsImpassable), "At point " << pt);
+            BOOST_TEST_REQUIRE(map.textureMap.All(pt, isImpassable), "At point " << pt);
             BOOST_TEST_REQUIRE(helpers::contains(map.barren, pt), "At point " << pt);
         }
         BOOST_TEST(map.barren.size() == area.size());
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateSwamp_lowers_shore_towards_swamp)
+BOOST_AUTO_TEST_CASE(createSwamp_lowers_shore_towards_swamp)
 {
     Map map = createSlopedMap(MapExtent(48, 48));
     const Map original = createSlopedMap(MapExtent(48, 48));
@@ -329,7 +326,7 @@ BOOST_AUTO_TEST_CASE(CreateSwamp_lowers_shore_towards_swamp)
     const auto distances = DistancesTo(area, map.size);
     RandomUtility rnd(0);
 
-    CreateSwamp(map, rnd, area);
+    createSwamp(map, rnd, area);
 
     unsigned lowered = 0;
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -344,7 +341,7 @@ BOOST_AUTO_TEST_CASE(CreateSwamp_lowers_shore_towards_swamp)
     BOOST_TEST(lowered > 0u);
 }
 
-BOOST_AUTO_TEST_CASE(CreateSwamp_avoids_steep_slopes_on_steep_land)
+BOOST_AUTO_TEST_CASE(createSwamp_avoids_steep_slopes_on_steep_land)
 {
     Map map = createMap(MapExtent(48, 48));
     map.z.Resize(map.size, landHeight);
@@ -356,7 +353,7 @@ BOOST_AUTO_TEST_CASE(CreateSwamp_avoids_steep_slopes_on_steep_land)
     const Mountain area = createArea(map, MapPoint(16, 24), 5);
     RandomUtility rnd(0);
 
-    CreateSwamp(map, rnd, area);
+    createSwamp(map, rnd, area);
 
     for(const MapPoint& pt : map.z.GetPointsInRadiusWithCenter(MapPoint(16, 24), 10))
     {
@@ -373,7 +370,7 @@ BOOST_AUTO_TEST_CASE(CreateSwamp_avoids_steep_slopes_on_steep_land)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateSwamp_never_lowers_banks_below_rivers)
+BOOST_AUTO_TEST_CASE(createSwamp_never_lowers_banks_below_rivers)
 {
     // Rivers follow the height of the land instead of the sea level
     Map map = createSlopedMap(MapExtent(48, 48));
@@ -390,7 +387,7 @@ BOOST_AUTO_TEST_CASE(CreateSwamp_never_lowers_banks_below_rivers)
 
     // The river passes the upper side of the swamp at a distance of three nodes
     const Mountain area = createArea(map, MapPoint(18, 24), 6);
-    CreateSwamp(map, rnd, area);
+    createSwamp(map, rnd, area);
 
     unsigned lowered = 0;
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -410,7 +407,7 @@ BOOST_AUTO_TEST_CASE(CreateSwamp_never_lowers_banks_below_rivers)
     BOOST_TEST(lowered > 0u);
 }
 
-BOOST_AUTO_TEST_CASE(CreateSwamp_keeps_shape_of_other_landscapes)
+BOOST_AUTO_TEST_CASE(createSwamp_keeps_shape_of_other_landscapes)
 {
     Map map = createSlopedMap(MapExtent(48, 48));
     const Mountain area = createArea(map, MapPoint(18, 24), 6);
@@ -419,12 +416,12 @@ BOOST_AUTO_TEST_CASE(CreateSwamp_keeps_shape_of_other_landscapes)
     map.textureMap.Set(mountain, map.textureMap.Find(IsMinableMountain));
     RandomUtility rnd(0);
 
-    CreateSwamp(map, rnd, area);
+    createSwamp(map, rnd, area);
 
     BOOST_TEST(map.z[mountain] == height);
 }
 
-BOOST_AUTO_TEST_CASE(SmoothDesertTransitions_separates_desert_from_lush_land)
+BOOST_AUTO_TEST_CASE(smoothDesertTransitions_separates_desert_from_lush_land)
 {
     for(unsigned i = 0; i < numLandscapes; i++)
     {
@@ -440,7 +437,7 @@ BOOST_AUTO_TEST_CASE(SmoothDesertTransitions_separates_desert_from_lush_land)
         const MapPoint center(24, 24);
         const Mountain area = createArea(map, center, 6);
         RandomUtility rnd(0);
-        RaiseDesertHill(map, rnd, area);
+        raiseDesertHill(map, rnd, area);
         // Texturing coasts may replace the transitions of the hill
         for(const MapPoint& pt : area)
         {
@@ -450,7 +447,7 @@ BOOST_AUTO_TEST_CASE(SmoothDesertTransitions_separates_desert_from_lush_land)
         for(const MapPoint& pt : map.barren)
             map.textureMap.Set(pt, map.textureMap.Find(IsCoastTerrain));
 
-        SmoothDesertTransitions(map);
+        smoothDesertTransitions(map);
 
         const auto humidityOf = [this, &map](const Triangle& triangle) {
             return worldDesc.get(map.textureMap.Get(triangle)).humidity;
@@ -475,7 +472,7 @@ BOOST_AUTO_TEST_CASE(SmoothDesertTransitions_separates_desert_from_lush_land)
     }
 }
 
-BOOST_AUTO_TEST_CASE(SmoothDesertTransitions_keeps_maps_without_deserts)
+BOOST_AUTO_TEST_CASE(smoothDesertTransitions_keeps_maps_without_deserts)
 {
     Map map = createLandMap(MapExtent(32, 32));
     const auto land = map.textureMap.Find(IsBuildableLand);
@@ -484,10 +481,10 @@ BOOST_AUTO_TEST_CASE(SmoothDesertTransitions_keeps_maps_without_deserts)
         map.textureMap.Set(pt, land);
     }
     RandomUtility rnd(0);
-    CreateSwamp(map, rnd, createArea(map, MapPoint(16, 16), 4));
+    createSwamp(map, rnd, createArea(map, MapPoint(16, 16), 4));
     const auto before = map.getTextures();
 
-    SmoothDesertTransitions(map);
+    smoothDesertTransitions(map);
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
@@ -496,14 +493,14 @@ BOOST_AUTO_TEST_CASE(SmoothDesertTransitions_keeps_maps_without_deserts)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateSwamp_places_dead_trees_on_border_to_free_land_only)
+BOOST_AUTO_TEST_CASE(createSwamp_places_dead_trees_on_border_to_free_land_only)
 {
     Map map = createLandMap(MapExtent(48, 48));
     const Mountain area = createArea(map, MapPoint(24, 24), 6);
     const auto distances = DistancesTo(area, map.size);
     RandomUtility rnd(0);
 
-    CreateSwamp(map, rnd, area);
+    createSwamp(map, rnd, area);
 
     BOOST_TEST_REQUIRE(countObjects(map, [](const MapPoint&) { return true; }) > 0u);
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -517,7 +514,7 @@ BOOST_AUTO_TEST_CASE(CreateSwamp_places_dead_trees_on_border_to_free_land_only)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CloseGaps_adds_enclosed_nodes_only)
+BOOST_AUTO_TEST_CASE(closeGaps_adds_enclosed_nodes_only)
 {
     const Map map = createLandMap(MapExtent(32, 32));
     const MapPoint center(16, 16);
@@ -526,41 +523,41 @@ BOOST_AUTO_TEST_CASE(CloseGaps_adds_enclosed_nodes_only)
     area.erase(center);
     area.erase(MapPoint(13, 15));
 
-    BOOST_TEST((CloseGaps(map.size, area) == closed));
-    BOOST_TEST((CloseGaps(map.size, closed) == closed));
+    BOOST_TEST((closeGaps(map.size, area) == closed));
+    BOOST_TEST((closeGaps(map.size, closed) == closed));
 }
 
-BOOST_AUTO_TEST_CASE(FillFreeLand_creates_all_desired_types_on_disjoint_areas)
+BOOST_AUTO_TEST_CASE(fillFreeLand_creates_all_desired_types_on_disjoint_areas)
 {
     Map map = createLandMap(MapExtent(64, 64));
     RandomUtility rnd(0);
 
-    const auto areas = FillFreeLand(map, rnd, mountainLevel, settings, {50, 50, 50});
+    const auto areas = fillFreeLand(map, rnd, mountainLevel, settings, {50, 50, 50});
 
     BOOST_TEST_REQUIRE(areas.size() >= 3u);
     BOOST_TEST((areas.front().type == LandFill::Mountain));
 
     Mountain visited;
-    std::array<unsigned, numLandFills> count{};
+    helpers::EnumArray<unsigned, LandFill> count{};
     for(const FilledArea& area : areas)
     {
-        count[idx(area.type)]++;
+        count[area.type]++;
         for(const MapPoint& pt : area.nodes)
         {
             BOOST_TEST_REQUIRE(visited.insert(pt).second, "At point " << pt);
         }
     }
-    BOOST_TEST(count[idx(LandFill::Mountain)] > 0u);
-    BOOST_TEST(count[idx(LandFill::Desert)] > 0u);
-    BOOST_TEST(count[idx(LandFill::Swamp)] > 0u);
+    BOOST_TEST(count[LandFill::Mountain] > 0u);
+    BOOST_TEST(count[LandFill::Desert] > 0u);
+    BOOST_TEST(count[LandFill::Swamp] > 0u);
 }
 
-BOOST_AUTO_TEST_CASE(FillFreeLand_applies_textures_matching_the_type)
+BOOST_AUTO_TEST_CASE(fillFreeLand_applies_textures_matching_the_type)
 {
     Map map = createLandMap(MapExtent(64, 64));
     RandomUtility rnd(0);
 
-    for(const FilledArea& area : FillFreeLand(map, rnd, mountainLevel, settings, {50, 50, 50}))
+    for(const FilledArea& area : fillFreeLand(map, rnd, mountainLevel, settings, {50, 50, 50}))
     {
         const auto all = [&map, &area](bool (*predicate)(const TerrainDesc&)) {
             return std::all_of(area.nodes.begin(), area.nodes.end(),
@@ -575,20 +572,20 @@ BOOST_AUTO_TEST_CASE(FillFreeLand_applies_textures_matching_the_type)
         {
             case LandFill::Mountain: BOOST_TEST(all(IsMinableMountain)); break;
             case LandFill::Desert: BOOST_TEST(any(IsCoastTerrain)); break;
-            case LandFill::Swamp: BOOST_TEST(all(IsImpassable)); break;
+            case LandFill::Swamp: BOOST_TEST(all(isImpassable)); break;
         }
     }
 }
 
-BOOST_AUTO_TEST_CASE(FillFreeLand_creates_only_mountains_by_default)
+BOOST_AUTO_TEST_CASE(fillFreeLand_creates_only_mountains_by_default)
 {
     Map map = createLandMap(MapExtent(64, 64));
     Map expected = createLandMap(MapExtent(64, 64));
     RandomUtility rnd1(7);
     RandomUtility rnd2(7);
 
-    const auto areas = FillFreeLand(map, rnd1, mountainLevel, settings, {50, 0, 0});
-    const auto mountains = CreateMountains(expected, rnd2, mountainLevel, settings);
+    const auto areas = fillFreeLand(map, rnd1, mountainLevel, settings, {50, 0, 0});
+    const auto mountains = createMountains(expected, rnd2, mountainLevel, settings);
 
     BOOST_TEST_REQUIRE(areas.size() == mountains.size());
     for(unsigned i = 0; i < areas.size(); i++)
@@ -603,12 +600,12 @@ BOOST_AUTO_TEST_CASE(FillFreeLand_creates_only_mountains_by_default)
     BOOST_TEST(map.barren.empty());
 }
 
-BOOST_AUTO_TEST_CASE(FillFreeLand_limits_swamps_to_half_the_size)
+BOOST_AUTO_TEST_CASE(fillFreeLand_limits_swamps_to_half_the_size)
 {
     Map map = createLandMap(MapExtent(64, 64));
     RandomUtility rnd(0);
 
-    const auto areas = FillFreeLand(map, rnd, mountainLevel, settings, {0, 0, 50});
+    const auto areas = fillFreeLand(map, rnd, mountainLevel, settings, {0, 0, 50});
 
     BOOST_TEST_REQUIRE(!areas.empty());
     for(const FilledArea& area : areas)
@@ -620,14 +617,14 @@ BOOST_AUTO_TEST_CASE(FillFreeLand_limits_swamps_to_half_the_size)
     BOOST_TEST(areas.front().nodes.size() < settings.maxSize * 3 / 4);
 }
 
-BOOST_AUTO_TEST_CASE(FillFreeLand_leaves_no_free_land_beyond_limit)
+BOOST_AUTO_TEST_CASE(fillFreeLand_leaves_no_free_land_beyond_limit)
 {
     Map map = createLandMap(MapExtent(64, 64));
     RandomUtility rnd(0);
 
-    FillFreeLand(map, rnd, mountainLevel, settings, {20, 40, 40});
+    fillFreeLand(map, rnd, mountainLevel, settings, {20, 40, 40});
 
-    const auto distances = GetFreeLandDistances(map, mountainLevel);
+    const auto distances = getFreeLandDistances(map, mountainLevel);
     BOOST_TEST(*std::max_element(distances.begin(), distances.end()) <= settings.minFreeLand);
 }
 
@@ -643,8 +640,8 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_decoration_and_places_nothing_on_barren_no
     const Mountain swamp = createArea(map, MapPoint(8, 16), 4);
     const Mountain hill = createArea(map, MapPoint(22, 16), 5);
     RandomUtility rnd(0);
-    CreateSwamp(map, rnd, swamp);
-    RaiseDesertHill(map, rnd, hill);
+    createSwamp(map, rnd, swamp);
+    raiseDesertHill(map, rnd, hill);
     const auto typesBefore = map.objectTypes;
     const auto infosBefore = map.objectInfos;
 
@@ -678,7 +675,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_removes_decoration_around_headquarters)
     }
     const MapPoint hq(16, 16);
     RandomUtility rnd(0);
-    CreateSwamp(map, rnd, createArea(map, MapPoint(9, 16), 4));
+    createSwamp(map, rnd, createArea(map, MapPoint(9, 16), 4));
     map.hqPositions.push_back(hq);
 
     AddObjects(map, rnd, MapSettings());
@@ -704,7 +701,7 @@ BOOST_AUTO_TEST_CASE(AddResources_and_AddAnimals_skip_swamps_made_of_water)
         }
         const Mountain swamp = createArea(map, MapPoint(16, 16), 8);
         RandomUtility rnd(0);
-        CreateSwamp(map, rnd, swamp);
+        createSwamp(map, rnd, swamp);
 
         AddResources(map, rnd, MapSettings());
         AddAnimals(map, rnd);

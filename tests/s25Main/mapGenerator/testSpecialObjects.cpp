@@ -56,20 +56,20 @@ unsigned countObjects(const Map& map)
 
 BOOST_FIXTURE_TEST_SUITE(SpecialObjectsTests, SpecialObjectsFixture)
 
-BOOST_AUTO_TEST_CASE(GetNumSpecialScenes_returns_a_few_scenes_depending_on_map_size)
+BOOST_AUTO_TEST_CASE(getNumSpecialScenes_returns_a_few_scenes_depending_on_map_size)
 {
-    BOOST_TEST(GetNumSpecialScenes(MapExtent(32, 32)) == 1u);
-    BOOST_TEST(GetNumSpecialScenes(MapExtent(64, 64)) < GetNumSpecialScenes(MapExtent(128, 128)));
-    BOOST_TEST(GetNumSpecialScenes(MapExtent(128, 128)) < GetNumSpecialScenes(MapExtent(256, 256)));
-    BOOST_TEST(GetNumSpecialScenes(MapExtent(1024, 1024)) <= 6u);
+    BOOST_TEST(getNumSpecialScenes(MapExtent(32, 32)) == 1u);
+    BOOST_TEST(getNumSpecialScenes(MapExtent(64, 64)) < getNumSpecialScenes(MapExtent(128, 128)));
+    BOOST_TEST(getNumSpecialScenes(MapExtent(128, 128)) < getNumSpecialScenes(MapExtent(256, 256)));
+    BOOST_TEST(getNumSpecialScenes(MapExtent(1024, 1024)) <= 6u);
 }
 
-BOOST_AUTO_TEST_CASE(FindSceneSites_returns_requested_number_of_distant_sites)
+BOOST_AUTO_TEST_CASE(findSceneSites_returns_requested_number_of_distant_sites)
 {
     const Map map = createLandMap(MapExtent(96, 96));
     RandomUtility rnd(0);
 
-    const auto sites = FindSceneSites(map, rnd, 4);
+    const auto sites = findSceneSites(map, rnd, 4);
 
     BOOST_TEST_REQUIRE(sites.size() == 4u);
     for(unsigned i = 0; i < sites.size(); i++)
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(FindSceneSites_returns_requested_number_of_distant_sites)
     }
 }
 
-BOOST_AUTO_TEST_CASE(FindSceneSites_finds_nothing_without_buildable_land)
+BOOST_AUTO_TEST_CASE(findSceneSites_finds_nothing_without_buildable_land)
 {
     Map map = createMap(MapExtent(32, 32));
     const auto water = map.textureMap.Find(IsWater);
@@ -89,10 +89,10 @@ BOOST_AUTO_TEST_CASE(FindSceneSites_finds_nothing_without_buildable_land)
     }
     RandomUtility rnd(0);
 
-    BOOST_TEST(FindSceneSites(map, rnd, 3).empty());
+    BOOST_TEST(findSceneSites(map, rnd, 3).empty());
 }
 
-BOOST_AUTO_TEST_CASE(FindSceneSites_keeps_distance_to_obstacles_and_players)
+BOOST_AUTO_TEST_CASE(findSceneSites_keeps_distance_to_obstacles_and_players)
 {
     Map map = createLandMap(MapExtent(64, 64));
     const MapPoint hq(10, 10);
@@ -101,12 +101,12 @@ BOOST_AUTO_TEST_CASE(FindSceneSites_keeps_distance_to_obstacles_and_players)
     map.hqPositions.push_back(hq);
     map.harbors.push_back(Triangle(true, MapPoint(50, 12)));
     map.objectTypes[tree] = libsiedler2::OT_TreeOrPalm;
-    map.textureMap.Set(swamp, map.textureMap.Find(IsImpassable));
+    map.textureMap.Set(swamp, map.textureMap.Find(isImpassable));
 
     for(unsigned seed = 0; seed < 30; seed++)
     {
         RandomUtility rnd(seed);
-        for(const MapPoint& site : FindSceneSites(map, rnd, 3))
+        for(const MapPoint& site : findSceneSites(map, rnd, 3))
         {
             // Objects around headquarters and harbors are removed within a radius of 5
             BOOST_TEST_REQUIRE(map.z.CalcDistance(site, hq) > sceneRadius + 5, "At point " << site);
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(FindSceneSites_keeps_distance_to_obstacles_and_players)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_surrounds_special_object_by_decoration_within_scene)
+BOOST_AUTO_TEST_CASE(createScene_surrounds_special_object_by_decoration_within_scene)
 {
     for(unsigned i = 0; i < numLandscapes; i++)
     {
@@ -132,12 +132,12 @@ BOOST_AUTO_TEST_CASE(CreateScene_surrounds_special_object_by_decoration_within_s
                     const MapPoint center(20, 20);
                     RandomUtility rnd(seed);
 
-                    CreateScene(map, rnd, center, type, style);
+                    createScene(map, rnd, center, type, style);
 
                     BOOST_TEST_CONTEXT("Landscape " << i << " scene " << static_cast<unsigned>(type) << " style "
                                                     << static_cast<unsigned>(style) << " seed " << seed)
                     {
-                        BOOST_TEST(IsSpecialObject(map.objectTypes[center], map.objectInfos[center]));
+                        BOOST_TEST(isSpecialObject(map.objectTypes[center], map.objectInfos[center]));
                         BOOST_TEST(countObjects(map) >= 15u);
                         BOOST_TEST(map.reserved.size() == 169u);
                         RTTR_FOREACH_PT(MapPoint, map.size)
@@ -169,7 +169,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_surrounds_special_object_by_decoration_within_s
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_keeps_footprint_of_castle_ruin_free_and_even)
+BOOST_AUTO_TEST_CASE(createScene_keeps_footprint_of_castle_ruin_free_and_even)
 {
     for(const SceneStyle style : helpers::EnumRange<SceneStyle>())
     {
@@ -179,7 +179,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_keeps_footprint_of_castle_ruin_free_and_even)
             const MapPoint center(20, 20);
             RandomUtility rnd(seed);
 
-            CreateScene(map, rnd, center, SceneType::CastleRuin, style);
+            createScene(map, rnd, center, SceneType::CastleRuin, style);
 
             BOOST_TEST(map.objectInfos[center] == OI_CastleRuin);
             for(const Direction dir : {Direction::West, Direction::NorthWest, Direction::NorthEast})
@@ -193,14 +193,14 @@ BOOST_AUTO_TEST_CASE(CreateScene_keeps_footprint_of_castle_ruin_free_and_even)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_blends_ground_into_surrounding_land)
+BOOST_AUTO_TEST_CASE(createScene_blends_ground_into_surrounding_land)
 {
     Map map = createLandMap(MapExtent(40, 40));
     const MapPoint center(20, 20);
     RandomUtility rnd(0);
     const auto isFlowers = [](const TerrainDesc& terrain) { return terrain.s2Id == 0x0F; };
 
-    CreateScene(map, rnd, center, SceneType::RuinGrove, SceneStyle::Overgrown);
+    createScene(map, rnd, center, SceneType::RuinGrove, SceneStyle::Overgrown);
 
     // Flowers in the middle fade out via the textures between flowers and meadow
     BOOST_TEST(map.textureMap.All(center, isFlowers));
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_blends_ground_into_surrounding_land)
     BOOST_TEST(textures.count(0x0A) == 1u);
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_uses_all_transition_textures_between_dry_ground_and_meadow)
+BOOST_AUTO_TEST_CASE(createScene_uses_all_transition_textures_between_dry_ground_and_meadow)
 {
     const auto isSteppe = [](const TerrainDesc& terrain) { return terrain.s2Id == 0x0E; };
     const auto isSavannah = [](const TerrainDesc& terrain) { return terrain.s2Id == 0x00; };
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_uses_all_transition_textures_between_dry_ground
             const MapPoint center(20, 20);
             RandomUtility rnd(seed);
 
-            CreateScene(map, rnd, center, SceneType::Camp, style);
+            createScene(map, rnd, center, SceneType::Camp, style);
 
             BOOST_TEST(map.textureMap.All(center, isSteppe));
             unsigned savannah = 0;
@@ -246,7 +246,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_uses_all_transition_textures_between_dry_ground
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_surrounds_pond_by_transitions_from_sand_to_meadow)
+BOOST_AUTO_TEST_CASE(createScene_surrounds_pond_by_transitions_from_sand_to_meadow)
 {
     const auto isSteppe = [](const TerrainDesc& terrain) { return terrain.s2Id == 0x0E; };
     const auto isSavannah = [](const TerrainDesc& terrain) { return terrain.s2Id == 0x00; };
@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_surrounds_pond_by_transitions_from_sand_to_mead
             const MapPoint center(20, 20);
             RandomUtility rnd(seed);
 
-            CreateScene(map, rnd, center, type, SceneStyle::Crag);
+            createScene(map, rnd, center, type, SceneStyle::Crag);
 
             BOOST_TEST_CONTEXT("Scene " << static_cast<unsigned>(type) << " seed " << seed)
             {
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_surrounds_pond_by_transitions_from_sand_to_mead
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_adds_transitions_within_lush_meadow)
+BOOST_AUTO_TEST_CASE(createScene_adds_transitions_within_lush_meadow)
 {
     // The most lush meadow is several textures away from sand but looks like any other meadow
     const auto isGreen = [](const TerrainDesc& terrain) { return IsBuildableLand(terrain) && terrain.humidity > 90; };
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_adds_transitions_within_lush_meadow)
                 const MapPoint center(20, 20);
                 RandomUtility rnd(seed);
 
-                CreateScene(map, rnd, center, type, style);
+                createScene(map, rnd, center, type, style);
 
                 BOOST_TEST_CONTEXT("Scene " << static_cast<unsigned>(type) << " style " << static_cast<unsigned>(style)
                                             << " seed " << seed)
@@ -325,7 +325,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_adds_transitions_within_lush_meadow)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_leaves_other_landscapes_untouched)
+BOOST_AUTO_TEST_CASE(createScene_leaves_other_landscapes_untouched)
 {
     for(const SceneType type : helpers::EnumRange<SceneType>())
     {
@@ -354,12 +354,12 @@ BOOST_AUTO_TEST_CASE(CreateScene_leaves_other_landscapes_untouched)
                 const Map original = map;
                 RandomUtility rnd(seed);
 
-                CreateScene(map, rnd, center, type, style);
+                createScene(map, rnd, center, type, style);
 
                 BOOST_TEST_CONTEXT("Scene " << static_cast<unsigned>(type) << " style " << static_cast<unsigned>(style)
                                             << " seed " << seed)
                 {
-                    BOOST_TEST(IsSpecialObject(map.objectTypes[center], map.objectInfos[center]));
+                    BOOST_TEST(isSpecialObject(map.objectTypes[center], map.objectInfos[center]));
                     BOOST_TEST(map.objectTypes[tree] == original.objectTypes[tree]);
                     BOOST_TEST(map.objectInfos[tree] == original.objectInfos[tree]);
                     const auto isLand = [this](DescIdx<TerrainDesc> texture) {
@@ -384,14 +384,14 @@ BOOST_AUTO_TEST_CASE(CreateScene_leaves_other_landscapes_untouched)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_adds_rim_around_rock)
+BOOST_AUTO_TEST_CASE(createScene_adds_rim_around_rock)
 {
     Map map = createLandMap(MapExtent(40, 40));
     const MapPoint center(20, 20);
     RandomUtility rnd(0);
     const auto isRock = [](const TerrainDesc& terrain) { return terrain.s2Id == 0x22; };
 
-    CreateScene(map, rnd, center, SceneType::CastleRuin, SceneStyle::Overgrown);
+    createScene(map, rnd, center, SceneType::CastleRuin, SceneStyle::Overgrown);
 
     BOOST_TEST(map.textureMap.All(center, isRock));
     BOOST_TEST(map.z[center] > landHeight);
@@ -402,7 +402,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_adds_rim_around_rock)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_raises_crag_next_to_pond)
+BOOST_AUTO_TEST_CASE(createScene_raises_crag_next_to_pond)
 {
     for(unsigned seed = 0; seed < 10; seed++)
     {
@@ -410,7 +410,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_raises_crag_next_to_pond)
         const MapPoint center(20, 20);
         RandomUtility rnd(seed);
 
-        CreateScene(map, rnd, center, SceneType::RuinGrove, SceneStyle::Crag);
+        createScene(map, rnd, center, SceneType::RuinGrove, SceneStyle::Crag);
 
         unsigned pond = 0;
         unsigned rocks = 0;
@@ -435,7 +435,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_raises_crag_next_to_pond)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_lines_road_of_avenue_with_trees)
+BOOST_AUTO_TEST_CASE(createScene_lines_road_of_avenue_with_trees)
 {
     for(unsigned seed = 0; seed < 10; seed++)
     {
@@ -443,7 +443,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_lines_road_of_avenue_with_trees)
         const MapPoint center(20, 20);
         RandomUtility rnd(seed);
 
-        CreateScene(map, rnd, center, SceneType::CastleRuin, SceneStyle::Avenue);
+        createScene(map, rnd, center, SceneType::CastleRuin, SceneStyle::Avenue);
 
         // One of the six directions is a free road with trees on both sides
         unsigned roads = 0;
@@ -471,13 +471,13 @@ BOOST_AUTO_TEST_CASE(CreateScene_lines_road_of_avenue_with_trees)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_lines_trail_with_remains)
+BOOST_AUTO_TEST_CASE(createScene_lines_trail_with_remains)
 {
     Map map = createLandMap(MapExtent(40, 40));
     const MapPoint center(20, 20);
     RandomUtility rnd(0);
 
-    CreateScene(map, rnd, center, SceneType::StoneCircle, SceneStyle::Trail);
+    createScene(map, rnd, center, SceneType::StoneCircle, SceneStyle::Trail);
 
     unsigned stones = 0;
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -490,7 +490,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_lines_trail_with_remains)
     BOOST_TEST((map.objectInfos[center] == OI_Gate || map.objectInfos[center] == OI_OpenGate));
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_places_single_tent_and_rows_of_graves_in_any_style)
+BOOST_AUTO_TEST_CASE(createScene_places_single_tent_and_rows_of_graves_in_any_style)
 {
     for(const SceneStyle style : helpers::EnumRange<SceneStyle>())
     {
@@ -501,8 +501,8 @@ BOOST_AUTO_TEST_CASE(CreateScene_places_single_tent_and_rows_of_graves_in_any_st
             const MapPoint center(20, 20);
             RandomUtility rnd(seed);
 
-            CreateScene(camp, rnd, center, SceneType::Camp, style);
-            CreateScene(graveyard, rnd, center, SceneType::Graveyard, style);
+            createScene(camp, rnd, center, SceneType::Camp, style);
+            createScene(graveyard, rnd, center, SceneType::Graveyard, style);
 
             unsigned tents = 0;
             unsigned graves = 0;
@@ -519,7 +519,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_places_single_tent_and_rows_of_graves_in_any_st
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateScene_levels_ground_and_smooths_transition)
+BOOST_AUTO_TEST_CASE(createScene_levels_ground_and_smooths_transition)
 {
     Map map = createLandMap(MapExtent(48, 48));
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -530,7 +530,7 @@ BOOST_AUTO_TEST_CASE(CreateScene_levels_ground_and_smooths_transition)
     const uint8_t level = map.z[center];
     RandomUtility rnd(0);
 
-    CreateScene(map, rnd, center, SceneType::Camp, SceneStyle::Trail);
+    createScene(map, rnd, center, SceneType::Camp, SceneStyle::Trail);
 
     for(const MapPoint& pt : map.z.GetPointsInRadiusWithCenter(center, sceneRadius))
     {
@@ -541,33 +541,33 @@ BOOST_AUTO_TEST_CASE(CreateScene_levels_ground_and_smooths_transition)
     }
 }
 
-BOOST_AUTO_TEST_CASE(AddSpecialScenes_mixes_up_types_of_scenes)
+BOOST_AUTO_TEST_CASE(addSpecialScenes_mixes_up_types_of_scenes)
 {
     Map map = createLandMap(MapExtent(256, 256));
     RandomUtility rnd(0);
 
-    const auto scenes = AddSpecialScenes(map, rnd);
+    const auto scenes = addSpecialScenes(map, rnd);
 
-    BOOST_TEST_REQUIRE(scenes.size() == GetNumSpecialScenes(map.size));
+    BOOST_TEST_REQUIRE(scenes.size() == getNumSpecialScenes(map.size));
     std::set<SceneType> types;
     for(const Scene& scene : scenes)
     {
         types.insert(scene.type);
-        BOOST_TEST(IsSpecialObject(map.objectTypes[scene.center], map.objectInfos[scene.center]));
+        BOOST_TEST(isSpecialObject(map.objectTypes[scene.center], map.objectInfos[scene.center]));
     }
     BOOST_TEST(types.size() == 5u);
     BOOST_TEST(map.reserved.size() == 169 * scenes.size());
 }
 
-BOOST_AUTO_TEST_CASE(AddSpecialScenes_varies_with_seed)
+BOOST_AUTO_TEST_CASE(addSpecialScenes_varies_with_seed)
 {
     Map map1 = createLandMap(MapExtent(64, 64));
     Map map2 = createLandMap(MapExtent(64, 64));
     RandomUtility rnd1(1);
     RandomUtility rnd2(2);
 
-    const auto scenes1 = AddSpecialScenes(map1, rnd1);
-    const auto scenes2 = AddSpecialScenes(map2, rnd2);
+    const auto scenes1 = addSpecialScenes(map1, rnd1);
+    const auto scenes2 = addSpecialScenes(map2, rnd2);
 
     BOOST_TEST_REQUIRE(scenes1.size() == 1u);
     BOOST_TEST_REQUIRE(scenes2.size() == 1u);
@@ -578,7 +578,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_scenes_free_from_trees_and_stone_piles)
 {
     Map map = createLandMap(MapExtent(48, 48));
     RandomUtility rnd(0);
-    const auto scenes = AddSpecialScenes(map, rnd);
+    const auto scenes = addSpecialScenes(map, rnd);
     BOOST_TEST_REQUIRE(!scenes.empty());
     const auto typesBefore = map.objectTypes;
     const auto infosBefore = map.objectInfos;

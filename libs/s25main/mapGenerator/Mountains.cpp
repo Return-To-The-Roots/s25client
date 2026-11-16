@@ -22,7 +22,7 @@ namespace {
     constexpr unsigned brushDensity = 75;
 
     /// Updates the distances after the specified nodes stopped being free land
-    void MarkAsOccupied(NodeMapBase<unsigned>& freeLand, const Mountain& mountain)
+    void markAsOccupied(NodeMapBase<unsigned>& freeLand, const Mountain& mountain)
     {
         std::queue<MapPoint> queue;
         for(const MapPoint& pt : mountain)
@@ -50,13 +50,13 @@ namespace {
     }
 } // namespace
 
-unsigned GetMountainSize(const MountainSettings& settings, unsigned index)
+unsigned getMountainSize(const MountainSettings& settings, unsigned index)
 {
     const auto size = static_cast<unsigned>(settings.maxSize * std::pow(sizeDecay, index));
     return std::max(size, settings.minSize);
 }
 
-NodeMapBase<unsigned> GetFreeLandDistances(const Map& map, unsigned mountainLevel)
+NodeMapBase<unsigned> getFreeLandDistances(const Map& map, unsigned mountainLevel)
 {
     const auto& textures = map.getTextures();
     return DistancesTo(map.size, [&map, &textures, mountainLevel](const MapPoint& pt) {
@@ -64,7 +64,7 @@ NodeMapBase<unsigned> GetFreeLandDistances(const Map& map, unsigned mountainLeve
     });
 }
 
-Mountain GrowMountain(const NodeMapBase<unsigned>& freeLand, RandomUtility& rnd, const MapPoint& center, unsigned size,
+Mountain growMountain(const NodeMapBase<unsigned>& freeLand, RandomUtility& rnd, const MapPoint& center, unsigned size,
                       unsigned margin)
 {
     const auto priority = [&freeLand, &center](const MapPoint& pt) {
@@ -96,18 +96,18 @@ Mountain GrowMountain(const NodeMapBase<unsigned>& freeLand, RandomUtility& rnd,
     return mountain;
 }
 
-std::vector<Mountain> FindMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel,
+std::vector<Mountain> findMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel,
                                     const MountainSettings& settings)
 {
-    return FindMountains(map, rnd, mountainLevel, settings.minFreeLand,
-                         [&settings](unsigned index) { return GetMountainSize(settings, index); });
+    return findMountains(map, rnd, mountainLevel, settings.minFreeLand,
+                         [&settings](unsigned index) { return getMountainSize(settings, index); });
 }
 
-std::vector<Mountain> FindMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel, unsigned minFreeLand,
+std::vector<Mountain> findMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel, unsigned minFreeLand,
                                     const std::function<unsigned(unsigned)>& getSize)
 {
     std::vector<Mountain> mountains;
-    auto freeLand = GetFreeLandDistances(map, mountainLevel);
+    auto freeLand = getFreeLandDistances(map, mountainLevel);
     const auto maxDistance = [&freeLand] { return *std::max_element(freeLand.begin(), freeLand.end()); };
 
     for(unsigned distance = maxDistance(); distance > minFreeLand; distance = maxDistance())
@@ -120,14 +120,14 @@ std::vector<Mountain> FindMountains(const Map& map, RandomUtility& rnd, unsigned
         const unsigned margin = rnd.RandomValue(minFreeLand, maxMargin);
         const unsigned size = getSize(static_cast<unsigned>(mountains.size()));
 
-        mountains.push_back(GrowMountain(freeLand, rnd, center, size, margin));
-        MarkAsOccupied(freeLand, mountains.back());
+        mountains.push_back(growMountain(freeLand, rnd, center, size, margin));
+        markAsOccupied(freeLand, mountains.back());
     }
 
     return mountains;
 }
 
-NodeMapBase<unsigned> GetFootDistances(const MapExtent& size, const Mountain& mountain)
+NodeMapBase<unsigned> getFootDistances(const MapExtent& size, const Mountain& mountain)
 {
     NodeMapBase<unsigned> neighbors;
     neighbors.Resize(size);
@@ -139,9 +139,9 @@ NodeMapBase<unsigned> GetFootDistances(const MapExtent& size, const Mountain& mo
     return Distances(size, mountain, 0, isFoot);
 }
 
-void RaiseMountain(Map& map, RandomUtility& rnd, const Mountain& mountain)
+void raiseMountain(Map& map, RandomUtility& rnd, const Mountain& mountain)
 {
-    const auto footDistance = GetFootDistances(map.size, mountain);
+    const auto footDistance = getFootDistances(map.size, mountain);
     const ValueRange<unsigned> range(0u, GetMaximum(footDistance, mountain));
     const auto textures = map.textureMap.FindAll(IsMinableMountain);
 
@@ -153,14 +153,14 @@ void RaiseMountain(Map& map, RandomUtility& rnd, const Mountain& mountain)
     }
 }
 
-std::vector<Mountain> CreateMountains(Map& map, RandomUtility& rnd, unsigned mountainLevel,
+std::vector<Mountain> createMountains(Map& map, RandomUtility& rnd, unsigned mountainLevel,
                                       const MountainSettings& settings)
 {
-    auto mountains = FindMountains(map, rnd, mountainLevel, settings);
+    auto mountains = findMountains(map, rnd, mountainLevel, settings);
 
     for(const Mountain& mountain : mountains)
     {
-        RaiseMountain(map, rnd, mountain);
+        raiseMountain(map, rnd, mountain);
     }
 
     return mountains;

@@ -147,30 +147,30 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
     ValidateMap(map, settings.size, settings.numPlayers);
 }
 
-BOOST_AUTO_TEST_CASE(GetMaxMountainSize_grows_with_map_size)
+BOOST_AUTO_TEST_CASE(getMaxMountainSize_grows_with_map_size)
 {
-    BOOST_TEST(GetMaxMountainSize(MapExtent(64, 64)) < GetMaxMountainSize(MapExtent(128, 128)));
-    BOOST_TEST(GetMaxMountainSize(MapExtent(128, 128)) < GetMaxMountainSize(MapExtent(256, 256)));
-    BOOST_TEST(GetMaxMountainSize(MapExtent(256, 256)) < GetMaxMountainSize(MapExtent(512, 512)));
-    BOOST_TEST(GetMaxMountainSize(MapExtent(512, 512)) < GetMaxMountainSize(MapExtent(1024, 1024)));
+    BOOST_TEST(getMaxMountainSize(MapExtent(64, 64)) < getMaxMountainSize(MapExtent(128, 128)));
+    BOOST_TEST(getMaxMountainSize(MapExtent(128, 128)) < getMaxMountainSize(MapExtent(256, 256)));
+    BOOST_TEST(getMaxMountainSize(MapExtent(256, 256)) < getMaxMountainSize(MapExtent(512, 512)));
+    BOOST_TEST(getMaxMountainSize(MapExtent(512, 512)) < getMaxMountainSize(MapExtent(1024, 1024)));
 }
 
-BOOST_AUTO_TEST_CASE(GetMinFreeLand_keeps_mountain_distance_for_medium_amount)
+BOOST_AUTO_TEST_CASE(getMinFreeLand_keeps_mountain_distance_for_medium_amount)
 {
-    BOOST_TEST(GetMinFreeLand(15, 50) == 15u);
+    BOOST_TEST(getMinFreeLand(15, 50) == 15u);
 }
 
-BOOST_AUTO_TEST_CASE(GetMinFreeLand_decreases_with_amount_of_mountains)
+BOOST_AUTO_TEST_CASE(getMinFreeLand_decreases_with_amount_of_mountains)
 {
-    BOOST_TEST(GetMinFreeLand(30, 25) > GetMinFreeLand(30, 50));
-    BOOST_TEST(GetMinFreeLand(30, 50) > GetMinFreeLand(30, 75));
+    BOOST_TEST(getMinFreeLand(30, 25) > getMinFreeLand(30, 50));
+    BOOST_TEST(getMinFreeLand(30, 50) > getMinFreeLand(30, 75));
 }
 
-BOOST_AUTO_TEST_CASE(GetMinFreeLand_keeps_space_for_headquarters)
+BOOST_AUTO_TEST_CASE(getMinFreeLand_keeps_space_for_headquarters)
 {
-    BOOST_TEST(GetMinFreeLand(30, 100) == 4u);
-    BOOST_TEST(GetMinFreeLand(5, 90) == 4u);
-    BOOST_TEST(GetMinFreeLand(30, 1000) == 4u);
+    BOOST_TEST(getMinFreeLand(30, 100) == 4u);
+    BOOST_TEST(getMinFreeLand(5, 90) == 4u);
+    BOOST_TEST(getMinFreeLand(30, 1000) == 4u);
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_more_mountains_for_higher_amount)
@@ -239,7 +239,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_leaves_no_large_free_land)
     // Maximum of the randomized free land to keep plus the transition textures added at the foot of mountains and
     // desert hills
     const unsigned amount = settings.mountains + settings.desert + settings.swamp;
-    const unsigned maxFreeLand = GetMinFreeLand(static_cast<unsigned>(settings.mountainDistance), amount) + 5 + 3;
+    const unsigned maxFreeLand = getMinFreeLand(static_cast<unsigned>(settings.mountainDistance), amount) + 5 + 3;
 
     for(const MapStyle style : {MapStyle::Land, MapStyle::Mixed})
     {
@@ -321,12 +321,12 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_deserts_and_swamps_for_all_landsc
         };
         BOOST_TEST_CONTEXT("Landscape " << landscape)
         {
-            BOOST_TEST(count(IsImpassable) > 0);
+            BOOST_TEST(count(isImpassable) > 0);
             BOOST_TEST(count(IsCoastTerrain) > 0);
             BOOST_TEST(helpers::count(map.objectTypes, 0xC8) > 0);
             for(const MapPoint& pt : map.barren)
             {
-                if(!map.textureMap.All(pt, IsImpassable))
+                if(!map.textureMap.All(pt, isImpassable))
                     continue;
                 // Swamps are flat and not used for fishing
                 BOOST_TEST_REQUIRE(map.resources[pt] != libsiedler2::R_Fish, "At point " << pt);
@@ -374,7 +374,7 @@ static unsigned countSpecialObjects(const Map& map)
     unsigned count = 0;
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
-        if(IsSpecialObject(map.objectTypes[pt], map.objectInfos[pt]))
+        if(isSpecialObject(map.objectTypes[pt], map.objectInfos[pt]))
             count++;
     }
     return count;
@@ -422,10 +422,10 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_a_few_special_objects_if_enabled)
             {
                 // The graveyard contains more than one special object
                 BOOST_TEST(countSpecialObjects(map) > 0u);
-                BOOST_TEST(countSpecialObjects(map) <= 16 * GetNumSpecialScenes(map.size));
+                BOOST_TEST(countSpecialObjects(map) <= 16 * getNumSpecialScenes(map.size));
                 BOOST_TEST(map.reserved.size() % 169 == 0u);
                 BOOST_TEST(map.reserved.size() > 0u);
-                BOOST_TEST(map.reserved.size() <= 169 * GetNumSpecialScenes(map.size));
+                BOOST_TEST(map.reserved.size() <= 169 * getNumSpecialScenes(map.size));
             }
         }
     }

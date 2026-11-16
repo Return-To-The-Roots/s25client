@@ -24,103 +24,43 @@ struct MountainSettings
     unsigned minSize;
 };
 
-/**
- * Computes the desired number of nodes of a mountain.
- *
- * @param settings size limits for mountains
- * @param index index of the mountain - the first mountain has index 0
- *
- * @returns the desired size which decreases with the index but never drops below the minimum size.
- */
-unsigned GetMountainSize(const MountainSettings& settings, unsigned index);
+/// Desired number of nodes of the mountain with the given index (0 = first). Decreases with the index down to minSize.
+unsigned getMountainSize(const MountainSettings& settings, unsigned index);
+
+/// Distance of each node to the closest node which isn't free land, i.e. water, mountain or already textured.
+NodeMapBase<unsigned> getFreeLandDistances(const Map& map, unsigned mountainLevel);
 
 /**
- * Computes for each node the distance to the closest node which is not free land. Nodes are not considered free land
- * if they are water, reach the mountain level or already have a texture (e.g. rivers and islands).
- *
- * @param map map to compute the distances for
- * @param mountainLevel minimum z-value of mountains
- *
- * @returns the distance of each node to the closest node which isn't free land.
- */
-NodeMapBase<unsigned> GetFreeLandDistances(const Map& map, unsigned mountainLevel);
-
-/**
- * Grows a mountain around the specified center. Nodes close to the center and far away from other obstacles are
- * preferred. Skipping nodes by chance creates an irregular shape.
+ * Grows an irregular mountain around the center preferring nodes far away from obstacles.
  *
  * @param freeLand distances to the closest node which isn't free land
- * @param rnd random number generator
- * @param center center of the mountain which is always part of the mountain
- * @param size maximum number of nodes of the mountain
- * @param margin only nodes with a distance greater than this value become part of the mountain
- *
- * @returns all nodes of the new mountain.
+ * @param size maximum number of nodes
+ * @param margin only nodes with a larger distance to obstacles become part of the mountain
  */
-Mountain GrowMountain(const NodeMapBase<unsigned>& freeLand, RandomUtility& rnd, const MapPoint& center, unsigned size,
+Mountain growMountain(const NodeMapBase<unsigned>& freeLand, RandomUtility& rnd, const MapPoint& center, unsigned size,
                       unsigned margin);
 
 /**
- * Selects the nodes of new mountains until no node is further away from water or mountains than the minimum of free
- * land to keep. Every mountain starts at the node with the largest distance to water and mountains. As nodes close to
- * obstacles are never selected, passages between areas of the map stay open.
+ * Selects the nodes of new mountains until no node is further away from obstacles than settings.minFreeLand.
+ * Nodes close to obstacles are never selected so passages stay open. Does not modify the map.
  *
- * @param map map to search for free land (is not modified)
- * @param rnd random number generator
- * @param mountainLevel minimum z-value of mountains
- * @param settings settings of the new mountains
- *
- * @returns the nodes of each new mountain. All mountains are disjoint.
+ * @returns the nodes of each mountain. All mountains are disjoint.
  */
-std::vector<Mountain> FindMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel,
+std::vector<Mountain> findMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel,
                                     const MountainSettings& settings);
 
-/**
- * Selects the nodes of new mountains just like the overload above but asks for the size of each mountain right before
- * growing it. This allows callers to vary the size, e.g. depending on what the nodes are going to be used for.
- *
- * @param map map to search for free land (is not modified)
- * @param rnd random number generator
- * @param mountainLevel minimum z-value of mountains
- * @param minFreeLand land up to this distance to water or mountains stays free
- * @param getSize returns the desired number of nodes for the mountain with the specified index
- *
- * @returns the nodes of each new mountain. All mountains are disjoint.
- */
-std::vector<Mountain> FindMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel, unsigned minFreeLand,
+/// Same as above but queries the size of each mountain (by its index) right before growing it.
+std::vector<Mountain> findMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel, unsigned minFreeLand,
                                     const std::function<unsigned(unsigned)>& getSize);
 
-/**
- * Computes the distance of each node of the mountain to the foot of the mountain. The foot consists of all nodes of the
- * mountain with at least one neighbor which isn't part of the mountain.
- *
- * @param size size of the map
- * @param mountain nodes of the mountain
- *
- * @returns the distance to the foot for each node of the mountain and zero for all other nodes.
- */
-NodeMapBase<unsigned> GetFootDistances(const MapExtent& size, const Mountain& mountain);
+/// Distance of each node of the mountain to its foot (its outermost nodes). Zero for nodes outside the mountain.
+NodeMapBase<unsigned> getFootDistances(const MapExtent& size, const Mountain& mountain);
 
-/**
- * Elevates the nodes of the mountain relative to the surrounding land and applies mountain textures to them.
- *
- * @param map reference to the map to place the mountain on (manipulates textures and z-values of the map)
- * @param rnd random number generator
- * @param mountain nodes of the mountain
- */
-void RaiseMountain(Map& map, RandomUtility& rnd, const Mountain& mountain);
+/// Elevates the nodes of the mountain and applies mountain textures to them.
+void raiseMountain(Map& map, RandomUtility& rnd, const Mountain& mountain);
 
-/**
- * Reduces the size of free land by adding new mountains to the map.
- *
- * @param map reference to the map to place the mountains on (manipulates textures and z-values of the map)
- * @param rnd random number generator
- * @param mountainLevel minimum z-value of mountains
- * @param settings settings of the new mountains
- *
- * @returns the nodes of each new mountain.
- */
-std::vector<Mountain> CreateMountains(Map& map, RandomUtility& rnd, unsigned mountainLevel,
+/// Fills large areas of free land with mountains and returns their nodes.
+std::vector<Mountain> createMountains(Map& map, RandomUtility& rnd, unsigned mountainLevel,
                                       const MountainSettings& settings);
 
 } // namespace rttr::mapGenerator

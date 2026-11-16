@@ -41,87 +41,87 @@ unsigned maxDistance(const NodeMapBase<unsigned>& distances)
 
 BOOST_FIXTURE_TEST_SUITE(MountainsTests, MountainFixture)
 
-BOOST_AUTO_TEST_CASE(GetMountainSize_starts_with_maximum_size)
+BOOST_AUTO_TEST_CASE(getMountainSize_starts_with_maximum_size)
 {
-    BOOST_TEST(GetMountainSize(settings, 0) == settings.maxSize);
+    BOOST_TEST(getMountainSize(settings, 0) == settings.maxSize);
 }
 
-BOOST_AUTO_TEST_CASE(GetMountainSize_decreases_with_index)
+BOOST_AUTO_TEST_CASE(getMountainSize_decreases_with_index)
 {
-    BOOST_TEST(GetMountainSize(settings, 1) < GetMountainSize(settings, 0));
-    BOOST_TEST(GetMountainSize(settings, 2) < GetMountainSize(settings, 1));
+    BOOST_TEST(getMountainSize(settings, 1) < getMountainSize(settings, 0));
+    BOOST_TEST(getMountainSize(settings, 2) < getMountainSize(settings, 1));
 }
 
-BOOST_AUTO_TEST_CASE(GetMountainSize_never_drops_below_minimum_size)
+BOOST_AUTO_TEST_CASE(getMountainSize_never_drops_below_minimum_size)
 {
-    BOOST_TEST(GetMountainSize(settings, 1000) == settings.minSize);
+    BOOST_TEST(getMountainSize(settings, 1000) == settings.minSize);
 }
 
-BOOST_AUTO_TEST_CASE(GetFreeLandDistances_is_zero_for_water)
+BOOST_AUTO_TEST_CASE(getFreeLandDistances_is_zero_for_water)
 {
     const Map map = createLandMap(MapExtent(16, 16));
-    const auto distances = GetFreeLandDistances(map, mountainLevel);
+    const auto distances = getFreeLandDistances(map, mountainLevel);
 
     BOOST_TEST(distances[MapPoint(5, 0)] == 0u);
     BOOST_TEST(distances[MapPoint(5, 1)] == 1u);
     BOOST_TEST(distances[MapPoint(5, 8)] == 8u);
 }
 
-BOOST_AUTO_TEST_CASE(GetFreeLandDistances_is_zero_for_nodes_at_mountain_level)
+BOOST_AUTO_TEST_CASE(getFreeLandDistances_is_zero_for_nodes_at_mountain_level)
 {
     Map map = createLandMap(MapExtent(16, 16));
     const MapPoint mountain(8, 8);
     map.z[mountain] = mountainLevel;
 
-    const auto distances = GetFreeLandDistances(map, mountainLevel);
+    const auto distances = getFreeLandDistances(map, mountainLevel);
 
     BOOST_TEST(distances[mountain] == 0u);
     BOOST_TEST(distances[MapPoint(9, 8)] == 1u);
 }
 
-BOOST_AUTO_TEST_CASE(GetFreeLandDistances_is_zero_for_textured_nodes)
+BOOST_AUTO_TEST_CASE(getFreeLandDistances_is_zero_for_textured_nodes)
 {
     Map map = createLandMap(MapExtent(16, 16));
     const MapPoint river(8, 8);
     map.textureMap.Set(river, map.textureMap.Find(IsWater));
 
-    const auto distances = GetFreeLandDistances(map, mountainLevel);
+    const auto distances = getFreeLandDistances(map, mountainLevel);
 
     BOOST_TEST(distances[river] == 0u);
 }
 
-BOOST_AUTO_TEST_CASE(GrowMountain_contains_center_even_if_size_is_one)
+BOOST_AUTO_TEST_CASE(growMountain_contains_center_even_if_size_is_one)
 {
     const Map map = createLandMap(MapExtent(32, 32));
-    const auto distances = GetFreeLandDistances(map, mountainLevel);
+    const auto distances = getFreeLandDistances(map, mountainLevel);
     const MapPoint center(16, 16);
     RandomUtility rnd(0);
 
-    const auto mountain = GrowMountain(distances, rnd, center, 1, 3);
+    const auto mountain = growMountain(distances, rnd, center, 1, 3);
 
     BOOST_TEST(mountain.size() == 1u);
     BOOST_TEST(mountain.count(center) == 1u);
 }
 
-BOOST_AUTO_TEST_CASE(GrowMountain_reaches_requested_size_on_sufficient_land)
+BOOST_AUTO_TEST_CASE(growMountain_reaches_requested_size_on_sufficient_land)
 {
     const Map map = createLandMap(MapExtent(32, 32));
-    const auto distances = GetFreeLandDistances(map, mountainLevel);
+    const auto distances = getFreeLandDistances(map, mountainLevel);
     RandomUtility rnd(0);
 
-    const auto mountain = GrowMountain(distances, rnd, MapPoint(16, 16), 50, 3);
+    const auto mountain = growMountain(distances, rnd, MapPoint(16, 16), 50, 3);
 
     BOOST_TEST(mountain.size() == 50u);
 }
 
-BOOST_AUTO_TEST_CASE(GrowMountain_keeps_margin_to_obstacles)
+BOOST_AUTO_TEST_CASE(growMountain_keeps_margin_to_obstacles)
 {
     const Map map = createLandMap(MapExtent(32, 32));
-    const auto distances = GetFreeLandDistances(map, mountainLevel);
+    const auto distances = getFreeLandDistances(map, mountainLevel);
     const unsigned margin = 6;
     RandomUtility rnd(0);
 
-    const auto mountain = GrowMountain(distances, rnd, MapPoint(16, 16), 1000, margin);
+    const auto mountain = growMountain(distances, rnd, MapPoint(16, 16), 1000, margin);
 
     BOOST_TEST_REQUIRE(mountain.size() > 1u);
     for(const MapPoint& pt : mountain)
@@ -130,13 +130,13 @@ BOOST_AUTO_TEST_CASE(GrowMountain_keeps_margin_to_obstacles)
     }
 }
 
-BOOST_AUTO_TEST_CASE(FindMountains_does_not_change_map)
+BOOST_AUTO_TEST_CASE(findMountains_does_not_change_map)
 {
     const Map map = createLandMap(MapExtent(32, 32));
     const auto heightsBefore = map.z;
     RandomUtility rnd(0);
 
-    const auto mountains = FindMountains(map, rnd, mountainLevel, settings);
+    const auto mountains = findMountains(map, rnd, mountainLevel, settings);
 
     BOOST_TEST_REQUIRE(!mountains.empty());
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -145,41 +145,41 @@ BOOST_AUTO_TEST_CASE(FindMountains_does_not_change_map)
     }
 }
 
-BOOST_AUTO_TEST_CASE(FindMountains_finds_nothing_without_enough_free_land)
+BOOST_AUTO_TEST_CASE(findMountains_finds_nothing_without_enough_free_land)
 {
     const Map map = createLandMap(MapExtent(32, 32));
-    const auto freeLand = maxDistance(GetFreeLandDistances(map, mountainLevel));
+    const auto freeLand = maxDistance(getFreeLandDistances(map, mountainLevel));
     RandomUtility rnd(0);
 
     const MountainSettings limit{freeLand, settings.maxSize, settings.minSize};
 
-    BOOST_TEST(FindMountains(map, rnd, mountainLevel, limit).empty());
+    BOOST_TEST(findMountains(map, rnd, mountainLevel, limit).empty());
 }
 
-BOOST_AUTO_TEST_CASE(FindMountains_finds_nothing_on_water_only)
+BOOST_AUTO_TEST_CASE(findMountains_finds_nothing_on_water_only)
 {
     Map map = createMap(MapExtent(16, 16));
     map.z.Resize(map.size, map.height.minimum);
     RandomUtility rnd(0);
 
-    BOOST_TEST(FindMountains(map, rnd, mountainLevel, settings).empty());
+    BOOST_TEST(findMountains(map, rnd, mountainLevel, settings).empty());
 }
 
-BOOST_AUTO_TEST_CASE(FindMountains_covers_map_without_any_obstacles)
+BOOST_AUTO_TEST_CASE(findMountains_covers_map_without_any_obstacles)
 {
     Map map = createMap(MapExtent(32, 32));
     map.z.Resize(map.size, landHeight);
     RandomUtility rnd(0);
 
-    BOOST_TEST(!FindMountains(map, rnd, mountainLevel, settings).empty());
+    BOOST_TEST(!findMountains(map, rnd, mountainLevel, settings).empty());
 }
 
-BOOST_AUTO_TEST_CASE(FindMountains_returns_disjoint_mountains)
+BOOST_AUTO_TEST_CASE(findMountains_returns_disjoint_mountains)
 {
     const Map map = createLandMap(MapExtent(64, 64));
     RandomUtility rnd(0);
 
-    const auto mountains = FindMountains(map, rnd, mountainLevel, settings);
+    const auto mountains = findMountains(map, rnd, mountainLevel, settings);
 
     BOOST_TEST_REQUIRE(mountains.size() > 1u);
     Mountain visited;
@@ -192,27 +192,27 @@ BOOST_AUTO_TEST_CASE(FindMountains_returns_disjoint_mountains)
     }
 }
 
-BOOST_AUTO_TEST_CASE(FindMountains_respects_size_of_each_mountain)
+BOOST_AUTO_TEST_CASE(findMountains_respects_size_of_each_mountain)
 {
     const Map map = createLandMap(MapExtent(64, 64));
     RandomUtility rnd(0);
 
-    const auto mountains = FindMountains(map, rnd, mountainLevel, settings);
+    const auto mountains = findMountains(map, rnd, mountainLevel, settings);
 
     BOOST_TEST_REQUIRE(mountains.size() > 1u);
     for(unsigned index = 0; index < mountains.size(); index++)
     {
-        BOOST_TEST_REQUIRE(mountains[index].size() <= GetMountainSize(settings, index), "Mountain " << index);
+        BOOST_TEST_REQUIRE(mountains[index].size() <= getMountainSize(settings, index), "Mountain " << index);
     }
 }
 
-BOOST_AUTO_TEST_CASE(FindMountains_keeps_free_land_around_obstacles)
+BOOST_AUTO_TEST_CASE(findMountains_keeps_free_land_around_obstacles)
 {
     const Map map = createLandMap(MapExtent(64, 64));
-    const auto distances = GetFreeLandDistances(map, mountainLevel);
+    const auto distances = getFreeLandDistances(map, mountainLevel);
     RandomUtility rnd(0);
 
-    for(const Mountain& mountain : FindMountains(map, rnd, mountainLevel, settings))
+    for(const Mountain& mountain : findMountains(map, rnd, mountainLevel, settings))
     {
         for(const MapPoint& pt : mountain)
         {
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE(FindMountains_keeps_free_land_around_obstacles)
     }
 }
 
-BOOST_AUTO_TEST_CASE(RaiseMountain_elevates_center_above_foot_and_keeps_surroundings)
+BOOST_AUTO_TEST_CASE(raiseMountain_elevates_center_above_foot_and_keeps_surroundings)
 {
     Map map = createLandMap(MapExtent(32, 32));
     const MapPoint center(16, 16);
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(RaiseMountain_elevates_center_above_foot_and_keeps_surround
     const MapPoint outside(16, 26);
     RandomUtility rnd(0);
 
-    RaiseMountain(map, rnd, mountain);
+    raiseMountain(map, rnd, mountain);
 
     BOOST_TEST(map.z[center] > landHeight + 1);
     BOOST_TEST(map.z[outside] == landHeight);
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE(RaiseMountain_elevates_center_above_foot_and_keeps_surround
     }
 }
 
-BOOST_AUTO_TEST_CASE(RaiseMountain_applies_minable_textures_to_all_nodes)
+BOOST_AUTO_TEST_CASE(raiseMountain_applies_minable_textures_to_all_nodes)
 {
     Map map = createLandMap(MapExtent(32, 32));
     const auto points = map.z.GetPointsInRadiusWithCenter(MapPoint(16, 16), 4);
@@ -248,7 +248,7 @@ BOOST_AUTO_TEST_CASE(RaiseMountain_applies_minable_textures_to_all_nodes)
     const auto minable = map.textureMap.FindAll(IsMinableMountain);
     RandomUtility rnd(0);
 
-    RaiseMountain(map, rnd, mountain);
+    raiseMountain(map, rnd, mountain);
 
     for(const MapPoint& pt : mountain)
     {
@@ -258,14 +258,14 @@ BOOST_AUTO_TEST_CASE(RaiseMountain_applies_minable_textures_to_all_nodes)
     }
 }
 
-BOOST_AUTO_TEST_CASE(RaiseMountain_does_not_exceed_maximum_height)
+BOOST_AUTO_TEST_CASE(raiseMountain_does_not_exceed_maximum_height)
 {
     Map map = createMap(MapExtent(32, 32));
     map.z.Resize(map.size, map.height.maximum - 1);
     const auto points = map.z.GetPointsInRadiusWithCenter(MapPoint(16, 16), 6);
     RandomUtility rnd(0);
 
-    RaiseMountain(map, rnd, Mountain(points.begin(), points.end()));
+    raiseMountain(map, rnd, Mountain(points.begin(), points.end()));
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
@@ -273,26 +273,26 @@ BOOST_AUTO_TEST_CASE(RaiseMountain_does_not_exceed_maximum_height)
     }
 }
 
-BOOST_AUTO_TEST_CASE(CreateMountains_leaves_no_free_land_beyond_limit)
+BOOST_AUTO_TEST_CASE(createMountains_leaves_no_free_land_beyond_limit)
 {
     Map map = createLandMap(MapExtent(64, 64));
-    BOOST_TEST_REQUIRE(maxDistance(GetFreeLandDistances(map, mountainLevel)) > settings.minFreeLand);
+    BOOST_TEST_REQUIRE(maxDistance(getFreeLandDistances(map, mountainLevel)) > settings.minFreeLand);
     RandomUtility rnd(0);
 
-    const auto mountains = CreateMountains(map, rnd, mountainLevel, settings);
+    const auto mountains = createMountains(map, rnd, mountainLevel, settings);
 
     BOOST_TEST_REQUIRE(!mountains.empty());
-    BOOST_TEST(maxDistance(GetFreeLandDistances(map, mountainLevel)) <= settings.minFreeLand);
+    BOOST_TEST(maxDistance(getFreeLandDistances(map, mountainLevel)) <= settings.minFreeLand);
 }
 
-BOOST_AUTO_TEST_CASE(FindMountains_is_deterministic_for_same_seed)
+BOOST_AUTO_TEST_CASE(findMountains_is_deterministic_for_same_seed)
 {
     const Map map = createLandMap(MapExtent(48, 48));
     RandomUtility rnd1(42);
     RandomUtility rnd2(42);
 
-    const auto mountains1 = FindMountains(map, rnd1, mountainLevel, settings);
-    const auto mountains2 = FindMountains(map, rnd2, mountainLevel, settings);
+    const auto mountains1 = findMountains(map, rnd1, mountainLevel, settings);
+    const auto mountains2 = findMountains(map, rnd2, mountainLevel, settings);
 
     BOOST_TEST_REQUIRE(mountains1.size() == mountains2.size());
     for(unsigned index = 0; index < mountains1.size(); index++)
