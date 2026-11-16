@@ -7,6 +7,7 @@
 #include "LuaInterfaceGameBase.h"
 #include "gameTypes/MapCoordinates.h"
 #include "gameTypes/PactTypes.h"
+#include "gameData/CampaignTypes.h"
 #include <memory>
 #include <string>
 
@@ -33,6 +34,7 @@ public:
     void EventOccupied(unsigned player, MapPoint pt);
     void EventAttack(unsigned char attackerPlayerId, unsigned char defenderPlayerId, unsigned attackerCount);
     void EventStart(bool isFirstStart);
+    void EventHumanWinner();
     void EventGameFrame(unsigned nr);
     void EventResourceFound(unsigned char player, MapPoint pt, ResourceType type, unsigned char quantity);
     // Called if player wants to cancel a pact
@@ -45,6 +47,7 @@ public:
     // called if pact was created
     void EventPactCreated(PactType pt, unsigned char suggestedByPlayerId, unsigned char targetPlayerId,
                           unsigned duration);
+
     // Callable from Lua
     void ClearResources();
     unsigned GetGF() const;
@@ -58,6 +61,10 @@ public:
     void SetMissionGoal(int playerIdx, const std::string& newGoal = "");
     void PostMessageLua(int playerIdx, const std::string& msg);
     void PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y);
+
+    void EnableCampaignChapter(const CampaignID& campaignUid, ChapterID chapter);
+    void SetCampaignChapterCompleted(const CampaignID& campaignUid, ChapterID chapter);
+    void SetCampaignCompleted(const CampaignID& campaignUid);
 
 private:
     ILocalGameState& localGameState;
