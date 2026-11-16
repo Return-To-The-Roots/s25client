@@ -51,8 +51,8 @@ public:
             : counter(counter), maxExcl(maxExcl), rngState(rngState), srcName(ctx.srcName), srcLine(ctx.srcLine),
               objId(ctx.objId){};
 
-        void Serialize(Serializer& ser) const;
-        void Deserialize(Serializer& ser);
+        void serialize(Serializer& ser) const;
+        void deserialize(Serializer& ser);
 
         int getValue() const;
     };

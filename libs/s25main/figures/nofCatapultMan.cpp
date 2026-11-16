@@ -24,7 +24,7 @@ nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd)
     : pos(sgd.popMapPoint()), distance(sgd.PopUnsignedInt())
 {}
 
-void nofCatapultMan::PossibleTarget::Serialize(SerializedGameData& sgd) const
+void nofCatapultMan::PossibleTarget::serialize(SerializedGameData& sgd) const
 {
     helpers::pushPoint(sgd, pos);
     sgd.PushUnsignedInt(distance);
@@ -38,12 +38,12 @@ nofCatapultMan::nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id)
     : nofBuildingWorker(sgd, obj_id), wheel_steps(sgd.PopSignedInt()), target(sgd)
 {}
 
-void nofCatapultMan::Serialize(SerializedGameData& sgd) const
+void nofCatapultMan::serialize(SerializedGameData& sgd) const
 {
-    nofBuildingWorker::Serialize(sgd);
+    nofBuildingWorker::serialize(sgd);
 
     sgd.PushSignedInt(wheel_steps);
-    target.PossibleTarget::Serialize(sgd);
+    target.PossibleTarget::serialize(sgd);
 }
 
 void nofCatapultMan::walkedDerived() {}

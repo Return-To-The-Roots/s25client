@@ -28,9 +28,9 @@ void noBuilding::destroy()
     noBaseBuilding::destroy();
 }
 
-void noBuilding::Serialize(SerializedGameData& sgd) const
+void noBuilding::serialize(SerializedGameData& sgd) const
 {
-    noBaseBuilding::Serialize(sgd);
+    noBaseBuilding::serialize(sgd);
 
     sgd.PushSignedChar(opendoor);
 }

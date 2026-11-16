@@ -37,9 +37,9 @@ nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noBuildin
     }
 }
 
-void nofBuilder::Serialize(SerializedGameData& sgd) const
+void nofBuilder::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(state);
     sgd.pushObject(building_site, true);

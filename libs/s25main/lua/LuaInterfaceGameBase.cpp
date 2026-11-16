@@ -21,10 +21,10 @@ unsigned LuaInterfaceGameBase::getFeatureLevel()
 
 LuaInterfaceGameBase::LuaInterfaceGameBase(const ILocalGameState& localGameState) : localGameState(localGameState)
 {
-    Register(lua);
+    registerClasses(lua);
 }
 
-void LuaInterfaceGameBase::Register(kaguya::State& state)
+void LuaInterfaceGameBase::registerClasses(kaguya::State& state)
 {
     state["RTTRGameBase"].setClass(
       kaguya::UserdataMetatable<LuaInterfaceGameBase, LuaInterfaceBase>()

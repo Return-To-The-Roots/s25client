@@ -34,7 +34,7 @@ nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd)
     : boards(sgd.PopUnsignedInt()), stones(sgd.PopUnsignedInt()), active(sgd.PopBool()), builder(sgd.PopBool())
 {}
 
-void nobHarborBuilding::ExpeditionInfo::Serialize(SerializedGameData& sgd) const
+void nobHarborBuilding::ExpeditionInfo::serialize(SerializedGameData& sgd) const
 {
     sgd.PushUnsignedInt(boards);
     sgd.PushUnsignedInt(stones);
@@ -46,7 +46,7 @@ nobHarborBuilding::ExplorationExpeditionInfo::ExplorationExpeditionInfo(Serializ
     : active(sgd.PopBool()), scouts(sgd.PopUnsignedInt())
 {}
 
-void nobHarborBuilding::ExplorationExpeditionInfo::Serialize(SerializedGameData& sgd) const
+void nobHarborBuilding::ExplorationExpeditionInfo::serialize(SerializedGameData& sgd) const
 {
     sgd.PushBool(active);
     sgd.PushUnsignedInt(scouts);
@@ -143,11 +143,11 @@ void nobHarborBuilding::DestroyBuilding()
     world->recalcTerritory(*this, TerritoryChangeReason::Destroyed);
 }
 
-void nobHarborBuilding::Serialize(SerializedGameData& sgd) const
+void nobHarborBuilding::serialize(SerializedGameData& sgd) const
 {
-    nobBaseWarehouse::Serialize(sgd);
-    expedition.Serialize(sgd);
-    exploration_expedition.Serialize(sgd);
+    nobBaseWarehouse::serialize(sgd);
+    expedition.serialize(sgd);
+    exploration_expedition.serialize(sgd);
     sgd.pushEvent(orderware_ev);
     helpers::pushContainer(sgd, seaIds);
     sgd.pushObjectContainer(wares_for_ships, true);

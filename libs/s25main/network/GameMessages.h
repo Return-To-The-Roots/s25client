@@ -886,13 +886,13 @@ public:
     void Serialize(Serializer& ser) const override
     {
         GameMessage::Serialize(ser);
-        ggs.Serialize(ser);
+        ggs.serialize(ser);
     }
 
     void Deserialize(Serializer& ser) override
     {
         GameMessage::Deserialize(ser);
-        ggs.Deserialize(ser);
+        ggs.deserialize(ser);
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -1065,7 +1065,7 @@ public:
 
         ser.PushUnsignedInt(entries.size());
         for(const RandomEntry& entry : entries)
-            entry.Serialize(ser);
+            entry.serialize(ser);
 
         ser.PushBool(last);
     }
@@ -1079,7 +1079,7 @@ public:
         entries.clear();
         entries.resize(cnt);
         for(RandomEntry& entry : entries)
-            entry.Deserialize(ser);
+            entry.deserialize(ser);
 
         last = ser.PopBool();
     }

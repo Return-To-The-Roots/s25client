@@ -136,7 +136,7 @@ void SavedFile::writePlayerData(BinaryFile& file)
     Serializer ser;
     ser.PushUnsignedChar(players.size());
     for(const auto& player : players)
-        player.Serialize(ser, true);
+        player.serialize(ser, true);
 
     ser.WriteToFile(file);
 }
@@ -172,7 +172,7 @@ void SavedFile::readPlayerData(BinaryFile& file)
 void SavedFile::writeGGS(BinaryFile& file) const
 {
     Serializer ser;
-    ggs.Serialize(ser);
+    ggs.serialize(ser);
     ser.WriteToFile(file);
 }
 
@@ -183,7 +183,7 @@ void SavedFile::readGGS(BinaryFile& file)
 {
     Serializer ser;
     ser.ReadFromFile(file);
-    ggs.Deserialize(ser);
+    ggs.deserialize(ser);
 }
 
 const BasePlayerInfo& SavedFile::getPlayer(unsigned idx) const

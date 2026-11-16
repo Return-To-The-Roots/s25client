@@ -26,9 +26,9 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMi
     RTTR_Assert(IsSoldier());
 }
 
-void nofSoldier::Serialize(SerializedGameData& sgd) const
+void nofSoldier::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
         sgd.pushObject(homeBld);

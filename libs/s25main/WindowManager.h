@@ -86,7 +86,7 @@ public:
     /// Close the window right away and free it.
     void closeNow(IngameWindow* window);
     /// merkt einen Desktop zum Wechsel vor.
-    Desktop* Switch(std::unique_ptr<Desktop> desktop);
+    Desktop* switchTo(std::unique_ptr<Desktop> desktop);
     /// Process press of left mouse button
     void msgLeftDown(MouseCoords mc) override;
     /// Process release of left mouse button

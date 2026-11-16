@@ -14,9 +14,9 @@ noGranite::noGranite(const GraniteType type, const unsigned char state)
     : noBase(NodalObjectType::Granite), type(type), state(state)
 {}
 
-void noGranite::Serialize(SerializedGameData& sgd) const
+void noGranite::serialize(SerializedGameData& sgd) const
 {
-    noBase::Serialize(sgd);
+    noBase::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(type);
     sgd.PushUnsignedChar(state);

@@ -49,6 +49,6 @@ void dskDirectIP::msgButtonClick(const unsigned ctrl_id)
                 WINDOWMANAGER.replaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::Direct));
             break;
         case ID_btJoinGame: WINDOWMANAGER.replaceWindow(std::make_unique<iwDirectIPConnect>(ServerType::Direct)); break;
-        case ID_btBack: WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>()); break;
+        case ID_btBack: WINDOWMANAGER.switchTo(std::make_unique<dskMultiPlayer>()); break;
     }
 }

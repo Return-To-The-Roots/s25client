@@ -56,11 +56,11 @@ void dskGameLoader::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         GAMECLIENT.stop();
 
         if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
-            WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
         else if(loader_.getGame()->world_.isSinglePlayer())
-            WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskSinglePlayer>());
         else
-            WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskDirectIP>());
     }
 }
 
@@ -151,7 +151,7 @@ void dskGameLoader::LC_Status_Error(const std::string& error)
 void dskGameLoader::CI_GameStarted()
 {
     RTTR_Assert(gameInterface);
-    WINDOWMANAGER.Switch(std::move(gameInterface));
+    WINDOWMANAGER.switchTo(std::move(gameInterface));
 }
 
 void dskGameLoader::CI_Error(const ClientError ce)

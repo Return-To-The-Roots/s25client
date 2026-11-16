@@ -30,7 +30,7 @@ public:
     void handleEvent(unsigned evId) override { handledEventIds.push_back(evId); }
     // LCOV_EXCL_START
     void destroy() override {}
-    void Serialize(SerializedGameData&) const override {}
+    void serialize(SerializedGameData&) const override {}
     GO_Type getGOT() const final { return GO_Type::Staticobject; }
     // LCOV_EXCL_STOP
 };
@@ -145,7 +145,7 @@ public:
     }
     // LCOV_EXCL_START
     void destroy() override { destroyNum++; }
-    void Serialize(SerializedGameData&) const override {}
+    void serialize(SerializedGameData&) const override {}
     GO_Type getGOT() const final { return GO_Type::Staticobject; }
     // LCOV_EXCL_STOP
 };

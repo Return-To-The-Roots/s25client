@@ -18,9 +18,9 @@ JoinPlayerInfo::JoinPlayerInfo(Serializer& ser)
     : PlayerInfo(ser, BasePlayerInfo::getCurrentVersion()), originName(ser.PopLongString()), isReady(ser.PopBool())
 {}
 
-void JoinPlayerInfo::Serialize(Serializer& ser) const
+void JoinPlayerInfo::serialize(Serializer& ser) const
 {
-    PlayerInfo::Serialize(ser);
+    PlayerInfo::serialize(ser);
     ser.PushLongString(originName);
     ser.PushBool(isReady);
 }

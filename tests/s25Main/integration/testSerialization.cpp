@@ -195,10 +195,10 @@ BOOST_AUTO_TEST_CASE(SerializeGGS)
         ggs.setSelection(addon->getId(), rttr::test::randomValue(0u, addon->getNumOptions() - 1));
     }
     ::Serializer ser;
-    ggs.Serialize(ser);
+    ggs.serialize(ser);
     ::Serializer loader(ser.GetData(), ser.GetLength());
     GlobalGameSettings ggsLoaded;
-    ggsLoaded.Deserialize(loader);
+    ggsLoaded.deserialize(loader);
     BOOST_TEST(ggs.speed == ggsLoaded.speed);
     BOOST_TEST(ggs.objective == ggsLoaded.objective);
     BOOST_TEST(ggs.startWares == ggsLoaded.startWares);
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeMigratesToPerMineBehavio
 
     Serializer loader(ser.GetData(), ser.GetLength());
     GlobalGameSettings ggsLoaded;
-    ggsLoaded.Deserialize(loader);
+    ggsLoaded.deserialize(loader);
 
     for(const BuildingType mineType :
         {BuildingType::GraniteMine, BuildingType::CoalMine, BuildingType::IronMine, BuildingType::GoldMine})
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeAlsoMigratesLegacyGranit
 
     Serializer loader(ser.GetData(), ser.GetLength());
     GlobalGameSettings ggsLoaded;
-    ggsLoaded.Deserialize(loader);
+    ggsLoaded.deserialize(loader);
 
     for(const BuildingType mineType :
         {BuildingType::GraniteMine, BuildingType::CoalMine, BuildingType::IronMine, BuildingType::GoldMine})
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeDoesNotOverridePerMineBe
 
     Serializer loader(ser.GetData(), ser.GetLength());
     GlobalGameSettings ggsLoaded;
-    ggsLoaded.Deserialize(loader);
+    ggsLoaded.deserialize(loader);
 
     BOOST_TEST(getMineResourceBehavior(ggsLoaded, BuildingType::CoalMine) == MineResourceBehavior::S4LikeExhaustion);
     BOOST_TEST(getMineResourceBehavior(ggsLoaded, BuildingType::GraniteMine) == MineResourceBehavior::Inexhaustible);

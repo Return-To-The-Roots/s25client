@@ -45,5 +45,5 @@ public:
     nofShipWright(SerializedGameData& sgd, unsigned obj_id);
     GO_Type getGOT() const final { return GO_Type::NofShipwright; }
     void handleDerivedEvent(unsigned id) override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 };

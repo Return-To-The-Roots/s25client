@@ -83,12 +83,12 @@ BOOST_AUTO_TEST_CASE(SoldierRankCommandsRejectInvalidSerializedRank)
     const auto count = rttr::test::randomValue<unsigned>();
 
     gc::Deserializer troopLimitCommand;
-    TestSetTroopLimit(pt, invalidRank, count).Serialize(troopLimitCommand);
-    BOOST_REQUIRE_THROW(gc::GameCommand::Deserialize(troopLimitCommand), std::range_error);
+    TestSetTroopLimit(pt, invalidRank, count).serialize(troopLimitCommand);
+    BOOST_REQUIRE_THROW(gc::GameCommand::deserialize(troopLimitCommand), std::range_error);
 
     gc::Deserializer reserveCommand;
-    TestChangeReserve(pt, invalidRank, count).Serialize(reserveCommand);
-    BOOST_REQUIRE_THROW(gc::GameCommand::Deserialize(reserveCommand), std::range_error);
+    TestChangeReserve(pt, invalidRank, count).serialize(reserveCommand);
+    BOOST_REQUIRE_THROW(gc::GameCommand::deserialize(reserveCommand), std::range_error);
 }
 
 BOOST_FIXTURE_TEST_CASE(PlaceFlagTest, WorldWithGCExecution2P)

@@ -35,9 +35,9 @@ void nofWarehouseWorker::destroy()
     looseWare();
 }
 
-void nofWarehouseWorker::Serialize(SerializedGameData& sgd) const
+void nofWarehouseWorker::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
     sgd.pushObject(carried_ware, true);
     sgd.PushBool(shouldBringWareIn);

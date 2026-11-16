@@ -32,7 +32,7 @@ CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id)
 {}
 
 /// Serialisierungsfunktionen
-void CatapultStone::Serialize(SerializedGameData& sgd) const
+void CatapultStone::serialize(SerializedGameData& sgd) const
 {
     helpers::pushPoint(sgd, dest_building);
     helpers::pushPoint(sgd, dest_map);

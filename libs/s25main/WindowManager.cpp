@@ -203,7 +203,7 @@ IngameWindow* WindowManager::showAfterSwitch(std::unique_ptr<IngameWindow> windo
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
  *  @param[in] data          Daten für den neuen Desktop
  */
-Desktop* WindowManager::Switch(std::unique_ptr<Desktop> desktop)
+Desktop* WindowManager::switchTo(std::unique_ptr<Desktop> desktop)
 {
     nextdesktop = std::move(desktop);
     // Disable the mouse till the next desktop is shown to avoid e.g. double-switching

@@ -41,9 +41,9 @@ BuildRoad::BuildRoad(Serializer& ser)
         i = helpers::popEnum<Direction>(ser);
 }
 
-void BuildRoad::Serialize(Serializer& ser) const
+void BuildRoad::serialize(Serializer& ser) const
 {
-    Coords::Serialize(ser);
+    Coords::serialize(ser);
 
     ser.PushBool(boat_road);
     ser.PushUnsignedInt(route.size());
@@ -60,9 +60,9 @@ DestroyRoad::DestroyRoad(Serializer& ser)
     : Coords(GCType::DestroyRoad, ser), start_dir(helpers::popEnum<Direction>(ser))
 {}
 
-void DestroyRoad::Serialize(Serializer& ser) const
+void DestroyRoad::serialize(Serializer& ser) const
 {
-    Coords::Serialize(ser);
+    Coords::serialize(ser);
 
     helpers::pushEnum<uint8_t>(ser, start_dir);
 }
@@ -78,9 +78,9 @@ UpgradeRoad::UpgradeRoad(Serializer& ser)
     : Coords(GCType::UpgradeRoad, ser), start_dir(helpers::popEnum<Direction>(ser))
 {}
 
-void UpgradeRoad::Serialize(Serializer& ser) const
+void UpgradeRoad::serialize(Serializer& ser) const
 {
-    Coords::Serialize(ser);
+    Coords::serialize(ser);
     helpers::pushEnum<uint8_t>(ser, start_dir);
 }
 

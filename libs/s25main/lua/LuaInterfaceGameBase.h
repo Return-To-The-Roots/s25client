@@ -10,7 +10,7 @@
 class LuaInterfaceGameBase : public LuaInterfaceBase
 {
 public:
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
     bool checkScriptVersion();
 

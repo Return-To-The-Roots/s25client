@@ -33,7 +33,7 @@ protected:
 
 public:
     LuaPlayer(Game& game, GamePlayer& player) : game(game), player(player) {}
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
     void enableBuilding(lua::SafeEnum<BuildingType> bld, bool notify);
     void disableBuilding(lua::SafeEnum<BuildingType> bld);

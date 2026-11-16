@@ -28,7 +28,7 @@ class nofCatapultMan : public nofBuildingWorker
         PossibleTarget(const MapPoint pt, unsigned distance) : pos(pt), distance(distance) {}
         PossibleTarget(SerializedGameData& sgd);
 
-        void Serialize(SerializedGameData& sgd) const;
+        void serialize(SerializedGameData& sgd) const;
 
     } target; /// das anvisierte Ziel
 
@@ -44,7 +44,7 @@ public:
     nofCatapultMan(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofCatapultMan(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::NofCatapultman; }
 

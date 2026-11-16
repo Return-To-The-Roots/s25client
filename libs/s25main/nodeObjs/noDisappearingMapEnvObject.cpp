@@ -19,9 +19,9 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(const MapPoint pos, const
     : noDisappearingEnvObject(pos, 4000, 1000), map_id(map_id)
 {}
 
-void noDisappearingMapEnvObject::Serialize(SerializedGameData& sgd) const
+void noDisappearingMapEnvObject::serialize(SerializedGameData& sgd) const
 {
-    noDisappearingEnvObject::Serialize(sgd);
+    noDisappearingEnvObject::serialize(sgd);
 
     sgd.PushUnsignedShort(map_id);
 }

@@ -106,7 +106,7 @@ EconomyModeHandler::EconomyModeHandler(SerializedGameData& sgd, unsigned objId)
 void EconomyModeHandler::destroy() {}
 
 /// Serialisierungsfunktion
-void EconomyModeHandler::Serialize(SerializedGameData& sgd) const
+void EconomyModeHandler::serialize(SerializedGameData& sgd) const
 {
     sgd.PushUnsignedInt(endFrame);
     helpers::pushContainer(sgd, goodsToCollect);
@@ -286,7 +286,7 @@ EconomyModeHandler::EconTeam::EconTeam(SerializedGameData& sgd, unsigned numGood
     : playersInTeam(sgd.PopSignedInt()), amountsTheTeamCollected(numGoodTypesToCollect, 0), goodTypeWins(0)
 {}
 
-void EconomyModeHandler::EconTeam::Serialize(SerializedGameData& sgd) const
+void EconomyModeHandler::EconTeam::serialize(SerializedGameData& sgd) const
 {
     sgd.PushUnsignedInt(playersInTeam.to_ulong());
 }

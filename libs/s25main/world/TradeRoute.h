@@ -27,7 +27,7 @@ public:
     TradeRoute(const GameWorld& world, unsigned char player, const MapPoint& start, const MapPoint& goal);
     TradeRoute(SerializedGameData& sgd, const GameWorld& world, unsigned char player);
 
-    void Serialize(SerializedGameData& sgd) const;
+    void serialize(SerializedGameData& sgd) const;
 
     /// Gets the next direction the caravane has to take, TradeDirection::ReachedGoal or std::nullopt_t
     helpers::OptionalEnum<TradeDirection> getNextDir();

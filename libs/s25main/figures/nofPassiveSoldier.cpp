@@ -34,9 +34,9 @@ void nofPassiveSoldier::destroy()
     nofSoldier::destroy();
 }
 
-void nofPassiveSoldier::Serialize(SerializedGameData& sgd) const
+void nofPassiveSoldier::serialize(SerializedGameData& sgd) const
 {
-    nofSoldier::Serialize(sgd);
+    nofSoldier::serialize(sgd);
 
     sgd.pushEvent(healing_event);
 }

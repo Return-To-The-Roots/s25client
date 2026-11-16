@@ -75,7 +75,7 @@ void dskLAN::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btBack: WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>()); break;
+        case ID_btBack: WINDOWMANAGER.switchTo(std::make_unique<dskMultiPlayer>()); break;
         case ID_btConnect: connectToSelectedGame(); break;
         case ID_btAddServer:
             if(SETTINGS.proxy.type != ProxyType::None)
@@ -105,7 +105,7 @@ void dskLAN::readOpenGames()
         Serializer ser(&service.second.info.GetPayload().front(), service.second.info.GetPayload().size()); //-V807
         GameInfo info;
         info.ip = service.second.ip;
-        info.info.Deserialize(ser);
+        info.info.deserialize(ser);
         openGames.push_back(info);
     }
 }

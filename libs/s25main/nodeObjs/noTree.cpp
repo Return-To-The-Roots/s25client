@@ -51,9 +51,9 @@ void noTree::destroy()
     noCoordBase::destroy();
 }
 
-void noTree::Serialize(SerializedGameData& sgd) const
+void noTree::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushUnsignedChar(type);
     sgd.PushUnsignedChar(size);

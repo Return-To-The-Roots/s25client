@@ -224,7 +224,7 @@ void iwLobbyConnect::LC_LoggedIn(const std::string& /*email*/)
 {
     getCtrl<ctrlButton>(ID_btRegister)->setEnabled(false);
 
-    WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
+    WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
 }
 
 void iwLobbyConnect::LC_Status_Waiting()

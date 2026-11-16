@@ -19,7 +19,7 @@ class LuaWorld
 
 public:
     LuaWorld(GameWorld& gw) : gw(gw) {}
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
     bool addEnvObject(int x, int y, unsigned id, unsigned file = 0xFFFF);
     bool addStaticObject(int x, int y, unsigned id, unsigned file = 0xFFFF, unsigned size = 1);
     void addAnimal(int x, int y, lua::SafeEnum<Species> species);

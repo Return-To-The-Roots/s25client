@@ -59,7 +59,7 @@ public:
 
     ~nobUsual() override;
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const override { return GO_Type::NobUsual; }
     unsigned getMilitaryRadius() const override { return 0; }

@@ -50,9 +50,9 @@ void nofAttacker::destroy()
     RTTR_Assert(!world->GetPlayer(oplayer).GetFirstWH()->Test(this));*/
 }
 
-void nofAttacker::Serialize(SerializedGameData& sgd) const
+void nofAttacker::serialize(SerializedGameData& sgd) const
 {
-    nofActiveSoldier::Serialize(sgd);
+    nofActiveSoldier::serialize(sgd);
 
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {

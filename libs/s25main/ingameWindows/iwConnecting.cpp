@@ -83,8 +83,8 @@ void iwConnecting::CI_NextConnectState(const ConnectState cs)
         case ConnectState::QueryPlayerList: setStatus(_("Waiting for Playerinfo...")); break;
         case ConnectState::QuerySettings: setStatus(_("Waiting for server info...")); break;
         case ConnectState::Finished:
-            WINDOWMANAGER.Switch(std::make_unique<dskGameLobby>(serverType_, GAMECLIENT.getGameLobby(),
-                                                                GAMECLIENT.getPlayerId(), std::move(lobbyClient_)));
+            WINDOWMANAGER.switchTo(std::make_unique<dskGameLobby>(serverType_, GAMECLIENT.getGameLobby(),
+                                                                  GAMECLIENT.getPlayerId(), std::move(lobbyClient_)));
             close();
             break;
     }

@@ -14,7 +14,7 @@ TradePath::TradePath(SerializedGameData& sgd) : start(sgd.popMapPoint()), goal(s
     }
 }
 
-void TradePath::Serialize(SerializedGameData& sgd) const
+void TradePath::serialize(SerializedGameData& sgd) const
 {
     helpers::pushPoint(sgd, start);
     helpers::pushPoint(sgd, goal);

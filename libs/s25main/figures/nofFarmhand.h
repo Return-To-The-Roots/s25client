@@ -58,7 +58,7 @@ public:
     static unsigned getWorkRadius(const GlobalGameSettings& ggs, Job job);
     unsigned getWorkRadius(Job job);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     void handleDerivedEvent(unsigned id) override;
     /// Return the quality of this working point (including if the worker can work here at all)

@@ -41,8 +41,8 @@ public:
     void addToKillList(GameObject* obj);
     void addToKillList(std::unique_ptr<GameObject> obj);
 
-    void Serialize(SerializedGameData& sgd) const;
-    void Deserialize(SerializedGameData& sgd);
+    void serialize(SerializedGameData& sgd) const;
+    void deserialize(SerializedGameData& sgd);
 
     unsigned getNextEventInstanceId();
 

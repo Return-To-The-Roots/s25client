@@ -25,9 +25,9 @@ nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const un
       workplace))); // Assume we have at least a GameObject and check if it is a valid workplace
 }
 
-void nofBuildingWorker::Serialize(SerializedGameData& sgd) const
+void nofBuildingWorker::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(state);
 

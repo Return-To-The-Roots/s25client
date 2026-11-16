@@ -94,7 +94,7 @@ void RoadSegment::destroy()
     }
 }
 
-void RoadSegment::Serialize(SerializedGameData& sgd) const
+void RoadSegment::serialize(SerializedGameData& sgd) const
 {
     sgd.pushEnum<uint8_t>(rt);
     sgd.pushObject(f1);

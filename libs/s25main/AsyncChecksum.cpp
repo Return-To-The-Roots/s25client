@@ -18,7 +18,7 @@ AsyncChecksum::AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned obj
     : randChecksum(randChecksum), objCt(objCt), objIdCt(objIdCt), eventCt(eventCt), evInstanceCt(evInstanceCt)
 {}
 
-void AsyncChecksum::Serialize(Serializer& ser) const
+void AsyncChecksum::serialize(Serializer& ser) const
 {
     ser.PushUnsignedInt(randChecksum);
     ser.PushUnsignedInt(objCt);
@@ -27,7 +27,7 @@ void AsyncChecksum::Serialize(Serializer& ser) const
     ser.PushUnsignedInt(evInstanceCt);
 }
 
-void AsyncChecksum::Deserialize(Serializer& ser)
+void AsyncChecksum::deserialize(Serializer& ser)
 {
     randChecksum = ser.PopUnsignedInt();
     objCt = ser.PopUnsignedInt();
@@ -39,7 +39,7 @@ void AsyncChecksum::Deserialize(Serializer& ser)
 unsigned AsyncChecksum::getHash() const
 {
     Serializer ser;
-    Serialize(ser);
+    serialize(ser);
     return calcChecksumOfBuffer(ser.GetData(), ser.GetLength());
 }
 

@@ -34,7 +34,7 @@ void initGUITests()
         LOADER.loadDummyGUIFiles();
         LOADER.loadDummySoundFiles();
         BOOST_TEST_CHECKPOINT("Switch to Desktop");
-        WINDOWMANAGER.Switch(std::make_unique<DummyDesktop>());
+        WINDOWMANAGER.switchTo(std::make_unique<DummyDesktop>());
         BOOST_TEST_CHECKPOINT("Dummy Draw");
         WINDOWMANAGER.draw();
         logAcc.clearLog();
@@ -60,7 +60,7 @@ Fixture::~Fixture()
     if(!dynamic_cast<DummyDesktop*>(WINDOWMANAGER.getCurrentDesktop()) || WINDOWMANAGER.getTopMostWindow())
     {
         // Switch back to new, empty desktop to clean up active windows
-        WINDOWMANAGER.Switch(std::make_unique<DummyDesktop>());
+        WINDOWMANAGER.switchTo(std::make_unique<DummyDesktop>());
         WINDOWMANAGER.draw();
     }
 }

@@ -102,7 +102,7 @@ public:
         RTTR_Assert(!workplace);
         noFigure::destroy();
     }
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     void draw(DrawPoint drawPt) override;
 

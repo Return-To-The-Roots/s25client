@@ -208,7 +208,7 @@ void iwLoad::saveLoad()
     } else
     {
         if(LOBBYCLIENT.IsLoggedIn())
-            WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
         else
             close();
     }

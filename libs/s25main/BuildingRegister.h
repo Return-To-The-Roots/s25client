@@ -20,9 +20,9 @@ class BuildingRegister
 {
 public:
     /// Serialisieren
-    void Serialize(SerializedGameData& sgd) const;
+    void serialize(SerializedGameData& sgd) const;
     // Deserialisieren
-    void Deserialize(SerializedGameData& sgd);
+    void deserialize(SerializedGameData& sgd);
     /// Compatibility with old savegames
     void deserialize2(SerializedGameData& sgd);
 

@@ -30,9 +30,9 @@ nofHunter::nofHunter(const MapPoint pos, const unsigned char player, nobUsual* w
       shooting_dir(Direction::West)
 {}
 
-void nofHunter::Serialize(SerializedGameData& sgd) const
+void nofHunter::serialize(SerializedGameData& sgd) const
 {
-    nofBuildingWorker::Serialize(sgd);
+    nofBuildingWorker::serialize(sgd);
 
     if(state != State::FigureWork && state != State::Waiting1)
     {

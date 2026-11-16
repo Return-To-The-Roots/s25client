@@ -54,7 +54,7 @@ public:
     ~Ware() override;
 
     void destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::Ware; }
 

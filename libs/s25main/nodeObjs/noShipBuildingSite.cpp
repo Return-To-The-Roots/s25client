@@ -28,9 +28,9 @@ void noShipBuildingSite::destroy()
     noCoordBase::destroy();
 }
 
-void noShipBuildingSite::Serialize(SerializedGameData& sgd) const
+void noShipBuildingSite::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushUnsignedChar(player);
     sgd.PushUnsignedChar(progress);

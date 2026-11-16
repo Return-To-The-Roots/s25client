@@ -691,13 +691,13 @@ void dskGameLobby::msgGroupComboSelectItem(const unsigned group_id, const unsign
 void dskGameLobby::goBack()
 {
     if(isSinglePlayer())
-        WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskSinglePlayer>());
     else if(serverType == ServerType::LAN)
-        WINDOWMANAGER.Switch(std::make_unique<dskLAN>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskLAN>());
     else if(serverType == ServerType::Lobby && lobbyClient_ && lobbyClient_->IsLoggedIn())
-        WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
     else
-        WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskDirectIP>());
 }
 
 bool dskGameLobby::isChangeAllowed(const std::string& setting) const
@@ -1051,7 +1051,7 @@ void dskGameLobby::CI_PlayerLeft(const unsigned playerId)
 
 void dskGameLobby::CI_GameLoading(std::shared_ptr<Game> game)
 {
-    WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(std::move(game)));
+    WINDOWMANAGER.switchTo(std::make_unique<dskGameLoader>(std::move(game)));
 }
 
 void dskGameLobby::CI_PlayerDataChanged(unsigned playerId)

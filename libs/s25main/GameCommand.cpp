@@ -18,7 +18,7 @@ unsigned Deserializer::getCurrentVersion()
     return 2;
 }
 
-GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
+GameCommandPtr GameCommand::deserialize(Deserializer& ser)
 {
     auto gcType = helpers::popEnum<GCType>(ser);
     GameCommand* gc;
@@ -65,7 +65,7 @@ GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
     return gc;
 }
 
-void GameCommand::Serialize(Serializer& ser) const
+void GameCommand::serialize(Serializer& ser) const
 {
     helpers::pushEnum<uint8_t>(ser, gcType);
 }

@@ -15,7 +15,7 @@
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddEnvObjectWrapper, LuaWorld, addEnvObject, 3, 4)
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(AddStaticObjectWrapper, LuaWorld, addStaticObject, 3, 5)
 
-void LuaWorld::Register(kaguya::State& state)
+void LuaWorld::registerClasses(kaguya::State& state)
 {
 #pragma region ConstDefs
 #define ADD_LUA_CONST(name) state["SPEC_" + s25util::toUpper(#name)] = Species::name

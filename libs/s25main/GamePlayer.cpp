@@ -159,7 +159,7 @@ void GamePlayer::loadStandardDistribution()
 
 GamePlayer::~GamePlayer() = default;
 
-void GamePlayer::Serialize(SerializedGameData& sgd) const
+void GamePlayer::serialize(SerializedGameData& sgd) const
 {
     // PlayerStatus speichern, ehemalig
     sgd.pushEnum<uint8_t>(ps);
@@ -170,7 +170,7 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
 
     sgd.PushBool(isDefeated);
 
-    buildings.Serialize(sgd);
+    buildings.serialize(sgd);
 
     sgd.pushObjectContainer(roads, true);
 
@@ -227,13 +227,13 @@ void GamePlayer::Serialize(SerializedGameData& sgd) const
     for(const auto& playerPacts : pacts)
     {
         for(const Pact& pact : playerPacts)
-            pact.Serialize(sgd);
+            pact.serialize(sgd);
     }
 
     sgd.PushBool(emergency);
 }
 
-void GamePlayer::Deserialize(SerializedGameData& sgd)
+void GamePlayer::deserialize(SerializedGameData& sgd)
 {
     std::fill(building_enabled.begin(), building_enabled.end(), true);
 
@@ -244,7 +244,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         return;
 
     isDefeated = sgd.PopBool();
-    buildings.Deserialize(sgd);
+    buildings.deserialize(sgd);
 
     sgd.popObjectContainer(roads, GO_Type::Roadsegment);
 
@@ -1654,7 +1654,7 @@ GamePlayer::Pact::Pact(SerializedGameData& sgd)
     : duration(sgd.PopUnsignedInt()), start(sgd.PopUnsignedInt()), accepted(sgd.PopBool()), want_cancel(sgd.PopBool())
 {}
 
-void GamePlayer::Pact::Serialize(SerializedGameData& sgd) const
+void GamePlayer::Pact::serialize(SerializedGameData& sgd) const
 {
     sgd.PushUnsignedInt(duration);
     sgd.PushUnsignedInt(start);

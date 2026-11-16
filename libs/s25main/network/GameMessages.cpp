@@ -23,7 +23,7 @@ void GameMessage_Player_List::Serialize(Serializer& ser) const
     GameMessage::Serialize(ser);
     ser.PushUnsignedInt(playerInfos.size());
     for(const auto& playerInfo : playerInfos)
-        playerInfo.Serialize(ser);
+        playerInfo.serialize(ser);
 }
 
 void GameMessage_Player_List::Deserialize(Serializer& ser)

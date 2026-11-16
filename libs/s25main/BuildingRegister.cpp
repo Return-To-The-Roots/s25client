@@ -17,7 +17,7 @@
 #include "gameData/BuildingConsts.h"
 #include "gameData/BuildingProperties.h"
 
-void BuildingRegister::Serialize(SerializedGameData& sgd) const
+void BuildingRegister::serialize(SerializedGameData& sgd) const
 {
     sgd.pushObjectContainer(warehouses);
     sgd.pushObjectContainer(harbors, true);
@@ -30,7 +30,7 @@ void BuildingRegister::Serialize(SerializedGameData& sgd) const
     sgd.pushObjectContainer(military_buildings, true);
 }
 
-void BuildingRegister::Deserialize(SerializedGameData& sgd)
+void BuildingRegister::deserialize(SerializedGameData& sgd)
 {
     sgd.popObjectContainer(warehouses);
     sgd.popObjectContainer(harbors, GO_Type::NobHarborbuilding);

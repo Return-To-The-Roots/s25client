@@ -22,7 +22,7 @@ namespace bfs = boost::filesystem;
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const boost::filesystem::path& basePath)
     : worldDesc_(worldDesc), basePath_(basePath.lexically_normal().make_preferred()), curIncludeDepth_(0)
 {
-    Register(lua);
+    registerClasses(lua);
 
     lua["rttr"] = this;
     lua["include"] = kaguya::function([this](const std::string& file) { include(file); });
@@ -41,7 +41,7 @@ bool GameDataLoader::Load()
     return loadScript(curFile_);
 }
 
-void GameDataLoader::Register(kaguya::State& state)
+void GameDataLoader::registerClasses(kaguya::State& state)
 {
     state["RTTRGameData"].setClass(kaguya::UserdataMetatable<GameDataLoader, LuaInterfaceBase>()
                                      .addFunction("AddLandscape", &GameDataLoader::addLandscape)

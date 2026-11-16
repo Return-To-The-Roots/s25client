@@ -43,7 +43,7 @@ struct DummyWorker : GameObject
 
     // LCOV_EXCL_START
     void destroy() override {}
-    void Serialize(SerializedGameData&) const override {}
+    void serialize(SerializedGameData&) const override {}
     GO_Type getGOT() const final { return GO_Type::NofGeologist; }
     // LCOV_EXCL_STOP
 };

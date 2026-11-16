@@ -45,9 +45,9 @@ void noCharburnerPile::destroy()
     noCoordBase::destroy();
 }
 
-void noCharburnerPile::Serialize(SerializedGameData& sgd) const
+void noCharburnerPile::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(state);
     sgd.PushUnsignedShort(step);

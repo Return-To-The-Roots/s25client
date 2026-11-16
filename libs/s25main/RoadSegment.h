@@ -36,7 +36,7 @@ public:
     /// zerstört das Objekt.
     void destroy() override;
     /// serialisiert das Objekt.
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
     /// liefert den GO-Type.
     GO_Type getGOT() const final { return GO_Type::Roadsegment; }
     /// Gibt die ID (0 oder 1) eines RoadNodes dieser Straße zurück (die Flagge muss zu dieser Straße gehören, sonst

@@ -48,7 +48,7 @@ protected:
     void DestroyBuilding() override;
 
 public:
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     auto getLeavingFigures() const { return helpers::nonNullPtrSpan(leave_house); }
 

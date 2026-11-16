@@ -85,9 +85,9 @@ public:
     ~GamePlayer();
 
     /// Serialisieren
-    void Serialize(SerializedGameData& sgd) const;
+    void serialize(SerializedGameData& sgd) const;
     // Deserialisieren
-    void Deserialize(SerializedGameData& sgd);
+    void deserialize(SerializedGameData& sgd);
 
     GameWorld& getGameWorld() { return world; }
     const GameWorld& getGameWorld() const { return world; }
@@ -411,7 +411,7 @@ private:
 
         Pact() : duration(0), start(0), accepted(false), want_cancel(false) {}
         explicit Pact(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const;
+        void serialize(SerializedGameData& sgd) const;
     };
     /// Bündnisse dieses Spielers mit anderen Spielern
     std::array<helpers::EnumArray<Pact, PactType>, MAX_PLAYERS> pacts;

@@ -41,9 +41,9 @@ noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), id(sgd.PopUnsignedShort()), file(sgd.PopUnsignedShort()), size(sgd.PopUnsignedChar())
 {}
 
-void noStaticObject::Serialize(SerializedGameData& sgd) const
+void noStaticObject::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushUnsignedShort(id);
     sgd.PushUnsignedShort(file);

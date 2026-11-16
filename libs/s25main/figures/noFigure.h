@@ -151,7 +151,7 @@ public:
     noFigure(SerializedGameData& sgd, unsigned obj_id);
 
     void destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     void handleEvent(unsigned id) override;
 

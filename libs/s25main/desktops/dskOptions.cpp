@@ -537,7 +537,7 @@ void dskOptions::msgGroupComboSelectItem(const unsigned group_id, const unsigned
             std::string old_lang = SETTINGS.language.language; //-V807
             SETTINGS.language.language = LANGUAGES.setLanguage(selection);
             if(SETTINGS.language.language != old_lang)
-                WINDOWMANAGER.Switch(std::make_unique<dskOptions>());
+                WINDOWMANAGER.switchTo(std::make_unique<dskOptions>());
         }
         break;
         case ID_cbProxyType:
@@ -721,7 +721,7 @@ void dskOptions::msgButtonClick(const unsigned ctrl_id)
                 return;
             }
 
-            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>());
         }
         break;
         case ID_btAddons: WINDOWMANAGER.toggleWindow(std::make_unique<iwAddons>(ggs)); break;
@@ -751,7 +751,7 @@ void dskOptions::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*
         default: break;
         // "You need to restart your game ..."
         // "The selected video driver does not support GUI scaling!"
-        case 1: WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>()); break;
+        case 1: WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>()); break;
     }
 }
 

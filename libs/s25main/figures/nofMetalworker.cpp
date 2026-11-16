@@ -61,9 +61,9 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
     });
 }
 
-void nofMetalworker::Serialize(SerializedGameData& sgd) const
+void nofMetalworker::serialize(SerializedGameData& sgd) const
 {
-    nofWorkman::Serialize(sgd);
+    nofWorkman::serialize(sgd);
     sgd.pushOptionalEnum<uint8_t>(nextProducedTool);
 }
 

@@ -67,9 +67,9 @@ nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
     helpers::popContainer(sgd, lastProductivities);
 }
 
-void nobUsual::Serialize(SerializedGameData& sgd) const
+void nobUsual::serialize(SerializedGameData& sgd) const
 {
-    noBuilding::Serialize(sgd);
+    noBuilding::serialize(sgd);
 
     sgd.pushObject(worker);
     sgd.PushUnsignedShort(productivity);

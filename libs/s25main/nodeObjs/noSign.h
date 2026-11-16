@@ -15,7 +15,7 @@ public:
     noSign(MapPoint pos, Resource resource);
     noSign(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::Sign; }
 

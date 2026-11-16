@@ -72,7 +72,7 @@ void dskTextureTest::msgComboSelectItem(const unsigned ctrl_id, const unsigned s
 
 void dskTextureTest::msgButtonClick(const unsigned /*ctrl_id*/)
 {
-    WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
+    WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>());
 }
 
 using PointF = Point<GLfloat>;

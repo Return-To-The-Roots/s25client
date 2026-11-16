@@ -22,7 +22,7 @@ protected:
 
 public:
     LuaServerPlayer(IGameLobbyController& lobbyServerController, unsigned playerId);
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
     void setNation(lua::SafeEnum<Nation> nat);
     void setTeam(lua::SafeEnum<Team> team);

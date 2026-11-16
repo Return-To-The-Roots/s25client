@@ -46,7 +46,7 @@ struct WMFixture : mock::cleanup
     TestDesktop* dsk;
     WMFixture() : video(uiHelper::getVideoDriver())
     {
-        dsk = static_cast<TestDesktop*>(WINDOWMANAGER.Switch(std::make_unique<TestDesktop>()));
+        dsk = static_cast<TestDesktop*>(WINDOWMANAGER.switchTo(std::make_unique<TestDesktop>()));
         MOCK_EXPECT(dsk->msgMouseMove).once().returns(true);
         MOCK_EXPECT(dsk->msgLeftDown).once().returns(true);
         MOCK_EXPECT(dsk->msgLeftUp).once().returns(true);

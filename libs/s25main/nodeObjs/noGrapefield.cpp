@@ -40,9 +40,9 @@ void noGrapefield::destroy()
     noCoordBase::destroy();
 }
 
-void noGrapefield::Serialize(SerializedGameData& sgd) const
+void noGrapefield::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushUnsignedChar(type);
     sgd.pushEnum<uint8_t>(state);

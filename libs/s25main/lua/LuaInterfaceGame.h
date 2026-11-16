@@ -24,10 +24,10 @@ public:
     LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGameState);
     virtual ~LuaInterfaceGame();
 
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
-    bool Serialize(Serializer& luaSaveState);
-    bool Deserialize(Serializer& luaSaveState);
+    bool serialize(Serializer& luaSaveState);
+    bool deserialize(Serializer& luaSaveState);
 
     void eventExplored(unsigned player, MapPoint pt, unsigned char owner);
     void eventOccupied(unsigned player, MapPoint pt);

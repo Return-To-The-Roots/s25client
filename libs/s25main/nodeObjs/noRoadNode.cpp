@@ -24,9 +24,9 @@ void noRoadNode::destroy()
     noCoordBase::destroy();
 }
 
-void noRoadNode::Serialize(SerializedGameData& sgd) const
+void noRoadNode::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushUnsignedChar(player);
 

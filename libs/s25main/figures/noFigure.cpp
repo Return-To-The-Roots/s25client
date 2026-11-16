@@ -74,9 +74,9 @@ void noFigure::destroy()
     RTTR_Assert(!world->getPlayer(player).isDependentFigure(*this));
 }
 
-void noFigure::Serialize(SerializedGameData& sgd) const
+void noFigure::serialize(SerializedGameData& sgd) const
 {
-    noMovable::Serialize(sgd);
+    noMovable::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(fs);
     sgd.pushEnum<uint8_t>(job_);

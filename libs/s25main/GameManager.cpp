@@ -169,7 +169,7 @@ bool GameManager::showSplashscreen()
         s25util::error(_("Splash screen couldn't be loaded!"));
         return false;
     }
-    windowManager_.Switch(std::make_unique<dskSplash>(std::move(image)));
+    windowManager_.switchTo(std::make_unique<dskSplash>(std::move(image)));
     return true;
 }
 
@@ -183,10 +183,10 @@ bool GameManager::showMenu()
 
     if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen
-        windowManager_.Switch(std::make_unique<dskLobby>());
+        windowManager_.switchTo(std::make_unique<dskLobby>());
     else
         // Hauptmenü zeigen
-        windowManager_.Switch(std::make_unique<dskMainMenu>());
+        windowManager_.switchTo(std::make_unique<dskMainMenu>());
 
     return true;
 }

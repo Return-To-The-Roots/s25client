@@ -28,9 +28,9 @@ void noSkeleton::destroy()
     noCoordBase::destroy();
 }
 
-void noSkeleton::Serialize(SerializedGameData& sgd) const
+void noSkeleton::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushUnsignedChar(type);
     sgd.pushEvent(current_event);

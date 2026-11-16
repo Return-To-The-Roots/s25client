@@ -22,7 +22,7 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib()), logger_(LOG), e
     lua.openlib("table", luaopen_table);
     lua.openlib("math", luaopen_math);
 
-    Register(lua);
+    registerClasses(lua);
     setThrowOnError(true);
     // Quasi-Standard translate function
     lua["_"] = kaguya::function([this](const std::string& s) { return translate(s); });
@@ -32,7 +32,7 @@ LuaInterfaceBase::LuaInterfaceBase() : lua(kaguya::NoLoadLib()), logger_(LOG), e
 
 LuaInterfaceBase::~LuaInterfaceBase() = default;
 
-void LuaInterfaceBase::Register(kaguya::State& state)
+void LuaInterfaceBase::registerClasses(kaguya::State& state)
 {
     state["RTTRBase"].setClass(kaguya::UserdataMetatable<LuaInterfaceBase>()
                                  .addFunction("Log", &LuaInterfaceBase::log)

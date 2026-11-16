@@ -116,9 +116,9 @@ void noBuildingSite::destroy()
     world->recalcBQAroundPointBig(pos);
 }
 
-void noBuildingSite::Serialize(SerializedGameData& sgd) const
+void noBuildingSite::serialize(SerializedGameData& sgd) const
 {
-    noBaseBuilding::Serialize(sgd);
+    noBaseBuilding::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(state);
     sgd.pushObject(planer, true);

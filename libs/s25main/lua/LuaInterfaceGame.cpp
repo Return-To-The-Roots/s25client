@@ -192,9 +192,9 @@ LuaInterfaceGame::LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGam
 #undef ADD_LUA_CONST
 #pragma endregion ConstDefs
 
-    Register(lua);
-    LuaPlayer::Register(lua);
-    LuaWorld::Register(lua);
+    registerClasses(lua);
+    LuaPlayer::registerClasses(lua);
+    LuaWorld::registerClasses(lua);
 
     lua["rttr"] = this;
 }
@@ -203,7 +203,7 @@ LuaInterfaceGame::~LuaInterfaceGame() = default;
 
 KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, setMissionGoal, 1, 2)
 
-void LuaInterfaceGame::Register(kaguya::State& state)
+void LuaInterfaceGame::registerClasses(kaguya::State& state)
 {
     state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceGameBase>()
                                  .addFunction("ClearResources", &LuaInterfaceGame::clearResources)
@@ -231,7 +231,7 @@ void LuaInterfaceGame::Register(kaguya::State& state)
                                         .addFunction("PopString", &Serializer::PopString));
 }
 
-bool LuaInterfaceGame::Serialize(Serializer& luaSaveState)
+bool LuaInterfaceGame::serialize(Serializer& luaSaveState)
 {
     kaguya::LuaRef save = lua["onSave"];
     if(save.type() == LUA_TFUNCTION)
@@ -248,7 +248,7 @@ bool LuaInterfaceGame::Serialize(Serializer& luaSaveState)
         return true;
 }
 
-bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
+bool LuaInterfaceGame::deserialize(Serializer& luaSaveState)
 {
     kaguya::LuaRef load = lua["onLoad"];
     if(load.type() == LUA_TFUNCTION)

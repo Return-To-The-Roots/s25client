@@ -36,9 +36,9 @@ nofSkinner::nofSkinner(SerializedGameData& sgd, const unsigned obj_id) : nofWork
         animal = nullptr;
 }
 
-void nofSkinner::Serialize(SerializedGameData& sgd) const
+void nofSkinner::serialize(SerializedGameData& sgd) const
 {
-    nofBuildingWorker::Serialize(sgd);
+    nofBuildingWorker::serialize(sgd);
 
     if(state != State::FigureWork && state != State::Waiting1)
         sgd.pushObject(animal, true);

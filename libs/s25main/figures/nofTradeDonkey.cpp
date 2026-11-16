@@ -35,9 +35,9 @@ nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
         helpers::popContainer(sgd, next_dirs);
 }
 
-void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
+void nofTradeDonkey::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
     sgd.pushObject(successor, true);
     sgd.pushOptionalEnum<uint8_t>(gt);

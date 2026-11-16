@@ -37,7 +37,7 @@ protected:
 public:
     nofMetalworker(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofMetalworker(SerializedGameData& sgd, unsigned obj_id);
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::NofMetalworker; }
 };

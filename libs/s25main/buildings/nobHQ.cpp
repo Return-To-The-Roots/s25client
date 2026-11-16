@@ -331,9 +331,9 @@ void nobHQ::DestroyBuilding()
     world->recalcTerritory(*this, TerritoryChangeReason::Destroyed);
 }
 
-void nobHQ::Serialize(SerializedGameData& sgd) const
+void nobHQ::serialize(SerializedGameData& sgd) const
 {
-    nobBaseWarehouse::Serialize(sgd);
+    nobBaseWarehouse::serialize(sgd);
     sgd.PushBool(isTent_);
 }
 

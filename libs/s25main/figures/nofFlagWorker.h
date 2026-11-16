@@ -41,7 +41,7 @@ public:
     nofFlagWorker(const nofFlagWorker&) = delete;
 
     void destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     /// Wird aufgerufen, wenn die Flagge abgerissen wurde
     virtual void lostWork() = 0;

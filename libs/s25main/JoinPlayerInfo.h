@@ -18,7 +18,7 @@ struct JoinPlayerInfo : public PlayerInfo
     explicit JoinPlayerInfo(Serializer& ser);
 
     // Serialize complete struct
-    void Serialize(Serializer& ser) const;
+    void serialize(Serializer& ser) const;
 
     void setAIName(unsigned playerId);
     // Recovers fixed data in savegames after player slots are swapped

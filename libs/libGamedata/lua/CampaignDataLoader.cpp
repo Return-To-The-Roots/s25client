@@ -23,7 +23,7 @@ unsigned CampaignDataLoader::getVersion()
 CampaignDataLoader::CampaignDataLoader(CampaignDescription& campaignDesc, const boost::filesystem::path& basePath)
     : campaignDesc_(campaignDesc), basePath_(basePath.lexically_normal().make_preferred())
 {
-    Register(lua);
+    registerClasses(lua);
     lua["rttr"] = this;
 }
 
@@ -73,7 +73,7 @@ bool CampaignDataLoader::Load()
     }
     return true;
 }
-void CampaignDataLoader::Register(kaguya::State& state)
+void CampaignDataLoader::registerClasses(kaguya::State& state)
 {
     state["RTTRCampaignData"].setClass(kaguya::UserdataMetatable<CampaignDataLoader, LuaInterfaceBase>());
 }

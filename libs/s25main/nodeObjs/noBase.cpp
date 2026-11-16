@@ -10,7 +10,7 @@ noBase::noBase(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd,
     nop = sgd.pop<NodalObjectType>();
 }
 
-void noBase::Serialize(SerializedGameData& sgd) const
+void noBase::serialize(SerializedGameData& sgd) const
 {
     sgd.pushEnum<uint8_t>(nop);
 }

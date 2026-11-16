@@ -27,9 +27,9 @@ nofWinegrower::nofWinegrower(SerializedGameData& sgd, const unsigned obj_id)
     : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool())
 {}
 
-void nofWinegrower::Serialize(SerializedGameData& sgd) const
+void nofWinegrower::serialize(SerializedGameData& sgd) const
 {
-    nofFarmhand::Serialize(sgd);
+    nofFarmhand::serialize(sgd);
     sgd.PushBool(harvest);
 }
 

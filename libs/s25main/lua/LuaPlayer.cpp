@@ -27,9 +27,9 @@ const BasePlayerInfo& LuaPlayer::getPlayer() const
     return player;
 }
 
-void LuaPlayer::Register(kaguya::State& state)
+void LuaPlayer::registerClasses(kaguya::State& state)
 {
-    LuaPlayerBase::Register(state);
+    LuaPlayerBase::registerClasses(state);
     state["Player"].setClass(kaguya::UserdataMetatable<LuaPlayer, LuaPlayerBase>()
                                .addFunction("EnableBuilding", &LuaPlayer::enableBuilding)
                                .addFunction("DisableBuilding", &LuaPlayer::disableBuilding)

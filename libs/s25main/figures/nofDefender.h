@@ -40,7 +40,7 @@ public:
         RTTR_Assert(!attacker);
         nofActiveSoldier::destroy();
     }
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::NofDefender; }
 

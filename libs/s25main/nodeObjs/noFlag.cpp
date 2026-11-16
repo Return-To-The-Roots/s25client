@@ -88,9 +88,9 @@ void noFlag::destroy()
     noRoadNode::destroy();
 }
 
-void noFlag::Serialize(SerializedGameData& sgd) const
+void noFlag::serialize(SerializedGameData& sgd) const
 {
-    noRoadNode::Serialize(sgd);
+    noRoadNode::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(flagtype);
     sgd.pushObjectContainer(wares, true);

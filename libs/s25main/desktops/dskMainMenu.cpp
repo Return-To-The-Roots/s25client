@@ -86,7 +86,7 @@ bool dskMainMenu::msgLeftUp(const MouseCoords& mc)
     auto* txtVersion = getCtrl<Window>(dskMenuBase::ID_txtVersion);
     if(mc.dbl_click && IsPointInRect(mc.pos, txtVersion->getBoundaryRect()))
     {
-        WINDOWMANAGER.Switch(std::make_unique<dskTest>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskTest>());
         return true;
     }
     return false;
@@ -97,19 +97,19 @@ void dskMainMenu::msgButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case ID_btSingleplayer: // "Single Player"
-            WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskSinglePlayer>());
             break;
         case ID_btMultiplayer: // "Multiplayer"
-            WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskMultiPlayer>());
             break;
         case ID_btOptions: // "Options"
-            WINDOWMANAGER.Switch(std::make_unique<dskOptions>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskOptions>());
             break;
         case ID_btIntro: // "Intro"
-            WINDOWMANAGER.Switch(std::make_unique<dskIntro>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskIntro>());
             break;
         case ID_btCredits: // "Credits"
-            WINDOWMANAGER.Switch(std::make_unique<dskCredits>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskCredits>());
             break;
         case ID_btQuit: // "Quit"
             GLOBALVARS.notdone = false;

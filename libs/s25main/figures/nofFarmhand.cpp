@@ -21,9 +21,9 @@ nofFarmhand::nofFarmhand(const Job job, const MapPoint pos, const unsigned char 
     : nofBuildingWorker(job, pos, player, workplace), dest(0, 0)
 {}
 
-void nofFarmhand::Serialize(SerializedGameData& sgd) const
+void nofFarmhand::serialize(SerializedGameData& sgd) const
 {
-    nofBuildingWorker::Serialize(sgd);
+    nofBuildingWorker::serialize(sgd);
 
     helpers::pushPoint(sgd, dest);
 }

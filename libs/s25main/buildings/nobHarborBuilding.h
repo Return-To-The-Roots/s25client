@@ -27,7 +27,7 @@ class nobHarborBuilding : public nobBaseWarehouse
     {
         ExpeditionInfo() : boards(0), stones(0), active(false), builder(false) {}
         ExpeditionInfo(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const;
+        void serialize(SerializedGameData& sgd) const;
 
         /// Anzahl an Brettern und Steinen, die bereits angesammelt wurden
         unsigned boards, stones;
@@ -41,7 +41,7 @@ class nobHarborBuilding : public nobBaseWarehouse
     {
         ExplorationExpeditionInfo() : active(false), scouts(0) {}
         ExplorationExpeditionInfo(SerializedGameData& sgd);
-        void Serialize(SerializedGameData& sgd) const;
+        void serialize(SerializedGameData& sgd) const;
 
         /// Expedition in Vorbereitung?
         bool active;
@@ -107,7 +107,7 @@ public:
     unsigned getMilitaryRadius() const override { return HARBOR_RADIUS; }
 
     /// Serialisierung
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
     GO_Type getGOT() const final { return GO_Type::NobHarborbuilding; }
     void draw(DrawPoint drawPt) override;
     void handleEvent(unsigned id) override;

@@ -14,7 +14,7 @@
 #include <boost/container/static_vector.hpp>
 #include <mygettext/mygettext.h>
 
-void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sgd)
+void MapSerializer::serialize(const GameWorldBase& world, SerializedGameData& sgd)
 {
     // Headinformationen
     helpers::pushPoint(sgd, world.getSize());
@@ -26,7 +26,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
     const unsigned numPlayers = world.getNumPlayers();
     for(const auto& node : world.nodes)
     {
-        node.Serialize(sgd, numPlayers, world.getDescription());
+        node.serialize(sgd, numPlayers, world.getDescription());
     }
 
     // Katapultsteine serialisieren
@@ -66,7 +66,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
         Serializer luaSaveState;
         try
         {
-            if(!world.getLua().Serialize(luaSaveState))
+            if(!world.getLua().serialize(luaSaveState))
                 throw SerializedGameData::Error(_("Failed to save lua state!"));
         } catch(const std::exception& e)
         {
@@ -79,7 +79,7 @@ void MapSerializer::Serialize(const GameWorldBase& world, SerializedGameData& sg
     }
 }
 
-void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, Game& game,
+void MapSerializer::deserialize(GameWorldBase& world, SerializedGameData& sgd, Game& game,
                                 ILocalGameState& localgameState)
 {
     // Initialisierungen
@@ -116,7 +116,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
     const unsigned numPlayers = world.getNumPlayers();
     for(auto& node : world.nodes)
     {
-        node.Deserialize(sgd, numPlayers, world.getDescription(), landscapeTerrains);
+        node.deserialize(sgd, numPlayers, world.getDescription(), landscapeTerrains);
         curPos.x++;
         if(curPos.x >= world.getWidth())
         {
@@ -240,7 +240,7 @@ void MapSerializer::Deserialize(GameWorldBase& world, SerializedGameData& sgd, G
             throw SerializedGameData::Error(_("Wrong version for lua script."));
         try
         {
-            if(!lua->Deserialize(luaSaveState))
+            if(!lua->deserialize(luaSaveState))
                 throw SerializedGameData::Error(_("Lua load callback returned failure!"));
         } catch(const std::exception& e)
         {

@@ -39,7 +39,7 @@ public:
     /// Return the unique ID of an object. Always non-zero!
     unsigned getObjId() const { return objId; }
 
-    virtual void Serialize(SerializedGameData& sgd) const = 0;
+    virtual void serialize(SerializedGameData& sgd) const = 0;
     virtual GO_Type getGOT() const = 0;
 
     virtual std::string toString() const;

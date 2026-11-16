@@ -85,9 +85,9 @@ void nobBaseMilitary::DestroyBuilding()
     }
 }
 
-void nobBaseMilitary::Serialize(SerializedGameData& sgd) const
+void nobBaseMilitary::serialize(SerializedGameData& sgd) const
 {
-    noBuilding::Serialize(sgd);
+    noBuilding::serialize(sgd);
 
     sgd.pushObjectContainer(leave_house);
     sgd.pushEvent(leaving_event);

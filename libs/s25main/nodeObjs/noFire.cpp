@@ -39,9 +39,9 @@ void noFire::destroy()
     noCoordBase::destroy();
 }
 
-void noFire::Serialize(SerializedGameData& sgd) const
+void noFire::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushBool(isBig);
     sgd.pushEvent(dead_event);

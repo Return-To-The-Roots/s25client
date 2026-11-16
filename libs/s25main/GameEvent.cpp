@@ -20,7 +20,7 @@ GameEvent::GameEvent(SerializedGameData& sgd, const unsigned instanceId)
     RTTR_Assert(obj);
 }
 
-void GameEvent::Serialize(SerializedGameData& sgd) const
+void GameEvent::serialize(SerializedGameData& sgd) const
 {
     sgd.pushObject(obj);
     sgd.PushUnsignedInt(startGF);

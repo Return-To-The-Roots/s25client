@@ -29,7 +29,7 @@ private:
 public:
     fowBuilding(BuildingType type, Nation nation);
     fowBuilding(SerializedGameData& sgd);
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
     void draw(DrawPoint drawPt) const override;
     FoW_Type getType() const override { return FoW_Type::Building; }
     BuildingType getBuildingType() const { return type; }
@@ -51,7 +51,7 @@ private:
 public:
     fowBuildingSite(bool planing, BuildingType type, Nation nation, unsigned char build_progress);
     fowBuildingSite(SerializedGameData& sgd);
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
     void draw(DrawPoint drawPt) const override;
     FoW_Type getType() const override { return FoW_Type::Buildingsite; }
 };
@@ -68,7 +68,7 @@ private:
 public:
     fowFlag(unsigned playerColor, Nation nation, FlagType flag_type);
     fowFlag(SerializedGameData& sgd);
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
     void draw(DrawPoint drawPt) const override;
     FoW_Type getType() const override { return FoW_Type::Flag; }
 };
@@ -85,7 +85,7 @@ private:
 public:
     fowTree(unsigned char type, unsigned char size);
     fowTree(SerializedGameData& sgd);
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
     void draw(DrawPoint drawPt) const override;
     FoW_Type getType() const override { return FoW_Type::Tree; }
 };
@@ -100,7 +100,7 @@ private:
 public:
     fowGranite(GraniteType type, unsigned char state);
     fowGranite(SerializedGameData& sgd);
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
     void draw(DrawPoint drawPt) const override;
     FoW_Type getType() const override { return FoW_Type::Granite; }
 };

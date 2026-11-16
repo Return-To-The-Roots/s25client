@@ -23,9 +23,9 @@ noSign::noSign(const MapPoint pos, Resource resource)
         this->resource.setType(ResourceType::Nothing);
 }
 
-void noSign::Serialize(SerializedGameData& sgd) const
+void noSign::serialize(SerializedGameData& sgd) const
 {
-    noDisappearingEnvObject::Serialize(sgd);
+    noDisappearingEnvObject::serialize(sgd);
 
     sgd.PushUnsignedChar(resource.getValue());
 }

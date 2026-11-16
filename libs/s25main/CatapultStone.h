@@ -37,7 +37,7 @@ public:
 
     /// Zerstören
     void destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     // Zeichnet den fliegenden Stein
     void draw(DrawPoint drawOffset);

@@ -86,7 +86,7 @@ void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
                 // Server info
                 CreateServerInfo csi = createLocalGameInfo(name);
 
-                WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
+                WINDOWMANAGER.switchTo(std::make_unique<dskSelectMap>(csi));
 
                 if(GAMECLIENT.hostGame(csi, {mostRecentFilepath, MapType::Savegame}))
                     WINDOWMANAGER.showAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
@@ -108,7 +108,7 @@ void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
         break;
         case 5: // "Kampagne"
         {
-            WINDOWMANAGER.Switch(std::make_unique<dskCampaignSelection>(createLocalGameInfo(_("Campaign"))));
+            WINDOWMANAGER.switchTo(std::make_unique<dskCampaignSelection>(createLocalGameInfo(_("Campaign"))));
         }
         break;
         case 6: // "Freies Spiel"
@@ -123,7 +123,7 @@ void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
         break;
         case 8: // "Zurück"
         {
-            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>());
         }
         break;
     }
@@ -131,13 +131,13 @@ void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
 
 void dskSinglePlayer::prepareSinglePlayerServer()
 {
-    WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(createLocalGameInfo(_("Unlimited Play"))));
+    WINDOWMANAGER.switchTo(std::make_unique<dskSelectMap>(createLocalGameInfo(_("Unlimited Play"))));
 }
 
 void dskSinglePlayer::prepareLoadGame()
 {
     CreateServerInfo csi = createLocalGameInfo(_("Unlimited Play"));
 
-    WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
+    WINDOWMANAGER.switchTo(std::make_unique<dskSelectMap>(csi));
     WINDOWMANAGER.showAfterSwitch(std::make_unique<iwLoad>(csi));
 }

@@ -24,8 +24,8 @@ public:
     GlobalGameSettings& operator=(GlobalGameSettings&&) noexcept;
 
     /// Serialisierung und Deserialisierung
-    void Serialize(Serializer& ser) const;
-    void Deserialize(Serializer& ser);
+    void serialize(Serializer& ser) const;
+    void deserialize(Serializer& ser);
 
     GameSpeed speed;
     GameObjective objective;

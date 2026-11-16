@@ -30,6 +30,6 @@ class FOWObject
 public:
     virtual ~FOWObject() = default;
     virtual void draw(DrawPoint drawPt) const = 0;
-    virtual void Serialize(SerializedGameData& sgd) const = 0;
+    virtual void serialize(SerializedGameData& sgd) const = 0;
     virtual FoW_Type getType() const = 0;
 };

@@ -36,9 +36,9 @@ void noGrainfield::destroy()
     noCoordBase::destroy();
 }
 
-void noGrainfield::Serialize(SerializedGameData& sgd) const
+void noGrainfield::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushUnsignedChar(type);
     sgd.pushEnum<uint8_t>(state);

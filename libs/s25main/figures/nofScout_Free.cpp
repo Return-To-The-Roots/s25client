@@ -17,9 +17,9 @@ nofScout_Free::nofScout_Free(const MapPoint pos, const unsigned char player, noR
     : nofFlagWorker(Job::Scout, pos, player, goal), nextPos(pos), rest_way(0)
 {}
 
-void nofScout_Free::Serialize(SerializedGameData& sgd) const
+void nofScout_Free::serialize(SerializedGameData& sgd) const
 {
-    nofFlagWorker::Serialize(sgd);
+    nofFlagWorker::serialize(sgd);
     helpers::pushPoint(sgd, nextPos);
     sgd.PushUnsignedInt(rest_way);
 }

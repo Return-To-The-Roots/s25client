@@ -247,7 +247,7 @@ void GlobalGameSettings::saveSettings() const
 /**
  *  saves the current addon configuration to a serializer object.
  */
-void GlobalGameSettings::Serialize(Serializer& ser) const
+void GlobalGameSettings::serialize(Serializer& ser) const
 {
     // LOG.writeToFile(">>> Addon Status:\n");
 
@@ -272,7 +272,7 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
 /**
  *  reads the current addon configuration from a serializer object.
  */
-void GlobalGameSettings::Deserialize(Serializer& ser)
+void GlobalGameSettings::deserialize(Serializer& ser)
 {
     speed = helpers::popEnum<GameSpeed>(ser);
     objective = helpers::popEnum<GameObjective>(ser);

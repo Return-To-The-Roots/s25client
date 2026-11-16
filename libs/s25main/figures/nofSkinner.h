@@ -37,7 +37,7 @@ public:
     nofSkinner(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofSkinner(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::NofSkinner; }
 

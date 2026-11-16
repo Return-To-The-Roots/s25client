@@ -40,7 +40,7 @@ public:
     ~noBaseBuilding() override;
 
     void destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     /// Eine bestellte Ware konnte doch nicht kommen
     virtual void wareLost(Ware& ware) = 0;

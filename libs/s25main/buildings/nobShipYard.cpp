@@ -14,9 +14,9 @@ nobShipYard::nobShipYard(SerializedGameData& sgd, const unsigned obj_id)
 {}
 
 /// Serialisierungsfunktionen
-void nobShipYard::Serialize(SerializedGameData& sgd) const
+void nobShipYard::serialize(SerializedGameData& sgd) const
 {
-    nobUsual::Serialize(sgd);
+    nobUsual::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(mode);
 }

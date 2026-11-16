@@ -41,7 +41,7 @@ public:
     ~noRoadNode() override;
 
     void destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     RoadSegment* getRoute(const Direction dir) const { return routes[dir]; }
     void setRoute(const Direction dir, RoadSegment* route) { routes[dir] = route; }

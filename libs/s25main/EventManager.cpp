@@ -147,7 +147,7 @@ void EventManager::executeEvents(const EventMap::iterator& itEvents)
     events.erase(itEvents);
 }
 
-void EventManager::Serialize(SerializedGameData& sgd) const
+void EventManager::serialize(SerializedGameData& sgd) const
 {
     // Kill list must be empty (do not store to-be-killed objects)
     RTTR_Assert(killList.empty());
@@ -166,7 +166,7 @@ void EventManager::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedInt(eventInstanceCtr);
 }
 
-void EventManager::Deserialize(SerializedGameData& sgd)
+void EventManager::deserialize(SerializedGameData& sgd)
 {
     if(numActiveEvents != 0)
         throw SerializedGameData::Error(_("Cannot deserialize event manager when there are still events active!"));

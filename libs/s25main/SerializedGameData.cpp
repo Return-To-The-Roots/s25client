@@ -250,9 +250,9 @@ void SerializedGameData::makeSnapshot(const Game& game)
     PushUnsignedInt(expectedNumObjects);
 
     // World and objects
-    MapSerializer::Serialize(gw, *this);
+    MapSerializer::serialize(gw, *this);
     // EventManager
-    writeEm->Serialize(*this);
+    writeEm->serialize(*this);
     if(game.ggs_.objective == GameObjective::EconomyMode)
     {
         pushObject(gw.getEconHandler(), true);
@@ -262,7 +262,7 @@ void SerializedGameData::makeSnapshot(const Game& game)
     {
         if(debugMode)
             LOG.write("Start serializing player %1% at %2%\n") % player.getPlayerId() % GetLength();
-        player.Serialize(*this);
+        player.serialize(*this);
         if(debugMode)
             LOG.write("Done serializing player %1% at %2%\n") % player.getPlayerId() % GetLength();
     }
@@ -293,8 +293,8 @@ void SerializedGameData::readSnapshot(Game& game, ILocalGameState& localGameStat
 
     expectedNumObjects = PopUnsignedInt();
 
-    MapSerializer::Deserialize(gw, *this, game, localGameState);
-    em->Deserialize(*this);
+    MapSerializer::deserialize(gw, *this, game, localGameState);
+    em->deserialize(*this);
     if(gw.getGGS().objective == GameObjective::EconomyMode)
     {
         gw.setEconHandler(
@@ -302,7 +302,7 @@ void SerializedGameData::readSnapshot(Game& game, ILocalGameState& localGameStat
     }
 
     for(auto& player : gw.getPlayers())
-        player.Deserialize(*this);
+        player.deserialize(*this);
 
     // If this check fails, we did not serialize all objects or there was an async
     if(readEvents.size() != em->getNumActiveEvents())
@@ -383,7 +383,7 @@ void SerializedGameData::pushObjectImpl(const GameObject* go, const bool known)
     // Objekt serialisieren
     if(debugMode)
         LOG.write("Start serializing %1% at %2%\n") % objId % GetLength();
-    go->Serialize(*this);
+    go->serialize(*this);
     if(debugMode)
         LOG.write("Done serializing %1% at %2%\n") % objId % GetLength();
 
@@ -406,7 +406,7 @@ void SerializedGameData::pushEvent(const GameEvent* event)
     writtenEventIds.insert(instanceId);
     if(debugMode)
         LOG.write("Start serializing event %1% at %2%\n") % instanceId % GetLength();
-    event->Serialize(*this);
+    event->serialize(*this);
     if(debugMode)
         LOG.write("Done serializing event %1% at %2%\n") % instanceId % GetLength();
     PushUnsignedShort(getSafetyCode(*event));
@@ -450,7 +450,7 @@ void SerializedGameData::pushFOWObject(const FOWObject* fowobj)
     pushEnum<uint8_t>(fowobj->getType());
 
     // Objekt serialisieren
-    fowobj->Serialize(*this);
+    fowobj->serialize(*this);
 }
 
 std::unique_ptr<FOWObject> SerializedGameData::popFOWObject()

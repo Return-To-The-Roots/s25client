@@ -24,9 +24,9 @@ nofDefender::nofDefender(const nofPassiveSoldier& other, nofAttacker& attacker)
     : nofActiveSoldier(other, SoldierState::DefendingWalkingTo), attacker(&attacker)
 {}
 
-void nofDefender::Serialize(SerializedGameData& sgd) const
+void nofDefender::serialize(SerializedGameData& sgd) const
 {
-    nofActiveSoldier::Serialize(sgd);
+    nofActiveSoldier::serialize(sgd);
 
     if(state != SoldierState::FigureWork)
         sgd.pushObject(attacker, true);

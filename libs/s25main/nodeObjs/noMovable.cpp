@@ -19,9 +19,9 @@ noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
     : noCoordBase(nop, pos), curMoveDir(Direction::SouthEast), ascent(0), moving(false), current_ev(nullptr)
 {}
 
-void noMovable::Serialize(SerializedGameData& sgd) const
+void noMovable::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(curMoveDir);
     sgd.PushUnsignedChar(ascent);

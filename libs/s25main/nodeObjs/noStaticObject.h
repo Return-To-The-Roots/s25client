@@ -21,7 +21,7 @@ public:
     noStaticObject(SerializedGameData& sgd, unsigned obj_id);
 
     void destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
     GO_Type getGOT() const override { return GO_Type::Staticobject; }
 
     /// gibt die Item-ID zurück (nr in der jeweiligen File)

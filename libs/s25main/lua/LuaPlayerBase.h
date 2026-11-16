@@ -22,7 +22,7 @@ protected:
     virtual const BasePlayerInfo& getPlayer() const = 0;
 
 public:
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
     std::string getName() const;
     Nation getNation() const;

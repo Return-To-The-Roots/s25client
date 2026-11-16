@@ -32,7 +32,7 @@ public:
 
     void CI_GameLoading(std::shared_ptr<Game> game) override
     {
-        WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(std::move(game)));
+        WINDOWMANAGER.switchTo(std::make_unique<dskGameLoader>(std::move(game)));
     }
 };
 

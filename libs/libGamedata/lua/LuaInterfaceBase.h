@@ -27,7 +27,7 @@ public:
 class LuaInterfaceBase
 {
 public:
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
     bool loadScript(const boost::filesystem::path& scriptPath);
     bool loadScriptString(const std::string& script, bool rethrowError = false);

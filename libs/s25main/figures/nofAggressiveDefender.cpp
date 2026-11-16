@@ -37,9 +37,9 @@ void nofAggressiveDefender::destroy()
     nofActiveSoldier::destroy();
 }
 
-void nofAggressiveDefender::Serialize(SerializedGameData& sgd) const
+void nofAggressiveDefender::serialize(SerializedGameData& sgd) const
 {
-    nofActiveSoldier::Serialize(sgd);
+    nofActiveSoldier::serialize(sgd);
 
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {

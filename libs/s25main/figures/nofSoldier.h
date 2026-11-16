@@ -36,7 +36,7 @@ public:
         RTTR_Assert(!getHomeBld());
         noFigure::destroy();
     }
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     unsigned char getRank() const;
     unsigned char getHitpoints() const;

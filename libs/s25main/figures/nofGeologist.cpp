@@ -29,9 +29,9 @@ nofGeologist::nofGeologist(const MapPoint pos, const unsigned char player, noRoa
     std::fill(resAlreadyFound.begin(), resAlreadyFound.end(), false);
 }
 
-void nofGeologist::Serialize(SerializedGameData& sgd) const
+void nofGeologist::serialize(SerializedGameData& sgd) const
 {
-    nofFlagWorker::Serialize(sgd);
+    nofFlagWorker::serialize(sgd);
 
     sgd.PushUnsignedShort(signs);
 

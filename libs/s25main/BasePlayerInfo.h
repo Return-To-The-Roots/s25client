@@ -28,7 +28,7 @@ struct BasePlayerInfo
     /// Deserialize data. If lightData is true, unused data is not read (e.g. unused slot -> Skip rest)
     BasePlayerInfo(Serializer& ser, int serializedVersion, bool lightData);
     /// Serialize data. If lightData is true, unused data is not written (e.g. unused slot -> Skip rest)
-    void Serialize(Serializer& ser, bool lightData) const;
+    void serialize(Serializer& ser, bool lightData) const;
 
     /// Slot used by a human player (has socket etc)
     bool isHuman() const { return (ps == PlayerState::Occupied); }

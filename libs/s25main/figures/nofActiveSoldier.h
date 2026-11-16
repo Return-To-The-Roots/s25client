@@ -106,7 +106,7 @@ public:
         RTTR_Assert(!enemy);
         nofSoldier::destroy();
     }
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     /// Draw soldier (for all types of soldiers done by this base class!)
     void draw(DrawPoint drawPt) override;

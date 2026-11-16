@@ -99,7 +99,7 @@ std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::GetAsyncLog()
 //////////////////////////////////////////////////////////////////////////
 
 template<class T_PRNG>
-void Random<T_PRNG>::RandomEntry::Serialize(Serializer& ser) const
+void Random<T_PRNG>::RandomEntry::serialize(Serializer& ser) const
 {
     ser.PushUnsignedInt(counter);
     ser.PushSignedInt(maxExcl);
@@ -112,7 +112,7 @@ void Random<T_PRNG>::RandomEntry::Serialize(Serializer& ser) const
 }
 
 template<class T_PRNG>
-void Random<T_PRNG>::RandomEntry::Deserialize(Serializer& ser)
+void Random<T_PRNG>::RandomEntry::deserialize(Serializer& ser)
 {
     counter = ser.PopUnsignedInt();
     maxExcl = ser.PopSignedInt();

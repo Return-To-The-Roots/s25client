@@ -17,8 +17,8 @@ struct AsyncChecksum
     unsigned eventCt, evInstanceCt;
     AsyncChecksum();
     AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned objIdCt, unsigned eventCt, unsigned evInstanceCt);
-    void Serialize(Serializer& ser) const;
-    void Deserialize(Serializer& ser);
+    void serialize(Serializer& ser) const;
+    void deserialize(Serializer& ser);
     /// Get a hash for this checksum
     unsigned getHash() const;
 

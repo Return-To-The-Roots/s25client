@@ -25,9 +25,9 @@ nofTempleServant::nofTempleServant(SerializedGameData& sgd, const unsigned obj_i
     : nofWorkman(sgd, obj_id), currentProduction(sgd.pop<GoodType>())
 {}
 
-void nofTempleServant::Serialize(SerializedGameData& sgd) const
+void nofTempleServant::serialize(SerializedGameData& sgd) const
 {
-    nofWorkman::Serialize(sgd);
+    nofWorkman::serialize(sgd);
     sgd.pushEnum<uint8_t>(currentProduction);
 }
 

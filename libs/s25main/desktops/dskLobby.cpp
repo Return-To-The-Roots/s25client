@@ -101,7 +101,7 @@ void dskLobby::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mb
 {
     // Verbindung verloren
     if(msgbox_id == 0)
-        WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskMultiPlayer>());
 }
 
 void dskLobby::msgButtonClick(const unsigned ctrl_id)
@@ -111,7 +111,7 @@ void dskLobby::msgButtonClick(const unsigned ctrl_id)
         case ID_btBack:
         {
             LOBBYCLIENT.Stop();
-            WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskMultiPlayer>());
         }
         break;
         case ID_btConnect: connectToSelectedGame(); break;

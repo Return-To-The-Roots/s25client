@@ -37,7 +37,7 @@ public:
 
         EconTeam(SerializedGameData& sgd, unsigned numGoodTypesToCollect);
 
-        void Serialize(SerializedGameData& sgd) const;
+        void serialize(SerializedGameData& sgd) const;
 
         /// Returns true if the player is in the team
         bool containsPlayer(unsigned playerId) const;
@@ -75,7 +75,7 @@ public:
     EconomyModeHandler(SerializedGameData& sgd, unsigned objId);
 
     void destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     /// Event-Handler
     void handleEvent(unsigned id) override;

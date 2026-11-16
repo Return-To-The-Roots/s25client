@@ -19,9 +19,9 @@ LuaServerPlayer::LuaServerPlayer(IGameLobbyController& lobbyServerController, un
       player(lobbyServerController_.getJoinPlayer(playerId))
 {}
 
-void LuaServerPlayer::Register(kaguya::State& state)
+void LuaServerPlayer::registerClasses(kaguya::State& state)
 {
-    LuaPlayerBase::Register(state);
+    LuaPlayerBase::registerClasses(state);
     state["Player"].setClass(kaguya::UserdataMetatable<LuaServerPlayer, LuaPlayerBase>()
                                .addFunction("SetNation", &LuaServerPlayer::setNation)
                                .addFunction("SetTeam", &LuaServerPlayer::setTeam)

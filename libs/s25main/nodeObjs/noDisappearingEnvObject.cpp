@@ -18,9 +18,9 @@ noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos, const unsig
     dead_event = getEvMgr().addEvent(this, living_time + RANDOM_RAND(add_var_living_time));
 }
 
-void noDisappearingEnvObject::Serialize(SerializedGameData& sgd) const
+void noDisappearingEnvObject::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushBool(disappearing);
     sgd.pushEvent(dead_event);

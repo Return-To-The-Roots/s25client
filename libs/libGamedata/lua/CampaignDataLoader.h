@@ -23,7 +23,7 @@ public:
 
     bool Load();
 
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
 private:
     CampaignDescription& campaignDesc_;

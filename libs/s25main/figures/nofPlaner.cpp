@@ -20,9 +20,9 @@ nofPlaner::nofPlaner(const MapPoint pos, const unsigned char player, noBuildingS
       pd(PlaningDir::NotWorking)
 {}
 
-void nofPlaner::Serialize(SerializedGameData& sgd) const
+void nofPlaner::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(state);
     sgd.pushObject(building_site, true);

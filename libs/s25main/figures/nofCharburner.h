@@ -51,7 +51,7 @@ public:
     nofCharburner(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofCharburner(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::NofCharburner; }
 };

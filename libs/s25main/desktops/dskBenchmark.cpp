@@ -80,7 +80,7 @@ bool dskBenchmark::msgKeyDown(const KeyEvent& ke)
 {
     switch(ke.kt)
     {
-        case KeyType::Escape: WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>()); break;
+        case KeyType::Escape: WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>()); break;
         case KeyType::F1: startTest(Benchmark::Text); break;
         case KeyType::F2: startTest(Benchmark::Primitives); break;
         case KeyType::F3: startTest(Benchmark::EmptyGame); break;

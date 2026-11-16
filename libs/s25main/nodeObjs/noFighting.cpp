@@ -43,9 +43,9 @@ noFighting::noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2) :
 
 noFighting::~noFighting() = default;
 
-void noFighting::Serialize(SerializedGameData& sgd) const
+void noFighting::serialize(SerializedGameData& sgd) const
 {
-    noBase::Serialize(sgd);
+    noBase::serialize(sgd);
 
     sgd.PushUnsignedChar(turn);
     sgd.PushUnsignedChar(defending_animation);

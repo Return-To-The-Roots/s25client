@@ -21,9 +21,9 @@ nofArmorer::nofArmorer(const MapPoint pos, const unsigned char player, nobUsual*
     : nofWorkman(Job::Armorer, pos, player, workplace), sword_shield(false)
 {}
 
-void nofArmorer::Serialize(SerializedGameData& sgd) const
+void nofArmorer::serialize(SerializedGameData& sgd) const
 {
-    nofWorkman::Serialize(sgd);
+    nofWorkman::serialize(sgd);
 
     sgd.PushBool(sword_shield);
 }

@@ -17,9 +17,9 @@ TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorld& world, const un
     : world(world), player(player), path(sgd), curPos(sgd.popMapPoint()), curRouteIdx(sgd.PopUnsignedInt())
 {}
 
-void TradeRoute::Serialize(SerializedGameData& sgd) const
+void TradeRoute::serialize(SerializedGameData& sgd) const
 {
-    path.Serialize(sgd);
+    path.serialize(sgd);
     helpers::pushPoint(sgd, curPos);
     sgd.PushUnsignedInt(curRouteIdx);
 }

@@ -22,7 +22,7 @@ public:
 
     bool Load();
 
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
 private:
     void include(const std::string& filepath);

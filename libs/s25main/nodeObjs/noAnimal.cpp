@@ -33,9 +33,9 @@ noAnimal::noAnimal(const Species species, const MapPoint pos)
       hunter(nullptr), skinner(nullptr), sound_moment(0)
 {}
 
-void noAnimal::Serialize(SerializedGameData& sgd) const
+void noAnimal::serialize(SerializedGameData& sgd) const
 {
-    noMovable::Serialize(sgd);
+    noMovable::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(species);
     sgd.pushEnum<uint8_t>(state);

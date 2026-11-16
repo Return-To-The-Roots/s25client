@@ -18,9 +18,9 @@ nobTemple::nobTemple(SerializedGameData& sgd, const unsigned obj_id)
     : nobUsual(sgd, obj_id), productionMode(sgd.pop<ProductionMode>())
 {}
 
-void nobTemple::Serialize(SerializedGameData& sgd) const
+void nobTemple::serialize(SerializedGameData& sgd) const
 {
-    nobUsual::Serialize(sgd);
+    nobUsual::serialize(sgd);
     sgd.pushEnum<uint8_t>(productionMode);
 }
 

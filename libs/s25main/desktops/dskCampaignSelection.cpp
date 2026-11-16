@@ -154,13 +154,13 @@ void dskCampaignSelection::showCampaignInfo(const bool show)
 void dskCampaignSelection::showCampaignMissionSelectionScreen()
 {
     const auto& campaign = campaigns_.at(getCtrl<ctrlTable>(ID_Table)->getSelection().value());
-    WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
+    WINDOWMANAGER.switchTo(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
 }
 
 void dskCampaignSelection::msgButtonClick(unsigned ctrl_id)
 {
     if(ctrl_id == ID_btBack)
-        WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskSinglePlayer>());
     else if(ctrl_id == ID_Next)
         showCampaignMissionSelectionScreen();
 }

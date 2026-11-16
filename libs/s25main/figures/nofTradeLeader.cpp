@@ -30,11 +30,11 @@ nofTradeLeader::nofTradeLeader(SerializedGameData& sgd, const unsigned obj_id)
       homePos(sgd.popMapPoint()), goalPos(sgd.popMapPoint())
 {}
 
-void nofTradeLeader::Serialize(SerializedGameData& sgd) const
+void nofTradeLeader::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
-    tr.Serialize(sgd);
+    tr.serialize(sgd);
 
     sgd.pushObject(successor, true);
     helpers::pushPoint(sgd, homePos);

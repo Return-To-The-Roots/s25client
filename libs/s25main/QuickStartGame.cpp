@@ -28,7 +28,7 @@ public:
 
     void CI_GameLoading(std::shared_ptr<Game> game) override
     {
-        WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(std::move(game)));
+        WINDOWMANAGER.switchTo(std::make_unique<dskGameLoader>(std::move(game)));
     }
 };
 
@@ -85,7 +85,7 @@ bool quickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     LOG.write(_("Loading game...\n"));
     const std::string extension = s25util::toLower(mapOrReplayPath.extension().string());
 
-    WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
+    WINDOWMANAGER.switchTo(std::make_unique<dskSelectMap>(csi));
 
     if((extension == ".sav" && GAMECLIENT.hostGame(csi, {mapOrReplayPath, MapType::Savegame}))
        || ((extension == ".swd" || extension == ".wld")

@@ -42,7 +42,7 @@ public:
     noMovable(NodalObjectType nop, MapPoint pos);
     noMovable(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     /// Sets the position. Usually not required as all position changes are done by the walk functions
     void setPos(const MapPoint& pos) { this->pos = pos; }

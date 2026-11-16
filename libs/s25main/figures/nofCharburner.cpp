@@ -24,9 +24,9 @@ nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id)
     : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool()), wt(sgd.pop<WareType>())
 {}
 
-void nofCharburner::Serialize(SerializedGameData& sgd) const
+void nofCharburner::serialize(SerializedGameData& sgd) const
 {
-    nofFarmhand::Serialize(sgd);
+    nofFarmhand::serialize(sgd);
 
     sgd.PushBool(harvest);
     sgd.pushEnum<uint8_t>(wt);

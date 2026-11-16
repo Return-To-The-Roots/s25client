@@ -17,7 +17,7 @@ MapNode::MapNode()
     std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
 }
 
-void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const
+void MapNode::serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const
 {
     helpers::pushContainer(sgd, roads);
     sgd.PushUnsignedChar(altitude);
@@ -30,14 +30,14 @@ void MapNode::Serialize(SerializedGameData& sgd, const unsigned numPlayers, cons
     helpers::pushContainer(sgd, boundary_stones);
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
-        fow[z].Serialize(sgd);
+        fow[z].serialize(sgd);
     sgd.pushObject(obj);
     sgd.pushObjectContainer(figures);
     sgd.PushUnsignedShort(seaId.value());
     sgd.PushUnsignedInt(harborId.value());
 }
 
-void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
+void MapNode::deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
                           const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains)
 {
     helpers::popContainer(sgd, roads);
@@ -69,7 +69,7 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
         bq = sgd.pop<BuildingQuality>();
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
-        fow[z].Deserialize(sgd);
+        fow[z].deserialize(sgd);
     obj = sgd.popObject<noBase>();
     sgd.popObjectContainer(figures);
     seaId = SeaId(sgd.PopUnsignedShort());

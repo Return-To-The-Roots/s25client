@@ -190,7 +190,7 @@ void dskCampaignMissionSelection::msgGroupButtonClick(unsigned group_id, unsigne
 void dskCampaignMissionSelection::msgButtonClick(unsigned ctrl_id)
 {
     if(ctrl_id == ID_btBack)
-        WINDOWMANAGER.Switch(std::make_unique<dskCampaignSelection>(csi_));
+        WINDOWMANAGER.switchTo(std::make_unique<dskCampaignSelection>(csi_));
     else if(ctrl_id == ID_btStart)
     {
         const auto selectedMission = getCtrl<ctrlMapSelection>(ID_MapSelection)->getSelection();

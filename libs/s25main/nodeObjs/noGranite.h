@@ -19,7 +19,7 @@ public:
     noGranite(SerializedGameData& sgd, unsigned obj_id);
 
     void destroy() override {}
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     GO_Type getGOT() const final { return GO_Type::Granite; }
 

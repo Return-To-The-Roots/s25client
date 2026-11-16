@@ -31,9 +31,9 @@ nofFlagWorker::nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), flag(sgd.popObject<noFlag>(GO_Type::Flag)), state(sgd.pop<State>())
 {}
 
-void nofFlagWorker::Serialize(SerializedGameData& sgd) const
+void nofFlagWorker::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
     sgd.pushObject(flag, true);
     sgd.pushEnum<uint8_t>(state);

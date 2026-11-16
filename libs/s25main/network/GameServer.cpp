@@ -252,7 +252,7 @@ void GameServer::announceStatusChange()
         info.version = rttr::version::getReadableVersion();
         info.revision = rttr::version::getRevision();
         Serializer ser;
-        info.Serialize(ser);
+        info.serialize(ser);
         lanAnnouncer.SetPayload(ser.GetData(), ser.GetLength());
     } else if(config.servertype == ServerType::Lobby)
     {

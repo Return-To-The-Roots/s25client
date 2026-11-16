@@ -483,7 +483,7 @@ void dskCredits::msgTimer(unsigned timerId)
 
 bool dskCredits::close()
 {
-    WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
+    WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>());
     return true;
 }
 

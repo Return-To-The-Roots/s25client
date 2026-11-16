@@ -48,9 +48,9 @@ protected:
     Coords(const GCType gst, Serializer& ser) : GameCommand(gst), pt_(helpers::popPoint<MapPoint>(ser)) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushPoint(ser, pt_);
     }
 };
@@ -97,7 +97,7 @@ protected:
     BuildRoad(Serializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override;
+    void serialize(Serializer& ser) const override;
 
     void execute(GameWorld& world, uint8_t playerId) override;
 };
@@ -114,7 +114,7 @@ protected:
     DestroyRoad(Serializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override;
+    void serialize(Serializer& ser) const override;
 
     void execute(GameWorld& world, uint8_t playerId) override;
 };
@@ -131,7 +131,7 @@ protected:
     UpgradeRoad(Serializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override;
+    void serialize(Serializer& ser) const override;
 
     void execute(GameWorld& world, uint8_t playerId) override;
 };
@@ -148,9 +148,9 @@ protected:
     ChangeDistribution(Deserializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushContainer(ser, data);
     }
 
@@ -173,9 +173,9 @@ protected:
     ChangeBuildOrder(Deserializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         ser.PushBool(useCustomBuildOrder);
         for(auto i : data)
             helpers::pushEnum<uint8_t>(ser, i);
@@ -196,9 +196,9 @@ protected:
     SetBuildingSite(Serializer& ser) : Coords(GCType::SetBuildingsite, ser), bt(helpers::popEnum<BuildingType>(ser)) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         helpers::pushEnum<uint8_t>(ser, bt);
     }
@@ -235,9 +235,9 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushUnsignedChar(rank);
         ser.PushUnsignedInt(count);
@@ -258,9 +258,9 @@ protected:
     ChangeTransport(Deserializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushContainer(ser, data);
     }
 
@@ -279,9 +279,9 @@ protected:
     ChangeMilitary(Serializer& ser) : GameCommand(GCType::ChangeMilitary) { helpers::popContainer(ser, data); }
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushContainer(ser, data);
     }
 
@@ -306,9 +306,9 @@ protected:
     }
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushContainer(ser, data);
         helpers::pushContainer(ser, orders);
     }
@@ -327,9 +327,9 @@ protected:
     CallSpecialist(Serializer& ser) : Coords(GCType::CallSpecialist, ser), job(helpers::popEnum<Job>(ser)) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, job);
     }
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -354,9 +354,9 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushUnsignedInt(soldiers_count);
         ser.PushBool(strong_soldiers);
@@ -404,9 +404,9 @@ protected:
     SetCoinsAllowed(Serializer& ser) : Coords(GCType::SetCoinsAllowed, ser), enabled(ser.PopBool()) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(enabled);
     }
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -423,9 +423,9 @@ protected:
     SetArmorAllowed(Serializer& ser) : Coords(GCType::SetArmorAllowed, ser), enabled(ser.PopBool()) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(enabled);
     }
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -443,9 +443,9 @@ protected:
     SetProductionEnabled(Serializer& ser) : Coords(GCType::SetProductionEnabled, ser), enabled(ser.PopBool()) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(enabled);
     }
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -486,9 +486,9 @@ protected:
     }
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushBool(holds_alternative<Job>(what));
         visit([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
@@ -513,9 +513,9 @@ protected:
     SetAllInventorySettings(Deserializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushBool(isJob);
         RTTR_Assert(states.size() == (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>));
@@ -544,9 +544,9 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushUnsignedChar(rank);
         ser.PushUnsignedInt(count);
@@ -615,9 +615,9 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         ser.PushUnsignedChar(targetPlayer);
         helpers::pushEnum<uint8_t>(ser, pt);
         ser.PushUnsignedInt(duration);
@@ -647,9 +647,9 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         ser.PushUnsignedInt(id);
         helpers::pushEnum<uint8_t>(ser, pt);
         ser.PushUnsignedChar(fromPlayer);
@@ -676,9 +676,9 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, pt);
         ser.PushUnsignedChar(otherPlayer);
     }
@@ -698,9 +698,9 @@ protected:
 
 public:
     void execute(GameWorld& world, uint8_t playerId) override;
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(buildShips);
     }
 };
@@ -721,9 +721,9 @@ protected:
 
 public:
     void execute(GameWorld& world, uint8_t playerId) override;
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, productionMode);
     }
 };
@@ -740,9 +740,9 @@ protected:
 
 public:
     void execute(GameWorld& world, uint8_t playerId) override;
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(start);
     }
 };
@@ -763,9 +763,9 @@ protected:
 
 public:
     void execute(GameWorld& world, uint8_t playerId) override;
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(start);
     }
 };
@@ -799,9 +799,9 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, action);
         ser.PushUnsignedInt(ship_id);
     }
@@ -838,9 +838,9 @@ protected:
     }
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushBool(holds_alternative<Job>(what));
         visit([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);

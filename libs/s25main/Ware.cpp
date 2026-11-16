@@ -48,7 +48,7 @@ void Ware::destroy()
 #endif
 }
 
-void Ware::Serialize(SerializedGameData& sgd) const
+void Ware::serialize(SerializedGameData& sgd) const
 {
     sgd.pushEnum<uint8_t>(next_dir);
     sgd.pushEnum<uint8_t>(state);

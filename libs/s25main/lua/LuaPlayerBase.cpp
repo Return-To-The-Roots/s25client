@@ -8,7 +8,7 @@
 #include "luaRegistrationHelpers.h"
 #include <kaguya/kaguya.hpp>
 
-void LuaPlayerBase::Register(kaguya::State& state)
+void LuaPlayerBase::registerClasses(kaguya::State& state)
 {
     state["PlayerBase"].setClass(kaguya::UserdataMetatable<LuaPlayerBase>()
                                    .addFunction("GetName", &LuaPlayerBase::getName)

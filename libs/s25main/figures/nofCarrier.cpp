@@ -96,9 +96,9 @@ nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
     }
 }
 
-void nofCarrier::Serialize(SerializedGameData& sgd) const
+void nofCarrier::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(ct);
     sgd.pushEnum<uint8_t>(state);

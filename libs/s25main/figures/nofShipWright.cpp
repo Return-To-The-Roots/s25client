@@ -142,9 +142,9 @@ nofShipWright::nofShipWright(SerializedGameData& sgd, const unsigned obj_id)
     : nofWorkman(sgd, obj_id), curShipBuildPos(sgd.popMapPoint())
 {}
 
-void nofShipWright::Serialize(SerializedGameData& sgd) const
+void nofShipWright::serialize(SerializedGameData& sgd) const
 {
-    nofWorkman::Serialize(sgd);
+    nofWorkman::serialize(sgd);
 
     helpers::pushPoint(sgd, curShipBuildPos);
 }

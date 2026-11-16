@@ -5,9 +5,9 @@
 #include "noExtension.h"
 #include "SerializedGameData.h"
 
-void noExtension::Serialize(SerializedGameData& sgd) const
+void noExtension::serialize(SerializedGameData& sgd) const
 {
-    noBase::Serialize(sgd);
+    noBase::serialize(sgd);
 
     sgd.pushObject(base);
 }

@@ -36,7 +36,7 @@ public:
     /// Type zurückgeben.
     NodalObjectType getType() const { return nop; }
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
     virtual std::unique_ptr<FOWObject> createFOWObject() const;

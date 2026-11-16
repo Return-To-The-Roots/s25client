@@ -66,9 +66,9 @@ noShip::noShip(const MapPoint pos, const unsigned char player)
 
 noShip::~noShip() = default;
 
-void noShip::Serialize(SerializedGameData& sgd) const
+void noShip::serialize(SerializedGameData& sgd) const
 {
-    noMovable::Serialize(sgd);
+    noMovable::serialize(sgd);
 
     sgd.PushUnsignedChar(ownerId_);
     sgd.pushEnum<uint8_t>(state);

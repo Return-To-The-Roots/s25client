@@ -28,7 +28,7 @@ void dskIntro::msgButtonClick(const unsigned ctrl_id)
     {
         case 0: // "Zurück"
         {
-            WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>());
         }
         break;
     }

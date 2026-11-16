@@ -150,9 +150,9 @@ void noBaseBuilding::destroy()
     noRoadNode::destroy();
 }
 
-void noBaseBuilding::Serialize(SerializedGameData& sgd) const
+void noBaseBuilding::serialize(SerializedGameData& sgd) const
 {
-    noRoadNode::Serialize(sgd);
+    noRoadNode::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(bldType_);
     sgd.pushEnum<uint8_t>(nation);

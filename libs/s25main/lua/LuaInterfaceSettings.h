@@ -20,7 +20,7 @@ public:
     LuaInterfaceSettings(IGameLobbyController& lobbyServerController, const ILocalGameState& localGameState);
     virtual ~LuaInterfaceSettings();
 
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
     // Interface for C++
     /// Called when settings are entered. Returns whether script should be executed

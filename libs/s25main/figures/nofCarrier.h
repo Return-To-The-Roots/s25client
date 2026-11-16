@@ -105,7 +105,7 @@ public:
 
     ~nofCarrier() override;
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     void destroy() override;
 

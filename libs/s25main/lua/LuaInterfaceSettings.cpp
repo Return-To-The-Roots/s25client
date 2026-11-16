@@ -25,14 +25,14 @@ LuaInterfaceSettings::LuaInterfaceSettings(IGameLobbyController& lobbyServerCont
                                            const ILocalGameState& localGameState)
     : LuaInterfaceGameBase(localGameState), lobbyServerController_(lobbyServerController)
 {
-    Register(lua);
-    LuaServerPlayer::Register(lua);
+    registerClasses(lua);
+    LuaServerPlayer::registerClasses(lua);
     lua["rttr"] = this;
 }
 
 LuaInterfaceSettings::~LuaInterfaceSettings() = default;
 
-void LuaInterfaceSettings::Register(kaguya::State& state)
+void LuaInterfaceSettings::registerClasses(kaguya::State& state)
 {
     state["RTTRSettings"].setClass(
       kaguya::UserdataMetatable<LuaInterfaceSettings, LuaInterfaceGameBase>()
