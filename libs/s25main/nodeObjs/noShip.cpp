@@ -264,7 +264,7 @@ void noShip::HandleEvent(const unsigned id)
                 {
                     // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
                     state = State::ExpeditionDriving;
-                    HandleState_ExpeditionDriving();
+                    handleStateExpeditionDriving();
                 }
                 break;
             }
@@ -287,7 +287,7 @@ void noShip::HandleEvent(const unsigned id)
                 {
                     // target harbor for unloading doesnt exist anymore -> set state to driving and handle the new state
                     state = State::ExplorationexpeditionDriving;
-                    HandleState_ExplorationExpeditionDriving();
+                    handleStateExplorationExpeditionDriving();
                 }
 
                 // Sichtbarkeiten neu berechnen
@@ -377,12 +377,12 @@ void noShip::Driven()
 
     switch(state)
     {
-        case State::Gotoharbor: HandleState_GoToHarbor(); break;
-        case State::ExpeditionDriving: HandleState_ExpeditionDriving(); break;
-        case State::ExplorationexpeditionDriving: HandleState_ExplorationExpeditionDriving(); break;
-        case State::TransportDriving: HandleState_TransportDriving(); break;
-        case State::SeaattackDrivingToDestination: HandleState_SeaAttackDriving(); break;
-        case State::SeaattackReturnDriving: HandleState_SeaAttackReturn(); break;
+        case State::Gotoharbor: handleStateGoToHarbor(); break;
+        case State::ExpeditionDriving: handleStateExpeditionDriving(); break;
+        case State::ExplorationexpeditionDriving: handleStateExplorationExpeditionDriving(); break;
+        case State::TransportDriving: handleStateTransportDriving(); break;
+        case State::SeaattackDrivingToDestination: handleStateSeaAttackDriving(); break;
+        case State::SeaattackReturnDriving: handleStateSeaAttackReturn(); break;
         default: RTTR_Assert(false); break;
     }
 }
@@ -558,7 +558,7 @@ void noShip::ContinueExpedition(const ShipDirection dir)
     goalHarbor = new_goal;
     state = State::ExpeditionDriving;
 
-    HandleState_ExpeditionDriving();
+    handleStateExpeditionDriving();
 }
 
 /// Weist das Schiff an, eine Expedition abzubrechen (nur wenn es steht) und zum
@@ -579,13 +579,13 @@ void noShip::CancelExpedition()
         route_.clear();
         curRouteIdx = 0;
         state = State::ExpeditionDriving; // just in case the home harbor was destroyed
-        HandleState_ExpeditionDriving();
+        handleStateExpeditionDriving();
     } else
     {
         state = State::ExpeditionDriving;
         goalHarbor = homeHarbor;
         StartDrivingToHarborPlace();
-        HandleState_ExpeditionDriving();
+        handleStateExpeditionDriving();
     }
 }
 
@@ -608,7 +608,7 @@ void noShip::FoundColony()
         world->GetNotifications().publish(ExpeditionNote(ExpeditionNote::Waiting, ownerId_, pos));
 }
 
-void noShip::HandleState_GoToHarbor()
+void noShip::handleStateGoToHarbor()
 {
     // Hafen schon zerstört?
     if(!goalHarbor)
@@ -645,7 +645,7 @@ void noShip::HandleState_GoToHarbor()
     }
 }
 
-void noShip::HandleState_ExpeditionDriving()
+void noShip::handleStateExpeditionDriving()
 {
     Result res;
     // Zum Heimathafen fahren?
@@ -687,7 +687,7 @@ void noShip::HandleState_ExpeditionDriving()
             {
                 // Try to go back
                 goalHarbor = homeHarbor;
-                HandleState_ExpeditionDriving();
+                handleStateExpeditionDriving();
             } else
                 FindUnloadGoal(State::ExpeditionDriving); // Unload anywhere!
         }
@@ -695,7 +695,7 @@ void noShip::HandleState_ExpeditionDriving()
     }
 }
 
-void noShip::HandleState_ExplorationExpeditionDriving()
+void noShip::handleStateExplorationExpeditionDriving()
 {
     Result res;
     // Zum Heimathafen fahren?
@@ -732,14 +732,14 @@ void noShip::HandleState_ExplorationExpeditionDriving()
             {
                 // Try to go back
                 goalHarbor = homeHarbor;
-                HandleState_ExplorationExpeditionDriving();
+                handleStateExplorationExpeditionDriving();
             } else
                 FindUnloadGoal(State::ExplorationexpeditionDriving); // Unload anywhere!
             break;
     }
 }
 
-void noShip::HandleState_TransportDriving()
+void noShip::handleStateTransportDriving()
 {
     Result res = DriveToHarbour();
     switch(res)
@@ -778,7 +778,7 @@ void noShip::HandleState_TransportDriving()
     }
 }
 
-void noShip::HandleState_SeaAttackDriving()
+void noShip::handleStateSeaAttackDriving()
 {
     Result res = DriveToHarbourPlace();
     switch(res)
@@ -798,7 +798,7 @@ void noShip::HandleState_SeaAttackDriving()
     }
 }
 
-void noShip::HandleState_SeaAttackReturn()
+void noShip::handleStateSeaAttackReturn()
 {
     Result res = DriveToHarbour();
     switch(res)
@@ -906,7 +906,7 @@ void noShip::StartSeaAttack()
 {
     state = State::SeaattackDrivingToDestination;
     StartDrivingToHarborPlace();
-    HandleState_SeaAttackDriving();
+    handleStateSeaAttackDriving();
 }
 
 void noShip::AbortSeaAttack()
@@ -932,7 +932,7 @@ void noShip::AbortSeaAttack()
         {
             // Else start driving back
             state = State::SeaattackReturnDriving;
-            HandleState_SeaAttackReturn();
+            handleStateSeaAttackReturn();
         }
     } else
     {
@@ -1001,7 +1001,7 @@ void noShip::StartTransport()
 
     StartDrivingToHarborPlace();
     // Einfach weiterfahren
-    HandleState_TransportDriving();
+    handleStateTransportDriving();
 }
 
 void noShip::FindUnloadGoal(State newState)
@@ -1014,13 +1014,13 @@ void noShip::FindUnloadGoal(State newState)
         curRouteIdx = 0;
         homeHarbor = goalHarbor; // To allow unloading here
         if(state == State::ExpeditionDriving)
-            HandleState_ExpeditionDriving();
+            handleStateExpeditionDriving();
         else if(state == State::ExplorationexpeditionDriving)
-            HandleState_ExplorationExpeditionDriving();
+            handleStateExplorationExpeditionDriving();
         else if(state == State::TransportDriving)
-            HandleState_TransportDriving();
+            handleStateTransportDriving();
         else if(state == State::SeaattackReturnDriving)
-            HandleState_SeaAttackReturn();
+            handleStateSeaAttackReturn();
         else
         {
             RTTR_Assert(false);
@@ -1146,7 +1146,7 @@ void noShip::SeaAttackerWishesNoReturn()
             goalHarbor = homeHarbor;
             state = State::SeaattackReturnDriving;
             StartDrivingToHarborPlace();
-            HandleState_SeaAttackReturn();
+            handleStateSeaAttackReturn();
         } else
         {
             // Wenn keine Soldaten mehr da sind können wir auch erstmal idlen
@@ -1193,7 +1193,7 @@ void noShip::ContinueExplorationExpedition()
 
     StartDrivingToHarborPlace();
     state = State::ExplorationexpeditionDriving;
-    HandleState_ExplorationExpeditionDriving();
+    handleStateExplorationExpeditionDriving();
 }
 
 /// Sagt dem Schiff, dass ein neuer Hafen erbaut wurde

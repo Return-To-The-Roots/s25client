@@ -15,7 +15,7 @@
  *  @param[in] text        Der Text
  *  @param[in] destination Ziel der Nachricht
  */
-void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
+void GameClient::commandChat(const std::string& text, const ChatDestination cd)
 {
     // Replaymodus oder kein Text --> nichts senden
     if(IsReplayModeOn() || text.empty())
@@ -24,17 +24,17 @@ void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
     mainPlayer.sendMsgAsync(new GameMessage_Chat(0xff, cd, text));
 }
 
-void GameClient::Command_SetNation(Nation newNation)
+void GameClient::commandSetNation(Nation newNation)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Nation(0xff, newNation));
 }
 
-void GameClient::Command_SetPortrait(unsigned portraitIndex)
+void GameClient::commandSetPortrait(unsigned portraitIndex)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Portrait(0xff, portraitIndex));
 }
 
-void GameClient::Command_SetTeam(Team newTeam)
+void GameClient::commandSetTeam(Team newTeam)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Team(0xff, newTeam));
 }
@@ -42,12 +42,12 @@ void GameClient::Command_SetTeam(Team newTeam)
 /**
  *  sendet den "Bereit"-Status.
  */
-void GameClient::Command_SetReady(bool isReady)
+void GameClient::commandSetReady(bool isReady)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Ready(0xFF, isReady));
 }
 
-void GameClient::Command_SetColor(unsigned newColor)
+void GameClient::commandSetColor(unsigned newColor)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Color(0xFF, newColor));
 }

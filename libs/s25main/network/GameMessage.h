@@ -23,8 +23,8 @@ public:
 
     bool run(MessageInterface* callback, unsigned senderPlayerID) override;
 
-    static Message* create_game(unsigned short id);
-    Message* create(unsigned short id) const override { return create_game(id); }
+    static Message* createGame(unsigned short id);
+    Message* create(unsigned short id) const override { return createGame(id); }
 };
 
 /// Game message that optionally has a player ID

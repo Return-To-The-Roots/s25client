@@ -6,7 +6,7 @@
 #include "GameMessage.h"
 
 NetworkPlayer::NetworkPlayer(unsigned playerId)
-    : playerId(playerId), recvQueue(GameMessage::create_game), sendQueue(GameMessage::create_game)
+    : playerId(playerId), recvQueue(GameMessage::createGame), sendQueue(GameMessage::createGame)
 {}
 
 void NetworkPlayer::closeConnection()

@@ -73,7 +73,7 @@ class nofAttacker : public nofActiveSoldier
     void CancelAtShip();
     void CancelAtHuntingDefender();
     /// Handle walking back to ship
-    void HandleState_SeaAttack_ReturnToShip();
+    void handleStateSeaAttackReturnToShip();
 
 protected:
     SoldierState FreeFightAborted() override;

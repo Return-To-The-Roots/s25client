@@ -211,7 +211,7 @@ public:
     /// Straße läuft!
     void CorrectSplitData(const RoadSegment* rs2);
     /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
-    virtual void CorrectSplitData_Derived();
+    virtual void correctSplitDataDerived();
     /// Lässt die Figur sterben (löst sich auf und hinterlässt ggf. Leiche)
     void Die();
     /// Removes the figure from the players inventory (e.g. when it does not exist anymore)

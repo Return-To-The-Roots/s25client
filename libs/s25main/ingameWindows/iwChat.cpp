@@ -63,5 +63,5 @@ void iwChat::msgEditEnter(const unsigned /*ctrl_id*/)
         if(listener)
             listener->OnChatCommand(text.substr(1));
     } else
-        GAMECLIENT.Command_Chat(text, ChatDestination(lastChatDestination));
+        GAMECLIENT.commandChat(text, ChatDestination(lastChatDestination));
 }

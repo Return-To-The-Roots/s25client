@@ -83,12 +83,12 @@ private:
     /// Fängt an zu fahren
     void StartDriving(Direction dir);
 
-    void HandleState_GoToHarbor();
-    void HandleState_ExpeditionDriving();
-    void HandleState_ExplorationExpeditionDriving();
-    void HandleState_TransportDriving();
-    void HandleState_SeaAttackDriving();
-    void HandleState_SeaAttackReturn();
+    void handleStateGoToHarbor();
+    void handleStateExpeditionDriving();
+    void handleStateExplorationExpeditionDriving();
+    void handleStateTransportDriving();
+    void handleStateSeaAttackDriving();
+    void handleStateSeaAttackReturn();
 
     enum class Result
     {

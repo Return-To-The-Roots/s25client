@@ -117,12 +117,12 @@ public:
     unsigned Interpolate(unsigned maxVal, const GameEvent* ev) const;
     int Interpolate(int x1, int x2, const GameEvent* ev) const;
 
-    void Command_Chat(const std::string& text, ChatDestination cd);
-    void Command_SetNation(Nation newNation);
-    void Command_SetPortrait(unsigned portraitIndex);
-    void Command_SetTeam(Team newTeam);
-    void Command_SetColor(unsigned newColor);
-    void Command_SetReady(bool isReady);
+    void commandChat(const std::string& text, ChatDestination cd);
+    void commandSetNation(Nation newNation);
+    void commandSetPortrait(unsigned portraitIndex);
+    void commandSetTeam(Team newTeam);
+    void commandSetColor(unsigned newColor);
+    void commandSetReady(bool isReady);
 
     /// Called internally when the game is ready to start (loaded and all players ready)
     /// And a 2nd time when the GUI is ready which actually starty the game
@@ -195,7 +195,7 @@ private:
 
     /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
     void ExecuteGameFrame();
-    void ExecuteGameFrame_Replay();
+    void executeGameFrameReplay();
     void ExecuteNWF();
     /// Filtert aus einem Network-Command-Paket alle Commands aus und führt sie aus, falls ein Spielerwechsel-Command
     /// dabei ist, füllt er die übergebenen IDs entsprechend aus
@@ -211,7 +211,7 @@ private:
     /// Interpolate implementation for generic types
     /// Returns x in [x1, x2] according to the current time in the range of the events duration.
     template<typename T>
-    T do_interpolate(T x1, T x2, const GameEvent& ev) const;
+    T doInterpolate(T x1, T x2, const GameEvent& ev) const;
 
     //  Netzwerknachrichten
     RTTR_IGNORE_OVERLOADED_VIRTUAL

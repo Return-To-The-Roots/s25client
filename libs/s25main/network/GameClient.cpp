@@ -1307,7 +1307,7 @@ void GameClient::ExecuteGameFrame()
             if(replayMode)
             {
                 // In replay mode we have all commands in the file -> Execute them
-                ExecuteGameFrame_Replay();
+                executeGameFrameReplay();
             } else
             {
                 RTTR_Assert(curGF <= nwfInfo->getNextNWF());
@@ -1577,7 +1577,7 @@ unsigned GameClient::GetGlobalAnimation(const unsigned short max, const unsigned
 }
 
 template<typename T>
-T GameClient::do_interpolate(const T x1, const T x2, const GameEvent& ev) const
+T GameClient::doInterpolate(const T x1, const T x2, const GameEvent& ev) const
 {
     // TODO: Move to some animation system that is part of game
     std::chrono::milliseconds elapsedTime{};
@@ -1589,12 +1589,12 @@ T GameClient::do_interpolate(const T x1, const T x2, const GameEvent& ev) const
 
 unsigned GameClient::Interpolate(const unsigned maxVal, const GameEvent* ev) const
 {
-    return do_interpolate(0u, maxVal, assertNonNull(ev));
+    return doInterpolate(0u, maxVal, assertNonNull(ev));
 }
 
 int GameClient::Interpolate(const int x1, const int x2, const GameEvent* ev) const
 {
-    return do_interpolate(x1, x2, assertNonNull(ev));
+    return doInterpolate(x1, x2, assertNonNull(ev));
 }
 
 void GameClient::ServerLost()

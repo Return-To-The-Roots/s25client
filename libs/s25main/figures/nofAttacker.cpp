@@ -276,7 +276,7 @@ void nofAttacker::Walked()
             // Can't walk while on the ship
             RTTR_Assert(false);
             break;
-        case SoldierState::SeaattackingReturnToShip: HandleState_SeaAttack_ReturnToShip(); break;
+        case SoldierState::SeaattackingReturnToShip: handleStateSeaAttackReturnToShip(); break;
     }
 }
 
@@ -389,7 +389,7 @@ void nofAttacker::ReturnHomeMissionAttacking()
     if(ship_obj_id)
     {
         state = SoldierState::SeaattackingReturnToShip;
-        HandleState_SeaAttack_ReturnToShip();
+        handleStateSeaAttackReturnToShip();
     } else
         ReturnHome();
 }
@@ -881,7 +881,7 @@ void nofAttacker::CancelAtHuntingDefender()
     }
 }
 
-void nofAttacker::HandleState_SeaAttack_ReturnToShip()
+void nofAttacker::handleStateSeaAttackReturnToShip()
 {
     if(!homeBld)
     {

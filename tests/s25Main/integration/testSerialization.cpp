@@ -772,7 +772,7 @@ BOOST_AUTO_TEST_CASE(SerializeGameMessageChat)
     const GameMessage_Chat msg(rttr::test::randomValue(0u, 10u), rttr::test::randomEnum<ChatDestination>(), "Hello");
     Serializer ser;
     msg.Serialize(ser);
-    std::unique_ptr<Message> newMsg(GameMessage::create_game(msg.getId()));
+    std::unique_ptr<Message> newMsg(GameMessage::createGame(msg.getId()));
     BOOST_TEST_REQUIRE(!!newMsg);
     newMsg->Deserialize(ser);
     const auto* newMsgChat = dynamic_cast<GameMessage_Chat*>(newMsg.get());

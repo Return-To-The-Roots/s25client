@@ -112,7 +112,7 @@
 static const unsigned currentGameDataVersion = 15;
 // clang-format on
 
-std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type got, const unsigned obj_id)
+std::unique_ptr<GameObject> SerializedGameData::createGameObject(const GO_Type got, const unsigned obj_id)
 {
     switch(got)
     {
@@ -198,7 +198,7 @@ std::unique_ptr<GameObject> SerializedGameData::Create_GameObject(const GO_Type 
                 + " found!");
 }
 
-std::unique_ptr<FOWObject> SerializedGameData::Create_FOWObject(const FoW_Type fowtype)
+std::unique_ptr<FOWObject> SerializedGameData::createFOWObject(const FoW_Type fowtype)
 {
     switch(fowtype)
     {
@@ -463,7 +463,7 @@ std::unique_ptr<FOWObject> SerializedGameData::PopFOWObject()
         return nullptr;
 
     // entsprechendes Objekt erzeugen
-    return Create_FOWObject(type);
+    return createFOWObject(type);
 }
 
 GameObject* SerializedGameData::PopObject_(helpers::OptionalEnum<GO_Type> got)
@@ -484,7 +484,7 @@ GameObject* SerializedGameData::PopObject_(helpers::OptionalEnum<GO_Type> got)
         got = Pop<GO_Type>();
 
     // und erzeugen
-    std::unique_ptr<GameObject> go = Create_GameObject(*got, objId);
+    std::unique_ptr<GameObject> go = createGameObject(*got, objId);
 
     // Sicherheitscode auslesen
     unsigned short safety_code = PopUnsignedShort();

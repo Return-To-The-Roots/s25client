@@ -10,7 +10,7 @@
 #include "network/GameClient.h"
 #include "s25util/Log.h"
 
-void GameClient::ExecuteGameFrame_Replay()
+void GameClient::executeGameFrameReplay()
 {
     const unsigned curGF = GetGFNumber();
     RTTR_Assert(replayinfo->nextGF.value_or(curGF) >= curGF || curGF > replayinfo->replay.GetLastGF()); //-V807

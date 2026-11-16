@@ -753,11 +753,11 @@ void noFigure::CorrectSplitData(const RoadSegment* const rs2)
         }
     }
 
-    CorrectSplitData_Derived();
+    correctSplitDataDerived();
 }
 
 /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
-void noFigure::CorrectSplitData_Derived() {}
+void noFigure::correctSplitDataDerived() {}
 
 unsigned noFigure::CalcWalkAnimationFrame() const
 {

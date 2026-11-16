@@ -893,7 +893,7 @@ void nofCarrier::StopWorking()
 }
 
 /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
-void nofCarrier::CorrectSplitData_Derived()
+void nofCarrier::correctSplitDataDerived()
 {
     // Tragen wir eine Ware?
     if(state == CarrierState::CarryWare)

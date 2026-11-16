@@ -143,5 +143,5 @@ public:
     noRoadNode* GetSecondFlag() const;
 
     /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
-    void CorrectSplitData_Derived() override;
+    void correctSplitDataDerived() override;
 };

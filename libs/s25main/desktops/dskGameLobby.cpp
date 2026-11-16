@@ -575,7 +575,7 @@ void dskGameLobby::msgGroupButtonClick(const unsigned group_id, const unsigned c
                 if(gameLobby_->isHost())
                     lobbyController->SetNation(playerId, player.nation);
                 else
-                    GAMECLIENT.Command_SetNation(player.nation);
+                    GAMECLIENT.commandSetNation(player.nation);
                 ChangeNation(playerId, player.nation);
             }
         }
@@ -592,7 +592,7 @@ void dskGameLobby::msgGroupButtonClick(const unsigned group_id, const unsigned c
                 if(gameLobby_->isHost())
                     lobbyController->SetPortrait(playerId, player.portraitIndex);
                 else
-                    GAMECLIENT.Command_SetPortrait(player.portraitIndex);
+                    GAMECLIENT.commandSetPortrait(player.portraitIndex);
                 ChangePortrait(playerId, player.portraitIndex);
             }
         }
@@ -628,7 +628,7 @@ void dskGameLobby::msgGroupButtonClick(const unsigned group_id, const unsigned c
                 if(gameLobby_->isHost())
                     lobbyController->SetColor(playerId, player.color);
                 else
-                    GAMECLIENT.Command_SetColor(player.color);
+                    GAMECLIENT.commandSetColor(player.color);
                 ChangeColor(playerId, player.color);
             }
 
@@ -647,7 +647,7 @@ void dskGameLobby::msgGroupButtonClick(const unsigned group_id, const unsigned c
                 if(gameLobby_->isHost())
                     lobbyController->SetTeam(playerId, player.team);
                 else
-                    GAMECLIENT.Command_SetTeam(player.team);
+                    GAMECLIENT.commandSetTeam(player.team);
                 ChangeTeam(playerId, player.team);
             }
         }
@@ -777,7 +777,7 @@ void dskGameLobby::msgEditEnter(const unsigned ctrl_id)
     const std::string msg = edit->GetText();
     edit->SetText("");
     if(gameChat->IsVisible())
-        GAMECLIENT.Command_Chat(msg, ChatDestination::All);
+        GAMECLIENT.commandChat(msg, ChatDestination::All);
     else if(lobbyClient_ && lobbyClient_->IsLoggedIn() && lobbyChat->IsVisible())
         lobbyClient_->SendChat(msg);
 }
@@ -1029,7 +1029,7 @@ void dskGameLobby::SetPlayerReady(unsigned char player, bool ready)
     if(gameLobby_->getPlayer(player).isReady != ready)
     {
         gameLobby_->getPlayer(player).isReady = ready;
-        GAMECLIENT.Command_SetReady(ready);
+        GAMECLIENT.commandSetReady(ready);
     }
     ChangeReady(player, ready);
 }

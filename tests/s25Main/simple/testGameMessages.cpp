@@ -49,7 +49,7 @@ auto serializeDeserializeMessage(const TMsg& msgIn)
     static Serializer ser;
     ser.Clear();
     msgIn.Serialize(ser);
-    Message* msgOut(GameMessage::create_game(msgIn.getId()));
+    Message* msgOut(GameMessage::createGame(msgIn.getId()));
     BOOST_TEST_REQUIRE(msgOut);
     std::unique_ptr<TMsg> msgResult(dynamic_cast<TMsg*>(msgOut));
     BOOST_TEST_REQUIRE(!!msgResult);
