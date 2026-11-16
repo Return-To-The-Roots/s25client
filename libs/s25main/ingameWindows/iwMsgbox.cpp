@@ -7,11 +7,12 @@
 #include "WindowManager.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlMultiline.h"
+#include "driver/KeyEvent.h"
 #include "drivers/VideoDriverWrapper.h"
 #include "enum_cast.hpp"
-#include "helpers/EnumArray.h"
 #include "ogl/glArchivItem_Bitmap.h"
 #include "gameData/const_gui_ids.h"
+#include <utility>
 
 namespace {
 enum IDS
@@ -24,25 +25,96 @@ const Extent btSize(90, 20);
 const unsigned short paddingX = 15; /// Padding in X/to image
 const unsigned short minTextWidth = 150;
 const unsigned short maxTextHeight = 200;
+
+MsgboxConfig makeLegacyConfig(const MsgboxButton button)
+{
+    MsgboxConfig config;
+    switch(button)
+    {
+        case MsgboxButton::Ok:
+            config.buttons.push_back({_("OK"), MsgboxResult::Ok, TextureColor::Green2});
+            config.defaultButton = 0;
+            config.cancelButton = -1;
+            config.focusedButton = 0;
+            break;
+
+        case MsgboxButton::OkCancel:
+            config.buttons.push_back({_("OK"), MsgboxResult::Ok, TextureColor::Green2});
+            config.buttons.push_back({_("Cancel"), MsgboxResult::Cancel, TextureColor::Red1});
+            config.defaultButton = 0;
+            config.cancelButton = 1;
+            config.focusedButton = 1;
+            break;
+
+        case MsgboxButton::YesNo:
+            config.buttons.push_back({_("Yes"), MsgboxResult::Yes, TextureColor::Green2});
+            config.buttons.push_back({_("No"), MsgboxResult::No, TextureColor::Red1});
+            config.defaultButton = 0;
+            config.cancelButton = 1;
+            config.focusedButton = 1;
+            break;
+
+        case MsgboxButton::YesNoCancel:
+            config.buttons.push_back({_("Yes"), MsgboxResult::Yes, TextureColor::Green2});
+            config.buttons.push_back({_("No"), MsgboxResult::No, TextureColor::Red1});
+            config.buttons.push_back({_("Cancel"), MsgboxResult::Cancel, TextureColor::Grey});
+            config.defaultButton = 0;
+            config.cancelButton = 2;
+            config.focusedButton = 2;
+            break;
+    }
+    return config;
+}
 } // namespace
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
                    MsgboxIcon icon, unsigned msgboxid)
-    : iwMsgbox(title, text, msgHandler, button, "io", rttr::enum_cast(icon), msgboxid)
+    : iwMsgbox(title, text, msgHandler, makeLegacyConfig(button), icon, msgboxid)
 {}
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
                    const ResourceId& iconFile, unsigned iconIdx, unsigned msgboxid /* = 0 */)
+    : iwMsgbox(title, text, msgHandler, makeLegacyConfig(button), iconFile, iconIdx, msgboxid)
+{}
+
+iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxConfig config,
+                   unsigned msgboxid /* = 0 */)
     : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41),
                    true, CloseBehavior::Custom),
-      button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
+      msgboxid(msgboxid), buttons_(std::move(config.buttons)), defaultButton_(config.defaultButton),
+      cancelButton_(config.cancelButton), focusedButton_(config.focusedButton), msgHandler_(msgHandler)
 {
-    Init(text, iconFile, iconIdx);
+    Init(text, nullptr);
 }
 
-void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigned iconIdx)
+iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxConfig config,
+                   MsgboxIcon icon, unsigned msgboxid)
+    : iwMsgbox(title, text, msgHandler, std::move(config), "io", rttr::enum_cast(icon), msgboxid)
+{}
+
+iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxConfig config,
+                   const ResourceId& iconFile, unsigned iconIdx, unsigned msgboxid /* = 0 */)
+    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41),
+                   true, CloseBehavior::Custom),
+      msgboxid(msgboxid), buttons_(std::move(config.buttons)), defaultButton_(config.defaultButton),
+      cancelButton_(config.cancelButton), focusedButton_(config.focusedButton), msgHandler_(msgHandler)
 {
-    glArchivItem_Bitmap* icon = LOADER.GetImageN(iconFile, iconIdx);
+    Init(text, LOADER.GetImageN(iconFile, iconIdx));
+}
+
+void iwMsgbox::Init(const std::string& text, glArchivItem_Bitmap* icon)
+{
+    if(buttons_.empty())
+        buttons_.push_back({_("OK"), MsgboxResult::Ok, TextureColor::Green2});
+    if(buttons_.size() > 3)
+        buttons_.resize(3);
+    if(defaultButton_ >= buttons_.size())
+        defaultButton_ = 0;
+    if(cancelButton_ >= static_cast<int>(buttons_.size()))
+        cancelButton_ = -1;
+    if(focusedButton_ >= static_cast<int>(buttons_.size()))
+        focusedButton_ = -1;
+
     if(icon)
         AddImage(ID_ICON, contentOffset + DrawPoint(30, 20), icon);
     int textX = icon ? icon->getWidth() - icon->getNx() + GetCtrl<Window>(ID_ICON)->GetPos().x : contentOffset.x;
@@ -58,35 +130,17 @@ void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigne
     // Increase window size if required
     SetIwSize(elMax(GetIwSize(), newIwSize));
 
-    unsigned defaultBt = 0;
-    // Buttons erstellen
-    switch(button)
+    const auto numButtons = static_cast<unsigned>(buttons_.size());
+    const int spacing = 6;
+    const int totalBtWidth = numButtons * btSize.x + (numButtons - 1) * spacing;
+    int x = GetSize().x / 2 - totalBtWidth / 2;
+    for(unsigned i = 0; i < numButtons; ++i)
     {
-        case MsgboxButton::Ok:
-            AddButton(ID_BT_0, GetSize().x / 2 - 45, _("OK"), TextureColor::Green2);
-            defaultBt = 0;
-            break;
-
-        case MsgboxButton::OkCancel:
-            AddButton(ID_BT_0, GetSize().x / 2 - 3 - 90, _("OK"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 + 3, _("Cancel"), TextureColor::Red1);
-            defaultBt = 1;
-            break;
-
-        case MsgboxButton::YesNo:
-            AddButton(ID_BT_0, GetSize().x / 2 - 3 - 90, _("Yes"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 + 3, _("No"), TextureColor::Red1);
-            defaultBt = 1;
-            break;
-
-        case MsgboxButton::YesNoCancel:
-            AddButton(ID_BT_0, GetSize().x / 2 - 45 - 6 - 90, _("Yes"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 - 45, _("No"), TextureColor::Red1);
-            AddButton(ID_BT_0 + 2, GetSize().x / 2 + 45 + 6, _("Cancel"), TextureColor::Grey);
-            defaultBt = 2;
-            break;
+        AddButton(ID_BT_0 + i, x, buttons_[i].text, buttons_[i].color);
+        x += btSize.x + spacing;
     }
-    const Window* defBt = GetCtrl<Window>(defaultBt + ID_BT_0);
+    const unsigned focusedButton = focusedButton_ >= 0 ? static_cast<unsigned>(focusedButton_) : defaultButton_;
+    const Window* defBt = GetCtrl<Window>(focusedButton + ID_BT_0);
     if(defBt)
         VIDEODRIVER.SetMousePos(defBt->GetDrawPos() + DrawPoint(defBt->GetSize()) / 2);
     WINDOWMANAGER.SetCursor();
@@ -152,16 +206,25 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
     }
 }
 
-constexpr helpers::EnumArray<std::array<MsgboxResult, 3>, MsgboxButton> RET_IDS = {
-  {{MsgboxResult::Ok},
-   {MsgboxResult::Ok, MsgboxResult::Cancel},
-   {MsgboxResult::Yes, MsgboxResult::No},
-   {MsgboxResult::Yes, MsgboxResult::No, MsgboxResult::Cancel}}};
+bool iwMsgbox::Msg_KeyDown(const KeyEvent& ke)
+{
+    if(ke.kt == KeyType::Return)
+    {
+        Msg_ButtonClick(ID_BT_0 + defaultButton_);
+        return true;
+    }
+    if(ke.kt == KeyType::Escape && cancelButton_ >= 0)
+    {
+        Msg_ButtonClick(ID_BT_0 + static_cast<unsigned>(cancelButton_));
+        return true;
+    }
+    return false;
+}
 
 void iwMsgbox::Msg_ButtonClick(const unsigned ctrl_id)
 {
     if(msgHandler_)
-        msgHandler_->Msg_MsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - ID_BT_0]);
+        msgHandler_->Msg_MsgBoxResult(msgboxid, buttons_[ctrl_id - ID_BT_0].result);
     Close();
 }
 
