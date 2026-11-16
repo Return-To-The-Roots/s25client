@@ -82,6 +82,11 @@ void GameLobbyController::SetTeam(unsigned playerIdx, Team newTeam)
     mainPlayer_.sendMsgAsync(new GameMessage_Player_Team(playerIdx, newTeam));
 }
 
+void GameLobbyController::SetStartWares(unsigned playerIdx, std::optional<StartWares> startWares)
+{
+    mainPlayer_.sendMsgAsync(new GameMessage_Player_StartWares(playerIdx, startWares));
+}
+
 void GameLobbyController::SetNation(unsigned playerIdx, Nation newNation)
 {
     mainPlayer_.sendMsgAsync(new GameMessage_Player_Nation(playerIdx, newNation));

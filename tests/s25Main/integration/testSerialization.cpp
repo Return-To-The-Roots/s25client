@@ -72,6 +72,7 @@ struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
         world.GetPlayer(3).ps = PlayerState::AI; //-V807
         world.GetPlayer(3).aiInfo = AI::Info(AI::Type::Default, AI::Level::Easy);
         world.GetPlayer(3).name = "PlAI2";
+        world.GetPlayer(3).startWares = StartWares::VLow;
 
         ggs.speed = GameSpeed::VeryFast;
     }
@@ -369,12 +370,15 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
                 if(!loadPlayer.isUsed())
                     continue;
                 BOOST_TEST(loadPlayer.name == worldPlayer.name);
+                BOOST_TEST((loadPlayer.startWares == worldPlayer.startWares));
                 if(!loadPlayer.isHuman())
                 {
                     BOOST_TEST(loadPlayer.aiInfo.type == worldPlayer.aiInfo.type);
                     BOOST_TEST(loadPlayer.aiInfo.level == worldPlayer.aiInfo.level);
                 }
             }
+            BOOST_TEST((loadSave.GetPlayer(3).startWares == StartWares::VLow));
+            BOOST_TEST(!loadSave.GetPlayer(0).startWares);
             BOOST_TEST(loadSave.ggs.speed == ggs.speed);
         }
         if(what != SaveGameDataToLoad::All)
@@ -471,6 +475,7 @@ struct ReplayMapFixture
         players[3].ps = PlayerState::AI;
         players[3].aiInfo = AI::Info(rttr::test::randomEnum<AI::Type>(), rttr::test::randomEnum<AI::Level>());
         players[3].name = "PlAI2";
+        players[3].startWares = StartWares::ALot;
     }
 };
 
@@ -555,12 +560,14 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
             if(!loadPlayer.isUsed())
                 continue;
             BOOST_TEST(loadPlayer.name == worldPlayer.name);
+            BOOST_TEST((loadPlayer.startWares == worldPlayer.startWares));
             if(!loadPlayer.isHuman())
             {
                 BOOST_TEST(loadPlayer.aiInfo.type == worldPlayer.aiInfo.type);
                 BOOST_TEST(loadPlayer.aiInfo.level == worldPlayer.aiInfo.level);
             }
         }
+        BOOST_TEST((loadReplay.GetPlayer(3).startWares == StartWares::ALot));
         BOOST_TEST(loadReplay.ggs.speed == replay.ggs.speed);
         BOOST_TEST(loadReplay.getSeed() == replay.getSeed());
         BOOST_TEST(newMap.type == map.type);

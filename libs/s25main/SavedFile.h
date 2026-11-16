@@ -26,6 +26,8 @@ public:
     /// Return the maximum supported file format version
     virtual uint8_t GetLatestMinorVersion() const = 0;
     virtual uint8_t GetLatestMajorVersion() const = 0;
+    /// Version of the BasePlayerInfo data in a file of the loaded minor version
+    virtual int GetPlayerInfoVersion() const = 0;
 
     /// Return the file format version read from file - minor part
     uint8_t GetMinorVersion() const;

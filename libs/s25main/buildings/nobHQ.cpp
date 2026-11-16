@@ -319,7 +319,8 @@ GoodsAndPeopleCounts nobHQ::getStartInventory(StartWares setting)
 
 void nobHQ::addStartWares()
 {
-    AddToInventory(getStartInventory(world->GetGGS().startWares), true);
+    const GamePlayer& owner = world->GetPlayer(player);
+    AddToInventory(getStartInventory(owner.getStartWares(world->GetGGS().startWares)), true);
 }
 
 void nobHQ::DestroyBuilding()

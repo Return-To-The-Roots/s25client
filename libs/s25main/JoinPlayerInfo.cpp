@@ -36,6 +36,7 @@ void JoinPlayerInfo::FixSwappedSaveSlot(JoinPlayerInfo& other)
     swap(nation, other.nation);
     swap(color, other.color);
     swap(team, other.team);
+    swap(startWares, other.startWares);
 }
 
 void JoinPlayerInfo::SetAIName(unsigned playerId)

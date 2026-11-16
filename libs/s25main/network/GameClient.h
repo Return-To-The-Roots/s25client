@@ -13,6 +13,7 @@
 #include "factories/GameCommandFactory.h"
 #include "gameTypes/AIInfo.h"
 #include "gameTypes/ChatDestination.h"
+#include "gameTypes/GameSettingTypes.h"
 #include "gameTypes/MapDescription.h"
 #include "gameTypes/MapInfo.h"
 #include "gameTypes/Nation.h"
@@ -121,6 +122,7 @@ public:
     void Command_SetNation(Nation newNation);
     void Command_SetPortrait(unsigned portraitIndex);
     void Command_SetTeam(Team newTeam);
+    void Command_SetStartWares(std::optional<StartWares> startWares);
     void Command_SetColor(unsigned newColor);
     void Command_SetReady(bool isReady);
 
@@ -233,6 +235,7 @@ private:
     bool OnGameMessage(const GameMessage_Player_State& msg) override;
     bool OnGameMessage(const GameMessage_Player_Nation& msg) override;
     bool OnGameMessage(const GameMessage_Player_Team& msg) override;
+    bool OnGameMessage(const GameMessage_Player_StartWares& msg) override;
     bool OnGameMessage(const GameMessage_Player_Color& msg) override;
     bool OnGameMessage(const GameMessage_Player_Kicked& msg) override;
     bool OnGameMessage(const GameMessage_Player_Ping& msg) override;

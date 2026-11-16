@@ -1106,6 +1106,24 @@ bool GameServer::OnGameMessage(const GameMessage_Player_Team& msg)
     return true;
 }
 
+bool GameServer::OnGameMessage(const GameMessage_Player_StartWares& msg)
+{
+    if(state != ServerState::Config)
+    {
+        KickPlayer(msg.senderPlayerID, KickReason::InvalidMsg, __LINE__);
+        return true;
+    }
+    int playerID = GetTargetPlayer(msg);
+    if(playerID < 0)
+        return true;
+
+    playerInfos[playerID].startWares = msg.startWares;
+
+    SendToAll(GameMessage_Player_StartWares(playerID, msg.startWares));
+    PlayerDataChanged(playerID);
+    return true;
+}
+
 bool GameServer::OnGameMessage(const GameMessage_Player_Color& msg)
 {
     if(state != ServerState::Config)

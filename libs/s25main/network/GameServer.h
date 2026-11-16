@@ -91,6 +91,7 @@ private:
     bool OnGameMessage(const GameMessage_Player_Portrait& msg) override;
     bool OnGameMessage(const GameMessage_Player_Nation& msg) override;
     bool OnGameMessage(const GameMessage_Player_Team& msg) override;
+    bool OnGameMessage(const GameMessage_Player_StartWares& msg) override;
     bool OnGameMessage(const GameMessage_Player_Color& msg) override;
     bool OnGameMessage(const GameMessage_Player_Ready& msg) override;
     bool OnGameMessage(const GameMessage_Player_Swap& msg) override;

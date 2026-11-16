@@ -53,6 +53,7 @@ public:
     std::string GetSignature() const override;
     uint8_t GetLatestMinorVersion() const override;
     uint8_t GetLatestMajorVersion() const override;
+    int GetPlayerInfoVersion() const override;
 
     /// Opens the replay for recording
     bool StartRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo, unsigned randomSeed);

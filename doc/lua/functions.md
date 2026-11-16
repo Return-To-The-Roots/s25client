@@ -234,6 +234,9 @@ Change the players nation.
 **SetTeam(Team)**  
 Change the players team.
 
+**SetStartWares(startWares)**  
+Set the start wares (SWR_*) of this player overriding the global setting.
+
 **SetColor(color or colorIdx)**  
 Sets the players color by index into the [`PLAYER_COLORS`](https://github.com/Return-To-The-Roots/libutil/blob/master/libs/common/include/s25util/colors.h#L34-L46) array.
 You can also use custom colors by specifying an ARGB value with a non-zero alpha channel (`0xFF` is strongly recommended).

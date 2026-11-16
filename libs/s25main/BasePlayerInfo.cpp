@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "BasePlayerInfo.h"
+#include "enum_cast.hpp"
 #include "helpers/serializeEnums.h"
 #include "gameData/PortraitConsts.h"
 #include "s25util/colors.h"
@@ -31,6 +32,8 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, int serializedVersion, bool ligh
         nation = helpers::popEnum<Nation>(ser);
         color = ser.PopUnsignedInt();
         team = helpers::popEnum<Team>(ser);
+        if(serializedVersion >= 2)
+            startWares = popStartWares(ser);
     }
 }
 
@@ -46,6 +49,23 @@ void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
     helpers::pushEnum<uint8_t>(ser, nation);
     ser.PushUnsignedInt(color);
     helpers::pushEnum<uint8_t>(ser, team);
+    pushStartWares(ser, startWares);
+}
+
+void BasePlayerInfo::pushStartWares(Serializer& ser, const std::optional<StartWares>& startWares)
+{
+    // 0 = global setting, otherwise the value + 1
+    ser.PushUnsignedChar(startWares ? static_cast<uint8_t>(rttr::enum_cast(*startWares) + 1) : uint8_t(0));
+}
+
+std::optional<StartWares> BasePlayerInfo::popStartWares(Serializer& ser)
+{
+    const unsigned value = ser.PopUnsignedChar();
+    if(value == 0)
+        return std::nullopt;
+    if(value > helpers::MaxEnumValue_v<StartWares> + 1u)
+        throw helpers::makeOutOfRange(value, helpers::MaxEnumValue_v<StartWares> + 1u);
+    return static_cast<StartWares>(value - 1);
 }
 
 int BasePlayerInfo::GetColorIdx() const
@@ -67,5 +87,6 @@ int BasePlayerInfo::getCurrentVersion()
 {
     // 0: Initial
     // 1: Added portraitIndex
-    return 1;
+    // 2: Added startWares
+    return 2;
 }

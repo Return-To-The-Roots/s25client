@@ -5,9 +5,11 @@
 #pragma once
 
 #include "gameTypes/AIInfo.h"
+#include "gameTypes/GameSettingTypes.h"
 #include "gameTypes/Nation.h"
 #include "gameTypes/PlayerState.h"
 #include "gameTypes/TeamTypes.h"
+#include <optional>
 #include <string>
 
 class Serializer;
@@ -23,6 +25,8 @@ struct BasePlayerInfo
     /// Actual color (ARGB)
     unsigned color;
     Team team;
+    /// Start wares of this player. Empty: Use the global setting (GlobalGameSettings::startWares)
+    std::optional<StartWares> startWares;
 
     BasePlayerInfo();
     /// Deserialize data. If lightData is true, unused data is not read (e.g. unused slot -> Skip rest)
@@ -39,5 +43,11 @@ struct BasePlayerInfo
     int GetColorIdx() const;
     static int GetColorIdx(unsigned color);
 
+    /// Start wares of this player when the global setting is gameDefault
+    StartWares getStartWares(StartWares gameDefault) const { return startWares.value_or(gameDefault); }
+
     static int getCurrentVersion();
+
+    static void pushStartWares(Serializer& ser, const std::optional<StartWares>& startWares);
+    static std::optional<StartWares> popStartWares(Serializer& ser);
 };
