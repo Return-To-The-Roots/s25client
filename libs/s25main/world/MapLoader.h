@@ -40,6 +40,9 @@ class MapLoader
     static void CalcHarborPosNeighbors(World& world);
 
 public:
+    static constexpr unsigned MAX_GENERATED_HARBOR_SPOTS = 4;
+    static constexpr unsigned MIN_GENERATED_HARBOR_DISTANCE = 12;
+
     /// Construct a loader for the given world.
     explicit MapLoader(GameWorldBase& world);
     /// Load the map from the given archive, resetting previous state. Return false on error
@@ -61,7 +64,8 @@ public:
     static void InitShadows(World& world);
     static void SetMapExplored(World& world);
     static bool InitSeasAndHarbors(World& world,
-                                   const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
+                                   const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>(),
+                                   bool generateHarborSpots = false);
     /// Place the HQs on a loaded map and add starting wares if desired.
     /// Return false if there was an error.
     static bool PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions, bool addStartWares = true);
