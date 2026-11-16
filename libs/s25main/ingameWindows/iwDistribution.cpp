@@ -106,8 +106,8 @@ void iwDistribution::TransmitSettings()
     }
 }
 
-void iwDistribution::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/,
-                                              const unsigned short /*position*/)
+void iwDistribution::msgGroupProgressChange(const unsigned /*group_id*/, const unsigned /*ctrl_id*/,
+                                            const unsigned short /*position*/)
 {
     settings_changed = true;
 }
@@ -133,7 +133,7 @@ void iwDistribution::UpdateSettings()
     UpdateSettings(GAMECLIENT.visual_settings.distribution);
 }
 
-void iwDistribution::Msg_ButtonClick(const unsigned ctrl_id)
+void iwDistribution::msgButtonClick(const unsigned ctrl_id)
 {
     if(GAMECLIENT.IsReplayModeOn())
         return;

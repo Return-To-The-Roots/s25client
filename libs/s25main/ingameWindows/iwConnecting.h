@@ -23,7 +23,7 @@ public:
     boost::signals2::signal<void(ClientError)> onError;
 
     void Close() override;
-    void Msg_ButtonClick(unsigned ctrlId) override;
+    void msgButtonClick(unsigned ctrlId) override;
 
 private:
     ServerType serverType_;

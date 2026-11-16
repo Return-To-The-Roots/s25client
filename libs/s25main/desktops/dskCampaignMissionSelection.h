@@ -17,8 +17,8 @@ public:
 
 private:
     void UpdateMissionPage();
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void StartServer(unsigned missionIdx);
     void UpdateStateOfNavigationButtons();
     CreateServerInfo csi_;

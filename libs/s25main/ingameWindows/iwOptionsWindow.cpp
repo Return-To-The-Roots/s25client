@@ -141,7 +141,7 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
     AddTextButton(ID_btEndGame, curPos, optionSizeBig, TextureColor::Red1, _("End game"), NormalFont);
 }
 
-void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
+void iwOptionsWindow::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -185,7 +185,7 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position)
+void iwOptionsWindow::msgProgressChange(const unsigned ctrl_id, const unsigned short position)
 {
     switch(ctrl_id)
     {
@@ -200,7 +200,7 @@ void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned 
     }
 }
 
-void iwOptionsWindow::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
+void iwOptionsWindow::msgCheckboxChange(const unsigned ctrl_id, const bool checked)
 {
     RTTR_Assert(ctrl_id == ID_cpBirdSounds);
     SETTINGS.sound.birdsEnabled = checked;

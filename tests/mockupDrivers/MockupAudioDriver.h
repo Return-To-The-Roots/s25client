@@ -18,7 +18,7 @@ struct MockupSoundData
 
 MOCK_BASE_CLASS(MockAudioDriverCallback, IAudioDriverCallback)
 {
-    MOCK_NON_CONST_METHOD(Msg_MusicFinished, 0);
+    MOCK_NON_CONST_METHOD(msgMusicFinished, 0);
 };
 
 MOCK_BASE_CLASS(MockupAudioDriver, driver::AudioDriver)

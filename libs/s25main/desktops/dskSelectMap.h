@@ -29,11 +29,11 @@ private:
 
     void FillTable(const std::vector<boost::filesystem::path>& files);
 
-    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
-    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
-    void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgTableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void msgTableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
     void LC_Status_Error(const std::string& error) override;
 

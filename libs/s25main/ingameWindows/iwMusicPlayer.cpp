@@ -65,17 +65,17 @@ iwMusicPlayer::InputWindow::InputWindow(iwMusicPlayer& playerWnd, const unsigned
     AddTextButton(ID_btAbort, DrawPoint(130, 60), Extent(100, 22), TextureColor::Red1, _("Abort"), NormalFont);
 }
 
-void iwMusicPlayer::InputWindow::Msg_ButtonClick(const unsigned ctrl_id)
+void iwMusicPlayer::InputWindow::msgButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_btOk)
-        playerWnd_.Msg_Input(win_id, GetCtrl<ctrlEdit>(ID_edtName)->GetText());
+        playerWnd_.msgInput(win_id, GetCtrl<ctrlEdit>(ID_edtName)->GetText());
 
     Close();
 }
 
-void iwMusicPlayer::InputWindow::Msg_EditEnter(const unsigned /*ctrl_id*/)
+void iwMusicPlayer::InputWindow::msgEditEnter(const unsigned /*ctrl_id*/)
 {
-    Msg_ButtonClick(ID_btOk);
+    msgButtonClick(ID_btOk);
 }
 
 iwMusicPlayer::iwMusicPlayer()
@@ -124,7 +124,7 @@ iwMusicPlayer::iwMusicPlayer()
     if(!cbPlayList->GetSelection() && cbPlayList->GetNumItems() > 0u)
     {
         cbPlayList->SetSelection(0u);
-        Msg_ComboSelectItem(ID_cbPlaylist, 0u);
+        msgComboSelectItem(ID_cbPlaylist, 0u);
     }
 }
 
@@ -157,7 +157,7 @@ void iwMusicPlayer::Close()
     }
 }
 
-void iwMusicPlayer::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
+void iwMusicPlayer::msgComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
     RTTR_Assert(ctrl_id == ID_cbPlaylist);
     Playlist pl;
@@ -174,7 +174,7 @@ void iwMusicPlayer::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned s
     UpdateSaveChangeButtonsState();
 }
 
-void iwMusicPlayer::Msg_ListChooseItem(const unsigned /*ctrl_id*/, const unsigned selection)
+void iwMusicPlayer::msgListChooseItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
     // (Re)create playlist with selected song as start song set in musicplayer
     Playlist pl = MakePlaylist();
@@ -252,7 +252,7 @@ Playlist iwMusicPlayer::MakePlaylist()
     return Playlist(std::move(songs), GetRepeats(), GetRandomPlayback());
 }
 
-void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
+void iwMusicPlayer::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -349,7 +349,7 @@ void iwMusicPlayer::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwMusicPlayer::Msg_Input(const unsigned win_id, const std::string& msg)
+void iwMusicPlayer::msgInput(const unsigned win_id, const std::string& msg)
 {
     switch(win_id)
     {

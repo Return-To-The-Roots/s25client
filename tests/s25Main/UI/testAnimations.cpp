@@ -668,10 +668,10 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
       dsk->AddTextButton(1, DrawPoint(130, bt->GetPos().y), bt->GetSize(), TextureColor::Red1, "", NormalFont);
     dsk->GetAnimationManager().addAnimation(
       new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RepeatType::None));
-    dsk->Msg_PaintBefore();
+    dsk->msgPaintBefore();
     // Pass the animation
     video->tickCount_ += 1100;
-    dsk->Msg_PaintBefore();
+    dsk->msgPaintBefore();
     BOOST_TEST_REQUIRE(bt->GetPos() == btReference->GetPos());
 
     // Restart
@@ -679,12 +679,12 @@ BOOST_AUTO_TEST_CASE(MoveAniScale)
     dsk->GetAnimationManager().addAnimation(
       new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RepeatType::None));
     video->tickCount_ += 1;
-    dsk->Msg_PaintBefore();
+    dsk->msgPaintBefore();
     // Resize the screen and test that the final position got updated too
     VIDEODRIVER.ResizeScreen(VideoMode(1024, 768), DisplayMode::Windowed);
     // Pass the animation
     video->tickCount_ += 1100;
-    dsk->Msg_PaintBefore();
+    dsk->msgPaintBefore();
     BOOST_TEST_REQUIRE(bt->GetPos() == btReference->GetPos());
 }
 

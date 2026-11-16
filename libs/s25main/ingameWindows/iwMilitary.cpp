@@ -97,7 +97,7 @@ void iwMilitary::TransmitSettings()
     }
 }
 
-void iwMilitary::Msg_ProgressChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
+void iwMilitary::msgProgressChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
     settings_changed = true;
 }
@@ -115,7 +115,7 @@ void iwMilitary::UpdateSettings()
     UpdateSettings(GAMECLIENT.visual_settings.military_settings);
 }
 
-void iwMilitary::Msg_ButtonClick(const unsigned ctrl_id)
+void iwMilitary::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

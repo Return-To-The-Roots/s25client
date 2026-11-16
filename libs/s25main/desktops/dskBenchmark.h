@@ -47,8 +47,8 @@ public:
     dskBenchmark();
     ~dskBenchmark();
 
-    bool Msg_KeyDown(const KeyEvent& ke) override;
-    void Msg_PaintAfter() override;
+    bool msgKeyDown(const KeyEvent& ke) override;
+    void msgPaintAfter() override;
     void SetActive(bool activate) override;
 
 private:

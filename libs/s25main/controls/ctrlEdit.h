@@ -52,8 +52,8 @@ public:
 
     void Resize(const Extent& newSize) override;
 
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_KeyDown(const KeyEvent& ke) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgKeyDown(const KeyEvent& ke) override;
 
 protected:
     void Draw_() override;

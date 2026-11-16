@@ -98,10 +98,10 @@ iwBaseWarehouse::~iwBaseWarehouse()
         wh->RemoveListener(this);
 }
 
-void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
+void iwBaseWarehouse::msgGroupButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     if(group_id != warePageID && group_id != peoplePageID)
-        iwWares::Msg_Group_ButtonClick(group_id, ctrl_id);
+        iwWares::msgGroupButtonClick(group_id, ctrl_id);
     else
     {
         if(GAMECLIENT.IsReplayModeOn())
@@ -134,7 +134,7 @@ void iwBaseWarehouse::Msg_Group_ButtonClick(const unsigned group_id, const unsig
     }
 }
 
-void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
+void iwBaseWarehouse::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -255,7 +255,7 @@ void iwBaseWarehouse::Msg_ButtonClick(const unsigned ctrl_id)
         break;
         default: // an Basis weiterleiten
         {
-            iwWares::Msg_ButtonClick(ctrl_id);
+            iwWares::msgButtonClick(ctrl_id);
         }
         break;
     }

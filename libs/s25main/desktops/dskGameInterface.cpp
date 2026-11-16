@@ -335,7 +335,7 @@ void dskGameInterface::Resize(const Extent& newSize)
     gwv.Resize(newSize);
 }
 
-void dskGameInterface::Msg_ButtonClick(const unsigned ctrl_id)
+void dskGameInterface::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -352,9 +352,9 @@ void dskGameInterface::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void dskGameInterface::Msg_PaintBefore()
+void dskGameInterface::msgPaintBefore()
 {
-    Desktop::Msg_PaintBefore();
+    Desktop::msgPaintBefore();
 
     // Spiel ausführen
     Run();
@@ -383,9 +383,9 @@ void dskGameInterface::Msg_PaintBefore()
       DrawPoint((screenSize.x - imgButtonBar.getWidth()) / 2, screenSize.y - imgButtonBar.getHeight()));
 }
 
-void dskGameInterface::Msg_PaintAfter()
+void dskGameInterface::msgPaintAfter()
 {
-    Desktop::Msg_PaintAfter();
+    Desktop::msgPaintAfter();
 
     const GameWorldBase& world = worldViewer.GetWorld();
 
@@ -704,7 +704,7 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
+bool dskGameInterface::msgLeftDown(const MouseCoords& mc)
 {
     const glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
     const auto btOrig = DrawPoint(VIDEODRIVER.GetRenderSize().x / 2 - imgButtonBar.getWidth() / 2,
@@ -718,7 +718,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
         // Start scrolling also on Ctrl + left click
         if(VIDEODRIVER.GetModKeyState().ctrl)
         {
-            Msg_RightDown(mc);
+            msgRightDown(mc);
             return true;
         } else if(isScrolling)
             StopScrolling();
@@ -733,7 +733,7 @@ bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
+bool dskGameInterface::msgLeftUp(const MouseCoords& mc)
 {
     if(isScrolling)
     {
@@ -749,12 +749,12 @@ bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
     return false;
 }
 
-bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
+bool dskGameInterface::msgMouseMove(const MouseCoords& mc)
 {
     if(!isScrolling)
     {
         if(mc.num_tfingers == 1)
-            Msg_RightDown(mc);
+            msgRightDown(mc);
         else
             return false;
     }
@@ -781,7 +781,7 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
+bool dskGameInterface::msgRightDown(const MouseCoords& mc)
 {
     if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
         StartScrolling(gwv.ViewPosToMap(mc.pos));
@@ -790,14 +790,14 @@ bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
+bool dskGameInterface::msgRightUp(const MouseCoords& /*mc*/) //-V524
 {
     if(isScrolling)
         StopScrolling();
     return false;
 }
 
-bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
+bool dskGameInterface::msgKeyDown(const KeyEvent& ke)
 {
     cheatCommandTracker_.onKeyEvent(ke);
 
@@ -955,12 +955,12 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     return false;
 }
 
-bool dskGameInterface::Msg_WheelUp(const MouseCoords&)
+bool dskGameInterface::msgWheelUp(const MouseCoords&)
 {
     WheelZoom(ZOOM_WHEEL_INCREMENT);
     return true;
 }
-bool dskGameInterface::Msg_WheelDown(const MouseCoords&)
+bool dskGameInterface::msgWheelDown(const MouseCoords&)
 {
     WheelZoom(-ZOOM_WHEEL_INCREMENT);
     return true;
@@ -1173,7 +1173,7 @@ void dskGameInterface::GI_BuildRoad()
     }
 }
 
-void dskGameInterface::Msg_WindowClosed(IngameWindow& wnd)
+void dskGameInterface::msgWindowClosed(IngameWindow& wnd)
 {
     if(actionwindow == &wnd)
         actionwindow = nullptr;

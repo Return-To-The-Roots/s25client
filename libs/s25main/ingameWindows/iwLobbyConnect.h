@@ -19,11 +19,11 @@ public:
     void LC_Status_Error(const std::string& error) override;
 
 protected:
-    void Msg_EditChange(unsigned ctrl_id) override;
-    void Msg_EditEnter(unsigned ctrl_id) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
-    bool Msg_KeyDown(const KeyEvent&) override;
+    void msgEditChange(unsigned ctrl_id) override;
+    void msgEditEnter(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    bool msgKeyDown(const KeyEvent&) override;
 
 private:
     void SetText(const std::string& text, unsigned color, bool button);

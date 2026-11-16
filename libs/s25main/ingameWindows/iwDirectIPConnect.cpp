@@ -69,13 +69,13 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType serverType)
     port->SetText(SETTINGS.server.localPort);
 }
 
-void iwDirectIPConnect::Msg_EditChange(const unsigned /*ctrl_id*/)
+void iwDirectIPConnect::msgEditChange(const unsigned /*ctrl_id*/)
 {
     // Reset status
     SetStatus("", COLOR_RED);
 }
 
-void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
+void iwDirectIPConnect::msgEditEnter(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -85,7 +85,7 @@ void iwDirectIPConnect::Msg_EditEnter(const unsigned ctrl_id)
     }
 }
 
-void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
+void iwDirectIPConnect::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -131,7 +131,7 @@ void iwDirectIPConnect::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwDirectIPConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void iwDirectIPConnect::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     if(ctrl_id == ID_grpIpv6)
         SETTINGS.server.ipv6 = (selection == 1);
@@ -155,5 +155,5 @@ void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned shor
     if(hasPwd)
         GetCtrl<ctrlEdit>(ID_edtPw)->SetFocus(true);
     else
-        Msg_ButtonClick(ID_btConnect);
+        msgButtonClick(ID_btConnect);
 }

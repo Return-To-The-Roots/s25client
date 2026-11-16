@@ -226,7 +226,7 @@ void iwMilitaryBuilding::DrawContent()
     }
 }
 
-void iwMilitaryBuilding::Msg_ButtonClick(const unsigned ctrl_id)
+void iwMilitaryBuilding::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

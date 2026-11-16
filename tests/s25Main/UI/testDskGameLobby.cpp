@@ -71,7 +71,7 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
         RTTR_REQUIRE_LOG_CONTAINS("<TestName>", false);
         li->LC_Chat("OtherPlayer", "Test");
         RTTR_REQUIRE_LOG_CONTAINS("<OtherPlayer>", false);
-        desktop->Msg_OptionGroupChange(chatTab.front()->GetID(), chatBts[i % 2]->GetID());
+        desktop->msgOptionGroupChange(chatTab.front()->GetID(), chatBts[i % 2]->GetID());
     }
     // Free desktop etc to trigger mock verification
     WINDOWMANAGER.CleanUp();

@@ -29,15 +29,15 @@ public:
     void SetText(unsigned item, const std::string& text) { GetCtrl<ctrlList>(0)->SetItemText(item, text); }
     std::optional<std::string> GetSelectedText() const;
 
-    void Msg_PaintAfter() override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_RightDown(const MouseCoords& mc) override;
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
+    void msgPaintAfter() override;
+    bool msgMouseMove(const MouseCoords& mc) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgRightDown(const MouseCoords& mc) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
 
-    void Msg_ListSelectItem(unsigned ctrl_id, int selection) override;
+    void msgListSelectItem(unsigned ctrl_id, int selection) override;
 
 protected:
     void Draw_() override;

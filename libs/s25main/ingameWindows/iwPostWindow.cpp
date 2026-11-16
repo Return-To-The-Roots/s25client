@@ -109,7 +109,7 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
     DisplayPostMessage();
 }
 
-void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
+void iwPostWindow::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -209,9 +209,9 @@ void iwPostWindow::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwPostWindow::Msg_PaintBefore()
+void iwPostWindow::msgPaintBefore()
 {
-    IngameWindow::Msg_PaintBefore();
+    IngameWindow::msgPaintBefore();
     ValidateMessages();
     if(lastHasMissionGoal != !postBox.GetCurrentMissionGoal().empty())
     {
@@ -223,7 +223,7 @@ void iwPostWindow::Msg_PaintBefore()
 /**
  *  React on keypress
  */
-bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
+bool iwPostWindow::msgKeyDown(const KeyEvent& ke)
 {
     switch(ke.kt)
     {
@@ -232,20 +232,20 @@ bool iwPostWindow::Msg_KeyDown(const KeyEvent& ke)
 #ifdef __APPLE__
         case KeyType::Backspace: // Macs usually have no delete key on small keyboards, so backspace is more convenient
 #endif
-            Msg_ButtonClick(ID_DELETE);
+            msgButtonClick(ID_DELETE);
             return true;
     }
 
     switch(ke.c)
     {
         case '+': // Next message
-            Msg_ButtonClick(ID_GO_FWD);
+            msgButtonClick(ID_GO_FWD);
             return true;
         case '-': // Previous message
-            Msg_ButtonClick(ID_GO_BACK);
+            msgButtonClick(ID_GO_BACK);
             return true;
         case 'g': // Go to site of event
-            Msg_ButtonClick(ID_GOTO);
+            msgButtonClick(ID_GOTO);
             return true;
     }
 

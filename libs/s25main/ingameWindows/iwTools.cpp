@@ -140,9 +140,9 @@ void iwTools::UpdateTexts()
     }
 }
 
-void iwTools::Msg_PaintBefore()
+void iwTools::msgPaintBefore()
 {
-    IngameWindow::Msg_PaintBefore();
+    IngameWindow::msgPaintBefore();
 
     if(shouldUpdateTexts)
     {
@@ -151,7 +151,7 @@ void iwTools::Msg_PaintBefore()
     }
 }
 
-void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
+void iwTools::msgButtonClick(const unsigned ctrl_id)
 {
     if(isReplay)
         return;
@@ -197,7 +197,7 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
         }
 }
 
-void iwTools::Msg_ProgressChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
+void iwTools::msgProgressChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
     // Einstellungen wurden geändert
     settings_changed = true;

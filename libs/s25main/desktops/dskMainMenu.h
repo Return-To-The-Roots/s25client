@@ -12,8 +12,8 @@ class dskMainMenu : public dskMenuBase
 public:
     dskMainMenu();
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_Timer(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgTimer(unsigned ctrl_id) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
 };

@@ -45,16 +45,16 @@ private:
     void ChangePing(unsigned playerId);
     void ChangeColor(unsigned player, unsigned color);
 
-    void Msg_PaintBefore() override;
-    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
-    void Msg_Group_CheckboxChange(unsigned group_id, unsigned ctrl_id, bool checked) override;
-    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_EditEnter(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
-    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    void msgPaintBefore() override;
+    void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void msgGroupCheckboxChange(unsigned group_id, unsigned ctrl_id, bool checked) override;
+    void msgGroupComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgEditEnter(unsigned ctrl_id) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+    void msgCheckboxChange(unsigned ctrl_id, bool checked) override;
+    void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
 
     void CI_Error(ClientError ce) override;
 

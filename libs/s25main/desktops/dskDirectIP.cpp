@@ -33,7 +33,7 @@ dskDirectIP::dskDirectIP()
     AddImage(ID_imgLogo, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }
 
-void dskDirectIP::Msg_ButtonClick(const unsigned ctrl_id)
+void dskDirectIP::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

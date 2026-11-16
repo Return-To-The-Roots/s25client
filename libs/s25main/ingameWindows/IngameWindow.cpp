@@ -191,7 +191,7 @@ void IngameWindow::SetPinned(bool pinned)
         windowSettings_->isPinned = isPinned_;
 }
 
-bool IngameWindow::Msg_LeftDown(const MouseCoords& mc)
+bool IngameWindow::msgLeftDown(const MouseCoords& mc)
 {
     for(const auto btn : helpers::enumRange<IwButton>())
     {
@@ -208,7 +208,7 @@ bool IngameWindow::Msg_LeftDown(const MouseCoords& mc)
     return false;
 }
 
-bool IngameWindow::Msg_LeftUp(const MouseCoords& mc)
+bool IngameWindow::msgLeftUp(const MouseCoords& mc)
 {
     // If we handled the msg event. Don't return yet in case touch dblclick triggered dragging
     const bool handled = StopDragging();
@@ -262,18 +262,18 @@ bool IngameWindow::Msg_LeftUp(const MouseCoords& mc)
     return handled;
 }
 
-bool IngameWindow::Msg_MiddleDown(const MouseCoords& mc)
+bool IngameWindow::msgMiddleDown(const MouseCoords& mc)
 {
     StartDragging(mc.pos);
     return true;
 }
 
-bool IngameWindow::Msg_MiddleUp(const MouseCoords&)
+bool IngameWindow::msgMiddleUp(const MouseCoords&)
 {
     return StopDragging();
 }
 
-bool IngameWindow::Msg_MouseMove(const MouseCoords& mc)
+bool IngameWindow::msgMouseMove(const MouseCoords& mc)
 {
     if(isMoving)
     {

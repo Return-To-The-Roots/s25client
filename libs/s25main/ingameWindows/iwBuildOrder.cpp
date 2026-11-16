@@ -109,7 +109,7 @@ void iwBuildOrder::TransmitSettings()
     }
 }
 
-void iwBuildOrder::Msg_ListSelectItem(const unsigned ctrl_id, const int selection)
+void iwBuildOrder::msgListSelectItem(const unsigned ctrl_id, const int selection)
 {
     if(GAMECLIENT.IsReplayModeOn())
         return;
@@ -126,7 +126,7 @@ void iwBuildOrder::Msg_ListSelectItem(const unsigned ctrl_id, const int selectio
     }
 }
 
-void iwBuildOrder::Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection)
+void iwBuildOrder::msgComboSelectItem(unsigned ctrl_id, unsigned selection)
 {
     if(ctrl_id == 6)
     {
@@ -135,7 +135,7 @@ void iwBuildOrder::Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection)
     }
 }
 
-void iwBuildOrder::Msg_ButtonClick(const unsigned ctrl_id)
+void iwBuildOrder::msgButtonClick(const unsigned ctrl_id)
 {
     if(GAMECLIENT.IsReplayModeOn())
         return;

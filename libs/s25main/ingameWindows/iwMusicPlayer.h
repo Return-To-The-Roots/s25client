@@ -21,8 +21,8 @@ class iwMusicPlayer final : public IngameWindow
     public:
         InputWindow(iwMusicPlayer& playerWnd, unsigned win_id, const std::string& title);
 
-        void Msg_ButtonClick(unsigned ctrl_id) override;
-        void Msg_EditEnter(unsigned ctrl_id) override;
+        void msgButtonClick(unsigned ctrl_id) override;
+        void msgEditEnter(unsigned ctrl_id) override;
     };
 
     /// Set to true if anything changed to (re)start music on close
@@ -50,9 +50,9 @@ private:
     void UpdateSaveChangeButtonsState();
     Playlist MakePlaylist();
 
-    void Msg_ListChooseItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgListChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 
-    void Msg_Input(unsigned win_id, const std::string& msg);
+    void msgInput(unsigned win_id, const std::string& msg);
 };

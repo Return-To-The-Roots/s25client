@@ -23,8 +23,8 @@ MOCK_BASE_CLASS(TestWindow, Window)
 {
 public:
     TestWindow() : Window(nullptr, randomValue<unsigned>(), DrawPoint(0, 0)) {}
-    MOCK_METHOD(Msg_ComboSelectItem, 2)
-    MOCK_METHOD(Msg_ListSelectItem, 2)
+    MOCK_METHOD(msgComboSelectItem, 2)
+    MOCK_METHOD(msgListSelectItem, 2)
 };
 } // namespace
 
@@ -90,22 +90,22 @@ BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
                    + Position(randomValue(0u, cb->GetSize().x - 1u), randomValue(0u, cb->GetSize().y - 1u))};
     for(unsigned i = 0; i < 3u; i++)
     {
-        MOCK_EXPECT(wnd.Msg_ComboSelectItem).once().with(cb->GetID(), static_cast<unsigned>(i)).in(s);
-        cb->Msg_WheelDown(mc);
+        MOCK_EXPECT(wnd.msgComboSelectItem).once().with(cb->GetID(), static_cast<unsigned>(i)).in(s);
+        cb->msgWheelDown(mc);
         REQUIRE(cb->GetSelection() == i);
     }
     // 4th time does nothing
-    cb->Msg_WheelDown(mc);
+    cb->msgWheelDown(mc);
     REQUIRE(cb->GetSelection() == 2u);
     // Same but up
     for(int i = 1; i >= 0; i--)
     {
-        MOCK_EXPECT(wnd.Msg_ComboSelectItem).once().with(cb->GetID(), static_cast<unsigned>(i)).in(s);
-        cb->Msg_WheelUp(mc);
+        MOCK_EXPECT(wnd.msgComboSelectItem).once().with(cb->GetID(), static_cast<unsigned>(i)).in(s);
+        cb->msgWheelUp(mc);
         REQUIRE(cb->GetSelection() == static_cast<unsigned>(i));
     }
     // next time does nothing
-    cb->Msg_WheelUp(mc);
+    cb->msgWheelUp(mc);
     REQUIRE(cb->GetSelection() == 0u);
 }
 
@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(ListRemove)
         REQUIRE(!list->GetSelection());
     }
     mock::sequence s;
-    MOCK_EXPECT(wnd.Msg_ListSelectItem).once().with(list->GetID(), 4).in(s);
+    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->GetID(), 4).in(s);
     list->SetSelection(4);
     REQUIRE(list->GetSelection() == 4u);
     REQUIRE(list->GetSelItemText() == lines[4]);
@@ -149,15 +149,15 @@ BOOST_AUTO_TEST_CASE(ListRemove)
     // Remove selection -> Next selected
     REQUIRE(list->GetNumLines() == 5);
     REQUIRE(list->GetSelection() == 0u);
-    MOCK_EXPECT(wnd.Msg_ListSelectItem).once().with(list->GetID(), 0).in(s);
+    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->GetID(), 0).in(s);
     list->Remove(0);
     REQUIRE(list->GetNumLines() == 4);
     REQUIRE(list->GetSelection() == 0u);
     REQUIRE(list->GetSelItemText() == lines[1]);
     lines.erase(lines.begin());
     // Also for middle pos
-    MOCK_EXPECT(wnd.Msg_ListSelectItem).once().with(list->GetID(), 2).in(s);
-    MOCK_EXPECT(wnd.Msg_ListSelectItem).once().with(list->GetID(), 2).in(s);
+    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->GetID(), 2).in(s);
+    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->GetID(), 2).in(s);
     list->SetSelection(2);
     list->Remove(2);
     REQUIRE(list->GetNumLines() == 3);
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(ListRemove)
     lines.erase(lines.begin() + 2);
     // For last pos previous is selected
     list->SetSelection(list->GetNumLines() - 1);
-    MOCK_EXPECT(wnd.Msg_ListSelectItem).once().with(list->GetID(), 1).in(s);
+    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->GetID(), 1).in(s);
     list->Remove(list->GetNumLines() - 1);
     REQUIRE(list->GetNumLines() == 2);
     REQUIRE(list->GetSelection() == 1u);

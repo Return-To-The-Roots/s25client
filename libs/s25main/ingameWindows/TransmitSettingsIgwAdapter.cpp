@@ -35,13 +35,13 @@ void TransmitSettingsIgwAdapter::Close()
     }
 }
 
-void TransmitSettingsIgwAdapter::Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr)
+void TransmitSettingsIgwAdapter::msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr)
 {
     if(msgbox_id == firstCtrlID && mbr == MsgboxResult::Ok)
         IngameWindow::Close();
 }
 
-void TransmitSettingsIgwAdapter::Msg_Timer(const unsigned /*ctrl_id*/)
+void TransmitSettingsIgwAdapter::msgTimer(const unsigned /*ctrl_id*/)
 {
     if(GAMECLIENT.IsReplayModeOn())
         UpdateSettings();

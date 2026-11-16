@@ -135,16 +135,16 @@ void ctrlMultiline::SetScrollBarAllowed(bool allowed)
     }
 }
 
-bool ctrlMultiline::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlMultiline::msgLeftDown(const MouseCoords& mc)
 {
-    return GetCtrl<Window>(0)->Msg_LeftDown(mc);
+    return GetCtrl<Window>(0)->msgLeftDown(mc);
 }
 
-bool ctrlMultiline::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlMultiline::msgLeftUp(const MouseCoords& mc)
 {
-    return GetCtrl<Window>(0)->Msg_LeftUp(mc);
+    return GetCtrl<Window>(0)->msgLeftUp(mc);
 }
-bool ctrlMultiline::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlMultiline::msgWheelUp(const MouseCoords& mc)
 {
     const Extent padding(PADDING, PADDING);
     if(IsPointInRect(mc.pos, Rect(GetDrawPos() + DrawPoint(padding), GetSize() - padding * 2u)))
@@ -156,7 +156,7 @@ bool ctrlMultiline::Msg_WheelUp(const MouseCoords& mc)
         return false;
 }
 
-bool ctrlMultiline::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlMultiline::msgWheelDown(const MouseCoords& mc)
 {
     const Extent padding(PADDING, PADDING);
     if(IsPointInRect(mc.pos, Rect(GetDrawPos() + DrawPoint(padding), GetSize() - padding * 2u)))
@@ -168,9 +168,9 @@ bool ctrlMultiline::Msg_WheelDown(const MouseCoords& mc)
         return false;
 }
 
-bool ctrlMultiline::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlMultiline::msgMouseMove(const MouseCoords& mc)
 {
-    return GetCtrl<Window>(0)->Msg_MouseMove(mc);
+    return GetCtrl<Window>(0)->msgMouseMove(mc);
 }
 
 void ctrlMultiline::Resize(const Extent& newSize)

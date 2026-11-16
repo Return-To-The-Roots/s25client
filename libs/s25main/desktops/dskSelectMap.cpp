@@ -140,7 +140,7 @@ dskSelectMap::~dskSelectMap()
     LOBBYCLIENT.RemoveListener(this);
 }
 
-void dskSelectMap::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
+void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
     auto* table = GetCtrl<ctrlTable>(1);
 
@@ -199,7 +199,7 @@ static std::unique_ptr<libsiedler2::ArchivItem_Map> loadAndVerifyMap(const std::
 /**
  *  Occurs when user changes the selection in the table of maps.
  */
-void dskSelectMap::Msg_TableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
+void dskSelectMap::msgTableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
     if(ctrl_id != 1)
         return;
@@ -256,7 +256,7 @@ void dskSelectMap::GoBack() const
         WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
 }
 
-void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
+void dskSelectMap::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -296,7 +296,7 @@ void dskSelectMap::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void dskSelectMap::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
+void dskSelectMap::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
     // Doppelklick auf bestimmte Map -> weiter
     StartServer();
@@ -367,7 +367,7 @@ void dskSelectMap::StartServer()
     }
 }
 
-void dskSelectMap::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
+void dskSelectMap::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
     if(msgbox_id == ID_msgBoxError)
     {

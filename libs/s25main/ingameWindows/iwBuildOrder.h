@@ -26,9 +26,9 @@ private:
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
     void TransmitSettings() override;
 
-    void Msg_ListSelectItem(unsigned ctrl_id, int selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+    void msgListSelectItem(unsigned ctrl_id, int selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
 
     void fillBuildOrder(const BuildOrders& build_order);
 };

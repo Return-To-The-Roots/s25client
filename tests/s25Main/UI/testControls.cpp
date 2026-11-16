@@ -170,9 +170,9 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
         // Activate
         MouseCoords mc(edt2.GetPos());
         mc.ldown = true;
-        edt2.Msg_LeftDown(mc);
-        edt2.Msg_PaintAfter();
-        edt2.Msg_KeyDown(KeyEvent(c));
+        edt2.msgLeftDown(mc);
+        edt2.msgPaintAfter();
+        edt2.msgKeyDown(KeyEvent(c));
         // Remove chars from front until in size
         auto itFirst = curChars.begin();
         while(font->getWidth(curText) > allowedWidth)
@@ -185,20 +185,20 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     // Check navigating of cursor
     MouseCoords mc(edt2.GetPos());
     mc.ldown = true;
-    edt.Msg_LeftDown(mc); // Activate
-    edt.Msg_PaintAfter();
+    edt.msgLeftDown(mc); // Activate
+    edt.msgPaintAfter();
     int curCursorPos = curChars.size(); // Current cursor should be at end
     while(!curChars.empty())
     {
         int moveOffset = rttr::test::randomValue<int>(-curCursorPos - 1,
                                                       curChars.size() - curCursorPos + 1); //+-1 to check for "overrun"
         for(; moveOffset < 0; ++moveOffset, --curCursorPos)
-            edt.Msg_KeyDown(KeyEvent(KeyType::Left));
+            edt.msgKeyDown(KeyEvent(KeyType::Left));
         for(; moveOffset > 0; --moveOffset, ++curCursorPos)
-            edt.Msg_KeyDown(KeyEvent(KeyType::Right));
+            edt.msgKeyDown(KeyEvent(KeyType::Right));
         curCursorPos = helpers::clamp(curCursorPos, 0, static_cast<int>(curChars.size()));
         // Erase one char (currently only good way to check where the cursor is
-        edt.Msg_KeyDown(KeyEvent(KeyType::Backspace));
+        edt.msgKeyDown(KeyEvent(KeyType::Backspace));
         if(curCursorPos > 0)
         {
             curChars.erase(curChars.begin() + --curCursorPos);
@@ -224,18 +224,18 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     do
     {
         BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
-        edt.Msg_KeyDown(KeyEvent(KeyType::Left));
+        edt.msgKeyDown(KeyEvent(KeyType::Left));
         --curCursorPos;
     } while(curCursorPos > 5);
     while(curCursorPos-- >= 0)
     {
         BOOST_TEST_REQUIRE(txt->GetText() == curText); // Trailing chars are removed by font rendering
-        edt.Msg_KeyDown(KeyEvent(KeyType::Left));
+        edt.msgKeyDown(KeyEvent(KeyType::Left));
     }
     // Moving fully right shows txt again
     curCursorPos = 0;
     while(static_cast<unsigned>(curCursorPos++) < curChars.size())
-        edt.Msg_KeyDown(KeyEvent(KeyType::Right));
+        edt.msgKeyDown(KeyEvent(KeyType::Right));
     BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
 }
 
@@ -248,15 +248,15 @@ BOOST_FIXTURE_TEST_CASE(EditFileNameOnlyFiltersInvalidChars, uiHelper::Fixture)
 
     MouseCoords mc(edt.GetPos());
     mc.ldown = true;
-    edt.Msg_LeftDown(mc); // give focus
+    edt.msgLeftDown(mc); // give focus
 
     for(char32_t c : {U'a', U'B', U'1', U'2', U' '}) // valid chars
-        edt.Msg_KeyDown(KeyEvent(c));
+        edt.msgKeyDown(KeyEvent(c));
     BOOST_TEST(edt.GetText() == "aB12 "); // all accepted
 
     for(char32_t c : {U'c', U'<', U'D', U'>', U'-', U':', U'"', U'3', U'/', U'\\', U'4', U'|', U'?', U'!',
                       U'*'}) // mixed valid and invalid chars
-        edt.Msg_KeyDown(KeyEvent(c));
+        edt.msgKeyDown(KeyEvent(c));
     BOOST_TEST(edt.GetText() == "aB12 cD-34!"); // only valid accepted
 
     edt.SetText("a/B\\1");
@@ -335,13 +335,13 @@ BOOST_FIXTURE_TEST_CASE(EditSpaceKeyDoesNotDuplicateChar, uiHelper::Fixture)
     ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get());
     MouseCoords mc(edt.GetPos());
     mc.ldown = true;
-    edt.Msg_LeftDown(mc);
+    edt.msgLeftDown(mc);
 
     // A real space press fires both of these on SDL2 (SDL_KEYDOWN+SDL_TEXTINPUT) and WinAPI
     // (WM_KEYDOWN+WM_CHAR) for one physical key press.
-    edt.Msg_KeyDown(KeyEvent(KeyType::Space)); // OS "key down" event - must not insert anything
-    edt.Msg_KeyDown(KeyEvent(U' '));           // OS "char/text-input" event - inserts the space
-    BOOST_TEST(edt.GetText() == " ");          // exactly one space, not two
+    edt.msgKeyDown(KeyEvent(KeyType::Space)); // OS "key down" event - must not insert anything
+    edt.msgKeyDown(KeyEvent(U' '));           // OS "char/text-input" event - inserts the space
+    BOOST_TEST(edt.GetText() == " ");         // exactly one space, not two
 }
 
 BOOST_FIXTURE_TEST_CASE(EditMaxLengthTruncatesInput, uiHelper::Fixture)
@@ -350,10 +350,10 @@ BOOST_FIXTURE_TEST_CASE(EditMaxLengthTruncatesInput, uiHelper::Fixture)
     ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get(), 3 /*maxlength*/);
     MouseCoords mc(edt.GetPos());
     mc.ldown = true;
-    edt.Msg_LeftDown(mc);
+    edt.msgLeftDown(mc);
 
     for(char32_t c : {U'a', U'b', U'c', U'd', U'e'}) // 5 chars typed, cap is 3
-        edt.Msg_KeyDown(KeyEvent(c));
+        edt.msgKeyDown(KeyEvent(c));
     BOOST_TEST(edt.GetText() == "abc"); // input beyond maxLength is dropped
 
     edt.SetText("abcde"); // input beyond maxLength is dropped

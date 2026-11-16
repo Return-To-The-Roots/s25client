@@ -135,7 +135,7 @@ void iwPlayReplay::PopulateTable()
     loadedOnce = true;
 }
 
-void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
+void iwPlayReplay::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -162,7 +162,7 @@ void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwPlayReplay::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
+void iwPlayReplay::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
     StartReplay();
 }
@@ -184,7 +184,7 @@ void iwPlayReplay::StartReplay()
     }
 }
 
-void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void iwPlayReplay::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     // Sollen alle Replays gelöscht werden?
     if(msgbox_id == 1 && mbr == MsgboxResult::Yes)

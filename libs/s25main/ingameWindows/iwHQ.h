@@ -15,6 +15,6 @@ public:
     iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh);
 
 protected:
-    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
     unsigned grpIdReserve;
 };

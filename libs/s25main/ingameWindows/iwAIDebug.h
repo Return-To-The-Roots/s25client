@@ -21,10 +21,10 @@ public:
     ~iwAIDebug() override;
 
 private:
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     // void Msg_ButtonClick(unsigned ctrl_id);
     // void Msg_ProgressChange(unsigned ctrl_id, unsigned short position);
-    void Msg_PaintBefore() override;
+    void msgPaintBefore() override;
 
     class DebugPrinter;
 

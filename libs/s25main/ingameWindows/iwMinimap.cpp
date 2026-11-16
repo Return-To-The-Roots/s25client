@@ -78,7 +78,7 @@ void iwMinimap::Resize(const Extent& newSize)
     GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetTextureN("io", extended ? 108 : 109));
 }
 
-void iwMinimap::Msg_ButtonClick(const unsigned ctrl_id)
+void iwMinimap::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

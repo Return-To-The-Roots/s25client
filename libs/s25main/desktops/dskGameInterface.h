@@ -120,21 +120,21 @@ protected:
     /// Executed during left click. Checks click pos for buildings/roads
     bool ContextClick(const MouseCoords& mc);
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_PaintBefore() override;
-    void Msg_PaintAfter() override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
-    bool Msg_RightDown(const MouseCoords& mc) override;
-    bool Msg_RightUp(const MouseCoords& mc) override;
-    bool Msg_KeyDown(const KeyEvent& ke) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgPaintBefore() override;
+    void msgPaintAfter() override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
+    bool msgRightDown(const MouseCoords& mc) override;
+    bool msgRightUp(const MouseCoords& mc) override;
+    bool msgKeyDown(const KeyEvent& ke) override;
 
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
     void WheelZoom(float step);
 
-    void Msg_WindowClosed(IngameWindow& wnd) override;
+    void msgWindowClosed(IngameWindow& wnd) override;
 
     void OnBuildingNote(const BuildingNote& note);
 

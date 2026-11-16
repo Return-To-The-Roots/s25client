@@ -49,7 +49,7 @@ dskGameLoader::~dskGameLoader()
     GAMECLIENT.RemoveInterface(this);
 }
 
-void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
+void dskGameLoader::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
     if(msgbox_id == 0) // Verbindung zu Server verloren?
     {
@@ -64,7 +64,7 @@ void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResul
     }
 }
 
-void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
+void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
 {
     auto* timer = GetCtrl<ctrlTimer>(1);
     auto* text = GetCtrl<ctrlText>(10 + position);

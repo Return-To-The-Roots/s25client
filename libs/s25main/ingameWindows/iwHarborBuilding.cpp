@@ -90,7 +90,7 @@ void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
     }
 }
 
-void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
+void iwHarborBuilding::msgGroupButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     if(group_id == grpIdExpedition) // Hafengruppe?
     {
@@ -112,5 +112,5 @@ void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned group_id, const unsi
     }
 
     // an Basis weiterleiten
-    iwHQ::Msg_Group_ButtonClick(group_id, ctrl_id);
+    iwHQ::msgGroupButtonClick(group_id, ctrl_id);
 }

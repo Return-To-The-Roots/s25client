@@ -172,7 +172,7 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
     curPage_ = warePageID;
 }
 
-void iwWares::Msg_ButtonClick(const unsigned ctrl_id)
+void iwWares::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -187,9 +187,9 @@ void iwWares::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwWares::Msg_PaintBefore()
+void iwWares::msgPaintBefore()
 {
-    IngameWindow::Msg_PaintBefore();
+    IngameWindow::msgPaintBefore();
 
     // Farben ggf. aktualisieren
 

@@ -34,10 +34,10 @@ protected:
     /// Empty if no preset is selected
     boost::filesystem::path GetSelectedFilePath() const;
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
-    void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgTableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void msgTableChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 
 private:
     bool IsPresetSelected() const;
@@ -57,10 +57,10 @@ private:
     void SaveToPath(const boost::filesystem::path& filePath);
     bool CanDoAction() const override;
     void DoAction() override;
-    void Msg_EditEnter(unsigned ctrl_id) override;
-    void Msg_EditChange(unsigned ctrl_id) override;
-    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgEditEnter(unsigned ctrl_id) override;
+    void msgEditChange(unsigned ctrl_id) override;
+    void msgTableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 };
 
 class iwLoadAddonPreset : public iwAddonPresetsBase

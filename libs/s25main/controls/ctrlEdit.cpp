@@ -229,7 +229,7 @@ void ctrlEdit::Notify()
     if(!notify_ || !GetParent())
         return;
 
-    GetParent()->Msg_EditChange(GetID());
+    GetParent()->msgEditChange(GetID());
 }
 
 void ctrlEdit::Resize(const Extent& newSize)
@@ -241,7 +241,7 @@ void ctrlEdit::Resize(const Extent& newSize)
 /**
  *  Maustaste-gedrückt Callback
  */
-bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlEdit::msgLeftDown(const MouseCoords& mc)
 {
     SetFocus(IsPointInRect(mc.pos, GetDrawRect()));
     return false; // "Unhandled" so other edits can handle this too and set their focus accordingly
@@ -250,7 +250,7 @@ bool ctrlEdit::Msg_LeftDown(const MouseCoords& mc)
 /**
  *  Taste-gedrückt Callback
  */
-bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
+bool ctrlEdit::msgKeyDown(const KeyEvent& ke)
 {
     auto isDelimiter = [](char32_t c) {
         for(const auto cur : U" \t\n-+=")
@@ -328,7 +328,7 @@ bool ctrlEdit::Msg_KeyDown(const KeyEvent& ke)
 
         case KeyType::Return: // Enter gedrückt
             if(!isDisabled_ && GetParent())
-                GetParent()->Msg_EditEnter(GetID());
+                GetParent()->msgEditEnter(GetID());
             break;
 
         case KeyType::Home: // Pos1 gedrückt

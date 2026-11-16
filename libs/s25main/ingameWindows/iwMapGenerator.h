@@ -50,7 +50,7 @@ public:
      */
     iwMapGenerator(rttr::mapGenerator::MapSettings& settings);
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 
 private:
     rttr::mapGenerator::MapSettings& mapSettings;

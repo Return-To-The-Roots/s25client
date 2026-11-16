@@ -24,7 +24,7 @@ public:
 
 private:
     void UpdatePercents();
-    void Msg_PaintAfter() override;
+    void msgPaintAfter() override;
 
     void setBuildingOrder();
     /// Icons shown (in this order)

@@ -39,7 +39,7 @@ void ctrlOptionGroup::SetSelection(unsigned selection, bool notify)
     this->selection_ = selection;
 
     if(notify && GetParent())
-        GetParent()->Msg_OptionGroupChange(GetID(), selection);
+        GetParent()->msgOptionGroupChange(GetID(), selection);
 }
 
 unsigned ctrlOptionGroup::GetSelection() const
@@ -49,32 +49,32 @@ unsigned ctrlOptionGroup::GetSelection() const
     return *selection_;
 }
 
-void ctrlOptionGroup::Msg_ButtonClick(const unsigned ctrl_id)
+void ctrlOptionGroup::msgButtonClick(const unsigned ctrl_id)
 {
     SetSelection(ctrl_id, true);
 }
 
-bool ctrlOptionGroup::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlOptionGroup::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+    return RelayMouseMessage(&Window::msgLeftDown, mc);
 }
 
-bool ctrlOptionGroup::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlOptionGroup::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return RelayMouseMessage(&Window::msgLeftUp, mc);
 }
 
-bool ctrlOptionGroup::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlOptionGroup::msgWheelUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_WheelUp, mc);
+    return RelayMouseMessage(&Window::msgWheelUp, mc);
 }
 
-bool ctrlOptionGroup::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlOptionGroup::msgWheelDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_WheelDown, mc);
+    return RelayMouseMessage(&Window::msgWheelDown, mc);
 }
 
-bool ctrlOptionGroup::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlOptionGroup::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return RelayMouseMessage(&Window::msgMouseMove, mc);
 }

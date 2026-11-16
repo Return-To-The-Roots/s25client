@@ -32,9 +32,9 @@ public:
     bool GetIlluminated() const { return isIlluminated; }
     void SetBorder(bool hasBorder) { this->hasBorder = hasBorder; }
 
-    bool Msg_MouseMove(const MouseCoords& mc) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
 
     ButtonState getState() const { return state; }
 

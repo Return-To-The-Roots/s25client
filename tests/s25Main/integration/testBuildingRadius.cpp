@@ -214,7 +214,7 @@ BOOST_FIXTURE_TEST_CASE(TestUpdateRadiusPreview, GameWorldViewFixture)
     for(const auto bt : {BuildingType::Watchtower, BuildingType::Mill, BuildingType::Catapult})
     {
         const auto& icon = findIcon(bt);
-        WINDOWMANAGER.Msg_MouseMove(MouseCoords(icon.GetDrawPos() + DrawPoint(1, 1)));
+        WINDOWMANAGER.msgMouseMove(MouseCoords(icon.GetDrawPos() + DrawPoint(1, 1)));
         BOOST_TEST_REQUIRE(icon.getState() == Window::ButtonState::Hover);
         const auto& radius = view.getRadiusPreview();
         // Mill has no radius, so preview is hidden
@@ -228,12 +228,12 @@ BOOST_FIXTURE_TEST_CASE(TestUpdateRadiusPreview, GameWorldViewFixture)
     }
     // Moving mouse away from icons hides radius preview
     BOOST_TEST_REQUIRE(view.getRadiusPreview().has_value());
-    WINDOWMANAGER.Msg_MouseMove(MouseCoords(action.GetDrawPos()));
+    WINDOWMANAGER.msgMouseMove(MouseCoords(action.GetDrawPos()));
     BOOST_TEST(!view.getRadiusPreview());
 
     // Closing the action window hides radius preview
     const auto& icon = findIcon(BuildingType::Watchtower);
-    WINDOWMANAGER.Msg_MouseMove(MouseCoords(icon.GetDrawPos() + DrawPoint(1, 1)));
+    WINDOWMANAGER.msgMouseMove(MouseCoords(icon.GetDrawPos() + DrawPoint(1, 1)));
     BOOST_TEST_REQUIRE(view.getRadiusPreview().has_value());
     WINDOWMANAGER.CloseNow(&action);
     BOOST_TEST(!view.getRadiusPreview());

@@ -63,15 +63,15 @@ public:
     const std::optional<unsigned>& GetSelection() const { return selection_; }
     void SetSelection(const std::optional<unsigned>& selection);
 
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_RightDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_ScrollShow(unsigned ctrl_id, bool visible) override;
-    bool Msg_KeyDown(const KeyEvent& ke) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgRightDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgScrollShow(unsigned ctrl_id, bool visible) override;
+    bool msgKeyDown(const KeyEvent& ke) override;
 
 protected:
     void Draw_() override;

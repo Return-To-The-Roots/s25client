@@ -18,8 +18,8 @@ public:
     void SetActive(bool activate) override;
 
 private:
-    void Msg_Timer(unsigned ctrl_id) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
+    void msgTimer(unsigned ctrl_id) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
     void LoadFiles();
 
     std::unique_ptr<glArchivItem_Bitmap> splashImg;

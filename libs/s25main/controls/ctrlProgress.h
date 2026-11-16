@@ -20,12 +20,12 @@ public:
     void SetPosition(unsigned short position);
     const unsigned short& GetPosition() const { return position; }
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
 
 protected:
     void Draw_() override;

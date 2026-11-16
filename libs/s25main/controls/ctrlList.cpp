@@ -28,11 +28,11 @@ void ctrlList::SetSelection(const std::optional<unsigned>& selection)
     {
         selection_ = selection;
         if(selection && GetParent())
-            GetParent()->Msg_ListSelectItem(GetID(), *selection);
+            GetParent()->msgListSelectItem(GetID(), *selection);
     }
 }
 
-bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlList::msgMouseMove(const MouseCoords& mc)
 {
     auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
@@ -48,10 +48,10 @@ bool ctrlList::Msg_MouseMove(const MouseCoords& mc)
     tooltip_.HideTooltip();
 
     // Für die Scrollbar weiterleiten
-    return scrollbar->Msg_MouseMove(mc);
+    return scrollbar->msgMouseMove(mc);
 }
 
-bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlList::msgLeftDown(const MouseCoords& mc)
 {
     auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
@@ -64,10 +64,10 @@ bool ctrlList::Msg_LeftDown(const MouseCoords& mc)
     }
 
     // Für die Scrollbar weiterleiten
-    return scrollbar->Msg_LeftDown(mc);
+    return scrollbar->msgLeftDown(mc);
 }
 
-bool ctrlList::Msg_RightDown(const MouseCoords& mc)
+bool ctrlList::msgRightDown(const MouseCoords& mc)
 {
     auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
@@ -80,10 +80,10 @@ bool ctrlList::Msg_RightDown(const MouseCoords& mc)
     }
 
     // Für die Scrollbar weiterleiten
-    return scrollbar->Msg_RightDown(mc);
+    return scrollbar->msgRightDown(mc);
 }
 
-bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlList::msgLeftUp(const MouseCoords& mc)
 {
     auto* scrollbar = GetCtrl<ctrlScrollBar>(0);
 
@@ -92,16 +92,16 @@ bool ctrlList::Msg_LeftUp(const MouseCoords& mc)
     {
         // Doppelklick? Dann noch einen extra Eventhandler aufrufen
         if(mc.dbl_click && GetParent() && selection_)
-            GetParent()->Msg_ListChooseItem(GetID(), *selection_);
+            GetParent()->msgListChooseItem(GetID(), *selection_);
 
         return true;
     }
 
     // Für die Scrollbar weiterleiten
-    return scrollbar->Msg_LeftUp(mc);
+    return scrollbar->msgLeftUp(mc);
 }
 
-bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlList::msgWheelUp(const MouseCoords& mc)
 {
     // If mouse in list or scrollbar
     if(IsPointInRect(mc.pos, GetFullDrawArea()))
@@ -114,7 +114,7 @@ bool ctrlList::Msg_WheelUp(const MouseCoords& mc)
     return false;
 }
 
-bool ctrlList::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlList::msgWheelDown(const MouseCoords& mc)
 {
     // If mouse in list
     if(IsPointInRect(mc.pos, GetFullDrawArea()))

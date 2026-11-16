@@ -67,12 +67,12 @@ void ctrlIngameMinimap::Draw_()
     image->DrawPart(Rect(GetMapDrawArea().getOrigin() + pos, drawSize), srcOffset);
 }
 
-bool ctrlIngameMinimap::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlIngameMinimap::msgLeftDown(const MouseCoords& mc)
 {
-    return Msg_MouseMove(mc);
+    return msgMouseMove(mc);
 }
 
-bool ctrlIngameMinimap::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlIngameMinimap::msgMouseMove(const MouseCoords& mc)
 {
     if(mc.ldown)
     {

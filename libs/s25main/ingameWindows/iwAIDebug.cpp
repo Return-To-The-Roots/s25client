@@ -133,7 +133,7 @@ iwAIDebug::~iwAIDebug()
     }
 }
 
-void iwAIDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
+void iwAIDebug::msgComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {
@@ -142,9 +142,9 @@ void iwAIDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selec
     }
 }
 
-void iwAIDebug::Msg_PaintBefore()
+void iwAIDebug::msgPaintBefore()
 {
-    IngameWindow::Msg_PaintBefore();
+    IngameWindow::msgPaintBefore();
     std::stringstream ss;
 
     const AIJH::AIJob* currentJob = printer->ai->GetCurrentJob();

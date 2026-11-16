@@ -72,10 +72,10 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
 
     // Choose wares at first
     box->SetSelection(0);
-    Msg_ComboSelectItem(2, 0);
+    msgComboSelectItem(2, 0);
 }
 
-void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
+void iwTrade::msgButtonClick(const unsigned /*ctrl_id*/)
 {
     // pressed the send button
     const unsigned ware_figure_selection = GetCtrl<ctrlComboBox>(4)->GetSelection().value();
@@ -96,7 +96,7 @@ void iwTrade::Msg_ButtonClick(const unsigned /*ctrl_id*/)
     }
 }
 
-void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
+void iwTrade::msgComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {
@@ -118,7 +118,7 @@ void iwTrade::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selecti
                     names->AddItem(_(JOB_NAMES[job]));
             }
             names->SetSelection(0);
-            Msg_ComboSelectItem(4, 0);
+            msgComboSelectItem(4, 0);
         }
         break;
         case 4:

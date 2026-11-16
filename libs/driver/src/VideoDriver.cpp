@@ -114,7 +114,7 @@ void VideoDriver::setGuiScalePercent(unsigned percent)
     // move cursor to new position in view space
     // must happen after window resize event to avoid drawing spurious hover events
     mouse_xy.pos = guiScale_.screenToView(screenPos);
-    CallBack->Msg_MouseMove(mouse_xy);
+    CallBack->msgMouseMove(mouse_xy);
 }
 
 GuiScaleRange VideoDriver::getGuiScaleRange() const

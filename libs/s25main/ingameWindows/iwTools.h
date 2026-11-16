@@ -37,9 +37,9 @@ private:
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
     void TransmitSettings() override;
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_ProgressChange(unsigned ctrl_id, unsigned short position) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgProgressChange(unsigned ctrl_id, unsigned short position) override;
 
     void UpdateTexts();
-    void Msg_PaintBefore() override;
+    void msgPaintBefore() override;
 };

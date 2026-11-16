@@ -10,5 +10,5 @@ class BOOST_SYMBOL_VISIBLE IAudioDriverCallback
 {
 public:
     virtual ~IAudioDriverCallback() = default;
-    virtual void Msg_MusicFinished() = 0;
+    virtual void msgMusicFinished() = 0;
 };

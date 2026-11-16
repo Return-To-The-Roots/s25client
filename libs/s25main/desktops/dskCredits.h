@@ -21,13 +21,13 @@ public:
     dskCredits();
     ~dskCredits() override;
 
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_RightUp(const MouseCoords& mc) override;
-    bool Msg_KeyDown(const KeyEvent& ke) override;
-    void Msg_Timer(unsigned timerId) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgRightUp(const MouseCoords& mc) override;
+    bool msgKeyDown(const KeyEvent& ke) override;
+    void msgTimer(unsigned timerId) override;
     void Draw_() override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult) override;
     void SetActive(bool active) override;
     static bool Close();
 

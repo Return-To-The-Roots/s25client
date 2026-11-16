@@ -437,7 +437,7 @@ void iwAction::Close()
         VIDEODRIVER.SetMousePos(mousePosAtOpen_);
 }
 
-void iwAction::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)
+void iwAction::msgGroupButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)
 {
     switch(GetCtrl<ctrlTab>(0)->GetCurrentTab())
     {
@@ -445,54 +445,54 @@ void iwAction::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned
 
         case TAB_ATTACK:
         {
-            Msg_ButtonClick_TabAttack(ctrl_id);
+            msgButtonClickTabAttack(ctrl_id);
         }
         break;
         case TAB_SEAATTACK:
         {
-            Msg_ButtonClick_TabSeaAttack(ctrl_id);
+            msgButtonClickTabSeaAttack(ctrl_id);
         }
         break;
 
         case TAB_FLAG:
         {
-            Msg_ButtonClick_TabFlag(ctrl_id);
+            msgButtonClickTabFlag(ctrl_id);
         }
         break;
 
         case TAB_BUILD:
         {
-            Msg_ButtonClick_TabBuild(ctrl_id);
+            msgButtonClickTabBuild(ctrl_id);
         }
         break;
 
         case TAB_SETFLAG:
         {
-            Msg_ButtonClick_TabSetFlag(ctrl_id);
+            msgButtonClickTabSetFlag(ctrl_id);
         }
         break;
 
         case TAB_CUTROAD:
         {
-            Msg_ButtonClick_TabCutRoad(ctrl_id);
+            msgButtonClickTabCutRoad(ctrl_id);
         }
         break;
 
         case TAB_WATCH:
         {
-            Msg_ButtonClick_TabWatch(ctrl_id);
+            msgButtonClickTabWatch(ctrl_id);
         }
         break;
 
         case TAB_CHEAT:
         {
-            Msg_ButtonClick_TabCheat(ctrl_id);
+            msgButtonClickTabCheat(ctrl_id);
         }
         break;
     }
 }
 
-void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id)
+void iwAction::msgTabChange(const unsigned ctrl_id, const unsigned short tab_id)
 {
     switch(ctrl_id)
     {
@@ -536,7 +536,7 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
     }
 }
 
-void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
+void iwAction::msgGroupTabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
 {
     switch(ctrl_id)
     {
@@ -548,9 +548,9 @@ void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned c
     }
 }
 
-void iwAction::Msg_PaintAfter()
+void iwAction::msgPaintAfter()
 {
-    IngameWindow::Msg_PaintAfter();
+    IngameWindow::msgPaintAfter();
 
     auto* tab = GetCtrl<ctrlTab>(0);
     if(tab)
@@ -569,7 +569,7 @@ void iwAction::Msg_PaintAfter()
     }
 }
 
-void iwAction::Msg_ButtonClick_TabAttack(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabAttack(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -606,7 +606,7 @@ void iwAction::Msg_ButtonClick_TabAttack(const unsigned ctrl_id)
     }
 }
 
-void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabSeaAttack(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -643,7 +643,7 @@ void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned ctrl_id)
     }
 }
 
-void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabFlag(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -707,7 +707,7 @@ void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
     }
 }
 
-void iwAction::Msg_ButtonClick_TabBuild(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabBuild(const unsigned ctrl_id)
 {
     // Klick auf Gebäudebauicon
     if(GAMECLIENT.SetBuildingSite(selectedPt, GetCtrl<ctrlTab>(0)
@@ -722,7 +722,7 @@ void iwAction::Msg_ButtonClick_TabBuild(const unsigned ctrl_id)
     }
 }
 
-void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabSetFlag(const unsigned ctrl_id)
 {
     bool success = false;
     switch(ctrl_id)
@@ -739,7 +739,7 @@ void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id)
         Close();
 }
 
-void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabCutRoad(const unsigned ctrl_id)
 {
     bool success = true;
     switch(ctrl_id)
@@ -761,7 +761,7 @@ void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned ctrl_id)
         Close();
 }
 
-void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabWatch(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -787,7 +787,7 @@ void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
     }
 }
 
-void iwAction::Msg_ButtonClick_TabCheat(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabCheat(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

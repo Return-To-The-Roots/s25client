@@ -93,15 +93,15 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
         AddText(600 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
     }
     // Farben festlegen
-    Msg_PaintAfter();
+    msgPaintAfter();
 }
 
-void iwDiplomacy::Msg_PaintBefore()
+void iwDiplomacy::msgPaintBefore()
 {
     // Farben, die zu den 3 Bündnisstates gesetzt werden (0-kein Bündnis, 1-in Arbeit, 2-Bündnis abgeschlossen)
     constexpr helpers::EnumArray<unsigned, PactState> PACT_COLORS = {COLOR_RED, COLOR_YELLOW, COLOR_GREEN};
 
-    IngameWindow::Msg_PaintBefore();
+    IngameWindow::msgPaintBefore();
     // Die farbigen Zeilen malen
     DrawPoint curPos = GetDrawPos() + DrawPoint(LINE_DISTANCE_TO_MARGINS, FIRST_LINE_Y);
     Rect curRect(curPos, Extent(GetSize().x - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT));
@@ -147,7 +147,7 @@ void iwDiplomacy::Msg_PaintBefore()
     }
 }
 
-void iwDiplomacy::Msg_ButtonClick(const unsigned ctrl_id)
+void iwDiplomacy::msgButtonClick(const unsigned ctrl_id)
 {
     if(gwv.GetWorld().GetGGS().lockedTeams)
     {
@@ -240,7 +240,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
     AddTextButton(7, DrawPoint(110, 170), Extent(100, 22), TextureColor::Green2, _("Confirm"), NormalFont);
 }
 
-void iwSuggestPact::Msg_ButtonClick(const unsigned /*ctrl_id*/)
+void iwSuggestPact::msgButtonClick(const unsigned /*ctrl_id*/)
 {
     /// Dauer auswählen (wenn id == NUM_DURATIONS, dann "für alle Ewigkeit" ausgewählt)
     const unsigned selected_id = GetCtrl<ctrlComboBox>(6)->GetSelection().value();

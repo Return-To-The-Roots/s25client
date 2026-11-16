@@ -32,9 +32,9 @@ void ctrlTimer::Stop()
     timer_.stop();
 }
 
-void ctrlTimer::Msg_PaintBefore()
+void ctrlTimer::msgPaintBefore()
 {
-    Window::Msg_PaintBefore();
+    Window::msgPaintBefore();
 
     if(!timer_.isRunning())
         return;
@@ -42,6 +42,6 @@ void ctrlTimer::Msg_PaintBefore()
     if(timer_.getElapsed() >= timeout_)
     {
         timer_.restart(); // Do this first so parent can stop or change duration
-        GetParent()->Msg_Timer(GetID());
+        GetParent()->msgTimer(GetID());
     }
 }

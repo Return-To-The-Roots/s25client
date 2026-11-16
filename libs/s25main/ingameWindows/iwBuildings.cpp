@@ -100,10 +100,10 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
 }
 
 /// Anzahlen der Gebäude zeichnen
-void iwBuildings::Msg_PaintAfter()
+void iwBuildings::msgPaintAfter()
 {
     static boost::format fmt("%1%/%2%");
-    IngameWindow::Msg_PaintAfter();
+    IngameWindow::msgPaintAfter();
     // Anzahlen herausfinden
     BuildingCount bc = gwv.GetViewer().GetPlayer().GetBuildingRegister().GetBuildingNums();
 
@@ -125,7 +125,7 @@ void iwBuildings::Msg_PaintAfter()
     }
 }
 
-void iwBuildings::Msg_ButtonClick(const unsigned ctrl_id)
+void iwBuildings::msgButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_Help) // Help button
     {

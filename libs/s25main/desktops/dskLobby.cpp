@@ -83,28 +83,28 @@ dskLobby::~dskLobby()
     LOBBYCLIENT.RemoveListener(this);
 }
 
-void dskLobby::Msg_Timer(const unsigned /*ctrl_id*/)
+void dskLobby::msgTimer(const unsigned /*ctrl_id*/)
 {
     if(LOBBYCLIENT.IsLoggedIn())
         LOBBYCLIENT.SendServerListRequest();
 }
 
-void dskLobby::Msg_PaintBefore()
+void dskLobby::msgPaintBefore()
 {
-    dskMenuBase::Msg_PaintBefore();
+    dskMenuBase::msgPaintBefore();
     UpdateServerList();
     UpdatePlayerList();
     GetCtrl<ctrlEdit>(ID_edtChat)->SetFocus();
 }
 
-void dskLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
+void dskLobby::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
     // Verbindung verloren
     if(msgbox_id == 0)
         WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>());
 }
 
-void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
+void dskLobby::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -131,7 +131,7 @@ void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void dskLobby::Msg_EditEnter(const unsigned ctrl_id)
+void dskLobby::msgEditEnter(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_edtChat)
     {
@@ -141,7 +141,7 @@ void dskLobby::Msg_EditEnter(const unsigned ctrl_id)
     }
 }
 
-void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const std::optional<unsigned>& selection)
+void dskLobby::msgTableRightButton(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
     if(!selection)
         return;
@@ -166,7 +166,7 @@ void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const std::optional<
     }
 }
 
-void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned /*selection*/)
+void dskLobby::msgTableChooseItem(const unsigned ctrl_id, const unsigned /*selection*/)
 {
     if(ctrl_id == ID_tblGames) // Server list
         ConnectToSelectedGame();
@@ -186,7 +186,7 @@ void dskLobby::UpdateServerList()
     LC_ServerList(LOBBYCLIENT.GetServerList());
 }
 
-void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
+void dskLobby::msgWindowClosed(IngameWindow& wnd)
 {
     if(&wnd == serverInfoWnd)
         serverInfoWnd = nullptr;

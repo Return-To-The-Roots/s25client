@@ -145,7 +145,7 @@ bool iwAddonPresetsBase::CanDoAction() const
     return IsPresetSelected();
 }
 
-void iwAddonPresetsBase::Msg_ButtonClick(const unsigned ctrl_id)
+void iwAddonPresetsBase::msgButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_btDelete)
         ConfirmDelete();
@@ -156,12 +156,12 @@ void iwAddonPresetsBase::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwAddonPresetsBase::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/)
+void iwAddonPresetsBase::msgTableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/)
 {
     UpdateButtons();
 }
 
-void iwAddonPresetsBase::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
+void iwAddonPresetsBase::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
     DoAction();
 }
@@ -176,7 +176,7 @@ void iwAddonPresetsBase::ConfirmDelete()
       this, MsgboxButton::YesNo, MsgboxIcon::QuestionRed, ID_mbDelete));
 }
 
-void iwAddonPresetsBase::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void iwAddonPresetsBase::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     if(msgbox_id != ID_mbDelete || mbr != MsgboxResult::Yes)
         return;
@@ -208,18 +208,18 @@ iwSaveAddonPreset::iwSaveAddonPreset(std::map<unsigned, unsigned> states)
       ->SetType(EditType::Filename);
 }
 
-void iwSaveAddonPreset::Msg_EditEnter(const unsigned /*ctrl_id*/)
+void iwSaveAddonPreset::msgEditEnter(const unsigned /*ctrl_id*/)
 {
     DoAction();
 }
 
-void iwSaveAddonPreset::Msg_EditChange(const unsigned /*ctrl_id*/)
+void iwSaveAddonPreset::msgEditChange(const unsigned /*ctrl_id*/)
 {
     // Editing makes the selected preset ambiguous, so drop the selection instead of guessing which one is meant
     assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets)).SetSelection(std::nullopt);
 }
 
-void iwSaveAddonPreset::Msg_TableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
+void iwSaveAddonPreset::msgTableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
     if(selection)
     {
@@ -231,7 +231,7 @@ void iwSaveAddonPreset::Msg_TableSelectItem(const unsigned ctrl_id, const std::o
         edit.SetNotify(true);
     }
     // The name must be filled first, as it decides whether saving is possible
-    iwAddonPresetsBase::Msg_TableSelectItem(ctrl_id, selection);
+    iwAddonPresetsBase::msgTableSelectItem(ctrl_id, selection);
 }
 
 bool iwSaveAddonPreset::CanDoAction() const
@@ -293,11 +293,11 @@ void iwSaveAddonPreset::SaveToPath(const bfs::path& filePath)
     RefreshTable();
 }
 
-void iwSaveAddonPreset::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void iwSaveAddonPreset::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     if(msgbox_id != ID_mbOverwrite)
     {
-        iwAddonPresetsBase::Msg_MsgBoxResult(msgbox_id, mbr);
+        iwAddonPresetsBase::msgMsgBoxResult(msgbox_id, mbr);
         return;
     }
     if(mbr != MsgboxResult::Yes)

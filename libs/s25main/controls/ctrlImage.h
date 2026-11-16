@@ -17,7 +17,7 @@ public:
     ctrlImage(Window* parent, unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip);
     ~ctrlImage() override;
 
-    bool Msg_MouseMove(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
     Rect GetBoundaryRect() const override;
 
 protected:

@@ -46,7 +46,7 @@ void iwConnecting::Close()
     GAMECLIENT.RemoveInterface(this);
 }
 
-void iwConnecting::Msg_ButtonClick(unsigned ctrlId)
+void iwConnecting::msgButtonClick(unsigned ctrlId)
 {
     RTTR_Assert(ctrlId == ID_btAbort);
     GAMECLIENT.Stop();

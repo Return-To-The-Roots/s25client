@@ -222,62 +222,62 @@ public:
 
     // These messages get passed downwards (WindowManager to controls)
     // Return true if the message was handled
-    virtual void Msg_PaintBefore();
-    virtual void Msg_PaintAfter();
-    virtual bool Msg_LeftDown(const MouseCoords&) { return false; }
-    virtual bool Msg_RightDown(const MouseCoords&) { return false; }
-    virtual bool Msg_MiddleDown(const MouseCoords&) { return false; }
-    virtual bool Msg_LeftUp(const MouseCoords&) { return false; }
-    virtual bool Msg_RightUp(const MouseCoords&) { return false; }
-    virtual bool Msg_MiddleUp(const MouseCoords&) { return false; }
-    virtual bool Msg_WheelUp(const MouseCoords&) { return false; }
-    virtual bool Msg_WheelDown(const MouseCoords&) { return false; }
-    virtual bool Msg_MouseMove(const MouseCoords&) { return false; }
-    virtual bool Msg_KeyDown(const KeyEvent&) { return false; }
-    virtual void Msg_ScreenResize(const ScreenResizeEvent& sr);
+    virtual void msgPaintBefore();
+    virtual void msgPaintAfter();
+    virtual bool msgLeftDown(const MouseCoords&) { return false; }
+    virtual bool msgRightDown(const MouseCoords&) { return false; }
+    virtual bool msgMiddleDown(const MouseCoords&) { return false; }
+    virtual bool msgLeftUp(const MouseCoords&) { return false; }
+    virtual bool msgRightUp(const MouseCoords&) { return false; }
+    virtual bool msgMiddleUp(const MouseCoords&) { return false; }
+    virtual bool msgWheelUp(const MouseCoords&) { return false; }
+    virtual bool msgWheelDown(const MouseCoords&) { return false; }
+    virtual bool msgMouseMove(const MouseCoords&) { return false; }
+    virtual bool msgKeyDown(const KeyEvent&) { return false; }
+    virtual void msgScreenResize(const ScreenResizeEvent& sr);
 
     // Callback messages that are passed upwards (from controls to window)
-    virtual void Msg_ButtonClick(unsigned /*ctrl_id*/) {}
-    virtual void Msg_EditEnter(unsigned /*ctrl_id*/) {}
-    virtual void Msg_EditChange(unsigned /*ctrl_id*/) {}
-    virtual void Msg_TabChange(unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
-    virtual void Msg_ListSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
-    virtual void Msg_ListChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_ComboSelectItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_CheckboxChange(unsigned /*ctrl_id*/, bool /*checked*/) {}
-    virtual void Msg_ProgressChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
-    virtual void Msg_ScrollChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
-    virtual void Msg_ScrollShow(unsigned /*ctrl_id*/, bool /*visible*/) {}
-    virtual void Msg_OptionGroupChange(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_Timer(unsigned /*ctrl_id*/) {}
-    virtual void Msg_TableSelectItem(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
-    virtual void Msg_TableChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_TableRightButton(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
-    virtual void Msg_TableLeftButton(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
+    virtual void msgButtonClick(unsigned /*ctrl_id*/) {}
+    virtual void msgEditEnter(unsigned /*ctrl_id*/) {}
+    virtual void msgEditChange(unsigned /*ctrl_id*/) {}
+    virtual void msgTabChange(unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
+    virtual void msgListSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void msgListChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgComboSelectItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgCheckboxChange(unsigned /*ctrl_id*/, bool /*checked*/) {}
+    virtual void msgProgressChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
+    virtual void msgScrollChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
+    virtual void msgScrollShow(unsigned /*ctrl_id*/, bool /*visible*/) {}
+    virtual void msgOptionGroupChange(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgTimer(unsigned /*ctrl_id*/) {}
+    virtual void msgTableSelectItem(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
+    virtual void msgTableChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgTableRightButton(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
+    virtual void msgTableLeftButton(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
 
     /// Callback of a message box when closed
-    virtual void Msg_MsgBoxResult(unsigned /*msgbox_id*/, MsgboxResult /*mbr*/) {}
+    virtual void msgMsgBoxResult(unsigned /*msgbox_id*/, MsgboxResult /*mbr*/) {}
 
     // Callbacks triggered by controls of ctrlGroup
-    virtual void Msg_Group_ButtonClick(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_EditEnter(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_EditChange(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_TabChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
-    virtual void Msg_Group_ListSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
-    virtual void Msg_Group_ComboSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_Group_CheckboxChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*checked*/) {}
-    virtual void Msg_Group_ProgressChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*position*/) {}
-    virtual void Msg_Group_ScrollShow(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*visible*/) {}
-    virtual void Msg_Group_OptionGroupChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_Group_Timer(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_TableSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/,
-                                           const std::optional<unsigned>& /*selection*/)
+    virtual void msgGroupButtonClick(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void msgGroupEditEnter(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void msgGroupEditChange(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void msgGroupTabChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
+    virtual void msgGroupListSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void msgGroupComboSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgGroupCheckboxChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*checked*/) {}
+    virtual void msgGroupProgressChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*position*/) {}
+    virtual void msgGroupScrollShow(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*visible*/) {}
+    virtual void msgGroupOptionGroupChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgGroupTimer(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void msgGroupTableSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/,
+                                         const std::optional<unsigned>& /*selection*/)
     {}
-    virtual void Msg_Group_TableRightButton(unsigned /*group_id*/, unsigned /*ctrl_id*/,
-                                            const std::optional<unsigned>& /*selection*/)
+    virtual void msgGroupTableRightButton(unsigned /*group_id*/, unsigned /*ctrl_id*/,
+                                          const std::optional<unsigned>& /*selection*/)
     {}
-    virtual void Msg_Group_TableLeftButton(unsigned /*group_id*/, unsigned /*ctrl_id*/,
-                                           const std::optional<unsigned>& /*selection*/)
+    virtual void msgGroupTableLeftButton(unsigned /*group_id*/, unsigned /*ctrl_id*/,
+                                         const std::optional<unsigned>& /*selection*/)
     {}
 
     enum class ButtonState

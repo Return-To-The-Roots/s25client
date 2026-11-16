@@ -27,7 +27,7 @@ void ctrlMultiSelectGroup::AddSelection(unsigned selection, bool notify)
     this->selectedItems_.insert(selection);
 
     if(notify && GetParent())
-        GetParent()->Msg_OptionGroupChange(GetID(), selection);
+        GetParent()->msgOptionGroupChange(GetID(), selection);
 }
 
 /**
@@ -48,7 +48,7 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned selection, bool notify)
     this->selectedItems_.erase(selection);
 
     if(notify && GetParent())
-        GetParent()->Msg_OptionGroupChange(GetID(), selection);
+        GetParent()->msgOptionGroupChange(GetID(), selection);
 }
 
 /**
@@ -67,32 +67,32 @@ bool ctrlMultiSelectGroup::IsSelected(unsigned selection) const
     return (this->selectedItems_.count(selection) == 1);
 }
 
-void ctrlMultiSelectGroup::Msg_ButtonClick(const unsigned ctrl_id)
+void ctrlMultiSelectGroup::msgButtonClick(const unsigned ctrl_id)
 {
     ToggleSelection(ctrl_id, true);
 }
 
-bool ctrlMultiSelectGroup::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlMultiSelectGroup::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+    return RelayMouseMessage(&Window::msgLeftDown, mc);
 }
 
-bool ctrlMultiSelectGroup::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlMultiSelectGroup::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return RelayMouseMessage(&Window::msgLeftUp, mc);
 }
 
-bool ctrlMultiSelectGroup::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlMultiSelectGroup::msgWheelUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_WheelUp, mc);
+    return RelayMouseMessage(&Window::msgWheelUp, mc);
 }
 
-bool ctrlMultiSelectGroup::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlMultiSelectGroup::msgWheelDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_WheelDown, mc);
+    return RelayMouseMessage(&Window::msgWheelDown, mc);
 }
 
-bool ctrlMultiSelectGroup::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlMultiSelectGroup::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return RelayMouseMessage(&Window::msgMouseMove, mc);
 }

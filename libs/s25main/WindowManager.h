@@ -88,25 +88,25 @@ public:
     /// merkt einen Desktop zum Wechsel vor.
     Desktop* Switch(std::unique_ptr<Desktop> desktop);
     /// Process press of left mouse button
-    void Msg_LeftDown(MouseCoords mc) override;
+    void msgLeftDown(MouseCoords mc) override;
     /// Process release of left mouse button
-    void Msg_LeftUp(MouseCoords mc) override;
+    void msgLeftUp(MouseCoords mc) override;
     /// Process press of right mouse button
-    void Msg_RightDown(const MouseCoords& mc) override;
+    void msgRightDown(const MouseCoords& mc) override;
     /// Process release of right mouse button
-    void Msg_RightUp(const MouseCoords& mc) override;
+    void msgRightUp(const MouseCoords& mc) override;
     /// Process press of middle mouse button
-    void Msg_MiddleDown(const MouseCoords& mc) override;
+    void msgMiddleDown(const MouseCoords& mc) override;
     /// Process release of middle mouse button
-    void Msg_MiddleUp(const MouseCoords& mc) override;
+    void msgMiddleUp(const MouseCoords& mc) override;
     /// Verarbeitung des Drückens des Rad hoch.
-    void Msg_WheelUp(const MouseCoords& mc) override;
+    void msgWheelUp(const MouseCoords& mc) override;
     /// Verarbeitung Rad runter.
-    void Msg_WheelDown(const MouseCoords& mc) override;
+    void msgWheelDown(const MouseCoords& mc) override;
     /// Verarbeitung des Verschiebens der Maus.
-    void Msg_MouseMove(const MouseCoords& mc) override;
+    void msgMouseMove(const MouseCoords& mc) override;
     /// Verarbeitung Keyboard-Event
-    void Msg_KeyDown(const KeyEvent& ke) override;
+    void msgKeyDown(const KeyEvent& ke) override;
     // Show a tooltip
     // ttw: Window that the tooltip is for, used when updating current tooltip
     // tooltip: The tooltip text, empty to hide
@@ -117,7 +117,7 @@ public:
     void WindowResized() override;
     /// Verarbeitung Spielfenstergröße verändert (vom Spiel aus)
     // Achtung: nicht dieselbe Nachricht, die die Window-Klasse empfängt
-    void Msg_ScreenResize(const Extent& newSize);
+    void msgScreenResize(const Extent& newSize);
 
     /// Return the window currently on the top (probably active)
     IngameWindow* GetTopMostWindow() const;

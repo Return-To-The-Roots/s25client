@@ -22,10 +22,10 @@ public:
     /// Scrolls by the given distance (less than 0 = up, else down)
     void Scroll(int distance);
 
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 
 protected:
     void Draw_() override;

@@ -42,7 +42,7 @@ void dskSplash::SetActive(bool activate)
         AddTimer(0, 1ms);
 }
 
-void dskSplash::Msg_Timer(const unsigned ctrl_id)
+void dskSplash::msgTimer(const unsigned ctrl_id)
 {
     GetCtrl<ctrlTimer>(ctrl_id)->Stop();
     if(ctrl_id == 0)
@@ -55,7 +55,7 @@ void dskSplash::Msg_Timer(const unsigned ctrl_id)
         WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
 }
 
-bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
+bool dskSplash::msgLeftDown(const MouseCoords& /*mc*/)
 {
     if(isLoaded)
         WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());

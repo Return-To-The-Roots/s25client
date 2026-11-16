@@ -23,9 +23,9 @@ public:
 
 private:
     /// Anzahlen der Gebäude zeichnen
-    void Msg_PaintAfter() override;
+    void msgPaintAfter() override;
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
     template<class T_Window, class T_Building>
     void GoToFirstMatching(BuildingType bldType, const std::list<T_Building*>& blds);
 

@@ -25,6 +25,6 @@ private:
     /// Send changed values to client, if any have changed
     void TransmitSettings() override;
 
-    void Msg_ProgressChange(unsigned ctrl_id, unsigned short position) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgProgressChange(unsigned ctrl_id, unsigned short position) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 };

@@ -72,13 +72,13 @@ std::optional<std::string> ctrlComboBox::GetSelectedText() const
         return std::nullopt;
 }
 
-bool ctrlComboBox::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlComboBox::msgMouseMove(const MouseCoords& mc)
 {
     // Für Button und Liste weiterleiten
-    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return RelayMouseMessage(&Window::msgMouseMove, mc);
 }
 
-bool ctrlComboBox::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlComboBox::msgLeftDown(const MouseCoords& mc)
 {
     auto* list = GetCtrl<ctrlList>(0);
 
@@ -98,21 +98,21 @@ bool ctrlComboBox::Msg_LeftDown(const MouseCoords& mc)
     }
 
     // Für Button und Liste weiterleiten
-    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+    return RelayMouseMessage(&Window::msgLeftDown, mc);
 }
 
-bool ctrlComboBox::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlComboBox::msgLeftUp(const MouseCoords& mc)
 {
     // Für Button und Liste weiterleiten
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return RelayMouseMessage(&Window::msgLeftUp, mc);
 }
 
-bool ctrlComboBox::Msg_RightDown(const MouseCoords& mc)
+bool ctrlComboBox::msgRightDown(const MouseCoords& mc)
 {
     auto* list = GetCtrl<ctrlList>(0);
 
     // Für Button und Liste weiterleiten (und danach erst schließen)
-    bool ret = RelayMouseMessage(&Window::Msg_RightDown, mc);
+    bool ret = RelayMouseMessage(&Window::msgRightDown, mc);
 
     // Clicked on list -> close it
     if(!readonly && IsPointInRect(mc.pos, list->GetDrawRect()))
@@ -124,14 +124,14 @@ bool ctrlComboBox::Msg_RightDown(const MouseCoords& mc)
     return ret;
 }
 
-bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlComboBox::msgWheelUp(const MouseCoords& mc)
 {
     if(readonly)
         return false;
 
     auto* list = GetCtrl<ctrlList>(0);
     if(list->IsVisible() && IsPointInRect(mc.pos, list->GetDrawRect()))
-        return RelayMouseMessage(&Window::Msg_WheelUp, mc);
+        return RelayMouseMessage(&Window::msgWheelUp, mc);
 
     if(IsPointInRect(mc.pos, GetDrawRect()))
     {
@@ -144,7 +144,7 @@ bool ctrlComboBox::Msg_WheelUp(const MouseCoords& mc)
     return false;
 }
 
-bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlComboBox::msgWheelDown(const MouseCoords& mc)
 {
     if(readonly)
         return false;
@@ -154,7 +154,7 @@ bool ctrlComboBox::Msg_WheelDown(const MouseCoords& mc)
     if(list->IsVisible() && IsPointInRect(mc.pos, list->GetDrawRect()))
     {
         // Scrolled in opened list ->
-        return RelayMouseMessage(&Window::Msg_WheelDown, mc);
+        return RelayMouseMessage(&Window::msgWheelDown, mc);
     }
 
     if(IsPointInRect(mc.pos, GetDrawRect()))
@@ -174,7 +174,7 @@ Rect ctrlComboBox::GetFullDrawRect(const ctrlList* list)
     return myRect;
 }
 
-void ctrlComboBox::Msg_ListSelectItem(unsigned, const int selection)
+void ctrlComboBox::msgListSelectItem(unsigned, const int selection)
 {
     // Liste wieder ausblenden
     ShowList(false);
@@ -183,7 +183,7 @@ void ctrlComboBox::Msg_ListSelectItem(unsigned, const int selection)
     if(selection >= 0 && !suppressSelectEvent)
     {
         // Nachricht an übergeordnetes Fenster verschicken
-        GetParent()->Msg_ComboSelectItem(GetID(), selection);
+        GetParent()->msgComboSelectItem(GetID(), selection);
     }
 }
 
@@ -226,11 +226,11 @@ void ctrlComboBox::Draw_()
         button->Draw();
 }
 
-void ctrlComboBox::Msg_PaintAfter()
+void ctrlComboBox::msgPaintAfter()
 {
     // Draw list now so it is on top of everything
     GetCtrl<ctrlList>(0)->Draw();
-    Window::Msg_PaintAfter();
+    Window::msgPaintAfter();
 }
 
 void ctrlComboBox::ShowList(bool show)

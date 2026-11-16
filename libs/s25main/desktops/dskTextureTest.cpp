@@ -55,10 +55,10 @@ void dskTextureTest::Load()
     for(const auto& t : desc.terrain)
         cb->AddItem(t.name);
     cb->SetSelection(selection);
-    Msg_ComboSelectItem(ID_cbTexture, selection);
+    msgComboSelectItem(ID_cbTexture, selection);
 }
 
-void dskTextureTest::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
+void dskTextureTest::msgComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
     curTerrainIdx = desc.terrain.getIndex(GetCtrl<ctrlComboBox>(ctrl_id)->GetText(selection));
     if(!curTerrainIdx)
@@ -70,7 +70,7 @@ void dskTextureTest::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned 
     curTexture = LOADER.ExtractTexture(*texBmp, cur.posInTexture);
 }
 
-void dskTextureTest::Msg_ButtonClick(const unsigned /*ctrl_id*/)
+void dskTextureTest::msgButtonClick(const unsigned /*ctrl_id*/)
 {
     WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
 }
@@ -78,9 +78,9 @@ void dskTextureTest::Msg_ButtonClick(const unsigned /*ctrl_id*/)
 using PointF = Point<GLfloat>;
 using Triangle = std::array<PointF, 3>;
 
-void dskTextureTest::Msg_PaintAfter()
+void dskTextureTest::msgPaintAfter()
 {
-    dskMenuBase::Msg_PaintAfter();
+    dskMenuBase::msgPaintAfter();
     if(!curTexture)
         return;
     DrawRectangle(Rect(0, 50, 800, 550), COLOR_BLACK);
@@ -126,12 +126,12 @@ void dskTextureTest::Msg_PaintAfter()
     glDrawArrays(GL_TRIANGLES, 0, 2 * 3);
 }
 
-bool dskTextureTest::Msg_KeyDown(const KeyEvent& ke)
+bool dskTextureTest::msgKeyDown(const KeyEvent& ke)
 {
     if(ke.kt == KeyType::F5)
     {
         Load();
         return true;
     }
-    return dskMenuBase::Msg_KeyDown(ke);
+    return dskMenuBase::msgKeyDown(ke);
 }

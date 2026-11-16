@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->SetPosition(expectedTrees);
     BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->GetPosition() == settings.stonePiles);
     wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->SetPosition(expectedStonePiles);
-    wnd.Msg_ButtonClick(iwMapGenerator::ID_btApply);
+    wnd.msgButtonClick(iwMapGenerator::ID_btApply);
     BOOST_TEST(wnd.ShouldBeClosed());
 
     BOOST_TEST(settings.numPlayers == expectedNumPlayers);
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(ConnectingWindow)
     {
         iwConnecting wnd(ServerType::Local, nullptr);
         // Clicking the button sends the onError signal (or if not set opens an error window) and closes the window
-        wnd.Msg_ButtonClick(wnd.GetCtrls<ctrlButton>().at(0)->GetID());
+        wnd.msgButtonClick(wnd.GetCtrls<ctrlButton>().at(0)->GetID());
         BOOST_TEST(wnd.ShouldBeClosed());
         BOOST_TEST((dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow())));
     }
@@ -301,23 +301,23 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
 
             // Only react when clicking the button not when moving the mouse to the button
             // while holding left mouse button
-            wnd.Msg_LeftDown(evLDownInsideWindow);
-            wnd.Msg_MouseMove(evLDown);
-            wnd.Msg_LeftUp(evLUp);
+            wnd.msgLeftDown(evLDownInsideWindow);
+            wnd.msgMouseMove(evLDown);
+            wnd.msgLeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
             // Similar when moving out of the button
-            wnd.Msg_LeftDown(evLDown);
-            wnd.Msg_MouseMove(evLDownInsideWindow);
-            wnd.Msg_MouseMove(evLDown);
-            wnd.Msg_LeftUp(evLUp);
+            wnd.msgLeftDown(evLDown);
+            wnd.msgMouseMove(evLDownInsideWindow);
+            wnd.msgMouseMove(evLDown);
+            wnd.msgLeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
 
-            wnd.Msg_LeftDown(evLDown);
-            wnd.Msg_LeftUp(evLUp);
+            wnd.msgLeftDown(evLDown);
+            wnd.msgLeftUp(evLUp);
             BOOST_TEST(wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -335,8 +335,8 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftDown(evLDown);
-            wnd.Msg_LeftUp(evLDblClick);
+            wnd.msgLeftDown(evLDown);
+            wnd.msgLeftUp(evLDblClick);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -355,8 +355,8 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftDown(evLDown);
-            wnd.Msg_LeftUp(evLUp);
+            wnd.msgLeftDown(evLDown);
+            wnd.msgLeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -380,8 +380,8 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftDown(evLDown);
-            wnd.Msg_LeftUp(evLUp);
+            wnd.msgLeftDown(evLDown);
+            wnd.msgLeftUp(evLUp);
             BOOST_TEST(wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -399,8 +399,8 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftDown(evLDown);
-            wnd.Msg_LeftUp(evLDblClick);
+            wnd.msgLeftDown(evLDown);
+            wnd.msgLeftUp(evLDblClick);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
@@ -420,8 +420,8 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(!wnd.IsPinned());
-            wnd.Msg_LeftDown(evLDown);
-            wnd.Msg_LeftUp(evLUp);
+            wnd.msgLeftDown(evLDown);
+            wnd.msgLeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
             BOOST_TEST(!wnd.IsMinimized());
             BOOST_TEST(wnd.IsPinned());
@@ -608,12 +608,12 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
     {
         const DrawPoint mousePosRel = DrawPoint(wnd2.GetSize().x / 2, 4);
         const MouseCoords evLDown = makeLeftDown(wnd2.GetPos() + mousePosRel);
-        wnd2.Msg_LeftDown(evLDown);
+        wnd2.msgLeftDown(evLDown);
 
         {
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-80, 0));
             VIDEODRIVER.SetMousePos(mc.pos);
-            wnd2.Msg_MouseMove(mc);
+            wnd2.msgMouseMove(mc);
             BOOST_TEST(wnd2.GetPos() == DrawPoint(120, 480)); // Not in snap range yet
             BOOST_TEST(VIDEODRIVER.GetMousePos() == (wnd2.GetPos() + mousePosRel));
         }
@@ -621,7 +621,7 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
         {
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 0));
             VIDEODRIVER.SetMousePos(mc.pos);
-            wnd2.Msg_MouseMove(mc);
+            wnd2.msgMouseMove(mc);
             BOOST_TEST(wnd2.GetPos() == DrawPoint(100, 480)); // In snap range
             BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);
             // Cursor position is off by snap offset
@@ -632,7 +632,7 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 30));
             // Reset mouse position to ensure it's properly updated in Msg_MouseMove()
             VIDEODRIVER.SetMousePos(Position(0, 0));
-            wnd2.Msg_MouseMove(mc);
+            wnd2.msgMouseMove(mc);
             BOOST_TEST(wnd2.GetPos() == DrawPoint(100, 500)); // Still in snap range
             BOOST_TEST(VIDEODRIVER.GetMousePos() == Position(mc.pos.x, wnd2.GetPos().y + mousePosRel.y));
             // Cursor position is off by snap offset
@@ -647,14 +647,14 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
 
         const DrawPoint mousePosRel = DrawPoint(wnd3.GetSize().x / 2, 4);
         const MouseCoords evLDown = makeLeftDown(wnd3.GetPos() + mousePosRel);
-        wnd3.Msg_LeftDown(evLDown);
+        wnd3.msgLeftDown(evLDown);
 
         {
             wnd1.SetPos(DrawPoint(0, 0));
             wnd2.SetPos(DrawPoint(5, 0));
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 0));
             VIDEODRIVER.SetMousePos(mc.pos);
-            wnd3.Msg_MouseMove(mc);
+            wnd3.msgMouseMove(mc);
             // In snap range of wnd1 and wnd2, but closest to wnd2
             BOOST_TEST(wnd3.GetPos() == DrawPoint(wnd2.GetPos().x + wnd2.GetSize().x, 0));
             BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);
@@ -667,7 +667,7 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
             wnd2.SetPos(DrawPoint(0, 0));
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 0));
             VIDEODRIVER.SetMousePos(mc.pos);
-            wnd3.Msg_MouseMove(mc);
+            wnd3.msgMouseMove(mc);
             // In snap range of wnd1 and wnd2, but closest to wnd1
             BOOST_TEST(wnd3.GetPos() == DrawPoint(wnd1.GetPos().x + wnd1.GetSize().x, 0));
             BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);

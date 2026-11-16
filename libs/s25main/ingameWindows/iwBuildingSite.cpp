@@ -37,7 +37,7 @@ iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const b
                    _("Go to place"));
 }
 
-void iwBuildingSite::Msg_ButtonClick(const unsigned ctrl_id)
+void iwBuildingSite::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -62,9 +62,9 @@ void iwBuildingSite::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwBuildingSite::Msg_PaintAfter()
+void iwBuildingSite::msgPaintAfter()
 {
-    IngameWindow::Msg_PaintAfter();
+    IngameWindow::msgPaintAfter();
     // Baukosten zeichnen
     DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
     for(unsigned char i = 0; i < 2; ++i)

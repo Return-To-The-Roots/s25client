@@ -471,7 +471,7 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
         }
     }
 
-    CallBack->Msg_KeyDown(ke);
+    CallBack->msgKeyDown(ke);
 }
 
 void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
@@ -512,7 +512,7 @@ void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
     }
 
     if(ke.kt != KeyType::Invalid)
-        CallBack->Msg_KeyDown(ke);
+        CallBack->msgKeyDown(ke);
 }
 
 void VideoWinAPI::OnWMPaste()
@@ -577,31 +577,31 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
         case WM_MOUSEMOVE:
             pVideoWinAPI->mouse_xy.pos.x = LOWORD(lParam);
             pVideoWinAPI->mouse_xy.pos.y = HIWORD(lParam);
-            pVideoWinAPI->CallBack->Msg_MouseMove(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgMouseMove(pVideoWinAPI->mouse_xy);
             break;
         case WM_LBUTTONDOWN:
             pVideoWinAPI->mouse_xy.ldown = true;
-            pVideoWinAPI->CallBack->Msg_LeftDown(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgLeftDown(pVideoWinAPI->mouse_xy);
             break;
         case WM_LBUTTONUP:
             pVideoWinAPI->mouse_xy.ldown = false;
-            pVideoWinAPI->CallBack->Msg_LeftUp(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgLeftUp(pVideoWinAPI->mouse_xy);
             break;
         case WM_RBUTTONDOWN:
             pVideoWinAPI->mouse_xy.rdown = true;
-            pVideoWinAPI->CallBack->Msg_RightDown(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgRightDown(pVideoWinAPI->mouse_xy);
             break;
         case WM_RBUTTONUP:
             pVideoWinAPI->mouse_xy.rdown = false;
-            pVideoWinAPI->CallBack->Msg_RightUp(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgRightUp(pVideoWinAPI->mouse_xy);
             break;
         case WM_MBUTTONDOWN:
             pVideoWinAPI->mouse_xy.mdown = true;
-            pVideoWinAPI->CallBack->Msg_MiddleDown(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgMiddleDown(pVideoWinAPI->mouse_xy);
             break;
         case WM_MBUTTONUP:
             pVideoWinAPI->mouse_xy.mdown = false;
-            pVideoWinAPI->CallBack->Msg_MiddleUp(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgMiddleUp(pVideoWinAPI->mouse_xy);
             break;
         case WM_MOUSEWHEEL:
             // Obtain scrolling distance. For every multiple of WHEEL_DELTA, we have to fire an event, because we treat
@@ -615,11 +615,11 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
                 if(pVideoWinAPI->mouse_z > 0) // Scrolled to top
                 {
                     pVideoWinAPI->mouse_z -= WHEEL_DELTA;
-                    pVideoWinAPI->CallBack->Msg_WheelUp(pVideoWinAPI->mouse_xy);
+                    pVideoWinAPI->CallBack->msgWheelUp(pVideoWinAPI->mouse_xy);
                 } else // Scrolled to bottom
                 {
                     pVideoWinAPI->mouse_z += WHEEL_DELTA;
-                    pVideoWinAPI->CallBack->Msg_WheelDown(pVideoWinAPI->mouse_xy);
+                    pVideoWinAPI->CallBack->msgWheelDown(pVideoWinAPI->mouse_xy);
                 }
             }
             break;

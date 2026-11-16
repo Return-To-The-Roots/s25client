@@ -12,14 +12,14 @@ class dskTest : public dskMenuBase
 public:
     dskTest();
 
-    void Msg_EditChange(unsigned ctrl_id) override;
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    bool Msg_RightUp(const MouseCoords& mc) override;
+    void msgEditChange(unsigned ctrl_id) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    bool msgRightUp(const MouseCoords& mc) override;
 
     void ToggleCtrlVisibility();
 
-    bool Msg_KeyDown(const KeyEvent& ke) override;
+    bool msgKeyDown(const KeyEvent& ke) override;
 
 private:
     unsigned curBGIdx;

@@ -26,11 +26,11 @@ public:
     /// Setzt Farbe der Zeitangaben.
     void SetTimeColor(unsigned color) { time_color = color; }
 
-    bool Msg_MouseMove(const MouseCoords& mc) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
 
     /// Create a (almost) unique color for the given name
     static unsigned CalcUniqueColor(const std::string& name);

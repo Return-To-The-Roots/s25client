@@ -178,7 +178,7 @@ void ctrlTable::Resize(const Extent& newSize)
 
     ResetButtonWidths();
     if(scrollbar->IsVisible())
-        Msg_ScrollShow(0, true);
+        msgScrollShow(0, true);
 }
 
 /**
@@ -218,7 +218,7 @@ void ctrlTable::SetSelection(const std::optional<unsigned>& selection)
     }
 
     if(GetParent())
-        GetParent()->Msg_TableSelectItem(GetID(), selection_);
+        GetParent()->msgTableSelectItem(GetID(), selection_);
 }
 
 void ctrlTable::AddRow(std::vector<std::string> row)
@@ -340,7 +340,7 @@ void ctrlTable::Draw_()
     }
 }
 
-void ctrlTable::Msg_ButtonClick(const unsigned ctrl_id)
+void ctrlTable::msgButtonClick(const unsigned ctrl_id)
 {
     RTTR_Assert(ctrl_id > 0);
     const int column = ctrl_id - 1;
@@ -365,30 +365,30 @@ Rect ctrlTable::GetFullDrawArea() const
     return Rect(orig, size);
 }
 
-bool ctrlTable::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlTable::msgLeftDown(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.pos, GetContentDrawArea()))
     {
         SetSelection(GetSelectionFromMouse(mc));
         if(GetParent())
-            GetParent()->Msg_TableLeftButton(this->GetID(), selection_);
+            GetParent()->msgTableLeftButton(this->GetID(), selection_);
 
         return true;
     } else
-        return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+        return RelayMouseMessage(&Window::msgLeftDown, mc);
 }
 
-bool ctrlTable::Msg_RightDown(const MouseCoords& mc)
+bool ctrlTable::msgRightDown(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.pos, GetContentDrawArea()))
     {
         SetSelection(GetSelectionFromMouse(mc));
         if(GetParent())
-            GetParent()->Msg_TableRightButton(this->GetID(), selection_);
+            GetParent()->msgTableRightButton(this->GetID(), selection_);
 
         return true;
     } else
-        return RelayMouseMessage(&Window::Msg_RightDown, mc);
+        return RelayMouseMessage(&Window::msgRightDown, mc);
 }
 
 std::optional<unsigned> ctrlTable::GetSelectionFromMouse(const MouseCoords& mc) const
@@ -402,7 +402,7 @@ std::optional<unsigned> ctrlTable::GetSelectionFromMouse(const MouseCoords& mc) 
     return itemIdx;
 }
 
-bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlTable::msgWheelUp(const MouseCoords& mc)
 {
     // If mouse in list or scrollbar
     if(IsPointInRect(mc.pos, GetFullDrawArea()))
@@ -414,7 +414,7 @@ bool ctrlTable::Msg_WheelUp(const MouseCoords& mc)
         return false;
 }
 
-bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlTable::msgWheelDown(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.pos, GetFullDrawArea()))
     {
@@ -425,7 +425,7 @@ bool ctrlTable::Msg_WheelDown(const MouseCoords& mc)
         return false;
 }
 
-bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlTable::msgLeftUp(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.pos, GetContentDrawArea()))
     {
@@ -435,21 +435,21 @@ bool ctrlTable::Msg_LeftUp(const MouseCoords& mc)
             SetSelection(GetSelectionFromMouse(mc));
             if(selection_ && oldSelection == selection_)
             {
-                GetParent()->Msg_TableChooseItem(this->GetID(), *selection_);
+                GetParent()->msgTableChooseItem(this->GetID(), *selection_);
                 return true;
             }
         }
     }
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return RelayMouseMessage(&Window::msgLeftUp, mc);
 }
 
-bool ctrlTable::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlTable::msgMouseMove(const MouseCoords& mc)
 {
     // ButtonMessages weiterleiten
-    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return RelayMouseMessage(&Window::msgMouseMove, mc);
 }
 
-void ctrlTable::Msg_ScrollShow(const unsigned /*ctrl_id*/, const bool /*visible*/)
+void ctrlTable::msgScrollShow(const unsigned /*ctrl_id*/, const bool /*visible*/)
 {
     ResetButtonWidths();
 }
@@ -483,7 +483,7 @@ void ctrlTable::ResetButtonWidths()
     }
 }
 
-bool ctrlTable::Msg_KeyDown(const KeyEvent& ke)
+bool ctrlTable::msgKeyDown(const KeyEvent& ke)
 {
     switch(ke.kt)
     {

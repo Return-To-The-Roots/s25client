@@ -110,7 +110,7 @@ unsigned ctrlProgress::CalcBarWidth() const
     return GetSize().x - 2 * (padding_.x + GetSize().y);
 }
 
-void ctrlProgress::Msg_ButtonClick(const unsigned ctrl_id)
+void ctrlProgress::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -119,7 +119,7 @@ void ctrlProgress::Msg_ButtonClick(const unsigned ctrl_id)
             if(position)
                 --position;
             if(GetParent())
-                GetParent()->Msg_ProgressChange(GetID(), position);
+                GetParent()->msgProgressChange(GetID(), position);
         }
         break;
         case 1: // Plus
@@ -127,13 +127,13 @@ void ctrlProgress::Msg_ButtonClick(const unsigned ctrl_id)
             if(position < maximum)
                 ++position;
             if(GetParent())
-                GetParent()->Msg_ProgressChange(GetID(), position);
+                GetParent()->msgProgressChange(GetID(), position);
         }
         break;
     }
 }
 
-bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlProgress::msgLeftDown(const MouseCoords& mc)
 {
     // Test if clicked on progress bar
     DrawPoint progressOrigin = GetDrawPos() + DrawPoint(padding_) + DrawPoint(GetSize().y + 2, 4);
@@ -144,43 +144,43 @@ bool ctrlProgress::Msg_LeftDown(const MouseCoords& mc)
           helpers::iround<uint16_t>(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x);
 
         if(GetParent())
-            GetParent()->Msg_ProgressChange(GetID(), position);
+            GetParent()->msgProgressChange(GetID(), position);
         return true;
     } else
-        return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+        return RelayMouseMessage(&Window::msgLeftDown, mc);
 }
 
-bool ctrlProgress::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlProgress::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return RelayMouseMessage(&Window::msgLeftUp, mc);
 }
 
-bool ctrlProgress::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlProgress::msgWheelUp(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
     if(IsPointInRect(mc.pos, GetDrawRect()))
     {
-        Msg_ButtonClick(1);
+        msgButtonClick(1);
         return true;
     }
     return false;
 }
 
-bool ctrlProgress::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlProgress::msgWheelDown(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
     if(IsPointInRect(mc.pos, GetDrawRect()))
     {
-        Msg_ButtonClick(0);
+        msgButtonClick(0);
         return true;
     }
     return false;
 }
 
-bool ctrlProgress::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlProgress::msgMouseMove(const MouseCoords& mc)
 {
     // an Buttons weiterleiten
-    RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    RelayMouseMessage(&Window::msgMouseMove, mc);
 
     Extent offset(GetSize().y + padding_.x, 0);
     DrawPoint rectOrig = GetDrawPos() + DrawPoint(offset);

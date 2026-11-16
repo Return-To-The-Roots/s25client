@@ -42,7 +42,7 @@ iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* 
     }
 }
 
-void iwHQ::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
+void iwHQ::msgGroupButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     if(group_id == grpIdReserve)
     {
@@ -70,5 +70,5 @@ void iwHQ::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id
     }
 
     // an Basis weiterleiten
-    iwBaseWarehouse::Msg_Group_ButtonClick(group_id, ctrl_id);
+    iwBaseWarehouse::msgGroupButtonClick(group_id, ctrl_id);
 }

@@ -99,11 +99,11 @@ public:
 
     GUI_ID GetGUIID() const { return static_cast<GUI_ID>(Window::GetID()); }
 
-    bool Msg_LeftDown(const MouseCoords&) override;
-    bool Msg_LeftUp(const MouseCoords&) override;
-    bool Msg_MiddleDown(const MouseCoords&) override;
-    bool Msg_MiddleUp(const MouseCoords&) override;
-    bool Msg_MouseMove(const MouseCoords&) override;
+    bool msgLeftDown(const MouseCoords&) override;
+    bool msgLeftUp(const MouseCoords&) override;
+    bool msgMiddleDown(const MouseCoords&) override;
+    bool msgMiddleUp(const MouseCoords&) override;
+    bool msgMouseMove(const MouseCoords&) override;
 
 protected:
     void Draw_() final;

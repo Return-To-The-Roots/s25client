@@ -83,19 +83,19 @@ public:
     const MapPoint& GetSelectedPt() const { return selectedPt; }
 
 private:
-    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
-    void Msg_TabChange(unsigned ctrl_id, unsigned short tab_id) override;
-    void Msg_Group_TabChange(unsigned group_id, unsigned ctrl_id, unsigned short tab_id) override;
-    void Msg_PaintAfter() override;
+    void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void msgTabChange(unsigned ctrl_id, unsigned short tab_id) override;
+    void msgGroupTabChange(unsigned group_id, unsigned ctrl_id, unsigned short tab_id) override;
+    void msgPaintAfter() override;
 
-    inline void Msg_ButtonClick_TabBuild(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabCutRoad(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabFlag(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabAttack(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabSeaAttack(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabSetFlag(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabWatch(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabCheat(unsigned ctrl_id);
+    inline void msgButtonClickTabBuild(unsigned ctrl_id);
+    inline void msgButtonClickTabCutRoad(unsigned ctrl_id);
+    inline void msgButtonClickTabFlag(unsigned ctrl_id);
+    inline void msgButtonClickTabAttack(unsigned ctrl_id);
+    inline void msgButtonClickTabSeaAttack(unsigned ctrl_id);
+    inline void msgButtonClickTabSetFlag(unsigned ctrl_id);
+    inline void msgButtonClickTabWatch(unsigned ctrl_id);
+    inline void msgButtonClickTabCheat(unsigned ctrl_id);
 
     void DisableMousePosResetOnClose();
 

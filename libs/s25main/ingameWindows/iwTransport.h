@@ -37,7 +37,7 @@ private:
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
     void TransmitSettings() override;
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 
     void fillTransportOrder(const TransportOrders& transport_order);
 };

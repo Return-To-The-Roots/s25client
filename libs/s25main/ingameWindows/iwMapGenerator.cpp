@@ -119,7 +119,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     Reset();
 }
 
-void iwMapGenerator::Msg_ButtonClick(const unsigned ctrl_id)
+void iwMapGenerator::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

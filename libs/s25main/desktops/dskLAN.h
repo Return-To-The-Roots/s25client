@@ -20,10 +20,10 @@ public:
     dskLAN();
 
 protected:
-    void Msg_Timer(unsigned ctrl_id) override;
-    void Msg_PaintBefore() override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void msgTimer(unsigned ctrl_id) override;
+    void msgPaintBefore() override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgTableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
     /**
      * Connects to the currently selected game and returns true on success

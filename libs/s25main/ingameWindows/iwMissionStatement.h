@@ -38,7 +38,7 @@ public:
     };
     iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame,
                        HelpImage image = IM_SWORDSMAN);
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
     void SetActive(bool activate) override;
 
 private:

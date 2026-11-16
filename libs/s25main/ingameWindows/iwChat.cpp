@@ -36,20 +36,20 @@ iwChat::iwChat(Window* parent)
     group->SetSelection(rttr::enum_cast(lastChatDestination));
 }
 
-void iwChat::Msg_PaintBefore()
+void iwChat::msgPaintBefore()
 {
-    IngameWindow::Msg_PaintBefore();
+    IngameWindow::msgPaintBefore();
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
-void iwChat::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
+void iwChat::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
     RTTR_Assert(selection <= helpers::MaxEnumValue_v<ChatDestination>);
     lastChatDestination = static_cast<ChatDestination>(selection);
     GetCtrl<ctrlEdit>(0)->SetFocus();
 }
 
-void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
+void iwChat::msgEditEnter(const unsigned /*ctrl_id*/)
 {
     Close();
 

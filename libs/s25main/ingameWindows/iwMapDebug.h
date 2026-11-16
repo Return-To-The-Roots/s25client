@@ -19,11 +19,11 @@ private:
     class DebugPrinter;
     class EventChecker;
 
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned select) override;
-    void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
-    void Msg_Timer(unsigned ctrl_id) override;
-    void Msg_EditEnter(unsigned ctrl_id) override;
-    bool Msg_KeyDown(const KeyEvent& ke) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned select) override;
+    void msgCheckboxChange(unsigned ctrl_id, bool checked) override;
+    void msgTimer(unsigned ctrl_id) override;
+    void msgEditEnter(unsigned ctrl_id) override;
+    bool msgKeyDown(const KeyEvent& ke) override;
 
     void SetActive(bool activate) override;
 

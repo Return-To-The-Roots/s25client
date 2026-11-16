@@ -312,7 +312,7 @@ void VideoSDL2::HandlePaste()
         PrintError(text ? SDL_GetError() : "Paste failed.");
 
     for(const char32_t c : s25util::utf8to32(text.get()))
-        CallBack->Msg_KeyDown(KeyEvent(c));
+        CallBack->msgKeyDown(KeyEvent(c));
 }
 
 void VideoSDL2::DestroyScreen()
@@ -392,7 +392,7 @@ bool VideoSDL2::MessageLoop()
                 setSpecialKeys(ke, SDL_Keymod(ev.key.keysym.mod));
 
                 if(ke.kt != KeyType::Invalid)
-                    CallBack->Msg_KeyDown(ke);
+                    CallBack->msgKeyDown(ke);
                 else if(ke.alt || ke.ctrl)
                 {
                     // Handle shortcuts (CTRL+x, ALT+y)
@@ -402,7 +402,7 @@ bool VideoSDL2::MessageLoop()
                     {
                         ke.kt = KeyType::Char;
                         ke.c = static_cast<char32_t>(keycode);
-                        CallBack->Msg_KeyDown(ke);
+                        CallBack->msgKeyDown(ke);
                     }
                 }
             }
@@ -415,7 +415,7 @@ bool VideoSDL2::MessageLoop()
                 for(char32_t c : text)
                 {
                     ke.c = c;
-                    CallBack->Msg_KeyDown(ke);
+                    CallBack->msgKeyDown(ke);
                 }
                 break;
             }
@@ -426,17 +426,17 @@ bool VideoSDL2::MessageLoop()
                 {
                     case SDL_BUTTON_LEFT:
                         mouse_xy.ldown = true;
-                        CallBack->Msg_LeftDown(mouse_xy);
+                        CallBack->msgLeftDown(mouse_xy);
                         break;
 
                     case SDL_BUTTON_RIGHT:
                         mouse_xy.rdown = true;
-                        CallBack->Msg_RightDown(mouse_xy);
+                        CallBack->msgRightDown(mouse_xy);
                         break;
 
                     case SDL_BUTTON_MIDDLE:
                         mouse_xy.mdown = true;
-                        CallBack->Msg_MiddleDown(mouse_xy);
+                        CallBack->msgMiddleDown(mouse_xy);
                         break;
                 }
                 break;
@@ -447,17 +447,17 @@ bool VideoSDL2::MessageLoop()
                 {
                     case SDL_BUTTON_LEFT:
                         mouse_xy.ldown = false;
-                        CallBack->Msg_LeftUp(mouse_xy);
+                        CallBack->msgLeftUp(mouse_xy);
                         break;
 
                     case SDL_BUTTON_RIGHT:
                         mouse_xy.rdown = false;
-                        CallBack->Msg_RightUp(mouse_xy);
+                        CallBack->msgRightUp(mouse_xy);
                         break;
 
                     case SDL_BUTTON_MIDDLE:
                         mouse_xy.mdown = false;
-                        CallBack->Msg_MiddleUp(mouse_xy);
+                        CallBack->msgMiddleUp(mouse_xy);
                         break;
                 }
                 break;
@@ -467,9 +467,9 @@ bool VideoSDL2::MessageLoop()
                 if(ev.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
                     y = -y;
                 if(y > 0)
-                    CallBack->Msg_WheelUp(mouse_xy);
+                    CallBack->msgWheelUp(mouse_xy);
                 else if(y < 0)
-                    CallBack->Msg_WheelDown(mouse_xy);
+                    CallBack->msgWheelDown(mouse_xy);
             }
             break;
             case SDL_MOUSEMOTION:
@@ -479,7 +479,7 @@ bool VideoSDL2::MessageLoop()
                 if(newPos != mouse_xy.pos)
                 {
                     mouse_xy.pos = newPos;
-                    CallBack->Msg_MouseMove(mouse_xy);
+                    CallBack->msgMouseMove(mouse_xy);
                 }
             }
             break;
@@ -490,7 +490,7 @@ bool VideoSDL2::MessageLoop()
                                                                    static_cast<int>(ev.tfinger.y * wnSize.height)));
                 mouse_xy.ldown = true;
                 mouse_xy.num_tfingers++;
-                CallBack->Msg_LeftDown(mouse_xy);
+                CallBack->msgLeftDown(mouse_xy);
                 break;
             }
             case SDL_FINGERUP:
@@ -499,7 +499,7 @@ bool VideoSDL2::MessageLoop()
                 mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
                                                                    static_cast<int>(ev.tfinger.y * wnSize.height)));
                 mouse_xy.ldown = false;
-                CallBack->Msg_LeftUp(mouse_xy);
+                CallBack->msgLeftUp(mouse_xy);
                 mouse_xy.num_tfingers--; // Dirty way to count leftUp as touch event without extra isTouch bool
                 break;
             }
@@ -512,7 +512,7 @@ bool VideoSDL2::MessageLoop()
                 if(newPos != mouse_xy.pos)
                 {
                     mouse_xy.pos = newPos;
-                    CallBack->Msg_MouseMove(mouse_xy);
+                    CallBack->msgMouseMove(mouse_xy);
                 }
                 break;
             }
@@ -521,9 +521,9 @@ bool VideoSDL2::MessageLoop()
                 if(std::fabs(ev.mgesture.dDist) > 0.001)
                 {
                     if(ev.mgesture.dDist > 0)
-                        CallBack->Msg_WheelUp(mouse_xy);
+                        CallBack->msgWheelUp(mouse_xy);
                     else
-                        CallBack->Msg_WheelDown(mouse_xy);
+                        CallBack->msgWheelDown(mouse_xy);
                 }
                 break;
             }

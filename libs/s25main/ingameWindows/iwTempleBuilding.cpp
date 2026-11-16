@@ -20,7 +20,7 @@ iwTempleBuilding::iwTempleBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
                    _("Output mineral"));
 }
 
-void iwTempleBuilding::Msg_ButtonClick(const unsigned ctrl_id)
+void iwTempleBuilding::msgButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == 8)
     {
@@ -31,5 +31,5 @@ void iwTempleBuilding::Msg_ButtonClick(const unsigned ctrl_id)
             static_cast<nobTemple*>(building)->SetProductionMode(nextProductionMode);
         }
     } else
-        iwBuilding::Msg_ButtonClick(ctrl_id);
+        iwBuilding::msgButtonClick(ctrl_id);
 }

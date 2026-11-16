@@ -26,8 +26,8 @@ public:
     /// Zeichnet die MapPreview
     void Draw_() override;
 
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
 
     /// Die einzelnen Dinge umschalten
     void ToggleTerritory();

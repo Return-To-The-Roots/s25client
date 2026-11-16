@@ -453,7 +453,7 @@ void dskCredits::DrawBobs()
     }
 }
 
-void dskCredits::Msg_Timer(unsigned timerId)
+void dskCredits::msgTimer(unsigned timerId)
 {
     if(timerId == ID_tmrBobAnim)
     {
@@ -495,31 +495,31 @@ glArchivItem_Bitmap* dskCredits::GetCreditsImgOrDefault(const std::string& name)
     return result;
 }
 
-bool dskCredits::Msg_KeyDown(const KeyEvent&)
+bool dskCredits::msgKeyDown(const KeyEvent&)
 {
     GotoNextPage();
     return true;
 }
 
-bool dskCredits::Msg_LeftUp(const MouseCoords&)
+bool dskCredits::msgLeftUp(const MouseCoords&)
 {
     GotoNextPage();
     bobSpawnTimer.restart(); // Little easteregg
     return true;
 }
 
-bool dskCredits::Msg_RightUp(const MouseCoords&)
+bool dskCredits::msgRightUp(const MouseCoords&)
 {
     GotoPrevPage();
     return true;
 }
 
-void dskCredits::Msg_ButtonClick(const unsigned)
+void dskCredits::msgButtonClick(const unsigned)
 {
     Close();
 }
 
-void dskCredits::Msg_MsgBoxResult(unsigned, MsgboxResult)
+void dskCredits::msgMsgBoxResult(unsigned, MsgboxResult)
 {
     Close();
 }

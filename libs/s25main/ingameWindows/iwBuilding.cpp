@@ -96,18 +96,18 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
                    LOADER.GetImageN("io_new", 11), _("Go to next building of same type"));
 }
 
-void iwBuilding::Msg_PaintBefore()
+void iwBuilding::msgPaintBefore()
 {
-    IngameWindow::Msg_PaintBefore();
+    IngameWindow::msgPaintBefore();
     productivity = building->GetProductivity();
 
     // Haus unbesetzt ggf ausblenden
     GetCtrl<ctrlText>(10)->SetVisible(!building->HasWorker());
 }
 
-void iwBuilding::Msg_PaintAfter()
+void iwBuilding::msgPaintAfter()
 {
-    IngameWindow::Msg_PaintAfter();
+    IngameWindow::msgPaintAfter();
     const auto& bldWorkDesk = BLD_WORK_DESC[building->GetBuildingType()];
     if(BuildingProperties::IsMine(building->GetBuildingType()))
     {
@@ -152,7 +152,7 @@ void iwBuilding::Msg_PaintAfter()
     }
 }
 
-void iwBuilding::Msg_ButtonClick(const unsigned ctrl_id)
+void iwBuilding::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

@@ -36,5 +36,5 @@ private:
 
     void AddButton(unsigned short id, int x, const std::string& text, TextureColor tc);
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 };

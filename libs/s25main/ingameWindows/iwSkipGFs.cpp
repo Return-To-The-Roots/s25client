@@ -78,7 +78,7 @@ void iwSkipGFs::SkipGFs(const unsigned edtCtrlId)
     GAMECLIENT.SkipGF(targetGF, gwv);
 }
 
-void iwSkipGFs::Msg_ButtonClick(const unsigned ctrlId)
+void iwSkipGFs::msgButtonClick(const unsigned ctrlId)
 {
     if(ctrlId < ID_btJumpPresetStart)
         SkipGFs((ctrlId == ID_btByGf) ? ID_edtByGf : ID_edtToGf);
@@ -89,7 +89,7 @@ void iwSkipGFs::Msg_ButtonClick(const unsigned ctrlId)
     }
 }
 
-void iwSkipGFs::Msg_EditEnter(const unsigned ctrlId)
+void iwSkipGFs::msgEditEnter(const unsigned ctrlId)
 {
     SkipGFs(ctrlId);
 }

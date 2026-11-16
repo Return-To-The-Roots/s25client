@@ -70,7 +70,7 @@ public:
 private:
     using Handle = std::unique_ptr<driver::IAudioDriver, void (*)(driver::IAudioDriver*)>;
     bool Init();
-    void Msg_MusicFinished() override;
+    void msgMusicFinished() override;
     SoundHandle createSoundHandle(const driver::RawSoundHandle& rawHandle);
 
     drivers::DriverWrapper driver_wrapper;

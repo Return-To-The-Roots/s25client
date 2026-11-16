@@ -128,7 +128,7 @@ void iwShip::DrawContent()
     DrawCargo();
 }
 
-void iwShip::Msg_ButtonClick(const unsigned ctrl_id)
+void iwShip::msgButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == 2) // Hilfe
     {

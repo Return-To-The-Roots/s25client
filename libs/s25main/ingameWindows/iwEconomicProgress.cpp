@@ -126,7 +126,7 @@ void iwEconomicProgress::DrawContent()
     }
 }
 
-void iwEconomicProgress::Msg_ButtonClick(const unsigned ctrl_id)
+void iwEconomicProgress::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -143,9 +143,9 @@ void iwEconomicProgress::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwEconomicProgress::Msg_PaintBefore()
+void iwEconomicProgress::msgPaintBefore()
 {
-    IngameWindow::Msg_PaintBefore();
+    IngameWindow::msgPaintBefore();
 
     const GameWorldBase& world = gwv.GetWorld();
     EconomyModeHandler* eH = world.getEconHandler();

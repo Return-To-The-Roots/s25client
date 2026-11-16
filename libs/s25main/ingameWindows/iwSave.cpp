@@ -66,18 +66,18 @@ iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const u
     RefreshTable();
 }
 
-void iwSaveLoad::Msg_EditEnter(const unsigned /*ctrl_id*/)
+void iwSaveLoad::msgEditEnter(const unsigned /*ctrl_id*/)
 {
     SaveLoad();
 }
 
-void iwSaveLoad::Msg_ButtonClick(const unsigned ctrl_id)
+void iwSaveLoad::msgButtonClick(const unsigned ctrl_id)
 {
     RTTR_Assert(ctrl_id == ID_btSaveOrLoad);
     SaveLoad();
 }
 
-void iwSaveLoad::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& selection)
+void iwSaveLoad::msgTableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& selection)
 {
     // On selecting a table entry put the filename into the edit control
     GetCtrl<ctrlEdit>(ID_edtFilename)
@@ -177,7 +177,7 @@ iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
     }
 }
 
-void iwSave::Msg_ComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selection)
+void iwSave::msgComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selection)
 {
     if(selection == 0) // First entry is "disabled"
         SETTINGS.interface.autosaveInterval = 0;
@@ -215,7 +215,7 @@ void iwLoad::SaveLoad()
 }
 
 /// Handle double click on the table
-void iwLoad::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
+void iwLoad::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
     SaveLoad();
 }

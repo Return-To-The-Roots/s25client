@@ -21,7 +21,7 @@ iwEndgame::iwEndgame()
     AddImageButton(2, DrawPoint(160, 24), Extent(65, 57), TextureColor::Grey, LOADER.GetImageN("io", 47));
 }
 
-void iwEndgame::Msg_ButtonClick(const unsigned ctrl_id)
+void iwEndgame::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

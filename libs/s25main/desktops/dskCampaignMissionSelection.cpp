@@ -180,14 +180,14 @@ void dskCampaignMissionSelection::UpdateStateOfNavigationButtons()
     GetCtrl<ctrlImageButton>(ID_btLastPage)->SetEnabled(currentPage_ < lastPage_);
 }
 
-void dskCampaignMissionSelection::Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id)
+void dskCampaignMissionSelection::msgGroupButtonClick(unsigned group_id, unsigned ctrl_id)
 {
     const auto page = group_id - ID_FirstPageGrp;
     RTTR_Assert(page == currentPage_);
     StartServer(page * missionsPerPage_ + ctrl_id);
 }
 
-void dskCampaignMissionSelection::Msg_ButtonClick(unsigned ctrl_id)
+void dskCampaignMissionSelection::msgButtonClick(unsigned ctrl_id)
 {
     if(ctrl_id == ID_btBack)
         WINDOWMANAGER.Switch(std::make_unique<dskCampaignSelection>(csi_));

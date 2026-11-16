@@ -15,7 +15,7 @@ public:
     iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb);
 
 protected:
-    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
 
 private:
     void AdjustExpeditionButton(bool flip);

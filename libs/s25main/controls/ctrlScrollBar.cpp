@@ -37,19 +37,19 @@ void ctrlScrollBar::Scroll(int distance)
     {
         scroll_pos = static_cast<unsigned short>(newScrollPos);
         UpdateSliderFromPos();
-        GetParent()->Msg_ScrollChange(GetID(), scroll_pos);
+        GetParent()->msgScrollChange(GetID(), scroll_pos);
     }
 }
 
-bool ctrlScrollBar::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlScrollBar::msgLeftUp(const MouseCoords& mc)
 {
     isMouseScrolling = false;
 
     // ButtonMessages weiterleiten
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return RelayMouseMessage(&Window::msgLeftUp, mc);
 }
 
-bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlScrollBar::msgLeftDown(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.pos,
                      Rect(GetDrawPos().x, GetDrawPos().y + button_height + sliderPos, GetSize().x, sliderHeight)))
@@ -88,10 +88,10 @@ bool ctrlScrollBar::Msg_LeftDown(const MouseCoords& mc)
         }
     }
 
-    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+    return RelayMouseMessage(&Window::msgLeftDown, mc);
 }
 
-bool ctrlScrollBar::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlScrollBar::msgMouseMove(const MouseCoords& mc)
 {
     if(isMouseScrolling)
     {
@@ -105,10 +105,10 @@ bool ctrlScrollBar::Msg_MouseMove(const MouseCoords& mc)
     last_y = mc.pos.y;
 
     // ButtonMessages weiterleiten
-    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return RelayMouseMessage(&Window::msgMouseMove, mc);
 }
 
-void ctrlScrollBar::Msg_ButtonClick(const unsigned ctrl_id)
+void ctrlScrollBar::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -207,7 +207,7 @@ void ctrlScrollBar::UpdatePosFromSlider()
     {
         RTTR_Assert(newScrollPos + pagesize <= scroll_range); // Probably slider to small?
         scroll_pos = newScrollPos;
-        GetParent()->Msg_ScrollChange(GetID(), scroll_pos);
+        GetParent()->msgScrollChange(GetID(), scroll_pos);
     }
 }
 
@@ -235,7 +235,7 @@ void ctrlScrollBar::RecalculateSizes()
         if(!IsVisible())
         {
             SetVisible(true);
-            GetParent()->Msg_ScrollShow(GetID(), IsVisible());
+            GetParent()->msgScrollShow(GetID(), IsVisible());
         }
     } else
     {
@@ -245,7 +245,7 @@ void ctrlScrollBar::RecalculateSizes()
         if(IsVisible())
         {
             SetVisible(false);
-            GetParent()->Msg_ScrollShow(GetID(), IsVisible());
+            GetParent()->msgScrollShow(GetID(), IsVisible());
         }
     }
 }

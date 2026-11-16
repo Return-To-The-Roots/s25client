@@ -120,7 +120,7 @@ iwSettings::iwSettings()
     updateResolutionGroups();
 }
 
-void iwSettings::Msg_ButtonClick(unsigned ctrl_id)
+void iwSettings::msgButtonClick(unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -166,7 +166,7 @@ void iwSettings::Msg_ButtonClick(unsigned ctrl_id)
     }
 }
 
-void iwSettings::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned /*selection*/)
+void iwSettings::msgComboSelectItem(const unsigned ctrl_id, const unsigned /*selection*/)
 {
     // Handle on apply and just disable closing the window without the buttons (apply/discard)
     closeBehavior_ = CloseBehavior::Custom;
@@ -174,13 +174,13 @@ void iwSettings::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned /*se
         updateResolutionGroups();
 }
 
-void iwSettings::Msg_CheckboxChange(const unsigned /*ctrl_id*/, const bool /*checked*/)
+void iwSettings::msgCheckboxChange(const unsigned /*ctrl_id*/, const bool /*checked*/)
 {
     // Handle on apply and just disable closing the window without the buttons (apply/discard)
     closeBehavior_ = CloseBehavior::Custom;
 }
 
-void iwSettings::Msg_Group_ComboSelectItem(unsigned /*group_id*/, unsigned ctrl_id, unsigned selection)
+void iwSettings::msgGroupComboSelectItem(unsigned /*group_id*/, unsigned ctrl_id, unsigned selection)
 {
     if(ctrl_id == ID_cbWindowSize && selection > 0)
     {
@@ -195,9 +195,9 @@ void iwSettings::Msg_Group_ComboSelectItem(unsigned /*group_id*/, unsigned ctrl_
         closeBehavior_ = CloseBehavior::Custom;
 }
 
-void iwSettings::Msg_ScreenResize(const ScreenResizeEvent& sr)
+void iwSettings::msgScreenResize(const ScreenResizeEvent& sr)
 {
-    IngameWindow::Msg_ScreenResize(sr);
+    IngameWindow::msgScreenResize(sr);
     updateWindowSizeComboBox();
 }
 

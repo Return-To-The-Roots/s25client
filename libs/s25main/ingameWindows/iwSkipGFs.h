@@ -18,6 +18,6 @@ private:
 
     void SkipGFs(unsigned edtCtrlId);
 
-    void Msg_ButtonClick(unsigned ctrlId) override;
-    void Msg_EditEnter(unsigned ctrlId) override;
+    void msgButtonClick(unsigned ctrlId) override;
+    void msgEditEnter(unsigned ctrlId) override;
 };

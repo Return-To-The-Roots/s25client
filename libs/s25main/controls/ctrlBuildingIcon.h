@@ -25,7 +25,7 @@ protected:
     /// zeichnet das Fenster.
     void Draw_() override;
     void DrawContent() const override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
 
     const BuildingType type; /// der GebäudeType des Icons.
     const Nation nation;     /// Volk

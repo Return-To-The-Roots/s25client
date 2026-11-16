@@ -225,7 +225,7 @@ iwMapDebug::~iwMapDebug()
     gwv.RemoveDrawNodeCallback(printer.get());
 }
 
-void iwMapDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned select)
+void iwMapDebug::msgComboSelectItem(const unsigned ctrl_id, const unsigned select)
 {
     if(ctrl_id == ID_cbShowWhat)
         printer->showDataIdx = select;
@@ -245,19 +245,19 @@ void iwMapDebug::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned sele
     }
 }
 
-void iwMapDebug::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
+void iwMapDebug::msgCheckboxChange(const unsigned ctrl_id, const bool checked)
 {
     if(ctrl_id == ID_cbShowCoordinates)
         printer->showCoords = checked;
 }
 
-void iwMapDebug::Msg_Timer(unsigned /*ctrl_id*/)
+void iwMapDebug::msgTimer(unsigned /*ctrl_id*/)
 {
     if(eventChecker)
         eventChecker->check();
 }
 
-void iwMapDebug::Msg_EditEnter(unsigned ctrl_id)
+void iwMapDebug::msgEditEnter(unsigned ctrl_id)
 {
     RTTR_Assert(ctrl_id == ID_edtJumpX || ctrl_id == ID_edtJumpY);
     Position pos;
@@ -268,11 +268,11 @@ void iwMapDebug::Msg_EditEnter(unsigned ctrl_id)
     }
 }
 
-bool iwMapDebug::Msg_KeyDown(const KeyEvent& ke)
+bool iwMapDebug::msgKeyDown(const KeyEvent& ke)
 {
     switch(ke.kt)
     {
-        case KeyType::Return: Msg_EditEnter(ID_edtJumpY); break;
+        case KeyType::Return: msgEditEnter(ID_edtJumpY); break;
         case KeyType::Tab:
         {
             auto* edtNewFocus = GetCtrl<ctrlEdit>(ID_edtJumpX);
@@ -282,7 +282,7 @@ bool iwMapDebug::Msg_KeyDown(const KeyEvent& ke)
             edtNewFocus->SetText("");
         };
         break;
-        default: return IngameWindow::Msg_KeyDown(ke);
+        default: return IngameWindow::msgKeyDown(ke);
     }
     return true;
 }

@@ -49,7 +49,7 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     }
 }
 
-void iwMissionStatement::Msg_ButtonClick(const unsigned /*ctrl_id*/)
+void iwMissionStatement::msgButtonClick(const unsigned /*ctrl_id*/)
 {
     if(pauseGame_ && GAMECLIENT.GetState() != ClientState::Stopped)
         GAMECLIENT.SetPause(false);

@@ -33,7 +33,7 @@ dskMultiPlayer::dskMultiPlayer()
     AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
 }
 
-void dskMultiPlayer::Msg_ButtonClick(const unsigned ctrl_id)
+void dskMultiPlayer::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

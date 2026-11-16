@@ -504,8 +504,8 @@ dskOptions::~dskOptions()
     ggs.SaveSettings();
 }
 
-void dskOptions::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned ctrl_id,
-                                          const unsigned short position)
+void dskOptions::msgGroupProgressChange(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                        const unsigned short position)
 {
     switch(ctrl_id)
     {
@@ -520,7 +520,7 @@ void dskOptions::Msg_Group_ProgressChange(const unsigned /*group_id*/, const uns
     }
 }
 
-void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const unsigned selection)
+void dskOptions::msgGroupComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const unsigned selection)
 {
     auto* group = GetCtrl<ctrlGroup>(group_id);
     auto* combo = group->GetCtrl<ctrlComboBox>(ctrl_id);
@@ -601,8 +601,8 @@ void dskOptions::Msg_Group_ComboSelectItem(const unsigned group_id, const unsign
     }
 }
 
-void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id,
-                                             const unsigned selection)
+void dskOptions::msgGroupOptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                           const unsigned selection)
 {
     const bool enabled = selection == ID_btOn;
     switch(ctrl_id)
@@ -642,7 +642,7 @@ void dskOptions::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const 
     }
 }
 
-void dskOptions::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void dskOptions::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     if(ctrl_id == ID_grpOptions)
     {
@@ -667,7 +667,7 @@ static bool validatePort(const std::string& sPort, uint16_t& outPort)
     return static_cast<bool>(port);
 }
 
-void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
+void dskOptions::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -728,7 +728,7 @@ void dskOptions::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void dskOptions::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)
+void dskOptions::msgGroupButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -744,7 +744,7 @@ void dskOptions::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsign
     }
 }
 
-void dskOptions::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
+void dskOptions::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
     switch(msgbox_id)
     {
@@ -765,31 +765,31 @@ void dskOptions::loadVideoModes()
     windowSizes_.assign(windowSizes.begin(), windowSizes.end());
 }
 
-void dskOptions::Msg_ScreenResize(const ScreenResizeEvent& sr)
+void dskOptions::msgScreenResize(const ScreenResizeEvent& sr)
 {
-    Desktop::Msg_ScreenResize(sr);
+    Desktop::msgScreenResize(sr);
     updateGuiScale();
     updateWindowSizeComboBox();
 }
 
-bool dskOptions::Msg_WheelUp(const MouseCoords& mc)
+bool dskOptions::msgWheelUp(const MouseCoords& mc)
 {
     if(VIDEODRIVER.GetModKeyState().ctrl)
     {
         scrollGuiScale(true);
         return true;
     } else
-        return Desktop::Msg_WheelUp(mc);
+        return Desktop::msgWheelUp(mc);
 }
 
-bool dskOptions::Msg_WheelDown(const MouseCoords& mc)
+bool dskOptions::msgWheelDown(const MouseCoords& mc)
 {
     if(VIDEODRIVER.GetModKeyState().ctrl)
     {
         scrollGuiScale(false);
         return true;
     } else
-        return Desktop::Msg_WheelDown(mc);
+        return Desktop::msgWheelDown(mc);
 }
 
 void dskOptions::updateGuiScale()

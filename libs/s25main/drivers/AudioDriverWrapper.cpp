@@ -170,7 +170,7 @@ void AudioDriverWrapper::StopEffect(EffectPlayId& playId)
     playId = EffectPlayId::Invalid;
 }
 
-void AudioDriverWrapper::Msg_MusicFinished()
+void AudioDriverWrapper::msgMusicFinished()
 {
     // MusicManager Bescheid sagen
     MUSICPLAYER.MusicFinished();

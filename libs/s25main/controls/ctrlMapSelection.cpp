@@ -117,7 +117,7 @@ void ctrlMapSelection::setPreview(bool previewOnly)
     preview = previewOnly;
 }
 
-bool ctrlMapSelection::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlMapSelection::msgLeftUp(const MouseCoords& mc)
 {
     if(!preview && IsMouseOver(mc))
     {
@@ -134,7 +134,7 @@ bool ctrlMapSelection::Msg_LeftUp(const MouseCoords& mc)
         if(matchingMissionIdx >= 0)
         {
             setSelection(matchingMissionIdx);
-            GetParent()->Msg_ButtonClick(GetID());
+            GetParent()->msgButtonClick(GetID());
         }
         return true;
     }

@@ -113,7 +113,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode di
     SwapBuffers();
 
     // WindowManager informieren
-    WINDOWMANAGER.Msg_ScreenResize(GetRenderSize());
+    WINDOWMANAGER.msgScreenResize(GetRenderSize());
 
     return true;
 }

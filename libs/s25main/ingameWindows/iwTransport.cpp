@@ -134,7 +134,7 @@ void iwTransport::TransmitSettings()
     }
 }
 
-void iwTransport::Msg_ButtonClick(const unsigned ctrl_id)
+void iwTransport::msgButtonClick(const unsigned ctrl_id)
 {
     if(GAMECLIENT.IsReplayModeOn())
         return;

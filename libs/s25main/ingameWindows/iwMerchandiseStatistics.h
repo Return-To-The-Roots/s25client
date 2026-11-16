@@ -40,6 +40,6 @@ private:
 
     void DrawContent() override;
     // Durchgereichte Methoden vom Window
-    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 };

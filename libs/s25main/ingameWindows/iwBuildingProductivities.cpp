@@ -103,8 +103,8 @@ void iwBuildingProductivities::UpdatePercents()
     percents = player.GetBuildingRegister().CalcProductivities();
 }
 
-void iwBuildingProductivities::Msg_PaintAfter()
+void iwBuildingProductivities::msgPaintAfter()
 {
-    IngameWindow::Msg_PaintAfter();
+    IngameWindow::msgPaintAfter();
     UpdatePercents();
 }

@@ -189,7 +189,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
 
 iwStatistics::~iwStatistics() = default;
 
-void iwStatistics::Msg_ButtonClick(const unsigned ctrl_id)
+void iwStatistics::msgButtonClick(const unsigned ctrl_id)
 {
     const unsigned playerIndex = ctrl_id - ID_btPlayer_Start;
     if(playerIndex < showStatistic.size())
@@ -204,7 +204,7 @@ void iwStatistics::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void iwStatistics::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {

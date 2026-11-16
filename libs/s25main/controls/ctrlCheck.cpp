@@ -17,19 +17,19 @@ ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Ex
     : Window(parent, id, pos, size), tc(tc), text(std::move(text)), font(font), check(false), readonly(readonly)
 {}
 
-bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlCheck::msgLeftDown(const MouseCoords& mc)
 {
     if(!readonly && IsPointInRect(mc.pos, GetDrawRect()))
     {
         check = !check;
-        GetParent()->Msg_CheckboxChange(GetID(), check);
+        GetParent()->msgCheckboxChange(GetID(), check);
         return true;
     }
 
     return false;
 }
 
-bool ctrlCheck::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlCheck::msgMouseMove(const MouseCoords& mc)
 {
     if(IsMouseOver(mc.pos))
     {

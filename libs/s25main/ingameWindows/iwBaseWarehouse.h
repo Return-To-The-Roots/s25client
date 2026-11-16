@@ -33,8 +33,8 @@ protected:
     void UpdateOverlay(unsigned i, bool isWare);
     void UpdateOverlays();
 
-    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 
     void SetPage(unsigned page) override;
 };

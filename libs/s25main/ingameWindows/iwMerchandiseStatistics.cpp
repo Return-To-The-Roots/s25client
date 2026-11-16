@@ -103,7 +103,7 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
 
 iwMerchandiseStatistics::~iwMerchandiseStatistics() = default;
 
-void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
+void iwMerchandiseStatistics::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -126,7 +126,7 @@ void iwMerchandiseStatistics::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwMerchandiseStatistics::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void iwMerchandiseStatistics::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {

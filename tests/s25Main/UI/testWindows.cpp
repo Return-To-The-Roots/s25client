@@ -156,7 +156,7 @@ struct AddonPresetFixture : uiHelper::Fixture
     static void answerMsgbox(Window& wnd, unsigned msgboxId, MsgboxResult result)
     {
         auto& prompt = ensureNonNull(topMsgbox());
-        wnd.Msg_MsgBoxResult(msgboxId, result);
+        wnd.msgMsgBoxResult(msgboxId, result);
         closeMsgbox(prompt);
     }
 
@@ -165,7 +165,7 @@ struct AddonPresetFixture : uiHelper::Fixture
         iwSaveAddonPreset wnd(states);
         Window& base = wnd;
         base.GetCtrls<ctrlEdit>().at(0)->SetText(name);
-        base.Msg_ButtonClick(iwAddonPresetsBase::ID_btAction);
+        base.msgButtonClick(iwAddonPresetsBase::ID_btAction);
     }
 
     // Returns the given preset's settings, or empty if the preset is missing or corrupt.
@@ -175,7 +175,7 @@ struct AddonPresetFixture : uiHelper::Fixture
         iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>& s) { out = s; });
         Window& base = wnd;
         if(select(base, name))
-            base.Msg_ButtonClick(iwAddonPresetsBase::ID_btAction);
+            base.msgButtonClick(iwAddonPresetsBase::ID_btAction);
         return out;
     }
 
@@ -206,7 +206,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetOverwrite, AddonPresetFixture)
         iwSaveAddonPreset wnd(newStates);
         Window& base = wnd;
         base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset");
-        base.Msg_EditEnter(0);
+        base.msgEditEnter(0);
 
         const auto& msgbox = ensureNonNull(topMsgbox());
         BOOST_TEST(msgbox.GetTitle() == _("Overwrite Preset"));
@@ -221,7 +221,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetOverwrite, AddonPresetFixture)
         iwSaveAddonPreset wnd(newStates);
         Window& base = wnd;
         base.GetCtrls<ctrlEdit>().at(0)->SetText("myPreset");
-        base.Msg_EditEnter(0);
+        base.msgEditEnter(0);
         answerMsgbox(base, iwSaveAddonPreset::ID_mbOverwrite, MsgboxResult::Yes);
     }
     BOOST_TEST(load("myPreset") == newStates);
@@ -249,7 +249,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetDoubleClickLoads, AddonPresetFixture)
     iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>& s) { loaded = s; });
     Window& base = wnd;
     BOOST_TEST_REQUIRE(select(base, "myPreset"));
-    base.Msg_TableChooseItem(iwAddonPresetsBase::ID_tblPresets, 0u);
+    base.msgTableChooseItem(iwAddonPresetsBase::ID_tblPresets, 0u);
 
     BOOST_TEST_REQUIRE(loaded.has_value());
     BOOST_TEST(*loaded == states);
@@ -267,11 +267,11 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetLoadCorrupt, AddonPresetFixture)
     iwLoadAddonPreset wnd([&](const std::map<unsigned, unsigned>&) noexcept { ++numLoaded; });
     Window& base = wnd;
     BOOST_TEST_REQUIRE(select(base, "valid"));
-    base.Msg_ButtonClick(iwAddonPresetsBase::ID_btAction);
+    base.msgButtonClick(iwAddonPresetsBase::ID_btAction);
     BOOST_TEST_REQUIRE(numLoaded == 1u);
 
     BOOST_TEST_REQUIRE(select(base, "corrupt"));
-    base.Msg_ButtonClick(iwAddonPresetsBase::ID_btAction);
+    base.msgButtonClick(iwAddonPresetsBase::ID_btAction);
 
     BOOST_TEST(numLoaded == 1u); // nothing is applied from a corrupt preset
     auto& msgbox = ensureNonNull(topMsgbox());
@@ -289,7 +289,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetSaveUnwritable, AddonPresetFixture)
     iwSaveAddonPreset wnd(states);
     Window& base = wnd;
     base.GetCtrls<ctrlEdit>().at(0)->SetText("blocked");
-    base.Msg_ButtonClick(iwAddonPresetsBase::ID_btAction);
+    base.msgButtonClick(iwAddonPresetsBase::ID_btAction);
     answerMsgbox(base, iwSaveAddonPreset::ID_mbOverwrite, MsgboxResult::Yes);
 
     auto& msgbox = ensureNonNull(topMsgbox());
@@ -331,7 +331,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetSaveNameFollowsSelection, AddonPresetFixture)
     BOOST_TEST(!table.GetSelection().has_value());
     BOOST_TEST(!deleteBtn.GetEnabled());
     BOOST_TEST(edit.GetText() == "presetC");
-    base.Msg_EditEnter(0);
+    base.msgEditEnter(0);
 
     BOOST_TEST(numPresets() == 3u);
     BOOST_TEST(load("presetC") == statesNew); // saved under the typed name
@@ -346,7 +346,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetDelete, AddonPresetFixture)
     iwLoadAddonPreset wnd([](const std::map<unsigned, unsigned>&) noexcept {});
     Window& base = wnd;
     BOOST_TEST_REQUIRE(select(base, "toDelete"));
-    base.Msg_ButtonClick(iwAddonPresetsBase::ID_btDelete);
+    base.msgButtonClick(iwAddonPresetsBase::ID_btDelete);
 
     const auto& msgbox = ensureNonNull(topMsgbox());
     BOOST_TEST(msgbox.GetTitle() == _("Delete Preset"));
@@ -367,7 +367,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetSaveWindowCanDelete, AddonPresetFixture)
     iwSaveAddonPreset wnd(std::map<unsigned, unsigned>{{9, 9}});
     Window& base = wnd;
     BOOST_TEST_REQUIRE(select(base, "toDelete"));
-    base.Msg_ButtonClick(iwAddonPresetsBase::ID_btDelete);
+    base.msgButtonClick(iwAddonPresetsBase::ID_btDelete);
     answerMsgbox(base, iwAddonPresetsBase::ID_mbDelete, MsgboxResult::Yes);
 
     BOOST_TEST(numPresets() == 0u);
@@ -425,8 +425,8 @@ MOCK_BASE_CLASS(TestWindow, Window)
 {
 public:
     TestWindow(Window * parent, unsigned id, const DrawPoint& position) : Window(parent, id, position) {}
-    MOCK_METHOD(Msg_PaintBefore, 0)
-    MOCK_METHOD(Msg_PaintAfter, 0)
+    MOCK_METHOD(msgPaintBefore, 0)
+    MOCK_METHOD(msgPaintAfter, 0)
     MOCK_METHOD(Draw_, 0, void())
 };
 } // namespace
@@ -455,11 +455,11 @@ BOOST_AUTO_TEST_CASE(DrawOrder)
     mock::sequence s;
     // Note: Actually order of calls to controls is undefined but in practice matches the IDs
     for(TestWindow* wnd : wnds)
-        MOCK_EXPECT(wnd->Msg_PaintBefore).once().in(s);
+        MOCK_EXPECT(wnd->msgPaintBefore).once().in(s);
     for(TestWindow* wnd : wnds)
         MOCK_EXPECT(wnd->Draw_).once().in(s);
     for(TestWindow* wnd : wnds)
-        MOCK_EXPECT(wnd->Msg_PaintAfter).once().in(s);
+        MOCK_EXPECT(wnd->msgPaintAfter).once().in(s);
     WINDOWMANAGER.Draw();
     mock::verify();
 }

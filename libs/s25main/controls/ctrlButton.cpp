@@ -30,7 +30,7 @@ void ctrlButton::SetActive(bool activate)
         state = ButtonState::Hover;
 }
 
-bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlButton::msgMouseMove(const MouseCoords& mc)
 {
     if(isEnabled && IsMouseOver(mc))
     {
@@ -47,7 +47,7 @@ bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
     }
 }
 
-bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlButton::msgLeftDown(const MouseCoords& mc)
 {
     if(isEnabled && IsMouseOver(mc))
     {
@@ -58,14 +58,14 @@ bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
     return false;
 }
 
-bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlButton::msgLeftUp(const MouseCoords& mc)
 {
     if(state == ButtonState::Pressed)
     {
         if(isEnabled && IsMouseOver(mc))
         {
             state = ButtonState::Hover;
-            GetParent()->Msg_ButtonClick(GetID());
+            GetParent()->msgButtonClick(GetID());
             return true;
         } else
             state = ButtonState::Up;

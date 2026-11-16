@@ -76,7 +76,7 @@ dskBenchmark::~dskBenchmark()
     {}
 }
 
-bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
+bool dskBenchmark::msgKeyDown(const KeyEvent& ke)
 {
     switch(ke.kt)
     {
@@ -99,13 +99,13 @@ bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
                 GetCtrl<ctrlText>(ID_txtAmount)->SetText("Instances: " + helpers::toString(numInstances_));
                 break;
             } else
-                return dskMenuBase::Msg_KeyDown(ke);
-        default: return dskMenuBase::Msg_KeyDown(ke);
+                return dskMenuBase::msgKeyDown(ke);
+        default: return dskMenuBase::msgKeyDown(ke);
     }
     return true;
 }
 
-void dskBenchmark::Msg_PaintAfter()
+void dskBenchmark::msgPaintAfter()
 {
     for(const ColoredRect& rect : rects_)
         DrawRectangle(rect.rect, rect.clr);
@@ -125,7 +125,7 @@ void dskBenchmark::Msg_PaintAfter()
         if(frameCtr_.getCurNumFrames() >= numTestFrames)
             finishTest();
     }
-    dskMenuBase::Msg_PaintAfter();
+    dskMenuBase::msgPaintAfter();
 }
 
 void dskBenchmark::SetActive(bool activate)

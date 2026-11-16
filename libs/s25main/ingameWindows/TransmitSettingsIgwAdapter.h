@@ -25,6 +25,6 @@ public:
 
     void Close() override;
 
-    void Msg_Timer(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgTimer(unsigned ctrl_id) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 };

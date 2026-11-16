@@ -18,7 +18,7 @@ public:
     bool isRunning() const { return timer_.isRunning(); }
     Timer::duration getElapsed() const { return timer_.getElapsed(); }
 
-    void Msg_PaintBefore() override;
+    void msgPaintBefore() override;
 
 protected:
     void Draw_() override{};

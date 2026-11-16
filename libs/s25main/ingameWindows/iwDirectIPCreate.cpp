@@ -59,7 +59,7 @@ iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
 /**
  *  Statustext resetten
  */
-void iwDirectIPCreate::Msg_EditChange(const unsigned /*ctrl_id*/)
+void iwDirectIPCreate::msgEditChange(const unsigned /*ctrl_id*/)
 {
     // Statustext resetten
     SetText("", COLOR_RED, true);
@@ -68,7 +68,7 @@ void iwDirectIPCreate::Msg_EditChange(const unsigned /*ctrl_id*/)
 /**
  *  Bei Enter nächstes Steuerelement auswählen
  */
-void iwDirectIPCreate::Msg_EditEnter(const unsigned ctrl_id)
+void iwDirectIPCreate::msgEditEnter(const unsigned ctrl_id)
 {
     auto* name = GetCtrl<ctrlEdit>(1);
     auto* port = GetCtrl<ctrlEdit>(3);
@@ -93,13 +93,13 @@ void iwDirectIPCreate::Msg_EditEnter(const unsigned ctrl_id)
         case 5:
         {
             // Starten klicken
-            Msg_ButtonClick(7);
+            msgButtonClick(7);
         }
         break;
     }
 }
 
-void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void iwDirectIPCreate::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {
@@ -114,7 +114,7 @@ void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned ctrl_id, const unsig
 /**
  *  Button Clicki-Di-Bunti-Li
  */
-void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
+void iwDirectIPCreate::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

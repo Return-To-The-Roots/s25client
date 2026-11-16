@@ -48,7 +48,7 @@ iwVictory::iwVictory(const std::vector<std::string>& winnerNames)
                   NormalFont);
 }
 
-void iwVictory::Msg_ButtonClick(const unsigned ctrl_id)
+void iwVictory::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

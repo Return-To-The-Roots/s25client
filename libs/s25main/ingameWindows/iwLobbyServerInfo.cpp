@@ -44,7 +44,7 @@ iwLobbyServerInfo::iwLobbyServerInfo(unsigned serverId)
     AddTimer(9, 5s);
 }
 
-void iwLobbyServerInfo::Msg_Timer(const unsigned ctrl_id)
+void iwLobbyServerInfo::msgTimer(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

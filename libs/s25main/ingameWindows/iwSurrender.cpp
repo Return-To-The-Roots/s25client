@@ -22,7 +22,7 @@ iwSurrender::iwSurrender()
                    _("Don't surrender"));
 }
 
-void iwSurrender::Msg_ButtonClick(const unsigned ctrl_id)
+void iwSurrender::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

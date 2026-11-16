@@ -543,15 +543,15 @@ void dskGameLobby::UpdatePlayerRow(const unsigned row)
 /**
  *  Methode vor dem Zeichnen
  */
-void dskGameLobby::Msg_PaintBefore()
+void dskGameLobby::msgPaintBefore()
 {
-    Desktop::Msg_PaintBefore();
+    Desktop::msgPaintBefore();
     // Chatfenster Fokus geben
     if(!IsSinglePlayer())
         GetCtrl<ctrlEdit>(ID_edtChatMsg)->SetFocus();
 }
 
-void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
+void dskGameLobby::msgGroupButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     unsigned playerId = group_id - ID_grpPlayerStart;
 
@@ -655,7 +655,7 @@ void dskGameLobby::Msg_Group_ButtonClick(const unsigned group_id, const unsigned
     }
 }
 
-void dskGameLobby::Msg_Group_CheckboxChange(const unsigned group_id, const unsigned /*ctrl_id*/, const bool checked)
+void dskGameLobby::msgGroupCheckboxChange(const unsigned group_id, const unsigned /*ctrl_id*/, const bool checked)
 {
     unsigned playerId = group_id - ID_grpPlayerStart;
 
@@ -664,8 +664,8 @@ void dskGameLobby::Msg_Group_CheckboxChange(const unsigned group_id, const unsig
         SetPlayerReady(playerId, checked);
 }
 
-void dskGameLobby::Msg_Group_ComboSelectItem(const unsigned group_id, const unsigned /*ctrl_id*/,
-                                             const unsigned selection)
+void dskGameLobby::msgGroupComboSelectItem(const unsigned group_id, const unsigned /*ctrl_id*/,
+                                           const unsigned selection)
 {
     if(!gameLobby_->isHost())
         return;
@@ -705,7 +705,7 @@ bool dskGameLobby::IsChangeAllowed(const std::string& setting) const
     return !lua || lua->IsChangeAllowed(setting);
 }
 
-void dskGameLobby::Msg_ButtonClick(const unsigned ctrl_id)
+void dskGameLobby::msgButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id >= ID_btSwap && ctrl_id < ID_btSwap + MAX_PLAYERS)
     {
@@ -769,7 +769,7 @@ void dskGameLobby::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void dskGameLobby::Msg_EditEnter(const unsigned ctrl_id)
+void dskGameLobby::msgEditEnter(const unsigned ctrl_id)
 {
     if(ctrl_id != ID_edtChatMsg)
         return;
@@ -837,7 +837,7 @@ void dskGameLobby::FlashGameChat()
     }
 }
 
-void dskGameLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void dskGameLobby::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     switch(msgbox_id)
     {
@@ -867,7 +867,7 @@ void dskGameLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
             } else if(mbr == MsgboxResult::No)
             {
                 forceOptions = true;
-                Msg_ButtonClick(ID_btStartGame);
+                msgButtonClick(ID_btStartGame);
             }
         }
         break;
@@ -879,14 +879,14 @@ void dskGameLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
             } else if(mbr == MsgboxResult::No)
             {
                 forceOptions = true;
-                Msg_ButtonClick(ID_btStartGame);
+                msgButtonClick(ID_btStartGame);
             }
         }
         break;
     }
 }
 
-void dskGameLobby::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned /*selection*/)
+void dskGameLobby::msgComboSelectItem(const unsigned ctrl_id, const unsigned /*selection*/)
 {
     switch(ctrl_id)
     {
@@ -904,7 +904,7 @@ void dskGameLobby::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned /*
     }
 }
 
-void dskGameLobby::Msg_CheckboxChange(const unsigned ctrl_id, const bool /*checked*/)
+void dskGameLobby::msgCheckboxChange(const unsigned ctrl_id, const bool /*checked*/)
 {
     switch(ctrl_id)
     {
@@ -920,7 +920,7 @@ void dskGameLobby::Msg_CheckboxChange(const unsigned ctrl_id, const bool /*check
     }
 }
 
-void dskGameLobby::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void dskGameLobby::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     if(ctrl_id == ID_optChatTab)
     {

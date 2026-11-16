@@ -34,8 +34,8 @@ private:
     /// Sendet veränderte Einstellungen (an den Client), falls sie verändert wurden
     void TransmitSettings() override;
 
-    void Msg_Group_ProgressChange(unsigned group_id, unsigned ctrl_id, unsigned short position) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgGroupProgressChange(unsigned group_id, unsigned ctrl_id, unsigned short position) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 
     /// Groups for the settings
     std::vector<DistributionGroup> groups;

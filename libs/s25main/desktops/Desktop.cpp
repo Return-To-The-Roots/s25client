@@ -45,9 +45,9 @@ void Desktop::Draw_()
     Window::Draw_();
 }
 
-void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
+void Desktop::msgScreenResize(const ScreenResizeEvent& sr)
 {
-    Window::Msg_ScreenResize(sr);
+    Window::msgScreenResize(sr);
     // Resize to new screen size
     Resize(sr.newSize);
     auto* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);

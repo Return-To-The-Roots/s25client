@@ -129,13 +129,13 @@ void iwLobbyConnect::ReadFromEditAndSaveLobbyData(std::string& user, std::string
         SETTINGS.lobby.password.clear();
 }
 
-void iwLobbyConnect::Msg_EditChange(const unsigned /*ctrl_id*/)
+void iwLobbyConnect::msgEditChange(const unsigned /*ctrl_id*/)
 {
     // Reset status text
     SetText("", COLOR_RED, true);
 }
 
-void iwLobbyConnect::Msg_EditEnter(const unsigned ctrl_id)
+void iwLobbyConnect::msgEditEnter(const unsigned ctrl_id)
 {
     auto* user = GetCtrl<ctrlEdit>(ID_edtUser);
     auto* pass = GetCtrl<ctrlEdit>(ID_edtPw);
@@ -145,11 +145,11 @@ void iwLobbyConnect::Msg_EditEnter(const unsigned ctrl_id)
             user->SetFocus(false);
             pass->SetFocus(true);
             break;
-        case ID_edtPw: Msg_ButtonClick(ID_btConnect); break;
+        case ID_edtPw: msgButtonClick(ID_btConnect); break;
     }
 }
 
-void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
+void iwLobbyConnect::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -179,7 +179,7 @@ void iwLobbyConnect::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void iwLobbyConnect::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {
@@ -190,7 +190,7 @@ void iwLobbyConnect::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigne
     }
 }
 
-bool iwLobbyConnect::Msg_KeyDown(const KeyEvent& ev)
+bool iwLobbyConnect::msgKeyDown(const KeyEvent& ev)
 {
     if(ev.kt != KeyType::Tab)
         return false;

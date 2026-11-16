@@ -104,7 +104,7 @@ void iwAddons::Close()
     IngameWindow::Close();
 }
 
-void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
+void iwAddons::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -124,7 +124,7 @@ void iwAddons::Msg_ButtonClick(const unsigned ctrl_id)
                     case AddonChangeAllowed::All:
                     case AddonChangeAllowed::WhitelistOnly:
                         // send message via msgboxresult
-                        GetParent()->Msg_MsgBoxResult(GetID(), MsgboxResult::Yes);
+                        GetParent()->msgMsgBoxResult(GetID(), MsgboxResult::Yes);
                         break;
                 }
             }
@@ -208,7 +208,7 @@ bool iwAddons::isReadOnly(AddonId id) const
            || (policy_ == AddonChangeAllowed::WhitelistOnly && !helpers::contains(whitelistedAddons_, id));
 }
 
-void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void iwAddons::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {
@@ -224,19 +224,19 @@ void iwAddons::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned sele
 /**
  *  get scrollbar notification
  */
-void iwAddons::Msg_ScrollChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
+void iwAddons::msgScrollChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
     auto* optiongroup = GetCtrl<ctrlOptionGroup>(ID_grpAddonGroup);
     UpdateView(static_cast<AddonGroup>(optiongroup->GetSelection()));
 }
 
-bool iwAddons::Msg_WheelUp(const MouseCoords& /*mc*/)
+bool iwAddons::msgWheelUp(const MouseCoords& /*mc*/)
 {
     GetCtrl<ctrlScrollBar>(ID_scroll)->Scroll(-2);
     return true;
 }
 
-bool iwAddons::Msg_WheelDown(const MouseCoords& /*mc*/)
+bool iwAddons::msgWheelDown(const MouseCoords& /*mc*/)
 {
     GetCtrl<ctrlScrollBar>(ID_scroll)->Scroll(+2);
     return true;

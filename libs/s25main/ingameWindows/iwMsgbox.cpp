@@ -158,10 +158,10 @@ constexpr helpers::EnumArray<std::array<MsgboxResult, 3>, MsgboxButton> RET_IDS 
    {MsgboxResult::Yes, MsgboxResult::No},
    {MsgboxResult::Yes, MsgboxResult::No, MsgboxResult::Cancel}}};
 
-void iwMsgbox::Msg_ButtonClick(const unsigned ctrl_id)
+void iwMsgbox::msgButtonClick(const unsigned ctrl_id)
 {
     if(msgHandler_)
-        msgHandler_->Msg_MsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - ID_BT_0]);
+        msgHandler_->msgMsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - ID_BT_0]);
     Close();
 }
 

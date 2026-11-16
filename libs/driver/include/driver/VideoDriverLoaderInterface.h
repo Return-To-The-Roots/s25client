@@ -13,17 +13,17 @@ class BOOST_SYMBOL_VISIBLE VideoDriverLoaderInterface
 public:
     virtual ~VideoDriverLoaderInterface() = default;
 
-    virtual void Msg_LeftDown(MouseCoords mc) = 0;
-    virtual void Msg_LeftUp(MouseCoords mc) = 0;
-    virtual void Msg_RightDown(const MouseCoords& mc) = 0;
-    virtual void Msg_RightUp(const MouseCoords& mc) = 0;
-    virtual void Msg_MiddleDown(const MouseCoords& mc) = 0;
-    virtual void Msg_MiddleUp(const MouseCoords& mc) = 0;
-    virtual void Msg_WheelUp(const MouseCoords& mc) = 0;
-    virtual void Msg_WheelDown(const MouseCoords& mc) = 0;
-    virtual void Msg_MouseMove(const MouseCoords& mc) = 0;
+    virtual void msgLeftDown(MouseCoords mc) = 0;
+    virtual void msgLeftUp(MouseCoords mc) = 0;
+    virtual void msgRightDown(const MouseCoords& mc) = 0;
+    virtual void msgRightUp(const MouseCoords& mc) = 0;
+    virtual void msgMiddleDown(const MouseCoords& mc) = 0;
+    virtual void msgMiddleUp(const MouseCoords& mc) = 0;
+    virtual void msgWheelUp(const MouseCoords& mc) = 0;
+    virtual void msgWheelDown(const MouseCoords& mc) = 0;
+    virtual void msgMouseMove(const MouseCoords& mc) = 0;
 
-    virtual void Msg_KeyDown(const KeyEvent& ke) = 0;
+    virtual void msgKeyDown(const KeyEvent& ke) = 0;
 
     virtual void WindowResized() = 0;
 };

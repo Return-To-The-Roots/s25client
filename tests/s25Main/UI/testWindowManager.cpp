@@ -35,9 +35,9 @@ namespace {
 MOCK_BASE_CLASS(TestDesktop, Desktop)
 {
     TestDesktop() : Desktop(nullptr) {}
-    MOCK_METHOD(Msg_LeftDown, 1)
-    MOCK_METHOD(Msg_LeftUp, 1)
-    MOCK_METHOD(Msg_MouseMove, 1)
+    MOCK_METHOD(msgLeftDown, 1)
+    MOCK_METHOD(msgLeftUp, 1)
+    MOCK_METHOD(msgMouseMove, 1)
 };
 
 struct WMFixture : mock::cleanup
@@ -47,9 +47,9 @@ struct WMFixture : mock::cleanup
     WMFixture() : video(uiHelper::GetVideoDriver())
     {
         dsk = static_cast<TestDesktop*>(WINDOWMANAGER.Switch(std::make_unique<TestDesktop>()));
-        MOCK_EXPECT(dsk->Msg_MouseMove).once().returns(true);
-        MOCK_EXPECT(dsk->Msg_LeftDown).once().returns(true);
-        MOCK_EXPECT(dsk->Msg_LeftUp).once().returns(true);
+        MOCK_EXPECT(dsk->msgMouseMove).once().returns(true);
+        MOCK_EXPECT(dsk->msgLeftDown).once().returns(true);
+        MOCK_EXPECT(dsk->msgLeftUp).once().returns(true);
         WINDOWMANAGER.Draw();
 
         // Ensure next click in test won't be registered as double-click
@@ -58,8 +58,8 @@ struct WMFixture : mock::cleanup
         mc1.ldown = true;
         MouseCoords mc1_u(mc1.pos);
         video->tickCount_ = DOUBLE_CLICK_INTERVAL * 100;
-        WINDOWMANAGER.Msg_LeftDown(mc1);
-        WINDOWMANAGER.Msg_LeftUp(mc1);
+        WINDOWMANAGER.msgLeftDown(mc1);
+        WINDOWMANAGER.msgLeftUp(mc1);
         video->tickCount_ = 0;
 
         mock::verify(*dsk);
@@ -90,22 +90,22 @@ BOOST_FIXTURE_TEST_CASE(LeftClick, WMFixture)
     MouseCoords mc2(10, 7);
     mc2.ldown = true;
     MouseCoords mc2_u(mc2.pos);
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc1).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc1_u).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc2_u).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc1).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc2_u).in(s).returns(true);
-    WINDOWMANAGER.Msg_LeftDown(mc1);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc1).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc1_u).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc2).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc2_u).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc1).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc2_u).in(s).returns(true);
+    WINDOWMANAGER.msgLeftDown(mc1);
     video->tickCount_ += 50;
-    WINDOWMANAGER.Msg_LeftUp(mc1_u);
+    WINDOWMANAGER.msgLeftUp(mc1_u);
     video->tickCount_ += 2000;
-    WINDOWMANAGER.Msg_LeftDown(mc2);
+    WINDOWMANAGER.msgLeftDown(mc2);
     video->tickCount_ += 50;
-    WINDOWMANAGER.Msg_LeftUp(mc2_u);
+    WINDOWMANAGER.msgLeftUp(mc2_u);
     video->tickCount_ += 3000;
-    WINDOWMANAGER.Msg_LeftDown(mc1);
-    WINDOWMANAGER.Msg_LeftUp(mc2_u);
+    WINDOWMANAGER.msgLeftDown(mc1);
+    WINDOWMANAGER.msgLeftUp(mc2_u);
     mock::verify();
 }
 
@@ -120,41 +120,41 @@ BOOST_FIXTURE_TEST_CASE(DblClick, WMFixture)
     mc2.ldown = true;
     MouseCoords mc2_u(mc2.pos);
     // Click with time > DOUBLE_CLICK_INTERVAL is no dbl click
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc1).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc1_u).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc1).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc1_u).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc1).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc1_u).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc1).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc1_u).in(s).returns(true);
     // Click on different positions is no dbl click
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc2_u).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc2).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc2_u).in(s).returns(true);
     // Click on same pos with time < DOUBLE_CLICK_INTERVAL is dbl click
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc2).in(s).returns(true);
     MouseCoords dbl_mc2(mc2.pos);
     dbl_mc2.dbl_click = true;
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(dbl_mc2).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(dbl_mc2).in(s).returns(true);
     // No triple click
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc2_u).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc2).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc2_u).in(s).returns(true);
 
-    WINDOWMANAGER.Msg_LeftDown(mc1);
+    WINDOWMANAGER.msgLeftDown(mc1);
     video->tickCount_ += 1;
-    WINDOWMANAGER.Msg_LeftUp(mc1_u);
+    WINDOWMANAGER.msgLeftUp(mc1_u);
     // time > DOUBLE_CLICK_INTERVAL
     video->tickCount_ += DOUBLE_CLICK_INTERVAL;
-    WINDOWMANAGER.Msg_LeftDown(mc1);
+    WINDOWMANAGER.msgLeftDown(mc1);
     video->tickCount_ += 1;
-    WINDOWMANAGER.Msg_LeftUp(mc1_u);
+    WINDOWMANAGER.msgLeftUp(mc1_u);
     // Different position
-    WINDOWMANAGER.Msg_LeftDown(mc2);
-    WINDOWMANAGER.Msg_LeftUp(mc2_u);
+    WINDOWMANAGER.msgLeftDown(mc2);
+    WINDOWMANAGER.msgLeftUp(mc2_u);
     // time < DOUBLE_CLICK_INTERVAL
     video->tickCount_ += DOUBLE_CLICK_INTERVAL - 1;
-    WINDOWMANAGER.Msg_LeftDown(mc2);
-    WINDOWMANAGER.Msg_LeftUp(mc2_u);
+    WINDOWMANAGER.msgLeftDown(mc2);
+    WINDOWMANAGER.msgLeftUp(mc2_u);
     // Triple?
     video->tickCount_ += DOUBLE_CLICK_INTERVAL - 1;
-    WINDOWMANAGER.Msg_LeftDown(mc2);
-    WINDOWMANAGER.Msg_LeftUp(mc2_u);
+    WINDOWMANAGER.msgLeftDown(mc2);
+    WINDOWMANAGER.msgLeftUp(mc2_u);
     mock::verify();
 }
 
@@ -183,47 +183,47 @@ BOOST_FIXTURE_TEST_CASE(DblClickTouch, WMFixture)
     mc3_u.num_tfingers = 1;
 
     // Set last click position on mc1
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc1).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc1_u).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc1).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc1_u).in(s).returns(true);
 
     // Touch position mc2 -> Too far away fom previous point -> Set last click position on mc2
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc2).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc2_u).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc2).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc2_u).in(s).returns(true);
 
     // Touch position mc3 -> In range of mc -> dblclick
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc3).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc3).in(s).returns(true);
     MouseCoords range_mc3(mc3.pos);
     range_mc3.dbl_click = true;
     range_mc3.num_tfingers = 1;
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(range_mc3).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(range_mc3).in(s).returns(true);
 
     // Try to touch 3rd time -> no dblclick -> Set last click position to mc3
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc3).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc3_u).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc3).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc3_u).in(s).returns(true);
 
     // Touch position mc3 again -> In range of mc but duration > TOUCH_DOUBLE_CLICK_INTERVAL no dblclick
-    MOCK_EXPECT(dsk->Msg_LeftDown).once().with(mc3).in(s).returns(true);
-    MOCK_EXPECT(dsk->Msg_LeftUp).once().with(mc3_u).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftDown).once().with(mc3).in(s).returns(true);
+    MOCK_EXPECT(dsk->msgLeftUp).once().with(mc3_u).in(s).returns(true);
 
-    WINDOWMANAGER.Msg_LeftDown(mc1);
+    WINDOWMANAGER.msgLeftDown(mc1);
     video->tickCount_ += 1;
-    WINDOWMANAGER.Msg_LeftUp(mc1_u);
+    WINDOWMANAGER.msgLeftUp(mc1_u);
 
-    WINDOWMANAGER.Msg_LeftDown(mc2);
+    WINDOWMANAGER.msgLeftDown(mc2);
     video->tickCount_ += 1;
-    WINDOWMANAGER.Msg_LeftUp(mc2_u);
+    WINDOWMANAGER.msgLeftUp(mc2_u);
 
     video->tickCount_ += TOUCH_DOUBLE_CLICK_INTERVAL - 1;
-    WINDOWMANAGER.Msg_LeftDown(mc3);
-    WINDOWMANAGER.Msg_LeftUp(mc3_u);
+    WINDOWMANAGER.msgLeftDown(mc3);
+    WINDOWMANAGER.msgLeftUp(mc3_u);
 
     video->tickCount_ += TOUCH_DOUBLE_CLICK_INTERVAL - 1;
-    WINDOWMANAGER.Msg_LeftDown(mc3);
-    WINDOWMANAGER.Msg_LeftUp(mc3_u);
+    WINDOWMANAGER.msgLeftDown(mc3);
+    WINDOWMANAGER.msgLeftUp(mc3_u);
 
     video->tickCount_ += TOUCH_DOUBLE_CLICK_INTERVAL;
-    WINDOWMANAGER.Msg_LeftDown(mc3);
-    WINDOWMANAGER.Msg_LeftUp(mc3_u);
+    WINDOWMANAGER.msgLeftDown(mc3);
+    WINDOWMANAGER.msgLeftUp(mc3_u);
     mock::verify();
 }
 
@@ -237,9 +237,9 @@ MOCK_BASE_CLASS(TestIngameWnd, IngameWindow)
     }
     ~TestIngameWnd() override { closed.push_back(this); }
     MOCK_METHOD(DrawContent, 0, void())
-    MOCK_METHOD(Msg_KeyDown, 1)
-    MOCK_METHOD(Msg_LeftDown, 1)
-    MOCK_METHOD(Msg_MiddleDown, 1)
+    MOCK_METHOD(msgKeyDown, 1)
+    MOCK_METHOD(msgLeftDown, 1)
+    MOCK_METHOD(msgMiddleDown, 1)
     static std::vector<TestIngameWnd*> closed;
 };
 std::vector<TestIngameWnd*> TestIngameWnd::closed;
@@ -453,7 +453,7 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     mock::sequence s;
     for(TestIngameWnd* curWnd : expectedOrder)
     {
-        MOCK_EXPECT(curWnd->Msg_KeyDown).once().in(s).returns(true);
+        MOCK_EXPECT(curWnd->msgKeyDown).once().in(s).returns(true);
         MOCK_EXPECT(curWnd->DrawContent); // Ignore all draw calls
     }
     // Way outside any window, should still be handled
@@ -461,7 +461,7 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     for(TestIngameWnd* curWnd : expectedOrder)
     {
         REQUIRE_WINDOW_ACTIVE(curWnd);
-        WINDOWMANAGER.Msg_KeyDown(ke);
+        WINDOWMANAGER.msgKeyDown(ke);
         curWnd->Close();
         WINDOWMANAGER.Draw();
     }
@@ -482,27 +482,27 @@ BOOST_FIXTURE_TEST_CASE(ModalBlocksMouseActivation, uiHelper::Fixture)
     // Click is over non-modal A, not modal B; B must still receive it instead of the window under the cursor.
     const Position posInA = wndA->GetDrawPos() + Position(10, 10);
 
-    MOCK_EXPECT(wndB->Msg_LeftDown).once().returns(true);
+    MOCK_EXPECT(wndB->msgLeftDown).once().returns(true);
     MouseCoords mcDown(posInA);
     mcDown.ldown = true;
-    WINDOWMANAGER.Msg_LeftDown(mcDown);
-    WINDOWMANAGER.Msg_LeftUp(MouseCoords(posInA));
+    WINDOWMANAGER.msgLeftDown(mcDown);
+    WINDOWMANAGER.msgLeftUp(MouseCoords(posInA));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
     BOOST_TEST(!wndA->IsActive());
     mock::verify();
 
-    MOCK_EXPECT(wndB->Msg_MiddleDown).once().returns(true);
+    MOCK_EXPECT(wndB->msgMiddleDown).once().returns(true);
     MouseCoords mcMiddle(posInA);
     mcMiddle.mdown = true;
-    WINDOWMANAGER.Msg_MiddleDown(mcMiddle);
+    WINDOWMANAGER.msgMiddleDown(mcMiddle);
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
     BOOST_TEST(!wndA->IsActive());
     mock::verify();
 
     // Wheel events must respect modal blocking too; the stack/active state must stay unchanged regardless.
-    WINDOWMANAGER.Msg_WheelUp(MouseCoords(posInA));
-    WINDOWMANAGER.Msg_WheelDown(MouseCoords(posInA));
+    WINDOWMANAGER.msgWheelUp(MouseCoords(posInA));
+    WINDOWMANAGER.msgWheelDown(MouseCoords(posInA));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
     BOOST_TEST(!wndA->IsActive());
@@ -546,22 +546,22 @@ BOOST_FIXTURE_TEST_CASE(ClickActivatesBackgroundNonModal, uiHelper::Fixture)
     BOOST_TEST(!wndA->IsActive());
 
     // B is topmost, click is over A which must become topmost/active
-    MOCK_EXPECT(wndA->Msg_LeftDown).once().returns(true);
+    MOCK_EXPECT(wndA->msgLeftDown).once().returns(true);
     MouseCoords mcDownA(wndA->GetDrawPos() + Position(10, 10));
     mcDownA.ldown = true;
-    WINDOWMANAGER.Msg_LeftDown(mcDownA);
-    WINDOWMANAGER.Msg_LeftUp(MouseCoords(mcDownA.pos));
+    WINDOWMANAGER.msgLeftDown(mcDownA);
+    WINDOWMANAGER.msgLeftUp(MouseCoords(mcDownA.pos));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndA);
     REQUIRE_WINDOW_ACTIVE(wndA);
     BOOST_TEST(!wndB->IsActive());
     mock::verify();
 
     // A is topmost, click is over B which must become topmost/active again
-    MOCK_EXPECT(wndB->Msg_LeftDown).once().returns(true);
+    MOCK_EXPECT(wndB->msgLeftDown).once().returns(true);
     MouseCoords mcDownB(wndB->GetDrawPos() + Position(10, 10));
     mcDownB.ldown = true;
-    WINDOWMANAGER.Msg_LeftDown(mcDownB);
-    WINDOWMANAGER.Msg_LeftUp(MouseCoords(mcDownB.pos));
+    WINDOWMANAGER.msgLeftDown(mcDownB);
+    WINDOWMANAGER.msgLeftUp(MouseCoords(mcDownB.pos));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
     BOOST_TEST(!wndA->IsActive());
@@ -573,7 +573,7 @@ BOOST_FIXTURE_TEST_CASE(EscClosesWindow, uiHelper::Fixture)
     auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
     const KeyEvent evEsc(KeyType::Escape);
-    WINDOWMANAGER.Msg_KeyDown(evEsc);
+    WINDOWMANAGER.msgKeyDown(evEsc);
     WINDOWMANAGER.Draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == nullptr);
     REQUIRE_WINDOW_DESTROYED(wnd);
@@ -582,21 +582,21 @@ BOOST_FIXTURE_TEST_CASE(EscClosesWindow, uiHelper::Fixture)
     auto* wnd1 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
     auto* wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
     auto* wnd3 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, true));
-    WINDOWMANAGER.Msg_KeyDown(evEsc);
-    WINDOWMANAGER.Msg_KeyDown(evEsc);
+    WINDOWMANAGER.msgKeyDown(evEsc);
+    WINDOWMANAGER.msgKeyDown(evEsc);
     MOCK_EXPECT(wnd1->DrawContent).once();
     WINDOWMANAGER.Draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
     REQUIRE_WINDOW_DESTROYED(wnd2);
     REQUIRE_WINDOW_DESTROYED(wnd3);
-    WINDOWMANAGER.Msg_KeyDown(evEsc);
+    WINDOWMANAGER.msgKeyDown(evEsc);
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_DESTROYED(wnd1);
 
     // ESC does not close non-user-closable windows
     wnd1 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, false, CloseBehavior::Custom));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
-    WINDOWMANAGER.Msg_KeyDown(evEsc);
+    WINDOWMANAGER.msgKeyDown(evEsc);
     REQUIRE_WINDOW_ALIVE(wnd1);
     MOCK_EXPECT(wnd1->DrawContent).once();
     WINDOWMANAGER.Draw();
@@ -604,7 +604,7 @@ BOOST_FIXTURE_TEST_CASE(EscClosesWindow, uiHelper::Fixture)
 
     wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, true, CloseBehavior::Custom));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd2);
-    WINDOWMANAGER.Msg_KeyDown(evEsc);
+    WINDOWMANAGER.msgKeyDown(evEsc);
     REQUIRE_WINDOW_ALIVE(wnd1);
     REQUIRE_WINDOW_ALIVE(wnd2);
     MOCK_EXPECT(wnd1->DrawContent).once();
@@ -619,7 +619,7 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
     MouseCoords evRDown(wnd->GetDrawPos() + Position(10, 10));
     evRDown.rdown = true;
-    WINDOWMANAGER.Msg_RightDown(evRDown);
+    WINDOWMANAGER.msgRightDown(evRDown);
     WINDOWMANAGER.Draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == nullptr);
     REQUIRE_WINDOW_DESTROYED(wnd);
@@ -627,7 +627,7 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
     // Only close top most window
     auto* wnd1 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
     auto* wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
-    WINDOWMANAGER.Msg_RightDown(evRDown);
+    WINDOWMANAGER.msgRightDown(evRDown);
     MOCK_EXPECT(wnd1->DrawContent).once();
     WINDOWMANAGER.Draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
@@ -635,7 +635,7 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
     // Also modal windows, even when not opened last
     wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, true));
     auto* wnd3 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
-    WINDOWMANAGER.Msg_RightDown(evRDown);
+    WINDOWMANAGER.msgRightDown(evRDown);
     REQUIRE_WINDOW_ALIVE(wnd1);
     REQUIRE_WINDOW_ALIVE(wnd3);
     MOCK_EXPECT(wnd1->DrawContent).once();
@@ -643,10 +643,10 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
     WINDOWMANAGER.Draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd3);
     REQUIRE_WINDOW_DESTROYED(wnd2);
-    WINDOWMANAGER.Msg_RightDown(evRDown);
+    WINDOWMANAGER.msgRightDown(evRDown);
     MOCK_EXPECT(wnd1->DrawContent).once();
     WINDOWMANAGER.Draw();
-    WINDOWMANAGER.Msg_RightDown(evRDown);
+    WINDOWMANAGER.msgRightDown(evRDown);
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_DESTROYED(wnd1);
     REQUIRE_WINDOW_DESTROYED(wnd3);
@@ -654,14 +654,14 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
     // Don't close non-user-closable windows
     wnd1 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, false, CloseBehavior::Custom));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
-    WINDOWMANAGER.Msg_RightDown(evRDown);
+    WINDOWMANAGER.msgRightDown(evRDown);
     MOCK_EXPECT(wnd1->DrawContent).once();
     WINDOWMANAGER.Draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
 
     wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, true, CloseBehavior::NoRightClick));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd2);
-    WINDOWMANAGER.Msg_RightDown(evRDown);
+    WINDOWMANAGER.msgRightDown(evRDown);
     MOCK_EXPECT(wnd1->DrawContent).once();
     MOCK_EXPECT(wnd2->DrawContent).once();
     WINDOWMANAGER.Draw();
@@ -682,7 +682,7 @@ BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
         BOOST_TEST_CONTEXT("Pinned")
         {
             BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
-            WINDOWMANAGER.Msg_KeyDown(evEsc);
+            WINDOWMANAGER.msgKeyDown(evEsc);
             MOCK_EXPECT(wnd->DrawContent).once();
             WINDOWMANAGER.Draw();
             BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
@@ -691,7 +691,7 @@ BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
         wnd->SetPinned(false);
         BOOST_TEST_CONTEXT("Un-pinned")
         {
-            WINDOWMANAGER.Msg_KeyDown(evEsc);
+            WINDOWMANAGER.msgKeyDown(evEsc);
             WINDOWMANAGER.Draw();
             REQUIRE_WINDOW_DESTROYED(wnd);
         }
@@ -705,7 +705,7 @@ BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
         BOOST_TEST_CONTEXT("Pinned")
         {
             BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
-            WINDOWMANAGER.Msg_KeyDown(evAltW);
+            WINDOWMANAGER.msgKeyDown(evAltW);
             WINDOWMANAGER.Draw();
             REQUIRE_WINDOW_DESTROYED(wnd);
         }
@@ -721,7 +721,7 @@ BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
         wnd->SetPinned();
         BOOST_TEST_CONTEXT("Pinned")
         {
-            WINDOWMANAGER.Msg_RightDown(evRDown);
+            WINDOWMANAGER.msgRightDown(evRDown);
             MOCK_EXPECT(wnd->DrawContent).once();
             WINDOWMANAGER.Draw();
             BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
@@ -730,7 +730,7 @@ BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
         wnd->SetPinned(false);
         BOOST_TEST_CONTEXT("Un-pinned")
         {
-            WINDOWMANAGER.Msg_RightDown(evRDown);
+            WINDOWMANAGER.msgRightDown(evRDown);
             WINDOWMANAGER.Draw();
             REQUIRE_WINDOW_DESTROYED(wnd);
         }
@@ -802,7 +802,7 @@ BOOST_FIXTURE_TEST_CASE(TestTransmitSettingsAdapter, uiHelper::Fixture)
         wnd = &WINDOWMANAGER.Show(std::make_unique<MockSettingsWnd>(CGI_TOOLS));
         BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
         MOCK_EXPECT(wnd->TransmitSettings).once();
-        WINDOWMANAGER.Msg_KeyDown(KeyEvent(KeyType::Escape));
+        WINDOWMANAGER.msgKeyDown(KeyEvent(KeyType::Escape));
         WINDOWMANAGER.Draw();
         BOOST_TEST(MockSettingsWnd::activeWnds == 0);
         BOOST_TEST(WINDOWMANAGER.GetTopMostWindow() == nullptr);
@@ -814,7 +814,7 @@ BOOST_FIXTURE_TEST_CASE(TestTransmitSettingsAdapter, uiHelper::Fixture)
         MOCK_EXPECT(wnd->TransmitSettings).once();
         KeyEvent ke('w');
         ke.alt = true;
-        WINDOWMANAGER.Msg_KeyDown(ke);
+        WINDOWMANAGER.msgKeyDown(ke);
         WINDOWMANAGER.Draw();
         BOOST_TEST(MockSettingsWnd::activeWnds == 0);
         BOOST_TEST(WINDOWMANAGER.GetTopMostWindow() == nullptr);

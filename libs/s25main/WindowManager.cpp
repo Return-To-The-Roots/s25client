@@ -83,9 +83,9 @@ void WindowManager::Draw()
     if(!curDesktop)
         return;
 
-    curDesktop->Msg_PaintBefore();
+    curDesktop->msgPaintBefore();
     curDesktop->Draw();
-    curDesktop->Msg_PaintAfter();
+    curDesktop->msgPaintAfter();
 
     // First close all marked windows
     CloseMarkedIngameWnds();
@@ -93,11 +93,11 @@ void WindowManager::Draw()
     {
         // If the window is not minimized, call paintAfter
         if(!wnd->IsMinimized())
-            wnd->Msg_PaintBefore();
+            wnd->msgPaintBefore();
         wnd->Draw();
         // If the window is not minimized, call paintAfter
         if(!wnd->IsMinimized())
-            wnd->Msg_PaintAfter();
+            wnd->msgPaintAfter();
     }
 
     DrawToolTip();
@@ -264,7 +264,7 @@ Window* WindowManager::getActiveWindow() const
     return nullptr;
 }
 
-void WindowManager::Msg_LeftDown(MouseCoords mc)
+void WindowManager::msgLeftDown(MouseCoords mc)
 {
     // play click sound
     SoundEffectItem* sound = LOADER.GetSoundN("sound", 112);
@@ -274,10 +274,10 @@ void WindowManager::Msg_LeftDown(MouseCoords mc)
     Window* activeWindow = findAndActivateWindow(mc.pos);
     // Ignore mouse message, e.g. right after switching desktop, to avoid unwanted clicks
     if(!disable_mouse && activeWindow)
-        RelayMouseMessage(&Window::Msg_LeftDown, mc, activeWindow);
+        RelayMouseMessage(&Window::msgLeftDown, mc, activeWindow);
 }
 
-void WindowManager::Msg_LeftUp(MouseCoords mc)
+void WindowManager::msgLeftUp(MouseCoords mc)
 {
     // Any desktop active?
     if(!curDesktop)
@@ -307,12 +307,12 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
 
     // Don't relay message if mouse is disabled (e.g. right after desktop switch)
     if(!disable_mouse)
-        RelayMouseMessage(&Window::Msg_LeftUp, mc);
+        RelayMouseMessage(&Window::msgLeftUp, mc);
     else if(!nextdesktop)
         disable_mouse = false;
 }
 
-void WindowManager::Msg_RightDown(const MouseCoords& mc)
+void WindowManager::msgRightDown(const MouseCoords& mc)
 {
     if(!curDesktop)
         return;
@@ -340,44 +340,44 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
             }
         }
     }
-    RelayMouseMessage(&Window::Msg_RightDown, mc, findAndActivateWindow(mc.pos));
+    RelayMouseMessage(&Window::msgRightDown, mc, findAndActivateWindow(mc.pos));
 }
 
-void WindowManager::Msg_RightUp(const MouseCoords& mc)
+void WindowManager::msgRightUp(const MouseCoords& mc)
 {
-    RelayMouseMessage(&Window::Msg_RightUp, mc);
+    RelayMouseMessage(&Window::msgRightUp, mc);
 }
 
-void WindowManager::Msg_MiddleDown(const MouseCoords& mc)
+void WindowManager::msgMiddleDown(const MouseCoords& mc)
 {
     Window* activeWindow = findAndActivateWindow(mc.pos);
 
     if(activeWindow)
-        RelayMouseMessage(&Window::Msg_MiddleDown, mc, activeWindow);
+        RelayMouseMessage(&Window::msgMiddleDown, mc, activeWindow);
 }
 
-void WindowManager::Msg_MiddleUp(const MouseCoords& mc)
+void WindowManager::msgMiddleUp(const MouseCoords& mc)
 {
-    RelayMouseMessage(&Window::Msg_MiddleUp, mc);
+    RelayMouseMessage(&Window::msgMiddleUp, mc);
 }
 
-void WindowManager::Msg_WheelUp(const MouseCoords& mc)
+void WindowManager::msgWheelUp(const MouseCoords& mc)
 {
-    RelayMouseMessage(&Window::Msg_WheelUp, mc, findAndActivateWindow(mc.pos));
+    RelayMouseMessage(&Window::msgWheelUp, mc, findAndActivateWindow(mc.pos));
 }
 
-void WindowManager::Msg_WheelDown(const MouseCoords& mc)
+void WindowManager::msgWheelDown(const MouseCoords& mc)
 {
-    RelayMouseMessage(&Window::Msg_WheelDown, mc, findAndActivateWindow(mc.pos));
+    RelayMouseMessage(&Window::msgWheelDown, mc, findAndActivateWindow(mc.pos));
 }
 
-void WindowManager::Msg_MouseMove(const MouseCoords& mc)
+void WindowManager::msgMouseMove(const MouseCoords& mc)
 {
     lastMousePos = mc.pos;
-    RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    RelayMouseMessage(&Window::msgMouseMove, mc);
 }
 
-void WindowManager::Msg_KeyDown(const KeyEvent& ke)
+void WindowManager::msgKeyDown(const KeyEvent& ke)
 {
     if(ke.alt && (ke.kt == KeyType::Return))
     {
@@ -392,7 +392,7 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
     } else if(ke.kt == KeyType::Print)
         TakeScreenshot();
     else
-        RelayKeyboardMessage(&Window::Msg_KeyDown, ke);
+        RelayKeyboardMessage(&Window::msgKeyDown, ke);
 }
 
 /**
@@ -401,13 +401,13 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
 void WindowManager::WindowResized()
 {
     VIDEODRIVER.RenewViewport();
-    Msg_ScreenResize(VIDEODRIVER.GetRenderSize());
+    msgScreenResize(VIDEODRIVER.GetRenderSize());
 }
 
 /**
  *  React to change of the render size
  */
-void WindowManager::Msg_ScreenResize(const Extent& newSize)
+void WindowManager::msgScreenResize(const Extent& newSize)
 {
     // Don't handle it if nothing changed
     if(newSize == curRenderSize)
@@ -425,7 +425,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
     if(!curDesktop)
         return;
 
-    curDesktop->Msg_ScreenResize(sr);
+    curDesktop->msgScreenResize(sr);
 
     // Move IngameWindows so they are completely visible
     for(const auto& window : windows)
@@ -433,7 +433,7 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
         DrawPoint delta = window->GetPos() + DrawPoint(window->GetSize()) - DrawPoint(sr.newSize);
         if(delta.x > 0 || delta.y > 0)
             window->SetPos(window->GetPos() - elMax(delta, DrawPoint(0, 0)));
-        window->Msg_ScreenResize(sr);
+        window->msgScreenResize(sr);
     }
 }
 
@@ -466,7 +466,7 @@ void WindowManager::DoClose(IngameWindow* window)
         else
             SetActiveWindow(*windows.back());
     }
-    curDesktop->Msg_WindowClosed(*tmpHolder);
+    curDesktop->msgWindowClosed(*tmpHolder);
 }
 
 /**
@@ -516,7 +516,7 @@ void WindowManager::DoDesktopSwitch()
         disable_mouse = false;
 
     // Dummy mouse move to init hovering etc
-    Msg_MouseMove(MouseCoords(VIDEODRIVER.GetMousePos()));
+    msgMouseMove(MouseCoords(VIDEODRIVER.GetMousePos()));
 }
 
 void WindowManager::CloseMarkedIngameWnds()

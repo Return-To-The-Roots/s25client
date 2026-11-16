@@ -65,7 +65,7 @@ iwObservate::iwObservate(GameWorldView& gwv, const MapPoint selectedPt)
     AddTimer(ID_tmrUpdateFollow, 1s)->Stop();
 }
 
-void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
+void iwObservate::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -165,7 +165,7 @@ void iwObservate::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-void iwObservate::Msg_Timer(const unsigned ctrl_id)
+void iwObservate::msgTimer(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -242,7 +242,7 @@ bool iwObservate::MoveToFollowedObj(const MapPoint ptToCheck)
     return false;
 }
 
-bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
+bool iwObservate::msgMouseMove(const MouseCoords& mc)
 {
     if(isScrolling)
     {
@@ -255,10 +255,10 @@ bool iwObservate::Msg_MouseMove(const MouseCoords& mc)
         VIDEODRIVER.SetMousePos(scrollOrigin);
         return true;
     } else
-        return IngameWindow::Msg_MouseMove(mc);
+        return IngameWindow::msgMouseMove(mc);
 }
 
-bool iwObservate::Msg_RightDown(const MouseCoords& mc)
+bool iwObservate::msgRightDown(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.pos, Rect(view->GetPos(), view->GetSize()))
        && !IsPointInRect(mc.pos, GetCtrl<ctrlImageButton>(1)->GetDrawRect())
@@ -279,7 +279,7 @@ bool iwObservate::Msg_RightDown(const MouseCoords& mc)
     return true;
 }
 
-bool iwObservate::Msg_RightUp(const MouseCoords& /*mc*/)
+bool iwObservate::msgRightUp(const MouseCoords& /*mc*/)
 {
     if(isScrolling)
         WINDOWMANAGER.SetCursor(Cursor::Hand);

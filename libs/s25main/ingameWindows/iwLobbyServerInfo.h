@@ -19,5 +19,5 @@ public:
     void UpdateServerInfo();
 
 protected:
-    void Msg_Timer(unsigned ctrl_id) override;
+    void msgTimer(unsigned ctrl_id) override;
 };

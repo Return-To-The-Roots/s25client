@@ -437,17 +437,17 @@ void Window::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsign
     VIDEODRIVER.GetRenderer()->DrawLine(pt1, pt2, width, color);
 }
 
-void Window::Msg_PaintBefore()
+void Window::msgPaintBefore()
 {
     animations_.update(VIDEODRIVER.GetTickCount());
     for(auto& control : childIdToWnd_ | boost::adaptors::map_values)
-        control->Msg_PaintBefore();
+        control->msgPaintBefore();
 }
 
-void Window::Msg_PaintAfter()
+void Window::msgPaintAfter()
 {
     for(auto& control : childIdToWnd_ | boost::adaptors::map_values)
-        control->Msg_PaintAfter();
+        control->msgPaintAfter();
 }
 
 void Window::Draw_()
@@ -456,7 +456,7 @@ void Window::Draw_()
         control->Draw();
 }
 
-void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
+void Window::msgScreenResize(const ScreenResizeEvent& sr)
 {
     // If the window elements don't get scaled there is nothing to do
     if(!scale_)
@@ -467,7 +467,7 @@ void Window::Msg_ScreenResize(const ScreenResizeEvent& sr)
         // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
         Extent newSize = rescale(ctrl->GetSize());
         ctrl->SetPos(rescale(ctrl->GetPos()));
-        ctrl->Msg_ScreenResize(sr);
+        ctrl->msgScreenResize(sr);
         ctrl->Resize(newSize);
     }
     animations_.onRescale(sr);

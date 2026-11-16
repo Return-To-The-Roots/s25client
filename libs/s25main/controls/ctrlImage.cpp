@@ -17,7 +17,7 @@ void ctrlImage::Draw_()
     DrawImage(Rect(GetDrawPos(), GetImageRect().getSize()));
 }
 
-bool ctrlImage::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlImage::msgMouseMove(const MouseCoords& mc)
 {
     if(GetImage())
     {

@@ -33,7 +33,7 @@ iwDemolishBuilding::iwDemolishBuilding(GameWorldView& gwv, const noBaseBuilding*
             NormalFont);
 }
 
-void iwDemolishBuilding::Msg_ButtonClick(const unsigned ctrl_id)
+void iwDemolishBuilding::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

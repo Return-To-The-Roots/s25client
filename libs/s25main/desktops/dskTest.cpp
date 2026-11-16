@@ -106,13 +106,13 @@ dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
                   NormalFont);
 }
 
-void dskTest::Msg_EditChange(const unsigned ctrl_id)
+void dskTest::msgEditChange(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_edtTest)
         GetCtrl<ctrlText>(ID_txtTest)->SetText(GetCtrl<ctrlEdit>(ID_edtTest)->GetText());
 }
 
-void dskTest::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selection)
+void dskTest::msgComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
     if(ctrl_id == ID_cbTxtSize)
     {
@@ -125,7 +125,7 @@ void dskTest::Msg_ComboSelectItem(const unsigned ctrl_id, const unsigned selecti
     }
 }
 
-void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
+void dskTest::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -168,7 +168,7 @@ void dskTest::Msg_ButtonClick(const unsigned ctrl_id)
     }
 }
 
-bool dskTest::Msg_RightUp(const MouseCoords& mc)
+bool dskTest::msgRightUp(const MouseCoords& mc)
 {
     std::vector<ctrlButton*> bts = GetCtrls<ctrlButton>();
     for(ctrlButton* bt : bts)
@@ -179,7 +179,7 @@ bool dskTest::Msg_RightUp(const MouseCoords& mc)
             return true;
         }
     }
-    return dskMenuBase::Msg_RightUp(mc);
+    return dskMenuBase::msgRightUp(mc);
 }
 
 void dskTest::ToggleCtrlVisibility()
@@ -192,7 +192,7 @@ void dskTest::ToggleCtrlVisibility()
     }
 }
 
-bool dskTest::Msg_KeyDown(const KeyEvent& ke)
+bool dskTest::msgKeyDown(const KeyEvent& ke)
 {
     if(ke.kt == KeyType::Char && ke.c == 'h')
         ToggleCtrlVisibility();

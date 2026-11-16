@@ -218,22 +218,22 @@ void ctrlChat::AddMessage(const std::string& time_string, const std::string& pla
         scrollbar->SetScrollPos(chat_lines.size() - page_size);
 }
 
-bool ctrlChat::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlChat::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return RelayMouseMessage(&Window::msgMouseMove, mc);
 }
 
-bool ctrlChat::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlChat::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+    return RelayMouseMessage(&Window::msgLeftDown, mc);
 }
 
-bool ctrlChat::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlChat::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return RelayMouseMessage(&Window::msgLeftUp, mc);
 }
 
-bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlChat::msgWheelUp(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.pos, Rect(GetDrawPos() + DrawPoint(2, 2), GetSize() - Extent(2, 4))))
     {
@@ -244,7 +244,7 @@ bool ctrlChat::Msg_WheelUp(const MouseCoords& mc)
         return false;
 }
 
-bool ctrlChat::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlChat::msgWheelDown(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.pos, Rect(GetDrawPos() + DrawPoint(2, 2), GetSize() - Extent(2, 4))))
     {

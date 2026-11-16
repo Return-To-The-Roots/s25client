@@ -59,7 +59,7 @@ dskMainMenu::dskMainMenu()
     //  !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz\\_ABCDEFGHIJKLMNOPQRSTUVWXYZÇüéâäàåçêëèïîì©ÄÅôöòûùÖÜáíóúñ
 }
 
-void dskMainMenu::Msg_Timer(const unsigned ctrl_id)
+void dskMainMenu::msgTimer(const unsigned ctrl_id)
 {
     GetCtrl<ctrlTimer>(ctrl_id)->Stop();
     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
@@ -68,7 +68,7 @@ void dskMainMenu::Msg_Timer(const unsigned ctrl_id)
       this, MsgboxButton::YesNo, MsgboxIcon::QuestionRed, 100));
 }
 
-void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void dskMainMenu::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     if(msgbox_id == 100)
     {
@@ -81,7 +81,7 @@ void dskMainMenu::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     }
 }
 
-bool dskMainMenu::Msg_LeftUp(const MouseCoords& mc)
+bool dskMainMenu::msgLeftUp(const MouseCoords& mc)
 {
     auto* txtVersion = GetCtrl<Window>(dskMenuBase::ID_txtVersion);
     if(mc.dbl_click && IsPointInRect(mc.pos, txtVersion->GetBoundaryRect()))
@@ -92,7 +92,7 @@ bool dskMainMenu::Msg_LeftUp(const MouseCoords& mc)
     return false;
 }
 
-void dskMainMenu::Msg_ButtonClick(const unsigned ctrl_id)
+void dskMainMenu::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {

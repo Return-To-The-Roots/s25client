@@ -97,13 +97,13 @@ dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
 
 dskCampaignSelection::~dskCampaignSelection() noexcept = default;
 
-void dskCampaignSelection::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned)
+void dskCampaignSelection::msgTableChooseItem(const unsigned ctrl_id, const unsigned)
 {
     if(ctrl_id == ID_Table)
         showCampaignMissionSelectionScreen();
 }
 
-void dskCampaignSelection::Msg_TableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
+void dskCampaignSelection::msgTableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
     if(ctrl_id != ID_Table)
         return;
@@ -157,7 +157,7 @@ void dskCampaignSelection::showCampaignMissionSelectionScreen()
     WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
 }
 
-void dskCampaignSelection::Msg_ButtonClick(unsigned ctrl_id)
+void dskCampaignSelection::msgButtonClick(unsigned ctrl_id)
 {
     if(ctrl_id == ID_btBack)
         WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
@@ -165,7 +165,7 @@ void dskCampaignSelection::Msg_ButtonClick(unsigned ctrl_id)
         showCampaignMissionSelectionScreen();
 }
 
-void dskCampaignSelection::Msg_Timer(unsigned ctrl_id)
+void dskCampaignSelection::msgTimer(unsigned ctrl_id)
 {
     GetCtrl<ctrlTimer>(ctrl_id)->Stop();
     loadCampaigns();

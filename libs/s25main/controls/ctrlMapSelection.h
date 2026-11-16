@@ -32,7 +32,7 @@ public:
     std::optional<unsigned> getSelection() const;
     void setPreview(bool previewOnly);
 
-    bool Msg_LeftUp(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
 
 protected:
     void Draw_() override;

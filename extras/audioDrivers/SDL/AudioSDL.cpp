@@ -103,7 +103,7 @@ bool AudioSDL::Initialize()
 void AudioSDL::MusicFinished()
 {
     if(currentInstance)
-        currentInstance->driverCallback->Msg_MusicFinished();
+        currentInstance->driverCallback->msgMusicFinished();
 }
 
 /**
