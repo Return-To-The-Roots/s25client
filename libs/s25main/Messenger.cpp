@@ -24,7 +24,7 @@ Messenger::~Messenger() = default;
 /// Zeit, die
 void Messenger::Draw()
 {
-    const unsigned curTime = VIDEODRIVER.GetTickCount();
+    const unsigned curTime = VIDEODRIVER.getTickCount();
     DrawPoint textPos(20, 100);
     for(auto it = messages.begin(); it != messages.end(); textPos.y += LargeFont->getHeight())
     {
@@ -62,10 +62,10 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
     glFont::WrapInfo wi =
-      LargeFont->GetWrapInfo(msg,
-                             VIDEODRIVER.GetRenderSize().x - 60 - LargeFont->getWidth(author)
+      LargeFont->getWrapInfo(msg,
+                             VIDEODRIVER.getRenderSize().x - 60 - LargeFont->getWidth(author)
                                - ((cd == ChatDestination::System) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
-                             VIDEODRIVER.GetRenderSize().x - 60);
+                             VIDEODRIVER.getRenderSize().x - 60);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.CreateSingleStrings(msg);
@@ -91,7 +91,7 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
         tmp.color_author = color_author;
         tmp.color_msg = color_msg;
-        tmp.starttime = VIDEODRIVER.GetTickCount();
+        tmp.starttime = VIDEODRIVER.getTickCount();
 
         messages.push_back(tmp);
     }

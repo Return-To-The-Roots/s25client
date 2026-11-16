@@ -142,8 +142,8 @@ int main(int argc, char** argv)
         }
         if(options.count("version"))
         {
-            bnw::cout << rttr::version::GetTitle() << " v" << rttr::version::GetVersion() << "-"
-                      << rttr::version::GetRevision() << std::endl
+            bnw::cout << rttr::version::getTitle() << " v" << rttr::version::getVersion() << "-"
+                      << rttr::version::getRevision() << std::endl
                       << "Compiled with " << System::getCompilerName() << " for " << System::getOSName() << std::endl;
             return 0;
         }

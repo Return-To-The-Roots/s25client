@@ -46,8 +46,8 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
 
     unsigned max_id = 112;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
-    const Nation wpNation = workplace->GetNation();
-    unsigned plColor = world->GetPlayer(player).color;
+    const Nation wpNation = workplace->getNation();
+    unsigned plColor = world->getPlayer(player).color;
 
     // position zum rauslaufen berechnen
     DrawPoint walkOutPos = drawPt + walkoffsets[wpNation][now_id % 8];
@@ -73,17 +73,17 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
     } else if(now_id < 16) // eimer runter lassen
     {
         if(now_id == 8)
-            LOADER.GetPlayerImage("rom_bobs", 346)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+            LOADER.getPlayerImage("rom_bobs", 346)->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
         else
-            LOADER.GetPlayerImage("rom_bobs", 346 + (now_id % 8) - 1)
+            LOADER.getPlayerImage("rom_bobs", 346 + (now_id % 8) - 1)
               ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
     } else if(now_id < max_id - 16) // kurbeln
     {
-        LOADER.GetPlayerImage("rom_bobs", 330 + (now_id % 8))
+        LOADER.getPlayerImage("rom_bobs", 330 + (now_id % 8))
           ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
     } else if(now_id < max_id - 8) // eimer rauf kurbeln
     {
-        LOADER.GetPlayerImage("rom_bobs", 338 + (now_id % 8))
+        LOADER.getPlayerImage("rom_bobs", 338 + (now_id % 8))
           ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
     } else if(now_id < max_id - 4) // laufen 3
     {
@@ -105,7 +105,7 @@ void nofWellguy::DrawWorking(DrawPoint drawPt)
 
     if((now_id >= 8) && (now_id < max_id - 8) && now_id % 8 == 4)
     {
-        world->GetSoundMgr().playNOSound(82, *this, now_id);
+        world->getSoundMgr().playNOSound(82, *this, now_id);
         was_sounding = true;
     }
 }
@@ -132,7 +132,7 @@ bool nofWellguy::StartWorking()
         workplace->OnOutOfResources();
         return false;
     }
-    if(world->GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 2)
+    if(world->getGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 2)
         world->ReduceResource(resPt);
     return nofWorkman::StartWorking();
 }

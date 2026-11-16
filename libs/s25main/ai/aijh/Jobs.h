@@ -45,8 +45,8 @@ public:
     AIJob(AIPlayerJH& aijh);
     virtual ~AIJob() = default;
     virtual void ExecuteJob() = 0;
-    JobState GetState() const { return state; }
-    void SetState(JobState s) { state = s; }
+    JobState getState() const { return state; }
+    void setState(JobState s) { state = s; }
 
 protected:
     AIPlayerJH& aijh;
@@ -57,8 +57,8 @@ class JobWithTarget
 {
 public:
     JobWithTarget() : target(MapPoint::Invalid()) {}
-    MapPoint GetTarget() const { return target; }
-    void SetTarget(MapPoint newTarget) { target = newTarget; }
+    MapPoint getTarget() const { return target; }
+    void setTarget(MapPoint newTarget) { target = newTarget; }
 
 protected:
     MapPoint target;
@@ -72,8 +72,8 @@ public:
     {}
 
     void ExecuteJob() override;
-    BuildingType GetType() const { return type; }
-    MapPoint GetAround() const { return around; }
+    BuildingType getType() const { return type; }
+    MapPoint getAround() const { return around; }
 
 private:
     BuildingType type;
@@ -104,7 +104,7 @@ public:
     EventJob(AIPlayerJH& aijh, std::unique_ptr<AIEvent::Base> ev);
     ~EventJob() override;
     void ExecuteJob() override;
-    const AIEvent::Base& GetEvent() const { return *ev; }
+    const AIEvent::Base& getEvent() const { return *ev; }
 
 private:
     std::unique_ptr<AIEvent::Base> ev;

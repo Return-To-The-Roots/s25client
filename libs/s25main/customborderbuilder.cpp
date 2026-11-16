@@ -222,7 +222,7 @@ int CustomBorderBuilder::buildBorder(const Extent& size, std::array<glArchivItem
 
 void CustomBorderBuilder::Bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmapRLE, BdrBitmap& bdrBitmap)
 {
-    RTTR_FOREACH_PT(ImgPos, bitmapRLE.GetSize())
+    RTTR_FOREACH_PT(ImgPos, bitmapRLE.getSize())
         bdrBitmap.put(pt, bitmapRLE.getPixelClrIdx(pt.x, pt.y, &palette));
 }
 

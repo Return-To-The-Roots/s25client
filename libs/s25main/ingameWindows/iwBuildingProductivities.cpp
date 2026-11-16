@@ -40,7 +40,7 @@ const std::array<BuildingType, 30> iwBuildingProductivities::allIcons = {
 void iwBuildingProductivities::setBuildingOrder()
 {
     usedIcons.assign(allIcons.begin(), allIcons.end());
-    helpers::erase_if(usedIcons, makeIsUnusedBuilding(player.GetGameWorld().GetGGS()));
+    helpers::erase_if(usedIcons, makeIsUnusedBuilding(player.getGameWorld().getGGS()));
 }
 
 /// Abstand vom linken, oberen Fensterrand
@@ -59,7 +59,7 @@ constexpr Extent cellSize(percent_image_x + percentSize.x + image_percent_x, dis
 iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, IngameWindow::posLastOrCenter,
                    cellSize * Extent(2, helpers::divCeil(allIcons.size(), 2) + 1) + bldProdContentOffset,
-                   _("Productivity"), LOADER.GetImageN("resource", 41)),
+                   _("Productivity"), LOADER.getImageN("resource", 41)),
       player(player), percents()
 {
     setBuildingOrder();
@@ -77,15 +77,15 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
             const DrawPoint curPos = cellSize * DrawPoint(x, y) + bldProdContentOffset;
             const DrawPoint imgPos = curPos + DrawPoint(0, percentSize.y / 2);
             const unsigned imgId = curIdx * 2;
-            if(player.IsBuildingEnabled(usedIcons[curIdx]))
+            if(player.isBuildingEnabled(usedIcons[curIdx]))
             {
-                AddImage(imgId, imgPos, LOADER.GetNationIcon(playerNation, usedIcons[curIdx]),
+                AddImage(imgId, imgPos, LOADER.getNationIcon(playerNation, usedIcons[curIdx]),
                          _(BUILDING_NAMES[usedIcons[curIdx]]));
                 DrawPoint percentPos = curPos + DrawPoint(image_percent_x, 0);
                 AddPercent(imgId + 1, percentPos, percentSize, TextureColor::Grey, COLOR_YELLOW, SmallFont,
                            &percents[usedIcons[curIdx]]);
             } else
-                AddImage(imgId, imgPos, LOADER.GetImageN("io", 188));
+                AddImage(imgId, imgPos, LOADER.getImageN("io", 188));
         }
     }
 
@@ -100,7 +100,7 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
 
 void iwBuildingProductivities::UpdatePercents()
 {
-    percents = player.GetBuildingRegister().CalcProductivities();
+    percents = player.getBuildingRegister().CalcProductivities();
 }
 
 void iwBuildingProductivities::msgPaintAfter()

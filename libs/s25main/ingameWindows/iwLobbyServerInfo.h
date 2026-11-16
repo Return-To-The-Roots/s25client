@@ -14,8 +14,8 @@ private:
 public:
     iwLobbyServerInfo(unsigned serverId);
 
-    void SetServerId(unsigned serverId);
-    unsigned GetServerId() const { return serverId_; }
+    void setServerId(unsigned serverId);
+    unsigned getServerId() const { return serverId_; }
     void UpdateServerInfo();
 
 protected:

@@ -31,7 +31,7 @@ public:
 
     void OpenDoor();
     void CloseDoor();
-    bool IsDoorOpen() const { return opendoor > 0; }
+    bool isDoorOpen() const { return opendoor > 0; }
 
     /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
     virtual bool FreePlaceAtFlag() = 0;

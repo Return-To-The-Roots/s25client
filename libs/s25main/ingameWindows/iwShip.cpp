@@ -33,52 +33,52 @@
 #include "gameData/const_gui_ids.h"
 
 iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* const ship, const DrawPoint& pos)
-    : IngameWindow(CGI_SHIP, pos, Extent(252, 238), _("Ship register"), LOADER.GetImageN("resource", 41)), gwv(gwv),
-      gcFactory(gcFactory), player(ship ? ship->GetPlayerId() : gwv.GetViewer().GetPlayerId()),
-      ship_id(ship ? gwv.GetWorld().GetPlayer(player).GetShipID(*ship) : 0)
+    : IngameWindow(CGI_SHIP, pos, Extent(252, 238), _("Ship register"), LOADER.getImageN("resource", 41)), gwv(gwv),
+      gcFactory(gcFactory), player(ship ? ship->getPlayerId() : gwv.getViewer().getPlayerId()),
+      ship_id(ship ? gwv.getWorld().getPlayer(player).getShipID(*ship) : 0)
 {
-    AddImage(0, DrawPoint(126, 101), LOADER.GetImageN("io", 228));
+    AddImage(0, DrawPoint(126, 101), LOADER.getImageN("io", 228));
     AddImageButton(2, DrawPoint(18, 192), Extent(30, 35), TextureColor::Grey,
-                   LOADER.GetImageN("io", 225)); // Viewer: 226 - Hilfe
+                   LOADER.getImageN("io", 225)); // Viewer: 226 - Hilfe
     AddImageButton(3, DrawPoint(51, 196), Extent(30, 26), TextureColor::Grey,
-                   LOADER.GetImageN("io", 102)); // Viewer: 103 - Schnell zurück
+                   LOADER.getImageN("io", 102)); // Viewer: 103 - Schnell zurück
     AddImageButton(4, DrawPoint(81, 196), Extent(30, 26), TextureColor::Grey,
-                   LOADER.GetImageN("io", 103)); // Viewer: 104 - Zurück
+                   LOADER.getImageN("io", 103)); // Viewer: 104 - Zurück
     AddImageButton(5, DrawPoint(111, 196), Extent(30, 26), TextureColor::Grey,
-                   LOADER.GetImageN("io", 104)); // Viewer: 105 - Vor
+                   LOADER.getImageN("io", 104)); // Viewer: 105 - Vor
     AddImageButton(6, DrawPoint(141, 196), Extent(30, 26), TextureColor::Grey,
-                   LOADER.GetImageN("io", 105)); // Viewer: 106 - Schnell vor
-    AddImageButton(7, DrawPoint(181, 196), Extent(30, 26), TextureColor::Grey, LOADER.GetImageN("io", 107),
+                   LOADER.getImageN("io", 105)); // Viewer: 106 - Schnell vor
+    AddImageButton(7, DrawPoint(181, 196), Extent(30, 26), TextureColor::Grey, LOADER.getImageN("io", 107),
                    _("Go to place")); // "Gehe Zu Ort"
 
     // Die Expeditionsweiterfahrbuttons
-    AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TextureColor::Grey, LOADER.GetImageN("io", 187),
+    AddImageButton(10, DrawPoint(60, 81), Extent(18, 18), TextureColor::Grey, LOADER.getImageN("io", 187),
                    _("Found colony"))
-      ->SetVisible(false);
+      ->setVisible(false);
 
     constexpr helpers::EnumArray<DrawPoint, ShipDirection> BUTTON_POS = {
       {{60, 61}, {80, 70}, {80, 90}, {60, 101}, {40, 90}, {40, 70}}};
     constexpr helpers::EnumArray<unsigned, ShipDirection> BUTTON_IDs = {{185, 186, 181, 182, 183, 184}};
 
     // Expedition abbrechen
-    AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TextureColor::Red1, LOADER.GetImageN("io", 40),
+    AddImageButton(11, DrawPoint(200, 143), Extent(18, 18), TextureColor::Red1, LOADER.getImageN("io", 40),
                    _("Return to harbor"))
-      ->SetVisible(false);
+      ->setVisible(false);
 
     // Die 6 Richtungen
     for(const auto dir : helpers::EnumRange<ShipDirection>{})
         AddImageButton(12 + rttr::enum_cast(dir), BUTTON_POS[dir], Extent(18, 18), TextureColor::Grey,
-                       LOADER.GetImageN("io", BUTTON_IDs[dir]))
-          ->SetVisible(false);
+                       LOADER.getImageN("io", BUTTON_IDs[dir]))
+          ->setVisible(false);
 }
 
 void iwShip::DrawContent()
 {
     static boost::format valByValFmt{"%1%/%2%"};
 
-    const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
+    const GamePlayer& owner = gwv.getWorld().getPlayer(player);
     // Schiff holen
-    noShip* ship = (player == 0xff) ? nullptr : owner.GetShipByID(ship_id);
+    noShip* ship = (player == 0xff) ? nullptr : owner.getShipByID(ship_id);
 
     // Kein Schiff gefunden? Dann erstes Schiff holen
     if(!ship)
@@ -86,43 +86,43 @@ void iwShip::DrawContent()
         ship_id = 0;
         // Nochmal probieren
         if(player != 0xff)
-            ship = owner.GetShipByID(ship_id);
+            ship = owner.getShipByID(ship_id);
         // Immer noch nicht? Dann gibt es keine Schiffe mehr und wir zeigen eine entsprechende Meldung an
         if(!ship)
         {
-            NormalFont->Draw(GetDrawPos() + DrawPoint(GetSize().x / 2, 60), _("No ships available"),
+            NormalFont->Draw(getDrawPos() + DrawPoint(getSize().x / 2, 60), _("No ships available"),
                              FontStyle::CENTER | FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
             return;
         }
     }
 
     // Schiffsname
-    NormalFont->Draw(GetDrawPos() + DrawPoint(42, 42), ship->GetName(), FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
+    NormalFont->Draw(getDrawPos() + DrawPoint(42, 42), ship->getName(), FontStyle::NO_OUTLINE, COLOR_WINDOWBROWN);
     // Schiffs-Nr.
-    valByValFmt % (ship_id + 1) % owner.GetNumShips();
-    NormalFont->Draw(GetDrawPos() + DrawPoint(208, 42), valByValFmt.str(), FontStyle::RIGHT | FontStyle::NO_OUTLINE,
+    valByValFmt % (ship_id + 1) % owner.getNumShips();
+    NormalFont->Draw(getDrawPos() + DrawPoint(208, 42), valByValFmt.str(), FontStyle::RIGHT | FontStyle::NO_OUTLINE,
                      COLOR_WINDOWBROWN);
     // Das Schiffs-Bild
-    LOADER.GetImageN("boot_z", 12)->DrawFull(GetDrawPos() + DrawPoint(138, 117));
+    LOADER.getImageN("boot_z", 12)->DrawFull(getDrawPos() + DrawPoint(138, 117));
 
     // Expeditions-Buttons malen?
-    if(ship->IsWaitingForExpeditionInstructions())
+    if(ship->isWaitingForExpeditionInstructions())
     {
-        GetCtrl<Window>(10)->SetVisible(ship->IsAbleToFoundColony());
-        GetCtrl<Window>(11)->SetVisible(true);
+        getCtrl<Window>(10)->setVisible(ship->isAbleToFoundColony());
+        getCtrl<Window>(11)->setVisible(true);
 
         for(const auto dir : helpers::EnumRange<ShipDirection>{})
         {
-            GetCtrl<Window>(12 + rttr::enum_cast(dir))
-              ->SetVisible(gwv.GetWorld()
-                             .GetNextFreeHarborPoint(ship->GetPos(), ship->GetCurrentHarbor(), dir, ship->GetPlayerId())
+            getCtrl<Window>(12 + rttr::enum_cast(dir))
+              ->setVisible(gwv.getWorld()
+                             .getNextFreeHarborPoint(ship->getPos(), ship->getCurrentHarbor(), dir, ship->getPlayerId())
                              .isValid());
         }
     } else
     {
         // Alle Buttons inklusive Anker in der Mitte ausblenden
         for(unsigned i = 0; i < 8; ++i)
-            GetCtrl<Window>(10 + i)->SetVisible(false);
+            getCtrl<Window>(10 + i)->setVisible(false);
     }
 
     DrawCargo();
@@ -139,7 +139,7 @@ void iwShip::msgButtonClick(const unsigned ctrl_id)
         return;
     }
 
-    noShip* ship = gwv.GetWorld().GetPlayer(player).GetShipByID(ship_id);
+    noShip* ship = gwv.getWorld().getPlayer(player).getShipByID(ship_id);
 
     if(!ship)
         return;
@@ -172,7 +172,7 @@ void iwShip::msgButtonClick(const unsigned ctrl_id)
         case 4:
         {
             if(ship_id == 0)
-                ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetNumShips() - 1;
+                ship_id = gwv.getWorld().getPlayer(ship->getPlayerId()).getNumShips() - 1;
             else
                 --ship_id;
         }
@@ -181,19 +181,19 @@ void iwShip::msgButtonClick(const unsigned ctrl_id)
         case 5:
         {
             ++ship_id;
-            if(ship_id == gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetNumShips())
+            if(ship_id == gwv.getWorld().getPlayer(ship->getPlayerId()).getNumShips())
                 ship_id = 0;
         }
         break;
         // Letztes Schiff
         case 6:
         {
-            ship_id = gwv.GetWorld().GetPlayer(ship->GetPlayerId()).GetNumShips() - 1;
+            ship_id = gwv.getWorld().getPlayer(ship->getPlayerId()).getNumShips() - 1;
         }
         break;
         case 7: // "Gehe Zu Ort"
         {
-            gwv.MoveToMapPt(ship->GetPos());
+            gwv.MoveToMapPt(ship->getPos());
         }
         break;
     }
@@ -201,38 +201,38 @@ void iwShip::msgButtonClick(const unsigned ctrl_id)
 
 void iwShip::DrawCargo()
 {
-    const GamePlayer& owner = gwv.GetWorld().GetPlayer(player);
-    const noShip* ship = owner.GetShipByID(ship_id);
+    const GamePlayer& owner = gwv.getWorld().getPlayer(player);
+    const noShip* ship = owner.getShipByID(ship_id);
 
     // Count figures by type
     helpers::EnumArray<unsigned short, Job> orderedFigures{};
     helpers::EnumArray<unsigned short, ArmoredSoldier> armoredFigures{};
-    for(const noFigure& figure : ship->GetFigures())
+    for(const noFigure& figure : ship->getFigures())
     {
-        orderedFigures[figure.GetJobType()]++;
+        orderedFigures[figure.getJobType()]++;
 
-        if(isSoldier(figure.GetJobType()) && figure.HasArmor())
-            armoredFigures[jobEnumToAmoredSoldierEnum(figure.GetJobType())]++;
+        if(isSoldier(figure.getJobType()) && figure.hasArmor())
+            armoredFigures[jobEnumToAmoredSoldierEnum(figure.getJobType())]++;
     }
 
     // Count wares by type
     helpers::EnumArray<unsigned short, GoodType> orderedWares{};
-    for(const Ware& ware : ship->GetWares())
+    for(const Ware& ware : ship->getWares())
         orderedWares[ware.type]++;
 
     // Special cases: expeditions
-    if(ship->IsOnExpedition())
+    if(ship->isOnExpedition())
     {
         orderedFigures[Job::Builder] = 1;
         orderedWares[GoodType::Boards] = BUILDING_COSTS[BuildingType::HarborBuilding].boards;
         orderedWares[GoodType::Stones] = BUILDING_COSTS[BuildingType::HarborBuilding].stones;
-    } else if(ship->IsOnExplorationExpedition())
+    } else if(ship->isOnExplorationExpedition())
     {
-        orderedFigures[Job::Scout] = gwv.GetWorld().GetGGS().GetNumScoutsExpedition();
+        orderedFigures[Job::Scout] = gwv.getWorld().getGGS().getNumScoutsExpedition();
     }
 
     // Start Offset zum malen
-    const DrawPoint startPt = GetDrawPos() + DrawPoint(40, 130);
+    const DrawPoint startPt = getDrawPos() + DrawPoint(40, 130);
 
     // Step pro Ware/Figur
     const int xStep = 10;
@@ -260,9 +260,9 @@ void iwShip::DrawCargo()
             orderedFigures[job]--;
 
             if(job == Job::PackDonkey)
-                LOADER.GetMapTexture(2016)->DrawFull(drawPt);
+                LOADER.getMapTexture(2016)->DrawFull(drawPt);
             else if(job == Job::BoatCarrier)
-                LOADER.GetBob("carrier")->Draw(rttr::enum_cast(GoodType::Boat), libsiedler2::ImgDir::SW, false, 0,
+                LOADER.getBob("carrier")->Draw(rttr::enum_cast(GoodType::Boat), libsiedler2::ImgDir::SW, false, 0,
                                                drawPt, owner.color);
             else if(wineaddon::isWineAddonJobType(job))
             {
@@ -273,7 +273,7 @@ void iwShip::DrawCargo()
                     type = wineaddon::BobTypes::TEMPLESERVANT_WALKING;
 
                 LOADER
-                  .GetPlayerImage("wine_bobs",
+                  .getPlayerImage("wine_bobs",
                                   wineaddon::bobIndex[type] + static_cast<unsigned>(libsiedler2::ImgDir::SW) * 8)
                   ->DrawFull(drawPt, COLOR_WHITE, owner.color);
             } else if(leatheraddon::isLeatherAddonJobType(job))
@@ -285,20 +285,20 @@ void iwShip::DrawCargo()
                     type = leatheraddon::BobType::LeatherworkerWalking;
 
                 LOADER
-                  .GetPlayerImage("leather_bobs",
+                  .getPlayerImage("leather_bobs",
                                   leatheraddon::bobIndex[type] + static_cast<unsigned>(libsiedler2::ImgDir::SW) * 8)
                   ->DrawFull(drawPt, COLOR_WHITE, owner.color);
             } else
             {
                 const auto& spriteData = JOB_SPRITE_CONSTS[job];
-                LOADER.GetBob("jobs")->Draw(spriteData.getBobId(owner.nation), libsiedler2::ImgDir::SW,
+                LOADER.getBob("jobs")->Draw(spriteData.getBobId(owner.nation), libsiedler2::ImgDir::SW,
                                             spriteData.isFat(), 0, drawPt, owner.color);
             }
 
             if(isSoldier(job) && armoredFigures[jobEnumToAmoredSoldierEnum(job)] > 0)
             {
                 armoredFigures[jobEnumToAmoredSoldierEnum(job)]--;
-                if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
+                if(gwv.getWorld().getGGS().isEnabled(AddonId::MILITARY_HITPOINTS))
                 {
                     SmallFont->Draw(drawPt + DrawPoint(-2, -25), "+", FontStyle::CENTER, COLOR_RED);
                     SmallFont->Draw(drawPt + DrawPoint(1, -25), "1", FontStyle::CENTER, COLOR_RED);
@@ -325,7 +325,7 @@ void iwShip::DrawCargo()
 
             const auto draw_id = convertShieldToNation(ware, owner.nation);
 
-            LOADER.GetWareStackTex(draw_id)->DrawFull(drawPt);
+            LOADER.getWareStackTex(draw_id)->DrawFull(drawPt);
             drawPt.x += xStep;
             lineCounter++;
         }

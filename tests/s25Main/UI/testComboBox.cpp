@@ -35,41 +35,41 @@ BOOST_AUTO_TEST_CASE(ItemHandling)
     TestWindow wnd;
     auto cb = std::make_unique<ctrlComboBox>(&wnd, randomValue<unsigned>(), DrawPoint(0, 0), Extent(40, 20),
                                              TextureColor::Green1, NormalFont, 20, false);
-    REQUIRE(cb->GetNumItems() == 0);
-    REQUIRE(!cb->GetSelection());
+    REQUIRE(cb->getNumItems() == 0);
+    REQUIRE(!cb->getSelection());
 
     cb->AddItem("text");
-    REQUIRE(cb->GetNumItems() == 1);
-    REQUIRE(!cb->GetSelection());
-    REQUIRE(cb->GetText(0) == "text");
+    REQUIRE(cb->getNumItems() == 1);
+    REQUIRE(!cb->getSelection());
+    REQUIRE(cb->getText(0) == "text");
 
-    cb->SetSelection(0);
-    REQUIRE(cb->GetSelection() == 0u);
-    REQUIRE(cb->GetText(0) == "text");
+    cb->setSelection(0);
+    REQUIRE(cb->getSelection() == 0u);
+    REQUIRE(cb->getText(0) == "text");
     // Out of bounds selection
-    cb->SetSelection(1);
-    REQUIRE(cb->GetSelection() == 0u);
-    REQUIRE(cb->GetText(0) == "text");
+    cb->setSelection(1);
+    REQUIRE(cb->getSelection() == 0u);
+    REQUIRE(cb->getText(0) == "text");
 
     std::vector<std::string> lines{1, "text"};
     for(int i = 0; i < 10; i++)
     {
         lines.emplace_back(randString());
         cb->AddItem(lines.back());
-        REQUIRE(cb->GetNumItems() == lines.size());
-        REQUIRE(cb->GetSelection() == 0u);
+        REQUIRE(cb->getNumItems() == lines.size());
+        REQUIRE(cb->getSelection() == 0u);
     }
     for(unsigned i = 0; i < lines.size(); i++)
     {
-        REQUIRE(cb->GetText(i) == lines[i]);
+        REQUIRE(cb->getText(i) == lines[i]);
         auto sel = randomValue<unsigned>(0, lines.size() - 1);
-        cb->SetSelection(sel);
-        REQUIRE(cb->GetSelection() == sel);
+        cb->setSelection(sel);
+        REQUIRE(cb->getSelection() == sel);
     }
 
     cb->DeleteAllItems();
-    REQUIRE(cb->GetNumItems() == 0);
-    REQUIRE(!cb->GetSelection());
+    REQUIRE(cb->getNumItems() == 0);
+    REQUIRE(!cb->getSelection());
 }
 
 BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
@@ -83,30 +83,30 @@ BOOST_AUTO_TEST_CASE(ControlWithScrollWheel)
     {
         cb->AddItem(randString());
     }
-    REQUIRE(!cb->GetSelection());
+    REQUIRE(!cb->getSelection());
     mock::sequence s;
     // Scroll down 3 times (each selected)
-    MouseCoords mc{cb->GetPos()
-                   + Position(randomValue(0u, cb->GetSize().x - 1u), randomValue(0u, cb->GetSize().y - 1u))};
+    MouseCoords mc{cb->getPos()
+                   + Position(randomValue(0u, cb->getSize().x - 1u), randomValue(0u, cb->getSize().y - 1u))};
     for(unsigned i = 0; i < 3u; i++)
     {
-        MOCK_EXPECT(wnd.msgComboSelectItem).once().with(cb->GetID(), static_cast<unsigned>(i)).in(s);
+        MOCK_EXPECT(wnd.msgComboSelectItem).once().with(cb->getID(), static_cast<unsigned>(i)).in(s);
         cb->msgWheelDown(mc);
-        REQUIRE(cb->GetSelection() == i);
+        REQUIRE(cb->getSelection() == i);
     }
     // 4th time does nothing
     cb->msgWheelDown(mc);
-    REQUIRE(cb->GetSelection() == 2u);
+    REQUIRE(cb->getSelection() == 2u);
     // Same but up
     for(int i = 1; i >= 0; i--)
     {
-        MOCK_EXPECT(wnd.msgComboSelectItem).once().with(cb->GetID(), static_cast<unsigned>(i)).in(s);
+        MOCK_EXPECT(wnd.msgComboSelectItem).once().with(cb->getID(), static_cast<unsigned>(i)).in(s);
         cb->msgWheelUp(mc);
-        REQUIRE(cb->GetSelection() == static_cast<unsigned>(i));
+        REQUIRE(cb->getSelection() == static_cast<unsigned>(i));
     }
     // next time does nothing
     cb->msgWheelUp(mc);
-    REQUIRE(cb->GetSelection() == 0u);
+    REQUIRE(cb->getSelection() == 0u);
 }
 
 BOOST_AUTO_TEST_CASE(ListRemove)
@@ -119,64 +119,64 @@ BOOST_AUTO_TEST_CASE(ListRemove)
     {
         lines.emplace_back(randString());
         list->AddItem(lines.back());
-        REQUIRE(list->GetNumLines() == lines.size());
-        REQUIRE(!list->GetSelection());
+        REQUIRE(list->getNumLines() == lines.size());
+        REQUIRE(!list->getSelection());
     }
     mock::sequence s;
-    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->GetID(), 4).in(s);
-    list->SetSelection(4);
-    REQUIRE(list->GetSelection() == 4u);
-    REQUIRE(list->GetSelItemText() == lines[4]);
+    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->getID(), 4).in(s);
+    list->setSelection(4);
+    REQUIRE(list->getSelection() == 4u);
+    REQUIRE(list->getSelItemText() == lines[4]);
     // To big
     list->Remove(10);
-    REQUIRE(list->GetNumLines() == lines.size());
-    REQUIRE(list->GetSelItemText() == lines[4]);
+    REQUIRE(list->getNumLines() == lines.size());
+    REQUIRE(list->getSelItemText() == lines[4]);
     // Remove after selected. Selection remains
     list->Remove(5);
-    REQUIRE(list->GetNumLines() == lines.size() - 1);
-    REQUIRE(list->GetSelItemText() == lines[4]);
+    REQUIRE(list->getNumLines() == lines.size() - 1);
+    REQUIRE(list->getSelItemText() == lines[4]);
     lines.erase(lines.begin() + 5);
     // Remove all before. Selection remains
     for(int i = 1; i <= 4; i++)
     {
         list->Remove(randomValue(0, 4 - i));
-        REQUIRE(list->GetNumLines() == lines.size() - i);
-        REQUIRE(list->GetSelItemText() == lines[4]);
+        REQUIRE(list->getNumLines() == lines.size() - i);
+        REQUIRE(list->getSelItemText() == lines[4]);
     }
     lines.erase(lines.begin(), lines.begin() + 4);
     for(unsigned i = 0; i < lines.size(); i++)
-        REQUIRE(list->GetItemText(i) == lines[i]);
+        REQUIRE(list->getItemText(i) == lines[i]);
     // Remove selection -> Next selected
-    REQUIRE(list->GetNumLines() == 5);
-    REQUIRE(list->GetSelection() == 0u);
-    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->GetID(), 0).in(s);
+    REQUIRE(list->getNumLines() == 5);
+    REQUIRE(list->getSelection() == 0u);
+    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->getID(), 0).in(s);
     list->Remove(0);
-    REQUIRE(list->GetNumLines() == 4);
-    REQUIRE(list->GetSelection() == 0u);
-    REQUIRE(list->GetSelItemText() == lines[1]);
+    REQUIRE(list->getNumLines() == 4);
+    REQUIRE(list->getSelection() == 0u);
+    REQUIRE(list->getSelItemText() == lines[1]);
     lines.erase(lines.begin());
     // Also for middle pos
-    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->GetID(), 2).in(s);
-    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->GetID(), 2).in(s);
-    list->SetSelection(2);
+    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->getID(), 2).in(s);
+    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->getID(), 2).in(s);
+    list->setSelection(2);
     list->Remove(2);
-    REQUIRE(list->GetNumLines() == 3);
-    REQUIRE(list->GetSelection() == 2u);
-    REQUIRE(list->GetSelItemText() == lines[3]);
+    REQUIRE(list->getNumLines() == 3);
+    REQUIRE(list->getSelection() == 2u);
+    REQUIRE(list->getSelItemText() == lines[3]);
     lines.erase(lines.begin() + 2);
     // For last pos previous is selected
-    list->SetSelection(list->GetNumLines() - 1);
-    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->GetID(), 1).in(s);
-    list->Remove(list->GetNumLines() - 1);
-    REQUIRE(list->GetNumLines() == 2);
-    REQUIRE(list->GetSelection() == 1u);
-    REQUIRE(list->GetSelItemText() == lines[lines.size() - 2]);
+    list->setSelection(list->getNumLines() - 1);
+    MOCK_EXPECT(wnd.msgListSelectItem).once().with(list->getID(), 1).in(s);
+    list->Remove(list->getNumLines() - 1);
+    REQUIRE(list->getNumLines() == 2);
+    REQUIRE(list->getSelection() == 1u);
+    REQUIRE(list->getSelItemText() == lines[lines.size() - 2]);
     // Removing all sets selection to -1
     list->Remove(0);
     list->Remove(0);
-    REQUIRE(list->GetNumLines() == 0);
-    REQUIRE(!list->GetSelection());
-    REQUIRE(list->GetSelItemText() == "");
+    REQUIRE(list->getNumLines() == 0);
+    REQUIRE(!list->getSelection());
+    REQUIRE(list->getSelItemText() == "");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -20,15 +20,15 @@ protected:
     /// Zeichnet ihn beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override;
+    unsigned short getCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
     helpers::OptionalEnum<GoodType> ProduceWare() override;
     /// Returns the next tool to be produced according to the orders
-    helpers::OptionalEnum<GoodType> GetOrderedTool();
+    helpers::OptionalEnum<GoodType> getOrderedTool();
     /// Returns a random tool according to the priorities
-    helpers::OptionalEnum<GoodType> GetRandomTool();
+    helpers::OptionalEnum<GoodType> getRandomTool();
 
-    bool HasToolOrder() const;
+    bool hasToolOrder() const;
 
     bool AreWaresAvailable() const override;
     bool StartWorking() override;
@@ -39,5 +39,5 @@ public:
     nofMetalworker(SerializedGameData& sgd, unsigned obj_id);
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofMetalworker; }
+    GO_Type getGOT() const final { return GO_Type::NofMetalworker; }
 };

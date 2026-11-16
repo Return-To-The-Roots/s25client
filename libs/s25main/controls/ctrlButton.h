@@ -20,17 +20,17 @@ public:
                const std::string& tooltip);
     ~ctrlButton() override;
 
-    void SetEnabled(bool enable = true);
-    bool GetEnabled() const { return isEnabled; }
-    TextureColor GetTexture() const { return tc; }
-    void SetTexture(TextureColor tc) { this->tc = tc; }
-    void SetActive(bool activate = true) override;
+    void setEnabled(bool enable = true);
+    bool getEnabled() const { return isEnabled; }
+    TextureColor getTexture() const { return tc; }
+    void setTexture(TextureColor tc) { this->tc = tc; }
+    void setActive(bool activate = true) override;
 
-    void SetChecked(bool checked) { this->isChecked = checked; }
-    bool GetCheck() const { return isChecked; }
-    void SetIlluminated(bool illuminated) { this->isIlluminated = illuminated; }
-    bool GetIlluminated() const { return isIlluminated; }
-    void SetBorder(bool hasBorder) { this->hasBorder = hasBorder; }
+    void setChecked(bool checked) { this->isChecked = checked; }
+    bool getCheck() const { return isChecked; }
+    void setIlluminated(bool illuminated) { this->isIlluminated = illuminated; }
+    bool getIlluminated() const { return isIlluminated; }
+    void setBorder(bool hasBorder) { this->hasBorder = hasBorder; }
 
     bool msgMouseMove(const MouseCoords& mc) override;
     bool msgLeftDown(const MouseCoords& mc) override;

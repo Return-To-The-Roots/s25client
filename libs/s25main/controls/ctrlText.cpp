@@ -11,12 +11,12 @@ ctrlBaseText::ctrlBaseText(std::string text, const unsigned color, const glFont*
     : text(std::move(text)), color_(color), font(font)
 {}
 
-void ctrlBaseText::SetText(const std::string& text)
+void ctrlBaseText::setText(const std::string& text)
 {
     this->text = text;
 }
 
-void ctrlBaseText::SetFont(glFont* font)
+void ctrlBaseText::setFont(glFont* font)
 {
     this->font = font;
 }
@@ -27,13 +27,13 @@ ctrlText::ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std:
       maxWidth_(static_cast<unsigned short>(-1))
 {}
 
-Rect ctrlText::GetBoundaryRect() const
+Rect ctrlText::getBoundaryRect() const
 {
     if(text.empty())
-        return Rect(GetDrawPos(), 0, 0);
+        return Rect(getDrawPos(), 0, 0);
     else
     {
-        Rect bounds = font->getBounds(GetDrawPos(), text, format_);
+        Rect bounds = font->getBounds(getDrawPos(), text, format_);
         if(bounds.getSize().x > maxWidth_)
             bounds.setSize(Extent(maxWidth_, bounds.getSize().y));
         return bounds;
@@ -43,5 +43,5 @@ Rect ctrlText::GetBoundaryRect() const
 void ctrlText::Draw_()
 {
     if(!text.empty())
-        font->Draw(GetDrawPos(), text, format_, color_, maxWidth_);
+        font->Draw(getDrawPos(), text, format_, color_, maxWidth_);
 }

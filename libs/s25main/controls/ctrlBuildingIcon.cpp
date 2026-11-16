@@ -22,10 +22,10 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent, const unsigned id, cons
 void ctrlBuildingIcon::Draw_()
 {
     if(state == ButtonState::Hover || state == ButtonState::Pressed)
-        LOADER.GetImageN("io", 0)->DrawPart(GetDrawRect());
-    glArchivItem_Bitmap* image = LOADER.GetNationIcon(nation, type);
+        LOADER.getImageN("io", 0)->DrawPart(getDrawRect());
+    glArchivItem_Bitmap* image = LOADER.getNationIcon(nation, type);
     if(image)
-        image->DrawFull(GetDrawPos() + GetSize() / 2, (state == ButtonState::Pressed ? COLOR_YELLOW : COLOR_WHITE));
+        image->DrawFull(getDrawPos() + getSize() / 2, (state == ButtonState::Pressed ? COLOR_YELLOW : COLOR_WHITE));
 }
 
 void ctrlBuildingIcon::DrawContent() const {}

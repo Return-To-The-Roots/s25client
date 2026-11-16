@@ -243,10 +243,10 @@ void SerializedGameData::MakeSnapshot(const Game& game)
     Prepare(false);
 
     const GameWorldBase& gw = game.world_;
-    writeEm = &gw.GetEvMgr();
+    writeEm = &gw.getEvMgr();
 
     // Anzahl Objekte reinschreiben (used for safety checks only)
-    expectedNumObjects = GameObject::GetNumObjs();
+    expectedNumObjects = GameObject::getNumObjs();
     PushUnsignedInt(expectedNumObjects);
 
     // World and objects
@@ -261,15 +261,15 @@ void SerializedGameData::MakeSnapshot(const Game& game)
     for(const auto& player : gw.getPlayers())
     {
         if(debugMode)
-            LOG.write("Start serializing player %1% at %2%\n") % player.GetPlayerId() % GetLength();
+            LOG.write("Start serializing player %1% at %2%\n") % player.getPlayerId() % GetLength();
         player.Serialize(*this);
         if(debugMode)
-            LOG.write("Done serializing player %1% at %2%\n") % player.GetPlayerId() % GetLength();
+            LOG.write("Done serializing player %1% at %2%\n") % player.getPlayerId() % GetLength();
     }
 
-    if(writtenEventIds.size() != writeEm->GetNumActiveEvents())
+    if(writtenEventIds.size() != writeEm->getNumActiveEvents())
     {
-        throw Error(helpers::format("Event count mismatch. Expected: %1%, written: %2%", writeEm->GetNumActiveEvents(),
+        throw Error(helpers::format("Event count mismatch. Expected: %1%, written: %2%", writeEm->getNumActiveEvents(),
                                     writtenEventIds.size()));
     }
     // If this check fails, we missed some objects or some objects were destroyed without decreasing the obj count
@@ -289,13 +289,13 @@ void SerializedGameData::ReadSnapshot(Game& game, ILocalGameState& localGameStat
     Prepare(true);
 
     GameWorld& gw = game.world_;
-    em = &gw.GetEvMgr();
+    em = &gw.getEvMgr();
 
     expectedNumObjects = PopUnsignedInt();
 
     MapSerializer::Deserialize(gw, *this, game, localGameState);
     em->Deserialize(*this);
-    if(gw.GetGGS().objective == GameObjective::EconomyMode)
+    if(gw.getGGS().objective == GameObjective::EconomyMode)
     {
         gw.setEconHandler(
           std::unique_ptr<EconomyModeHandler>(PopObject<EconomyModeHandler>(GO_Type::Economymodehandler)));
@@ -305,15 +305,15 @@ void SerializedGameData::ReadSnapshot(Game& game, ILocalGameState& localGameStat
         player.Deserialize(*this);
 
     // If this check fails, we did not serialize all objects or there was an async
-    if(readEvents.size() != em->GetNumActiveEvents())
+    if(readEvents.size() != em->getNumActiveEvents())
     {
-        throw Error(helpers::format("Event count mismatch. Expected: %1%, read: %2%", em->GetNumActiveEvents(),
+        throw Error(helpers::format("Event count mismatch. Expected: %1%, read: %2%", em->getNumActiveEvents(),
                                     readEvents.size()));
     }
-    if(expectedNumObjects != GameObject::GetNumObjs())
+    if(expectedNumObjects != GameObject::getNumObjs())
     {
         throw Error(helpers::format("Object count mismatch. Expected: %1%, Existing: %2%", expectedNumObjects,
-                                    GameObject::GetNumObjs()));
+                                    GameObject::getNumObjs()));
     }
     if(expectedNumObjects != readObjects.size() + 1) // "Nothing" nodeObj does not get serialized
     {
@@ -325,9 +325,9 @@ void SerializedGameData::ReadSnapshot(Game& game, ILocalGameState& localGameStat
     for(const auto& entry : readObjects)
     {
         const auto* worker = dynamic_cast<const nofFlagWorker*>(entry.second);
-        if(worker && worker->GetFlag() && worker->GetPlayer() != worker->GetFlag()->GetPlayer())
+        if(worker && worker->getFlag() && worker->getPlayer() != worker->getFlag()->getPlayer())
         {
-            throw Error(helpers::format("Invalid flag worker at %1%", worker->GetPos()));
+            throw Error(helpers::format("Invalid flag worker at %1%", worker->getPos()));
         }
     }
 
@@ -348,10 +348,10 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
         return;
     }
 
-    const unsigned objId = go->GetObjId();
+    const unsigned objId = go->getObjId();
 
-    RTTR_Assert(objId <= GameObject::GetObjIDCounter());
-    if(objId > GameObject::GetObjIDCounter())
+    RTTR_Assert(objId <= GameObject::getObjIDCounter());
+    if(objId > GameObject::getObjIDCounter())
     {
         LOG.write("%s\n") % _("An error occured while saving which was suppressed!");
         PushUnsignedInt(0);
@@ -361,7 +361,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     PushUnsignedInt(objId);
 
     // If the object was already serialized skip the data
-    if(IsObjectSerialized(objId))
+    if(isObjectSerialized(objId))
     {
         if(debugMode)
             LOG.write("Saved known objId %u\n") % objId;
@@ -374,11 +374,11 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
     // Objekt merken
     writtenObjIds.insert(objId);
 
-    RTTR_Assert(writtenObjIds.size() < GameObject::GetNumObjs());
+    RTTR_Assert(writtenObjIds.size() < GameObject::getNumObjs());
 
     // Objekt nich bekannt? Dann Type-ID noch mit drauf
     if(!known)
-        PushEnum<uint16_t>(go->GetGOT());
+        PushEnum<uint16_t>(go->getGOT());
 
     // Objekt serialisieren
     if(debugMode)
@@ -388,7 +388,7 @@ void SerializedGameData::PushObject_(const GameObject* go, const bool known)
         LOG.write("Done serializing %1% at %2%\n") % objId % GetLength();
 
     // Sicherheitscode reinschreiben
-    PushUnsignedShort(GetSafetyCode(*go));
+    PushUnsignedShort(getSafetyCode(*go));
 }
 
 void SerializedGameData::PushEvent(const GameEvent* event)
@@ -399,9 +399,9 @@ void SerializedGameData::PushEvent(const GameEvent* event)
         return;
     }
 
-    unsigned instanceId = event->GetInstanceId();
+    unsigned instanceId = event->getInstanceId();
     PushUnsignedInt(instanceId);
-    if(IsEventSerialized(instanceId))
+    if(isEventSerialized(instanceId))
         return;
     writtenEventIds.insert(instanceId);
     if(debugMode)
@@ -409,7 +409,7 @@ void SerializedGameData::PushEvent(const GameEvent* event)
     event->Serialize(*this);
     if(debugMode)
         LOG.write("Done serializing event %1% at %2%\n") % instanceId % GetLength();
-    PushUnsignedShort(GetSafetyCode(*event));
+    PushUnsignedShort(getSafetyCode(*event));
 }
 
 const GameEvent* SerializedGameData::PopEvent()
@@ -426,7 +426,7 @@ const GameEvent* SerializedGameData::PopEvent()
 
     unsigned short safety_code = PopUnsignedShort();
 
-    if(safety_code != GetSafetyCode(*ev))
+    if(safety_code != getSafetyCode(*ev))
     {
         LOG.write("SerializedGameData::PopEvent: ERROR: After loading Event(instanceId = %1%); Code is wrong!\n")
           % instanceId;
@@ -447,7 +447,7 @@ void SerializedGameData::PushFOWObject(const FOWObject* fowobj)
     }
 
     // Objekt-Typ
-    PushEnum<uint8_t>(fowobj->GetType());
+    PushEnum<uint8_t>(fowobj->getType());
 
     // Objekt serialisieren
     fowobj->Serialize(*this);
@@ -476,7 +476,7 @@ GameObject* SerializedGameData::PopObject_(helpers::OptionalEnum<GO_Type> got)
     if(!objId)
         return nullptr;
 
-    if(GameObject* go = GetReadGameObject(objId))
+    if(GameObject* go = getReadGameObject(objId))
         return go;
 
     // Objekt nich bekannt? Dann in den heiligen Schriften lesen
@@ -489,7 +489,7 @@ GameObject* SerializedGameData::PopObject_(helpers::OptionalEnum<GO_Type> got)
     // Sicherheitscode auslesen
     unsigned short safety_code = PopUnsignedShort();
 
-    if(safety_code != GetSafetyCode(*go))
+    if(safety_code != getSafetyCode(*go))
     {
         LOG.write(
           "SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n")
@@ -500,14 +500,14 @@ GameObject* SerializedGameData::PopObject_(helpers::OptionalEnum<GO_Type> got)
     return go.release();
 }
 
-unsigned short SerializedGameData::GetSafetyCode(const GameObject& go)
+unsigned short SerializedGameData::getSafetyCode(const GameObject& go)
 {
-    return 0xFFFF ^ rttr::enum_cast(go.GetGOT()) ^ go.GetObjId();
+    return 0xFFFF ^ rttr::enum_cast(go.getGOT()) ^ go.getObjId();
 }
 
-unsigned short SerializedGameData::GetSafetyCode(const GameEvent& ev)
+unsigned short SerializedGameData::getSafetyCode(const GameEvent& ev)
 {
-    return 0xFFFF ^ ev.GetInstanceId();
+    return 0xFFFF ^ ev.getInstanceId();
 }
 
 SerializedGameData::Error SerializedGameData::makeOutOfRange(unsigned value, unsigned maxValue)
@@ -518,8 +518,8 @@ SerializedGameData::Error SerializedGameData::makeOutOfRange(unsigned value, uns
 void SerializedGameData::AddObject(GameObject* go)
 {
     RTTR_Assert(isReading);
-    RTTR_Assert(!readObjects[go->GetObjId()]); // Do not call this multiple times per GameObject
-    readObjects[go->GetObjId()] = go;
+    RTTR_Assert(!readObjects[go->getObjId()]); // Do not call this multiple times per GameObject
+    readObjects[go->getObjId()] = go;
     RTTR_Assert(readObjects.size() < expectedNumObjects);
 }
 
@@ -531,24 +531,24 @@ unsigned SerializedGameData::AddEvent(unsigned instanceId, GameEvent* ev)
     return instanceId;
 }
 
-bool SerializedGameData::IsObjectSerialized(unsigned obj_id) const
+bool SerializedGameData::isObjectSerialized(unsigned obj_id) const
 {
     RTTR_Assert(!isReading);
-    RTTR_Assert(obj_id <= GameObject::GetObjIDCounter());
+    RTTR_Assert(obj_id <= GameObject::getObjIDCounter());
     return helpers::contains(writtenObjIds, obj_id);
 }
 
-bool SerializedGameData::IsEventSerialized(unsigned evInstanceid) const
+bool SerializedGameData::isEventSerialized(unsigned evInstanceid) const
 {
     RTTR_Assert(!isReading);
-    RTTR_Assert(evInstanceid < writeEm->GetEventInstanceCtr());
+    RTTR_Assert(evInstanceid < writeEm->getEventInstanceCtr());
     return helpers::contains(writtenEventIds, evInstanceid);
 }
 
-GameObject* SerializedGameData::GetReadGameObject(const unsigned obj_id) const
+GameObject* SerializedGameData::getReadGameObject(const unsigned obj_id) const
 {
     RTTR_Assert(isReading);
-    RTTR_Assert(obj_id <= GameObject::GetObjIDCounter());
+    RTTR_Assert(obj_id <= GameObject::getObjIDCounter());
     auto foundObj = readObjects.find(obj_id);
     if(foundObj == readObjects.end())
         return nullptr;

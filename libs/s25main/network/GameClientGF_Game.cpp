@@ -15,7 +15,7 @@ void GameClient::ExecuteNWF()
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
     AsyncChecksum checksum = AsyncChecksum::create(*game);
-    const unsigned curGF = GetGFNumber();
+    const unsigned curGF = getGFNumber();
 
     for(const NWFPlayerInfo& player : nwfInfo->getPlayerInfos())
     {
@@ -23,7 +23,7 @@ void GameClient::ExecuteNWF()
 
         // Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
         // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
-        if(!currentGCs.gcs.empty() && replayinfo && replayinfo->replay.IsRecording())
+        if(!currentGCs.gcs.empty() && replayinfo && replayinfo->replay.isRecording())
         {
             // Set the current checksum as the GF checksum. The checksum from the command is from the last NWF!
             PlayerGameCommands replayCmds(checksum, currentGCs.gcs);
@@ -40,10 +40,10 @@ void GameClient::ExecuteNWF()
     {
         const std::vector<gc::GameCommandPtr> aiGCs = ai.FetchGameCommands();
         /// Cmds from own AI get added to our gcs
-        if(ai.GetPlayerId() == GetPlayerId())
+        if(ai.getPlayerId() == getPlayerId())
             gameCommands_.insert(gameCommands_.end(), aiGCs.begin(), aiGCs.end());
         else
-            mainPlayer.sendMsgAsync(new GameMessage_GameCommand(ai.GetPlayerId(), checksum, aiGCs));
+            mainPlayer.sendMsgAsync(new GameMessage_GameCommand(ai.getPlayerId(), checksum, aiGCs));
         for(auto& msg : ai.getAIInterface().FetchChatMessages())
             mainPlayer.sendMsgAsync(msg.release());
     }

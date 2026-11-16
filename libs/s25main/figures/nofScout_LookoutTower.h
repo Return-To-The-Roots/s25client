@@ -18,7 +18,7 @@ protected:
     /// Malt den Arbeiter beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override { return 0; }
+    unsigned short getCarryID() const override { return 0; }
     /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
     void WorkAborted() override;
     /// Arbeitsplatz wurde erreicht
@@ -30,7 +30,7 @@ public:
     nofScout_LookoutTower(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofScout_LookoutTower(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const final { return GO_Type::NofScoutLookouttower; }
+    GO_Type getGOT() const final { return GO_Type::NofScoutLookouttower; }
 
     void HandleDerivedEvent(unsigned id) override;
 };

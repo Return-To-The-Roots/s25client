@@ -69,9 +69,9 @@ void nofDefender::Walked()
                 } else
                 {
                     nobBaseMilitary* bld = homeBld;
-                    RTTR_Assert(bld->GetDefender() == this); // I should be the defender
+                    RTTR_Assert(bld->getDefender() == this); // I should be the defender
                     bld->AddActiveSoldier(world->RemoveFigure(pos, *this));
-                    RTTR_Assert(!bld->GetDefender()); // No defender anymore
+                    RTTR_Assert(!bld->getDefender()); // No defender anymore
                 }
             }
             break;
@@ -117,7 +117,7 @@ void nofDefender::HomeDestroyedAtBegin()
 void nofDefender::WonFighting()
 {
     // addon BattlefieldPromotion active? -> increase rank!
-    if(world->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+    if(world->getGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
         IncreaseRank();
     // Attacker is dead
     attacker = nullptr;
@@ -154,10 +154,10 @@ void nofDefender::LostFighting()
     {
         homeBld->ResetDefender();
         // A military building potentially needs to get new soldiers if this wasn't the last one
-        if(BuildingProperties::IsMilitary(homeBld->GetBuildingType()))
+        if(BuildingProperties::isMilitary(homeBld->getBuildingType()))
         {
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(homeBld));
-            if(static_cast<nobMilitary*>(homeBld)->GetNumTroops())
+            if(static_cast<nobMilitary*>(homeBld)->getNumTroops())
                 static_cast<nobMilitary*>(homeBld)->RegulateTroops();
         }
         homeBld = nullptr;

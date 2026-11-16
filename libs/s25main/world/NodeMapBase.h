@@ -39,13 +39,13 @@ public:
 template<typename T_Node>
 inline const T_Node& NodeMapBase<T_Node>::operator[](const MapPoint& pt) const
 {
-    return nodes[GetIdx(pt)];
+    return nodes[getIdx(pt)];
 }
 
 template<typename T_Node>
 inline T_Node& NodeMapBase<T_Node>::operator[](const MapPoint& pt)
 {
-    return nodes[GetIdx(pt)];
+    return nodes[getIdx(pt)];
 }
 
 template<typename T_Node>

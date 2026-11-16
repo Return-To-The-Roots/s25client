@@ -97,7 +97,7 @@ namespace {
 
 std::unique_ptr<ArchivItem_Bitmap_Raw> createBmp(Extent size, unsigned percentTransparent)
 {
-    const auto* pal = LOADER.GetPaletteN("pal5");
+    const auto* pal = LOADER.getPaletteN("pal5");
     auto bmp = std::make_unique<ArchivItem_Bitmap_Raw>();
     bmp->init(size.x, size.y, TextureFormat::BGRA);
     const auto offset = rttr::test::randomPoint<Position>(-100, 100);
@@ -120,7 +120,7 @@ std::unique_ptr<ArchivItem_Bitmap_Raw> createRandBmp(unsigned percentTransparent
 
 std::unique_ptr<ArchivItem_Bitmap_Player> createRandPlayerBmp(unsigned percentTransparent)
 {
-    const auto* pal = LOADER.GetPaletteN("colors");
+    const auto* pal = LOADER.getPaletteN("colors");
     auto bmp = std::make_unique<ArchivItem_Bitmap_Player>();
     const auto size = rttr::test::randomPoint<Extent>(10, 50);
     const auto offset = rttr::test::randomPoint<Position>(-100, 100);
@@ -171,9 +171,9 @@ BOOST_AUTO_TEST_CASE(RegularBitmap)
     PixelBufferBGRA buffer(size.x * 2 + offset.x, size.y * 2 + offset.y);
     glSmartBitmap smartBmp;
     smartBmp.add(bmpSrc.get());
-    BOOST_TEST(smartBmp.GetSize() == size);
+    BOOST_TEST(smartBmp.getSize() == size);
     BOOST_TEST(smartBmp.getRequiredTexSize() == size);
-    BOOST_TEST(smartBmp.GetOrigin() == Position(bmpSrc->getNx(), bmpSrc->getNy()));
+    BOOST_TEST(smartBmp.getOrigin() == Position(bmpSrc->getNx(), bmpSrc->getNy()));
     smartBmp.drawTo(buffer, offset);
     Position iSize(size);
     RTTR_FOREACH_PT(Position, Extent(buffer.getWidth(), buffer.getHeight()))
@@ -201,16 +201,16 @@ BOOST_AUTO_TEST_CASE(MultiRegularBitmap)
         commonOrigin.x = std::max<int>(commonOrigin.x, bmp->getNx());
         commonOrigin.y = std::max<int>(commonOrigin.y, bmp->getNy());
     }
-    Extent size = smartBmp.GetSize();
+    Extent size = smartBmp.getSize();
     for(const auto& bmp : bmps)
     {
         size.x = std::max<unsigned>(size.x, bmp->getWidth() + commonOrigin.x - bmp->getNx());
         size.y = std::max<unsigned>(size.y, bmp->getHeight() + commonOrigin.y - bmp->getNy());
     }
-    BOOST_TEST(smartBmp.GetSize() == smartBmp.getRequiredTexSize());
+    BOOST_TEST(smartBmp.getSize() == smartBmp.getRequiredTexSize());
     // Note: We don't test size and origin as they may be adjusted for optimization purposes
     // which is considered an internal detail
-    commonOrigin = smartBmp.GetOrigin();
+    commonOrigin = smartBmp.getOrigin();
 
     const auto offset = rttr::test::randomPoint<Extent>(0, 100);
     // Draw to a large buffer (detect pixels at wrong positions)
@@ -247,14 +247,14 @@ BOOST_AUTO_TEST_CASE(PlayerBitmap)
 {
     // Fully opaque bitmap so origin and size match
     auto bmp = createRandPlayerBmp(0);
-    const auto* pal = LOADER.GetPaletteN("colors");
+    const auto* pal = LOADER.getPaletteN("colors");
     const Extent size(bmp->getWidth(), bmp->getHeight());
     const auto offset = rttr::test::randomPoint<Extent>(0, 100);
     glSmartBitmap smartBmp;
     smartBmp.add(bmp.get());
-    BOOST_TEST(smartBmp.GetSize() == size);
+    BOOST_TEST(smartBmp.getSize() == size);
     BOOST_TEST(smartBmp.getRequiredTexSize() == Extent(size.x * 2, size.y));
-    BOOST_TEST(smartBmp.GetOrigin() == Position(bmp->getNx(), bmp->getNy()));
+    BOOST_TEST(smartBmp.getOrigin() == Position(bmp->getNx(), bmp->getNy()));
     PixelBufferBGRA buffer(size.x * 4 + offset.x, size.y * 4 + offset.y);
     smartBmp.drawTo(buffer, offset);
     RTTR_FOREACH_PT(Position, Extent(buffer.getWidth(), buffer.getHeight()))
@@ -263,10 +263,10 @@ BOOST_AUTO_TEST_CASE(PlayerBitmap)
         ColorBGRA expectedColor;
         if(bmpPos.x >= 0 && bmpPos.y >= 0 && bmpPos.y < bmp->getHeight())
         {
-            if(bmpPos.x >= static_cast<int>(smartBmp.GetSize().x))
+            if(bmpPos.x >= static_cast<int>(smartBmp.getSize().x))
             {
                 // Player color
-                const int plClrPos = bmpPos.x - smartBmp.GetSize().x;
+                const int plClrPos = bmpPos.x - smartBmp.getSize().x;
                 if(plClrPos < bmp->getWidth() && bmp->isPlayerColor(plClrPos, bmpPos.y))
                 {
                     expectedColor = pal->get(bmp->getPlayerColorIdx(plClrPos, bmpPos.y) + 128);
@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
         smartBmp.add(bmps.back().get());
     }
 
-    Extent size = smartBmp.GetSize();
+    Extent size = smartBmp.getSize();
     BOOST_TEST(smartBmp.getRequiredTexSize() == Extent(size.x * 2, size.y));
 
     Position commonOrigin(bmps[0]->getNx(), bmps[0]->getNy());
@@ -310,25 +310,25 @@ BOOST_AUTO_TEST_CASE(MultiPlayerBitmap)
     }
     // Note: We don't test size and origin as they may be adjusted for optimization purposes
     // which is considered an internal detail
-    commonOrigin = smartBmp.GetOrigin();
+    commonOrigin = smartBmp.getOrigin();
 
     const auto offset = rttr::test::randomPoint<Extent>(0, 100);
     // Draw to a large buffer (detect pixels at wrong positions)
     PixelBufferBGRA buffer(size.x * 4 + offset.x, size.y * 4 + offset.y);
     smartBmp.drawTo(buffer, offset);
-    const auto* pal = LOADER.GetPaletteN("colors");
+    const auto* pal = LOADER.getPaletteN("colors");
     RTTR_FOREACH_PT(Position, Extent(buffer.getWidth(), buffer.getHeight()))
     {
         const Position curPos = pt - offset;
         const bool isPlayerClrRegion =
-          (curPos.x >= static_cast<int>(smartBmp.GetSize().x) && curPos.x < static_cast<int>(smartBmp.GetSize().x) * 2);
+          (curPos.x >= static_cast<int>(smartBmp.getSize().x) && curPos.x < static_cast<int>(smartBmp.getSize().x) * 2);
         // Bitmaps are drawn in order added, so final pixel value is determined by all bitmaps at that position
         ColorBGRA expectedColor;
         for(const auto& bmp : bmps)
         {
             // Drawing buffer at `pos` - commonOrigin should be equal to drawing bmp at `pos` - origin
             const Position curOriginOffset = Position(bmp->getNx(), bmp->getNy()) - commonOrigin;
-            const Position bmpPos = curPos + curOriginOffset - Extent(isPlayerClrRegion ? smartBmp.GetSize().x : 0, 0);
+            const Position bmpPos = curPos + curOriginOffset - Extent(isPlayerClrRegion ? smartBmp.getSize().x : 0, 0);
             if(bmpPos.x >= 0 && bmpPos.y >= 0 && bmpPos.x < bmp->getWidth() && bmpPos.y < bmp->getHeight())
             {
                 const ColorBGRA color = bmp->getPixel(bmpPos.x, bmpPos.y);

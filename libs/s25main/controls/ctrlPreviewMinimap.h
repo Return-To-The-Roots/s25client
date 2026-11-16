@@ -33,10 +33,10 @@ public:
 
     /// Zeichnet die MapPreview
     void Draw_() override;
-    Rect GetBoundaryRect() const override;
+    Rect getBoundaryRect() const override;
 
     /// Setzt die (Start-)Farbe eines Spielers bzw. löscht diesen (color = 0)
-    void SetPlayerColor(unsigned id, unsigned color) { players[id].color = color; }
+    void setPlayerColor(unsigned id, unsigned color) { players[id].color = color; }
 
-    void SetMap(const libsiedler2::ArchivItem_Map* s2map);
+    void setMap(const libsiedler2::ArchivItem_Map* s2map);
 };

@@ -14,14 +14,14 @@ ctrlImage::~ctrlImage() = default;
 
 void ctrlImage::Draw_()
 {
-    DrawImage(Rect(GetDrawPos(), GetImageRect().getSize()));
+    DrawImage(Rect(getDrawPos(), getImageRect().getSize()));
 }
 
 bool ctrlImage::msgMouseMove(const MouseCoords& mc)
 {
-    if(GetImage())
+    if(getImage())
     {
-        if(IsMouseOver(mc.pos))
+        if(isMouseOver(mc.pos))
             ShowTooltip();
         else
             HideTooltip();
@@ -30,7 +30,7 @@ bool ctrlImage::msgMouseMove(const MouseCoords& mc)
     return false;
 }
 
-Rect ctrlImage::GetBoundaryRect() const
+Rect ctrlImage::getBoundaryRect() const
 {
-    return Rect::move(GetImageRect(), GetDrawPos());
+    return Rect::move(getImageRect(), getDrawPos());
 }

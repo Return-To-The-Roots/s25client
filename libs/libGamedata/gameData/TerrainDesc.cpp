@@ -122,18 +122,18 @@ TerrainBQ TerrainDesc::GetBQ() const
         return TerrainBQ::Nothing;
 }
 
-bool TerrainDesc::IsUsableByAnimals() const
+bool TerrainDesc::isUsableByAnimals() const
 {
     // If it is buildable land or mountain, animals can use it
     return (kind == TerrainKind::Land || kind == TerrainKind::Mountain) && Is(ETerrain::Buildable);
 }
 
-bool TerrainDesc::IsVital() const
+bool TerrainDesc::isVital() const
 {
     return kind == TerrainKind::Land && Is(ETerrain::Buildable);
 }
 
-TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
+TerrainDesc::Triangle TerrainDesc::getUSDTriangle() const
 {
     // Inset by 0.5 on all sites to sample middle of pixel in OGL
     RectBase<float> oglRect(posInTexture.getOrigin() + PointF::all(.5f), posInTexture.getSize() - PointF::all(1));
@@ -162,7 +162,7 @@ TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
     return result;
 }
 
-TerrainDesc::Triangle TerrainDesc::GetRSUTriangle() const
+TerrainDesc::Triangle TerrainDesc::getRSUTriangle() const
 {
     // Inset by 0.5 on all sites to sample middle of pixel in OGL
     RectBase<float> oglRect(posInTexture.getOrigin() + PointF::all(.5f), posInTexture.getSize() - PointF::all(1));

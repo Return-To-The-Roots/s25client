@@ -38,7 +38,7 @@ public:
 
     /// Moves the song with the given index (in the songs_ array) to the front of the list of songs to be played
     /// Has no effect if the song is not in the queue (anymore), e.g. if it was already played
-    void SetStartSong(unsigned id);
+    void setStartSong(unsigned id);
 
 private:
     /// Get the playlist ready for playing

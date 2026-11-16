@@ -28,20 +28,20 @@ public:
     void AddString(const std::string& str, unsigned color, bool scroll = true);
     /// Deletes all lines
     void Clear();
-    unsigned GetNumLines() const { return static_cast<unsigned>(lines.size()); }
+    unsigned getNumLines() const { return static_cast<unsigned>(lines.size()); }
     /// Gibt den index-ten Eintrag zurück
-    const std::string& GetLine(unsigned index) const { return lines[index].str; }
-    void SetLine(unsigned index, const std::string& str, unsigned color);
+    const std::string& getLine(unsigned index) const { return lines[index].str; }
+    void setLine(unsigned index, const std::string& str, unsigned color);
     /// Resizes the height such that the given number of lines can be shown
-    void SetNumVisibleLines(unsigned numLines);
+    void setNumVisibleLines(unsigned numLines);
     /// Return the currently used size including padding and the (possible) scrollbar (<=width,  <= height)
-    Extent GetContentSize() const;
+    Extent getContentSize() const;
 
     /// Schaltet Box ein und aus
     void ShowBackground(bool showBackground) { showBackground_ = showBackground; }
     /// (Dis-)allows a scrollbar. If scrollbar is disabled, text will be restricted by the current height and succeeding
     /// lines won't be shown
-    void SetScrollBarAllowed(bool allowed);
+    void setScrollBarAllowed(bool allowed);
 
     bool msgLeftDown(const MouseCoords& mc) override;
     bool msgLeftUp(const MouseCoords& mc) override;
@@ -61,7 +61,7 @@ private:
         Line(std::string str, unsigned color) : str(std::move(str)), color(color) {}
     };
 
-    unsigned GetContentWidth() const;
+    unsigned getContentWidth() const;
 
     TextureColor tc_;
     const glFont* font;

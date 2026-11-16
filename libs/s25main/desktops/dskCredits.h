@@ -28,7 +28,7 @@ public:
     void Draw_() override;
     void msgButtonClick(unsigned ctrl_id) override;
     void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult) override;
-    void SetActive(bool active) override;
+    void setActive(bool active) override;
     static bool Close();
 
 private:
@@ -37,7 +37,7 @@ private:
 
     void DrawCredit();
     void DrawBobs();
-    static glArchivItem_Bitmap* GetCreditsImgOrDefault(const std::string& name);
+    static glArchivItem_Bitmap* getCreditsImgOrDefault(const std::string& name);
 
     struct CreditsEntry
     {

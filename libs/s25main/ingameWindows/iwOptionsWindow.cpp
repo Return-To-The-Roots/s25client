@@ -63,36 +63,36 @@ constexpr auto leftMargin = 35;
 
 iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
     : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, windowSize, _("Game menu"),
-                   LOADER.GetImageN("resource", 41)),
+                   LOADER.getImageN("resource", 41)),
       soundManager(soundManager)
 {
     DrawPoint curPos = DrawPoint(centerPosition, 10);
 
     // The soldier on top
     constexpr Offset soldierOffset(0, 26);
-    AddImage(ID_imgSoldier, curPos + soldierOffset, LOADER.GetImageN("io", 30));
+    AddImage(ID_imgSoldier, curPos + soldierOffset, LOADER.getImageN("io", 30));
     curPos.y += textSpacing + soldierOffset.y;
 
     AddText(ID_txtRttr, curPos, "Return To The Roots", COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     curPos.y += textSpacing;
 
-    AddText(ID_txtVersion, curPos, rttr::version::GetReadableVersion(), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    AddText(ID_txtVersion, curPos, rttr::version::getReadableVersion(), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     curPos.y += textSpacing;
 
     AddFormattedText(ID_txtCopyright, curPos,
                      "\xC2\xA9"
                      "2005 - %s Settlers Freaks",
                      COLOR_YELLOW, FontStyle::CENTER, NormalFont)
-      % rttr::version::GetYear();
+      % rttr::version::getYear();
     curPos.y += textSpacing * 2;
     curPos.x = leftMargin;
 
-    AddImageButton(ID_btKeyboardLayout, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 79));
+    AddImageButton(ID_btKeyboardLayout, curPos, imageButtonSize, TextureColor::Green2, LOADER.getImageN("io", 79));
     AddText(ID_txtKeyboardLayout, curPos + textOffset, _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM,
             NormalFont);
     curPos.y += imageButtonSize.y + generalSpacing;
 
-    AddImageButton(ID_btReadme, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 79));
+    AddImageButton(ID_btReadme, curPos, imageButtonSize, TextureColor::Green2, LOADER.getImageN("io", 79));
     AddText(ID_txtReadme, curPos + textOffset, _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
     curPos.y += imageButtonSize.y + generalSpacing;
 
@@ -102,16 +102,16 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
     // curPos.y += imageButtonSize.y + generalSpacing;
 
     curPos.y += 3 + imageButtonSize.y / 2; // TODO: Delete this row, if the Load button is implemented
-    AddImageButton(ID_btSave, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 47));
+    AddImageButton(ID_btSave, curPos, imageButtonSize, TextureColor::Green2, LOADER.getImageN("io", 47));
     AddText(ID_txtSave, curPos + textOffset, _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
     curPos.y += 3 + imageButtonSize.y / 2; // TODO: Delete this row, if the Load button is implemented
     curPos.y += imageButtonSize.y + generalSpacing;
 
     // Sound on/off + volume
     AddImageButton(ID_btSoundEffects, curPos, imageButtonSize, TextureColor::Green2,
-                   LOADER.GetImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
+                   LOADER.getImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
     AddProgress(ID_pgEffectVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
-      ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
+      ->setPosition((SETTINGS.sound.effectsVolume * 100) / 255);
     curPos.y += imageButtonSize.y;
     curPos.x += optionOffset.x;
 
@@ -122,9 +122,9 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
 
     // Music on/off + volume
     AddImageButton(ID_btMusic, curPos, imageButtonSize, TextureColor::Green2,
-                   LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
+                   LOADER.getImageN("io", 116 + !SETTINGS.sound.musicEnabled));
     AddProgress(ID_pgMusicVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
-      ->SetPosition((SETTINGS.sound.musicVolume * 100) / 255);
+      ->setPosition((SETTINGS.sound.musicVolume * 100) / 255);
     curPos.y += imageButtonSize.y;
     curPos.x += optionOffset.x;
 
@@ -157,8 +157,8 @@ void iwOptionsWindow::msgButtonClick(const unsigned ctrl_id)
 
         case ID_btSoundEffects:
             SETTINGS.sound.effectsEnabled = !SETTINGS.sound.effectsEnabled; //-V807
-            GetCtrl<ctrlImageButton>(ID_btSoundEffects)
-              ->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effectsEnabled));
+            getCtrl<ctrlImageButton>(ID_btSoundEffects)
+              ->setImage(LOADER.getTextureN("io", 114 + !SETTINGS.sound.effectsEnabled));
 
             if(!SETTINGS.sound.effectsEnabled)
                 soundManager.stopAll();
@@ -166,8 +166,8 @@ void iwOptionsWindow::msgButtonClick(const unsigned ctrl_id)
 
         case ID_btMusic:
             SETTINGS.sound.musicEnabled = !SETTINGS.sound.musicEnabled;
-            GetCtrl<ctrlImageButton>(ID_btMusic)
-              ->SetImage(LOADER.GetTextureN("io", 116 + !SETTINGS.sound.musicEnabled));
+            getCtrl<ctrlImageButton>(ID_btMusic)
+              ->setImage(LOADER.getTextureN("io", 116 + !SETTINGS.sound.musicEnabled));
             if(SETTINGS.sound.musicEnabled)
                 MUSICPLAYER.Play();
             else
@@ -191,11 +191,11 @@ void iwOptionsWindow::msgProgressChange(const unsigned ctrl_id, const unsigned s
     {
         case ID_pgEffectVol:
             SETTINGS.sound.effectsVolume = static_cast<uint8_t>((position * 255) / 100);
-            AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effectsVolume);
+            AUDIODRIVER.setMasterEffectVolume(SETTINGS.sound.effectsVolume);
             break;
         case ID_pgMusicVol:
             SETTINGS.sound.musicVolume = static_cast<uint8_t>((position * 255) / 100);
-            AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musicVolume);
+            AUDIODRIVER.setMusicVolume(SETTINGS.sound.musicVolume);
             break;
     }
 }

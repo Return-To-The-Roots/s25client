@@ -14,7 +14,7 @@ const TransportPriorities STD_TRANSPORT_PRIO = {{2,  13, 13, 13, 13, 13, 13, 13,
                                                  13, 14, 1,  3,  12, 12, 12, 1,  10, 8,  9,  1,  1,  12,
                                                  0,  4,  5,  6,  12, 12, 1,  12, 12, 7,  7,  1}};
 
-unsigned GetTransportPrioFromOrdering(const TransportOrders& ordering, GoodType good)
+unsigned getTransportPrioFromOrdering(const TransportOrders& ordering, GoodType good)
 {
     // The priority is the index into the ordering -> 0 = highest, first entry
     for(unsigned prio = 0; prio < ordering.size(); ++prio)
@@ -28,7 +28,7 @@ unsigned GetTransportPrioFromOrdering(const TransportOrders& ordering, GoodType 
     throw std::logic_error("Invalid ordering or ware");
 }
 
-TransportOrders GetOrderingFromTransportPrio(const TransportPriorities& priorities)
+TransportOrders getOrderingFromTransportPrio(const TransportPriorities& priorities)
 {
     TransportOrders result;
     // Map prio of each ware to STD prio

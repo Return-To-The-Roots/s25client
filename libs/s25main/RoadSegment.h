@@ -38,26 +38,26 @@ public:
     /// serialisiert das Objekt.
     void Serialize(SerializedGameData& sgd) const override;
     /// liefert den GO-Type.
-    GO_Type GetGOT() const final { return GO_Type::Roadsegment; }
+    GO_Type getGOT() const final { return GO_Type::Roadsegment; }
     /// Gibt die ID (0 oder 1) eines RoadNodes dieser Straße zurück (die Flagge muss zu dieser Straße gehören, sonst
     /// kommt Müll raus!!)
-    bool GetNodeID(const noRoadNode& rn) const;
+    bool getNodeID(const noRoadNode& rn) const;
     /// Gibt Straßen-Typ zurück
-    RoadType GetRoadType() const { return rt; }
+    RoadType getRoadType() const { return rt; }
     /// Gibt die Länge der Staße zurück
     unsigned GetLength() const { return route.size(); }
     /// gibt Flagge 1 zurück
-    noRoadNode* GetF1() const { return f1; }
+    noRoadNode* getF1() const { return f1; }
     /// setzt Flagge 1 auf o
-    void SetF1(noRoadNode* o) { f1 = o; }
+    void setF1(noRoadNode* o) { f1 = o; }
     /// gibt Flagge 2 zurück
-    noRoadNode* GetF2() const { return f2; }
+    noRoadNode* getF2() const { return f2; }
     /// setzt Flagge 2 auf o
-    void SetF2(noRoadNode* o) { f2 = o; }
+    void setF2(noRoadNode* o) { f2 = o; }
     /// gibt die Route nr zurück
-    Direction GetRoute(unsigned nr) const { return route.at(nr); }
+    Direction getRoute(unsigned nr) const { return route.at(nr); }
     /// setzt die Route nr auf r
-    void SetRoute(unsigned short nr, Direction r) { route[nr] = r; }
+    void setRoute(unsigned short nr, Direction r) { route[nr] = r; }
     /// gibt den Carrier nr zurück
     nofCarrier* getCarrier(unsigned char nr) const { return carriers_[nr]; }
     /// setzt den Carrier nr auf c
@@ -80,7 +80,7 @@ public:
     /// haben wir überhaupt Carrier?
     bool isOccupied() const { return (carriers_[0] || carriers_[1]); }
 
-    Direction GetDir(bool bwdDir, unsigned id) const
+    Direction getDir(bool bwdDir, unsigned id) const
     {
         if(bwdDir)
             return route[route.size() - id - 1] + 3u;
@@ -103,9 +103,9 @@ public:
     /// Ein Träger muss kündigen, aus welchen Gründen auch immer.
     void CarrierAbrogated(nofCarrier* carrier);
     /// given a flag returns the flag at the other end
-    const noFlag& GetOtherFlag(const noFlag& flag) const;
+    const noFlag& getOtherFlag(const noFlag& flag) const;
     /// given a flag returns last direction of the route towards the other flag
-    Direction GetOtherFlagDir(const noFlag& flag) const;
+    Direction getOtherFlagDir(const noFlag& flag) const;
 
 private:
     /// Straßentyp

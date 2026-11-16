@@ -45,7 +45,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
     if(fs != FigureState::GoHome && fs != FigureState::Wander)
     {
         workplace = sgd.PopObject<nobUsual>();
-        if(sgd.GetGameDataVersion() < 5)
+        if(sgd.getGameDataVersion() < 5)
         {
             const auto iWare = sgd.PopUnsignedChar();
             // GoodType::Nothing is moved because of adding new wares due addons
@@ -114,7 +114,7 @@ void nofBuildingWorker::Walked()
             {
                 // dann war draußen kein Platz --> ist jetzt evtl Platz?
                 state = State::WaitForWareSpace;
-                if(workplace->GetFlag()->HasSpaceForWare())
+                if(workplace->getFlag()->hasSpaceForWare())
                     FreePlaceAtFlag();
                 // Ab jetzt warten, d.h. nicht mehr arbeiten --> schlecht für die Produktivität
                 workplace->StartNotWorking();
@@ -143,24 +143,24 @@ void nofBuildingWorker::WorkingReady()
     // Trage ich eine Ware?
     if(ware)
     {
-        noFlag* flag = workplace->GetFlag();
+        noFlag* flag = workplace->getFlag();
         // Ist noch Platz an der Fahne?
-        if(flag->HasSpaceForWare())
+        if(flag->hasSpaceForWare())
         {
             // Ware erzeugen
             auto real_ware = std::make_unique<Ware>(*ware, nullptr, flag);
             real_ware->WaitAtFlag(*flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
             GoodType ware_type = ConvertShields(real_ware->type);
-            world->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
+            world->getPlayer(player).IncreaseInventoryWare(ware_type, 1);
             // Abnehmer für Ware finden
-            real_ware->SetGoal(world->GetPlayer(player).FindClientForWare(*real_ware));
+            real_ware->setGoal(world->getPlayer(player).FindClientForWare(*real_ware));
             // Ware soll ihren weiteren Weg berechnen
             real_ware->RecalcRoute();
             // Ware ablegen
             flag->AddWare(std::move(real_ware));
             // Warenstatistik erhöhen
-            world->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware_type);
+            world->getPlayer(this->player).IncreaseMerchandiseStatistic(ware_type);
             // Tragen nun keine Ware mehr
             ware = std::nullopt;
         }
@@ -173,11 +173,11 @@ void nofBuildingWorker::WorkingReady()
 
 void nofBuildingWorker::TryToWork()
 {
-    if(!workplace->IsProductionDisabled() && AreWaresAvailable())
+    if(!workplace->isProductionDisabled() && AreWaresAvailable())
     {
         state = State::Waiting1;
-        current_ev = GetEvMgr().AddEvent(
-          this, (GetGOT() == GO_Type::NofCatapultman) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
+        current_ev = getEvMgr().AddEvent(
+          this, (getGOT() == GO_Type::NofCatapultman) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
         workplace->StopNotWorking();
     } else
     {
@@ -250,7 +250,7 @@ void nofBuildingWorker::LostWork()
         case State::CatapultBackoff:
         {
             // Bisheriges Event abmelden, da die Arbeit unterbrochen wird
-            GetEvMgr().RemoveEvent(current_ev);
+            getEvMgr().RemoveEvent(current_ev);
 
             // Bescheid sagen, dass Arbeit abgebrochen wurde
             WorkAborted();
@@ -260,7 +260,7 @@ void nofBuildingWorker::LostWork()
             Wander();
 
             // Evtl. Sounds löschen
-            world->GetSoundMgr().stopSounds(*this);
+            world->getSoundMgr().stopSounds(*this);
 
             state = State::FigureWork;
         }
@@ -283,7 +283,7 @@ void nofBuildingWorker::LostWork()
             StartWandering();
 
             // Evtl. Sounds löschen
-            world->GetSoundMgr().stopSounds(*this);
+            world->getSoundMgr().stopSounds(*this);
 
             state = State::FigureWork;
         }
@@ -298,7 +298,7 @@ void nofBuildingWorker::ProductionStopped()
     // Wenn ich gerade warte und schon ein Arbeitsevent angemeldet habe, muss das wieder abgemeldet werden
     if(state == State::Waiting1)
     {
-        GetEvMgr().RemoveEvent(current_ev);
+        getEvMgr().RemoveEvent(current_ev);
         current_ev = nullptr;
         state = State::WaitingForWaresOrProductionStopped;
         workplace->StartNotWorking();
@@ -315,7 +315,7 @@ void nofBuildingWorker::DrawOtherStates(DrawPoint) {}
 /// Zeichnet Figur beim Hereinlaufen/nach Hause laufen mit evtl. getragenen Waren
 void nofBuildingWorker::DrawWalkingWithWare(DrawPoint drawPt)
 {
-    unsigned short id = GetCarryID();
+    unsigned short id = getCarryID();
     // >=CARRY_ID_CARRIER_OFFSET -> carrier.bob else jobs.bob!
     if(id >= CARRY_ID_CARRIER_OFFSET)
     {
@@ -323,5 +323,5 @@ void nofBuildingWorker::DrawWalkingWithWare(DrawPoint drawPt)
         RTTR_Assert(id <= helpers::MaxEnumValue_v<GoodType>);
         DrawWalkingCarrier(drawPt, GoodType(id), JOB_SPRITE_CONSTS[job_].isFat());
     } else
-        DrawWalking(drawPt, LOADER.GetBob("jobs"), id, JOB_SPRITE_CONSTS[job_].isFat());
+        DrawWalking(drawPt, LOADER.getBob("jobs"), id, JOB_SPRITE_CONSTS[job_].isFat());
 }

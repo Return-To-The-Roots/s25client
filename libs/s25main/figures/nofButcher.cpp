@@ -23,12 +23,12 @@ void nofButcher::DrawWorking(DrawPoint drawPt)
 
     unsigned now_id;
 
-    LOADER.GetPlayerImage("rom_bobs", 160 + (now_id = GAMECLIENT.Interpolate(136, current_ev)) % 6)
-      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
+    LOADER.getPlayerImage("rom_bobs", 160 + (now_id = GAMECLIENT.Interpolate(136, current_ev)) % 6)
+      ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     if(now_id % 6 == 5)
     {
-        world->GetSoundMgr().playNOSound(66, *this, now_id / 6);
+        world->getSoundMgr().playNOSound(66, *this, now_id / 6);
         was_sounding = true;
     }
 

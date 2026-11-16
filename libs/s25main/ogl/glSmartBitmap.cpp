@@ -111,8 +111,8 @@ void glSmartBitmap::calcDimensions()
 
 void glSmartBitmap::drawTo(libsiedler2::PixelBufferBGRA& buffer, const Extent& bufOffset) const
 {
-    libsiedler2::ArchivItem_Palette* p_colors = LOADER.GetPaletteN("colors");
-    libsiedler2::ArchivItem_Palette* p_5 = LOADER.GetPaletteN("pal5");
+    libsiedler2::ArchivItem_Palette* p_colors = LOADER.getPaletteN("colors");
+    libsiedler2::ArchivItem_Palette* p_5 = LOADER.getPaletteN("pal5");
 
     for(const glBitmapItem& bmpItem : items)
     {

@@ -201,16 +201,16 @@ LuaInterfaceGame::LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGam
 
 LuaInterfaceGame::~LuaInterfaceGame() = default;
 
-KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, SetMissionGoal, 1, 2)
+KAGUYA_MEMBER_FUNCTION_OVERLOADS(SetMissionGoalWrapper, LuaInterfaceGame, setMissionGoal, 1, 2)
 
 void LuaInterfaceGame::Register(kaguya::State& state)
 {
     state["RTTRGame"].setClass(kaguya::UserdataMetatable<LuaInterfaceGame, LuaInterfaceGameBase>()
                                  .addFunction("ClearResources", &LuaInterfaceGame::ClearResources)
-                                 .addFunction("GetGF", &LuaInterfaceGame::GetGF)
+                                 .addFunction("GetGF", &LuaInterfaceGame::getGF)
                                  .addFunction("FormatNumGFs", &LuaInterfaceGame::FormatNumGFs)
-                                 .addFunction("GetGameFrame", &LuaInterfaceGame::GetGF)
-                                 .addFunction("GetNumPlayers", &LuaInterfaceGame::GetNumPlayers)
+                                 .addFunction("GetGameFrame", &LuaInterfaceGame::getGF)
+                                 .addFunction("GetNumPlayers", &LuaInterfaceGame::getNumPlayers)
                                  .addFunction("Chat", &LuaInterfaceGame::Chat)
                                  .addOverloadedFunctions("MissionStatement", &LuaInterfaceGame::MissionStatement,
                                                          &LuaInterfaceGame::MissionStatement2,
@@ -218,10 +218,10 @@ void LuaInterfaceGame::Register(kaguya::State& state)
                                  .addFunction("SetMissionGoal", SetMissionGoalWrapper())
                                  .addFunction("PostMessage", &LuaInterfaceGame::PostMessageLua)
                                  .addFunction("PostMessageWithLocation", &LuaInterfaceGame::PostMessageWithLocation)
-                                 .addFunction("GetPlayer", &LuaInterfaceGame::GetPlayer)
-                                 .addFunction("GetWorld", &LuaInterfaceGame::GetWorld)
+                                 .addFunction("GetPlayer", &LuaInterfaceGame::getPlayer)
+                                 .addFunction("GetWorld", &LuaInterfaceGame::getWorld)
                                  // Old name
-                                 .addFunction("GetPlayerCount", &LuaInterfaceGame::GetNumPlayers));
+                                 .addFunction("GetPlayerCount", &LuaInterfaceGame::getNumPlayers));
     state["RTTR_Serializer"].setClass(kaguya::UserdataMetatable<Serializer>()
                                         .addFunction("PushInt", &Serializer::PushSignedInt)
                                         .addFunction("PopInt", &Serializer::PopSignedInt)
@@ -261,13 +261,13 @@ bool LuaInterfaceGame::Deserialize(Serializer& luaSaveState)
 
 void LuaInterfaceGame::ClearResources()
 {
-    for(unsigned p = 0; p < gw.GetNumPlayers(); p++)
-        GetPlayer(p).ClearResources();
+    for(unsigned p = 0; p < gw.getNumPlayers(); p++)
+        getPlayer(p).ClearResources();
 }
 
-unsigned LuaInterfaceGame::GetGF() const
+unsigned LuaInterfaceGame::getGF() const
 {
-    return gw.GetEvMgr().GetCurrentGF();
+    return gw.getEvMgr().getCurrentGF();
 }
 
 std::string LuaInterfaceGame::FormatNumGFs(unsigned numGFs) const
@@ -275,14 +275,14 @@ std::string LuaInterfaceGame::FormatNumGFs(unsigned numGFs) const
     return localGameState.FormatGFTime(numGFs);
 }
 
-unsigned LuaInterfaceGame::GetNumPlayers() const
+unsigned LuaInterfaceGame::getNumPlayers() const
 {
-    return gw.GetNumPlayers();
+    return gw.getNumPlayers();
 }
 
 void LuaInterfaceGame::Chat(int playerIdx, const std::string& msg)
 {
-    if(playerIdx >= 0 && localGameState.GetPlayerId() != unsigned(playerIdx))
+    if(playerIdx >= 0 && localGameState.getPlayerId() != unsigned(playerIdx))
         return;
 
     localGameState.SystemChat(msg);
@@ -302,41 +302,41 @@ void LuaInterfaceGame::MissionStatement2(int playerIdx, const std::string& title
 void LuaInterfaceGame::MissionStatement3(int playerIdx, const std::string& title, const std::string& msg,
                                          unsigned imgIdx, bool pause)
 {
-    if(playerIdx >= 0 && localGameState.GetPlayerId() != unsigned(playerIdx))
+    if(playerIdx >= 0 && localGameState.getPlayerId() != unsigned(playerIdx))
         return;
 
-    WINDOWMANAGER.Show(std::make_unique<iwMissionStatement>(_(title), msg, gw.IsSinglePlayer() && pause,
+    WINDOWMANAGER.Show(std::make_unique<iwMissionStatement>(_(title), msg, gw.isSinglePlayer() && pause,
                                                             iwMissionStatement::HelpImage(imgIdx)));
 }
 
-void LuaInterfaceGame::SetMissionGoal(int playerIdx, const std::string& newGoal)
+void LuaInterfaceGame::setMissionGoal(int playerIdx, const std::string& newGoal)
 {
-    gw.GetPostMgr().SetMissionGoal(playerIdx, newGoal);
+    gw.getPostMgr().setMissionGoal(playerIdx, newGoal);
 }
 
 // Must not be PostMessage as this is a windows define :(
 void LuaInterfaceGame::PostMessageLua(int playerIdx, const std::string& msg)
 {
     lua::assertTrue(playerIdx >= 0, "Invalid player idx");
-    gw.GetPostMgr().SendMsg(static_cast<unsigned>(playerIdx),
-                            std::make_unique<PostMsg>(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General));
+    gw.getPostMgr().SendMsg(static_cast<unsigned>(playerIdx),
+                            std::make_unique<PostMsg>(gw.getEvMgr().getCurrentGF(), msg, PostCategory::General));
 }
 
 void LuaInterfaceGame::PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y)
 {
     lua::assertTrue(playerIdx >= 0, "Invalid player idx");
-    gw.GetPostMgr().SendMsg(static_cast<unsigned>(playerIdx),
-                            std::make_unique<PostMsg>(gw.GetEvMgr().GetCurrentGF(), msg, PostCategory::General,
+    gw.getPostMgr().SendMsg(static_cast<unsigned>(playerIdx),
+                            std::make_unique<PostMsg>(gw.getEvMgr().getCurrentGF(), msg, PostCategory::General,
                                                       gw.MakeMapPoint(Position(x, y))));
 }
 
-LuaPlayer LuaInterfaceGame::GetPlayer(int playerIdx)
+LuaPlayer LuaInterfaceGame::getPlayer(int playerIdx)
 {
-    lua::assertTrue(playerIdx >= 0 && static_cast<unsigned>(playerIdx) < gw.GetNumPlayers(), "Invalid player idx");
-    return LuaPlayer(game, gw.GetPlayer(static_cast<unsigned>(playerIdx)));
+    lua::assertTrue(playerIdx >= 0 && static_cast<unsigned>(playerIdx) < gw.getNumPlayers(), "Invalid player idx");
+    return LuaPlayer(game, gw.getPlayer(static_cast<unsigned>(playerIdx)));
 }
 
-LuaWorld LuaInterfaceGame::GetWorld()
+LuaWorld LuaInterfaceGame::getWorld()
 {
     return LuaWorld(gw);
 }
@@ -407,7 +407,7 @@ bool LuaInterfaceGame::EventCancelPactRequest(PactType pt, unsigned char cancele
 void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggestedByPlayerId,
                                         unsigned char targetPlayerId, const unsigned duration)
 {
-    AIPlayer* ai = game.GetAIPlayer(targetPlayerId);
+    AIPlayer* ai = game.getAIPlayer(targetPlayerId);
     if(ai != nullptr)
     {
         kaguya::LuaRef onPactCancel = lua["onSuggestPact"];
@@ -416,7 +416,7 @@ void LuaInterfaceGame::EventSuggestPact(const PactType pt, unsigned char suggest
             AIInterface& aii = ai->getAIInterface();
             auto luaResult = onPactCancel.call<bool>(pt, suggestedByPlayerId, targetPlayerId, duration);
             if(luaResult)
-                aii.AcceptPact(gw.GetEvMgr().GetCurrentGF(), pt, suggestedByPlayerId);
+                aii.AcceptPact(gw.getEvMgr().getCurrentGF(), pt, suggestedByPlayerId);
             else
                 aii.CancelPact(pt, suggestedByPlayerId);
         }

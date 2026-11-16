@@ -16,28 +16,28 @@ struct PathConditionHuman : PathConditionReachable
     PathConditionHuman(const World& world) : PathConditionReachable(world) {}
 
     // Called for every node but the start & goal and should return true, if this point is usable
-    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
+    BOOST_FORCEINLINE bool isNodeOk(const MapPoint& pt) const
     {
         // Node blocked -> Can't go there
-        const auto* no = world.GetNode(pt).obj;
-        const BlockingManner bm = no ? no->GetBM() : BlockingManner::None;
+        const auto* no = world.getNode(pt).obj;
+        const BlockingManner bm = no ? no->getBM() : BlockingManner::None;
         if(bm != BlockingManner::None && bm != BlockingManner::Tree && bm != BlockingManner::Flag)
             return false;
-        return PathConditionReachable::IsNodeOk(pt);
+        return PathConditionReachable::isNodeOk(pt);
     }
 
     // Called for every node
-    BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
+    BOOST_FORCEINLINE bool isEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // If there is a road (but no boat road) we can pass
-        const PointRoad road = world.GetPointRoad(fromPt, dir);
+        const PointRoad road = world.getPointRoad(fromPt, dir);
         if(road != PointRoad::None && road != PointRoad::Boat)
             return true;
 
         // Check terrain for node transition
-        const auto terrains = world.GetTerrain(fromPt, dir);
-        const TerrainDesc& tLeft = world.GetDescription().get(terrains.left);
-        const TerrainDesc& tRight = world.GetDescription().get(terrains.right);
+        const auto terrains = world.getTerrain(fromPt, dir);
+        const TerrainDesc& tLeft = world.getDescription().get(terrains.left);
+        const TerrainDesc& tRight = world.getDescription().get(terrains.right);
         // Don't go next to danger terrain
         if(tLeft.Is(ETerrain::Unreachable) || tRight.Is(ETerrain::Unreachable))
             return false;

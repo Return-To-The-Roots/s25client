@@ -63,8 +63,8 @@ public:
         noMovable::Destroy();
     }
 
-    GO_Type GetGOT() const final { return GO_Type::Animal; }
-    Species GetSpecies() const { return species; }
+    GO_Type getGOT() const final { return GO_Type::Animal; }
+    Species getSpecies() const { return species; }
 
     // An x,y zeichnen
     void Draw(DrawPoint drawPt) override;
@@ -74,15 +74,15 @@ public:
     /// Wird aufgerufen, nachdem das Tier erzeugt wurde und zur Figurenliste hinzugefügt wurde
     void StartLiving();
 
-    bool CanBeSkinned() const;
-    bool IsGettingSkinned() const;
+    bool canBeSkinned() const;
+    bool isGettingSkinned() const;
     void BeginSkinning(nofSkinner* skinner);
     void StopSkinning();
     void Skinned();
 
     /// Kann das Tier noch vom Jäger gejagt werden?
-    bool CanHunted() const;
-    bool IsHunted() const;
+    bool canHunted() const;
+    bool isHunted() const;
 
     /// Ein Jäger geht das Tier jagen
     void BeginHunting(nofHunter* hunter);
@@ -93,8 +93,8 @@ public:
     void StopHunting();
 
     /// Steht das Tier schon schön ruhig, damit der Jäger es erschießen kann?
-    bool IsReadyForShooting() const { return (state == State::WaitingForHunter); }
-    bool IsGettingReadyForShooting() const { return (state == State::WalkingUntilWaitingForHunter); }
+    bool isReadyForShooting() const { return (state == State::WaitingForHunter); }
+    bool isGettingReadyForShooting() const { return (state == State::WalkingUntilWaitingForHunter); }
     /// Tier soll sterben - erstmal nur Leiche liegen lassen
     void Die();
     /// Tier wurde vom Jäger ausgenommen und muss sofort verschwinden

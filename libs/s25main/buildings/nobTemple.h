@@ -21,9 +21,9 @@ private:
 public:
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NobTemple; }
+    GO_Type getGOT() const final { return GO_Type::NobTemple; }
 
-    ProductionMode GetProductionMode() const { return productionMode; }
-    void SetProductionMode(ProductionMode newProductionMode);
+    ProductionMode getProductionMode() const { return productionMode; }
+    void setProductionMode(ProductionMode newProductionMode);
     ProductionMode getNextProductionMode();
 };

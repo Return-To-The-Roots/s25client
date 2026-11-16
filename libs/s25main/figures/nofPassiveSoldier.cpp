@@ -30,7 +30,7 @@ nofPassiveSoldier::~nofPassiveSoldier() = default;
 
 void nofPassiveSoldier::Destroy()
 {
-    GetEvMgr().RemoveEvent(healing_event);
+    getEvMgr().RemoveEvent(healing_event);
     nofSoldier::Destroy();
 }
 
@@ -64,14 +64,14 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
             if(fs == FigureState::Job)
             {
                 // Dann uns heilen, wenn wir nicht schon gesund sind
-                if(hitpoints < HITPOINTS[GetRank()])
+                if(hitpoints < HITPOINTS[getRank()])
                 {
                     ++hitpoints;
 
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
-                    if(hitpoints < HITPOINTS[GetRank()])
+                    if(hitpoints < HITPOINTS[getRank()])
                         healing_event =
-                          GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
+                          getEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
                 }
             }
         }
@@ -85,14 +85,14 @@ void nofPassiveSoldier::Heal()
     // Dann muss dieses entfernt werden, wahrscheinlich war er zuvor draußen gewesen
     if(healing_event)
     {
-        GetEvMgr().RemoveEvent(healing_event);
+        getEvMgr().RemoveEvent(healing_event);
         healing_event = nullptr;
     }
 
     // Ist er verletzt?
     // Dann muss er geheilt werden
-    if(hitpoints < HITPOINTS[GetRank()])
-        healing_event = GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
+    if(hitpoints < HITPOINTS[getRank()])
+        healing_event = getEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
 }
 
 void nofPassiveSoldier::GoalReached()
@@ -105,7 +105,7 @@ void nofPassiveSoldier::LeaveBuilding()
     // Nach Hause in ein Lagerhaus gehen
     rs_dir = true;
     rs_pos = 1;
-    cur_rs = homeBld->GetRoute(Direction::SouthEast);
+    cur_rs = homeBld->getRoute(Direction::SouthEast);
     GoHome();
 
     homeBld = nullptr;
@@ -114,13 +114,13 @@ void nofPassiveSoldier::LeaveBuilding()
 void nofPassiveSoldier::Upgrade()
 {
     // We must not be in the buildings list while upgrading. This would destroy the ordered list
-    RTTR_Assert(!homeBld || !static_cast<nobMilitary*>(homeBld)->IsInTroops(*this));
+    RTTR_Assert(!homeBld || !static_cast<nobMilitary*>(homeBld)->isInTroops(*this));
     // Einen Rang höher
     job_ = Job(unsigned(job_) + 1);
 
     // wieder heilen bzw. Hitpoints anpasen
-    GamePlayer& owner = world->GetPlayer(player);
-    hitpoints = HITPOINTS[GetRank()];
+    GamePlayer& owner = world->getPlayer(player);
+    hitpoints = HITPOINTS[getRank()];
 
     // Inventur entsprechend erhöhen und verringern
     owner.IncreaseInventoryJob(job_, 1);

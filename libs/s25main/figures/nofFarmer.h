@@ -18,7 +18,7 @@ private:
     /// Malt den Arbeiter beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override;
+    unsigned short getCarryID() const override;
 
     /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
     void WorkStarted() override;
@@ -28,16 +28,16 @@ private:
     void WorkAborted() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
-    PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const override;
-    using nofFarmhand::GetPointQuality;
+    PointQuality getPointQuality(MapPoint pt, bool isBeforeWork) const override;
+    using nofFarmhand::getPointQuality;
 
 public:
     nofFarmer(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFarmer(SerializedGameData& sgd, unsigned obj_id);
 
-    static nofFarmhand::PointQuality GetNewFieldPointQuality(const GameWorld& world, MapPoint pt);
+    static nofFarmhand::PointQuality getNewFieldPointQuality(const GameWorld& world, MapPoint pt);
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofFarmer; }
+    GO_Type getGOT() const final { return GO_Type::NofFarmer; }
 };

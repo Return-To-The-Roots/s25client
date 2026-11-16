@@ -40,28 +40,28 @@ void nofArmorer::DrawWorking(DrawPoint drawPt)
     const unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
     if(now_id < 200)
     {
-        const Nation wpNation = workplace->GetNation();
-        const unsigned plColor = world->GetPlayer(player).color;
+        const Nation wpNation = workplace->getNation();
+        const unsigned plColor = world->getPlayer(player).color;
 
-        LOADER.GetPlayerImage("rom_bobs", 16 + (now_id % 8))
+        LOADER.getPlayerImage("rom_bobs", 16 + (now_id % 8))
           ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
 
         if((now_id % 8) == 5)
         {
-            world->GetSoundMgr().playNOSound(52, *this, now_id / 8);
+            world->getSoundMgr().playNOSound(52, *this, now_id / 8);
             was_sounding = true;
         }
     }
 }
 
-unsigned short nofArmorer::GetCarryID() const
+unsigned short nofArmorer::getCarryID() const
 {
     if(sword_shield)
         return 56;
     else
     {
         // Je nach Nation einen bestimmtem Schild fertigen
-        switch(world->GetPlayer(player).nation)
+        switch(world->getPlayer(player).nation)
         {
             case Nation::Africans: return 60; //-V525
             case Nation::Japanese: return 58;
@@ -80,14 +80,14 @@ void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
     {
         case State::Waiting1:
         {
-            if(!world->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) || !sword_shield)
+            if(!world->getGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) || !sword_shield)
             {
                 // LOG.write(("armorer handlewait1 - consume wares %i \n",player);
                 nofWorkman::HandleStateWaiting1();
             } else
             {
                 // Nach 1. Warten wird gearbeitet
-                current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
+                current_ev = getEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
                 state = State::Work;
                 workplace->is_working = true;
                 // LOG.write(("armorer handlewait1 - no consume wares %i \n",player);
@@ -110,7 +110,7 @@ void nofArmorer::HandleDerivedEvent(const unsigned /*id*/)
 
 bool nofArmorer::AreWaresAvailable() const
 {
-    return workplace->WaresAvailable() || (world->GetGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) && sword_shield);
+    return workplace->WaresAvailable() || (world->getGGS().isEnabled(AddonId::HALF_COST_MIL_EQUIP) && sword_shield);
 }
 
 helpers::OptionalEnum<GoodType> nofArmorer::ProduceWare()
@@ -120,5 +120,5 @@ helpers::OptionalEnum<GoodType> nofArmorer::ProduceWare()
     if(sword_shield)
         return GoodType::Sword;
     else
-        return SHIELD_TYPES[world->GetPlayer(player).nation];
+        return SHIELD_TYPES[world->getPlayer(player).nation];
 }

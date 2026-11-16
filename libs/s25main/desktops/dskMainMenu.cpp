@@ -42,12 +42,12 @@ dskMainMenu::dskMainMenu()
                   NormalFont);
     AddTextButton(ID_btOptions, DrawPoint(115, 250), Extent(220, 22), TextureColor::Green2, _("Options"), NormalFont);
     AddTextButton(ID_btIntro, DrawPoint(115, 280), Extent(220, 22), TextureColor::Green2, _("Intro"), NormalFont)
-      ->SetEnabled(false);
+      ->setEnabled(false);
     AddTextButton(ID_btReadme, DrawPoint(115, 310), Extent(220, 22), TextureColor::Green2, _("Readme"), NormalFont);
     AddTextButton(ID_btCredits, DrawPoint(115, 340), Extent(220, 22), TextureColor::Green2, _("Credits"), NormalFont);
     AddTextButton(ID_btQuit, DrawPoint(115, 390), Extent(220, 22), TextureColor::Red1, _("Quit program"), NormalFont);
 
-    AddImage(ID_logo, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
+    AddImage(ID_logo, DrawPoint(20, 20), LOADER.getImageN("logo", 0));
 
     using namespace std::chrono_literals;
     if(SETTINGS.global.submitDebugData == SubmitDebugData::AskAtStart)
@@ -61,7 +61,7 @@ dskMainMenu::dskMainMenu()
 
 void dskMainMenu::msgTimer(const unsigned ctrl_id)
 {
-    GetCtrl<ctrlTimer>(ctrl_id)->Stop();
+    getCtrl<ctrlTimer>(ctrl_id)->Stop();
     WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
       _("Submit debug data?"),
       _("RttR now supports sending debug data. Would you like to help us improving this game by sending debug data?"),
@@ -83,8 +83,8 @@ void dskMainMenu::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult m
 
 bool dskMainMenu::msgLeftUp(const MouseCoords& mc)
 {
-    auto* txtVersion = GetCtrl<Window>(dskMenuBase::ID_txtVersion);
-    if(mc.dbl_click && IsPointInRect(mc.pos, txtVersion->GetBoundaryRect()))
+    auto* txtVersion = getCtrl<Window>(dskMenuBase::ID_txtVersion);
+    if(mc.dbl_click && IsPointInRect(mc.pos, txtVersion->getBoundaryRect()))
     {
         WINDOWMANAGER.Switch(std::make_unique<dskTest>());
         return true;

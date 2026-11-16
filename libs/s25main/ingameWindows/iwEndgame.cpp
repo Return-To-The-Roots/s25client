@@ -11,14 +11,14 @@
 
 iwEndgame::iwEndgame()
     : IngameWindow(CGI_ENDGAME, IngameWindow::posLastOrCenter, Extent(240, 100), _("End game?"),
-                   LOADER.GetImageN("resource", 41))
+                   LOADER.getImageN("resource", 41))
 {
     // Ok
-    AddImageButton(0, DrawPoint(16, 24), Extent(71, 57), TextureColor::Green2, LOADER.GetImageN("io", 32)); //-V525
+    AddImageButton(0, DrawPoint(16, 24), Extent(71, 57), TextureColor::Green2, LOADER.getImageN("io", 32)); //-V525
     // Abbrechen
-    AddImageButton(1, DrawPoint(88, 24), Extent(71, 57), TextureColor::Red1, LOADER.GetImageN("io", 40));
+    AddImageButton(1, DrawPoint(88, 24), Extent(71, 57), TextureColor::Red1, LOADER.getImageN("io", 40));
     // Ok + Speichern
-    AddImageButton(2, DrawPoint(160, 24), Extent(65, 57), TextureColor::Grey, LOADER.GetImageN("io", 47));
+    AddImageButton(2, DrawPoint(160, 24), Extent(65, 57), TextureColor::Grey, LOADER.getImageN("io", 47));
 }
 
 void iwEndgame::msgButtonClick(const unsigned ctrl_id)

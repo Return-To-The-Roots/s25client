@@ -18,10 +18,10 @@ public:
     using Parent::world;
 
     MapPoint hqPos;
-    WorldWithGCExecution() : hqPos(world.GetPlayer(curPlayer).GetHQPos()) {}
+    WorldWithGCExecution() : hqPos(world.getPlayer(curPlayer).getHQPos()) {}
 
 protected:
-    GameWorld& GetWorld() override { return world; }
+    GameWorld& getWorld() override { return world; }
 };
 
 using WorldWithGCExecution1P = WorldWithGCExecution<1>;

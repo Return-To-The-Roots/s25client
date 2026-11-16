@@ -22,15 +22,15 @@ public:
     virtual ~SavedFile();
 
     /// Return the file signature. Must be at most 32 bytes
-    virtual std::string GetSignature() const = 0;
+    virtual std::string getSignature() const = 0;
     /// Return the maximum supported file format version
-    virtual uint8_t GetLatestMinorVersion() const = 0;
-    virtual uint8_t GetLatestMajorVersion() const = 0;
+    virtual uint8_t getLatestMinorVersion() const = 0;
+    virtual uint8_t getLatestMajorVersion() const = 0;
 
     /// Return the file format version read from file - minor part
-    uint8_t GetMinorVersion() const;
+    uint8_t getMinorVersion() const;
     /// Return the file format version read from file - major part
-    uint8_t GetMajorVersion() const;
+    uint8_t getMajorVersion() const;
 
     /// Schreibt Signatur und Version der Datei
     void WriteFileHeader(BinaryFile& file) const;
@@ -54,17 +54,17 @@ public:
     /// liest die GlobalGameSettings aus der Datei.
     void ReadGGS(BinaryFile& file);
 
-    const BasePlayerInfo& GetPlayer(unsigned idx) const;
-    unsigned GetNumPlayers();
+    const BasePlayerInfo& getPlayer(unsigned idx) const;
+    unsigned getNumPlayers();
     void AddPlayer(const BasePlayerInfo& player);
     void ClearPlayers();
 
-    const std::string& GetLastErrorMsg() const { return lastErrorMsg; }
+    const std::string& getLastErrorMsg() const { return lastErrorMsg; }
 
-    std::string GetRevision() const;
-    const std::string& GetMapName() const { return mapName_; }
-    s25util::time64_t GetSaveTime() const { return saveTime_; }
-    const std::vector<std::string>& GetPlayerNames() const { return playerNames_; }
+    std::string getRevision() const;
+    const std::string& getMapName() const { return mapName_; }
+    s25util::time64_t getSaveTime() const { return saveTime_; }
+    const std::vector<std::string>& getPlayerNames() const { return playerNames_; }
 
     GlobalGameSettings ggs;
 

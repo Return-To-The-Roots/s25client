@@ -44,10 +44,10 @@ public:
     /// Optionally returns offset of returned point to original point in pixels (for drawing)
     MapPoint ConvertCoords(Position pt, Position* offset = nullptr) const;
     /// Get position of node in pixels (VertexPos)
-    PointF GetVertexPos(const MapPoint pt) const { return GetVertex(pt).pos; }
+    PointF getVertexPos(const MapPoint pt) const { return getVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to
     /// GetNodePos(pt)
-    PointF GetNeighbourVertexPos(MapPoint pt, Direction dir) const;
+    PointF getNeighbourVertexPos(MapPoint pt, Direction dir) const;
 
     /// Callback function for altitude changes
     void AltitudeChanged(MapPoint pt, const GameWorldViewer& gwv);
@@ -145,18 +145,18 @@ private:
     std::vector<BmpPtr> roadTextures;
 
     /// Returns the index of a vertex. Used to access vertices and borders
-    unsigned GetVertexIdx(const MapPoint pt) const
+    unsigned getVertexIdx(const MapPoint pt) const
     {
         return static_cast<unsigned>(pt.y) * static_cast<unsigned>(size_.x) + static_cast<unsigned>(pt.x);
     }
     /// Returns the index of the first triangle (each point has 2). Used to access gl_* structs
-    unsigned GetTriangleIdx(const MapPoint pt) const { return GetVertexIdx(pt) * 2; }
+    unsigned getTriangleIdx(const MapPoint pt) const { return getVertexIdx(pt) * 2; }
     /// Return the coordinates of the neighbour node
-    MapPoint GetNeighbour(const MapPoint& pt, Direction dir) const;
+    MapPoint getNeighbour(const MapPoint& pt, Direction dir) const;
 
     /// liefert den Vertex an der Stelle X, Y.
-    Vertex& GetVertex(const MapPoint pt) { return vertices[GetVertexIdx(pt)]; }
-    const Vertex& GetVertex(const MapPoint pt) const { return vertices[GetVertexIdx(pt)]; }
+    Vertex& getVertex(const MapPoint pt) { return vertices[getVertexIdx(pt)]; }
+    const Vertex& getVertex(const MapPoint pt) const { return vertices[getVertexIdx(pt)]; }
 
     void LoadTextures(const WorldDescription& desc);
 
@@ -179,16 +179,16 @@ private:
     void UpdateBorderTriangleTerrain(MapPoint pt, bool updateVBO);
 
     /// liefert den Vertex-Farbwert an der Stelle X,Y
-    float GetColor(const MapPoint pt) const { return GetVertex(pt).color; }
+    float getColor(const MapPoint pt) const { return getVertex(pt).color; }
     /// liefert den Rand-Vertex an der Stelle X,Y
-    PointF GetBorderPos(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderPos[triangle]; }
+    PointF getBorderPos(const MapPoint pt, unsigned char triangle) const { return getVertex(pt).borderPos[triangle]; }
     /// Get neighbour border position of a node (VertexPos) potentially shifted so that the returned value is next to
     /// GetBorderPos(pt)
-    PointF GetNeighbourBorderPos(MapPoint pt, unsigned char triangle, Direction dir) const;
+    PointF getNeighbourBorderPos(MapPoint pt, unsigned char triangle, Direction dir) const;
     /// liefert den Rand-Vertex-Farbwert an der Stelle X,Y
-    float GetBorderColor(const MapPoint pt, unsigned char triangle) const
+    float getBorderColor(const MapPoint pt, unsigned char triangle) const
     {
-        return GetVertex(pt).borderColor[triangle];
+        return getVertex(pt).borderColor[triangle];
     }
 
     /// Adds possible roads from the given point to the prepared data struct

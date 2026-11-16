@@ -40,7 +40,7 @@ void fowBuilding::Serialize(SerializedGameData& sgd) const
 
 void fowBuilding::Draw(DrawPoint drawPt) const
 {
-    noBaseBuilding::GetBuildingImage(type, nation).DrawFull(drawPt, FOW_DRAW_COLOR);
+    noBaseBuilding::getBuildingImage(type, nation).DrawFull(drawPt, FOW_DRAW_COLOR);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -69,13 +69,13 @@ void fowBuildingSite::Draw(DrawPoint drawPt) const
     if(planing)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImage(nation, 450)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        LOADER.GetNationImage(nation, 451)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getNationImage(nation, 450)->DrawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.getNationImage(nation, 451)->DrawFull(drawPt, COLOR_SHADOW);
     } else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImage(nation, 455)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        LOADER.GetNationImage(nation, 456)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getNationImage(nation, 455)->DrawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.getNationImage(nation, 456)->DrawFull(drawPt, COLOR_SHADOW);
 
         // bis dahin gebautes Haus zeichnen
 
@@ -144,12 +144,12 @@ void fowTree::Draw(DrawPoint drawPt) const
     if(size == 3)
     {
         // Ausgewachsen
-        LOADER.GetMapTexture(200 + type * 15)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        LOADER.GetMapTexture(350 + type * 15)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getMapTexture(200 + type * 15)->DrawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.getMapTexture(350 + type * 15)->DrawFull(drawPt, COLOR_SHADOW);
     } else
     {
-        LOADER.GetMapTexture(208 + type * 15 + size)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        LOADER.GetMapTexture(358 + type * 15 + size)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getMapTexture(208 + type * 15 + size)->DrawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.getMapTexture(358 + type * 15 + size)->DrawFull(drawPt, COLOR_SHADOW);
     }
 }
 

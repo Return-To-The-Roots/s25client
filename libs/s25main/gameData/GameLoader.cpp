@@ -21,8 +21,8 @@ void GameLoader::initNations()
 {
     // Use set to filter duplicates
     std::set<Nation> tmpUsedNations;
-    for(unsigned i = 0; i < game->world_.GetNumPlayers(); ++i)
-        tmpUsedNations.insert(game->world_.GetPlayer(i).nation);
+    for(unsigned i = 0; i < game->world_.getNumPlayers(); ++i)
+        tmpUsedNations.insert(game->world_.getPlayer(i).nation);
     usedNations.assign(tmpUsedNations.begin(), tmpUsedNations.end());
 }
 
@@ -30,9 +30,9 @@ void GameLoader::initTextures()
 {
     textures.clear();
     std::set<DescIdx<TerrainDesc>> usedTerrains;
-    RTTR_FOREACH_PT(MapPoint, game->world_.GetSize())
+    RTTR_FOREACH_PT(MapPoint, game->world_.getSize())
     {
-        const MapNode& node = game->world_.GetNode(pt);
+        const MapNode& node = game->world_.getNode(pt);
         usedTerrains.insert(node.t1);
         usedTerrains.insert(node.t2);
     }
@@ -41,7 +41,7 @@ void GameLoader::initTextures()
 
     for(DescIdx<TerrainDesc> tIdx : usedTerrains)
     {
-        const TerrainDesc& t = game->world_.GetDescription().get(tIdx);
+        const TerrainDesc& t = game->world_.getDescription().get(tIdx);
         if(!helpers::contains(textures, t.texturePath))
             textures.push_back(t.texturePath);
         usedEdges.insert(t.edgeType);
@@ -51,13 +51,13 @@ void GameLoader::initTextures()
     {
         if(!eIdx)
             continue;
-        const EdgeDesc& e = game->world_.GetDescription().get(eIdx);
+        const EdgeDesc& e = game->world_.getDescription().get(eIdx);
         if(!helpers::contains(textures, e.texturePath))
             textures.push_back(e.texturePath);
     }
     for(DescIdx<LandscapeDesc> lIdx : usedLandscapes)
     {
-        const LandscapeDesc& e = game->world_.GetDescription().get(lIdx);
+        const LandscapeDesc& e = game->world_.getDescription().get(lIdx);
         for(const RoadTextureDesc& r : e.roadTexDesc)
         {
             if(!helpers::contains(textures, r.texturePath))
@@ -75,7 +75,7 @@ bool GameLoader::loadTextures()
             enabledAddons.push_back(id);
     }
 
-    const LandscapeDesc& lt = game->world_.GetDescription().get(game->world_.GetLandscapeType());
+    const LandscapeDesc& lt = game->world_.getDescription().get(game->world_.GetLandscapeType());
     if(!loader.LoadFilesAtGame(lt.mapGfxPath, lt.isWinter, usedNations, enabledAddons) || !loader.LoadFiles(textures))
         return false;
 

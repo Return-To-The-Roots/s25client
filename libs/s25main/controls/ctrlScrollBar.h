@@ -13,12 +13,12 @@ public:
     ctrlScrollBar(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
                   TextureColor tc, unsigned short pagesize);
     void Resize(const Extent& newSize) override;
-    void SetScrollPos(unsigned short scroll_pos);
-    void SetRange(unsigned short scroll_range);
-    void SetPageSize(unsigned short pagesize);
+    void setScrollPos(unsigned short scroll_pos);
+    void setRange(unsigned short scroll_range);
+    void setPageSize(unsigned short pagesize);
 
-    unsigned short GetPageSize() const { return pagesize; }
-    unsigned short GetScrollPos() const { return scroll_pos; }
+    unsigned short getPageSize() const { return pagesize; }
+    unsigned short getScrollPos() const { return scroll_pos; }
     /// Scrolls by the given distance (less than 0 = up, else down)
     void Scroll(int distance);
 

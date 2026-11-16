@@ -13,8 +13,8 @@ protected:
     virtual ~ITexture() = default;
 
 public:
-    virtual Position GetOrigin() const = 0;
-    virtual Extent GetSize() const = 0;
+    virtual Position getOrigin() const = 0;
+    virtual Extent getSize() const = 0;
     virtual void DrawFull(const Position& dstPos, unsigned color = 0xFFFFFFFFu) = 0;
 
     /// Draws portion of image specified by srcArea on area defined by dstArea.

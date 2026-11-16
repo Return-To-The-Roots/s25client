@@ -62,7 +62,7 @@ int getColumnOffsetY()
 } // namespace
 
 dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
-    : Desktop(LOADER.GetImageN("setup015", 0)), csi_(std::move(csi))
+    : Desktop(LOADER.getImageN("setup015", 0)), csi_(std::move(csi))
 {
     AddText(ID_Label, DrawPoint(250, startOffsetY), _("Campaigns"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
@@ -87,7 +87,7 @@ dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
 
     AddTextButton(ID_btBack, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
     AddTextButton(ID_Next, DrawPoint(590, 560), Extent(200, 22), TextureColor::Green2, _("Continue"), NormalFont)
-      ->SetEnabled(false);
+      ->setEnabled(false);
 
     showCampaignInfo(false);
 
@@ -109,24 +109,24 @@ void dskCampaignSelection::msgTableSelectItem(const unsigned ctrl_id, const std:
         return;
 
     DeleteCtrl(ID_MapSelection); // Needs to be either hidden or recreated as it doesn't support updating
-    auto& btContinue = *GetCtrl<ctrlButton>(ID_Next);
+    auto& btContinue = *getCtrl<ctrlButton>(ID_Next);
     if(!selection)
     {
-        btContinue.SetEnabled(false);
+        btContinue.setEnabled(false);
         showCampaignInfo(false);
     } else
     {
-        btContinue.SetEnabled(true);
+        btContinue.setEnabled(true);
         showCampaignInfo(true);
 
         const auto& campaign = campaigns_.at(*selection);
 
-        auto& campaignDescription = *GetCtrl<ctrlMultiline>(ID_PreviewDescription);
+        auto& campaignDescription = *getCtrl<ctrlMultiline>(ID_PreviewDescription);
         campaignDescription.Clear();
         campaignDescription.AddString(campaign.longDescription, COLOR_YELLOW);
 
-        auto& campaignTitle = *GetCtrl<ctrlText>(ID_PreviewTitle);
-        campaignTitle.SetText(campaign.name);
+        auto& campaignTitle = *getCtrl<ctrlText>(ID_PreviewTitle);
+        campaignTitle.setText(campaign.name);
 
         if(campaign.selectionMapData)
         {
@@ -137,7 +137,7 @@ void dskCampaignSelection::msgTableSelectItem(const unsigned ctrl_id, const std:
             mapSelection->setMissionsStatus(std::vector<MissionStatus>(campaign.getNumMaps(), {true, true}));
             mapSelection->setPreview(true);
         } else if(campaign.image)
-            campaignImage_ = LOADER.GetImageN(ResourceId::fromPath(*campaign.image), 0);
+            campaignImage_ = LOADER.getImageN(ResourceId::fromPath(*campaign.image), 0);
         else
             campaignImage_ = nullptr;
     }
@@ -145,15 +145,15 @@ void dskCampaignSelection::msgTableSelectItem(const unsigned ctrl_id, const std:
 
 void dskCampaignSelection::showCampaignInfo(const bool show)
 {
-    GetCtrl<ctrlMultiline>(ID_PreviewDescription)->SetVisible(show);
-    GetCtrl<ctrlText>(ID_PreviewTitle)->SetVisible(show);
+    getCtrl<ctrlMultiline>(ID_PreviewDescription)->setVisible(show);
+    getCtrl<ctrlText>(ID_PreviewTitle)->setVisible(show);
     if(!show)
         campaignImage_ = nullptr;
 }
 
 void dskCampaignSelection::showCampaignMissionSelectionScreen()
 {
-    const auto& campaign = campaigns_.at(GetCtrl<ctrlTable>(ID_Table)->GetSelection().value());
+    const auto& campaign = campaigns_.at(getCtrl<ctrlTable>(ID_Table)->getSelection().value());
     WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
 }
 
@@ -167,7 +167,7 @@ void dskCampaignSelection::msgButtonClick(unsigned ctrl_id)
 
 void dskCampaignSelection::msgTimer(unsigned ctrl_id)
 {
-    GetCtrl<ctrlTimer>(ctrl_id)->Stop();
+    getCtrl<ctrlTimer>(ctrl_id)->Stop();
     loadCampaigns();
     std::set<std::string> resourcesToLoad;
     for(const auto& campaign : campaigns_)
@@ -181,7 +181,7 @@ void dskCampaignSelection::msgTimer(unsigned ctrl_id)
 
 void dskCampaignSelection::FillCampaignsTable()
 {
-    auto* table = GetCtrl<ctrlTable>(ID_Table);
+    auto* table = getCtrl<ctrlTable>(ID_Table);
     for(const auto& campaign : campaigns_)
     {
         table->AddRow({campaign.name, campaign.shortDescription, campaign.author, std::to_string(campaign.getNumMaps()),

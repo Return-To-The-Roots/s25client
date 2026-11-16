@@ -18,7 +18,7 @@
 void GameClient::commandChat(const std::string& text, const ChatDestination cd)
 {
     // Replaymodus oder kein Text --> nichts senden
-    if(IsReplayModeOn() || text.empty())
+    if(isReplayModeOn() || text.empty())
         return;
 
     mainPlayer.sendMsgAsync(new GameMessage_Chat(0xff, cd, text));
@@ -69,38 +69,38 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
         return;
 
     // ID auch innerhalb der Spielerzahl?
-    if(playerId2 >= GetNumPlayers() || playerId1 >= GetNumPlayers())
+    if(playerId2 >= getNumPlayers() || playerId1 >= getNumPlayers())
         return;
 
-    if(IsReplayModeOn())
+    if(isReplayModeOn())
     {
-        RTTR_Assert(playerId1 == GetPlayerId());
+        RTTR_Assert(playerId1 == getPlayerId());
         // There must be someone at this slot
-        if(!GetPlayer(playerId2).isUsed())
+        if(!getPlayer(playerId2).isUsed())
             return;
 
         // In replay mode we don't touch the player
     } else
     {
         // old_id must be a player
-        GamePlayer& player1 = GetPlayer(playerId1);
+        GamePlayer& player1 = getPlayer(playerId1);
         if(player1.ps != PlayerState::Occupied)
             return;
         // new_id must be an AI
-        GamePlayer& player2 = GetPlayer(playerId2);
+        GamePlayer& player2 = getPlayer(playerId2);
         if(player2.ps != PlayerState::AI)
             return;
 
         std::swap(player1.ps, player2.ps);
         std::swap(player1.aiInfo, player2.aiInfo);
-        if(IsHost())
+        if(isHost())
         {
             // Switch AIs
-            game->aiPlayers_.erase_if([playerId2](const auto& player) { return player.GetPlayerId() == playerId2; });
+            game->aiPlayers_.erase_if([playerId2](const auto& player) { return player.getPlayerId() == playerId2; });
             game->AddAIPlayer(CreateAIPlayer(playerId1, AI::Info(AI::Type::Dummy)));
         }
-        GetPlayer(playerId1).ps = PlayerState::AI;
-        GetPlayer(playerId2).ps = PlayerState::Occupied;
+        getPlayer(playerId1).ps = PlayerState::AI;
+        getPlayer(playerId2).ps = PlayerState::Occupied;
     }
 
     // Wenn wir betroffen waren, unsere ID neu setzen
@@ -108,7 +108,7 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
     {
         mainPlayer.playerId = playerId2;
 
-        if(!IsReplayModeOn())
+        if(!isReplayModeOn())
         {
             // Our currently accumulated gamecommands are invalid after the change, as they would modify the old player
             gameCommands_.clear();

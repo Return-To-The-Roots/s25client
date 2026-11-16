@@ -42,7 +42,7 @@ public:
     }
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofDefender; }
+    GO_Type getGOT() const final { return GO_Type::NofDefender; }
 
     /// Inform that a new attacker arrived at the flag while we are going in such that we can come right back
     void NewAttacker(nofAttacker& attacker) { this->attacker = &attacker; }
@@ -59,11 +59,11 @@ public:
     void LostFighting() override;
 
     /// Is the defender waiting at the flag for an attacker?
-    bool IsWaitingAtFlag() const { return (state == SoldierState::DefendingWaiting); }
-    bool IsFightingAtFlag() const { return (state == SoldierState::Fighting); }
+    bool isWaitingAtFlag() const { return (state == SoldierState::DefendingWaiting); }
+    bool isFightingAtFlag() const { return (state == SoldierState::Fighting); }
     /// Inform the defender that a fight between him and an attacker has started
     void FightStarted() { state = SoldierState::Fighting; }
 
     // For debugging
-    const nofAttacker* GetAttacker() const { return attacker; }
+    const nofAttacker* getAttacker() const { return attacker; }
 };

@@ -42,7 +42,7 @@ std::string getPlayerStatus(const GamePlayer& player)
     if(player.IsDefeated())
         return "---";
     else if(player.isHuman())
-        return "#" + std::to_string(player.GetPlayerId() + 1);
+        return "#" + std::to_string(player.getPlayerId() + 1);
     else
         return _("COMP");
 }
@@ -76,12 +76,12 @@ enum
 
 iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     : IngameWindow(CGI_STATISTICS, IngameWindow::posLastOrCenter, Extent(252, 336), _("Statistics"),
-                   LOADER.GetImageN("resource", 41)),
+                   LOADER.getImageN("resource", 41)),
       gwv(gwv), showStatistic(MAX_PLAYERS)
 {
     // Count active players
     numPlayingPlayers = 0;
-    const GameWorldBase& world = gwv.GetWorld();
+    const GameWorldBase& world = gwv.getWorld();
     for(const auto& player : world.getPlayers())
     {
         if(player.isUsed())
@@ -90,15 +90,15 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
 
     DrawPoint curBtPos = playerButtonsCenterPos - DrawPoint(numPlayingPlayers * playerBtSize.x / 2, 0);
 
-    for(const auto i : helpers::range(world.GetNumPlayers()))
+    for(const auto i : helpers::range(world.getNumPlayers()))
     {
         // Ignore unused players
-        const GamePlayer& curPlayer = world.GetPlayer(i);
+        const GamePlayer& curPlayer = world.getPlayer(i);
         if(!curPlayer.isUsed())
             continue;
 
         // Set visibility based on addon setting
-        switch(GAMECLIENT.IsReplayModeOn() ? 0 : world.GetGGS().getSelection(AddonId::STATISTICS_VISIBILITY))
+        switch(GAMECLIENT.isReplayModeOn() ? 0 : world.getGGS().getSelection(AddonId::STATISTICS_VISIBILITY))
         {
             default:
                 RTTR_Assert_Msg(false, "Invalid Addon Setting");
@@ -108,10 +108,10 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
                 showStatistic[i] = true;
                 break;
             case 1: // Only for allies
-                showStatistic[i] = gwv.GetPlayer().IsAlly(i);
+                showStatistic[i] = gwv.getPlayer().isAlly(i);
                 break;
             case 2: // Only own statistic
-                showStatistic[i] = (gwv.GetPlayerId() == i);
+                showStatistic[i] = (gwv.getPlayerId() == i);
                 break;
         }
 
@@ -119,32 +119,32 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
         const auto& portrait = Portraits[curPlayer.portraitIndex];
         auto* btPortrait =
           AddImageButton(ID_btPlayer_Start + i, curBtPos, playerBtSize, TextureColor::Green1,
-                         LOADER.GetImageN(portrait.resourceId, portrait.resourceIndex), curPlayer.name);
+                         LOADER.getImageN(portrait.resourceId, portrait.resourceIndex), curPlayer.name);
         curBtPos.x += playerBtSize.x;
-        btPortrait->SetBorder(false);
-        btPortrait->SetEnabled(showStatistic[i]);
+        btPortrait->setBorder(false);
+        btPortrait->setEnabled(showStatistic[i]);
     }
 
-    AddImage(ID_imgStatistic, DrawPoint(126, 165), LOADER.GetImageN("io", 228));
+    AddImage(ID_imgStatistic, DrawPoint(126, 165), LOADER.getImageN("io", 228));
 
     // Buttons for changing the statistic type shown
     ctrlOptionGroup* statChanger = AddOptionGroup(ID_grpStatType, GroupSelectType::Illuminate);
     statChanger->AddImageButton(ID_btTypeSize, DrawPoint(18, 250), Extent(26, 30), TextureColor::Grey,
-                                LOADER.GetImageN("io", 167), _("Size of country"));
+                                LOADER.getImageN("io", 167), _("Size of country"));
     statChanger->AddImageButton(ID_btTypeBuildings, DrawPoint(45, 250), Extent(26, 30), TextureColor::Grey,
-                                LOADER.GetImageN("io", 168), _("Buildings"));
+                                LOADER.getImageN("io", 168), _("Buildings"));
     statChanger->AddImageButton(ID_btTypeInhabitants, DrawPoint(72, 250), Extent(26, 30), TextureColor::Grey,
-                                LOADER.GetImageN("io", 169), _("Inhabitants"));
+                                LOADER.getImageN("io", 169), _("Inhabitants"));
     statChanger->AddImageButton(ID_btTypeMerchandise, DrawPoint(99, 250), Extent(26, 30), TextureColor::Grey,
-                                LOADER.GetImageN("io", 170), _("Merchandise"));
+                                LOADER.getImageN("io", 170), _("Merchandise"));
     statChanger->AddImageButton(ID_btTypeMilitary, DrawPoint(126, 250), Extent(26, 30), TextureColor::Grey,
-                                LOADER.GetImageN("io", 171), _("Military strength"));
+                                LOADER.getImageN("io", 171), _("Military strength"));
     statChanger->AddImageButton(ID_btTypeGold, DrawPoint(153, 250), Extent(26, 30), TextureColor::Grey,
-                                LOADER.GetImageN("io", 172), _("Gold"));
+                                LOADER.getImageN("io", 172), _("Gold"));
     statChanger->AddImageButton(ID_btTypeProductivity, DrawPoint(180, 250), Extent(26, 30), TextureColor::Grey,
-                                LOADER.GetImageN("io", 173), _("Productivity"));
+                                LOADER.getImageN("io", 173), _("Productivity"));
     statChanger->AddImageButton(ID_btTypeVanquishedEnemies, DrawPoint(207, 250), Extent(26, 30), TextureColor::Grey,
-                                LOADER.GetImageN("io", 217), _("Vanquished enemies"));
+                                LOADER.getImageN("io", 217), _("Vanquished enemies"));
 
     // Buttons for duration
     constexpr Extent timeBtSize(43, 28);
@@ -154,7 +154,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     timeChanger->AddTextButton(ID_time4h, DrawPoint(141, 288), timeBtSize, TextureColor::Grey, _("4 h"), NormalFont);
     timeChanger->AddTextButton(ID_time16h, DrawPoint(186, 288), timeBtSize, TextureColor::Grey, _("16 h"), NormalFont);
 
-    AddImageButton(ID_btHelp, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225),
+    AddImageButton(ID_btHelp, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225),
                    _("Help"));
 
     const auto labelColor = MakeColor(255, 136, 96, 52);
@@ -178,13 +178,13 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     }
 
     // Default values:
-    statChanger->SetSelection(ID_btTypeSize);
+    statChanger->setSelection(ID_btTypeSize);
     currentView = StatisticType::Country;
-    timeChanger->SetSelection(ID_time15m, true);
+    timeChanger->setSelection(ID_time15m, true);
     currentTime = StatisticTime::T15Minutes;
 
     if(!SETTINGS.ingame.scaleStatistics)
-        txtMinValueY->SetVisible(false);
+        txtMinValueY->setVisible(false);
 }
 
 iwStatistics::~iwStatistics() = default;
@@ -213,35 +213,35 @@ void iwStatistics::msgOptionGroupChange(const unsigned ctrl_id, const unsigned s
             {
                 case ID_btTypeSize:
                     currentView = StatisticType::Country;
-                    headline->SetText(_("Size of country"));
+                    headline->setText(_("Size of country"));
                     break;
                 case ID_btTypeBuildings:
                     currentView = StatisticType::Buildings;
-                    headline->SetText(_("Buildings"));
+                    headline->setText(_("Buildings"));
                     break;
                 case ID_btTypeInhabitants:
                     currentView = StatisticType::Inhabitants;
-                    headline->SetText(_("Inhabitants"));
+                    headline->setText(_("Inhabitants"));
                     break;
                 case ID_btTypeMerchandise:
                     currentView = StatisticType::Merchandise;
-                    headline->SetText(_("Merchandise"));
+                    headline->setText(_("Merchandise"));
                     break;
                 case ID_btTypeMilitary:
                     currentView = StatisticType::Military;
-                    headline->SetText(_("Military strength"));
+                    headline->setText(_("Military strength"));
                     break;
                 case ID_btTypeGold:
                     currentView = StatisticType::Gold;
-                    headline->SetText(_("Gold"));
+                    headline->setText(_("Gold"));
                     break;
                 case ID_btTypeProductivity:
                     currentView = StatisticType::Productivity;
-                    headline->SetText(_("Productivity"));
+                    headline->setText(_("Productivity"));
                     break;
                 case ID_btTypeVanquishedEnemies:
                     currentView = StatisticType::Vanquished;
-                    headline->SetText(_("Vanquished enemies"));
+                    headline->setText(_("Vanquished enemies"));
                     break;
             }
             break;
@@ -271,11 +271,11 @@ void iwStatistics::DrawContent()
 
 void iwStatistics::DrawPlayerOverlays()
 {
-    DrawPoint drawPt = GetDrawPos() + playerButtonsCenterPos - DrawPoint(numPlayingPlayers * playerBtSize.x / 2, 0);
+    DrawPoint drawPt = getDrawPos() + playerButtonsCenterPos - DrawPoint(numPlayingPlayers * playerBtSize.x / 2, 0);
 
-    for(const auto i : helpers::range(gwv.GetWorld().GetNumPlayers()))
+    for(const auto i : helpers::range(gwv.getWorld().getNumPlayers()))
     {
-        const GamePlayer& player = gwv.GetWorld().GetPlayer(i);
+        const GamePlayer& player = gwv.getWorld().getPlayer(i);
         if(!player.isUsed())
             continue;
 
@@ -307,11 +307,11 @@ void iwStatistics::DrawPlayerAlliances(DrawPoint const& drawPt, const GamePlayer
     constexpr unsigned allianceRectOffset = allianceRectExtent.x + spacingAllianceRects;
 
     auto pactPos = drawPt + DrawPoint::all(spacingAllianceRects);
-    for(auto idxOther : helpers::range(gwv.GetWorld().GetNumPlayers()))
+    for(auto idxOther : helpers::range(gwv.getWorld().getNumPlayers()))
     {
-        if(idxOther != player.GetPlayerId() && player.IsAlly(idxOther))
+        if(idxOther != player.getPlayerId() && player.isAlly(idxOther))
         {
-            DrawRectangle(Rect(pactPos, allianceRectExtent), gwv.GetWorld().GetPlayer(idxOther).color);
+            DrawRectangle(Rect(pactPos, allianceRectExtent), gwv.getWorld().getPlayer(idxOther).color);
             pactPos.x += allianceRectOffset;
         }
     }
@@ -322,12 +322,12 @@ void iwStatistics::DrawStatistic(StatisticType type)
     // Find min and max value
     unsigned max = 1;
     auto min = std::numeric_limits<unsigned>::max();
-    const GameWorldBase& world = gwv.GetWorld();
-    for(const auto p : helpers::range(world.GetNumPlayers()))
+    const GameWorldBase& world = gwv.getWorld();
+    for(const auto p : helpers::range(world.getNumPlayers()))
     {
         if(!showStatistic[p])
             continue;
-        const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
+        const GamePlayer::Statistic& stat = world.getPlayer(p).getStatistic(currentTime);
 
         const auto currentIndex = stat.currentIndex;
         for(const auto i : helpers::range(NUM_STAT_STEPS))
@@ -345,20 +345,20 @@ void iwStatistics::DrawStatistic(StatisticType type)
         ++max;
     }
     // Add values to axis
-    txtMaxValueY->SetText(std::to_string(max));
+    txtMaxValueY->setText(std::to_string(max));
     if(SETTINGS.ingame.scaleStatistics)
-        txtMinValueY->SetText(std::to_string(min));
+        txtMinValueY->setText(std::to_string(min));
 
     // Draw the line diagram
-    const DrawPoint topLeft = GetPos() + topLeftRel;
+    const DrawPoint topLeft = getPos() + topLeftRel;
     DrawPoint previousPos;
 
-    for(const auto p : helpers::range(world.GetNumPlayers()))
+    for(const auto p : helpers::range(world.getNumPlayers()))
     {
         if(!showStatistic[p])
             continue;
-        const GamePlayer::Statistic& stat = world.GetPlayer(p).GetStatistic(currentTime);
-        const auto playerColor = world.GetPlayer(p).color;
+        const GamePlayer::Statistic& stat = world.getPlayer(p).getStatistic(currentTime);
+        const auto playerColor = world.getPlayer(p).color;
 
         const auto currentIndex = stat.currentIndex;
         for(const auto i : helpers::range(NUM_STAT_STEPS))
@@ -379,7 +379,7 @@ void iwStatistics::DrawStatistic(StatisticType type)
 
 void iwStatistics::DrawAxis()
 {
-    const DrawPoint topLeft = GetPos() + topLeftRel;
+    const DrawPoint topLeft = getPos() + topLeftRel;
     const auto axisColor = MakeColor(255, 88, 44, 16);
 
     // X-axis, horizontal
@@ -398,9 +398,9 @@ void iwStatistics::DrawAxis()
     // Marks on x-axis
     for(const auto* lbl : timeAnnotations)
     {
-        if(lbl->IsVisible())
+        if(lbl->isVisible())
         {
-            const auto lblPos = lbl->GetDrawPos();
+            const auto lblPos = lbl->getDrawPos();
             DrawLine(lblPos - DrawPoint(0, 4), lblPos - DrawPoint(0, 2), 1, axisColor);
         }
     }
@@ -414,34 +414,34 @@ void iwStatistics::updateTimeAxisLabels()
     switch(currentTime)
     {
         case StatisticTime::T15Minutes:
-            timeAnnotations[1]->SetText("-15");
-            timeAnnotations[2]->SetText("-12");
-            timeAnnotations[3]->SetText("-9");
-            timeAnnotations[4]->SetText("-6");
-            timeAnnotations[5]->SetText("-3");
+            timeAnnotations[1]->setText("-15");
+            timeAnnotations[2]->setText("-12");
+            timeAnnotations[3]->setText("-9");
+            timeAnnotations[4]->setText("-6");
+            timeAnnotations[5]->setText("-3");
             numMarks = 6;
             break;
         case StatisticTime::T1Hour:
-            timeAnnotations[1]->SetText("-60");
-            timeAnnotations[2]->SetText("-50");
-            timeAnnotations[3]->SetText("-40");
-            timeAnnotations[4]->SetText("-30");
-            timeAnnotations[5]->SetText("-20");
-            timeAnnotations[6]->SetText("-10");
+            timeAnnotations[1]->setText("-60");
+            timeAnnotations[2]->setText("-50");
+            timeAnnotations[3]->setText("-40");
+            timeAnnotations[4]->setText("-30");
+            timeAnnotations[5]->setText("-20");
+            timeAnnotations[6]->setText("-10");
             numMarks = 7;
             break;
         case StatisticTime::T4Hours:
-            timeAnnotations[1]->SetText("-240");
-            timeAnnotations[2]->SetText("-180");
-            timeAnnotations[3]->SetText("-120");
-            timeAnnotations[4]->SetText("-60");
+            timeAnnotations[1]->setText("-240");
+            timeAnnotations[2]->setText("-180");
+            timeAnnotations[3]->setText("-120");
+            timeAnnotations[4]->setText("-60");
             numMarks = 5;
             break;
         case StatisticTime::T16Hours:
-            timeAnnotations[1]->SetText("-960");
-            timeAnnotations[2]->SetText("-720");
-            timeAnnotations[3]->SetText("-480");
-            timeAnnotations[4]->SetText("-240");
+            timeAnnotations[1]->setText("-960");
+            timeAnnotations[2]->setText("-720");
+            timeAnnotations[3]->setText("-480");
+            timeAnnotations[4]->setText("-240");
             numMarks = 5;
             break;
     }
@@ -449,14 +449,14 @@ void iwStatistics::updateTimeAxisLabels()
     DrawPoint curPos = topLeftRel + offset + DrawPoint(0, diagramSize.y);
     for(const auto i : helpers::range(1, numMarks))
     {
-        timeAnnotations[i]->SetPos(curPos);
-        timeAnnotations[i]->SetVisible(true);
+        timeAnnotations[i]->setPos(curPos);
+        timeAnnotations[i]->setVisible(true);
         curPos.x += (diagramSize.x - offset.x) / (numMarks - 1);
     }
     for(const auto i : helpers::range<unsigned>(numMarks, timeAnnotations.size()))
-        timeAnnotations[i]->SetVisible(false);
+        timeAnnotations[i]->setVisible(false);
 
     // Zero is used for all time periods
-    timeAnnotations[0]->SetPos(topLeftRel + diagramSize + DrawPoint(0, offset.y)); // Exactly at the end of the x-axis
-    timeAnnotations[0]->SetText("0");
+    timeAnnotations[0]->setPos(topLeftRel + diagramSize + DrawPoint(0, offset.y)); // Exactly at the end of the x-axis
+    timeAnnotations[0]->setText("0");
 }

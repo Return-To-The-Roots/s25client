@@ -45,7 +45,7 @@ constexpr std::array AUTO_SAVE_INTERVALS{1min, 5min, 10min, 15min, 30min, 60min,
 
 iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const unsigned addHeight)
     : IngameWindow(CGI_SAVE, IngameWindow::posLastOrCenter, Extent(700, 400 + addHeight), window_title,
-                   LOADER.GetImageN("resource", 41))
+                   LOADER.getImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
     AddTable(ID_tblSaveGames, DrawPoint(20, 30), Extent(660, 300), TextureColor::Green2, NormalFont,
@@ -80,15 +80,15 @@ void iwSaveLoad::msgButtonClick(const unsigned ctrl_id)
 void iwSaveLoad::msgTableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& selection)
 {
     // On selecting a table entry put the filename into the edit control
-    GetCtrl<ctrlEdit>(ID_edtFilename)
-      ->SetText(selection ? GetCtrl<ctrlTable>(ID_tblSaveGames)->GetItemText(*selection, 0) : "");
+    getCtrl<ctrlEdit>(ID_edtFilename)
+      ->setText(selection ? getCtrl<ctrlTable>(ID_tblSaveGames)->getItemText(*selection, 0) : "");
 }
 
 void iwSaveLoad::RefreshTable()
 {
     static bool loadedOnce = false;
 
-    auto* table = GetCtrl<ctrlTable>(ID_tblSaveGames);
+    auto* table = getCtrl<ctrlTable>(ID_tblSaveGames);
 
     table->DeleteAllItems();
 
@@ -102,16 +102,16 @@ void iwSaveLoad::RefreshTable()
             if(!loadedOnce)
             {
                 LOG.write(_("Invalid Savegame %1%! Reason: %2%\n")) % saveFile
-                  % (save.GetLastErrorMsg().empty() ? _("Unknown") : save.GetLastErrorMsg());
+                  % (save.getLastErrorMsg().empty() ? _("Unknown") : save.getLastErrorMsg());
             }
             continue;
         }
 
         const auto fileName = saveFile.stem().string();
-        const std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.GetSaveTime());
+        const std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.getSaveTime());
         const std::string gameTime = GAMECLIENT.FormatGFTime(save.start_gf);
 
-        table->AddRow({fileName, save.GetMapName(), dateStr, gameTime, saveFile.string()});
+        table->AddRow({fileName, save.getMapName(), dateStr, gameTime, saveFile.string()});
     }
 
     // Sort by time
@@ -121,7 +121,7 @@ void iwSaveLoad::RefreshTable()
 
 void iwSave::SaveLoad()
 {
-    const auto fileNameResult = GetCtrl<ctrlEdit>(ID_edtFilename)->GetFileName(".sav");
+    const auto fileNameResult = getCtrl<ctrlEdit>(ID_edtFilename)->getFileName(".sav");
     switch(fileNameResult.status)
     {
         case FileNameStatus::Empty:
@@ -137,14 +137,14 @@ void iwSave::SaveLoad()
     GAMECLIENT.SaveToFile(RTTRCONFIG.ExpandPath(s25::folders::save) / fileNameResult.name);
 
     RefreshTable();
-    GetCtrl<ctrlEdit>(ID_edtFilename)->SetText("");
+    getCtrl<ctrlEdit>(ID_edtFilename)->setText("");
 }
 
-iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
+iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.getTextureN("io", 47), 30)
 {
-    auto* fileNameEdit = GetCtrl<ctrlEdit>(ID_edtFilename);
-    fileNameEdit->SetType(EditType::Filename);
-    DrawPoint pos(GetSize().x / 2, fileNameEdit->GetPos().y + fileNameEdit->GetSize().y + 10);
+    auto* fileNameEdit = getCtrl<ctrlEdit>(ID_edtFilename);
+    fileNameEdit->setType(EditType::Filename);
+    DrawPoint pos(getSize().x / 2, fileNameEdit->getPos().y + fileNameEdit->getSize().y + 10);
 
     ctrlComboBox* combo =
       AddComboBox(ID_cbAutoSaveInterval, pos, Extent(130, 22), TextureColor::Green2, NormalFont, 100);
@@ -160,9 +160,9 @@ iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
         combo->AddItem(_("Every GF"));
 
     // Select interval
-    combo->SetSelection(0); // Use disabled by default and change if possible
+    combo->setSelection(0); // Use disabled by default and change if possible
     if(SETTINGS.interface.autosaveInterval == 1)
-        combo->SetSelection(AUTO_SAVE_INTERVALS.size() + 1);
+        combo->setSelection(AUTO_SAVE_INTERVALS.size() + 1);
     else
     {
         // Start selection index at 1, 0 is "disabled"
@@ -170,7 +170,7 @@ iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.GetTextureN("io", 47), 30)
         {
             if(SETTINGS.interface.autosaveInterval == duration_to_gfs(i.value()))
             {
-                combo->SetSelection(static_cast<unsigned>(i.index()));
+                combo->setSelection(static_cast<unsigned>(i.index()));
                 break;
             }
         }
@@ -191,15 +191,15 @@ void iwSave::msgComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selec
     }
 }
 
-iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(_("Load game!"), LOADER.GetTextureN("io", 48)), csi(std::move(csi)) {}
+iwLoad::iwLoad(CreateServerInfo csi) : iwSaveLoad(_("Load game!"), LOADER.getTextureN("io", 48)), csi(std::move(csi)) {}
 
 void iwLoad::SaveLoad()
 {
-    const auto* table = GetCtrl<ctrlTable>(ID_tblSaveGames);
-    if(!table->GetSelection())
+    const auto* table = getCtrl<ctrlTable>(ID_tblSaveGames);
+    if(!table->getSelection())
         return;
 
-    if(GAMECLIENT.HostGame(csi, {table->GetItemText(*table->GetSelection(), 4), MapType::Savegame}))
+    if(GAMECLIENT.HostGame(csi, {table->getItemText(*table->getSelection(), 4), MapType::Savegame}))
     {
         std::unique_ptr<ILobbyClient> lobbyClient;
         if(csi.type == ServerType::Lobby)

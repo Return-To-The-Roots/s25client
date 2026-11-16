@@ -18,13 +18,13 @@
 
 void WorldFixtureBase::addStartResources()
 {
-    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+    for(unsigned i = 0; i < world.getNumPlayers(); i++)
         addStartResources(i);
 }
 
 void WorldFixtureBase::addStartResources(unsigned playerIdx)
 {
-    world.GetPlayer(playerIdx).GetHQ()->addStartWares();
+    world.getPlayer(playerIdx).getHQ()->addStartWares();
 }
 
 CreateEmptyWorld::CreateEmptyWorld(const MapExtent& size) : size_(size) {}
@@ -34,16 +34,16 @@ bool CreateEmptyWorld::operator()(GameWorld& world) const
     // For consistent results
     initGameRNG(0);
 
-    loadGameData(world.GetDescriptionWriteable());
+    loadGameData(world.getDescriptionWriteable());
     world.Init(size_);
     // Set everything to buildable land
-    DescIdx<TerrainDesc> t = GetLandTerrain(world.GetDescription(), ETerrain::Buildable);
+    DescIdx<TerrainDesc> t = GetLandTerrain(world.getDescription(), ETerrain::Buildable);
     RTTR_FOREACH_PT(MapPoint, size_)
     {
-        MapNode& node = world.GetNodeWriteable(pt);
+        MapNode& node = world.getNodeWriteable(pt);
         node.t1 = node.t2 = t;
     }
-    unsigned numPlayers = world.GetNumPlayers();
+    unsigned numPlayers = world.getNumPlayers();
     if(numPlayers > 0)
     {
         // Distribute player HQs evenly across map
@@ -77,12 +77,12 @@ void setRightTerrain(GameWorld& world, const MapPoint& pt, Direction dir, DescId
 {
     switch(dir)
     {
-        case Direction::West: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NorthWest)).t1 = t; break;
-        case Direction::NorthWest: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NorthWest)).t2 = t; break;
-        case Direction::NorthEast: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::NorthEast)).t1 = t; break;
-        case Direction::East: world.GetNodeWriteable(pt).t2 = t; break;
-        case Direction::SouthEast: world.GetNodeWriteable(pt).t1 = t; break;
-        case Direction::SouthWest: world.GetNodeWriteable(world.GetNeighbour(pt, Direction::West)).t2 = t; break;
+        case Direction::West: world.getNodeWriteable(world.getNeighbour(pt, Direction::NorthWest)).t1 = t; break;
+        case Direction::NorthWest: world.getNodeWriteable(world.getNeighbour(pt, Direction::NorthWest)).t2 = t; break;
+        case Direction::NorthEast: world.getNodeWriteable(world.getNeighbour(pt, Direction::NorthEast)).t1 = t; break;
+        case Direction::East: world.getNodeWriteable(pt).t2 = t; break;
+        case Direction::SouthEast: world.getNodeWriteable(pt).t1 = t; break;
+        case Direction::SouthWest: world.getNodeWriteable(world.getNeighbour(pt, Direction::West)).t2 = t; break;
     }
 }
 

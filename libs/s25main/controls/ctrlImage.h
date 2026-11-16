@@ -18,7 +18,7 @@ public:
     ~ctrlImage() override;
 
     bool msgMouseMove(const MouseCoords& mc) override;
-    Rect GetBoundaryRect() const override;
+    Rect getBoundaryRect() const override;
 
 protected:
     void Draw_() override;

@@ -39,26 +39,26 @@ void nofTempleServant::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 11) // servant pours wine into crucible(play once at start)
     {
-        LOADER.GetPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_START_ANIMATION] + now_id)
-          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     world->GetPlayer(workplace->GetPlayer()).color);
+        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_START_ANIMATION] + now_id)
+          ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+                     world->getPlayer(workplace->getPlayer()).color);
     } else if(now_id < 77) // wine and food is burned (loop for duration)
     {
-        LOADER.GetPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_MAIN_ANIMATION] + (now_id + 1) % 6)
-          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     world->GetPlayer(workplace->GetPlayer()).color);
+        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_MAIN_ANIMATION] + (now_id + 1) % 6)
+          ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+                     world->getPlayer(workplace->getPlayer()).color);
 
         // Play sound burning
         if((now_id + 1) % 6 == 3)
         {
-            world->GetSoundMgr().playNOSound(93, *this, now_id);
+            world->getSoundMgr().playNOSound(93, *this, now_id);
             was_sounding = true;
         }
     } else // last loop of animation (play once at end)
     {
-        LOADER.GetPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_END_ANIMATION] + now_id - 77)
-          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     world->GetPlayer(workplace->GetPlayer()).color);
+        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_END_ANIMATION] + now_id - 77)
+          ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+                     world->getPlayer(workplace->getPlayer()).color);
     }
 
     last_id = now_id;
@@ -69,7 +69,7 @@ void nofTempleServant::DrawWorking(DrawPoint drawPt)
 #    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
 #endif
 
-unsigned short nofTempleServant::GetCarryID() const
+unsigned short nofTempleServant::getCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
@@ -90,7 +90,7 @@ void nofTempleServant::DrawWalkingWithWare(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofTempleServant::ProduceWare()
 {
-    const auto productionMode = static_cast<nobTemple*>(workplace)->GetProductionMode();
+    const auto productionMode = static_cast<nobTemple*>(workplace)->getProductionMode();
     switch(productionMode)
     {
         case ProductionMode::IronOre: currentProduction = GoodType::IronOre; break;

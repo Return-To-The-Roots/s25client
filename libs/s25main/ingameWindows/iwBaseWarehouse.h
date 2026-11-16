@@ -36,5 +36,5 @@ protected:
     void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void msgButtonClick(unsigned ctrl_id) override;
 
-    void SetPage(unsigned page) override;
+    void setPage(unsigned page) override;
 };

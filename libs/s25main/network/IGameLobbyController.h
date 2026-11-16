@@ -19,15 +19,15 @@ class IGameLobbyController
 {
 public:
     virtual ~IGameLobbyController() = default;
-    virtual unsigned GetMaxNumPlayers() const = 0;
-    virtual JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) = 0;
+    virtual unsigned getMaxNumPlayers() const = 0;
+    virtual JoinPlayerInfo& getJoinPlayer(unsigned playerIdx) = 0;
     virtual void CloseSlot(unsigned playerIdx) = 0;
-    virtual void SetPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) = 0;
-    virtual void SetName(unsigned playerIdx, const std::string& name) = 0;
-    virtual void SetPortrait(unsigned playerIdx, unsigned portraitIndex) = 0;
-    virtual void SetColor(unsigned playerIdx, unsigned newColor) = 0;
-    virtual void SetTeam(unsigned playerIdx, Team newTeam) = 0;
-    virtual void SetNation(unsigned playerIdx, Nation newNation) = 0;
-    virtual const GlobalGameSettings& GetGGS() const = 0;
+    virtual void setPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) = 0;
+    virtual void setName(unsigned playerIdx, const std::string& name) = 0;
+    virtual void setPortrait(unsigned playerIdx, unsigned portraitIndex) = 0;
+    virtual void setColor(unsigned playerIdx, unsigned newColor) = 0;
+    virtual void setTeam(unsigned playerIdx, Team newTeam) = 0;
+    virtual void setNation(unsigned playerIdx, Nation newNation) = 0;
+    virtual const GlobalGameSettings& getGGS() const = 0;
     virtual void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) = 0;
 };

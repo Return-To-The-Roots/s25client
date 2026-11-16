@@ -38,7 +38,7 @@ private:
     /// Malt den Arbeiter beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override { return 0; }
+    unsigned short getCarryID() const override { return 0; }
 
 public:
     nofCatapultMan(MapPoint pos, unsigned char player, nobUsual* workplace);
@@ -46,7 +46,7 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofCatapultman; }
+    GO_Type getGOT() const final { return GO_Type::NofCatapultman; }
 
     void HandleDerivedEvent(unsigned id) override;
 

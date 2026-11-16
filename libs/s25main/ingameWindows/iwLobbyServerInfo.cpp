@@ -17,17 +17,17 @@ void iwLobbyServerInfo::UpdateServerInfo()
 {
     const LobbyServerInfo& serverinfo = LOBBYCLIENT.GetServerInfo();
 
-    SetTitle(serverinfo.getName());
+    setTitle(serverinfo.getName());
 
-    GetCtrl<ctrlEdit>(1)->SetText(serverinfo.getMap());
-    GetCtrl<ctrlEdit>(4)->SetText(serverinfo.getName());
-    GetCtrl<ctrlEdit>(6)->SetText(serverinfo.getHost() + ":" + helpers::toString(serverinfo.getPort()));
-    GetCtrl<ctrlEdit>(8)->SetText(serverinfo.getVersion());
+    getCtrl<ctrlEdit>(1)->setText(serverinfo.getMap());
+    getCtrl<ctrlEdit>(4)->setText(serverinfo.getName());
+    getCtrl<ctrlEdit>(6)->setText(serverinfo.getHost() + ":" + helpers::toString(serverinfo.getPort()));
+    getCtrl<ctrlEdit>(8)->setText(serverinfo.getVersion());
 }
 
 iwLobbyServerInfo::iwLobbyServerInfo(unsigned serverId)
     : IngameWindow(CGI_LOBBYSERVERINFO, IngameWindow::posLastOrCenter, Extent(260, 260), _("Server Information"),
-                   LOADER.GetImageN("resource", 41)),
+                   LOADER.getImageN("resource", 41)),
       serverId_(serverId)
 {
     AddText(0, DrawPoint(30, 40), _("Map Name:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -57,7 +57,7 @@ void iwLobbyServerInfo::msgTimer(const unsigned ctrl_id)
 /**
  *  setzt Serverinfo und ServerNummer.
  */
-void iwLobbyServerInfo::SetServerId(unsigned serverId)
+void iwLobbyServerInfo::setServerId(unsigned serverId)
 {
     serverId_ = serverId;
 }

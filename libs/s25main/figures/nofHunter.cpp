@@ -50,7 +50,7 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
         shootingPos = sgd.PopMapPoint();
         shooting_dir = sgd.Pop<Direction>();
         // https://github.com/Return-To-The-Roots/s25client/issues/1126
-        if(sgd.GetGameDataVersion() < 4 && state == State::HunterFindingShootingpoint && pos == shootingPos)
+        if(sgd.getGameDataVersion() < 4 && state == State::HunterFindingShootingpoint && pos == shootingPos)
             state = State::HunterWaitingForAnimalReady;
     } else
     {
@@ -62,7 +62,7 @@ nofHunter::nofHunter(SerializedGameData& sgd, const unsigned obj_id) : nofBuildi
 
 void nofHunter::DrawWorking(DrawPoint drawPt)
 {
-    const GamePlayer& owner = world->GetPlayer(player);
+    const GamePlayer& owner = world->getPlayer(player);
     switch(state)
     {
         default: break;
@@ -75,22 +75,22 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
             {
                 // die Animation in dieser Richtung ist etwas anders als die in den restlichen
                 unsigned short id = GAMECLIENT.Interpolate(13, current_ev);
-                LOADER.GetPlayerImage("rom_bobs", 219 + id)->drawForPlayer(drawPt, owner.color);
+                LOADER.getPlayerImage("rom_bobs", 219 + id)->drawForPlayer(drawPt, owner.color);
 
                 if(id == 12)
                 {
-                    world->GetSoundMgr().playNOSound(74, *this, 0);
+                    world->getSoundMgr().playNOSound(74, *this, 0);
                     was_sounding = true;
                 }
             } else
             {
                 unsigned short id = GAMECLIENT.Interpolate(8, current_ev);
-                LOADER.GetPlayerImage("rom_bobs", 1686 + rttr::enum_cast(shooting_dir + 2u) * 8 + id)
+                LOADER.getPlayerImage("rom_bobs", 1686 + rttr::enum_cast(shooting_dir + 2u) * 8 + id)
                   ->drawForPlayer(drawPt, owner.color);
 
                 if(id == 7)
                 {
-                    world->GetSoundMgr().playNOSound(74, *this, 0);
+                    world->getSoundMgr().playNOSound(74, *this, 0);
                     was_sounding = true;
                 }
             }
@@ -110,7 +110,7 @@ void nofHunter::DrawWorking(DrawPoint drawPt)
             else
                 draw_id = 244 + id - 36;
 
-            LOADER.GetPlayerImage("rom_bobs", draw_id)->drawForPlayer(drawPt, owner.color);
+            LOADER.getPlayerImage("rom_bobs", draw_id)->drawForPlayer(drawPt, owner.color);
         }
         break;
     }
@@ -128,13 +128,13 @@ void nofHunter::HandleDerivedEvent(unsigned /*id*/)
     }
 }
 
-std::vector<noAnimal*> nofHunter::GetAnimalsInRange(const GameWorldBase& world, const MapPoint pos, unsigned radius,
+std::vector<noAnimal*> nofHunter::getAnimalsInRange(const GameWorldBase& world, const MapPoint pos, unsigned radius,
                                                     unsigned maxDistance, bool (*isValidAnimal)(const noAnimal*))
 {
     const auto pointToAnimal = [&world](const MapPoint pt, unsigned) -> noAnimal* {
-        for(auto& figure : world.GetFigures(pt))
+        for(auto& figure : world.getFigures(pt))
         {
-            if(figure.GetType() == NodalObjectType::Animal)
+            if(figure.getType() == NodalObjectType::Animal)
                 return static_cast<noAnimal*>(&figure);
         }
         return nullptr;
@@ -142,24 +142,24 @@ std::vector<noAnimal*> nofHunter::GetAnimalsInRange(const GameWorldBase& world, 
 
     const auto canAnimalBeUsed = [pos, maxDistance, &world, isValidAnimal](const noAnimal* const animal) {
         return animal && isValidAnimal(animal)
-               && (pos == animal->GetPos() || world.FindHumanPath(pos, animal->GetPos(), maxDistance));
+               && (pos == animal->getPos() || world.FindHumanPath(pos, animal->getPos(), maxDistance));
     };
 
-    return world.GetPointsInRadius(pos, radius, pointToAnimal, canAnimalBeUsed, true);
+    return world.getPointsInRadius(pos, radius, pointToAnimal, canAnimalBeUsed, true);
 }
 
-std::vector<noAnimal*> nofHunter::GetHuntableAnimalsInRange(const GameWorldBase& world, MapPoint pos)
+std::vector<noAnimal*> nofHunter::getHuntableAnimalsInRange(const GameWorldBase& world, MapPoint pos)
 {
-    return GetAnimalsInRange(world, pos, ANIMAL_RADIUS, MAX_HUNTING_DISTANCE,
-                             [](const noAnimal* a) { return a->CanHunted(); });
+    return getAnimalsInRange(world, pos, ANIMAL_RADIUS, MAX_HUNTING_DISTANCE,
+                             [](const noAnimal* a) { return a->canHunted(); });
 }
 
 void nofHunter::TryStartHunting()
 {
     std::vector<noAnimal*> available_animals;
 
-    if(world->GetReplayCompatVersion() >= 4)
-        available_animals = GetHuntableAnimalsInRange(*world, pos);
+    if(world->getReplayCompatVersion() >= 4)
+        available_animals = getHuntableAnimalsInRange(*world, pos);
     else
     {
         // Legacy square search for replays recorded with old code
@@ -170,14 +170,14 @@ void nofHunter::TryStartHunting()
             for(curPos.x = pos.x - SQUARE_SIZE; curPos.x <= pos.x + SQUARE_SIZE; ++curPos.x)
             {
                 MapPoint curMapPos = world->MakeMapPoint(curPos);
-                for(auto& figure : world->GetFigures(curMapPos))
+                for(auto& figure : world->getFigures(curMapPos))
                 {
-                    if(figure.GetType() != NodalObjectType::Animal)
+                    if(figure.getType() != NodalObjectType::Animal)
                         continue;
                     auto& animal = static_cast<noAnimal&>(figure);
-                    if(!animal.CanHunted())
+                    if(!animal.canHunted())
                         continue;
-                    if(pos == animal.GetPos() || world->FindHumanPath(pos, animal.GetPos(), MAX_HUNTING_DISTANCE))
+                    if(pos == animal.getPos() || world->FindHumanPath(pos, animal.getPos(), MAX_HUNTING_DISTANCE))
                     {
                         available_animals.push_back(&animal);
                     }
@@ -208,9 +208,9 @@ void nofHunter::TryStartHunting()
     } else
     {
         // Weiter warten, vielleicht gibts ja später wieder mal was
-        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
-        world->GetNotifications().publish(
-          BuildingNote(BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
+        current_ev = getEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+        world->getNotifications().publish(
+          BuildingNote(BuildingNote::NoRessources, player, workplace->getPos(), workplace->getBuildingType()));
         workplace->StartNotWorking();
     }
 
@@ -229,16 +229,16 @@ void nofHunter::WalkedDerived()
     }
 }
 
-bool nofHunter::IsShootingPointGood(const MapPoint pt)
+bool nofHunter::isShootingPointGood(const MapPoint pt)
 {
     // Punkt muss betretbar sein und man muss ihn erreichen können
-    return PathConditionHuman(*world).IsNodeOk(pt) && world->FindHumanPath(this->pos, pt, 6).has_value();
+    return PathConditionHuman(*world).isNodeOk(pt) && world->FindHumanPath(this->pos, pt, 6).has_value();
 }
 
 void nofHunter::HandleStateChasing()
 {
     // Sind wir in der Nähe des Tieres?
-    if(world->CalcDistance(pos, animal->GetPos()) < 7)
+    if(world->CalcDistance(pos, animal->getPos()) < 7)
     {
         // Dann bitten wir es mal, schonmal anzuhalten und bekommen seine Koordinaten, wo es dann steht
         Position animalPos(animal->HunterIsNear());
@@ -303,7 +303,7 @@ void nofHunter::HandleStateChasing()
     } else
     {
         // Weg dorthin suchen
-        const auto dir = world->FindHumanPath(pos, animal->GetPos(), MAX_HUNTING_DISTANCE);
+        const auto dir = world->FindHumanPath(pos, animal->getPos(), MAX_HUNTING_DISTANCE);
         if(dir)
         {
             // Weg gefunden, dann hinlaufen
@@ -342,13 +342,13 @@ void nofHunter::HandleStateFindingShootingPoint()
 void nofHunter::HandleStateWaitingForAnimalReady()
 {
     // Is the animal ready?
-    if(animal->IsReadyForShooting())
+    if(animal->isReadyForShooting())
     {
         // fire!
         state = State::HunterShooting;
-        current_ev = GetEvMgr().AddEvent(this, 16, 1);
-    } else if(animal->IsGettingReadyForShooting())
-        current_ev = GetEvMgr().AddEvent(this, 15, 2); // Give the animal some time for getting ready
+        current_ev = getEvMgr().AddEvent(this, 16, 1);
+    } else if(animal->isGettingReadyForShooting())
+        current_ev = getEvMgr().AddEvent(this, 15, 2); // Give the animal some time for getting ready
     else
     {
         // Something went wrong, animal is doing something else?
@@ -368,15 +368,15 @@ void nofHunter::HandleStateShooting()
 void nofHunter::HandleStateWalkingToCadaver()
 {
     // Sind wir schon da?
-    if(animal->GetPos() == pos)
+    if(animal->getPos() == pos)
     {
         // dann ausnehmen
         state = State::HunterEviscerating;
-        current_ev = GetEvMgr().AddEvent(this, 80, 1);
+        current_ev = getEvMgr().AddEvent(this, 80, 1);
     } else
     {
         // Weg dorthin suchen
-        const auto dir = world->FindHumanPath(pos, animal->GetPos(), 6);
+        const auto dir = world->FindHumanPath(pos, animal->getPos(), 6);
         if(dir)
         {
             // Weg gefunden, dann hinlaufen
@@ -394,13 +394,13 @@ void nofHunter::HandleStateEviscerating()
     // Evtl. Sounds löschen
     if(was_sounding)
     {
-        world->GetSoundMgr().stopSounds(*this);
+        world->getSoundMgr().stopSounds(*this);
         was_sounding = false;
     }
 
     // see comment at noAnimal::HandleEvent for explanation of ownership of animal
     animal->Eviscerated();
-    if(!animal->IsGettingSkinned())
+    if(!animal->isGettingSkinned())
     {
         // Tier verschwinden lassen
         auto ownedAnimal = world->RemoveFigure(pos, *animal);
@@ -420,14 +420,14 @@ void nofHunter::StartWalkingHome()
     WorkAborted();
     state = State::WalkingHome;
     // We may be still walking in which case we delay finding a path home until we reached the next node
-    if(!IsMoving())
+    if(!isMoving())
         HandleStateWalkingHome();
 }
 
 void nofHunter::HandleStateWalkingHome()
 {
     // Sind wir zu Hause angekommen? (genauer an der Flagge !!)
-    MapPoint homeFlagPos = world->GetNeighbour(workplace->GetPos(), Direction::SouthEast);
+    MapPoint homeFlagPos = world->getNeighbour(workplace->getPos(), Direction::SouthEast);
     if(pos == homeFlagPos)
     {
         // Weiteres übernimmt nofBuildingWorker
@@ -465,7 +465,7 @@ void nofHunter::AnimalLost()
         case State::HunterEviscerating:
         case State::HunterWaitingForAnimalReady:
             // Arbeits-Event abmelden
-            GetEvMgr().RemoveEvent(current_ev);
+            getEvMgr().RemoveEvent(current_ev);
             // Nach Hause laufen
             StartWalkingHome();
             break;

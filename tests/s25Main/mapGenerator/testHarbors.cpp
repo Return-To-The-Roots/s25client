@@ -16,7 +16,7 @@ BOOST_FIXTURE_TEST_SUITE(HarborsTests, MapGenFixture)
 BOOST_AUTO_TEST_CASE(PlaceHarborPosition_flattens_ground_around_harbor_position)
 {
     Map map = createMap(MapExtent(6, 8));
-    auto land = TexturePair(map.textureMap.Find(IsBuildableLand));
+    auto land = TexturePair(map.textureMap.Find(isBuildableLand));
 
     map.getTextures().Resize(map.size, land);
 
@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_flattens_ground_around_harbor_position)
     map.z.Resize(map.size, map.height.maximum);
 
     const auto minHeight = map.height.minimum;
-    const auto neighbors = map.z.GetNeighbours(position);
+    const auto neighbors = map.z.getNeighbours(position);
 
     for(unsigned i = 0; i < neighbors.size(); i++)
     {
@@ -46,8 +46,8 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_applies_buildable_terrain_around_positi
 {
     Map map = createMap(MapExtent(6, 8));
 
-    auto coast = TexturePair(map.textureMap.Find(IsCoastTerrain));
-    auto buildable = map.textureMap.Find(IsBuildableCoast);
+    auto coast = TexturePair(map.textureMap.Find(isCoastTerrain));
+    auto buildable = map.textureMap.Find(isBuildableCoast);
 
     map.getTextures().Resize(map.size, coast);
 
@@ -75,8 +75,8 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbors_on_coast_below_minimum_size)
 
     map.getTextures().Resize(map.size, water);
 
-    auto coast = map.textureMap.Find(IsCoastTerrain);
-    map.textureMap.Set(island, coast);
+    auto coast = map.textureMap.Find(isCoastTerrain);
+    map.textureMap.set(island, coast);
 
     PlaceHarbors(map, {}, 100);
 
@@ -92,8 +92,8 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_harbor_on_suitable_island)
 
     map.getTextures().Resize(map.size, water);
 
-    auto coast = map.textureMap.Find(IsCoastTerrain);
-    map.textureMap.Set(island, coast);
+    auto coast = map.textureMap.Find(isCoastTerrain);
+    map.textureMap.set(island, coast);
 
     PlaceHarbors(map, {}, 5);
 
@@ -109,8 +109,8 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbor_near_river)
 
     map.getTextures().Resize(map.size, water);
 
-    auto coast = map.textureMap.Find(IsCoastTerrain);
-    map.textureMap.Set(island, coast);
+    auto coast = map.textureMap.Find(isCoastTerrain);
+    map.textureMap.set(island, coast);
 
     River river{island};
 

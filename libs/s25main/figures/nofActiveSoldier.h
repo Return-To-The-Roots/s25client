@@ -78,7 +78,7 @@ protected:
     void MeetingEnemy();
     /// Look for an appropriate fighting spot between the two soldiers
     /// Return true on success
-    std::optional<MapPoint> GetFightSpotNear(const nofActiveSoldier& other);
+    std::optional<MapPoint> getFightSpotNear(const nofActiveSoldier& other);
     /// increase rank if possible
     void IncreaseRank();
     /// Notify that a free fight (somewhere at the map, not the one at the building flag) cannot be started
@@ -90,7 +90,7 @@ private:
     void GoalReached() override;
 
     /// Get how much of the map/FoW the soldier discovers
-    unsigned GetVisualRange() const override;
+    unsigned getVisualRange() const override;
     /// Abort a free fight (somewhere at the map, not the one at the building flag) that cannot be started
     void AbortFreeFight();
 
@@ -125,17 +125,17 @@ public:
     virtual void LostFighting() = 0;
 
     /// Determine if this soldier is ready for a spontaneous  fight
-    bool IsReadyForFight() const;
+    bool isReadyForFight() const;
     /// Inform a waiting soldier about the start of a fight
     void FightingStarted();
 
     /// Get the current state
-    SoldierState GetState() const { return state; }
+    SoldierState getState() const { return state; }
     /// Set the home (building) to nullptr
     /// e.g. after the soldier was removed from the homes list but it was not destroyed
     void ResetHome() { homeBld = nullptr; }
     void FightVsDefenderStarted() { state = SoldierState::AttackingFightingVsDefender; }
 
     // For debugging
-    const nofActiveSoldier* GetEnemy() const { return enemy; }
+    const nofActiveSoldier* getEnemy() const { return enemy; }
 };

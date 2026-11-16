@@ -93,7 +93,7 @@ private:
     void StopWorking();
 
     /// Bestimmt neuen Animationszeitpunkt
-    void SetNewAnimationMoment();
+    void setNewAnimationMoment();
 
     /// Boat carrier paddles to the coast after his road was destroyed
     void WanderOnWater();
@@ -109,14 +109,14 @@ public:
 
     void Destroy() override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofCarrier; }
+    GO_Type getGOT() const final { return GO_Type::NofCarrier; }
 
     /// Gibt Träger-Typ zurück
-    CarrierType GetCarrierType() const { return ct; }
+    CarrierType getCarrierType() const { return ct; }
     /// Was macht der Träger gerade?
-    CarrierState GetCarrierState() const { return state; }
+    CarrierState getCarrierState() const { return state; }
     /// Gibt Träger-Produktivität in % zurück
-    unsigned GetProductivity() const { return productivity; }
+    unsigned getProductivity() const { return productivity; }
 
     void Draw(DrawPoint drawPt) override;
 
@@ -139,8 +139,8 @@ public:
     bool SpaceAtFlag(bool flag);
 
     /// Gibt erste Flagge des Arbeitsweges zurück, falls solch einer existiert
-    noRoadNode* GetFirstFlag() const;
-    noRoadNode* GetSecondFlag() const;
+    noRoadNode* getFirstFlag() const;
+    noRoadNode* getSecondFlag() const;
 
     /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde (für abgeleitete Klassen)
     void correctSplitDataDerived() override;

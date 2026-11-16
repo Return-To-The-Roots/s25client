@@ -41,19 +41,19 @@ void GameObject::Destroy() {}
 GameObject::~GameObject()
 {
     // RTTR_Assert(!world || !GetEvMgr().ObjectHasEvents(*this));
-    RTTR_Assert(!world || !GetEvMgr().IsObjectInKillList(*this));
+    RTTR_Assert(!world || !getEvMgr().isObjectInKillList(*this));
     // ein Objekt weniger
     --objCounter_;
 }
 
-EventManager& GameObject::GetEvMgr()
+EventManager& GameObject::getEvMgr()
 {
-    return world->GetEvMgr();
+    return world->getEvMgr();
 }
 
 void GameObject::SendPostMessage(unsigned player, std::unique_ptr<PostMsg> msg)
 {
-    world->GetPostMgr().SendMsg(player, std::move(msg));
+    world->getPostMgr().SendMsg(player, std::move(msg));
 }
 
 void GameObject::DetachWorld(GameWorld* gameWorld)

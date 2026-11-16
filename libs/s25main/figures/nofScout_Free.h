@@ -29,7 +29,7 @@ private:
     void GoToNewNode();
 
     /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
-    unsigned GetVisualRange() const override;
+    unsigned getVisualRange() const override;
 
 public:
     nofScout_Free(MapPoint pos, unsigned char player, noRoadNode* goal);
@@ -37,7 +37,7 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofScoutFree; }
+    GO_Type getGOT() const final { return GO_Type::NofScoutFree; }
 
     void Draw(DrawPoint drawPt) override;
 

@@ -77,7 +77,7 @@ protected:
     static constexpr unsigned short CARRY_ID_CARRIER_OFFSET = 100;
     /// Ask derived class for an ID into JOBS.BOB when the figure is carrying a ware
     /// Use GD_* + CARRY_ID_CARRIER_OFFSET for using carrier graphics
-    virtual unsigned short GetCarryID() const = 0;
+    virtual unsigned short getCarryID() const = 0;
     /// Laufen an abgeleitete Klassen weiterleiten
     virtual void WalkedDerived() = 0;
     /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
@@ -91,7 +91,7 @@ protected:
     virtual void DrawOtherStates(DrawPoint drawPt);
 
 public:
-    State GetState() const { return state; }
+    State getState() const { return state; }
 
     nofBuildingWorker(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     nofBuildingWorker(SerializedGameData& sgd, unsigned obj_id);

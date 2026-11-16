@@ -25,7 +25,7 @@ static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
 
     const auto validateHqPos = [&](const MapPoint hqPos) {
         // All textures around the point must allow a castle
-        const auto neighbors = map.z.GetNeighbours(hqPos);
+        const auto neighbors = map.z.getNeighbours(hqPos);
         for(const MapPoint pt : neighbors)
         {
             BOOST_TEST_REQUIRE(

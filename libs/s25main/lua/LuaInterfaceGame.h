@@ -47,15 +47,15 @@ public:
                           unsigned duration);
     // Callable from Lua
     void ClearResources();
-    unsigned GetGF() const;
+    unsigned getGF() const;
     std::string FormatNumGFs(unsigned numGFs) const;
-    unsigned GetNumPlayers() const;
+    unsigned getNumPlayers() const;
     void Chat(int playerIdx, const std::string& msg);
     void MissionStatement(int playerIdx, const std::string& title, const std::string& msg);
     void MissionStatement2(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx);
     void MissionStatement3(int playerIdx, const std::string& title, const std::string& msg, unsigned imgIdx,
                            bool pause);
-    void SetMissionGoal(int playerIdx, const std::string& newGoal = "");
+    void setMissionGoal(int playerIdx, const std::string& newGoal = "");
     void PostMessageLua(int playerIdx, const std::string& msg);
     void PostMessageWithLocation(int playerIdx, const std::string& msg, int x, int y);
 
@@ -63,6 +63,6 @@ private:
     ILocalGameState& localGameState;
     GameWorld& gw;
     Game& game;
-    LuaPlayer GetPlayer(int playerIdx);
-    LuaWorld GetWorld();
+    LuaPlayer getPlayer(int playerIdx);
+    LuaWorld getWorld();
 };

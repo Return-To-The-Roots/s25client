@@ -21,13 +21,13 @@ public:
     /// löscht alle Tabs.
     void DeleteAllTabs();
     /// aktiviert eine bestimmte Tabseite.
-    void SetSelection(unsigned short nr, bool notify = false);
+    void setSelection(unsigned short nr, bool notify = false);
     /// Gibt ID des aktuell gewählten Tabs zurück
-    unsigned GetCurrentTab() const { return tabs[tab_selection]; }
+    unsigned getCurrentTab() const { return tabs[tab_selection]; }
     /// Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen werden können
-    ctrlGroup* GetGroup(unsigned tab_id);
+    ctrlGroup* getGroup(unsigned tab_id);
     /// Gibt aktuell ausgewählte Tab-Gruppe zürck
-    ctrlGroup* GetCurrentGroup() { return GetGroup(GetCurrentTab()); }
+    ctrlGroup* getCurrentGroup() { return getGroup(getCurrentTab()); }
 
     void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void msgGroupEditEnter(unsigned group_id, unsigned ctrl_id) override;

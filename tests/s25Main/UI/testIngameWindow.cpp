@@ -58,17 +58,17 @@ static MouseCoords makeLeftDblClick(const Position pos)
 BOOST_AUTO_TEST_CASE(MinimizeWindow)
 {
     iwHelp wnd("Foo barFoo barFoo barFoo bar\n\n\n\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\nFoo\n");
-    const Extent oldSize = wnd.GetSize();
+    const Extent oldSize = wnd.getSize();
     BOOST_TEST_REQUIRE(oldSize.x > 50u);
     BOOST_TEST_REQUIRE(oldSize.y > 50u);
     // Window should reduce height (only)
-    wnd.SetMinimized(true);
-    BOOST_TEST_REQUIRE(wnd.GetSize().x == oldSize.x); //-V807
-    BOOST_TEST_REQUIRE(wnd.GetSize().y > 0u);
-    BOOST_TEST_REQUIRE(wnd.GetSize().y < oldSize.y);
+    wnd.setMinimized(true);
+    BOOST_TEST_REQUIRE(wnd.getSize().x == oldSize.x); //-V807
+    BOOST_TEST_REQUIRE(wnd.getSize().y > 0u);
+    BOOST_TEST_REQUIRE(wnd.getSize().y < oldSize.y);
     // And fully expand to old size
-    wnd.SetMinimized(false);
-    BOOST_TEST_REQUIRE(wnd.GetSize() == oldSize);
+    wnd.setMinimized(false);
+    BOOST_TEST_REQUIRE(wnd.getSize() == oldSize);
 }
 
 BOOST_AUTO_TEST_CASE(IwMapGenerator)
@@ -86,38 +86,38 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
     rttr::mapGenerator::MapSettings settings;
     iwMapGenerator wnd(settings);
     // UI values are set according to current values. Check that and adjust to random value to test apply-button
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbNumPlayers)->GetSelection().value()
+    BOOST_TEST(wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbNumPlayers)->getSelection().value()
                == settings.numPlayers - 2u);
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbNumPlayers)->SetSelection(expectedNumPlayers - 2);
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapType)->GetSelection().value() == settings.type.value);
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapType)->SetSelection(expectedMapType);
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapStyle)->GetSelection().value()
+    wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbNumPlayers)->setSelection(expectedNumPlayers - 2);
+    BOOST_TEST(wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapType)->getSelection().value() == settings.type.value);
+    wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapType)->setSelection(expectedMapType);
+    BOOST_TEST(wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapStyle)->getSelection().value()
                == static_cast<unsigned>(settings.style));
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapStyle)->SetSelection(1); // MapStyle::Land
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeX)->GetSelectedText().value()
+    wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapStyle)->setSelection(1); // MapStyle::Land
+    BOOST_TEST(wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeX)->getSelectedText().value()
                == s25util::toStringClassic(settings.size.x));
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeY)->GetSelectedText().value()
+    BOOST_TEST(wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeY)->getSelectedText().value()
                == s25util::toStringClassic(settings.size.y));
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeX)->SetSelection(7);                              // 256
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeY)->SetSelection(3);                              // 128
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMountainDist)->GetSelection().value() == 1u); // Normal
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMountainDist)->SetSelection(3);                          // VeryFar
-    BOOST_TEST(wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbIslands)->GetSelection().value() == 0u);      // Few
-    wnd.GetCtrl<ctrlComboBox>(iwMapGenerator::ID_cbIslands)->SetSelection(2); // IslandAmount::Many
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgGoldRatio)->GetPosition() == settings.ratioGold);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgGoldRatio)->SetPosition(expectedGoldRatio);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgIronRatio)->GetPosition() == settings.ratioIron);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgIronRatio)->SetPosition(expectedIronRatio);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgCoalRatio)->GetPosition() == settings.ratioCoal);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgCoalRatio)->SetPosition(expectedCoalRatio);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgGraniteRatio)->GetPosition() == settings.ratioGranite);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgGraniteRatio)->SetPosition(expectedGraniteRatio);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgRivers)->GetPosition() == settings.rivers);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgRivers)->SetPosition(expectedRivers);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->GetPosition() == settings.trees);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->SetPosition(expectedTrees);
-    BOOST_TEST(wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->GetPosition() == settings.stonePiles);
-    wnd.GetCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->SetPosition(expectedStonePiles);
+    wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeX)->setSelection(7);                              // 256
+    wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMapSizeY)->setSelection(3);                              // 128
+    BOOST_TEST(wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMountainDist)->getSelection().value() == 1u); // Normal
+    wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbMountainDist)->setSelection(3);                          // VeryFar
+    BOOST_TEST(wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbIslands)->getSelection().value() == 0u);      // Few
+    wnd.getCtrl<ctrlComboBox>(iwMapGenerator::ID_cbIslands)->setSelection(2); // IslandAmount::Many
+    BOOST_TEST(wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgGoldRatio)->getPosition() == settings.ratioGold);
+    wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgGoldRatio)->setPosition(expectedGoldRatio);
+    BOOST_TEST(wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgIronRatio)->getPosition() == settings.ratioIron);
+    wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgIronRatio)->setPosition(expectedIronRatio);
+    BOOST_TEST(wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgCoalRatio)->getPosition() == settings.ratioCoal);
+    wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgCoalRatio)->setPosition(expectedCoalRatio);
+    BOOST_TEST(wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgGraniteRatio)->getPosition() == settings.ratioGranite);
+    wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgGraniteRatio)->setPosition(expectedGraniteRatio);
+    BOOST_TEST(wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgRivers)->getPosition() == settings.rivers);
+    wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgRivers)->setPosition(expectedRivers);
+    BOOST_TEST(wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->getPosition() == settings.trees);
+    wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgTrees)->setPosition(expectedTrees);
+    BOOST_TEST(wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->getPosition() == settings.stonePiles);
+    wnd.getCtrl<ctrlProgress>(iwMapGenerator::ID_pgStonePiles)->setPosition(expectedStonePiles);
     wnd.msgButtonClick(iwMapGenerator::ID_btApply);
     BOOST_TEST(wnd.ShouldBeClosed());
 
@@ -139,13 +139,13 @@ BOOST_AUTO_TEST_CASE(IwMapGenerator)
 BOOST_AUTO_TEST_CASE(ConnectWindow)
 {
     iwDirectIPConnect wnd(ServerType::Local);
-    const auto edts = wnd.GetCtrls<ctrlEdit>();
+    const auto edts = wnd.getCtrls<ctrlEdit>();
     // Should have (at least) 3 fields: IP, port, password (in this order)
     const auto& edtIp = *edts.at(0);
     const auto& edtPort = *edts.at(1);
     const auto& edtPw = *edts.at(2);
     // And an option group to choose IPv6 vs IPv4
-    auto& ipGrp = *wnd.GetCtrls<ctrlOptionGroup>().at(0);
+    auto& ipGrp = *wnd.getCtrls<ctrlOptionGroup>().at(0);
     const auto testHost = rttr::test::randString(10);
     const auto testPort = rttr::test::randomValue(10, 10000);
     const auto testIsIpv6 = rttr::test::randomBool();
@@ -153,11 +153,11 @@ BOOST_AUTO_TEST_CASE(ConnectWindow)
                 true); // When the server has a password, the window shouldn't initiate the connection process
     BOOST_TEST_REQUIRE(!wnd.ShouldBeClosed()); // No error or anything, window still open
     // Fields filled and password field has focus
-    BOOST_TEST(edtIp.GetText() == testHost);
-    BOOST_TEST(edtPort.GetText() == s25util::toStringClassic(testPort));
-    BOOST_TEST(edtPw.GetText().empty());
-    BOOST_TEST(edtPw.HasFocus());
-    BOOST_TEST(ipGrp.GetSelection() == static_cast<unsigned>(testIsIpv6));
+    BOOST_TEST(edtIp.getText() == testHost);
+    BOOST_TEST(edtPort.getText() == s25util::toStringClassic(testPort));
+    BOOST_TEST(edtPw.getText().empty());
+    BOOST_TEST(edtPw.hasFocus());
+    BOOST_TEST(ipGrp.getSelection() == static_cast<unsigned>(testIsIpv6));
 }
 
 BOOST_AUTO_TEST_CASE(ConnectingWindow)
@@ -168,36 +168,36 @@ BOOST_AUTO_TEST_CASE(ConnectingWindow)
         ClientInterface& ci = wnd;
         boost::signals2::scoped_connection _ = wnd.onError.connect(onError);
         // Modal and doesn't react on right-click
-        BOOST_TEST(wnd.IsModal());
+        BOOST_TEST(wnd.isModal());
         BOOST_TEST(wnd.getCloseBehavior() == CloseBehavior::Custom);
-        ctrlPercent& progressBar = *wnd.GetCtrls<ctrlPercent>().at(0);
-        BOOST_TEST(!progressBar.IsVisible()); // Initially hidden
+        ctrlPercent& progressBar = *wnd.getCtrls<ctrlPercent>().at(0);
+        BOOST_TEST(!progressBar.isVisible()); // Initially hidden
         for(auto st :
             {ConnectState::Initiated, ConnectState::VerifyServer, ConnectState::QueryPw, ConnectState::QueryMapInfo})
         {
             ci.CI_NextConnectState(st);
-            BOOST_TEST(!progressBar.IsVisible()); // Still hidden
+            BOOST_TEST(!progressBar.isVisible()); // Still hidden
         }
         ci.CI_NextConnectState(ConnectState::ReceiveMap);
-        BOOST_TEST(progressBar.IsVisible()); // Shown
+        BOOST_TEST(progressBar.isVisible()); // Shown
         BOOST_TEST(progressBar.getPercentage() == 0u);
         ci.CI_MapPartReceived(499, 1000);
-        BOOST_TEST(progressBar.IsVisible());
+        BOOST_TEST(progressBar.isVisible());
         BOOST_TEST(progressBar.getPercentage() == 50u);
         ci.CI_MapPartReceived(1000, 1000);
-        BOOST_TEST(progressBar.IsVisible());
+        BOOST_TEST(progressBar.isVisible());
         BOOST_TEST(progressBar.getPercentage() == 100u);
         for(auto st : {ConnectState::VerifyMap, ConnectState::QueryServerName, ConnectState::QueryPlayerList,
                        ConnectState::QuerySettings})
         {
             ci.CI_NextConnectState(st);
-            BOOST_TEST(!progressBar.IsVisible()); // Hidden again
+            BOOST_TEST(!progressBar.isVisible()); // Hidden again
         }
         BOOST_TEST(!wnd.ShouldBeClosed());
         ci.CI_NextConnectState(ConnectState::Finished);
         BOOST_TEST(wnd.ShouldBeClosed());
         WINDOWMANAGER.Draw();
-        BOOST_TEST((dynamic_cast<dskGameLobby*>(WINDOWMANAGER.GetCurrentDesktop()) != nullptr));
+        BOOST_TEST((dynamic_cast<dskGameLobby*>(WINDOWMANAGER.getCurrentDesktop()) != nullptr));
     }
     {
         iwConnecting wnd(ServerType::Local, nullptr);
@@ -211,9 +211,9 @@ BOOST_AUTO_TEST_CASE(ConnectingWindow)
     {
         iwConnecting wnd(ServerType::Local, nullptr);
         // Clicking the button sends the onError signal (or if not set opens an error window) and closes the window
-        wnd.msgButtonClick(wnd.GetCtrls<ctrlButton>().at(0)->GetID());
+        wnd.msgButtonClick(wnd.getCtrls<ctrlButton>().at(0)->getID());
         BOOST_TEST(wnd.ShouldBeClosed());
-        BOOST_TEST((dynamic_cast<iwMsgbox*>(WINDOWMANAGER.GetTopMostWindow())));
+        BOOST_TEST((dynamic_cast<iwMsgbox*>(WINDOWMANAGER.getTopMostWindow())));
     }
 }
 
@@ -228,10 +228,10 @@ BOOST_AUTO_TEST_CASE(SaveAndRestoreMinimized)
         settings.isMinimized = false;
 
         IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-        BOOST_TEST(!wnd.IsMinimized());
-        BOOST_TEST(wnd.GetSize() == Extent(100, 100));
+        BOOST_TEST(!wnd.isMinimized());
+        BOOST_TEST(wnd.getSize() == Extent(100, 100));
 
-        wnd.SetMinimized(true);
+        wnd.setMinimized(true);
         BOOST_TEST(settings.isMinimized);
     }
 
@@ -239,10 +239,10 @@ BOOST_AUTO_TEST_CASE(SaveAndRestoreMinimized)
         settings.isMinimized = true;
 
         IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-        BOOST_TEST(wnd.IsMinimized());
-        BOOST_TEST(wnd.GetSize() != Extent(100, 100));
+        BOOST_TEST(wnd.isMinimized());
+        BOOST_TEST(wnd.getSize() != Extent(100, 100));
 
-        wnd.SetMinimized(false);
+        wnd.setMinimized(false);
         BOOST_TEST(!settings.isMinimized);
     }
 }
@@ -258,10 +258,10 @@ BOOST_AUTO_TEST_CASE(SaveAndRestorePinned)
         settings.isPinned = false;
 
         IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-        BOOST_TEST(!wnd.IsPinned());
-        BOOST_TEST(wnd.GetSize() == Extent(100, 100));
+        BOOST_TEST(!wnd.isPinned());
+        BOOST_TEST(wnd.getSize() == Extent(100, 100));
 
-        wnd.SetPinned();
+        wnd.setPinned();
         BOOST_TEST(settings.isPinned);
     }
 
@@ -269,9 +269,9 @@ BOOST_AUTO_TEST_CASE(SaveAndRestorePinned)
         settings.isPinned = true;
 
         IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-        BOOST_TEST(wnd.IsPinned());
+        BOOST_TEST(wnd.isPinned());
 
-        wnd.SetPinned(false);
+        wnd.setPinned(false);
         BOOST_TEST(!settings.isPinned);
     }
 }
@@ -291,13 +291,13 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Left title bar button closes window")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(4, 4));
-            const MouseCoords evLDownInsideWindow = makeLeftDown(wnd.GetPos() + wnd.GetSize() / 2);
+            const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(4, 4));
+            const MouseCoords evLDownInsideWindow = makeLeftDown(wnd.getPos() + wnd.getSize() / 2);
             const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
 
             // Only react when clicking the button not when moving the mouse to the button
             // while holding left mouse button
@@ -305,22 +305,22 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
             wnd.msgMouseMove(evLDown);
             wnd.msgLeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             // Similar when moving out of the button
             wnd.msgLeftDown(evLDown);
             wnd.msgMouseMove(evLDownInsideWindow);
             wnd.msgMouseMove(evLDown);
             wnd.msgLeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
 
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLUp);
             BOOST_TEST(wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             BOOST_TEST(!settings.isOpen);
             BOOST_TEST(!settings.isMinimized);
             BOOST_TEST(!settings.isPinned);
@@ -329,17 +329,17 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Double-click on the window title has no effect")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4));
+            const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(wnd.getSize().x / 2, 4));
             const MouseCoords evLDblClick = makeLeftDblClick(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLDblClick);
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             BOOST_TEST(settings.isOpen);
             BOOST_TEST(!settings.isMinimized);
             BOOST_TEST(!settings.isPinned);
@@ -349,17 +349,17 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Right title bar button minimizes window")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x, 0) + DrawPoint(-4, 4));
+            const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(wnd.getSize().x, 0) + DrawPoint(-4, 4));
             const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             BOOST_TEST(settings.isOpen);
             BOOST_TEST(settings.isMinimized);
             BOOST_TEST(!settings.isPinned);
@@ -374,17 +374,17 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Left title bar button closes window")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(4, 4));
+            const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(4, 4));
             const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLUp);
             BOOST_TEST(wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             BOOST_TEST(!settings.isOpen);
             BOOST_TEST(!settings.isMinimized);
             BOOST_TEST(!settings.isPinned);
@@ -393,17 +393,17 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Double-click on the window title minimizes")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x / 2, 4));
+            const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(wnd.getSize().x / 2, 4));
             const MouseCoords evLDblClick = makeLeftDblClick(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLDblClick);
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             BOOST_TEST(settings.isOpen);
             BOOST_TEST(settings.isMinimized);
             BOOST_TEST(!settings.isPinned);
@@ -414,17 +414,17 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
         BOOST_TEST_CONTEXT("Right title bar button pins window")
         {
             IngameWindow wnd(id, IngameWindow::posLastOrCenter, Extent(100, 100), "Test Window", nullptr);
-            const MouseCoords evLDown = makeLeftDown(wnd.GetPos() + DrawPoint(wnd.GetSize().x, 0) + DrawPoint(-4, 4));
+            const MouseCoords evLDown = makeLeftDown(wnd.getPos() + DrawPoint(wnd.getSize().x, 0) + DrawPoint(-4, 4));
             const MouseCoords evLUp = MouseCoords(evLDown.pos);
 
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(!wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(!wnd.isPinned());
             wnd.msgLeftDown(evLDown);
             wnd.msgLeftUp(evLUp);
             BOOST_TEST(!wnd.ShouldBeClosed());
-            BOOST_TEST(!wnd.IsMinimized());
-            BOOST_TEST(wnd.IsPinned());
+            BOOST_TEST(!wnd.isMinimized());
+            BOOST_TEST(wnd.isPinned());
             BOOST_TEST(settings.isOpen);
             BOOST_TEST(!settings.isMinimized);
             BOOST_TEST(settings.isPinned);
@@ -440,11 +440,11 @@ void WindowPositioning_testOne(IngameWindow& wnd, const char* context, const std
     {
         BOOST_TEST_CONTEXT("Before minimize/un-minimize") checkNormal();
 
-        wnd.SetMinimized(true);
+        wnd.setMinimized(true);
 
         BOOST_TEST_CONTEXT("Minimized") checkMinimized();
 
-        wnd.SetMinimized(false);
+        wnd.setMinimized(false);
 
         BOOST_TEST_CONTEXT("After minimize/un-minimize") checkNormal();
     }
@@ -455,7 +455,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
 {
     VIDEODRIVER.ResizeScreen(VideoMode(800, 600), DisplayMode::Windowed);
 
-    const auto renderSize = VIDEODRIVER.GetRenderSize();
+    const auto renderSize = VIDEODRIVER.getRenderSize();
 
     constexpr auto idPersisted = CGI_MINIMAP;
     constexpr auto idNonPersisted = CGI_OBSERVATION;
@@ -472,8 +472,8 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
     auto& settings = it->second;
 
     // Calculate minimized height
-    const auto minHeight = LOADER.GetImageN("resource", 42)->getHeight()    // title bar
-                           + LOADER.GetImageN("resource", 40)->getHeight(); // bottom bar
+    const auto minHeight = LOADER.getImageN("resource", 42)->getHeight()    // title bar
+                           + LOADER.getImageN("resource", 40)->getHeight(); // bottom bar
 
     BOOST_TEST_CONTEXT("Persisted window, fresh settings, posLastOrCenter")
     {
@@ -484,65 +484,65 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
         WindowPositioning_testOne(
           wnd, "Window should be centered",
           [&]() {
-              BOOST_TEST(wnd.GetPos() == (renderSize / 2 - wndSizeM / 2));
-              BOOST_TEST(wnd.GetPos() == settings.lastPos);
-              BOOST_TEST(wnd.GetPos() == settings.restorePos);
-              BOOST_TEST(wnd.GetSize() == wndSizeM);
+              BOOST_TEST(wnd.getPos() == (renderSize / 2 - wndSizeM / 2));
+              BOOST_TEST(wnd.getPos() == settings.lastPos);
+              BOOST_TEST(wnd.getPos() == settings.restorePos);
+              BOOST_TEST(wnd.getSize() == wndSizeM);
           },
           [&]() {
-              BOOST_TEST(wnd.GetPos() == settings.lastPos);
-              BOOST_TEST(wnd.GetPos() == settings.restorePos);
-              BOOST_TEST(wnd.GetPos() == (renderSize / 2 - wndSizeM / 2));
-              BOOST_TEST(wnd.GetSize() == Extent(wndSizeM.x, minHeight));
+              BOOST_TEST(wnd.getPos() == settings.lastPos);
+              BOOST_TEST(wnd.getPos() == settings.restorePos);
+              BOOST_TEST(wnd.getPos() == (renderSize / 2 - wndSizeM / 2));
+              BOOST_TEST(wnd.getSize() == Extent(wndSizeM.x, minHeight));
           });
 
         const auto restorePos = renderSize - offset; // new position is also the restorePos
         WindowPositioning_testOne(
           wnd, "Move window into bottom right corner, not connecting with the screen edges",
           [&]() {
-              wnd.SetPos(restorePos);
-              BOOST_TEST(wnd.GetPos() == restorePos);
-              BOOST_TEST(wnd.GetPos() == settings.lastPos);
-              BOOST_TEST(wnd.GetPos() == settings.restorePos);
-              BOOST_TEST(wnd.GetSize() == wndSizeM);
+              wnd.setPos(restorePos);
+              BOOST_TEST(wnd.getPos() == restorePos);
+              BOOST_TEST(wnd.getPos() == settings.lastPos);
+              BOOST_TEST(wnd.getPos() == settings.restorePos);
+              BOOST_TEST(wnd.getSize() == wndSizeM);
           },
           [&]() {
-              BOOST_TEST(wnd.GetPos() == restorePos);
-              BOOST_TEST(wnd.GetPos() == settings.lastPos);
-              BOOST_TEST(wnd.GetPos() == settings.restorePos);
-              BOOST_TEST(wnd.GetSize() == Extent(wndSizeM.x, minHeight));
+              BOOST_TEST(wnd.getPos() == restorePos);
+              BOOST_TEST(wnd.getPos() == settings.lastPos);
+              BOOST_TEST(wnd.getPos() == settings.restorePos);
+              BOOST_TEST(wnd.getSize() == Extent(wndSizeM.x, minHeight));
           });
 
         WindowPositioning_testOne(
           wnd, "Increase size, window connects with screen edges and should move",
           [&]() {
               wnd.Resize(wndSizeL);
-              BOOST_TEST(wnd.GetPos() == DrawPoint(renderSize - wndSizeL));
-              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(wnd.getPos() == DrawPoint(renderSize - wndSizeL));
+              BOOST_TEST(wnd.getPos() == settings.lastPos);
               BOOST_TEST(restorePos == settings.restorePos);
-              BOOST_TEST(wnd.GetSize() == wndSizeL);
+              BOOST_TEST(wnd.getSize() == wndSizeL);
           },
           [&]() {
-              BOOST_TEST(wnd.GetPos() == renderSize - DrawPoint(wndSizeL.x, minHeight));
-              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(wnd.getPos() == renderSize - DrawPoint(wndSizeL.x, minHeight));
+              BOOST_TEST(wnd.getPos() == settings.lastPos);
               BOOST_TEST(restorePos == settings.restorePos);
-              BOOST_TEST(wnd.GetSize() == Extent(wndSizeL.x, minHeight));
+              BOOST_TEST(wnd.getSize() == Extent(wndSizeL.x, minHeight));
           });
 
         WindowPositioning_testOne(
           wnd, "Decrease size, window no longer connects with screen edges and should move to restorePos",
           [&]() {
               wnd.Resize(wndSizeS);
-              BOOST_TEST(wnd.GetPos() == restorePos);
-              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(wnd.getPos() == restorePos);
+              BOOST_TEST(wnd.getPos() == settings.lastPos);
               BOOST_TEST(restorePos == settings.restorePos);
-              BOOST_TEST(wnd.GetSize() == wndSizeS);
+              BOOST_TEST(wnd.getSize() == wndSizeS);
           },
           [&]() {
-              BOOST_TEST(wnd.GetPos() == restorePos);
-              BOOST_TEST(wnd.GetPos() == settings.lastPos);
+              BOOST_TEST(wnd.getPos() == restorePos);
+              BOOST_TEST(wnd.getPos() == settings.lastPos);
               BOOST_TEST(restorePos == settings.restorePos);
-              BOOST_TEST(wnd.GetSize() == Extent(wndSizeS.x, minHeight));
+              BOOST_TEST(wnd.getSize() == Extent(wndSizeS.x, minHeight));
           });
     }
 
@@ -552,44 +552,44 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
         constexpr auto cursorOffset = DrawPoint(-20, wndSizeM.y / 2);
         const auto restorePos = renderSize - offset; // initial window position is also the restorePos
 
-        VIDEODRIVER.SetMousePos(restorePos + cursorOffset);
-        BOOST_REQUIRE(VIDEODRIVER.GetMousePos() == (restorePos + cursorOffset));
+        VIDEODRIVER.setMousePos(restorePos + cursorOffset);
+        BOOST_REQUIRE(VIDEODRIVER.getMousePos() == (restorePos + cursorOffset));
 
         IngameWindow wnd(idNonPersisted, IngameWindow::posAtMouse, wndSizeM, "Test Window", nullptr);
 
         WindowPositioning_testOne(
           wnd, "Window should be at cursor",
           [&]() {
-              BOOST_TEST(wnd.GetPos() == restorePos);
-              BOOST_TEST(wnd.GetSize() == wndSizeM);
+              BOOST_TEST(wnd.getPos() == restorePos);
+              BOOST_TEST(wnd.getSize() == wndSizeM);
           },
           [&]() {
-              BOOST_TEST(wnd.GetPos() == restorePos);
-              BOOST_TEST(wnd.GetSize() == Extent(wndSizeM.x, minHeight));
+              BOOST_TEST(wnd.getPos() == restorePos);
+              BOOST_TEST(wnd.getSize() == Extent(wndSizeM.x, minHeight));
           });
 
         WindowPositioning_testOne(
           wnd, "Increase size, window connects with screen edges and should move",
           [&]() {
               wnd.Resize(wndSizeL);
-              BOOST_TEST(wnd.GetPos() == DrawPoint(renderSize - wndSizeL));
-              BOOST_TEST(wnd.GetSize() == wndSizeL);
+              BOOST_TEST(wnd.getPos() == DrawPoint(renderSize - wndSizeL));
+              BOOST_TEST(wnd.getSize() == wndSizeL);
           },
           [&]() {
-              BOOST_TEST(wnd.GetPos() == renderSize - DrawPoint(wndSizeL.x, minHeight));
-              BOOST_TEST(wnd.GetSize() == Extent(wndSizeL.x, minHeight));
+              BOOST_TEST(wnd.getPos() == renderSize - DrawPoint(wndSizeL.x, minHeight));
+              BOOST_TEST(wnd.getSize() == Extent(wndSizeL.x, minHeight));
           });
 
         WindowPositioning_testOne(
           wnd, "Decrease size, window no longer connects with screen edges and should move to restorePos",
           [&]() {
               wnd.Resize(wndSizeS);
-              BOOST_TEST(wnd.GetPos() == restorePos);
-              BOOST_TEST(wnd.GetSize() == wndSizeS);
+              BOOST_TEST(wnd.getPos() == restorePos);
+              BOOST_TEST(wnd.getSize() == wndSizeS);
           },
           [&]() {
-              BOOST_TEST(wnd.GetPos() == restorePos);
-              BOOST_TEST(wnd.GetSize() == Extent(wndSizeS.x, minHeight));
+              BOOST_TEST(wnd.getPos() == restorePos);
+              BOOST_TEST(wnd.getSize() == Extent(wndSizeS.x, minHeight));
           });
     }
 }
@@ -606,37 +606,37 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
       std::make_unique<IngameWindow>(0, DrawPoint(200, 480), Extent(100, 100), "Test Window 2", nullptr)));
 
     {
-        const DrawPoint mousePosRel = DrawPoint(wnd2.GetSize().x / 2, 4);
-        const MouseCoords evLDown = makeLeftDown(wnd2.GetPos() + mousePosRel);
+        const DrawPoint mousePosRel = DrawPoint(wnd2.getSize().x / 2, 4);
+        const MouseCoords evLDown = makeLeftDown(wnd2.getPos() + mousePosRel);
         wnd2.msgLeftDown(evLDown);
 
         {
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-80, 0));
-            VIDEODRIVER.SetMousePos(mc.pos);
+            VIDEODRIVER.setMousePos(mc.pos);
             wnd2.msgMouseMove(mc);
-            BOOST_TEST(wnd2.GetPos() == DrawPoint(120, 480)); // Not in snap range yet
-            BOOST_TEST(VIDEODRIVER.GetMousePos() == (wnd2.GetPos() + mousePosRel));
+            BOOST_TEST(wnd2.getPos() == DrawPoint(120, 480)); // Not in snap range yet
+            BOOST_TEST(VIDEODRIVER.getMousePos() == (wnd2.getPos() + mousePosRel));
         }
 
         {
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 0));
-            VIDEODRIVER.SetMousePos(mc.pos);
+            VIDEODRIVER.setMousePos(mc.pos);
             wnd2.msgMouseMove(mc);
-            BOOST_TEST(wnd2.GetPos() == DrawPoint(100, 480)); // In snap range
-            BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);
+            BOOST_TEST(wnd2.getPos() == DrawPoint(100, 480)); // In snap range
+            BOOST_TEST(VIDEODRIVER.getMousePos() == mc.pos);
             // Cursor position is off by snap offset
-            BOOST_TEST((VIDEODRIVER.GetMousePos() - (wnd2.GetPos() + mousePosRel)) == DrawPoint(10, 0));
+            BOOST_TEST((VIDEODRIVER.getMousePos() - (wnd2.getPos() + mousePosRel)) == DrawPoint(10, 0));
         }
 
         {
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 30));
             // Reset mouse position to ensure it's properly updated in Msg_MouseMove()
-            VIDEODRIVER.SetMousePos(Position(0, 0));
+            VIDEODRIVER.setMousePos(Position(0, 0));
             wnd2.msgMouseMove(mc);
-            BOOST_TEST(wnd2.GetPos() == DrawPoint(100, 500)); // Still in snap range
-            BOOST_TEST(VIDEODRIVER.GetMousePos() == Position(mc.pos.x, wnd2.GetPos().y + mousePosRel.y));
+            BOOST_TEST(wnd2.getPos() == DrawPoint(100, 500)); // Still in snap range
+            BOOST_TEST(VIDEODRIVER.getMousePos() == Position(mc.pos.x, wnd2.getPos().y + mousePosRel.y));
             // Cursor position is off by snap offset
-            BOOST_TEST((VIDEODRIVER.GetMousePos() - (wnd2.GetPos() + mousePosRel)) == DrawPoint(10, 0));
+            BOOST_TEST((VIDEODRIVER.getMousePos() - (wnd2.getPos() + mousePosRel)) == DrawPoint(10, 0));
         }
     }
 
@@ -645,34 +645,34 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
         auto& wnd3 = static_cast<IngameWindow&>(WINDOWMANAGER.Show(
           std::make_unique<IngameWindow>(0, DrawPoint(200, 0), Extent(100, 100), "Test Window 3", nullptr)));
 
-        const DrawPoint mousePosRel = DrawPoint(wnd3.GetSize().x / 2, 4);
-        const MouseCoords evLDown = makeLeftDown(wnd3.GetPos() + mousePosRel);
+        const DrawPoint mousePosRel = DrawPoint(wnd3.getSize().x / 2, 4);
+        const MouseCoords evLDown = makeLeftDown(wnd3.getPos() + mousePosRel);
         wnd3.msgLeftDown(evLDown);
 
         {
-            wnd1.SetPos(DrawPoint(0, 0));
-            wnd2.SetPos(DrawPoint(5, 0));
+            wnd1.setPos(DrawPoint(0, 0));
+            wnd2.setPos(DrawPoint(5, 0));
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 0));
-            VIDEODRIVER.SetMousePos(mc.pos);
+            VIDEODRIVER.setMousePos(mc.pos);
             wnd3.msgMouseMove(mc);
             // In snap range of wnd1 and wnd2, but closest to wnd2
-            BOOST_TEST(wnd3.GetPos() == DrawPoint(wnd2.GetPos().x + wnd2.GetSize().x, 0));
-            BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);
+            BOOST_TEST(wnd3.getPos() == DrawPoint(wnd2.getPos().x + wnd2.getSize().x, 0));
+            BOOST_TEST(VIDEODRIVER.getMousePos() == mc.pos);
             // Cursor position is off by snap offset
-            BOOST_TEST((VIDEODRIVER.GetMousePos() - (wnd3.GetPos() + mousePosRel)) == DrawPoint(5, 0));
+            BOOST_TEST((VIDEODRIVER.getMousePos() - (wnd3.getPos() + mousePosRel)) == DrawPoint(5, 0));
         }
 
         {
-            wnd1.SetPos(DrawPoint(5, 0));
-            wnd2.SetPos(DrawPoint(0, 0));
+            wnd1.setPos(DrawPoint(5, 0));
+            wnd2.setPos(DrawPoint(0, 0));
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 0));
-            VIDEODRIVER.SetMousePos(mc.pos);
+            VIDEODRIVER.setMousePos(mc.pos);
             wnd3.msgMouseMove(mc);
             // In snap range of wnd1 and wnd2, but closest to wnd1
-            BOOST_TEST(wnd3.GetPos() == DrawPoint(wnd1.GetPos().x + wnd1.GetSize().x, 0));
-            BOOST_TEST(VIDEODRIVER.GetMousePos() == mc.pos);
+            BOOST_TEST(wnd3.getPos() == DrawPoint(wnd1.getPos().x + wnd1.getSize().x, 0));
+            BOOST_TEST(VIDEODRIVER.getMousePos() == mc.pos);
             // Cursor position is off by snap offset
-            BOOST_TEST((VIDEODRIVER.GetMousePos() - (wnd3.GetPos() + mousePosRel)) == DrawPoint(5, 0));
+            BOOST_TEST((VIDEODRIVER.getMousePos() - (wnd3.getPos() + mousePosRel)) == DrawPoint(5, 0));
         }
     }
 }

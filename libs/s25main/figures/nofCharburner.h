@@ -25,14 +25,14 @@ class nofCharburner : public nofFarmhand
 private:
     void DrawWorking(DrawPoint drawPt) override;
     /// Has no ID in jobs.bob or carrier.bob
-    [[noreturn]] unsigned short GetCarryID() const override;
+    [[noreturn]] unsigned short getCarryID() const override;
 
     void WorkStarted() override;
     void WorkFinished() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
-    PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const override;
-    using nofFarmhand::GetPointQuality;
+    PointQuality getPointQuality(MapPoint pt, bool isBeforeWork) const override;
+    using nofFarmhand::getPointQuality;
 
     /// Inform derived class about the start of the whole working process (at the beginning when walking out of the
     /// house)
@@ -53,5 +53,5 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofCharburner; }
+    GO_Type getGOT() const final { return GO_Type::NofCharburner; }
 };

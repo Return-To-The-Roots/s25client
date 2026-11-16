@@ -60,9 +60,9 @@ public:
 
     /// Get current maximum rank for soldiers
     /// 0 = Private, 1 = Private First Class, ...
-    unsigned GetMaxMilitaryRank() const;
+    unsigned getMaxMilitaryRank() const;
     /// Returns number of scouts required for exploration expeditions
-    unsigned GetNumScoutsExpedition() const;
+    unsigned getNumScoutsExpedition() const;
 
 private:
     struct AddonWithState

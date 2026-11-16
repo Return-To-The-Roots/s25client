@@ -11,7 +11,7 @@ nobStorehouse::nobStorehouse(const MapPoint pos, const unsigned char player, con
 {
     // Post versenden
     SendPostMessage(player, std::make_unique<PostMsgWithBuilding>(
-                              GetEvMgr().GetCurrentGF(), _("New storehouse finished"), PostCategory::Economy, *this));
+                              getEvMgr().getCurrentGF(), _("New storehouse finished"), PostCategory::Economy, *this));
 }
 
 nobStorehouse::nobStorehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id) {}

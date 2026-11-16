@@ -37,13 +37,13 @@ const std::vector<Direction>* ShipPathData::findCachedPath(MapPoint start, MapPo
     {
         if(e.start == start && e.dest == dest)
         {
-            const_cast<PathEntry&>(e).lastUse = world_.GetEvMgr().GetCurrentGF();
+            const_cast<PathEntry&>(e).lastUse = world_.getEvMgr().getCurrentGF();
             reversed = false;
             return &e.route;
         }
         if(e.start == dest && e.dest == start)
         {
-            const_cast<PathEntry&>(e).lastUse = world_.GetEvMgr().GetCurrentGF();
+            const_cast<PathEntry&>(e).lastUse = world_.getEvMgr().getCurrentGF();
             reversed = true;
             return &e.route;
         }
@@ -53,7 +53,7 @@ const std::vector<Direction>* ShipPathData::findCachedPath(MapPoint start, MapPo
 
 void ShipPathData::addToCache(MapPoint start, MapPoint dest, std::vector<Direction> route)
 {
-    PathEntry entry{start, dest, world_.GetEvMgr().GetCurrentGF(), std::move(route)};
+    PathEntry entry{start, dest, world_.getEvMgr().getCurrentGF(), std::move(route)};
     if(cachedPaths_.size() < cachedPaths_.max_size())
         cachedPaths_.emplace_back(std::move(entry));
     else
@@ -67,14 +67,14 @@ void ShipPathData::addToCache(MapPoint start, MapPoint dest, std::vector<Directi
 
 void ShipPathData::initHarborConnections()
 {
-    harborConnections_.resize(world_.GetNumHarborPoints());
-    for(const auto startHbId : helpers::idRange<HarborId>(world_.GetNumHarborPoints()))
+    harborConnections_.resize(world_.getNumHarborPoints());
+    for(const auto startHbId : helpers::idRange<HarborId>(world_.getNumHarborPoints()))
     {
         auto& curConnections = harborConnections_[startHbId];
         std::vector<HarborPos::Neighbor> neighbors;
         for(const auto dir : helpers::EnumRange<ShipDirection>{})
         {
-            const auto& curNbs = world_.GetHarborNeighbors(startHbId, dir);
+            const auto& curNbs = world_.getHarborNeighbors(startHbId, dir);
             neighbors.insert(neighbors.end(), curNbs.begin(), curNbs.end());
         }
         for(const auto& nb : neighbors)
@@ -85,8 +85,8 @@ void ShipPathData::initHarborConnections()
             RTTR_Assert(!helpers::contains_if(curConnections, HarborConnection::Matcher{nb.id, nb.sea}));
             curConnections.push_back(HarborConnection{nb.id, nb.sea, {}});
             unsigned len = 0;
-            const auto startPoint = world_.GetCoastalPoint(startHbId, nb.sea);
-            const auto nbPoint = world_.GetCoastalPoint(nb.id, nb.sea);
+            const auto startPoint = world_.getCoastalPoint(startHbId, nb.sea);
+            const auto nbPoint = world_.getCoastalPoint(nb.id, nb.sea);
             const bool found =
               (startPoint == nbPoint)
               || world_.FindShipPath(startPoint, nbPoint, nb.distance, &curConnections.back().route, &len);

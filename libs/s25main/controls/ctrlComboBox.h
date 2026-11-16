@@ -22,12 +22,12 @@ public:
     void AddItem(const std::string& text);
     void DeleteAllItems();
     /// Set selection to an item if within bounds. Does not trigger a notification.
-    void SetSelection(unsigned selection);
-    const std::optional<unsigned>& GetSelection() const { return GetCtrl<ctrlList>(0)->GetSelection(); };
-    unsigned GetNumItems() const { return GetCtrl<ctrlList>(0)->GetNumLines(); }
-    const std::string& GetText(unsigned item) const { return GetCtrl<ctrlList>(0)->GetItemText(item); }
-    void SetText(unsigned item, const std::string& text) { GetCtrl<ctrlList>(0)->SetItemText(item, text); }
-    std::optional<std::string> GetSelectedText() const;
+    void setSelection(unsigned selection);
+    const std::optional<unsigned>& getSelection() const { return getCtrl<ctrlList>(0)->getSelection(); };
+    unsigned getNumItems() const { return getCtrl<ctrlList>(0)->getNumLines(); }
+    const std::string& getText(unsigned item) const { return getCtrl<ctrlList>(0)->getItemText(item); }
+    void setText(unsigned item, const std::string& text) { getCtrl<ctrlList>(0)->setItemText(item, text); }
+    std::optional<std::string> getSelectedText() const;
 
     void msgPaintAfter() override;
     bool msgMouseMove(const MouseCoords& mc) override;
@@ -43,7 +43,7 @@ protected:
     void Draw_() override;
     /// Show or hide the list.
     void ShowList(bool show);
-    Rect GetFullDrawRect(const ctrlList* list);
+    Rect getFullDrawRect(const ctrlList* list);
 
 private:
     TextureColor tc;

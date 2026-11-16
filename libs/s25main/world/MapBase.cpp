@@ -29,7 +29,7 @@ void MapBase::Resize(const MapExtent& newSize)
     size_ = newSize;
 }
 
-MapPoint MapBase::GetNeighbour(const MapPoint pt, const Direction dir) const
+MapPoint MapBase::getNeighbour(const MapPoint pt, const Direction dir) const
 {
     /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
     Modifications for the dirs:
@@ -83,26 +83,26 @@ MapPoint MapBase::GetNeighbour(const MapPoint pt, const Direction dir) const
     return res;
 }
 
-MapPoint MapBase::GetNeighbour2(const MapPoint pt, unsigned dir) const
+MapPoint MapBase::getNeighbour2(const MapPoint pt, unsigned dir) const
 {
-    return MakeMapPoint(::GetNeighbour2(Position(pt), dir));
+    return MakeMapPoint(::getNeighbour2(Position(pt), dir));
 }
 
-std::vector<MapPoint> MapBase::GetAllNeighboursUnion(const std::vector<MapPoint>& points) const
+std::vector<MapPoint> MapBase::getAllNeighboursUnion(const std::vector<MapPoint>& points) const
 {
     std::set<MapPoint, MapPointLess> ptsToReturn;
 
     for(const MapPoint& curMapPt : points)
     {
         ptsToReturn.insert(curMapPt);
-        const auto neighbours = GetNeighbours(curMapPt);
+        const auto neighbours = getNeighbours(curMapPt);
         ptsToReturn.insert(neighbours.begin(), neighbours.end());
     }
 
     return std::vector<MapPoint>(ptsToReturn.begin(), ptsToReturn.end());
 }
 
-helpers::EnumArray<MapPoint, Direction> MapBase::GetNeighbours(const MapPoint pt) const
+helpers::EnumArray<MapPoint, Direction> MapBase::getNeighbours(const MapPoint pt) const
 {
     const MapCoord yplus1 = pt.y == size_.y - 1 ? 0 : pt.y + 1;
     const MapCoord yminus1 = (pt.y == 0 ? size_.y : pt.y) - 1;

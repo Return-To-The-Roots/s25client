@@ -14,5 +14,5 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent, unsigned id, const DrawPoint&
 
 void ctrlVarDeepening::DrawContent() const
 {
-    font->Draw(GetDrawPos() + GetSize() / 2, GetFormatedText(), FontStyle::CENTER | FontStyle::VCENTER, color_);
+    font->Draw(getDrawPos() + getSize() / 2, getFormatedText(), FontStyle::CENTER | FontStyle::VCENTER, color_);
 }

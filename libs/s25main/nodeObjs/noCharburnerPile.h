@@ -44,15 +44,15 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Charburnerpile; }
+    GO_Type getGOT() const final { return GO_Type::Charburnerpile; }
 
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;
 
-    BlockingManner GetBM() const override { return BlockingManner::NothingAround; }
+    BlockingManner getBM() const override { return BlockingManner::NothingAround; }
 
     /// Get the current state of the charburner pile
-    State GetState() const { return state; }
+    State getState() const { return state; }
 
     /// Charburner has worked on it --> Goto next step
     void NextStep();
@@ -64,5 +64,5 @@ public:
         Wood,
         Grain
     };
-    WareType GetNeededWareType() const;
+    WareType getNeededWareType() const;
 };

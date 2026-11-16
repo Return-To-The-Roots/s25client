@@ -97,7 +97,7 @@ void WaitForEnter()
 std::string GetProgramDescription()
 {
     std::stringstream s;
-    s << rttr::version::GetTitle() << " v" << rttr::version::GetVersion() << "-" << rttr::version::GetRevision() << "\n"
+    s << rttr::version::getTitle() << " v" << rttr::version::getVersion() << "-" << rttr::version::getRevision() << "\n"
       << "Compiled with " << System::getCompilerName() << " for " << System::getOSName();
     return s.str();
 }
@@ -173,7 +173,7 @@ void showCrashMessage()
 
 void handleException(void* pCtx = nullptr) noexcept
 {
-    const auto stacktrace = DebugInfo::GetStackTrace(pCtx);
+    const auto stacktrace = DebugInfo::getStackTrace(pCtx);
     try
     {
         LogTarget target = (LOG.getFileWriter()) ? LogTarget::FileAndStderr : LogTarget::Stderr;

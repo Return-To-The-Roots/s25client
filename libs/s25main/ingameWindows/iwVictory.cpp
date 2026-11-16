@@ -22,25 +22,25 @@ enum
 
 iwVictory::iwVictory(const std::vector<std::string>& winnerNames)
     : IngameWindow(CGI_VICTORY, IngameWindow::posLastOrCenter, Extent(240, 240), _("End of game"),
-                   LOADER.GetImageN("io", 5))
+                   LOADER.getImageN("io", 5))
 {
     AddText(ID_TITLE, DrawPoint(120, 40), winnerNames.size() > 1u ? _("The winners:") : _("The winner:"), COLOR_YELLOW,
             FontStyle::CENTER, NormalFont);
     auto* names = AddMultiline(ID_NAMES, DrawPoint(0, 70), Extent(800, 600), TextureColor::Invisible, NormalFont);
-    names->SetNumVisibleLines(winnerNames.size());
+    names->setNumVisibleLines(winnerNames.size());
     names->ShowBackground(false);
-    names->SetScrollBarAllowed(false);
+    names->setScrollBarAllowed(false);
     for(const auto& name : winnerNames)
         names->AddString(name, COLOR_YELLOW);
-    const auto txtBounds = Rect(names->GetPos(), names->GetContentSize());
-    Extent iwSize = GetIwSize();
+    const auto txtBounds = Rect(names->getPos(), names->getContentSize());
+    Extent iwSize = getIwSize();
     if(iwSize.x + 20u < txtBounds.getSize().x)
         iwSize.x = txtBounds.getSize().x + 20u;
     if(static_cast<int>(iwSize.y + 60) < txtBounds.bottom)
         iwSize.y = txtBounds.bottom + 60u;
-    if(iwSize != GetIwSize())
-        SetIwSize(iwSize);
-    names->SetPos(DrawPoint((GetSize().x - txtBounds.getSize().x) / 2, names->GetPos().y));
+    if(iwSize != getIwSize())
+        setIwSize(iwSize);
+    names->setPos(DrawPoint((getSize().x - txtBounds.getSize().x) / 2, names->getPos().y));
     int btPosY = std::max(170, txtBounds.bottom + 20);
     AddTextButton(ID_CONTINUE, DrawPoint(50, btPosY), Extent(140, 20), TextureColor::Grey, _("Continue game"),
                   NormalFont);

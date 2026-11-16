@@ -28,14 +28,14 @@ void nofVintner::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 91)
     {
-        LOADER.GetPlayerImage("wine_bobs", bobIndex[BobTypes::VINTNER_WORK_WINDOW] + (now_id) % 8)
-          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     world->GetPlayer(workplace->GetPlayer()).color);
+        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::VINTNER_WORK_WINDOW] + (now_id) % 8)
+          ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+                     world->getPlayer(workplace->getPlayer()).color);
 
         // Play rowing boat sound
         if(now_id % 8 == 3)
         {
-            world->GetSoundMgr().playNOSound(81, *this, now_id);
+            world->getSoundMgr().playNOSound(81, *this, now_id);
             was_sounding = true;
         }
     }
@@ -48,7 +48,7 @@ void nofVintner::DrawWorking(DrawPoint drawPt)
 #    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
 #endif
 
-unsigned short nofVintner::GetCarryID() const
+unsigned short nofVintner::getCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }

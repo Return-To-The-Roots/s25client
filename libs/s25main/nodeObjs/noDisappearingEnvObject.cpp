@@ -15,7 +15,7 @@ noDisappearingEnvObject::noDisappearingEnvObject(const MapPoint pos, const unsig
                                                  const unsigned add_var_living_time)
     : noCoordBase(NodalObjectType::Environment, pos), disappearing(false)
 {
-    dead_event = GetEvMgr().AddEvent(this, living_time + RANDOM_RAND(add_var_living_time));
+    dead_event = getEvMgr().AddEvent(this, living_time + RANDOM_RAND(add_var_living_time));
 }
 
 void noDisappearingEnvObject::Serialize(SerializedGameData& sgd) const
@@ -30,7 +30,7 @@ noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData& sgd, const 
     : noCoordBase(sgd, obj_id), disappearing(sgd.PopBool()), dead_event(sgd.PopEvent())
 {}
 
-unsigned noDisappearingEnvObject::GetDrawColor() const
+unsigned noDisappearingEnvObject::getDrawColor() const
 {
     if(disappearing)
     {
@@ -40,7 +40,7 @@ unsigned noDisappearingEnvObject::GetDrawColor() const
         return 0xFFFFFFFF;
 }
 
-unsigned noDisappearingEnvObject::GetDrawShadowColor() const
+unsigned noDisappearingEnvObject::getDrawShadowColor() const
 {
     if(disappearing)
     {
@@ -54,25 +54,25 @@ void noDisappearingEnvObject::HandleEvent(const unsigned /*id*/)
 {
     if(disappearing)
     {
-        RTTR_Assert(world->GetNode(pos).obj == this);
-        world->SetNO(pos, nullptr);
-        GetEvMgr().AddToKillList(this);
+        RTTR_Assert(world->getNode(pos).obj == this);
+        world->setNO(pos, nullptr);
+        getEvMgr().AddToKillList(this);
         dead_event = nullptr;
     } else
     {
         disappearing = true;
         // Remove after some time fading out
-        dead_event = GetEvMgr().AddEvent(this, 30, 1);
+        dead_event = getEvMgr().AddEvent(this, 30, 1);
     }
 }
 
 void noDisappearingEnvObject::Destroy()
 {
     // Remove from map if still present
-    if(world->GetNode(pos).obj == this)
-        world->SetNO(pos, nullptr);
+    if(world->getNode(pos).obj == this)
+        world->setNO(pos, nullptr);
 
-    GetEvMgr().RemoveEvent(dead_event);
+    getEvMgr().RemoveEvent(dead_event);
 
     noCoordBase::Destroy();
 }

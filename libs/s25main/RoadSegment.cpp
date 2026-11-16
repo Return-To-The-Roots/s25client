@@ -25,7 +25,7 @@ RoadSegment::RoadSegment(const RoadType rt, noRoadNode* const f1, noRoadNode* co
 RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
     : GameObject(sgd, obj_id), rt(sgd.Pop<RoadType>()), f1(sgd.PopObject<noRoadNode>()), f2(sgd.PopObject<noRoadNode>())
 {
-    if(sgd.GetGameDataVersion() < 7)
+    if(sgd.getGameDataVersion() < 7)
         route.resize(sgd.PopUnsignedShort());
     else
         helpers::popContainer(sgd, route);
@@ -33,15 +33,15 @@ RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
     carriers_[0] = sgd.PopObject<nofCarrier>(GO_Type::NofCarrier);
     carriers_[1] = sgd.PopObject<nofCarrier>(GO_Type::NofCarrier);
 
-    if(sgd.GetGameDataVersion() < 7)
+    if(sgd.getGameDataVersion() < 7)
         helpers::popContainer(sgd, route, true);
 
     // tell the noRoadNodes about our existance
-    f1->SetRoute(route.front(), this);
-    f2->SetRoute(route.back() + 3u, this);
+    f1->setRoute(route.front(), this);
+    f2->setRoute(route.back() + 3u, this);
 }
 
-bool RoadSegment::GetNodeID(const noRoadNode& rn) const
+bool RoadSegment::getNodeID(const noRoadNode& rn) const
 {
     RTTR_Assert(&rn == f1 || &rn == f2);
     // Return true if it is the 2nd node
@@ -52,9 +52,9 @@ void RoadSegment::Destroy()
 {
     // This can be the road segment from the flag to the building (always in this order!)
     // Those are not considered "roads" and therefore never registered
-    RTTR_Assert(f1->GetGOT() == GO_Type::Flag);
-    if(f2->GetGOT() == GO_Type::Flag)
-        world->GetPlayer(f1->GetPlayer()).DeleteRoad(this);
+    RTTR_Assert(f1->getGOT() == GO_Type::Flag);
+    if(f2->getGOT() == GO_Type::Flag)
+        world->getPlayer(f1->getPlayer()).DeleteRoad(this);
 
     if(carriers_[0])
         carriers_[0]->LostWork();
@@ -64,17 +64,17 @@ void RoadSegment::Destroy()
     if(!route.empty())
     {
         // Tell all characters on this road they lost their jobs
-        MapPoint pt = f1->GetPos();
+        MapPoint pt = f1->getPos();
 
         for(unsigned short i = 0; i < route.size() + 1; ++i)
         {
             // Figuren sammeln
-            for(noBase& object : world->GetFigures(pt))
+            for(noBase& object : world->getFigures(pt))
             {
-                if(object.GetType() == NodalObjectType::Figure)
+                if(object.getType() == NodalObjectType::Figure)
                 {
                     auto& figure = static_cast<noFigure&>(object);
-                    if(figure.GetCurrentRoad() == this)
+                    if(figure.getCurrentRoad() == this)
                     {
                         figure.Abrogate();
                         figure.StartWandering();
@@ -86,7 +86,7 @@ void RoadSegment::Destroy()
 
             if(i != route.size())
             {
-                pt = world->GetNeighbour(pt, route[i]);
+                pt = world->getNeighbour(pt, route[i]);
             }
         }
 
@@ -117,13 +117,13 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
 
     // find the place where the road is cut ( = length of the first section )
     unsigned length1, length2;
-    MapPoint t = f1->GetPos();
+    MapPoint t = f1->getPos();
     for(length1 = 0; length1 < route.size(); ++length1)
     {
-        if(t == splitflag->GetPos())
+        if(t == splitflag->getPos())
             break;
 
-        t = world->GetNeighbour(t, route[length1]);
+        t = world->getNeighbour(t, route[length1]);
     }
 
     length2 = this->route.size() - length1;
@@ -143,36 +143,36 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
     // f1 = f1;
     f2 = splitflag;
 
-    f1->SetRoute(route.front(), this);
-    splitflag->SetRoute(route.back() + 3u, this);
+    f1->setRoute(route.front(), this);
+    splitflag->setRoute(route.back() + 3u, this);
 
     // 2nd section from this F to F2
 
-    splitflag->SetRoute(second->route.front(), second);
-    second->f2->SetRoute(second->route.back() + 3u, second);
+    splitflag->setRoute(second->route.front(), second);
+    second->f2->setRoute(second->route.back() + 3u, second);
 
     // Notify all characters on the road
-    t = f1->GetPos();
+    t = f1->getPos();
 
     for(unsigned short i = 0; i < old_route.size() + 1; ++i)
     {
-        for(noBase& object : world->GetFigures(t))
+        for(noBase& object : world->getFigures(t))
         {
-            if(object.GetType() == NodalObjectType::Figure)
+            if(object.getType() == NodalObjectType::Figure)
             {
                 auto& figure = static_cast<noFigure&>(object);
-                if(figure.GetCurrentRoad() == this)
+                if(figure.getCurrentRoad() == this)
                     figure.CorrectSplitData(second);
             }
         }
 
         if(i != old_route.size())
         {
-            t = world->GetNeighbour(t, old_route[i]);
+            t = world->getNeighbour(t, old_route[i]);
         }
     }
 
-    world->GetPlayer(f1->GetPlayer()).AddRoad(second);
+    world->getPlayer(f1->getPlayer()).AddRoad(second);
 
     for(unsigned char i = 0; i < 2; ++i)
     {
@@ -181,7 +181,7 @@ void RoadSegment::SplitRoad(noFlag* splitflag)
         else if(i == 0)
             // If road was unoccupied before then add 2nd part to the unoccupied roads
             // (1st is already included)
-            world->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(*second);
+            world->getPlayer(f1->getPlayer()).FindCarrierForRoad(*second);
     }
 }
 
@@ -195,9 +195,9 @@ bool RoadSegment::AreWareJobs(const bool flag, CarrierType ct, const bool take_w
 
     // Anzahl der Waren, die getragen werden wollen, ermitteln
     if(flag)
-        jobs_count = static_cast<noFlag*>(f2)->GetNumWaresForRoad((route.back() + 3u));
+        jobs_count = static_cast<noFlag*>(f2)->getNumWaresForRoad((route.back() + 3u));
     else
-        jobs_count = static_cast<noFlag*>(f1)->GetNumWaresForRoad(route.front());
+        jobs_count = static_cast<noFlag*>(f1)->getNumWaresForRoad(route.front());
 
     // Nur eine Ware da --> evtl läuft schon ein anderer Träger/Esel hin, nur wo Esel und Träger da sind
     // Wenn der Träger nun natürlich schon da ist, kann er die mitnehmen
@@ -206,7 +206,7 @@ bool RoadSegment::AreWareJobs(const bool flag, CarrierType ct, const bool take_w
         // anderen Esel ermitteln
         unsigned otherCarrier = (ct == CarrierType::Donkey) ? 0 : 1;
 
-        switch(carriers_[otherCarrier]->GetCarrierState())
+        switch(carriers_[otherCarrier]->getCarrierState())
         {
             default: break;
             case CarrierState::FetchWare:
@@ -215,7 +215,7 @@ bool RoadSegment::AreWareJobs(const bool flag, CarrierType ct, const bool take_w
             case CarrierState::GoBackFromFlag:
             {
                 // Läuft der in die Richtung, holt eine Ware bzw. ist schon fast da, braucht der hier nicht hinlaufen
-                if(carriers_[otherCarrier]->GetRoadDir() == !flag)
+                if(carriers_[otherCarrier]->getRoadDir() == !flag)
                     return false;
             }
             break;
@@ -224,8 +224,8 @@ bool RoadSegment::AreWareJobs(const bool flag, CarrierType ct, const bool take_w
             {
                 // Wenn an die Flagge ein Gebäude angrenzt und der Träger da was reinträgt, kann der auch die Ware
                 // gleich mitnehmen, der zweite muss hier also nicht kommen
-                if((carriers_[otherCarrier]->GetCurrentRoad()->f1 == f1 && !flag)
-                   || (carriers_[otherCarrier]->GetCurrentRoad()->f1 == f2 && flag))
+                if((carriers_[otherCarrier]->getCurrentRoad()->f1 == f1 && !flag)
+                   || (carriers_[otherCarrier]->getCurrentRoad()->f1 == f2 && flag))
                     return false;
             }
             break;
@@ -245,16 +245,16 @@ void RoadSegment::AddWareJob(const noRoadNode* rn)
     // nur Lagerhäuser!)
     if(route.size() == 1)
     {
-        if(f2->GetType() == NodalObjectType::Building)
+        if(f2->getType() == NodalObjectType::Building)
         {
-            if(BuildingProperties::IsWareHouse(static_cast<noBuilding*>(f2)->GetBuildingType()))
+            if(BuildingProperties::isWareHouse(static_cast<noBuilding*>(f2)->getBuildingType()))
                 static_cast<nobBaseWarehouse*>(f2)->FetchWare();
             else
                 LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building at %i,%i (gf: %u)!\n")
-                  % f2->GetPos().x % f2->GetPos().y % GetEvMgr().GetCurrentGF();
+                  % f2->getPos().x % f2->getPos().y % getEvMgr().getCurrentGF();
         } else
             LOG.write("RoadSegment::AddWareJob: WARNING: Ware in front of building site at %i,%i (gf: %u)!\n")
-              % f2->GetPos().x % f2->GetPos().y % GetEvMgr().GetCurrentGF();
+              % f2->getPos().x % f2->getPos().y % getEvMgr().getCurrentGF();
     }
 
     // Zufällig Esel oder Träger zuerst fragen, ob er Zeit hat
@@ -295,16 +295,16 @@ void RoadSegment::UpgradeDonkeyRoad()
     rt = RoadType::Donkey;
 
     // Eselstraßen setzen
-    MapPoint pt = f1->GetPos();
+    MapPoint pt = f1->getPos();
     for(auto i : route)
     {
-        world->SetPointRoad(pt, i, PointRoad::Donkey);
-        pt = world->GetNeighbour(pt, i);
+        world->setPointRoad(pt, i, PointRoad::Donkey);
+        pt = world->getNeighbour(pt, i);
     }
 
     // Flaggen auf beiden Seiten upgraden
-    RTTR_Assert(f1->GetGOT() == GO_Type::Flag);
-    RTTR_Assert(f2->GetGOT() == GO_Type::Flag);
+    RTTR_Assert(f1->getGOT() == GO_Type::Flag);
+    RTTR_Assert(f2->getGOT() == GO_Type::Flag);
 
     static_cast<noFlag*>(f1)->Upgrade();
     static_cast<noFlag*>(f2)->Upgrade();
@@ -320,7 +320,7 @@ void RoadSegment::TryGetDonkey()
 {
     // Nur rufen, falls es eine Eselstraße ist, noch kein Esel da ist, aber schon ein Träger da ist
     if(NeedDonkey())
-        carriers_[1] = world->GetPlayer(f1->GetPlayer()).OrderDonkey(*this);
+        carriers_[1] = world->getPlayer(f1->getPlayer()).OrderDonkey(*this);
 }
 
 /**
@@ -329,23 +329,23 @@ void RoadSegment::TryGetDonkey()
 void RoadSegment::CarrierAbrogated(nofCarrier* carrier)
 {
     // Gucken, ob Träger und Esel gekündigt hat
-    if(carrier->GetCarrierType() == CarrierType::Normal || carrier->GetCarrierType() == CarrierType::Boat)
+    if(carrier->getCarrierType() == CarrierType::Normal || carrier->getCarrierType() == CarrierType::Boat)
     {
         // Straße wieder unbesetzt, bzw. nur noch Esel
         this->carriers_[0] = nullptr;
-        world->GetPlayer(f1->GetPlayer()).FindCarrierForRoad(*this);
+        world->getPlayer(f1->getPlayer()).FindCarrierForRoad(*this);
     } else
     {
         // Kein Esel mehr da, versuchen, neuen zu bestellen
-        this->carriers_[1] = world->GetPlayer(f1->GetPlayer()).OrderDonkey(*this);
+        this->carriers_[1] = world->getPlayer(f1->getPlayer()).OrderDonkey(*this);
     }
 }
 /**
  * Return flag at the other end of the road
  */
-const noFlag& RoadSegment::GetOtherFlag(const noFlag& flag) const
+const noFlag& RoadSegment::getOtherFlag(const noFlag& flag) const
 {
-    if(GetNodeID(flag))
+    if(getNodeID(flag))
         return dynamic_cast<noFlag&>(*f1);
     else
         return dynamic_cast<noFlag&>(*f2);
@@ -353,9 +353,9 @@ const noFlag& RoadSegment::GetOtherFlag(const noFlag& flag) const
 /**
  * Return last road direction to flag at the other end of the road
  */
-Direction RoadSegment::GetOtherFlagDir(const noFlag& flag) const
+Direction RoadSegment::getOtherFlagDir(const noFlag& flag) const
 {
-    if(GetNodeID(flag))
+    if(getNodeID(flag))
         return (route.front() + 3u);
     else
         return route.back();

@@ -13,12 +13,12 @@
 
 namespace rttr::mapGenerator {
 
-unsigned GetMaximumHeight(const MapExtent& size);
-unsigned GetCoastline(const MapExtent& size);
-unsigned GetIslandRadius(const MapExtent& size);
-unsigned GetIslandSize(const MapExtent& size);
-unsigned GetSmoothRadius(const MapExtent& size);
-unsigned GetSmoothIterations(const MapExtent& size);
+unsigned getMaximumHeight(const MapExtent& size);
+unsigned getCoastline(const MapExtent& size);
+unsigned getIslandRadius(const MapExtent& size);
+unsigned getIslandSize(const MapExtent& size);
+unsigned getSmoothRadius(const MapExtent& size);
+unsigned getSmoothIterations(const MapExtent& size);
 
 void SmoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range);
 

@@ -21,14 +21,14 @@ const unsigned GROWING_LENGTH = 16;
 noGrainfield::noGrainfield(const MapPoint pos)
     : noCoordBase(NodalObjectType::Grainfield, pos), type(RANDOM_RAND(2)), state(State::GrowingWaiting), size(0)
 {
-    event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
+    event = getEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
 }
 
 noGrainfield::~noGrainfield() = default;
 
 void noGrainfield::Destroy()
 {
-    GetEvMgr().RemoveEvent(event);
+    getEvMgr().RemoveEvent(event);
 
     // Bauplätze drumrum neu berechnen
     world->RecalcBQAroundPoint(pos);
@@ -90,7 +90,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
         case State::GrowingWaiting:
         {
             // Feld hat gewartet, also wächst es jetzt
-            event = GetEvMgr().AddEvent(this, GROWING_LENGTH);
+            event = getEvMgr().AddEvent(this, GROWING_LENGTH);
             state = State::Growing;
         }
         break;
@@ -100,7 +100,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
             // wächst
             if(++size != 3)
             {
-                event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
+                event = getEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
                 // Erstmal wieder bis zum nächsten Wachsstumsschub warten
                 state = State::GrowingWaiting;
             } else
@@ -108,7 +108,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
                 // bin nun ausgewachsen
                 state = State::Normal;
                 // nach langer Zeit verdorren
-                event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
+                event = getEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
             }
         }
         break;
@@ -116,15 +116,15 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
         {
             // Jetzt lebt es schon zu lange --> hokus pokus verschwindibus!
             state = State::Withering;
-            event = GetEvMgr().AddEvent(this, 20);
+            event = getEvMgr().AddEvent(this, 20);
         }
         break;
         case State::Withering:
         {
             // Selbst zerstören
             event = nullptr;
-            world->SetNO(pos, nullptr);
-            GetEvMgr().AddToKillList(this);
+            world->setNO(pos, nullptr);
+            getEvMgr().AddToKillList(this);
         }
         break;
     }
@@ -133,7 +133,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
 void noGrainfield::BeginHarvesting()
 {
     // Event killen, damit wir nicht plötzlich verschwinden, wenn er uns aberntet
-    GetEvMgr().RemoveEvent(event);
+    getEvMgr().RemoveEvent(event);
     event = nullptr;
     state = State::Normal;
 }
@@ -141,5 +141,5 @@ void noGrainfield::BeginHarvesting()
 void noGrainfield::EndHarvesting()
 {
     // nach langer Zeit verdorren (von neuem)
-    event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
+    event = getEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
 }

@@ -58,7 +58,7 @@ protected:
     /// Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
     unsigned CalcTerrainColor(MapPoint pt, unsigned t);
     /// Prüft ob an einer Stelle eine Straße gezeichnet werden muss
-    bool IsRoad(MapPoint pt, Visibility visibility);
+    bool isRoad(MapPoint pt, Visibility visibility);
     /// Berechnet Spielerfarbe mit in eine gegebene Farbe mit ein (player muss mit +1 gegeben sein!)
     unsigned CombineWithPlayerColor(unsigned color, unsigned char player) const;
     /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben

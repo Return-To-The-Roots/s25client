@@ -19,7 +19,7 @@ struct InventorySetting
     constexpr InventorySetting() noexcept = default;
     constexpr InventorySetting(const EInventorySetting setting) noexcept : state(MakeBitField(setting)) {}
     constexpr explicit InventorySetting(uint8_t state) noexcept : state(state) { MakeValid(); }
-    constexpr bool IsSet(EInventorySetting setting) const noexcept;
+    constexpr bool isSet(EInventorySetting setting) const noexcept;
     constexpr InventorySetting Toggle(EInventorySetting setting) noexcept;
     constexpr void MakeValid() noexcept;
     constexpr explicit operator uint8_t() const noexcept { return state; }
@@ -35,7 +35,7 @@ private:
 // Implementation
 //////////////////////////////////////////////////////////////////////////
 
-constexpr bool InventorySetting::IsSet(const EInventorySetting setting) const noexcept
+constexpr bool InventorySetting::isSet(const EInventorySetting setting) const noexcept
 {
     return (state & MakeBitField(setting)) != 0;
 }

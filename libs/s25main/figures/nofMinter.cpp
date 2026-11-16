@@ -25,14 +25,14 @@ void nofMinter::DrawWorking(DrawPoint drawPt)
 
     if(now_id < 91)
     {
-        LOADER.GetPlayerImage("rom_bobs", 84 + (now_id) % 8)
-          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     world->GetPlayer(workplace->GetPlayer()).color);
+        LOADER.getPlayerImage("rom_bobs", 84 + (now_id) % 8)
+          ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+                     world->getPlayer(workplace->getPlayer()).color);
 
         // Evtl Sound abspielen
         if(now_id % 8 == 3)
         {
-            world->GetSoundMgr().playNOSound(58, *this, now_id);
+            world->getSoundMgr().playNOSound(58, *this, now_id);
             was_sounding = true;
         }
     }
@@ -42,6 +42,6 @@ void nofMinter::DrawWorking(DrawPoint drawPt)
 
 helpers::OptionalEnum<GoodType> nofMinter::ProduceWare()
 {
-    world->GetPlayer(player).ChangeStatisticValue(StatisticType::Gold, 1);
+    world->getPlayer(player).ChangeStatisticValue(StatisticType::Gold, 1);
     return GoodType::Coins;
 }

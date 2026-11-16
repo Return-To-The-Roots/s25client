@@ -26,21 +26,21 @@ void nofLeatherWorker::DrawWorking(DrawPoint drawPt)
 
     const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
 
-    LOADER.GetPlayerImage("leather_bobs", bobIndex[BobType::LeatherworksWorkWindowAnimation] + (now_id % 23))
-      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
+    LOADER.getPlayerImage("leather_bobs", bobIndex[BobType::LeatherworksWorkWindowAnimation] + (now_id % 23))
+      ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     // hammer sound
     if(now_id % 23 == 3 || now_id % 23 == 7)
     {
-        world->GetSoundMgr().playNOSound(72, *this, now_id, 100);
+        world->getSoundMgr().playNOSound(72, *this, now_id, 100);
         was_sounding = true;
     } else if(now_id % 23 == 9) // saw sound 1
     {
-        world->GetSoundMgr().playNOSound(54, *this, now_id);
+        world->getSoundMgr().playNOSound(54, *this, now_id);
         was_sounding = true;
     } else if(now_id % 23 == 17) // saw sound 2
     {
-        world->GetSoundMgr().playNOSound(55, *this, now_id);
+        world->getSoundMgr().playNOSound(55, *this, now_id);
         was_sounding = true;
     }
 
@@ -52,7 +52,7 @@ void nofLeatherWorker::DrawWorking(DrawPoint drawPt)
 #    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
 #endif
 
-unsigned short nofLeatherWorker::GetCarryID() const
+unsigned short nofLeatherWorker::getCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }

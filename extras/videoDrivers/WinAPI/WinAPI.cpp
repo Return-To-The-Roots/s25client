@@ -57,7 +57,7 @@ VideoWinAPI::~VideoWinAPI()
     pVideoWinAPI = nullptr;
 }
 
-const char* VideoWinAPI::GetName() const
+const char* VideoWinAPI::getName() const
 {
     return GetDriverName();
 }
@@ -88,7 +88,7 @@ bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode newSize
     if(!RegisterAndCreateWindow(title, newSize, displayMode))
         return false;
 
-    if(displayMode == DisplayMode::Fullscreen && !MakeFullscreen(GetWindowSize()))
+    if(displayMode == DisplayMode::Fullscreen && !MakeFullscreen(getWindowSize()))
         return false;
 
     displayMode_ = displayMode;
@@ -110,7 +110,7 @@ bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
     if(!initialized || !isDisplayModeChangeable)
         return false;
 
-    if(displayMode == displayMode_ && newSize == GetWindowSize())
+    if(displayMode == displayMode_ && newSize == getWindowSize())
         return true;
 
     VideoMode windowSize = (displayMode == DisplayMode::Fullscreen) ? FindClosestVideoMode(newSize) : newSize;
@@ -134,7 +134,7 @@ bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
     }
 
     // Adjust style
-    const auto [style, exStyle] = GetStyleFlags(displayMode);
+    const auto [style, exStyle] = getStyleFlags(displayMode);
     SetWindowLongPtr(screen, GWL_STYLE, style);
     SetWindowLongPtr(screen, GWL_EXSTYLE, exStyle);
     displayMode_ = displayMode;
@@ -144,7 +144,7 @@ bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
     // Set size and position
     UINT flags = SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED;
     SetWindowPos(screen, HWND_TOP, wndArea.left, wndArea.top, wndArea.getSize().x, wndArea.getSize().y, flags);
-    SetNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
+    setNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
 
     ShowWindow(screen, SW_SHOW);
     SetActiveWindow(screen);
@@ -154,7 +154,7 @@ bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
     return true;
 }
 
-std::pair<DWORD, DWORD> VideoWinAPI::GetStyleFlags(const DisplayMode mode) const
+std::pair<DWORD, DWORD> VideoWinAPI::getStyleFlags(const DisplayMode mode) const
 {
     if(mode == DisplayMode::Fullscreen)
         return std::make_pair(WS_POPUP, WS_EX_APPWINDOW);
@@ -202,7 +202,7 @@ std::pair<Rect, VideoMode> VideoWinAPI::CalculateWindowRect(const DisplayMode mo
             wRect.right = wRect.left + size.width;
             wRect.bottom = wRect.top + size.height;
             // Calculate real right/bottom based on the window style
-            const auto [style, exStyle] = GetStyleFlags(mode);
+            const auto [style, exStyle] = getStyleFlags(mode);
             AdjustWindowRectEx(&wRect, style, false, exStyle);
             // Make sure border/title bar is visible
             wRect.left = std::max<LONG>(wRect.left, 0);
@@ -238,7 +238,7 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
 
     // Create window
     const auto [wndArea, adjustedSize] = CalculateWindowRect(displayMode, wndSize);
-    const auto [style, exStyle] = GetStyleFlags(displayMode);
+    const auto [style, exStyle] = getStyleFlags(displayMode);
     screen =
       CreateWindowExW(exStyle, windowClassName.c_str(), wTitle.c_str(), style, wndArea.left, wndArea.top,
                       wndArea.getSize().x, wndArea.getSize().y, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
@@ -246,7 +246,7 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
     if(screen == nullptr)
         return false;
 
-    SetNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
+    setNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
 
     SetClipboardViewer(screen);
 
@@ -385,7 +385,7 @@ bool VideoWinAPI::SwapBuffers()
     if(!screen_dc)
         return false;
 
-    ::SwapBuffers(screen_dc);
+    SwapBuffers(screen_dc);
     return true;
 }
 
@@ -408,9 +408,9 @@ void VideoWinAPI::ShowErrorMessage(const std::string& title, const std::string& 
     MessageBoxA(nullptr, message.c_str(), title.c_str(), MB_OK | MB_ICONEXCLAMATION);
 }
 
-unsigned long VideoWinAPI::GetTickCount() const
+unsigned long VideoWinAPI::getTickCount() const
 {
-    return ::GetTickCount();
+    return GetTickCount();
 }
 
 static void* wglGetProcAddress_Wrapper(const char* name)
@@ -424,7 +424,7 @@ static void* wglGetProcAddress_Wrapper(const char* name)
     return func;
 }
 
-OpenGL_Loader_Proc VideoWinAPI::GetLoaderFunction() const
+OpenGL_Loader_Proc VideoWinAPI::getLoaderFunction() const
 {
     return wglGetProcAddress_Wrapper;
 }
@@ -445,7 +445,7 @@ std::vector<VideoMode> VideoWinAPI::ListVideoModes() const
     return video_modes;
 }
 
-void VideoWinAPI::SetMousePos(Position pos)
+void VideoWinAPI::setMousePos(Position pos)
 {
     if(GetActiveWindow())
     {
@@ -549,9 +549,9 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             if(wParam != SIZE_MAXIMIZED && wParam != SIZE_RESTORED)
                 break;
             VideoMode newSize(LOWORD(lParam), HIWORD(lParam));
-            if(pVideoWinAPI->GetWindowSize() != newSize || pVideoWinAPI->isMinimized)
+            if(pVideoWinAPI->getWindowSize() != newSize || pVideoWinAPI->isMinimized)
             {
-                pVideoWinAPI->SetNewSize(newSize, Extent(newSize.width, newSize.height));
+                pVideoWinAPI->setNewSize(newSize, Extent(newSize.width, newSize.height));
 
                 pVideoWinAPI->isDisplayModeChangeable = false;
                 pVideoWinAPI->CallBack->WindowResized();
@@ -635,7 +635,7 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
     return DefWindowProcW(window, msg, wParam, lParam);
 }
 
-KeyEvent VideoWinAPI::GetModKeyState() const
+KeyEvent VideoWinAPI::getModKeyState() const
 {
     KeyEvent ke;
     ke.ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
@@ -644,7 +644,7 @@ KeyEvent VideoWinAPI::GetModKeyState() const
     return ke;
 }
 
-void* VideoWinAPI::GetMapPointer() const
+void* VideoWinAPI::getMapPointer() const
 {
     return (void*)this->screen;
 }

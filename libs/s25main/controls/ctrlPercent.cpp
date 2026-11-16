@@ -36,14 +36,14 @@ void ctrlPercent::Draw_()
         color = COLOR_0_PERCENT;
 
     // Box zeichnen
-    Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
+    Draw3D(Rect(getDrawPos(), getSize()), tc, false);
 
     // Fortschritt zeichnen
-    Extent progSize = GetSize() - Extent(8, 8);
+    Extent progSize = getSize() - Extent(8, 8);
     progSize.x = (progSize.x * percentage) / 100;
-    DrawRectangle(Rect(GetDrawPos() + DrawPoint(4, 4), progSize), color);
+    DrawRectangle(Rect(getDrawPos() + DrawPoint(4, 4), progSize), color);
 
     // Text zeichnen
     std::string caption = helpers::toString(percentage) + "%";
-    font->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, caption, FontStyle::CENTER | FontStyle::VCENTER, text_color);
+    font->Draw(getDrawPos() + DrawPoint(getSize()) / 2, caption, FontStyle::CENTER | FontStyle::VCENTER, text_color);
 }

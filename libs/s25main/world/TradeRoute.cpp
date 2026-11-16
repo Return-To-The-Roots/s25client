@@ -25,7 +25,7 @@ void TradeRoute::Serialize(SerializedGameData& sgd) const
 }
 
 /// Gets the next direction the caravane has to take
-helpers::OptionalEnum<TradeDirection> TradeRoute::GetNextDir()
+helpers::OptionalEnum<TradeDirection> TradeRoute::getNextDir()
 {
     if(curPos == path.goal)
         return TradeDirection::ReachedGoal;
@@ -49,7 +49,7 @@ helpers::OptionalEnum<TradeDirection> TradeRoute::GetNextDir()
 
     RTTR_Assert(nextDir == path.route[curRouteIdx]);
     curRouteIdx++;
-    curPos = world.GetNeighbour(curPos, nextDir);
+    curPos = world.getNeighbour(curPos, nextDir);
     return TradeDirection(rttr::enum_cast(nextDir));
 }
 

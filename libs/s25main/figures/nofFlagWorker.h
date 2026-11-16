@@ -47,5 +47,5 @@ public:
     virtual void LostWork() = 0;
 
     /// Gibt Flagge zurück
-    noFlag* GetFlag() const { return flag; }
+    noFlag* getFlag() const { return flag; }
 };

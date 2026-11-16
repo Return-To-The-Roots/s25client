@@ -79,16 +79,16 @@ private:
     /// Prüft, ob eine Expedition von den Spähern her vollständig ist und ruft ggf. das Schiff
     void CheckExplorationExpeditionReady();
     /// Gibt zurück, ob Expedition vollständig ist
-    bool IsExpeditionReady() const;
+    bool isExpeditionReady() const;
     /// Gibt zurück, ob Erkundungs-Expedition vollständig ist
-    bool IsExplorationExpeditionReady() const;
+    bool isExplorationExpeditionReady() const;
     /// Abgeleitete kann eine gerade erzeugte Ware ggf. sofort verwenden
     /// (muss in dem Fall true zurückgeben)
     bool UseWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuilding& goal) override;
     /// Dasselbe für Menschen
     bool UseFigureAtOnce(std::unique_ptr<noFigure>& fig, noRoadNode& goal) override;
     /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
-    void CancelFigure(noFigure* figure) override;
+    void cancelFigure(noFigure* figure) override;
     /// Bestellt ein Schiff zum Hafen, sofern dies nötig ist
     void OrderShip();
 
@@ -104,11 +104,11 @@ protected:
     void DestroyBuilding() override;
 
 public:
-    unsigned GetMilitaryRadius() const override { return HARBOR_RADIUS; }
+    unsigned getMilitaryRadius() const override { return HARBOR_RADIUS; }
 
     /// Serialisierung
     void Serialize(SerializedGameData& sgd) const override;
-    GO_Type GetGOT() const final { return GO_Type::NobHarborbuilding; }
+    GO_Type getGOT() const final { return GO_Type::NobHarborbuilding; }
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;
 
@@ -123,7 +123,7 @@ public:
     unsigned CalcDistributionPoints(GoodType type) const;
 
     /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
-    std::unique_ptr<Ware> CancelWareForShip(Ware* ware);
+    std::unique_ptr<Ware> cancelWareForShip(Ware* ware);
 
     /// Startet eine Expedition
     void StartExpedition();
@@ -134,9 +134,9 @@ public:
     void StopExplorationExpedition();
 
     /// Ist Expedition in Vorbereitung?
-    bool IsExpeditionActive() const { return expedition.active; }
+    bool isExpeditionActive() const { return expedition.active; }
     /// Ist Erkundungs-Expedition in Vorbereitung?
-    bool IsExplorationExpeditionActive() const { return exploration_expedition.active; }
+    bool isExplorationExpeditionActive() const { return exploration_expedition.active; }
     /// Schiff ist angekommen
     void ShipArrived(noShip& ship);
     /// Schiff konnte nicht mehr kommen
@@ -147,7 +147,7 @@ public:
     void RemoveDependentFigure(noFigure& figure) override;
 
     /// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
-    HarborId GetHarborPosID() const;
+    HarborId getHarborPosID() const;
 
     struct ShipConnection
     {
@@ -157,7 +157,7 @@ public:
         unsigned way_costs;
     };
     /// Gibt eine Liste mit möglichen Verbindungen zurück
-    std::vector<ShipConnection> GetShipConnections() const;
+    std::vector<ShipConnection> getShipConnections() const;
 
     /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
     void AddFigureForShip(std::unique_ptr<noFigure> fig, MapPoint dest);
@@ -168,9 +168,9 @@ public:
     void WareDontWantToTravelByShip(Ware* ware);
 
     /// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden
-    unsigned GetNumNeededShips() const;
+    unsigned getNumNeededShips() const;
     /// Gibt die Wichtigkeit an, dass ein Schiff kommen muss (0 -> keine Bedürftigkeit)
-    int GetNeedForShip(unsigned ships_coming) const;
+    int getNeedForShip(unsigned ships_coming) const;
 
     /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
     void ReceiveGoodsFromShip(std::list<std::unique_ptr<noFigure>>& figures, std::list<std::unique_ptr<Ware>>& wares);
@@ -198,18 +198,18 @@ public:
 
     /// Gibt die Angreifer zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
     /// defender_harbors sind dabei mögliche Zielhäfen
-    std::vector<SeaAttackerBuilding> GetAttackerBuildingsForSeaAttack(const std::vector<HarborId>& defender_harbors);
+    std::vector<SeaAttackerBuilding> getAttackerBuildingsForSeaAttack(const std::vector<HarborId>& defender_harbors);
     /// Gibt verfügbare Angreifer zurück
-    std::vector<SeaAttackerBuilding> GetAttackerBuildingsForSeaIdAttack();
+    std::vector<SeaAttackerBuilding> getAttackerBuildingsForSeaIdAttack();
 
     /// Fügt einen Schiffs-Angreifer zum Hafen hinzu
     void AddSeaAttacker(std::unique_ptr<nofAttacker> attacker);
     /// Attacker does not want to attack anymore
-    void CancelSeaAttacker(nofAttacker* attacker);
+    void cancelSeaAttacker(nofAttacker* attacker);
 
     /// People waiting for a ship have to examine their route if a road was destroyed
     void ExamineShipRouteOfPeople();
 
     /// Is the harbor just being destroyed right now?
-    bool IsBeingDestroyedNow() const;
+    bool isBeingDestroyedNow() const;
 };

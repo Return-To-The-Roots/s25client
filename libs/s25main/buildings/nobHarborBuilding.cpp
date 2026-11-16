@@ -56,11 +56,11 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
     : nobBaseWarehouse(BuildingType::HarborBuilding, pos, player, nation), orderware_ev(nullptr)
 {
     // ins Militärquadrat einfügen
-    world->GetMilitarySquares().Add(this);
+    world->getMilitarySquares().Add(this);
     world->RecalcTerritory(*this, TerritoryChangeReason::Build);
 
     // Take 1 as the reserve per rank
-    for(unsigned i = 0; i <= world->GetGGS().GetMaxMilitaryRank(); ++i)
+    for(unsigned i = 0; i <= world->getGGS().getMaxMilitaryRank(); ++i)
     {
         reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = 1;
         RefreshReserve(i);
@@ -68,20 +68,20 @@ nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char pla
 
     /// Die Meere herausfinden, an die dieser Hafen grenzt
     for(const auto dir : helpers::EnumRange<Direction>{})
-        seaIds[dir] = world->GetSeaFromCoastalPoint(world->GetNeighbour(pos, dir));
+        seaIds[dir] = world->getSeaFromCoastalPoint(world->getNeighbour(pos, dir));
 
     // Post versenden
     SendPostMessage(player,
-                    std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("New harbor building finished"),
+                    std::make_unique<PostMsgWithBuilding>(getEvMgr().getCurrentGF(), _("New harbor building finished"),
                                                           PostCategory::Economy, *this));
 }
 
 void nobHarborBuilding::DestroyBuilding()
 {
-    GetEvMgr().RemoveEvent(orderware_ev);
+    getEvMgr().RemoveEvent(orderware_ev);
 
     // Der Wirtschaftsverwaltung Bescheid sagen
-    GamePlayer& owner = world->GetPlayer(player);
+    GamePlayer& owner = world->getPlayer(player);
 
     // Baumaterialien in der Inventur verbuchen
     if(expedition.active)
@@ -99,7 +99,7 @@ void nobHarborBuilding::DestroyBuilding()
     if(exploration_expedition.active)
     {
         inventory.real.Add(Job::Scout, exploration_expedition.scouts);
-        for(unsigned i = exploration_expedition.scouts; i < world->GetGGS().GetNumScoutsExpedition(); i++)
+        for(unsigned i = exploration_expedition.scouts; i < world->getGGS().getNumScoutsExpedition(); i++)
             owner.OneJobNotWanted(Job::Scout, this);
     }
     // cancel all jobs wanted for this building
@@ -127,10 +127,10 @@ void nobHarborBuilding::DestroyBuilding()
     {
         nofAttacker& soldier = world->AddFigure(pos, std::move(soldiers_for_ship.attacker));
 
-        soldier.CancelSeaAttack();
-        RTTR_Assert(!soldier.GetAttackedGoal());
-        RTTR_Assert(!soldier.GetHomeBld());
-        RTTR_Assert(!soldier.GetGoal());
+        soldier.cancelSeaAttack();
+        RTTR_Assert(!soldier.getAttackedGoal());
+        RTTR_Assert(!soldier.getHomeBld());
+        RTTR_Assert(!soldier.getGoal());
         soldier.StartWandering();
         soldier.StartWalking(RANDOM_ENUM(Direction));
     }
@@ -138,7 +138,7 @@ void nobHarborBuilding::DestroyBuilding()
 
     nobBaseWarehouse::DestroyBuilding();
 
-    world->GetMilitarySquares().Remove(this);
+    world->getMilitarySquares().Remove(this);
     // Recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
     world->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
 }
@@ -169,7 +169,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
     : nobBaseWarehouse(sgd, obj_id), expedition(sgd), exploration_expedition(sgd), orderware_ev(sgd.PopEvent())
 {
     // ins Militärquadrat einfügen
-    world->GetMilitarySquares().Add(this);
+    world->getMilitarySquares().Add(this);
 
     helpers::popContainer(sgd, seaIds);
 
@@ -216,18 +216,18 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
     // Hafenfeuer zeichnen // TODO auch für nicht-römer machen
     if(nation == Nation::Romans || nation == Nation::Japanese || nation == Nation::Babylonians)
     {
-        LOADER.GetNationImage(nation, 500 + 5 * GAMECLIENT.GetGlobalAnimation(8, 2, 1, GetObjId() + GetX() + GetY()))
+        LOADER.getNationImage(nation, 500 + 5 * GAMECLIENT.getGlobalAnimation(8, 2, 1, getObjId() + getX() + getY()))
           ->DrawFull(drawPt + FIRE_POS[nation]);
     } else if(nation == Nation::Africans || nation == Nation::Vikings)
     {
-        LOADER.GetMapTexture(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
+        LOADER.getMapTexture(740 + GAMECLIENT.getGlobalAnimation(8, 5, 2, getObjId() + getX() + getY()))
           ->DrawFull(drawPt + FIRE_POS[nation]);
     }
 
     if(nation == Nation::Romans)
     {
         // Zusätzliches Feuer
-        LOADER.GetMapTexture(740 + GAMECLIENT.GetGlobalAnimation(8, 5, 2, GetObjId() + GetX() + GetY()))
+        LOADER.getMapTexture(740 + GAMECLIENT.getGlobalAnimation(8, 5, 2, getObjId() + getX() + getY()))
           ->DrawFull(drawPt + EXTRAFIRE_POS[nation]);
     }
 
@@ -239,16 +239,16 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
         // Bretter
         DrawPoint boardsPos = drawPt + BOARDS_POS[nation];
         for(unsigned char i = 0; i < expedition.boards; ++i)
-            LOADER.GetWareStackTex(GoodType::Boards)->DrawFull(boardsPos - DrawPoint(0, i * 4));
+            LOADER.getWareStackTex(GoodType::Boards)->DrawFull(boardsPos - DrawPoint(0, i * 4));
         DrawPoint stonesPos = drawPt + STONES_POS[nation];
         // Steine
         for(unsigned char i = 0; i < expedition.stones; ++i)
-            LOADER.GetWareStackTex(GoodType::Stones)->DrawFull(stonesPos - DrawPoint(0, i * 4));
+            LOADER.getWareStackTex(GoodType::Stones)->DrawFull(stonesPos - DrawPoint(0, i * 4));
 
         // Und den Bauarbeiter, falls er schon da ist
         if(expedition.builder)
         {
-            unsigned id = GAMECLIENT.GetGlobalAnimation(1000, 7, 1, GetX() + GetY());
+            unsigned id = GAMECLIENT.getGlobalAnimation(1000, 7, 1, getX() + getY());
 
             const int WALKING_DISTANCE = 30;
 
@@ -260,11 +260,11 @@ void nobHarborBuilding::Draw(DrawPoint drawPt)
             DrawPoint builderPos = drawPt + BUILDER_POS[nation];
             if(id < 500)
                 LOADER.getBobSprite(nation, Job::Builder, Direction::West, walking_id)
-                  .draw(builderPos - DrawPoint(walking_distance, 0), COLOR_WHITE, world->GetPlayer(player).color);
+                  .draw(builderPos - DrawPoint(walking_distance, 0), COLOR_WHITE, world->getPlayer(player).color);
             else
                 LOADER.getBobSprite(nation, Job::Builder, Direction::East, walking_id)
                   .draw(builderPos + DrawPoint(walking_distance - WALKING_DISTANCE, 0), COLOR_WHITE,
-                        world->GetPlayer(player).color);
+                        world->getPlayer(player).color);
         }
     }
 }
@@ -311,10 +311,10 @@ void nobHarborBuilding::StartExpedition()
         bool convert = true;
         expedition.builder = false;
         // got a builder in ANY storehouse?
-        GamePlayer& owner = world->GetPlayer(player);
-        for(const nobBaseWarehouse* wh : owner.GetBuildingRegister().GetStorehouses()) //-V807
+        GamePlayer& owner = world->getPlayer(player);
+        for(const nobBaseWarehouse* wh : owner.getBuildingRegister().getStorehouses()) //-V807
         {
-            if(wh->GetNumRealFigures(Job::Builder))
+            if(wh->getNumRealFigures(Job::Builder))
             {
                 convert = false;
                 break;
@@ -360,11 +360,11 @@ void nobHarborBuilding::StopExpedition()
     {
         inventory.Add(Job::Builder);
         // Evtl. Abnehmer für die Figur wieder finden
-        world->GetPlayer(player).FindWarehouseForAllJobs(Job::Builder);
+        world->getPlayer(player).FindWarehouseForAllJobs(Job::Builder);
     } else // todo falls noch nicht da - unterscheiden ob unterwegs oder nur bestellt - falls bestellt stornieren sonst
            // informieren damit kein ersatz geschickt wird falls was nicht klappt aufm weg
     {
-        world->GetPlayer(player).OneJobNotWanted(Job::Builder, this);
+        world->getPlayer(player).OneJobNotWanted(Job::Builder, this);
     }
 }
 
@@ -380,15 +380,15 @@ void nobHarborBuilding::StartExplorationExpedition()
     exploration_expedition.scouts = 0;
 
     // Look for missing scouts
-    const unsigned numScoutsRequired = world->GetGGS().GetNumScoutsExpedition();
+    const unsigned numScoutsRequired = world->getGGS().getNumScoutsExpedition();
     if(inventory[Job::Scout] < numScoutsRequired)
     {
         unsigned missing = numScoutsRequired - inventory[Job::Scout];
         // got scouts in ANY storehouse?
-        GamePlayer& owner = world->GetPlayer(player);
-        for(const nobBaseWarehouse* wh : owner.GetBuildingRegister().GetStorehouses()) //-V807
+        GamePlayer& owner = world->getPlayer(player);
+        for(const nobBaseWarehouse* wh : owner.getBuildingRegister().getStorehouses()) //-V807
         {
-            const unsigned numScouts = wh->GetNumRealFigures(Job::Scout);
+            const unsigned numScouts = wh->getNumRealFigures(Job::Scout);
             if(numScouts >= missing)
             {
                 missing = 0;
@@ -419,9 +419,9 @@ void nobHarborBuilding::StopExplorationExpedition()
     // Dann diese stoppen
     exploration_expedition.active = false;
     // cancel order for scouts
-    for(unsigned i = exploration_expedition.scouts; i < world->GetGGS().GetNumScoutsExpedition(); i++)
+    for(unsigned i = exploration_expedition.scouts; i < world->getGGS().getNumScoutsExpedition(); i++)
     {
-        world->GetPlayer(player).OneJobNotWanted(Job::Scout, this);
+        world->getPlayer(player).OneJobNotWanted(Job::Scout, this);
     }
     // Erkunder zurücktransferieren
     if(exploration_expedition.scouts)
@@ -429,15 +429,15 @@ void nobHarborBuilding::StopExplorationExpedition()
         inventory.real.Add(Job::Scout, exploration_expedition.scouts);
         exploration_expedition.scouts = 0;
         // Evtl. Abnehmer für die Figur wieder finden
-        world->GetPlayer(player).FindWarehouseForAllJobs(Job::Scout);
+        world->getPlayer(player).FindWarehouseForAllJobs(Job::Scout);
     }
 }
 
 /// Bestellt die zusätzlichen erforderlichen Waren für eine Expedition
 void nobHarborBuilding::OrderExpeditionWares()
 {
-    RTTR_Assert(!IsBeingDestroyedNow()); // Wares should already be canceled!
-    if(this->IsBeingDestroyedNow())      // don't order new stuff if we are about to be destroyed
+    RTTR_Assert(!isBeingDestroyedNow()); // Wares should already be canceled!
+    if(this->isBeingDestroyedNow())      // don't order new stuff if we are about to be destroyed
         return;
 
     if(!expedition.active) // expedition no longer active?
@@ -461,10 +461,10 @@ void nobHarborBuilding::OrderExpeditionWares()
         Ware* ware;
         do
         {
-            ware = world->GetPlayer(player).OrderWare(GoodType::Boards, *this);
+            ware = world->getPlayer(player).OrderWare(GoodType::Boards, *this);
             if(ware)
             {
-                RTTR_Assert(IsWareDependent(*ware));
+                RTTR_Assert(isWareDependent(*ware));
                 --todo_boards;
             }
         } while(ware && todo_boards);
@@ -477,10 +477,10 @@ void nobHarborBuilding::OrderExpeditionWares()
         Ware* ware;
         do
         {
-            ware = world->GetPlayer(player).OrderWare(GoodType::Stones, *this);
+            ware = world->getPlayer(player).OrderWare(GoodType::Stones, *this);
             if(ware)
             {
-                RTTR_Assert(IsWareDependent(*ware));
+                RTTR_Assert(isWareDependent(*ware));
                 --todo_stones;
             }
         } while(ware && todo_stones);
@@ -488,13 +488,13 @@ void nobHarborBuilding::OrderExpeditionWares()
 
     // Wenn immer noch nicht alles da ist, später noch einmal bestellen
     if(!orderware_ev)
-        orderware_ev = GetEvMgr().AddEvent(this, 210, 10);
+        orderware_ev = getEvMgr().AddEvent(this, 210, 10);
 }
 
 /// Eine bestellte Ware konnte doch nicht kommen
 void nobHarborBuilding::WareLost(Ware& ware)
 {
-    RTTR_Assert(!IsBeingDestroyedNow());
+    RTTR_Assert(!isBeingDestroyedNow());
     // ggf. neue Waren für Expedition bestellen
     if(expedition.active && (ware.type == GoodType::Boards || ware.type == GoodType::Stones))
         OrderExpeditionWares();
@@ -523,7 +523,7 @@ void nobHarborBuilding::ShipArrived(noShip& ship)
                 ++it;
         }
 
-        ship.PrepareSeaAttack(GetHarborPosID(), ship_dest, std::move(attackers));
+        ship.PrepareSeaAttack(getHarborPosID(), ship_dest, std::move(attackers));
         return;
     }
     // Expedition ready?
@@ -534,16 +534,16 @@ void nobHarborBuilding::ShipArrived(noShip& ship)
         // Aufräumen am Hafen
         expedition.active = false;
         // Expedition starten
-        ship.StartExpedition(GetHarborPosID());
+        ship.StartExpedition(getHarborPosID());
         return;
     }
     // Exploration-Expedition ready?
-    if(IsExplorationExpeditionReady())
+    if(isExplorationExpeditionReady())
     {
         // Aufräumen am Hafen
         exploration_expedition.active = false;
         // Expedition starten
-        ship.StartExplorationExpedition(GetHarborPosID());
+        ship.StartExplorationExpedition(getHarborPosID());
         inventory.visual.Remove(Job::Scout, exploration_expedition.scouts);
         return;
     }
@@ -558,9 +558,9 @@ void nobHarborBuilding::ShipArrived(noShip& ship)
         bool gotdest = false;
         for(const auto& figureForShip : figures_for_ships)
         {
-            noBase* nb = world->GetNO(figureForShip.dest);
-            if(nb->GetGOT() == GO_Type::NobHarborbuilding
-               && world->GetNode(figureForShip.dest).owner
+            noBase* nb = world->getNO(figureForShip.dest);
+            if(nb->getGOT() == GO_Type::NobHarborbuilding
+               && world->getNode(figureForShip.dest).owner
                     == player + 1) // target is a harbor and owned by the same player
             {
                 dest = figureForShip.dest;
@@ -570,11 +570,11 @@ void nobHarborBuilding::ShipArrived(noShip& ship)
         }
         for(const auto& wareForShip : wares_for_ships)
         {
-            noBase* nb = world->GetNO(wareForShip->GetNextHarbor());
-            if(nb->GetGOT() == GO_Type::NobHarborbuilding
-               && world->GetNode(wareForShip->GetNextHarbor()).owner == player + 1)
+            noBase* nb = world->getNO(wareForShip->getNextHarbor());
+            if(nb->getGOT() == GO_Type::NobHarborbuilding
+               && world->getNode(wareForShip->getNextHarbor()).owner == player + 1)
             {
-                dest = wareForShip->GetNextHarbor();
+                dest = wareForShip->getNextHarbor();
                 gotdest = true;
                 break;
             }
@@ -601,7 +601,7 @@ void nobHarborBuilding::ShipArrived(noShip& ship)
             for(auto it = wares_for_ships.begin();
                 it != wares_for_ships.end() && figures.size() + wares.size() < SHIP_CAPACITY;)
             {
-                if((*it)->GetNextHarbor() == dest)
+                if((*it)->getNextHarbor() == dest)
                 {
                     (*it)->StartShipJourney();
                     inventory.visual.Remove(ConvertShields((*it)->type));
@@ -612,35 +612,35 @@ void nobHarborBuilding::ShipArrived(noShip& ship)
             }
 
             // Und das Schiff starten lassen
-            ship.PrepareTransport(GetHarborPosID(), dest, std::move(figures), std::move(wares));
+            ship.PrepareTransport(getHarborPosID(), dest, std::move(figures), std::move(wares));
         }
     }
 }
 
 void nobHarborBuilding::AddWare(std::unique_ptr<Ware> ware)
 {
-    if(ware->GetGoal() && ware->GetGoal() != this)
+    if(ware->getGoal() && ware->getGoal() != this)
     {
         // This is not the goal but we have one -> Get new route
         ware->RecalcRoute();
 
         // Go by ship next?
-        if(ware->GetNextDir() == RoadPathDirection::Ship)
+        if(ware->getNextDir() == RoadPathDirection::Ship)
         {
             AddWareForShip(std::move(ware));
             return;
         }
-        if(ware->GetNextDir() != RoadPathDirection::None)
+        if(ware->getNextDir() != RoadPathDirection::None)
         {
             // Travel on roads -> Carry out
-            RTTR_Assert(ware->GetGoal() != this);
+            RTTR_Assert(ware->getGoal() != this);
             AddWaitingWare(std::move(ware));
             return;
         }
         // No next dir means the ware reached its goal, i.e. us,
         // or there is no valid, reachable goal
         // In both cases we take it as we initially would have.
-        if(ware->GetGoal() && ware->GetGoal() != this)
+        if(ware->getGoal() && ware->getGoal() != this)
         {
             // We have a goal but it isn't this and there is no next dir
             // This can only happen when the ware was redirected to a warehouse while being carried,
@@ -650,12 +650,12 @@ void nobHarborBuilding::AddWare(std::unique_ptr<Ware> ware)
             // and next_dir is None then goal will be NULL or us.
             // So the condition of this branch can never be true and the branch can be replaced by:
             // RTTR_Assert(!ware->GetGoal() || ware->GetGoal() == this)
-            RTTR_Assert(ware->IsCarried());
+            RTTR_Assert(ware->isCarried());
             // Explicitly calculate the route which now should set it.
             ware->RecalcRoute();
-            RTTR_Assert(ware->GetGoal());
-            RTTR_Assert(ware->GetNextDir() != RoadPathDirection::None);
-            if(ware->GetNextDir() == RoadPathDirection::Ship)
+            RTTR_Assert(ware->getGoal());
+            RTTR_Assert(ware->getNextDir() != RoadPathDirection::None);
+            if(ware->getNextDir() == RoadPathDirection::Ship)
                 AddWareForShip(std::move(ware));
             else
                 AddWaitingWare(std::move(ware));
@@ -673,10 +673,10 @@ void nobHarborBuilding::AddWare(std::unique_ptr<Ware> ware)
         {
             // Don't wait for it any longer if it had a goal, i.e. us.
             // Without a goal it was a "lost" ware.
-            if(ware->GetGoal())
+            if(ware->getGoal())
                 RemoveDependentWare(*ware);
             // Add to expedition
-            world->GetPlayer(player).RemoveWare(*ware);
+            world->getPlayer(player).RemoveWare(*ware);
             if(ware->type == GoodType::Boards)
                 ++expedition.boards;
             else
@@ -695,24 +695,24 @@ void nobHarborBuilding::AddWare(std::unique_ptr<Ware> ware)
 void nobHarborBuilding::AddFigure(std::unique_ptr<noFigure> figure, const bool increase_visual_counts)
 {
     // Brauchen wir einen Bauarbeiter für die Expedition?
-    if(figure->GetJobType() == Job::Builder && expedition.active && !expedition.builder)
+    if(figure->getJobType() == Job::Builder && expedition.active && !expedition.builder)
     {
         // Make sure the figure came from outside and was not already here waiting for a ship
-        if(IsDependentFigure(*figure))
+        if(isDependentFigure(*figure))
             nobBaseWarehouse::RemoveDependentFigure(*figure);
-        GetEvMgr().AddToKillList(std::move(figure));
+        getEvMgr().AddToKillList(std::move(figure));
 
         expedition.builder = true;
         // Ggf. ist jetzt alles benötigte da
         CheckExpeditionReady();
     }
     // Brauchen wir einen Spähter für die Expedition?
-    else if(figure->GetJobType() == Job::Scout && exploration_expedition.active && !IsExplorationExpeditionReady())
+    else if(figure->getJobType() == Job::Scout && exploration_expedition.active && !isExplorationExpeditionReady())
     {
         // Make sure the figure came from outside and was not already here waiting for a ship
-        if(IsDependentFigure(*figure))
+        if(isDependentFigure(*figure))
             nobBaseWarehouse::RemoveDependentFigure(*figure);
-        GetEvMgr().AddToKillList(std::move(figure));
+        getEvMgr().AddToKillList(std::move(figure));
 
         ++exploration_expedition.scouts;
         inventory.visual.Add(Job::Scout);
@@ -724,7 +724,7 @@ void nobHarborBuilding::AddFigure(std::unique_ptr<noFigure> figure, const bool i
 }
 
 /// Gibt zurück, ob Expedition vollständig ist
-bool nobHarborBuilding::IsExpeditionReady() const
+bool nobHarborBuilding::isExpeditionReady() const
 {
     if(!expedition.active)
         return false;
@@ -740,12 +740,12 @@ bool nobHarborBuilding::IsExpeditionReady() const
 }
 
 /// Gibt zurück, ob Expedition vollständig ist
-bool nobHarborBuilding::IsExplorationExpeditionReady() const
+bool nobHarborBuilding::isExplorationExpeditionReady() const
 {
     if(!exploration_expedition.active)
         return false;
     // Alles da?
-    if(exploration_expedition.scouts < world->GetGGS().GetNumScoutsExpedition())
+    if(exploration_expedition.scouts < world->getGGS().getNumScoutsExpedition())
         return false;
 
     return true;
@@ -756,7 +756,7 @@ void nobHarborBuilding::CheckExpeditionReady()
 {
     // Alles da?
     // Dann bestellen wir mal das Schiff
-    if(IsExpeditionReady())
+    if(isExpeditionReady())
         OrderShip();
 }
 
@@ -765,7 +765,7 @@ void nobHarborBuilding::CheckExplorationExpeditionReady()
 {
     // Alles da?
     // Dann bestellen wir mal das Schiff
-    if(IsExplorationExpeditionReady())
+    if(isExplorationExpeditionReady())
         OrderShip();
 }
 
@@ -777,9 +777,9 @@ void nobHarborBuilding::ShipLost(noShip* /*ship*/)
 }
 
 /// Gibt die Hafenplatz-ID zurück, auf der der Hafen steht
-HarborId nobHarborBuilding::GetHarborPosID() const
+HarborId nobHarborBuilding::getHarborPosID() const
 {
-    return world->GetHarborPointID(pos);
+    return world->getHarborPointID(pos);
 }
 
 /// Abfangen, wenn ein Mann nicht mehr kommen kann --> könnte ein Bauarbeiter sein und
@@ -788,63 +788,63 @@ void nobHarborBuilding::RemoveDependentFigure(noFigure& figure)
 {
     nobBaseWarehouse::RemoveDependentFigure(figure);
     // Ist das ein Bauarbeiter und brauchen wir noch einen
-    if(figure.GetJobType() == Job::Builder && expedition.active && !expedition.builder)
+    if(figure.getJobType() == Job::Builder && expedition.active && !expedition.builder)
     {
         // Alle Figuren durchkommen, die noch hierher kommen wollen und gucken, ob ein
         // Bauarbeiter dabei ist
         for(noFigure* dependent_figure : dependent_figures)
         {
-            if(dependent_figure->GetJobType() == Job::Builder)
+            if(dependent_figure->getJobType() == Job::Builder)
                 // Brauchen keinen bestellen, also raus
                 return;
         }
 
         // Keinen gefunden, also müssen wir noch einen bestellen
-        world->GetPlayer(player).AddJobWanted(Job::Builder, this);
+        world->getPlayer(player).AddJobWanted(Job::Builder, this);
     }
 
     // Ist das ein Erkunder und brauchen wir noch welche?
-    else if(figure.GetJobType() == Job::Scout && exploration_expedition.active)
+    else if(figure.getJobType() == Job::Scout && exploration_expedition.active)
     {
         unsigned scouts_coming = 0;
         for(noFigure* dependent_figure : dependent_figures)
         {
-            if(dependent_figure->GetJobType() == Job::Scout)
+            if(dependent_figure->getJobType() == Job::Scout)
                 ++scouts_coming;
         }
 
         // Wenn nicht genug Erkunder mehr kommen, müssen wir einen neuen bestellen
-        if(exploration_expedition.scouts + scouts_coming < world->GetGGS().GetNumScoutsExpedition())
-            world->GetPlayer(player).AddJobWanted(Job::Scout, this);
+        if(exploration_expedition.scouts + scouts_coming < world->getGGS().getNumScoutsExpedition())
+            world->getPlayer(player).AddJobWanted(Job::Scout, this);
     }
 }
 
 /// Gibt eine Liste mit möglichen Verbindungen zurück
-std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnections() const
+std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::getShipConnections() const
 {
     std::vector<ShipConnection> connections;
 
     // Is the harbor being destroyed right now? Could happen due to pathfinding for wares that get notified about this
     // buildings destruction
-    if(IsBeingDestroyedNow())
+    if(isBeingDestroyedNow())
         return connections;
 
     // Should already be handled by the above check, but keep the runtime check for now (TODO: remove runtime check)
-    RTTR_Assert(world->GetGOT(pos) == GO_Type::NobHarborbuilding);
+    RTTR_Assert(world->getGOT(pos) == GO_Type::NobHarborbuilding);
 
     // Is there any harbor building at all? (could be destroyed)?
-    if(world->GetGOT(pos) != GO_Type::NobHarborbuilding)
+    if(world->getGOT(pos) != GO_Type::NobHarborbuilding)
         return connections;
 
     const auto getSharedSea = [&seaIds = this->seaIds, world = this->world](const nobHarborBuilding& harbor) {
         for(SeaId seaId : seaIds)
         {
-            if(seaId && world->IsHarborAtSea(harbor.GetHarborPosID(), seaId))
+            if(seaId && world->isHarborAtSea(harbor.getHarborPosID(), seaId))
                 return seaId;
         }
         return SeaId::invalidValue();
     };
-    for(auto* harbor_building : world->GetPlayer(player).GetBuildingRegister().GetHarbors())
+    for(auto* harbor_building : world->getPlayer(player).getBuildingRegister().getHarbors())
     {
         if(harbor_building == this)
             continue;
@@ -856,7 +856,7 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
             // Use twice the distance as cost (ship might need to arrive first) and a fixed value to represent
             // loading&unloading
             sc.way_costs =
-              2 * world->GetHarborDistance(GetHarborPosID(), harbor_building->GetHarborPosID(), seaId) + 10;
+              2 * world->getHarborDistance(getHarborPosID(), harbor_building->getHarborPosID(), seaId) + 10;
             connections.push_back(sc);
         }
     }
@@ -866,7 +866,7 @@ std::vector<nobHarborBuilding::ShipConnection> nobHarborBuilding::GetShipConnect
 /// Fügt einen Mensch hinzu, der mit dem Schiff irgendwo hin fahren will
 void nobHarborBuilding::AddFigureForShip(std::unique_ptr<noFigure> fig, MapPoint dest)
 {
-    RTTR_Assert(!world->HasFigureAt(fig->GetPos(), *fig)); // Figure is in the harbor, so it cannot be outside
+    RTTR_Assert(!world->hasFigureAt(fig->getPos(), *fig)); // Figure is in the harbor, so it cannot be outside
     AddToVisualInventory(*fig);
     figures_for_ships.emplace_back(FigureForShip{std::move(fig), dest});
     OrderShip();
@@ -885,15 +885,15 @@ void nobHarborBuilding::AddWareForShip(std::unique_ptr<Ware> ware)
 }
 
 /// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden
-unsigned nobHarborBuilding::GetNumNeededShips() const
+unsigned nobHarborBuilding::getNumNeededShips() const
 {
     unsigned count = 0;
 
     // Expedition -> 1 Schiff
-    if(IsExpeditionReady())
+    if(isExpeditionReady())
         ++count;
     // Erkundungs-Expedition -> noch ein Schiff
-    if(IsExplorationExpeditionReady())
+    if(isExplorationExpeditionReady())
         ++count;
     // Evtl. Waren und Figuren -> noch ein Schiff pro Ziel
     if(!figures_for_ships.empty() || !wares_for_ships.empty())
@@ -912,9 +912,9 @@ unsigned nobHarborBuilding::GetNumNeededShips() const
 
         for(const auto& wares_for_ship : wares_for_ships)
         {
-            if(!helpers::contains(destinations, wares_for_ship->GetNextHarbor()))
+            if(!helpers::contains(destinations, wares_for_ship->getNextHarbor()))
             {
-                destinations.push_back(wares_for_ship->GetNextHarbor());
+                destinations.push_back(wares_for_ship->getNextHarbor());
                 ++count;
             }
         }
@@ -938,19 +938,19 @@ unsigned nobHarborBuilding::GetNumNeededShips() const
 }
 
 /// Gibt die Wichtigkeit an, dass ein Schiff kommen muss (0 -> keine Bedürftigkeit)
-int nobHarborBuilding::GetNeedForShip(unsigned ships_coming) const
+int nobHarborBuilding::getNeedForShip(unsigned ships_coming) const
 {
     int points = 0;
 
     // Expedition -> 1 Schiff
-    if(IsExpeditionReady())
+    if(isExpeditionReady())
     {
         if(ships_coming == 0)
             points += 100;
         else
             --ships_coming;
     }
-    if(IsExplorationExpeditionReady())
+    if(isExplorationExpeditionReady())
     {
         if(ships_coming == 0)
             points += 100;
@@ -974,11 +974,11 @@ int nobHarborBuilding::GetNeedForShip(unsigned ships_coming) const
 // try to order any ship that might be needed and is not ordered yet
 void nobHarborBuilding::OrderShip()
 {
-    unsigned needed = GetNumNeededShips();
-    GamePlayer& owner = world->GetPlayer(player);
+    unsigned needed = getNumNeededShips();
+    GamePlayer& owner = world->getPlayer(player);
 
     // Order (possibly) remaining ships
-    for(unsigned ordered = owner.GetShipsToHarbor(*this); ordered < needed; ++ordered)
+    for(unsigned ordered = owner.getShipsToHarbor(*this); ordered < needed; ++ordered)
         owner.OrderShip(*this);
 }
 
@@ -992,10 +992,10 @@ bool nobHarborBuilding::UseWareAtOnce(std::unique_ptr<Ware>& ware, noBaseBuildin
     // Evtl. muss die Ware gleich das Schiff nehmen -> dann zum Schiffsreservoir hinzufügen
     // Assert: This is a ware that got ordered. There MUST be a path to the goal
     //         Otherwise the ware will notify the goal which will order a new ware resulting in an infinite loop
-    RTTR_Assert(world->GetRoadPathFinder().PathExists(*this, goal, true));
+    RTTR_Assert(world->getRoadPathFinder().PathExists(*this, goal, true));
     ware->RecalcRoute(); // Also sets nextHarbor!
-    RTTR_Assert(ware->GetNextDir() != RoadPathDirection::None);
-    if(ware->GetNextDir() == RoadPathDirection::Ship)
+    RTTR_Assert(ware->getNextDir() != RoadPathDirection::None);
+    if(ware->getNextDir() == RoadPathDirection::Ship)
     {
         // Dann fügen wir die mal bei uns hinzu
         AddWareForShip(std::move(ware));
@@ -1037,11 +1037,11 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<std::unique_ptr<noFigure>
         figure->ArrivedByShip(pos);
 
         // Wenn es kein Ziel mehr hat, sprich keinen weiteren Weg, kann es direkt hier gelagert werden
-        if(figure->GetGoal() == this)
+        if(figure->getGoal() == this)
         {
-            figure->SetGoalTonullptr();
+            figure->setGoalTonullptr();
             AddFigure(std::move(figure), true);
-        } else if(!figure->GetGoal())
+        } else if(!figure->getGoal())
         {
             AddDependentFigure(*figure); // No goal? We take it
             AddFigure(std::move(figure), true);
@@ -1061,7 +1061,7 @@ void nobHarborBuilding::ReceiveGoodsFromShip(std::list<std::unique_ptr<noFigure>
             {
                 // No or invalid path -> Store here
                 RTTR_Assert(nextDir == RoadPathDirection::None);
-                figure->SetGoalTonullptr();
+                figure->setGoalTonullptr();
                 AddDependentFigure(*figure);
                 AddFigure(std::move(figure), true);
             }
@@ -1094,7 +1094,7 @@ nofAggressiveDefender* nobHarborBuilding::SendAggressiveDefender(nofAttacker& at
 }
 
 /// Storniert die Bestellung für eine bestimmte Ware, die mit einem Schiff transportiert werden soll
-std::unique_ptr<Ware> nobHarborBuilding::CancelWareForShip(Ware* ware)
+std::unique_ptr<Ware> nobHarborBuilding::cancelWareForShip(Ware* ware)
 {
     // Ware zur Inventur hinzufügen
     inventory.real.Add(ConvertShields(ware->type));
@@ -1102,7 +1102,7 @@ std::unique_ptr<Ware> nobHarborBuilding::CancelWareForShip(Ware* ware)
 }
 
 /// Bestellte Figur, die sich noch inder Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
-void nobHarborBuilding::CancelFigure(noFigure* figure)
+void nobHarborBuilding::cancelFigure(noFigure* figure)
 {
     const auto it =
       helpers::find_if(figures_for_ships, [figure](const FigureForShip& it) { return it.fig.get() == figure; });
@@ -1116,23 +1116,23 @@ void nobHarborBuilding::CancelFigure(noFigure* figure)
     }
     // An Basisklasse weiterdelegieren
     else
-        nobBaseWarehouse::CancelFigure(figure);
+        nobBaseWarehouse::cancelFigure(figure);
 }
 
 /// Gibt verfügbare Angreifer zurück
-std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttackerBuildingsForSeaIdAttack()
+std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::getAttackerBuildingsForSeaIdAttack()
 {
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     sortedMilitaryBlds all_buildings = world->LookForMilitaryBuildings(pos, 3);
     // Und zählen
     for(nobBaseMilitary* all_building : all_buildings)
     {
-        if(all_building->GetGOT() != GO_Type::NobMilitary)
+        if(all_building->getGOT() != GO_Type::NobMilitary)
             continue;
 
         // Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
-        if(all_building->GetPlayer() != player
-           || world->CalcDistance(all_building->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
+        if(all_building->getPlayer() != player
+           || world->CalcDistance(all_building->getPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
         // Gebäude suchen, vielleicht schon vorhanden? Dann können wir uns den pathfinding Aufwand sparen!
         if(helpers::contains(buildings, static_cast<nobMilitary*>(all_building)))
@@ -1141,7 +1141,7 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
             continue;
         }
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(!world->FindHumanPath(all_building->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
+        if(!world->FindHumanPath(all_building->getPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
             continue;
         // neues Gebäude mit weg und allem -> in die Liste!
         SeaAttackerBuilding sab = {static_cast<nobMilitary*>(all_building), this, 0};
@@ -1151,30 +1151,30 @@ std::vector<nobHarborBuilding::SeaAttackerBuilding> nobHarborBuilding::GetAttack
 }
 
 std::vector<nobHarborBuilding::SeaAttackerBuilding>
-nobHarborBuilding::GetAttackerBuildingsForSeaAttack(const std::vector<HarborId>& defender_harbors)
+nobHarborBuilding::getAttackerBuildingsForSeaAttack(const std::vector<HarborId>& defender_harbors)
 {
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     sortedMilitaryBlds all_buildings = world->LookForMilitaryBuildings(pos, 3);
     // Und zählen
     for(nobBaseMilitary* all_building : all_buildings)
     {
-        if(all_building->GetGOT() != GO_Type::NobMilitary)
+        if(all_building->getGOT() != GO_Type::NobMilitary)
             continue;
 
         // Liegt er auch im groben Raster und handelt es sich um den gleichen Besitzer?
-        if(all_building->GetPlayer() != player
-           || world->CalcDistance(all_building->GetPos(), pos) > BASE_ATTACKING_DISTANCE)
+        if(all_building->getPlayer() != player
+           || world->CalcDistance(all_building->getPos(), pos) > BASE_ATTACKING_DISTANCE)
             continue;
 
         // Weg vom Hafen zum Militärgebäude berechnen
-        if(!world->FindHumanPath(all_building->GetPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
+        if(!world->FindHumanPath(all_building->getPos(), pos, MAX_ATTACKING_RUN_DISTANCE))
             continue;
 
         // Entfernung zwischen Hafen und möglichen Zielhafenpunkt ausrechnen
         auto min_distance = std::numeric_limits<unsigned>::max();
         for(HarborId defender_harbor : defender_harbors)
         {
-            min_distance = std::min(min_distance, world->GetMinHarborDistance(GetHarborPosID(), defender_harbor));
+            min_distance = std::min(min_distance, world->getMinHarborDistance(getHarborPosID(), defender_harbor));
         }
 
         // Gebäude suchen, vielleicht schon vorhanden?
@@ -1202,12 +1202,12 @@ void nobHarborBuilding::AddSeaAttacker(std::unique_ptr<nofAttacker> attacker)
 {
     unsigned best_distance = 0xffffffff;
     HarborId best_harbor_point;
-    RTTR_Assert(attacker->GetAttackedGoal());
+    RTTR_Assert(attacker->getAttackedGoal());
     std::vector<HarborId> harbor_points =
-      world->GetHarborPointsAroundMilitaryBuilding(attacker->GetAttackedGoal()->GetPos());
+      world->getHarborPointsAroundMilitaryBuilding(attacker->getAttackedGoal()->getPos());
     for(HarborId harbor_point : harbor_points)
     {
-        unsigned tmp_distance = world->GetMinHarborDistance(this->GetHarborPosID(), harbor_point);
+        unsigned tmp_distance = world->getMinHarborDistance(this->getHarborPosID(), harbor_point);
         if(tmp_distance < best_distance)
         {
             best_distance = tmp_distance;
@@ -1220,28 +1220,28 @@ void nobHarborBuilding::AddSeaAttacker(std::unique_ptr<nofAttacker> attacker)
     {
         // notify target about noShow, notify home that soldier wont return, add to inventory
         attacker->SeaAttackFailedBeforeLaunch(); // set state, remove target & home
-        RTTR_Assert(!attacker->GetAttackedGoal());
-        RTTR_Assert(!attacker->GetHomeBld());
-        RTTR_Assert(!attacker->GetGoal());
+        RTTR_Assert(!attacker->getAttackedGoal());
+        RTTR_Assert(!attacker->getHomeBld());
+        RTTR_Assert(!attacker->getGoal());
         AddFigure(std::move(attacker), true);
         return;
     }
 
-    inventory.visual.Add(attacker->GetJobType());
-    if(attacker->HasArmor())
-        inventory.visual.Add(jobEnumToAmoredSoldierEnum(attacker->GetJobType()));
-    soldiers_for_ships.emplace_back(SoldierForShip{std::move(attacker), world->GetHarborPoint(best_harbor_point)});
+    inventory.visual.Add(attacker->getJobType());
+    if(attacker->hasArmor())
+        inventory.visual.Add(jobEnumToAmoredSoldierEnum(attacker->getJobType()));
+    soldiers_for_ships.emplace_back(SoldierForShip{std::move(attacker), world->getHarborPoint(best_harbor_point)});
 
     OrderShip();
 }
 
-void nobHarborBuilding::CancelSeaAttacker(nofAttacker* attacker)
+void nobHarborBuilding::cancelSeaAttacker(nofAttacker* attacker)
 {
     const auto it =
       helpers::find_if(soldiers_for_ships, [attacker](const auto& it) { return it.attacker.get() == attacker; });
 
     RTTR_Assert(it != soldiers_for_ships.end());
-    if(!attacker->GetGoal())
+    if(!attacker->getGoal())
     {
         // No goal? We take it
         AddDependentFigure(*attacker);
@@ -1291,7 +1291,7 @@ unsigned nobHarborBuilding::CalcDistributionPoints(const GoodType type) const
 void nobHarborBuilding::WareDontWantToTravelByShip(Ware* ware)
 {
     // Maybe this building is already destroyed
-    if(world->GetGOT(pos) != GO_Type::NobHarborbuilding)
+    if(world->getGOT(pos) != GO_Type::NobHarborbuilding)
         return;
 
     // Move to waiting_wares
@@ -1312,9 +1312,9 @@ std::unique_ptr<nofDefender> nobHarborBuilding::ProvideDefender(nofAttacker& att
     {
         std::unique_ptr<nofAttacker> defender_attacker = std::move(soldiers_for_ships.begin()->attacker);
         soldiers_for_ships.pop_front();
-        defender = std::make_unique<nofDefender>(pos, player, *this, defender_attacker->GetRank(), attacker);
-        defender->SetArmor(defender_attacker->HasArmor());
-        defender_attacker->CancelSeaAttack();
+        defender = std::make_unique<nofDefender>(pos, player, *this, defender_attacker->getRank(), attacker);
+        defender->setArmor(defender_attacker->hasArmor());
+        defender_attacker->cancelSeaAttack();
         defender_attacker->Destroy();
     }
 
@@ -1348,8 +1348,8 @@ void nobHarborBuilding::ExamineShipRouteOfPeople()
     }
 }
 
-bool nobHarborBuilding::IsBeingDestroyedNow() const
+bool nobHarborBuilding::isBeingDestroyedNow() const
 {
     // check if this harbor is in the known harbors. if not, it is probably being destroyed right now.
-    return !helpers::contains(world->GetPlayer(player).GetBuildingRegister().GetHarbors(), this);
+    return !helpers::contains(world->getPlayer(player).getBuildingRegister().getHarbors(), this);
 }

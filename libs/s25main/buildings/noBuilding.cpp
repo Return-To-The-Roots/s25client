@@ -20,8 +20,8 @@ void noBuilding::Destroy()
 {
     // First we have to remove the building from the map and the player
     // Replace by fire (huts and mines become small fire, rest big)
-    world->SetNO(pos, new noFire(pos, GetSize() != BuildingQuality::Hut && GetSize() != BuildingQuality::Mine), true);
-    world->GetPlayer(player).RemoveBuilding(this, bldType_);
+    world->setNO(pos, new noFire(pos, getSize() != BuildingQuality::Hut && getSize() != BuildingQuality::Mine), true);
+    world->getPlayer(player).RemoveBuilding(this, bldType_);
     // Destroy derived buildings
     DestroyBuilding();
     // Then go further down the chain
@@ -47,15 +47,15 @@ noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id)
 
 void noBuilding::DrawBaseBuilding(DrawPoint drawPt) const
 {
-    GetBuildingImage().DrawFull(drawPt);
+    getBuildingImage().DrawFull(drawPt);
     DrawDoor(drawPt);
 }
 
 void noBuilding::DrawDoor(DrawPoint drawPt) const
 {
-    if(!IsDoorOpen())
+    if(!isDoorOpen())
         return;
-    GetDoorImage().DrawFull(drawPt);
+    getDoorImage().DrawFull(drawPt);
 }
 
 void noBuilding::OpenDoor()
@@ -65,7 +65,7 @@ void noBuilding::OpenDoor()
 
 void noBuilding::CloseDoor()
 {
-    RTTR_Assert(IsDoorOpen());
+    RTTR_Assert(isDoorOpen());
     --opendoor;
 }
 

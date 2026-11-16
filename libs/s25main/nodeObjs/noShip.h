@@ -136,7 +136,7 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
     void Destroy() override;
 
-    GO_Type GetGOT() const final { return GO_Type::Ship; }
+    GO_Type getGOT() const final { return GO_Type::Ship; }
 
     // An x,y zeichnen
     void Draw(DrawPoint drawPt) override;
@@ -144,50 +144,50 @@ public:
     void HandleEvent(unsigned id) override;
 
     /// Gibt den Besitzer zurück
-    unsigned char GetPlayerId() const { return ownerId_; }
+    unsigned char getPlayerId() const { return ownerId_; }
     /// Gibt die ID des Meeres zurück, auf dem es sich befindet
-    SeaId GetSeaID() const { return seaId_; }
+    SeaId getSeaID() const { return seaId_; }
     /// Gibt den Schiffsnamen zurück
-    const std::string& GetName() const { return name; }
+    const std::string& getName() const { return name; }
     /// Hat das Schiff gerade nichts zu tun
-    bool IsIdling() const { return (state == State::Idle); }
-    bool IsLost() const { return lost; }
+    bool isIdling() const { return (state == State::Idle); }
+    bool isLost() const { return lost; }
     /// Führt das Schiff gerade eine Expedition durch und wartet auf weitere Befehle?
-    bool IsWaitingForExpeditionInstructions() const { return (state == State::ExpeditionWaiting); }
+    bool isWaitingForExpeditionInstructions() const { return (state == State::ExpeditionWaiting); }
     /// Ist das Schiff gerade irgendwie am Expeditionieren und hat entsprechenden Kram an Bord?
-    bool IsOnExpedition() const
+    bool isOnExpedition() const
     {
         return (state == State::ExpeditionLoading || state == State::ExpeditionWaiting
                 || state == State::ExpeditionDriving);
     }
     /// Ist das Schiff gerade irgendwie am Explorations-Expeditionieren und hat entsprechenden Kram an Bord?
-    bool IsOnExplorationExpedition() const
+    bool isOnExplorationExpedition() const
     {
         return (state == State::ExplorationexpeditionLoading || state == State::ExplorationexpeditionUnloading
                 || state == State::ExplorationexpeditionWaiting || state == State::ExplorationexpeditionDriving);
     }
-    bool IsOnAttackMission() const
+    bool isOnAttackMission() const
     {
         return (state == State::SeaattackLoading || state == State::SeaattackUnloading
                 || state == State::SeaattackDrivingToDestination || state == State::SeaattackWaiting
                 || state == State::SeaattackReturnDriving);
     }
-    bool IsLoading() const;
-    bool IsUnloading() const;
+    bool isLoading() const;
+    bool isUnloading() const;
     /// Gibt Liste der Waren an Bord zurück
-    auto GetWares() const { return helpers::nonNullPtrSpan(wares); }
+    auto getWares() const { return helpers::nonNullPtrSpan(wares); }
     /// Gibt Liste der Menschen an Bord zurück
-    auto GetFigures() const { return helpers::nonNullPtrSpan(figures); }
-    bool IsOnBoard(const noFigure& figure) const;
+    auto getFigures() const { return helpers::nonNullPtrSpan(figures); }
+    bool isOnBoard(const noFigure& figure) const;
     /// Gibt Sichtradius dieses Schiffes zurück
-    unsigned GetVisualRange() const;
+    unsigned getVisualRange() const;
 
     /// Return the harbor ID where the ship currently is. Only valid when waiting for expedition instructions
-    HarborId GetCurrentHarbor() const;
+    HarborId getCurrentHarbor() const;
     /// Return the harbor the ship is currently targeting (0 if ship is idling)
-    HarborId GetTargetHarbor() const;
+    HarborId getTargetHarbor() const;
     /// Return the source harbor from where the ship left the current mission (0 if ship is idling)
-    HarborId GetHomeHarbor() const;
+    HarborId getHomeHarbor() const;
 
     /// Fährt zum Hafen, um dort eine Mission (Expedition) zu erledigen
     void GoToHarbor(const nobHarborBuilding& hb, const std::vector<Direction>& route);
@@ -203,11 +203,11 @@ public:
     /// Weist das Schiff an, seine Erkundungs-Expedition fortzusetzen
     void ContinueExplorationExpedition();
     /// Gibt zurück, ob das Schiff jetzt in der Lage wäre, eine Kolonie zu gründen
-    bool IsAbleToFoundColony() const;
+    bool isAbleToFoundColony() const;
     /// Weist das Schiff an, an der aktuellen Position einen Hafen zu gründen
     void FoundColony();
     /// Return true, if the ship is driving to this harbor as its final destination (free for new orders)
-    bool IsGoingToHarbor(const nobHarborBuilding& hb) const;
+    bool isGoingToHarbor(const nobHarborBuilding& hb) const;
 
     /// Belädt das Schiff mit Waren und Figuren, um eine Transportfahrt zu starten
     void PrepareTransport(HarborId homeHarborId, MapPoint goal, std::list<std::unique_ptr<noFigure>> figures,

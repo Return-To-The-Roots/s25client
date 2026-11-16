@@ -45,8 +45,8 @@ unsigned AsyncChecksum::getHash() const
 
 AsyncChecksum AsyncChecksum::create(const Game& game)
 {
-    return AsyncChecksum(RANDOM.GetChecksum(), GameObject::GetNumObjs(), GameObject::GetObjIDCounter(),
-                         game.em_->GetNumActiveEvents(), game.em_->GetEventInstanceCtr());
+    return AsyncChecksum(RANDOM.getChecksum(), GameObject::getNumObjs(), GameObject::getObjIDCounter(),
+                         game.em_->getNumActiveEvents(), game.em_->getEventInstanceCtr());
 }
 
 std::ostream& operator<<(std::ostream& os, const AsyncChecksum& checksum)

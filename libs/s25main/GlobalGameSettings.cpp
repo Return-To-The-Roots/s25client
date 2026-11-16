@@ -310,8 +310,8 @@ void GlobalGameSettings::applyLegacyInexhaustibleMines()
 {
     for(const BuildingType mineType : MINE_BUILDING_TYPES)
     {
-        if(GetMineResourceBehavior(*this, mineType) == MineResourceBehavior::Default)
-            setSelection(GetMineResourceBehaviorAddonId(mineType),
+        if(getMineResourceBehavior(*this, mineType) == MineResourceBehavior::Default)
+            setSelection(getMineResourceBehaviorAddonId(mineType),
                          static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
     }
 }
@@ -325,13 +325,13 @@ void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
         addon->status = selection;
 }
 
-unsigned GlobalGameSettings::GetMaxMilitaryRank() const
+unsigned GlobalGameSettings::getMaxMilitaryRank() const
 {
     unsigned selection = getSelection(AddonId::MAX_RANK);
     RTTR_Assert(selection <= MAX_MILITARY_RANK);
     return MAX_MILITARY_RANK - selection;
 }
-unsigned GlobalGameSettings::GetNumScoutsExpedition() const
+unsigned GlobalGameSettings::getNumScoutsExpedition() const
 {
     unsigned selection = getSelection(AddonId::NUM_SCOUTS_EXPLORATION);
     return selection + 1;

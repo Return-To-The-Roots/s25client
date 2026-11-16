@@ -26,10 +26,10 @@ namespace bfs = boost::filesystem;
  *        schlecht.
  */
 iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
-    : IngameWindow(CGI_README, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.GetImageN("resource", 41))
+    : IngameWindow(CGI_README, IngameWindow::posLastOrCenter, Extent(640, 480), title, LOADER.getImageN("resource", 41))
 {
     ctrlMultiline* text =
-      AddMultiline(2, DrawPoint(10, 20), Extent(GetSize().x - 20, 450), TextureColor::Green1, NormalFont);
+      AddMultiline(2, DrawPoint(10, 20), Extent(getSize().x - 20, 450), TextureColor::Green1, NormalFont);
 
     // Pfad mit gewählter Sprache auswählen
     std::vector<bfs::path> paths;
@@ -52,6 +52,6 @@ iwTextfile::iwTextfile(const std::string& filename, const std::string& title)
         text->AddString(stream.str(), COLOR_YELLOW, false);
     }
 
-    text->SetWidth(text->GetContentSize().x);
-    SetIwSize(Extent(text->GetSize().x, GetIwSize().y));
+    text->setWidth(text->getContentSize().x);
+    setIwSize(Extent(text->getSize().x, getIwSize().y));
 }

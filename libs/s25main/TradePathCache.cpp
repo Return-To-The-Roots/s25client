@@ -20,7 +20,7 @@ bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const
         if(world.CheckTradeRoute(paths[entryIdx].path.start, paths[entryIdx].path.route, 0, player, &checkedGoal))
         {
             RTTR_Assert(checkedGoal == start || checkedGoal == goal);
-            paths[entryIdx].lastUse = world.GetEvMgr().GetCurrentGF();
+            paths[entryIdx].lastUse = world.getEvMgr().getCurrentGF();
             return true;
         } else
         {
@@ -41,7 +41,7 @@ bool TradePathCache::pathExists(const MapPoint start, const MapPoint goal, const
 
 int TradePathCache::findEntry(const MapPoint start, const MapPoint goal, const PlayerIdx player) const
 {
-    const GamePlayer& thisPlayer = world.GetPlayer(player);
+    const GamePlayer& thisPlayer = world.getPlayer(player);
 
     for(unsigned i = 0; i < paths.size(); i++)
     {
@@ -50,7 +50,7 @@ int TradePathCache::findEntry(const MapPoint start, const MapPoint goal, const P
             continue;
         if(pathEntry.path.goal != goal && pathEntry.path.start != goal)
             continue;
-        if(!thisPlayer.IsAlly(pathEntry.player))
+        if(!thisPlayer.isAlly(pathEntry.player))
             continue;
         return i;
     }
@@ -59,7 +59,7 @@ int TradePathCache::findEntry(const MapPoint start, const MapPoint goal, const P
 
 void TradePathCache::addEntry(TradePath path, const PlayerIdx player)
 {
-    Entry entry{player, world.GetEvMgr().GetCurrentGF(), std::move(path)};
+    Entry entry{player, world.getEvMgr().getCurrentGF(), std::move(path)};
 
     int idx = findEntry(entry.path.start, entry.path.goal, player);
     if(idx < 0)

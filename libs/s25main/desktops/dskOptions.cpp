@@ -161,13 +161,13 @@ ctrlOptionGroup& addOnOffOption(ctrlGroup& parentGroup, DrawPoint pos, unsigned 
     option->AddTextButton(ID_btOn, pos, size, TextureColor::Grey, _("On"), NormalFont);
     pos.x += size.x + spacing;
     option->AddTextButton(ID_btOff, pos, size, TextureColor::Grey, _("Off"), NormalFont);
-    option->SetSelection(value);
+    option->setSelection(value);
     return *option;
 }
 
 } // namespace
 
-dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
+dskOptions::dskOptions() : Desktop(LOADER.getImageN("setup013", 0))
 {
     AddText(ID_txtOptions, DrawPoint(400, 10), _("Options"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
@@ -200,12 +200,12 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupCommon->AddText(ID_txtName, curPos, _("Name in Game:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* name =
       groupCommon->AddEdit(ID_edtName, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 15);
-    name->SetText(SETTINGS.lobby.name);
+    name->setText(SETTINGS.lobby.name);
 
     const auto& currentPortrait = Portraits[SETTINGS.lobby.portraitIndex];
     groupCommon->AddImageButton(ID_btCommonPortrait, DrawPoint(500, curPos.y + ctrlOffset.y), Extent(40, rowHeight * 2),
                                 TextureColor::Grey,
-                                LOADER.GetImageN(currentPortrait.resourceId, currentPortrait.resourceIndex));
+                                LOADER.getImageN(currentPortrait.resourceId, currentPortrait.resourceIndex));
     curPos.y += rowHeight;
 
     groupCommon->AddText(ID_txtCommonPortrait, curPos, _("Portrait:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -216,7 +216,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     {
         combo->AddItem(_(Portraits[i].name));
         if(SETTINGS.lobby.portraitIndex == i)
-            combo->SetSelection(i);
+            combo->setSelection(i);
     }
     curPos.y += rowHeight;
 
@@ -231,12 +231,12 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         combo->AddItem(_(l.name));
         if(SETTINGS.language.language == l.code)
         {
-            combo->SetSelection(static_cast<unsigned short>(i));
+            combo->setSelection(static_cast<unsigned short>(i));
             selected = true;
         }
     }
     if(!selected)
-        combo->SetSelection(0);
+        combo->setSelection(0);
     curPos.y += rowHeight;
 
     groupCommon->AddTextButton(ID_btKeyboardLayout, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
@@ -247,27 +247,27 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     groupCommon->AddText(ID_txtPort, curPos, _("Local Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* edtPort =
       groupCommon->AddEdit(ID_edtPort, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont, 15);
-    edtPort->SetType(EditType::Number);
-    edtPort->SetText(SETTINGS.server.localPort);
+    edtPort->setType(EditType::Number);
+    edtPort->setText(SETTINGS.server.localPort);
     curPos.y += rowHeight;
 
     // IPv4/6
     auto& grpIPv6 = addOnOffOption(*groupCommon, curPos, ID_grpIpv6, _("Use IPv6:"), SETTINGS.server.ipv6);
-    grpIPv6.GetCtrl<ctrlTextButton>(ID_btOn)->SetText(_("IPv6"));
-    grpIPv6.GetCtrl<ctrlTextButton>(ID_btOff)->SetText(_("IPv4"));
+    grpIPv6.getCtrl<ctrlTextButton>(ID_btOn)->setText(_("IPv6"));
+    grpIPv6.getCtrl<ctrlTextButton>(ID_btOff)->setText(_("IPv4"));
     // Enable/disable the IPv6 field if necessary
-    grpIPv6.GetCtrl<ctrlButton>(ID_btOn)->SetEnabled(SETTINGS.proxy.type != ProxyType::Socks5); //-V807
+    grpIPv6.getCtrl<ctrlButton>(ID_btOn)->setEnabled(SETTINGS.proxy.type != ProxyType::Socks5); //-V807
     curPos.y += rowHeight;
 
     curPos.y += sectionSpacingCommon;
     // Proxy server
     groupCommon->AddText(ID_txtProxy, curPos, _("Proxyserver:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     ctrlEdit* proxy = groupCommon->AddEdit(ID_edtProxy, curPos + ctrlOffset, ctrlSize, TextureColor::Grey, NormalFont);
-    proxy->SetText(SETTINGS.proxy.hostname);
+    proxy->setText(SETTINGS.proxy.hostname);
     proxy =
       groupCommon->AddEdit(ID_edtProxyPort, curPos + ctrlOffset2, Extent(50, 22), TextureColor::Grey, NormalFont, 5);
-    proxy->SetType(EditType::Number);
-    proxy->SetText(SETTINGS.proxy.port);
+    proxy->setType(EditType::Number);
+    proxy->setText(SETTINGS.proxy.port);
     curPos.y += rowHeight;
 
     addOnOffOption(*groupCommon, curPos, ID_grpUPNP, _("Use UPnP"), SETTINGS.global.useUPNP);
@@ -284,9 +284,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     switch(SETTINGS.proxy.type)
     {
-        default: combo->SetSelection(0); break;
-        case ProxyType::Socks4: combo->SetSelection(1); break;
-        case ProxyType::Socks5: combo->SetSelection(2); break;
+        default: combo->setSelection(0); break;
+        case ProxyType::Socks4: combo->setSelection(1); break;
+        case ProxyType::Socks5: combo->setSelection(2); break;
     }
     curPos.y += rowHeight;
 
@@ -298,20 +298,20 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     combo->AddItem(
       _("Scroll opposite (Map moves in the opposite direction the mouse is moved when scrolling/panning.)"));
     combo->AddItem(_("Grab and drag (Map moves with your cursor when scrolling/panning.)"));
-    combo->SetSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
+    combo->setSelection(static_cast<int>(SETTINGS.interface.mapScrollMode));
     curPos.y += rowHeight;
 
     auto& grpSmartCursor =
       addOnOffOption(*groupCommon, curPos, ID_grpSmartCursor, _("Smart Cursor"), SETTINGS.global.smartCursor);
-    grpSmartCursor.GetCtrl<ctrlButton>(ID_btOn)->SetTooltip(
+    grpSmartCursor.getCtrl<ctrlButton>(ID_btOn)->setTooltip(
       _("Place cursor on default button for new dialogs / action windows (default)"));
-    grpSmartCursor.GetCtrl<ctrlButton>(ID_btOff)->SetTooltip(
+    grpSmartCursor.getCtrl<ctrlButton>(ID_btOff)->setTooltip(
       _("Don't move cursor automatically\nUseful e.g. for split-screen / dual-mice multiplayer (see wiki)"));
     curPos.y += rowHeight;
 
     auto& grpWindowPinning = addOnOffOption(*groupCommon, curPos, ID_grpWindowPinning, _("Window pinning"),
                                             SETTINGS.interface.enableWindowPinning);
-    grpWindowPinning.GetCtrl<ctrlButton>(ID_btOn)->SetTooltip(
+    grpWindowPinning.getCtrl<ctrlButton>(ID_btOn)->setTooltip(
       _("Replace minimize button on windows by pin button avoiding closing the window with "
         "ESC.\nMinimize by double-clicking the title bar."));
     curPos.y += rowHeight;
@@ -324,7 +324,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     mainGroup->AddTextButton(ID_btSubmitDebugAsk, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, _("Ask always"),
                              NormalFont);
 
-    mainGroup->SetSelection((SETTINGS.global.submitDebugData == SubmitDebugData::Yes) ? ID_btSubmitDebugOn :
+    mainGroup->setSelection((SETTINGS.global.submitDebugData == SubmitDebugData::Yes) ? ID_btSubmitDebugOn :
                                                                                         ID_btSubmitDebugAsk); //-V807
     curPos.y += rowHeight;
 
@@ -338,7 +338,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     cbDisplayMode->AddItem(_("Windowed"));
     cbDisplayMode->AddItem(_("Fullscreen"));
     cbDisplayMode->AddItem(_("Borderless window"));
-    cbDisplayMode->SetSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
+    cbDisplayMode->setSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
     curPos.y += rowHeight;
 
     auto* grpResolution = groupGraphics->AddGroup(ID_grpResolution);
@@ -372,9 +372,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     for(const auto& video_driver : video_drivers)
     {
-        combo->AddItem(video_driver.GetName());
-        if(video_driver.GetName() == SETTINGS.driver.video)
-            combo->SetSelection(combo->GetNumItems() - 1);
+        combo->AddItem(video_driver.getName());
+        if(video_driver.getName() == SETTINGS.driver.video)
+            combo->setSelection(combo->getNumItems() - 1);
     }
     curPos.y += rowHeight;
 
@@ -393,7 +393,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     ctrlProgress* FXvolume =
       groupSound->AddProgress(ID_pgEffectsVol, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, 139, 138, 100);
-    FXvolume->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
+    FXvolume->setPosition((SETTINGS.sound.effectsVolume * 100) / 255);
     curPos.y += rowHeight;
 
     curPos.y += sectionSpacing;
@@ -406,7 +406,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     ctrlProgress* Mvolume =
       groupSound->AddProgress(ID_pgMusicVol, curPos + ctrlOffset2, ctrlSize, TextureColor::Grey, 139, 138, 100);
-    Mvolume->SetPosition((SETTINGS.sound.musicVolume * 100) / 255); //-V807
+    Mvolume->setPosition((SETTINGS.sound.musicVolume * 100) / 255); //-V807
     curPos.y += rowHeight;
 
     curPos.y += sectionSpacing;
@@ -423,14 +423,14 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
     for(const auto& audio_driver : audio_drivers)
     {
-        combo->AddItem(audio_driver.GetName());
-        if(audio_driver.GetName() == SETTINGS.driver.audio)
-            combo->SetSelection(combo->GetNumItems() - 1);
+        combo->AddItem(audio_driver.getName());
+        if(audio_driver.getName() == SETTINGS.driver.audio)
+            combo->setSelection(combo->getNumItems() - 1);
     }
 
     // Select "General"
-    mainGroup = GetCtrl<ctrlOptionGroup>(ID_grpOptions);
-    mainGroup->SetSelection(ID_btCommon, true);
+    mainGroup = getCtrl<ctrlOptionGroup>(ID_grpOptions);
+    mainGroup->setSelection(ID_btCommon, true);
 
     // Graphics
     // {
@@ -438,7 +438,7 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     loadVideoModes();
 
     // and add to the combo box
-    ctrlComboBox& cbVideoModes = *grpResolution->GetCtrl<ctrlComboBox>(ID_cbResolution);
+    ctrlComboBox& cbVideoModes = *grpResolution->getCtrl<ctrlComboBox>(ID_cbResolution);
     for(const auto& videoMode : videoModes_)
     {
         VideoMode ratio = getAspectRatio(videoMode);
@@ -454,9 +454,9 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
 
         // Select, if this is the current resolution
         if(videoMode == SETTINGS.video.fullscreenSize) //-V807
-            cbVideoModes.SetSelection(cbVideoModes.GetNumItems() - 1);
+            cbVideoModes.setSelection(cbVideoModes.getNumItems() - 1);
     }
-    ctrlComboBox& cbWindowSize = *grpWindowSize->GetCtrl<ctrlComboBox>(ID_cbWindowSize);
+    ctrlComboBox& cbWindowSize = *grpWindowSize->getCtrl<ctrlComboBox>(ID_cbWindowSize);
     cbWindowSize.AddItem(""); // Placeholder for current window size
     for(const auto& size : windowSizes_)
     {
@@ -468,8 +468,8 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
     updateResolutionGroups();
 
     // Fill "Limit Framerate"
-    auto* cbFrameRate = groupGraphics->GetCtrl<ctrlComboBox>(ID_cbFramerate);
-    if(VIDEODRIVER.HasVSync())
+    auto* cbFrameRate = groupGraphics->getCtrl<ctrlComboBox>(ID_cbFramerate);
+    if(VIDEODRIVER.hasVSync())
         cbFrameRate->AddItem(_("Dynamic (Limits to display refresh rate, works with most drivers)"));
     for(int framerate : Settings::SCREEN_REFRESH_RATES)
     {
@@ -478,19 +478,19 @@ dskOptions::dskOptions() : Desktop(LOADER.GetImageN("setup013", 0))
         else
             cbFrameRate->AddItem(helpers::toString(framerate) + " FPS");
         if(SETTINGS.video.framerate == framerate)
-            cbFrameRate->SetSelection(cbFrameRate->GetNumItems() - 1);
+            cbFrameRate->setSelection(cbFrameRate->getNumItems() - 1);
     }
-    if(!cbFrameRate->GetSelection())
-        cbFrameRate->SetSelection(0);
+    if(!cbFrameRate->getSelection())
+        cbFrameRate->setSelection(0);
 
     // }
 
     // Sound
     // {
 
-    groupSound->GetCtrl<ctrlOptionGroup>(ID_grpEffects)->SetSelection(SETTINGS.sound.effectsEnabled);
-    groupSound->GetCtrl<ctrlOptionGroup>(ID_grpBirdSounds)->SetSelection(SETTINGS.sound.birdsEnabled);
-    groupSound->GetCtrl<ctrlOptionGroup>(ID_grpMusic)->SetSelection(SETTINGS.sound.musicEnabled);
+    groupSound->getCtrl<ctrlOptionGroup>(ID_grpEffects)->setSelection(SETTINGS.sound.effectsEnabled);
+    groupSound->getCtrl<ctrlOptionGroup>(ID_grpBirdSounds)->setSelection(SETTINGS.sound.birdsEnabled);
+    groupSound->getCtrl<ctrlOptionGroup>(ID_grpMusic)->setSelection(SETTINGS.sound.musicEnabled);
 
     // }
 
@@ -511,19 +511,19 @@ void dskOptions::msgGroupProgressChange(const unsigned /*group_id*/, const unsig
     {
         case ID_pgEffectsVol:
             SETTINGS.sound.effectsVolume = static_cast<uint8_t>((position * 255) / 100);
-            AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effectsVolume);
+            AUDIODRIVER.setMasterEffectVolume(SETTINGS.sound.effectsVolume);
             break;
         case ID_pgMusicVol:
             SETTINGS.sound.musicVolume = static_cast<uint8_t>((position * 255) / 100);
-            AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musicVolume);
+            AUDIODRIVER.setMusicVolume(SETTINGS.sound.musicVolume);
             break;
     }
 }
 
 void dskOptions::msgGroupComboSelectItem(const unsigned group_id, const unsigned ctrl_id, const unsigned selection)
 {
-    auto* group = GetCtrl<ctrlGroup>(group_id);
-    auto* combo = group->GetCtrl<ctrlComboBox>(ctrl_id);
+    auto* group = getCtrl<ctrlGroup>(group_id);
+    auto* combo = group->getCtrl<ctrlComboBox>(ctrl_id);
 
     switch(ctrl_id)
     {
@@ -551,19 +551,19 @@ void dskOptions::msgGroupComboSelectItem(const unsigned group_id, const unsigned
             // Disable IPv6 visually
             if(SETTINGS.proxy.type == ProxyType::Socks4 && SETTINGS.server.ipv6)
             {
-                GetCtrl<ctrlGroup>(ID_grpCommon)->GetCtrl<ctrlOptionGroup>(ID_grpIpv6)->SetSelection(0);
-                GetCtrl<ctrlGroup>(ID_grpCommon)
-                  ->GetCtrl<ctrlOptionGroup>(ID_grpIpv6)
-                  ->GetCtrl<ctrlButton>(1)
-                  ->SetEnabled(false);
+                getCtrl<ctrlGroup>(ID_grpCommon)->getCtrl<ctrlOptionGroup>(ID_grpIpv6)->setSelection(0);
+                getCtrl<ctrlGroup>(ID_grpCommon)
+                  ->getCtrl<ctrlOptionGroup>(ID_grpIpv6)
+                  ->getCtrl<ctrlButton>(1)
+                  ->setEnabled(false);
                 SETTINGS.server.ipv6 = false;
             }
 
             if(SETTINGS.proxy.type != ProxyType::Socks4)
-                GetCtrl<ctrlGroup>(ID_grpCommon)
-                  ->GetCtrl<ctrlOptionGroup>(ID_grpIpv6)
-                  ->GetCtrl<ctrlButton>(1)
-                  ->SetEnabled(true);
+                getCtrl<ctrlGroup>(ID_grpCommon)
+                  ->getCtrl<ctrlOptionGroup>(ID_grpIpv6)
+                  ->getCtrl<ctrlButton>(1)
+                  ->setEnabled(true);
             break;
         case ID_cbMapScrollMode: SETTINGS.interface.mapScrollMode = static_cast<MapScrollMode>(selection); break;
         case ID_cbResolution: SETTINGS.video.fullscreenSize = videoModes_[selection]; break;
@@ -572,12 +572,12 @@ void dskOptions::msgGroupComboSelectItem(const unsigned group_id, const unsigned
             {
                 SETTINGS.video.windowedSize = windowSizes_[selection - 1];
                 if(SETTINGS.video.displayMode == DisplayMode::Windowed
-                   && VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed)
+                   && VIDEODRIVER.getDisplayMode() == DisplayMode::Windowed)
                     VIDEODRIVER.ResizeScreen(SETTINGS.video.windowedSize, DisplayMode::Windowed);
             }
             break;
         case ID_cbFramerate:
-            if(VIDEODRIVER.HasVSync())
+            if(VIDEODRIVER.hasVSync())
             {
                 if(selection == 0)
                     SETTINGS.video.framerate = 0;
@@ -588,12 +588,12 @@ void dskOptions::msgGroupComboSelectItem(const unsigned group_id, const unsigned
 
             VIDEODRIVER.setTargetFramerate(SETTINGS.video.framerate);
             break;
-        case ID_cbVideoDriver: SETTINGS.driver.video = combo->GetText(selection); break;
+        case ID_cbVideoDriver: SETTINGS.driver.video = combo->getText(selection); break;
         case ID_cbGuiScale:
             SETTINGS.video.guiScale = guiScales_[selection];
             VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
             break;
-        case ID_cbAudioDriver: SETTINGS.driver.audio = combo->GetText(selection); break;
+        case ID_cbAudioDriver: SETTINGS.driver.audio = combo->getText(selection); break;
         case ID_cbDisplayMode:
             SETTINGS.video.displayMode = DisplayMode(selection);
             updateResolutionGroups();
@@ -612,8 +612,8 @@ void dskOptions::msgGroupOptionGroupChange(const unsigned /*group_id*/, const un
         {
             SETTINGS.video.displayMode.resizeable = !enabled;
             const auto newDisplayMode = SETTINGS.video.displayMode;
-            if(newDisplayMode == DisplayMode::Windowed && VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed)
-                VIDEODRIVER.ResizeScreen(VIDEODRIVER.GetWindowSize(), newDisplayMode);
+            if(newDisplayMode == DisplayMode::Windowed && VIDEODRIVER.getDisplayMode() == DisplayMode::Windowed)
+                VIDEODRIVER.ResizeScreen(VIDEODRIVER.getWindowSize(), newDisplayMode);
         }
         break;
         case ID_grpVBO: SETTINGS.video.vbo = enabled; break;
@@ -634,7 +634,7 @@ void dskOptions::msgGroupOptionGroupChange(const unsigned /*group_id*/, const un
         case ID_grpUPNP: SETTINGS.global.useUPNP = enabled; break;
         case ID_grpSmartCursor:
             SETTINGS.global.smartCursor = enabled;
-            VIDEODRIVER.SetMouseWarping(enabled);
+            VIDEODRIVER.setMouseWarping(enabled);
             break;
         case ID_grpWindowPinning: SETTINGS.interface.enableWindowPinning = enabled; break;
         case ID_grpGFInfo: SETTINGS.global.showGFInfo = enabled; break;
@@ -648,7 +648,7 @@ void dskOptions::msgOptionGroupChange(const unsigned ctrl_id, const unsigned sel
     {
         const auto visGrp = selection + ID_grpCommon - ID_btCommon;
         for(const unsigned id : {ID_grpCommon, ID_grpGraphics, ID_grpSound})
-            GetCtrl<ctrlGroup>(id)->SetVisible(id == visGrp);
+            getCtrl<ctrlGroup>(id)->setVisible(id == visGrp);
     }
 }
 
@@ -673,15 +673,15 @@ void dskOptions::msgButtonClick(const unsigned ctrl_id)
     {
         case ID_btBack:
         {
-            auto* groupCommon = GetCtrl<ctrlGroup>(ID_grpCommon);
+            auto* groupCommon = getCtrl<ctrlGroup>(ID_grpCommon);
 
             // Save the name
-            SETTINGS.lobby.name = groupCommon->GetCtrl<ctrlEdit>(ID_edtName)->GetText();
-            if(!validatePort(groupCommon->GetCtrl<ctrlEdit>(ID_edtPort)->GetText(), SETTINGS.server.localPort))
+            SETTINGS.lobby.name = groupCommon->getCtrl<ctrlEdit>(ID_edtName)->getText();
+            if(!validatePort(groupCommon->getCtrl<ctrlEdit>(ID_edtPort)->getText(), SETTINGS.server.localPort))
                 return;
 
-            SETTINGS.proxy.hostname = groupCommon->GetCtrl<ctrlEdit>(ID_edtProxy)->GetText();
-            if(!validatePort(groupCommon->GetCtrl<ctrlEdit>(ID_edtProxyPort)->GetText(), SETTINGS.proxy.port))
+            SETTINGS.proxy.hostname = groupCommon->getCtrl<ctrlEdit>(ID_edtProxy)->getText();
+            if(!validatePort(groupCommon->getCtrl<ctrlEdit>(ID_edtProxyPort)->getText(), SETTINGS.proxy.port))
                 return;
 
             SETTINGS.Save();
@@ -701,8 +701,8 @@ void dskOptions::msgButtonClick(const unsigned ctrl_id)
             }
 
             const auto fullscreen = SETTINGS.video.displayMode == DisplayMode::Fullscreen;
-            if((fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.GetWindowSize()) //-V807
-               || VIDEODRIVER.GetDisplayMode() != SETTINGS.video.displayMode)
+            if((fullscreen && SETTINGS.video.fullscreenSize != VIDEODRIVER.getWindowSize()) //-V807
+               || VIDEODRIVER.getDisplayMode() != SETTINGS.video.displayMode)
             {
                 const auto screenSize = fullscreen ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
                 if(!VIDEODRIVER.ResizeScreen(screenSize, SETTINGS.video.displayMode))
@@ -713,7 +713,7 @@ void dskOptions::msgButtonClick(const unsigned ctrl_id)
                     return;
                 }
             }
-            if(SETTINGS.driver.video != VIDEODRIVER.GetName() || SETTINGS.driver.audio != AUDIODRIVER.GetName())
+            if(SETTINGS.driver.video != VIDEODRIVER.getName() || SETTINGS.driver.audio != AUDIODRIVER.getName())
             {
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
                   _("Sorry!"), _("You need to restart your game to change the video or audio driver!"), this,
@@ -761,7 +761,7 @@ void dskOptions::loadVideoModes()
     const auto videoModes = VIDEODRIVER.ListVideoModes();
     // random access is need for selection
     videoModes_.assign(videoModes.begin(), videoModes.end());
-    const auto windowSizes = VIDEODRIVER.GetDefaultWindowSizes();
+    const auto windowSizes = VIDEODRIVER.getDefaultWindowSizes();
     windowSizes_.assign(windowSizes.begin(), windowSizes.end());
 }
 
@@ -774,7 +774,7 @@ void dskOptions::msgScreenResize(const ScreenResizeEvent& sr)
 
 bool dskOptions::msgWheelUp(const MouseCoords& mc)
 {
-    if(VIDEODRIVER.GetModKeyState().ctrl)
+    if(VIDEODRIVER.getModKeyState().ctrl)
     {
         scrollGuiScale(true);
         return true;
@@ -784,7 +784,7 @@ bool dskOptions::msgWheelUp(const MouseCoords& mc)
 
 bool dskOptions::msgWheelDown(const MouseCoords& mc)
 {
-    if(VIDEODRIVER.GetModKeyState().ctrl)
+    if(VIDEODRIVER.getModKeyState().ctrl)
     {
         scrollGuiScale(false);
         return true;
@@ -802,7 +802,7 @@ void dskOptions::updateGuiScale()
 
     const auto range = VIDEODRIVER.getGuiScaleRange();
     const auto recommendedPercentRounded = roundGuiScale(range.recommendedPercent);
-    auto* combo = GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlComboBox>(ID_cbGuiScale);
+    auto* combo = getCtrl<ctrlGroup>(ID_grpGraphics)->getCtrl<ctrlComboBox>(ID_cbGuiScale);
 
     guiScales_.clear();
     combo->DeleteAllItems();
@@ -810,7 +810,7 @@ void dskOptions::updateGuiScale()
     guiScales_.push_back(0);
     combo->AddItem(helpers::format(_("Auto (%u%%)"), range.recommendedPercent));
     if(SETTINGS.video.guiScale == 0)
-        combo->SetSelection(0);
+        combo->setSelection(0);
 
     for(unsigned percent = roundGuiScale(range.minPercent); percent <= range.maxPercent; percent += stepSize)
     {
@@ -820,13 +820,13 @@ void dskOptions::updateGuiScale()
 
         combo->AddItem(helpers::toString(percent) + "%");
         if(percent == SETTINGS.video.guiScale)
-            combo->SetSelection(combo->GetNumItems() - 1);
+            combo->setSelection(combo->getNumItems() - 1);
     }
 
     // if GUI scale exceeds maximum, lower it to keep UI elements on screen
     if(SETTINGS.video.guiScale > guiScales_.back())
     {
-        combo->SetSelection(combo->GetNumItems() - 1);
+        combo->setSelection(combo->getNumItems() - 1);
         SETTINGS.video.guiScale = guiScales_.back();
         VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
     }
@@ -834,17 +834,17 @@ void dskOptions::updateGuiScale()
 
 void dskOptions::scrollGuiScale(bool up)
 {
-    auto* combo = GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlComboBox>(ID_cbGuiScale);
-    const auto& selection = combo->GetSelection();
+    auto* combo = getCtrl<ctrlGroup>(ID_grpGraphics)->getCtrl<ctrlComboBox>(ID_cbGuiScale);
+    const auto& selection = combo->getSelection();
     unsigned newSelection = 0;
     if(!selection || *selection == 0) // No selection or "Auto" item selected
         newSelection = recommendedGuiScaleIndex_;
     else
-        newSelection = std::clamp<unsigned>(*selection + (up ? 1 : -1), 1, combo->GetNumItems() - 1);
+        newSelection = std::clamp<unsigned>(*selection + (up ? 1 : -1), 1, combo->getNumItems() - 1);
 
     if(newSelection != selection)
     {
-        combo->SetSelection(newSelection);
+        combo->setSelection(newSelection);
         SETTINGS.video.guiScale = guiScales_[newSelection];
         VIDEODRIVER.setGuiScalePercent(SETTINGS.video.guiScale);
     }
@@ -853,34 +853,34 @@ void dskOptions::scrollGuiScale(bool up)
 void dskOptions::updatePortraitControls()
 {
     const auto& newPortrait = Portraits[SETTINGS.lobby.portraitIndex];
-    auto* groupCommon = GetCtrl<ctrlGroup>(ID_grpCommon);
+    auto* groupCommon = getCtrl<ctrlGroup>(ID_grpCommon);
 
-    auto* portraitButton = groupCommon->GetCtrl<ctrlImageButton>(ID_btCommonPortrait);
-    auto* newPortraitTexture = LOADER.GetTextureN(newPortrait.resourceId, newPortrait.resourceIndex);
-    portraitButton->SetImage(newPortraitTexture);
+    auto* portraitButton = groupCommon->getCtrl<ctrlImageButton>(ID_btCommonPortrait);
+    auto* newPortraitTexture = LOADER.getTextureN(newPortrait.resourceId, newPortrait.resourceIndex);
+    portraitButton->setImage(newPortraitTexture);
 
-    auto* portraitCombo = groupCommon->GetCtrl<ctrlComboBox>(ID_cbCommonPortrait);
-    portraitCombo->SetSelection(SETTINGS.lobby.portraitIndex);
+    auto* portraitCombo = groupCommon->getCtrl<ctrlComboBox>(ID_cbCommonPortrait);
+    portraitCombo->setSelection(SETTINGS.lobby.portraitIndex);
 }
 
 void dskOptions::updateWindowSizeComboBox()
 {
     auto* cbWindowSize =
-      GetCtrl<ctrlGroup>(ID_grpGraphics)->GetCtrl<ctrlGroup>(ID_grpWindowSize)->GetCtrl<ctrlComboBox>(ID_cbWindowSize);
+      getCtrl<ctrlGroup>(ID_grpGraphics)->getCtrl<ctrlGroup>(ID_grpWindowSize)->getCtrl<ctrlComboBox>(ID_cbWindowSize);
 
     const VideoMode currentSize =
-      VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed ? VIDEODRIVER.GetWindowSize() : SETTINGS.video.windowedSize;
+      VIDEODRIVER.getDisplayMode() == DisplayMode::Windowed ? VIDEODRIVER.getWindowSize() : SETTINGS.video.windowedSize;
     s25util::ClassicImbuedStream<std::ostringstream> curStr;
     curStr << currentSize.width << "x" << currentSize.height;
-    cbWindowSize->SetText(0, curStr.str());
+    cbWindowSize->setText(0, curStr.str());
     // Not found == -1 -> First entry selected
-    cbWindowSize->SetSelection(static_cast<unsigned>(helpers::indexOf(windowSizes_, currentSize) + 1));
+    cbWindowSize->setSelection(static_cast<unsigned>(helpers::indexOf(windowSizes_, currentSize) + 1));
 }
 
 void dskOptions::updateResolutionGroups()
 {
     const auto currentDisplayMode = SETTINGS.video.displayMode;
-    auto& grpGraphics = *GetCtrl<ctrlGroup>(ID_grpGraphics);
-    grpGraphics.GetCtrl<ctrlGroup>(ID_grpResolution)->SetVisible(currentDisplayMode == DisplayMode::Fullscreen);
-    grpGraphics.GetCtrl<ctrlGroup>(ID_grpWindowSize)->SetVisible(currentDisplayMode == DisplayMode::Windowed);
+    auto& grpGraphics = *getCtrl<ctrlGroup>(ID_grpGraphics);
+    grpGraphics.getCtrl<ctrlGroup>(ID_grpResolution)->setVisible(currentDisplayMode == DisplayMode::Fullscreen);
+    grpGraphics.getCtrl<ctrlGroup>(ID_grpWindowSize)->setVisible(currentDisplayMode == DisplayMode::Windowed);
 }

@@ -50,9 +50,9 @@ public:
 
     void Close();
 
-    std::string GetSignature() const override;
-    uint8_t GetLatestMinorVersion() const override;
-    uint8_t GetLatestMajorVersion() const override;
+    std::string getSignature() const override;
+    uint8_t getLatestMinorVersion() const override;
+    uint8_t getLatestMajorVersion() const override;
 
     /// Opens the replay for recording
     bool StartRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo, unsigned randomSeed);
@@ -60,10 +60,10 @@ public:
     bool StopRecording();
 
     /// Is the replay in the state for accepting commands to record
-    bool IsRecording() const { return isRecording_ && file_.IsOpen(); }
+    bool isRecording() const { return isRecording_ && file_.IsOpen(); }
     /// Is the replay open for reading commands
-    bool IsReplaying() const { return !isRecording_ && file_.IsOpen(); }
-    const boost::filesystem::path& GetPath() const;
+    bool isReplaying() const { return !isRecording_ && file_.IsOpen(); }
+    const boost::filesystem::path& getPath() const;
 
     /// Load the header (containing map and player names)
     bool LoadHeader(const boost::filesystem::path& filepath);
@@ -83,9 +83,9 @@ public:
     void UpdateLastGF(unsigned last_gf);
 
     unsigned getSeed() const { return randomSeed_; }
-    unsigned GetLastGF() const { return lastGF_; }
+    unsigned getLastGF() const { return lastGF_; }
     /// TODO(Replay): Fish fix introduced in 8.3.
-    bool usesFishFix() const { return GetMinorVersion() >= 3; }
+    bool usesFishFix() const { return getMinorVersion() >= 3; }
 
 protected:
     BinaryFile file_;

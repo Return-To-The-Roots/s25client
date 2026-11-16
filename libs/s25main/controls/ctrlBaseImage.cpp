@@ -13,11 +13,11 @@ void ctrlBaseImage::SwapImage(ctrlBaseImage& other)
     std::swap(img_, other.img_);
 }
 
-Rect ctrlBaseImage::GetImageRect() const
+Rect ctrlBaseImage::getImageRect() const
 {
     if(!img_)
         return Rect();
-    return Rect(-img_->GetOrigin(), img_->GetSize());
+    return Rect(-img_->getOrigin(), img_->getSize());
 }
 
 void ctrlBaseImage::DrawImage(const Rect& dstArea) const
@@ -31,7 +31,7 @@ void ctrlBaseImage::DrawImage(const Rect& dstArea, unsigned color) const
         return;
 
     auto dst = dstArea;
-    auto imageSize = img_->GetSize();
+    auto imageSize = img_->getSize();
     auto dstSize = dstArea.getSize();
     Rect srcArea = Rect(DrawPoint::all(0), imageSize);
 

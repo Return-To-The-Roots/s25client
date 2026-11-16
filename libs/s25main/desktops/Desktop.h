@@ -20,7 +20,7 @@ public:
     /// Callback when a window was closed
     virtual void msgWindowClosed(IngameWindow&){};
     /// Show or hide the fps
-    void SetFpsDisplay(bool show);
+    void setFpsDisplay(bool show);
 
     /// ID of the fps display text
     static const unsigned fpsDisplayId;

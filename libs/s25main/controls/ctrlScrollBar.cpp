@@ -13,11 +13,11 @@ ctrlScrollBar::ctrlScrollBar(Window* parent, unsigned id, const DrawPoint& pos, 
     : Window(parent, id, pos, size), button_height(button_height), tc(tc), pagesize(pagesize), scroll_range(0),
       scroll_pos(0), scroll_height(0), sliderHeight(0), sliderPos(0), isMouseScrolling(false), last_y(0)
 {
-    SetVisible(false);
+    setVisible(false);
 
-    AddImageButton(0, DrawPoint(0, 0), Extent(size.x, button_height), tc, LOADER.GetImageN("io", 33));
+    AddImageButton(0, DrawPoint(0, 0), Extent(size.x, button_height), tc, LOADER.getImageN("io", 33));
     AddImageButton(1, DrawPoint(0, (size.y > button_height) ? size.y - button_height : 1),
-                   Extent(size.x, button_height), tc, LOADER.GetImageN("io", 34));
+                   Extent(size.x, button_height), tc, LOADER.getImageN("io", 34));
 
     Resize(size);
 }
@@ -37,7 +37,7 @@ void ctrlScrollBar::Scroll(int distance)
     {
         scroll_pos = static_cast<unsigned short>(newScrollPos);
         UpdateSliderFromPos();
-        GetParent()->msgScrollChange(GetID(), scroll_pos);
+        getParent()->msgScrollChange(getID(), scroll_pos);
     }
 }
 
@@ -52,12 +52,12 @@ bool ctrlScrollBar::msgLeftUp(const MouseCoords& mc)
 bool ctrlScrollBar::msgLeftDown(const MouseCoords& mc)
 {
     if(IsPointInRect(mc.pos,
-                     Rect(GetDrawPos().x, GetDrawPos().y + button_height + sliderPos, GetSize().x, sliderHeight)))
+                     Rect(getDrawPos().x, getDrawPos().y + button_height + sliderPos, getSize().x, sliderHeight)))
     {
         // Maus auf dem Scrollbutton
         isMouseScrolling = true;
         return true;
-    } else if(IsPointInRect(mc.pos, Rect(GetDrawPos().x, GetDrawPos().y + button_height, GetSize().x, sliderPos)))
+    } else if(IsPointInRect(mc.pos, Rect(getDrawPos().x, getDrawPos().y + button_height, getSize().x, sliderPos)))
     {
         // Clicked above slider -> Move half a slider height up
         if(sliderPos < sliderHeight / 2)
@@ -71,8 +71,8 @@ bool ctrlScrollBar::msgLeftDown(const MouseCoords& mc)
     {
         unsigned short bottomSliderPos = button_height + sliderPos + sliderHeight;
 
-        if(IsPointInRect(mc.pos, Rect(GetDrawPos().x, GetDrawPos().y + bottomSliderPos, GetSize().x,
-                                      GetSize().y - (bottomSliderPos + button_height))))
+        if(IsPointInRect(mc.pos, Rect(getDrawPos().x, getDrawPos().y + bottomSliderPos, getSize().x,
+                                      getSize().y - (bottomSliderPos + button_height))))
         {
             // Clicked below slider -> Move half a slider height down
             sliderPos += sliderHeight / 2;
@@ -124,7 +124,7 @@ void ctrlScrollBar::msgButtonClick(const unsigned ctrl_id)
 /**
  *  setzt die Scroll-Position.
  */
-void ctrlScrollBar::SetScrollPos(unsigned short scroll_pos)
+void ctrlScrollBar::setScrollPos(unsigned short scroll_pos)
 {
     if(this->scroll_pos != scroll_pos)
     {
@@ -136,7 +136,7 @@ void ctrlScrollBar::SetScrollPos(unsigned short scroll_pos)
 /**
  *  setzt die Scroll-Höhe.
  */
-void ctrlScrollBar::SetRange(unsigned short scroll_range)
+void ctrlScrollBar::setRange(unsigned short scroll_range)
 {
     if(this->scroll_range != scroll_range)
     {
@@ -148,7 +148,7 @@ void ctrlScrollBar::SetRange(unsigned short scroll_range)
 /**
  *  setzt die Seiten-Höhe.
  */
-void ctrlScrollBar::SetPageSize(unsigned short pagesize)
+void ctrlScrollBar::setPageSize(unsigned short pagesize)
 {
     if(this->pagesize != pagesize)
     {
@@ -163,17 +163,17 @@ void ctrlScrollBar::Resize(const Extent& newSize)
 
     // Up button
     Extent btSize = Extent(newSize.x, button_height);
-    GetCtrl<ctrlButton>(0)->Resize(btSize);
+    getCtrl<ctrlButton>(0)->Resize(btSize);
     // Down button
-    auto* downButton = GetCtrl<ctrlButton>(1);
+    auto* downButton = getCtrl<ctrlButton>(1);
     downButton->Resize(btSize);
 
     if(newSize.y >= button_height)
     {
-        downButton->SetVisible(true);
-        downButton->SetPos(DrawPoint(0, newSize.y - button_height));
+        downButton->setVisible(true);
+        downButton->setPos(DrawPoint(0, newSize.y - button_height));
     } else
-        downButton->SetVisible(false);
+        downButton->setVisible(false);
 
     RecalculateSizes();
 }
@@ -188,15 +188,15 @@ void ctrlScrollBar::Draw_()
     RTTR_Assert(scroll_range > pagesize); // Don't show unneccessary scrollbars, otherwise invariants might be violated.
     if(scroll_height == 0)
         return;
-    DrawPoint pos = GetDrawPos();
+    DrawPoint pos = getDrawPos();
     // Leiste
-    Draw3D(Rect(pos + DrawPoint(0, button_height - 2), GetSize().x, GetSize().y - button_height * 2 + 4), tc, false);
+    Draw3D(Rect(pos + DrawPoint(0, button_height - 2), getSize().x, getSize().y - button_height * 2 + 4), tc, false);
 
     // Buttons
     Window::Draw_();
 
     // Scrollbar
-    Draw3D(Rect(pos + DrawPoint(0, button_height + sliderPos), GetSize().x, sliderHeight), tc, true);
+    Draw3D(Rect(pos + DrawPoint(0, button_height + sliderPos), getSize().x, sliderHeight), tc, true);
 }
 
 void ctrlScrollBar::UpdatePosFromSlider()
@@ -207,7 +207,7 @@ void ctrlScrollBar::UpdatePosFromSlider()
     {
         RTTR_Assert(newScrollPos + pagesize <= scroll_range); // Probably slider to small?
         scroll_pos = newScrollPos;
-        GetParent()->msgScrollChange(GetID(), scroll_pos);
+        getParent()->msgScrollChange(getID(), scroll_pos);
     }
 }
 
@@ -224,7 +224,7 @@ void ctrlScrollBar::UpdateSliderFromPos()
  */
 void ctrlScrollBar::RecalculateSizes()
 {
-    scroll_height = ((GetSize().y > 2u * button_height) ? GetSize().y - 2u * button_height : 0);
+    scroll_height = ((getSize().y > 2u * button_height) ? getSize().y - 2u * button_height : 0);
 
     if(scroll_range > pagesize)
     {
@@ -232,20 +232,20 @@ void ctrlScrollBar::RecalculateSizes()
 
         UpdateSliderFromPos();
 
-        if(!IsVisible())
+        if(!isVisible())
         {
-            SetVisible(true);
-            GetParent()->msgScrollShow(GetID(), IsVisible());
+            setVisible(true);
+            getParent()->msgScrollShow(getID(), isVisible());
         }
     } else
     {
         scroll_pos = 0;
 
         // nicht nötig, Scrollleiste kann weg
-        if(IsVisible())
+        if(isVisible())
         {
-            SetVisible(false);
-            GetParent()->msgScrollShow(GetID(), IsVisible());
+            setVisible(false);
+            getParent()->msgScrollShow(getID(), isVisible());
         }
     }
 }

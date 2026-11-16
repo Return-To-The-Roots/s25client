@@ -60,7 +60,7 @@ AudioSDL::~AudioSDL()
  *
  *  @return liefert den Treibernamen zurück
  */
-const char* AudioSDL::GetName() const
+const char* AudioSDL::getName() const
 {
     return GetDriverName();
 }
@@ -90,7 +90,7 @@ bool AudioSDL::Initialize()
         std::cerr << Mix_GetError() << std::endl;
         return false;
     }
-    SetNumChannels(Mix_AllocateChannels(DEFAULT_NUM_CHANNELS));
+    setNumChannels(Mix_AllocateChannels(DEFAULT_NUM_CHANNELS));
     Mix_SetMusicCMD(nullptr);
     currentInstance = this;
     Mix_HookMusicFinished(AudioSDL::MusicFinished);
@@ -224,9 +224,9 @@ void AudioSDL::doStopEffect(int channel)
     Mix_HaltChannel(channel);
 }
 
-bool AudioSDL::IsEffectPlaying(EffectPlayId play_id)
+bool AudioSDL::isEffectPlaying(EffectPlayId play_id)
 {
-    int channel = GetEffectChannel(play_id);
+    int channel = getEffectChannel(play_id);
     if(channel < 0)
         return false;
     if(Mix_Playing(channel))
@@ -237,17 +237,17 @@ bool AudioSDL::IsEffectPlaying(EffectPlayId play_id)
 
 void AudioSDL::ChangeVolume(EffectPlayId play_id, uint8_t volume)
 {
-    int channel = GetEffectChannel(play_id);
+    int channel = getEffectChannel(play_id);
     if(channel >= 0)
         Mix_Volume(channel, CalcEffectVolume(volume));
 }
 
-void AudioSDL::SetMasterEffectVolume(uint8_t volume)
+void AudioSDL::setMasterEffectVolume(uint8_t volume)
 {
     master_effects_volume = volume;
 }
 
-void AudioSDL::SetMusicVolume(uint8_t volume)
+void AudioSDL::setMusicVolume(uint8_t volume)
 {
     master_music_volume = volume;
 

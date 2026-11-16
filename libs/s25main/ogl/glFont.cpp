@@ -49,7 +49,7 @@ glFont::glFont(const libsiedler2::ArchivItem_Font& font) : maxCharSize(font.getD
     libsiedler2::PixelBufferBGRA bufferWithOutline(texSize.x, texSize.y);
     libsiedler2::PixelBufferBGRA bufferNoOutline(texSize.x, texSize.y);
 
-    const libsiedler2::ArchivItem_Palette* const palette = LOADER.GetPaletteN("colors");
+    const libsiedler2::ArchivItem_Palette* const palette = LOADER.getPaletteN("colors");
     Position curPos(spacing);
     numChars = 0;
     for(unsigned i = 0; i < font.size(); ++i)
@@ -80,9 +80,9 @@ glFont::glFont(const libsiedler2::ArchivItem_Font& font) : maxCharSize(font.getD
 
     // Set the placeholder for non-existent glyphs. Use '?' (should always be possible)
     if(CharExist(0xFFFD))
-        placeHolder = GetCharInfo(0xFFFD);
+        placeHolder = getCharInfo(0xFFFD);
     else if(CharExist('?'))
-        placeHolder = GetCharInfo('?');
+        placeHolder = getCharInfo('?');
     else
         throw std::runtime_error("Cannot find '?' glyph in font. What shall I use as fallback?");
 
@@ -103,7 +103,7 @@ bool glFont::CharExist(char32_t c) const
     return helpers::contains(utf8_mapping, c);
 }
 
-const glFont::CharInfo& glFont::GetCharInfo(char32_t c) const
+const glFont::CharInfo& glFont::getCharInfo(char32_t c) const
 {
     if(c < asciiMapping.size())
     {
@@ -131,7 +131,7 @@ void glFont::AddCharInfo(char32_t c, const CharInfo& info)
  */
 inline void glFont::DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const
 {
-    CharInfo ci = GetCharInfo(curChar);
+    CharInfo ci = getCharInfo(curChar);
 
     GlPoint texCoord1(ci.pos);
     GlPoint texCoord2(ci.pos + DrawPoint(ci.width, maxCharSize.y));
@@ -239,10 +239,10 @@ void glFont::Draw(DrawPoint pos, const std::string& text, FontStyle format, unsi
 
     // Get texture first as it might need to be created
     glArchivItem_Bitmap& usedFont = format.is(FontStyle::NO_OUTLINE) ? *fontNoOutline : *fontWithOutline;
-    unsigned texture = usedFont.GetTexture();
+    unsigned texture = usedFont.getTexture();
     if(!texture)
         return;
-    const GlPoint texSize(usedFont.GetTexSize());
+    const GlPoint texSize(usedFont.getTexSize());
     RTTR_Assert(texList.texCoords.size() == texList.vertices.size());
     RTTR_Assert(texList.texCoords.size() % 4u == 0);
     for(GlPoint& pt : texList.texCoords)
@@ -326,7 +326,7 @@ std::vector<std::string> glFont::WrapInfo::CreateSingleStrings(const std::string
  *  @param[in]     primary_width   Maximale Breite der ersten Zeile
  *  @param[in]     secondary_width Maximale Breite der weiteren Zeilen
  */
-glFont::WrapInfo glFont::GetWrapInfo(const std::string& text, const unsigned short primary_width,
+glFont::WrapInfo glFont::getWrapInfo(const std::string& text, const unsigned short primary_width,
                                      const unsigned short secondary_width) const
 {
     RTTR_Assert(s25util::isValidUTF8(text)); // Can only handle UTF-8 strings!

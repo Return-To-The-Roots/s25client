@@ -36,15 +36,15 @@ struct DummyWorker : GameObject
 
     void HandleEvent(unsigned) override
     {
-        nodeWasEmptyWhenReplaced = (world.GetNode(pos).obj == nullptr);
+        nodeWasEmptyWhenReplaced = (world.getNode(pos).obj == nullptr);
         world.DestroyNO(pos, false);
-        world.SetNO(pos, new noStaticObject(pos, staticObjId));
+        world.setNO(pos, new noStaticObject(pos, staticObjId));
     }
 
     // LCOV_EXCL_START
     void Destroy() override {}
     void Serialize(SerializedGameData&) const override {}
-    GO_Type GetGOT() const final { return GO_Type::NofGeologist; }
+    GO_Type getGOT() const final { return GO_Type::NofGeologist; }
     // LCOV_EXCL_STOP
 };
 
@@ -52,8 +52,8 @@ struct Fixture : WorldFixture<CreateEmptyWorld, 1>
 {
     const MapPoint testPos; /// Position not blocked by HQ for use
     const unsigned startNumObjs;
-    Fixture() : testPos(world.GetPlayer(0).GetHQPos() + MapPoint(4, 4)), startNumObjs(GameObject::GetNumObjs()) {}
-    unsigned getNumObjs() const { return GameObject::GetNumObjs() - startNumObjs; }
+    Fixture() : testPos(world.getPlayer(0).getHQPos() + MapPoint(4, 4)), startNumObjs(GameObject::getNumObjs()) {}
+    unsigned getNumObjs() const { return GameObject::getNumObjs() - startNumObjs; }
 };
 
 template<class T>
@@ -78,29 +78,29 @@ using DisappearingEnvObjs = boost::mpl::list<noSign, noDisappearingMapEnvObject,
 BOOST_AUTO_TEST_CASE_TEMPLATE(RemoveEnvObjectFromNodeBeforeKill, T, DisappearingEnvObjs)
 {
     noBase& obj = *makeEnvObject<T>(testPos);
-    world.SetNO(testPos, &obj);
+    world.setNO(testPos, &obj);
     const MapPoint testPos2 = testPos + MapPoint(1, 0);
     noBase& obj2 = *makeEnvObject<T>(testPos2);
-    world.SetNO(testPos2, &obj2);
+    world.setNO(testPos2, &obj2);
     BOOST_TEST(getNumObjs() == 2u);
 
     // Should have an event scheduled for removal of the obj
-    BOOST_TEST_REQUIRE(em.GetObjEvents(obj).size() == 1u);
+    BOOST_TEST_REQUIRE(em.getObjEvents(obj).size() == 1u);
 
     if constexpr(!std::is_same_v<T, noFire>)
     {
         // Except for fire, which burns until it gets removed,
         // objects start fading after some time and only then get removed, so trigger the first event.
-        em.RescheduleEvent(em.GetObjEvents(obj).at(0), em.GetCurrentGF() + 1);
-        em.RescheduleEvent(em.GetObjEvents(obj2).at(0), em.GetCurrentGF() + 1);
+        em.RescheduleEvent(em.getObjEvents(obj).at(0), em.getCurrentGF() + 1);
+        em.RescheduleEvent(em.getObjEvents(obj2).at(0), em.getCurrentGF() + 1);
         em.ExecuteNextGF();
     }
     DummyWorker worker(world, testPos);
     DummyWorker worker2(world, testPos2);
     // Add worker event before and after object event, but both in the same GF
     em.AddEvent(&worker, 1);
-    em.RescheduleEvent(em.GetObjEvents(obj).at(0), em.GetCurrentGF() + 1);
-    em.RescheduleEvent(em.GetObjEvents(obj2).at(0), em.GetCurrentGF() + 1);
+    em.RescheduleEvent(em.getObjEvents(obj).at(0), em.getCurrentGF() + 1);
+    em.RescheduleEvent(em.getObjEvents(obj2).at(0), em.getCurrentGF() + 1);
     em.AddEvent(&worker2, 1);
 
     BOOST_TEST(getNumObjs() == 4u);
@@ -113,8 +113,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(RemoveEnvObjectFromNodeBeforeKill, T, Disappearing
     // Object moved itself to kill list
     BOOST_TEST(worker2.nodeWasEmptyWhenReplaced);
     // Objects placed by "workers" are present on the map
-    BOOST_TEST(ensureNonNull(world.GetSpecObj<noStaticObject>(testPos)).GetItemID() == DummyWorker::staticObjId);
-    BOOST_TEST(ensureNonNull(world.GetSpecObj<noStaticObject>(testPos2)).GetItemID() == DummyWorker::staticObjId);
+    BOOST_TEST(ensureNonNull(world.getSpecObj<noStaticObject>(testPos)).getItemID() == DummyWorker::staticObjId);
+    BOOST_TEST(ensureNonNull(world.getSpecObj<noStaticObject>(testPos2)).getItemID() == DummyWorker::staticObjId);
 }
 
 // noShipBuildingSite has no timed death event; its removal happens synchronously in MakeBuildStep.
@@ -124,39 +124,39 @@ BOOST_AUTO_TEST_CASE(ShipBuildingSiteDestroyDoesNotClobberNode)
 {
     // Similar for ship building sites: Replacing it by a new object must not hurt that new obj
     auto* site = new noShipBuildingSite(testPos, 0);
-    world.SetNO(testPos, site);
+    world.setNO(testPos, site);
     auto* staticObj = new noStaticObject(testPos, DummyWorker::staticObjId);
     BOOST_TEST(getNumObjs() == 2u);
     world.DestroyNO(testPos);
-    world.SetNO(testPos, staticObj);
+    world.setNO(testPos, staticObj);
     BOOST_TEST(getNumObjs() == 1u); // Catch possible double-free
-    BOOST_TEST(ensureNonNull(world.GetSpecObj<noStaticObject>(testPos)).GetItemID() == DummyWorker::staticObjId);
+    BOOST_TEST(ensureNonNull(world.getSpecObj<noStaticObject>(testPos)).getItemID() == DummyWorker::staticObjId);
     world.DestroyNO(testPos);
 
     // Fully build ship, then build new object there
     // Fake a nearby sea
-    world.GetNodeWriteable(world.GetNeighbour(testPos, Direction::SouthWest)).seaId = SeaId(1);
+    world.getNodeWriteable(world.getNeighbour(testPos, Direction::SouthWest)).seaId = SeaId(1);
     site = new noShipBuildingSite(testPos, 0);
-    world.SetNO(testPos, site);
+    world.setNO(testPos, site);
     BOOST_TEST(getNumObjs() == 1u);
     do
     {
         site->MakeBuildStep();
-    } while(world.GetNO(testPos)->GetGOT() == GO_Type::Shipbuildingsite);
+    } while(world.getNO(testPos)->getGOT() == GO_Type::Shipbuildingsite);
     // Replaced by ship
-    BOOST_TEST(world.GetPlayer(0).GetNumShips() == 1u);
+    BOOST_TEST(world.getPlayer(0).getNumShips() == 1u);
     // Building site will be replaced at end of GF
     BOOST_TEST(getNumObjs() == 2u);
-    BOOST_TEST(em.IsObjectInKillList(*site));
+    BOOST_TEST(em.isObjectInKillList(*site));
     // Now place new object at the free spot
     staticObj = new noStaticObject(testPos, DummyWorker::staticObjId);
     BOOST_TEST(getNumObjs() == 3u);
-    world.SetNO(testPos, staticObj);
+    world.setNO(testPos, staticObj);
 
     // Should only destroy the building site
     em.ExecuteNextGF();
     BOOST_TEST(getNumObjs() == 2u);
-    BOOST_TEST(ensureNonNull(world.GetSpecObj<noStaticObject>(testPos)).GetItemID() == DummyWorker::staticObjId);
+    BOOST_TEST(ensureNonNull(world.getSpecObj<noStaticObject>(testPos)).getItemID() == DummyWorker::staticObjId);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

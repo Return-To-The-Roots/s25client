@@ -15,7 +15,7 @@
 TerritoryRegion::TerritoryRegion(const Position& startPt, const Extent& size, const GameWorldBase& gwb)
     : startPt(startPt), size(size), world(gwb)
 {
-    if(size.x > gwb.GetWidth() || size.y > gwb.GetHeight())
+    if(size.x > gwb.getWidth() || size.y > gwb.getHeight())
         throw std::runtime_error("Size to big for TerritoryRegion");
     // Feld erzeugen
     nodes.resize(size.x * size.y);
@@ -23,7 +23,7 @@ TerritoryRegion::TerritoryRegion(const Position& startPt, const Extent& size, co
 
 TerritoryRegion::~TerritoryRegion() = default;
 
-bool TerritoryRegion::IsPointInPolygon(const std::vector<Position>& polygon, const Position& pt)
+bool TerritoryRegion::isPointInPolygon(const std::vector<Position>& polygon, const Position& pt)
 {
     // Adapted from http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
     // The site contains a lot of details and information.
@@ -54,14 +54,14 @@ bool TerritoryRegion::IsPointInPolygon(const std::vector<Position>& polygon, con
     return (inside);
 }
 
-bool TerritoryRegion::IsPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, const MapPoint pt)
+bool TerritoryRegion::isPointValid(const MapExtent& mapSize, const std::vector<MapPoint>& polygon, const MapPoint pt)
 {
     // This is for specifying polyons that wrap around corners:
     // - e.g. w=64, h=64, polygon = {(40,40), (40,80), (80,80), (80,40)}
     Position pt2(pt.x + mapSize.x, pt.y), pt3(pt.x, pt.y + mapSize.y), pt4(pt + mapSize);
     const std::vector<Position> polygonInt(polygon.begin(), polygon.end());
-    return (polygon.empty() || IsPointInPolygon(polygonInt, Position(pt)) || IsPointInPolygon(polygonInt, pt2)
-            || IsPointInPolygon(polygonInt, pt3) || IsPointInPolygon(polygonInt, pt4));
+    return (polygon.empty() || isPointInPolygon(polygonInt, Position(pt)) || isPointInPolygon(polygonInt, pt2)
+            || isPointInPolygon(polygonInt, pt3) || isPointInPolygon(polygonInt, pt4));
 }
 
 void TerritoryRegion::AdjustNode(MapPoint pt, uint8_t player, uint16_t radius, const std::vector<MapPoint>* allowedArea)
@@ -72,7 +72,7 @@ void TerritoryRegion::AdjustNode(MapPoint pt, uint8_t player, uint16_t radius, c
         return;
 
     // check whether this node is within the area we may have territory in
-    if(allowedArea && !IsPointValid(world.GetSize(), *allowedArea, pt))
+    if(allowedArea && !isPointValid(world.getSize(), *allowedArea, pt))
         return;
 
     /// If the new distance is less then the old, then we claim this point.
@@ -86,7 +86,7 @@ void TerritoryRegion::AdjustNode(MapPoint pt, uint8_t player, uint16_t radius, c
 
 TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(const MapPoint& pt)
 {
-    return TryGetNode(GetPosFromMapPos(pt));
+    return TryGetNode(getPosFromMapPos(pt));
 }
 
 TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt)
@@ -94,7 +94,7 @@ TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt)
     if(!AdjustCoords(realPt))
         return nullptr;
 
-    return &GetNode(realPt);
+    return &getNode(realPt);
 }
 
 const TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt) const
@@ -102,7 +102,7 @@ const TerritoryRegion::TRNode* TerritoryRegion::TryGetNode(Position realPt) cons
     if(!AdjustCoords(realPt))
         return nullptr;
 
-    return &GetNode(realPt);
+    return &getNode(realPt);
 }
 
 bool TerritoryRegion::AdjustCoords(Position& pt) const
@@ -114,18 +114,18 @@ bool TerritoryRegion::AdjustCoords(Position& pt) const
     // Check if this point is inside this region
     // Apply wrap-around if on either side
     if(pt.x < 0)
-        pt.x += world.GetWidth();
+        pt.x += world.getWidth();
     else if(static_cast<unsigned>(pt.x) >= size.x)
-        pt.x -= world.GetWidth();
+        pt.x -= world.getWidth();
     // Check the (possibly) adjusted point
     if(pt.x < 0 || static_cast<unsigned>(pt.x) >= size.x)
         return false;
 
     // Apply wrap-around if on either side
     if(pt.y < 0)
-        pt.y += world.GetHeight();
+        pt.y += world.getHeight();
     else if(static_cast<unsigned>(pt.y) >= size.y)
-        pt.y -= world.GetHeight();
+        pt.y -= world.getHeight();
     // Check the (possibly) adjusted point
     if(pt.y < 0 || static_cast<unsigned>(pt.y) >= size.y)
         return false;
@@ -134,33 +134,33 @@ bool TerritoryRegion::AdjustCoords(Position& pt) const
 
 void TerritoryRegion::CalcTerritoryOfBuilding(const noBaseBuilding& building)
 {
-    unsigned radius = building.GetMilitaryRadius();
+    unsigned radius = building.getMilitaryRadius();
     // Does not hold territory? -> Out
     if(radius == 0u)
         return;
     // Also ignore non-occupied military buildings
-    if(building.GetGOT() == GO_Type::NobMilitary && static_cast<const nobMilitary&>(building).IsNewBuilt())
+    if(building.getGOT() == GO_Type::NobMilitary && static_cast<const nobMilitary&>(building).isNewBuilt())
         return;
 
-    const std::vector<MapPoint>* allowedArea = &world.GetPlayer(building.GetPlayer()).GetRestrictedArea();
+    const std::vector<MapPoint>* allowedArea = &world.getPlayer(building.getPlayer()).getRestrictedArea();
     if(allowedArea->empty())
         allowedArea = nullptr;
 
     // Punkt, auf dem das Militärgebäude steht
-    MapPoint bldPos = building.GetPos();
-    AdjustNode(bldPos, building.GetPlayer(), 0,
+    MapPoint bldPos = building.getPos();
+    AdjustNode(bldPos, building.getPlayer(), 0,
                nullptr); // no need to check barriers here. this point is on our territory.
 
-    const auto pts = world.GetPointsInRadius(bldPos, radius, ReturnMapPointWithRadius{});
+    const auto pts = world.getPointsInRadius(bldPos, radius, ReturnMapPointWithRadius{});
     for(const auto& ptWithRadius : pts)
-        AdjustNode(ptWithRadius.first, building.GetPlayer(), ptWithRadius.second, allowedArea);
+        AdjustNode(ptWithRadius.first, building.getPlayer(), ptWithRadius.second, allowedArea);
 }
 
 uint8_t TerritoryRegion::SafeGetOwner(const Position& pt) const
 {
     const TRNode* node = TryGetNode(pt);
     if(!node)
-        return world.GetNode(world.MakeMapPoint(pt + startPt)).owner;
+        return world.getNode(world.MakeMapPoint(pt + startPt)).owner;
     return node->owner;
 }
 
@@ -170,7 +170,7 @@ bool TerritoryRegion::WillBePlayerTerritory(const Position& mapPos, uint8_t owne
     {
         if(d == exceptDir)
             continue;
-        if(SafeGetOwner(::GetNeighbour(mapPos, d) - startPt) != owner)
+        if(SafeGetOwner(::getNeighbour(mapPos, d) - startPt) != owner)
             return false;
     }
     return true;

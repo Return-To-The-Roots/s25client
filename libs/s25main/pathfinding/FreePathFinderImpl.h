@@ -48,8 +48,8 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
     IncreaseCurrentVisit();
 
     QueueImpl todo;
-    const unsigned startId = gwb_.GetIdx(start);
-    const unsigned destId = gwb_.GetIdx(dest);
+    const unsigned startId = gwb_.getIdx(start);
+    const unsigned destId = gwb_.getIdx(dest);
     FreePathNode& startNode = fpNodes[startId];
     FreePathNode& destNode = fpNodes[destId];
 
@@ -65,7 +65,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
     // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
     // TODO confirm random: RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
     const Direction startDir =
-      randomRoute ? convertToDirection(gwb_.GetIdx(start) * gwb_.GetEvMgr().GetCurrentGF()) : Direction::West;
+      randomRoute ? convertToDirection(gwb_.getIdx(start) * gwb_.getEvMgr().getCurrentGF()) : Direction::West;
 
     while(!todo.empty())
     {
@@ -104,14 +104,14 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
             continue;
 
         // Knoten in alle 6 Richtungen bilden
-        const auto neighbors = gwb_.GetNeighbours(best.mapPt);
+        const auto neighbors = gwb_.getNeighbours(best.mapPt);
         for(const Direction dir : helpers::enumRange(startDir))
         {
             // Koordinaten des entsprechenden umliegenden Punktes bilden
             MapPoint neighbourPos = neighbors[dir];
 
             // ID des umliegenden Knotens bilden
-            unsigned nbId = gwb_.GetIdx(neighbourPos);
+            unsigned nbId = gwb_.getIdx(neighbourPos);
             FreePathNode& neighbour = fpNodes[nbId];
 
             // Don't try to go back where we came from (would also bail out in the conditions below)
@@ -125,7 +125,7 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
                 if(best.curDistance + 1 < neighbour.curDistance)
                 {
                     // Check if we can use this transition
-                    if(!nodeChecker.IsEdgeOk(best.mapPt, dir))
+                    if(!nodeChecker.isEdgeOk(best.mapPt, dir))
                         continue;
 
                     neighbour.curDistance = best.curDistance + 1;
@@ -139,12 +139,12 @@ bool FreePathFinder::FindPath(const MapPoint start, const MapPoint dest, bool ra
                 // Check node for all but the goal (goal is assumed to be ok)
                 if(&neighbour != &destNode)
                 {
-                    if(!nodeChecker.IsNodeOk(neighbourPos))
+                    if(!nodeChecker.isNodeOk(neighbourPos))
                         continue;
                 }
 
                 // Check if we can use this transition
-                if(!nodeChecker.IsEdgeOk(best.mapPt, dir))
+                if(!nodeChecker.isEdgeOk(best.mapPt, dir))
                     continue;
 
                 // Alles in Ordnung, Knoten kann gebildet werden
@@ -176,19 +176,19 @@ bool FreePathFinder::CheckRoute(const MapPoint start, const std::vector<Directio
     unsigned sizeM1 = route.size() - 1;
     for(unsigned i = pos; i < sizeM1; ++i)
     {
-        if(!nodeChecker.IsEdgeOk(curPt, route[i]))
+        if(!nodeChecker.isEdgeOk(curPt, route[i]))
             return false;
-        curPt = gwb_.GetNeighbour(curPt, route[i]);
-        if(!nodeChecker.IsNodeOk(curPt))
+        curPt = gwb_.getNeighbour(curPt, route[i]);
+        if(!nodeChecker.isNodeOk(curPt))
             return false;
     }
 
     // Last step
-    if(!nodeChecker.IsEdgeOk(curPt, route.back()))
+    if(!nodeChecker.isEdgeOk(curPt, route.back()))
         return false;
 
     if(dest)
-        *dest = gwb_.GetNeighbour(curPt, route.back());
+        *dest = gwb_.getNeighbour(curPt, route.back());
 
     return true;
 }

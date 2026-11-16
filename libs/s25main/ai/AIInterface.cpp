@@ -35,7 +35,7 @@ struct Param_RoadPath
 bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction, const void* param)
 {
     const auto* prp = static_cast<const Param_RoadPath*>(param);
-    return makePathConditionRoad(gwb, prp->boat_road).IsNodeOk(pt);
+    return makePathConditionRoad(gwb, prp->boat_road).isNodeOk(pt);
 }
 
 /// Condition for comfort road construction with a possible flag every 2 steps
@@ -44,7 +44,7 @@ bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, con
     if(!IsPointOK_RoadPath(gwb, pt, dir, param))
         return false;
     const auto* prp = static_cast<const Param_RoadPath*>(param);
-    return prp->boat_road || gwb.GetBQ(pt, gwb.GetNode(pt).owner - 1) != BuildingQuality::Nothing;
+    return prp->boat_road || gwb.GetBQ(pt, gwb.getNode(pt).owner - 1) != BuildingQuality::Nothing;
 }
 
 int GetS4LikeMineResourceRating(const Resource resource, const unsigned defaultRating)
@@ -57,20 +57,20 @@ int GetS4LikeMineResourceRating(const Resource resource, const unsigned defaultR
 } // namespace
 
 AIInterface::AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPtr>& gcs, unsigned char playerID)
-    : gwb(gwb), player_(gwb.GetPlayer(playerID)), gcs(gcs), playerID_(playerID)
+    : gwb(gwb), player_(gwb.getPlayer(playerID)), gcs(gcs), playerID_(playerID)
 {
-    for(const auto curHarborId : helpers::idRange<HarborId>(gwb.GetNumHarborPoints()))
+    for(const auto curHarborId : helpers::idRange<HarborId>(gwb.getNumHarborPoints()))
     {
         bool hasOtherHarbor = false;
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const SeaId seaId = gwb.GetSeaId(curHarborId, dir);
+            const SeaId seaId = gwb.getSeaId(curHarborId, dir);
             if(!seaId)
                 continue;
 
-            for(const auto otherHarborId : helpers::idRangeAfter(curHarborId, gwb.GetNumHarborPoints()))
+            for(const auto otherHarborId : helpers::idRangeAfter(curHarborId, gwb.getNumHarborPoints()))
             {
-                if(gwb.IsHarborAtSea(otherHarborId, seaId))
+                if(gwb.isHarborAtSea(otherHarborId, seaId))
                 {
                     hasOtherHarbor = true;
                     break;
@@ -84,9 +84,9 @@ AIInterface::AIInterface(const GameWorldBase& gwb, std::vector<gc::GameCommandPt
 
 AIInterface::~AIInterface() = default;
 
-AISubSurfaceResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
+AISubSurfaceResource AIInterface::getSubsurfaceResource(const MapPoint pt) const
 {
-    const Resource subres = gwb.GetNode(pt).resources;
+    const Resource subres = gwb.getNode(pt).resources;
     if(subres.getAmount() == 0u)
         return AISubSurfaceResource::Nothing;
     switch(subres.getType())
@@ -102,13 +102,13 @@ AISubSurfaceResource AIInterface::GetSubsurfaceResource(const MapPoint pt) const
     return AISubSurfaceResource::Nothing;
 }
 
-AISurfaceResource AIInterface::GetSurfaceResource(const MapPoint pt) const
+AISurfaceResource AIInterface::getSurfaceResource(const MapPoint pt) const
 {
-    const auto& node = gwb.GetNode(pt);
-    NodalObjectType no = node.obj ? node.obj->GetType() : NodalObjectType::Nothing;
+    const auto& node = gwb.getNode(pt);
+    NodalObjectType no = node.obj ? node.obj->getType() : NodalObjectType::Nothing;
     DescIdx<TerrainDesc> t1 = node.t1;
     // valid terrain?
-    if(gwb.GetDescription().get(t1).Is(ETerrain::Walkable))
+    if(gwb.getDescription().get(t1).Is(ETerrain::Walkable))
     {
         if(no == NodalObjectType::Tree)
         {
@@ -127,38 +127,38 @@ AISurfaceResource AIInterface::GetSurfaceResource(const MapPoint pt) const
         return AISurfaceResource::Blocked;
 }
 
-int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
+int AIInterface::getResourceRating(const MapPoint pt, AIResource res) const
 {
     switch(res)
     {
         case AIResource::Wood:
-            if(GetSurfaceResource(pt) == AISurfaceResource::Wood)
+            if(getSurfaceResource(pt) == AISurfaceResource::Wood)
                 return RES_RADIUS[res];
-            else if(IsBuildingOnNode(pt, BuildingType::Woodcutter))
+            else if(isBuildingOnNode(pt, BuildingType::Woodcutter))
                 return -40;
-            else if(IsBuildingOnNode(pt, BuildingType::Forester))
+            else if(isBuildingOnNode(pt, BuildingType::Forester))
                 return 20;
             break;
         case AIResource::Stones:
-            if(GetSurfaceResource(pt) == AISurfaceResource::Stones)
+            if(getSurfaceResource(pt) == AISurfaceResource::Stones)
                 return RES_RADIUS[res];
             break;
         case AIResource::Plantspace:
-            if(GetSurfaceResource(pt) == AISurfaceResource::Nothing
-               && gwb.GetDescription().get(gwb.GetNode(pt).t1).IsVital())
+            if(getSurfaceResource(pt) == AISurfaceResource::Nothing
+               && gwb.getDescription().get(gwb.getNode(pt).t1).isVital())
                 return RES_RADIUS[res];
-            else if(IsBuildingOnNode(pt, BuildingType::Forester))
+            else if(isBuildingOnNode(pt, BuildingType::Forester))
                 return -40;
-            else if(IsBuildingOnNode(pt, BuildingType::Farm))
+            else if(isBuildingOnNode(pt, BuildingType::Farm))
                 return -20;
             break;
         case AIResource::Borderland:
-            if(IsOwnTerritory(pt) && !IsBorder(pt))
+            if(isOwnTerritory(pt) && !isBorder(pt))
                 return 0;
             else
             {
-                const auto& desc = gwb.GetDescription();
-                const auto& node = gwb.GetNode(pt);
+                const auto& desc = gwb.getDescription();
+                const auto& node = gwb.getNode(pt);
                 if(desc.get(node.t1).Is(ETerrain::Walkable) || desc.get(node.t2).Is(ETerrain::Walkable))
                     return RES_RADIUS[res];
             }
@@ -168,31 +168,31 @@ int AIInterface::GetResourceRating(const MapPoint pt, AIResource res) const
         case AIResource::Coal:
         case AIResource::Granite:
         {
-            const Resource subres = gwb.GetNode(pt).resources;
-            if(convertToNodeResource(GetSubsurfaceResource(pt)) == res)
+            const Resource subres = gwb.getNode(pt).resources;
+            if(convertToNodeResource(getSubsurfaceResource(pt)) == res)
             {
                 const auto mineBuildingType = GetMineBuildingType(subres.getType());
                 if(mineBuildingType
-                   && GetMineResourceBehavior(gwb.GetGGS(), *mineBuildingType)
+                   && getMineResourceBehavior(gwb.getGGS(), *mineBuildingType)
                         == MineResourceBehavior::S4LikeExhaustion)
                     return GetS4LikeMineResourceRating(subres, RES_RADIUS[res]);
 
                 return RES_RADIUS[res];
             }
-            if(IsMineResourceWorkEverywhere(res)
-               && gwb.IsOfTerrain(pt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Mineable); }))
+            if(isMineResourceWorkEverywhere(res)
+               && gwb.isOfTerrain(pt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Mineable); }))
                 return RES_RADIUS[res];
             break;
         }
         case AIResource::Fish:
-            if(convertToNodeResource(GetSubsurfaceResource(pt)) == res)
+            if(convertToNodeResource(getSubsurfaceResource(pt)) == res)
                 return RES_RADIUS[res];
             break;
     }
     return 0;
 }
 
-bool AIInterface::IsMineResourceWorkEverywhere(const AIResource res) const
+bool AIInterface::isMineResourceWorkEverywhere(const AIResource res) const
 {
     const auto resourceType = convertToResourceType(res);
     if(!resourceType)
@@ -200,7 +200,7 @@ bool AIInterface::IsMineResourceWorkEverywhere(const AIResource res) const
 
     const auto mineBuildingType = GetMineBuildingType(*resourceType);
     return mineBuildingType
-           && GetMineResourceBehavior(gwb.GetGGS(), *mineBuildingType) == MineResourceBehavior::WorkEverywhere;
+           && getMineResourceBehavior(gwb.getGGS(), *mineBuildingType) == MineResourceBehavior::WorkEverywhere;
 }
 
 int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::OptionalEnum<Direction> direction,
@@ -211,7 +211,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::O
     {
         std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, resRadius);
         return std::accumulate(pts.begin(), pts.end(), 0, [this, res](int lhs, const auto& curPt) {
-            return lhs + this->GetResourceRating(curPt, res);
+            return lhs + this->getResourceRating(curPt, res);
         });
     } else // calculate different nodes only (4n+2 ?anyways much faster)
     {
@@ -221,7 +221,7 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::O
         // first: go radius steps towards direction-1
         MapPoint tmpPt(pt);
         for(unsigned i = 0; i < resRadius; i++)
-            tmpPt = gwb.GetNeighbour(tmpPt, *direction - 1u);
+            tmpPt = gwb.getNeighbour(tmpPt, *direction - 1u);
         // then clockwise around at radius distance to get all new points
         for(unsigned i = iDirection + 1u; i < iDirection + 3u; ++i)
         {
@@ -231,17 +231,17 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::O
                 ++numSteps;
             for(MapCoord r2 = 0; r2 < numSteps; ++r2)
             {
-                returnVal += GetResourceRating(tmpPt, res);
-                tmpPt = gwb.GetNeighbour(tmpPt, convertToDirection(i));
+                returnVal += getResourceRating(tmpPt, res);
+                tmpPt = gwb.getNeighbour(tmpPt, convertToDirection(i));
             }
         }
         // now substract old points not in range of new point
         // go to old center point:
         tmpPt = pt;
-        tmpPt = gwb.GetNeighbour(tmpPt, *direction + 3u);
+        tmpPt = gwb.getNeighbour(tmpPt, *direction + 3u);
         // next: go to the first old point we have to substract
         for(unsigned i = 0; i < RES_RADIUS[res]; i++)
-            tmpPt = gwb.GetNeighbour(tmpPt, *direction + 2u);
+            tmpPt = gwb.getNeighbour(tmpPt, *direction + 2u);
         // now clockwise around at radius distance to remove all old points
         for(int i = iDirection + 4; i < iDirection + 6; ++i)
         {
@@ -250,8 +250,8 @@ int AIInterface::CalcResourceValue(const MapPoint pt, AIResource res, helpers::O
                 ++numSteps;
             for(MapCoord r2 = 0; r2 < numSteps; ++r2)
             {
-                returnVal -= GetResourceRating(tmpPt, res);
-                tmpPt = gwb.GetNeighbour(tmpPt, convertToDirection(i));
+                returnVal -= getResourceRating(tmpPt, res);
+                tmpPt = gwb.getNeighbour(tmpPt, convertToDirection(i));
             }
         }
         return returnVal;
@@ -265,52 +265,52 @@ bool AIInterface::FindFreePathForNewRoad(MapPoint start, MapPoint target, std::v
                                          unsigned* length /*= nullptr*/) const
 {
     bool boat = false;
-    return gwb.GetFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, nullptr,
+    return gwb.getFreePathFinder().FindPathAlternatingConditions(start, target, false, 100, route, length, nullptr,
                                                                  IsPointOK_RoadPath, IsPointOK_RoadPathEvenStep,
                                                                  nullptr, (void*)&boat);
 }
 
 bool AIInterface::CalcBQSumDifference(const MapPoint pt1, const MapPoint pt2) const
 {
-    return GetBuildingQuality(pt2) < GetBuildingQuality(pt1);
+    return getBuildingQuality(pt2) < getBuildingQuality(pt1);
 }
 
-BuildingQuality AIInterface::GetBuildingQuality(const MapPoint pt) const
+BuildingQuality AIInterface::getBuildingQuality(const MapPoint pt) const
 {
     return gwb.GetBQ(pt, playerID_);
 }
 
-BuildingQuality AIInterface::GetBuildingQualityAnyOwner(const MapPoint pt) const
+BuildingQuality AIInterface::getBuildingQualityAnyOwner(const MapPoint pt) const
 {
-    return gwb.GetNode(pt).bq;
+    return gwb.getNode(pt).bq;
 }
 
 bool AIInterface::FindPathOnRoads(const noRoadNode& start, const noRoadNode& target, unsigned* length) const
 {
     if(length)
-        return gwb.GetRoadPathFinder().FindPath(start, target, false, std::numeric_limits<unsigned>::max(), nullptr,
+        return gwb.getRoadPathFinder().FindPath(start, target, false, std::numeric_limits<unsigned>::max(), nullptr,
                                                 length);
     else
-        return gwb.GetRoadPathFinder().PathExists(start, target, false);
+        return gwb.getRoadPathFinder().PathExists(start, target, false);
 }
 
-const nobHQ* AIInterface::GetHeadquarter() const
+const nobHQ* AIInterface::getHeadquarter() const
 {
-    return gwb.GetSpecObj<nobHQ>(player_.GetHQPos());
+    return gwb.getSpecObj<nobHQ>(player_.getHQPos());
 }
 
 bool AIInterface::isBuildingNearby(BuildingType bldType, const MapPoint pt, unsigned maxDistance) const
 {
-    for(const nobUsual* bld : GetBuildings(bldType))
+    for(const nobUsual* bld : getBuildings(bldType))
     {
-        if(gwb.CalcDistance(pt, bld->GetPos()) <= maxDistance)
+        if(gwb.CalcDistance(pt, bld->getPos()) <= maxDistance)
             return true;
     }
-    for(const noBuildingSite* bldSite : GetBuildingSites())
+    for(const noBuildingSite* bldSite : getBuildingSites())
     {
-        if(bldSite->GetBuildingType() == bldType)
+        if(bldSite->getBuildingType() == bldType)
         {
-            if(gwb.CalcDistance(pt, bldSite->GetPos()) <= maxDistance)
+            if(gwb.CalcDistance(pt, bldSite->getPos()) <= maxDistance)
                 return true;
         }
     }
@@ -319,53 +319,53 @@ bool AIInterface::isBuildingNearby(BuildingType bldType, const MapPoint pt, unsi
 
 bool AIInterface::isHarborPosClose(const MapPoint pt, unsigned maxDistance, bool onlyempty) const
 {
-    for(const auto id : helpers::idRange<HarborId>(gwb.GetNumHarborPoints()))
+    for(const auto id : helpers::idRange<HarborId>(gwb.getNumHarborPoints()))
     {
-        const MapPoint harborPoint = gwb.GetHarborPoint(id);
+        const MapPoint harborPoint = gwb.getHarborPoint(id);
         if(gwb.CalcDistance(pt, harborPoint) <= maxDistance && helpers::contains(usableHarbors_, id))
         {
-            if(!onlyempty || !IsBuildingOnNode(harborPoint, BuildingType::HarborBuilding))
+            if(!onlyempty || !isBuildingOnNode(harborPoint, BuildingType::HarborBuilding))
                 return true;
         }
     }
     return false;
 }
 
-bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor,
+bool AIInterface::isExplorationDirectionPossible(const MapPoint pt, const nobHarborBuilding* originHarbor,
                                                  ShipDirection direction) const
 {
-    return IsExplorationDirectionPossible(pt, originHarbor->GetHarborPosID(), direction);
+    return isExplorationDirectionPossible(pt, originHarbor->getHarborPosID(), direction);
 }
 
-bool AIInterface::IsExplorationDirectionPossible(const MapPoint pt, HarborId originHarborID,
+bool AIInterface::isExplorationDirectionPossible(const MapPoint pt, HarborId originHarborID,
                                                  ShipDirection direction) const
 {
-    return gwb.GetNextFreeHarborPoint(pt, originHarborID, direction, playerID_).isValid();
+    return gwb.getNextFreeHarborPoint(pt, originHarborID, direction, playerID_).isValid();
 }
 
 bool AIInterface::SetCoinsAllowed(const nobMilitary* building, const bool enabled)
 {
-    return SetCoinsAllowed(building->GetPos(), enabled);
+    return SetCoinsAllowed(building->getPos(), enabled);
 }
 bool AIInterface::StartStopExpedition(const nobHarborBuilding* hb, bool start)
 {
-    return StartStopExpedition(hb->GetPos(), start);
+    return StartStopExpedition(hb->getPos(), start);
 }
 bool AIInterface::SetShipYardMode(const nobShipYard* shipyard, bool buildShips)
 {
-    return SetShipYardMode(shipyard->GetPos(), buildShips);
+    return SetShipYardMode(shipyard->getPos(), buildShips);
 }
 bool AIInterface::DestroyBuilding(const noBuilding* building)
 {
-    return DestroyBuilding(building->GetPos());
+    return DestroyBuilding(building->getPos());
 }
 bool AIInterface::DestroyFlag(const noFlag* flag)
 {
-    return DestroyFlag(flag->GetPos());
+    return DestroyFlag(flag->getPos());
 }
 bool AIInterface::CallSpecialist(const noFlag* flag, Job job)
 {
-    return CallSpecialist(flag->GetPos(), job);
+    return CallSpecialist(flag->getPos(), job);
 }
 
 void AIInterface::Chat(const std::string& message, ChatDestination destination)

@@ -21,7 +21,7 @@ protected:
     void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
 
 private:
-    void SetText(const std::string& text, unsigned color, bool button);
+    void setText(const std::string& text, unsigned color, bool button);
 
     ServerType server_type;
 };

@@ -18,7 +18,7 @@
 
 namespace rttr::mapGenerator {
 
-unsigned GetMaximumHeight(const MapExtent& size)
+unsigned getMaximumHeight(const MapExtent& size)
 {
     const unsigned combinedSize = size.x * size.y;
     if(combinedSize <= 64 * 64)
@@ -35,7 +35,7 @@ unsigned GetMaximumHeight(const MapExtent& size)
         return 60;
 }
 
-unsigned GetCoastline(const MapExtent& size)
+unsigned getCoastline(const MapExtent& size)
 {
     const unsigned combinedSize = size.x * size.y;
     if(combinedSize <= 128 * 128)
@@ -48,7 +48,7 @@ unsigned GetCoastline(const MapExtent& size)
         return 4;
 }
 
-unsigned GetIslandRadius(const MapExtent& size)
+unsigned getIslandRadius(const MapExtent& size)
 {
     const unsigned combinedSize = size.x * size.y;
     if(combinedSize <= 128 * 128)
@@ -63,7 +63,7 @@ unsigned GetIslandRadius(const MapExtent& size)
         return 6;
 }
 
-unsigned GetIslandSize(const MapExtent& size)
+unsigned getIslandSize(const MapExtent& size)
 {
     const unsigned combinedSize = size.x * size.y;
     if(combinedSize <= 64 * 64)
@@ -78,7 +78,7 @@ unsigned GetIslandSize(const MapExtent& size)
         return 1200;
 }
 
-unsigned GetSmoothRadius(const MapExtent& size)
+unsigned getSmoothRadius(const MapExtent& size)
 {
     const unsigned combinedSize = size.x * size.y;
     if(combinedSize <= 128 * 128)
@@ -93,7 +93,7 @@ unsigned GetSmoothRadius(const MapExtent& size)
         return 7;
 }
 
-unsigned GetSmoothIterations(const MapExtent& size)
+unsigned getSmoothIterations(const MapExtent& size)
 {
     const unsigned combinedSize = size.x * size.y;
     if(combinedSize <= 64 * 64)
@@ -112,8 +112,8 @@ unsigned GetSmoothIterations(const MapExtent& size)
 
 void SmoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range)
 {
-    int radius = GetSmoothRadius(z.GetSize());
-    int iterations = GetSmoothIterations(z.GetSize());
+    int radius = getSmoothRadius(z.getSize());
+    int iterations = getSmoothIterations(z.getSize());
 
     Smooth(iterations, radius, z);
     Scale(z, range.minimum, range.maximum);
@@ -125,7 +125,7 @@ RandomMap::RandomMap(RandomUtility& rnd, Map& map)
 
 void RandomMap::Create(const MapSettings& settings)
 {
-    auto defaultHeight = map_.height.minimum + map_.height.GetDifference() / 2;
+    auto defaultHeight = map_.height.minimum + map_.height.getDifference() / 2;
 
     settings_ = settings;
     map_.z.Resize(settings.size, defaultHeight);
@@ -165,9 +165,9 @@ std::vector<River> RandomMap::CreateRivers(const MapPoint source)
 
 void RandomMap::CreateFreeIslands(unsigned waterNodes)
 {
-    const auto islandRadius = GetIslandRadius(map_.size);
+    const auto islandRadius = getIslandRadius(map_.size);
     const auto islandAmount = static_cast<double>(settings_.islands) / 100;
-    const auto maxIslandSize = GetIslandSize(map_.size);
+    const auto maxIslandSize = getIslandSize(map_.size);
     const auto minIslandSize = std::min(200u, maxIslandSize);
     auto islandNodes = static_cast<unsigned>(islandAmount * waterNodes);
     auto islandSize = rnd_.RandomValue(minIslandSize, maxIslandSize);
@@ -203,7 +203,7 @@ void RandomMap::CreateMixedMap()
 
     CreateFreeIslands(waterNodes);
 
-    texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
+    texturizer_.AddTextures(mountainLevel, getCoastline(map_.size));
 
     PlaceHarbors(map_, rivers);
     PlaceHeadquarters(map_, rnd_, map_.players, settings_.mountainDistance);
@@ -230,8 +230,8 @@ void RandomMap::CreateWaterMap()
     const unsigned waterNodes = helpers::count(map_.z, map_.height.minimum);
     const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
     const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
-    const auto islandSize = GetIslandSize(map_.size);
-    const auto islandRadius = GetIslandRadius(map_.size);
+    const auto islandSize = getIslandSize(map_.size);
+    const auto islandRadius = getIslandRadius(map_.size);
 
     std::vector<Island> islands(map_.players);
 
@@ -247,7 +247,7 @@ void RandomMap::CreateWaterMap()
 
     const auto rivers = CreateRivers(center);
 
-    texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
+    texturizer_.AddTextures(mountainLevel, getCoastline(map_.size));
 
     PlaceHarbors(map_, rivers);
 
@@ -271,14 +271,14 @@ void RandomMap::CreateLandMap()
     const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
     CreateRivers();
 
-    texturizer_.AddTextures(mountainLevel, GetCoastline(map_.size));
+    texturizer_.AddTextures(mountainLevel, getCoastline(map_.size));
 
     PlaceHeadquarters(map_, rnd_, map_.players, settings_.mountainDistance);
 }
 
 Map GenerateRandomMap(RandomUtility& rnd, const WorldDescription& worldDesc, const MapSettings& settings)
 {
-    auto height = GetMaximumHeight(settings.size);
+    auto height = getMaximumHeight(settings.size);
     Map map(settings.size, settings.numPlayers, worldDesc, settings.type, height);
     RandomMap randomMap(rnd, map);
     randomMap.Create(settings);

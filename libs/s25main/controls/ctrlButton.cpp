@@ -15,24 +15,24 @@ ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const 
 
 ctrlButton::~ctrlButton() = default;
 
-void ctrlButton::SetEnabled(bool enable /*= true*/)
+void ctrlButton::setEnabled(bool enable /*= true*/)
 {
     isEnabled = enable;
     state = ButtonState::Up;
 }
 
-void ctrlButton::SetActive(bool activate)
+void ctrlButton::setActive(bool activate)
 {
-    Window::SetActive(activate);
+    Window::setActive(activate);
     if(!activate)
         state = ButtonState::Up;
-    else if(IsMouseOver())
+    else if(isMouseOver())
         state = ButtonState::Hover;
 }
 
 bool ctrlButton::msgMouseMove(const MouseCoords& mc)
 {
-    if(isEnabled && IsMouseOver(mc))
+    if(isEnabled && isMouseOver(mc))
     {
         if(state != ButtonState::Pressed)
             state = ButtonState::Hover;
@@ -49,7 +49,7 @@ bool ctrlButton::msgMouseMove(const MouseCoords& mc)
 
 bool ctrlButton::msgLeftDown(const MouseCoords& mc)
 {
-    if(isEnabled && IsMouseOver(mc))
+    if(isEnabled && isMouseOver(mc))
     {
         state = ButtonState::Pressed;
         return true;
@@ -62,10 +62,10 @@ bool ctrlButton::msgLeftUp(const MouseCoords& mc)
 {
     if(state == ButtonState::Pressed)
     {
-        if(isEnabled && IsMouseOver(mc))
+        if(isEnabled && isMouseOver(mc))
         {
             state = ButtonState::Hover;
-            GetParent()->msgButtonClick(GetID());
+            getParent()->msgButtonClick(getID());
             return true;
         } else
             state = ButtonState::Up;
@@ -79,7 +79,7 @@ bool ctrlButton::msgLeftUp(const MouseCoords& mc)
  */
 void ctrlButton::Draw_()
 {
-    if(GetSize().x == 0 || GetSize().y == 0)
+    if(getSize().x == 0 || getSize().y == 0)
         return;
 
     if(tc != TextureColor::Invisible)
@@ -89,9 +89,9 @@ void ctrlButton::Draw_()
         bool isElevated = !isChecked && state != ButtonState::Pressed;
         bool isHighlighted = isEnabled && !isChecked && state == ButtonState::Hover;
         if(hasBorder)
-            Draw3D(GetDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
+            Draw3D(getDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
         else
-            Draw3DContent(GetDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
+            Draw3DContent(getDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
     }
 
     /// Inhalt malen (Text, Bilder usw.)

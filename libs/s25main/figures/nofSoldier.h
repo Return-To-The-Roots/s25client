@@ -33,14 +33,14 @@ public:
 
     void Destroy() override
     {
-        RTTR_Assert(!GetHomeBld());
+        RTTR_Assert(!getHomeBld());
         noFigure::Destroy();
     }
     void Serialize(SerializedGameData& sgd) const override;
 
-    unsigned char GetRank() const;
-    unsigned char GetHitpoints() const;
-    const nobBaseMilitary* GetHomeBld() const { return homeBld; }
+    unsigned char getRank() const;
+    unsigned char getHitpoints() const;
+    const nobBaseMilitary* getHomeBld() const { return homeBld; }
 };
 
 /// Comparator to sort soldiers by rank and armor (and ID for ties), weak ones first
@@ -49,13 +49,13 @@ struct ComparatorSoldiersByRank
     template<typename TSoldierPtr>
     bool operator()(const TSoldierPtr& left, const TSoldierPtr& right) const
     {
-        if(left->GetRank() == right->GetRank())
+        if(left->getRank() == right->getRank())
         {
-            if(left->HasArmor() == right->HasArmor())
-                return left->GetObjId() < right->GetObjId();
+            if(left->hasArmor() == right->hasArmor())
+                return left->getObjId() < right->getObjId();
             else
-                return left->HasArmor() < right->HasArmor();
+                return left->hasArmor() < right->hasArmor();
         } else
-            return left->GetRank() < right->GetRank();
+            return left->getRank() < right->getRank();
     }
 };

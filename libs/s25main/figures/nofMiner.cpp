@@ -79,14 +79,14 @@ helpers::OptionalEnum<GoodType> GetNoOutputFallbackGood(const GlobalGameSettings
 std::vector<MapPoint> GetPointsWithResource(const GameWorld& world, const MapPoint pos, const ResourceType type)
 {
     return world.GetMatchingPointsInRadius(
-      pos, MINER_RADIUS, [&world, type](const MapPoint pt) { return world.GetNode(pt).resources.has(type); }, true);
+      pos, MINER_RADIUS, [&world, type](const MapPoint pt) { return world.getNode(pt).resources.has(type); }, true);
 }
 
 void ReduceS4LikeResource(GameWorld& world, const std::vector<MapPoint>& resourcePts)
 {
     for(const MapPoint pt : resourcePts)
     {
-        if(world.GetNode(pt).resources.getAmount() > S4LIKE_MIN_RESOURCE_AMOUNT)
+        if(world.getNode(pt).resources.getAmount() > S4LIKE_MIN_RESOURCE_AMOUNT)
         {
             world.ReduceResource(pt);
             return;
@@ -112,27 +112,27 @@ void nofMiner::DrawWorking(DrawPoint drawPt)
         {{{10, 3}, {10, 3}, {10, 3}, {10, 3}}}, // vikings
         {{{8, 3}, {8, 3}, {8, 3}, {8, 3}}}      // babylonians
       }};
-    const unsigned mineIdx = rttr::enum_cast(workplace->GetBuildingType()) - rttr::enum_cast(BuildingType::GraniteMine);
+    const unsigned mineIdx = rttr::enum_cast(workplace->getBuildingType()) - rttr::enum_cast(BuildingType::GraniteMine);
     RTTR_Assert(mineIdx < offsets.size());
 
     unsigned now_id = GAMECLIENT.Interpolate(160, current_ev);
     unsigned texture;
-    if(workplace->GetNation() == Nation::Romans)
+    if(workplace->getNation() == Nation::Romans)
         texture = 92 + now_id % 8;
     else
         texture = 1799 + now_id % 4;
-    LOADER.GetPlayerImage("rom_bobs", texture)->DrawFull(drawPt + offsets[workplace->GetNation()][mineIdx]);
+    LOADER.getPlayerImage("rom_bobs", texture)->DrawFull(drawPt + offsets[workplace->getNation()][mineIdx]);
 
     if(now_id % 8 == 3)
     {
-        world->GetSoundMgr().playNOSound(59, *this, now_id);
+        world->getSoundMgr().playNOSound(59, *this, now_id);
         was_sounding = true;
     }
 }
 
-unsigned short nofMiner::GetCarryID() const
+unsigned short nofMiner::getCarryID() const
 {
-    switch(workplace->GetBuildingType())
+    switch(workplace->getBuildingType())
     {
         case BuildingType::GoldMine: return 65;
         case BuildingType::IronMine: return 66;
@@ -143,24 +143,24 @@ unsigned short nofMiner::GetCarryID() const
 
 helpers::OptionalEnum<GoodType> nofMiner::ProduceWare()
 {
-    const GlobalGameSettings& settings = world->GetGGS();
-    const MineResourceBehavior behavior = GetMineResourceBehavior(settings, workplace->GetBuildingType());
+    const GlobalGameSettings& settings = world->getGGS();
+    const MineResourceBehavior behavior = getMineResourceBehavior(settings, workplace->getBuildingType());
 
     if(behavior == MineResourceBehavior::S4LikeExhaustion)
     {
-        const std::vector<MapPoint> resourcePts = GetPointsWithResource(*world, pos, GetRequiredResType());
+        const std::vector<MapPoint> resourcePts = GetPointsWithResource(*world, pos, getRequiredResType());
         const auto productionRoll = static_cast<unsigned>(RANDOM_RAND(MAX_PRODUCTION_PERCENT));
         const bool produceNothingThisCycle = resourcePts.empty()
-                                             || productionRoll >= GetS4LikeMineProductionChance(
-                                                  GetRemainingMineResources(*world, pos, GetRequiredResType()));
+                                             || productionRoll >= getS4LikeMineProductionChance(
+                                                  getRemainingMineResources(*world, pos, getRequiredResType()));
         if(produceNothingThisCycle)
-            return GetNoOutputFallbackGood(settings, workplace->GetBuildingType(), GetObjId());
+            return GetNoOutputFallbackGood(settings, workplace->getBuildingType(), getObjId());
 
         // S4-like exhaustion always depletes, but only down to the minimum amount
         ReduceS4LikeResource(*world, resourcePts);
     }
 
-    return GetMineOutput(workplace->GetBuildingType());
+    return getMineOutput(workplace->getBuildingType());
 }
 
 bool nofMiner::AreWaresAvailable() const
@@ -168,11 +168,11 @@ bool nofMiner::AreWaresAvailable() const
     if(!nofWorkman::AreWaresAvailable())
         return false;
 
-    const MineResourceBehavior behavior = GetMineResourceBehavior(world->GetGGS(), workplace->GetBuildingType());
+    const MineResourceBehavior behavior = getMineResourceBehavior(world->getGGS(), workplace->getBuildingType());
     if(behavior == MineResourceBehavior::WorkEverywhere)
         return true;
 
-    const bool hasResources = FindPointWithResource(GetRequiredResType()).isValid();
+    const bool hasResources = FindPointWithResource(getRequiredResType()).isValid();
     if(!hasResources)
         workplace->OnOutOfResources();
     return hasResources;
@@ -180,12 +180,12 @@ bool nofMiner::AreWaresAvailable() const
 
 bool nofMiner::StartWorking()
 {
-    const GlobalGameSettings& settings = world->GetGGS();
-    const MineResourceBehavior behavior = GetMineResourceBehavior(settings, workplace->GetBuildingType());
+    const GlobalGameSettings& settings = world->getGGS();
+    const MineResourceBehavior behavior = getMineResourceBehavior(settings, workplace->getBuildingType());
     if(behavior == MineResourceBehavior::WorkEverywhere)
         return nofWorkman::StartWorking();
 
-    const MapPoint resPt = FindPointWithResource(GetRequiredResType());
+    const MapPoint resPt = FindPointWithResource(getRequiredResType());
     if(!resPt.isValid())
     {
         workplace->OnOutOfResources();
@@ -193,13 +193,13 @@ bool nofMiner::StartWorking()
     }
 
     if(behavior != MineResourceBehavior::S4LikeExhaustion
-       && IsMineResourceDepletable(settings, workplace->GetBuildingType()))
+       && isMineResourceDepletable(settings, workplace->getBuildingType()))
         world->ReduceResource(resPt);
 
     return nofWorkman::StartWorking();
 }
 
-ResourceType nofMiner::GetRequiredResType() const
+ResourceType nofMiner::getRequiredResType() const
 {
-    return GetMineResourceType(workplace->GetBuildingType());
+    return getMineResourceType(workplace->getBuildingType());
 }

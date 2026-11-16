@@ -23,7 +23,7 @@ public:
     ~VideoWinAPI();
 
     /// Return name of driver
-    const char* GetName() const override;
+    const char* getName() const override;
 
     /// Initialize the driver, return true on success
     bool Initialize() override;
@@ -47,26 +47,26 @@ public:
     void ShowErrorMessage(const std::string& title, const std::string& message) override;
 
     /// Return the current tick count (time since epoch in ms)
-    unsigned long GetTickCount() const override;
+    unsigned long getTickCount() const override;
 
     /// Get a pointer to an OpenGL function loader
-    OpenGL_Loader_Proc GetLoaderFunction() const override;
+    OpenGL_Loader_Proc getLoaderFunction() const override;
 
     /// Return supported resolutions
     std::vector<VideoMode> ListVideoModes() const override;
 
     /// Set position of the mouse cursor in screen coordinates
-    void SetMousePos(Position pos) override;
+    void setMousePos(Position pos) override;
 
     /// Get state of the modifier keys
-    KeyEvent GetModKeyState() const override;
+    KeyEvent getModKeyState() const override;
 
     /// Get pointer to window (device-dependent!)
-    void* GetMapPointer() const override;
+    void* getMapPointer() const override;
 
 private:
     /// Get style and extended style flags
-    std::pair<DWORD, DWORD> GetStyleFlags(DisplayMode mode) const;
+    std::pair<DWORD, DWORD> getStyleFlags(DisplayMode mode) const;
     /// Calculate the rect for the window of the requested size at the display mode
     /// Returns the final rect (position&size) for the window and the possibly adjusted size of the render region
     std::pair<Rect, VideoMode> CalculateWindowRect(DisplayMode mode, VideoMode requestedSize) const;

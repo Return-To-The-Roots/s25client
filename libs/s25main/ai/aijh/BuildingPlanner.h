@@ -20,22 +20,22 @@ public:
     void Update(unsigned gf, AIPlayerJH& aijh);
 
     /// Return the number of buildings and buildingsites of a specific type (refresh with RefreshBuildingCount())
-    unsigned GetNumBuildings(BuildingType type) const;
+    unsigned getNumBuildings(BuildingType type) const;
     /// Return the number of buildingsites of a specific type (refresh with RefreshBuildingCount())
-    unsigned GetNumBuildingSites(BuildingType type) const;
+    unsigned getNumBuildingSites(BuildingType type) const;
     /// Get amount of (completed) military buildings
-    unsigned GetNumMilitaryBlds() const;
+    unsigned getNumMilitaryBlds() const;
     /// Get amount of construction sites of military buildings
-    unsigned GetNumMilitaryBldSites() const;
+    unsigned getNumMilitaryBldSites() const;
 
     void InitBuildingsWanted(const AIPlayerJH& aijh);
     void UpdateBuildingsWanted(const AIPlayerJH& aijh);
 
     /// Return the number of buildings that we want to build of the current type
-    int GetNumAdditionalBuildingsWanted(BuildingType type) const;
+    int getNumAdditionalBuildingsWanted(BuildingType type) const;
     /// Checks whether the ai wants to construct more mil buildings atm
     bool WantMoreMilitaryBlds(const AIPlayerJH& aijh) const;
-    bool IsExpansionRequired() const { return expansionRequired; }
+    bool isExpansionRequired() const { return expansionRequired; }
 
 private:
     /// Number of buildings and building sites of this player (refreshed by RefreshBuildingCount())

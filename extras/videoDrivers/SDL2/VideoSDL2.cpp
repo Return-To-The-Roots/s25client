@@ -91,7 +91,7 @@ VideoSDL2::~VideoSDL2()
     CleanUp();
 }
 
-const char* VideoSDL2::GetName() const
+const char* VideoSDL2::getName() const
 {
     return GetDriverName();
 }
@@ -126,7 +126,7 @@ void VideoSDL2::UpdateCurrentSizes()
     int w, h, w2, h2;
     SDL_GetWindowSize(window, &w, &h);
     SDL_GL_GetDrawableSize(window, &w2, &h2);
-    SetNewSize(VideoMode(w, h), Extent(w2, h2));
+    setNewSize(VideoMode(w, h), Extent(w2, h2));
 }
 
 static VideoMode getDesktopSize(SDL_Window* window, VideoMode fallback)
@@ -251,7 +251,7 @@ bool VideoSDL2::ResizeScreen(VideoMode newSize, DisplayMode displayMode)
     }
     if(displayMode_ == DisplayMode::BorderlessWindow)
         newSize = getDesktopSize(nullptr, newSize);
-    if(newSize != GetWindowSize())
+    if(newSize != getWindowSize())
     {
         if(displayMode_ == DisplayMode::Fullscreen)
         {
@@ -342,7 +342,7 @@ bool VideoSDL2::MessageLoop()
                 {
                     UpdateCurrentDisplayMode();
                     VideoMode newSize(ev.window.data1, ev.window.data2);
-                    if(newSize != GetWindowSize())
+                    if(newSize != getWindowSize())
                     {
                         UpdateCurrentSizes();
                         CallBack->WindowResized();
@@ -485,7 +485,7 @@ bool VideoSDL2::MessageLoop()
             break;
             case SDL_FINGERDOWN:
             {
-                VideoMode wnSize = GetWindowSize();
+                VideoMode wnSize = getWindowSize();
                 mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
                                                                    static_cast<int>(ev.tfinger.y * wnSize.height)));
                 mouse_xy.ldown = true;
@@ -495,7 +495,7 @@ bool VideoSDL2::MessageLoop()
             }
             case SDL_FINGERUP:
             {
-                VideoMode wnSize = GetWindowSize();
+                VideoMode wnSize = getWindowSize();
                 mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
                                                                    static_cast<int>(ev.tfinger.y * wnSize.height)));
                 mouse_xy.ldown = false;
@@ -505,7 +505,7 @@ bool VideoSDL2::MessageLoop()
             }
             case SDL_FINGERMOTION:
             {
-                VideoMode wnSize = GetWindowSize();
+                VideoMode wnSize = getWindowSize();
                 const auto newPos = getGuiScale().screenToView(Position(
                   static_cast<int>(ev.tfinger.x * wnSize.width), static_cast<int>(ev.tfinger.y * wnSize.height)));
 
@@ -533,7 +533,7 @@ bool VideoSDL2::MessageLoop()
     return true;
 }
 
-unsigned long VideoSDL2::GetTickCount() const
+unsigned long VideoSDL2::getTickCount() const
 {
     return SDL_GetTicks();
 }
@@ -559,7 +559,7 @@ std::vector<VideoMode> VideoSDL2::ListVideoModes() const
     return video_modes;
 }
 
-OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
+OpenGL_Loader_Proc VideoSDL2::getLoaderFunction() const
 {
 #if RTTR_OGL_GL4ES
     return gl4es_GetProcAddress;
@@ -568,21 +568,21 @@ OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
 #endif
 }
 
-void VideoSDL2::SetMousePos(Position pos)
+void VideoSDL2::setMousePos(Position pos)
 {
     const auto screenPos = getGuiScale().viewToScreen(pos);
     mouse_xy.pos = pos;
     SDL_WarpMouseInWindow(window, screenPos.x, screenPos.y);
 }
 
-KeyEvent VideoSDL2::GetModKeyState() const
+KeyEvent VideoSDL2::getModKeyState() const
 {
     KeyEvent ke;
     setSpecialKeys(ke);
     return ke;
 }
 
-void* VideoSDL2::GetMapPointer() const
+void* VideoSDL2::getMapPointer() const
 {
 #ifdef WIN32
     SDL_SysWMinfo wmInfo;
@@ -605,7 +605,7 @@ void VideoSDL2::MoveWindowToCenter()
     int top, left, bottom, right;
     if(!CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right)))
         top = left = bottom = right = 0;
-    auto wndOuterSize = GetWindowSize();
+    auto wndOuterSize = getWindowSize();
     wndOuterSize.width += left + right;
     wndOuterSize.height += top + bottom;
     if(usableBounds.w < wndOuterSize.width || usableBounds.h < wndOuterSize.height)

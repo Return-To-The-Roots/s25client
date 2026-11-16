@@ -28,10 +28,10 @@ public:
 
     /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
     void Resize(const Extent& newSize) override;
-    void SetActive(bool activate = true) override;
+    void setActive(bool activate = true) override;
 
 private:
-    void SetPlayerReady(unsigned char player, bool ready);
+    void setPlayerReady(unsigned char player, bool ready);
     // GGS von den Controls auslesen
     void UpdateGGS();
     /// Aktualisiert eine Spielerreihe (löscht Controls und legt neue an)
@@ -83,9 +83,9 @@ private:
     bool checkOptions();
 
     void GoBack();
-    bool IsSinglePlayer() const { return serverType == ServerType::Local; }
+    bool isSinglePlayer() const { return serverType == ServerType::Local; }
     /// Check whether the given setting can be changed, i.e. is not disabled by lua
-    bool IsChangeAllowed(const std::string& setting) const;
+    bool isChangeAllowed(const std::string& setting) const;
 
     const ServerType serverType;
     std::shared_ptr<GameLobby> gameLobby_;

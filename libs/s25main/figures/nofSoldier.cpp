@@ -50,8 +50,8 @@ nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigur
 
 void nofSoldier::DrawSoldierWaiting(DrawPoint drawPt)
 {
-    const GamePlayer& owner = world->GetPlayer(player);
-    LOADER.getBobSprite(owner.nation, job_, GetCurMoveDir(), 2).drawForPlayer(drawPt, owner.color);
+    const GamePlayer& owner = world->getPlayer(player);
+    LOADER.getBobSprite(owner.nation, job_, getCurMoveDir(), 2).drawForPlayer(drawPt, owner.color);
     if(hasArmor_)
         this->DrawArmor(drawPt);
 }
@@ -65,12 +65,12 @@ void nofSoldier::AbrogateWorkplace()
     }
 }
 
-unsigned char nofSoldier::GetRank() const
+unsigned char nofSoldier::getRank() const
 {
     return getSoldierRank(job_);
 }
 
-unsigned char nofSoldier::GetHitpoints() const
+unsigned char nofSoldier::getHitpoints() const
 {
     return hitpoints;
 }

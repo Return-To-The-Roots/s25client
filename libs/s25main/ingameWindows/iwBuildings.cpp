@@ -51,7 +51,7 @@ void iwBuildings::setBuildingOrder()
       BuildingType::Skinner,        BuildingType::Tannery,    BuildingType::LeatherWorks, // entry 37
     };
 
-    helpers::erase_if(bts, makeIsUnusedBuilding(gwv.GetWorld().GetGGS()));
+    helpers::erase_if(bts, makeIsUnusedBuilding(gwv.getWorld().getGGS()));
 }
 
 // Abstand des ersten Icons vom linken oberen Fensterrand
@@ -71,13 +71,13 @@ enum
 
 iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_BUILDINGS, IngameWindow::posLastOrCenter, Extent(185, 480), _("Buildings"),
-                   LOADER.GetImageN("resource", 41)),
+                   LOADER.getImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
     setBuildingOrder();
     Resize(iconSpacing * Extent(4, helpers::divCeil(bts.size(), 4) + 1) + bldContentOffset);
 
-    const Nation playerNation = gwv.GetViewer().GetPlayer().nation;
+    const Nation playerNation = gwv.getViewer().getPlayer().nation;
     // Symbole für die einzelnen Gebäude erstellen
     for(unsigned y = 0; y < bts.size() / 4 + (bts.size() % 4 > 0 ? 1 : 0); ++y)
     {
@@ -89,14 +89,14 @@ iwBuildings::iwBuildings(GameWorldView& gwv, GameCommandFactory& gcFactory)
             Extent btSize = Extent(32, 32);
             DrawPoint btPos = bldContentOffset - btSize / 2 + iconSpacing * DrawPoint(x, y);
             AddImageButton(ID_BuildingsStart + y * 4 + x, btPos, btSize, TextureColor::Grey,
-                           LOADER.GetNationIcon(playerNation, bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
+                           LOADER.getNationIcon(playerNation, bts[y * 4 + x]), _(BUILDING_NAMES[bts[y * 4 + x]]));
         }
     }
 
     // "Help" button
     Extent btSize = Extent(30, 32);
-    AddImageButton(ID_Help, GetFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
-                   LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(ID_Help, getFullSize() - DrawPoint(14, 20) - btSize, btSize, TextureColor::Grey,
+                   LOADER.getImageN("io", 225), _("Help"));
 }
 
 /// Anzahlen der Gebäude zeichnen
@@ -105,10 +105,10 @@ void iwBuildings::msgPaintAfter()
     static boost::format fmt("%1%/%2%");
     IngameWindow::msgPaintAfter();
     // Anzahlen herausfinden
-    BuildingCount bc = gwv.GetViewer().GetPlayer().GetBuildingRegister().GetBuildingNums();
+    BuildingCount bc = gwv.getViewer().getPlayer().getBuildingRegister().getBuildingNums();
 
     // Anzahlen unter die Gebäude schreiben
-    DrawPoint rowPos = GetDrawPos() + bldContentOffset + DrawPoint(0, font_distance_y);
+    DrawPoint rowPos = getDrawPos() + bldContentOffset + DrawPoint(0, font_distance_y);
     for(unsigned y = 0; y < helpers::divCeil(bts.size(), 4); ++y)
     {
         DrawPoint curPos = rowPos;
@@ -139,20 +139,20 @@ void iwBuildings::msgButtonClick(const unsigned ctrl_id)
     }
 
     // no buildings of type complete? -> do nothing
-    const GamePlayer& localPlayer = gwv.GetViewer().GetPlayer();
-    const BuildingRegister& buildingRegister = localPlayer.GetBuildingRegister();
+    const GamePlayer& localPlayer = gwv.getViewer().getPlayer();
+    const BuildingRegister& buildingRegister = localPlayer.getBuildingRegister();
 
     BuildingType bldType = bts[ctrl_id - ID_BuildingsStart];
-    if(BuildingProperties::IsMilitary(bldType))
-        GoToFirstMatching<iwMilitaryBuilding>(bldType, buildingRegister.GetMilitaryBuildings());
+    if(BuildingProperties::isMilitary(bldType))
+        GoToFirstMatching<iwMilitaryBuilding>(bldType, buildingRegister.getMilitaryBuildings());
     else if(bldType == BuildingType::HarborBuilding)
-        GoToFirstMatching<iwHarborBuilding>(bldType, buildingRegister.GetHarbors());
-    else if(BuildingProperties::IsWareHouse(bldType))
-        GoToFirstMatching<iwBaseWarehouse>(bldType, buildingRegister.GetStorehouses());
+        GoToFirstMatching<iwHarborBuilding>(bldType, buildingRegister.getHarbors());
+    else if(BuildingProperties::isWareHouse(bldType))
+        GoToFirstMatching<iwBaseWarehouse>(bldType, buildingRegister.getStorehouses());
     else if(bldType == BuildingType::Temple)
-        GoToFirstMatching<iwTempleBuilding>(bldType, buildingRegister.GetBuildings(bldType));
+        GoToFirstMatching<iwTempleBuilding>(bldType, buildingRegister.getBuildings(bldType));
     else
-        GoToFirstMatching<iwBuilding>(bldType, buildingRegister.GetBuildings(bldType));
+        GoToFirstMatching<iwBuilding>(bldType, buildingRegister.getBuildings(bldType));
 }
 
 template<class T_Window, class T_Building>
@@ -160,11 +160,11 @@ void iwBuildings::GoToFirstMatching(BuildingType bldType, const std::list<T_Buil
 {
     for(T_Building* bld : blds)
     {
-        if(bld->GetBuildingType() == bldType)
+        if(bld->getBuildingType() == bldType)
         {
-            gwv.MoveToMapPt(bld->GetPos());
+            gwv.MoveToMapPt(bld->getPos());
             auto nextscrn = std::make_unique<T_Window>(gwv, gcFactory, static_cast<T_Building*>(bld));
-            nextscrn->SetPos(GetPos());
+            nextscrn->setPos(getPos());
             WINDOWMANAGER.ReplaceWindow(std::move(nextscrn));
             return;
         }

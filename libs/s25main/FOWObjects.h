@@ -31,8 +31,8 @@ public:
     fowBuilding(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
-    FoW_Type GetType() const override { return FoW_Type::Building; }
-    BuildingType GetBuildingType() const { return type; }
+    FoW_Type getType() const override { return FoW_Type::Building; }
+    BuildingType getBuildingType() const { return type; }
 };
 
 /// Baustelle
@@ -53,7 +53,7 @@ public:
     fowBuildingSite(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
-    FoW_Type GetType() const override { return FoW_Type::Buildingsite; }
+    FoW_Type getType() const override { return FoW_Type::Buildingsite; }
 };
 
 /// Flagge
@@ -70,7 +70,7 @@ public:
     fowFlag(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
-    FoW_Type GetType() const override { return FoW_Type::Flag; }
+    FoW_Type getType() const override { return FoW_Type::Flag; }
 };
 
 /// Baum
@@ -87,7 +87,7 @@ public:
     fowTree(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
-    FoW_Type GetType() const override { return FoW_Type::Tree; }
+    FoW_Type getType() const override { return FoW_Type::Tree; }
 };
 
 /// Granitblock
@@ -102,5 +102,5 @@ public:
     fowGranite(SerializedGameData& sgd);
     void Serialize(SerializedGameData& sgd) const override;
     void Draw(DrawPoint drawPt) const override;
-    FoW_Type GetType() const override { return FoW_Type::Granite; }
+    FoW_Type getType() const override { return FoW_Type::Granite; }
 };

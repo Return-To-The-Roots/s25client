@@ -11,5 +11,5 @@ ctrlColorDeepening::ctrlColorDeepening(Window* parent, unsigned id, DrawPoint po
 
 void ctrlColorDeepening::DrawContent() const
 {
-    DrawRectangle(Rect(GetDrawPos() + DrawPoint(3, 3), GetSize() - Extent(6, 6)), color_);
+    DrawRectangle(Rect(getDrawPos() + DrawPoint(3, 3), getSize() - Extent(6, 6)), color_);
 }

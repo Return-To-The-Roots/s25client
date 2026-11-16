@@ -15,19 +15,19 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, GroupSel
 void ctrlMultiSelectGroup::AddSelection(unsigned selection, bool notify)
 {
     // Neuen Button auswählen
-    auto* button = GetCtrl<ctrlButton>(selection);
+    auto* button = getCtrl<ctrlButton>(selection);
     RTTR_Assert(button);
     switch(select_type)
     {
-        case GroupSelectType::Illuminate: button->SetIlluminated(true); break;
-        case GroupSelectType::Check: button->SetChecked(true); break;
-        case GroupSelectType::Show: button->SetVisible(false); break;
+        case GroupSelectType::Illuminate: button->setIlluminated(true); break;
+        case GroupSelectType::Check: button->setChecked(true); break;
+        case GroupSelectType::Show: button->setVisible(false); break;
     }
 
     this->selectedItems_.insert(selection);
 
-    if(notify && GetParent())
-        GetParent()->msgOptionGroupChange(GetID(), selection);
+    if(notify && getParent())
+        getParent()->msgOptionGroupChange(getID(), selection);
 }
 
 /**
@@ -36,19 +36,19 @@ void ctrlMultiSelectGroup::AddSelection(unsigned selection, bool notify)
 void ctrlMultiSelectGroup::RemoveSelection(unsigned selection, bool notify)
 {
     // Neuen Button auswählen
-    auto* button = GetCtrl<ctrlButton>(selection);
+    auto* button = getCtrl<ctrlButton>(selection);
     RTTR_Assert(button);
     switch(select_type)
     {
-        case GroupSelectType::Illuminate: button->SetIlluminated(false); break;
-        case GroupSelectType::Check: button->SetChecked(false); break;
-        case GroupSelectType::Show: button->SetVisible(true); break;
+        case GroupSelectType::Illuminate: button->setIlluminated(false); break;
+        case GroupSelectType::Check: button->setChecked(false); break;
+        case GroupSelectType::Show: button->setVisible(true); break;
     }
 
     this->selectedItems_.erase(selection);
 
-    if(notify && GetParent())
-        GetParent()->msgOptionGroupChange(GetID(), selection);
+    if(notify && getParent())
+        getParent()->msgOptionGroupChange(getID(), selection);
 }
 
 /**
@@ -56,13 +56,13 @@ void ctrlMultiSelectGroup::RemoveSelection(unsigned selection, bool notify)
  */
 void ctrlMultiSelectGroup::ToggleSelection(unsigned selection, bool notify)
 {
-    if(IsSelected(selection))
+    if(isSelected(selection))
         RemoveSelection(selection, notify);
     else
         AddSelection(selection, notify);
 }
 
-bool ctrlMultiSelectGroup::IsSelected(unsigned selection) const
+bool ctrlMultiSelectGroup::isSelected(unsigned selection) const
 {
     return (this->selectedItems_.count(selection) == 1);
 }

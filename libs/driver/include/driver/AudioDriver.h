@@ -19,7 +19,7 @@ public:
     ~AudioDriver() override;
 
     /// prüft auf Initialisierung.
-    bool IsInitialized() final override { return initialized; }
+    bool isInitialized() final override { return initialized; }
     void CleanUp() override;
 
     EffectPlayId PlayEffect(const RawSoundHandle& sound, uint8_t volume, bool loop) final override;
@@ -32,9 +32,9 @@ public:
 protected:
     static constexpr unsigned DEFAULT_NUM_CHANNELS = 64;
     /// Sets the actual number of channels used. Must be called before using channels
-    void SetNumChannels(unsigned numChannels);
+    void setNumChannels(unsigned numChannels);
     /// Get the channel an effect is being played at or -1 if not found
-    int GetEffectChannel(EffectPlayId playId) const;
+    int getEffectChannel(EffectPlayId playId) const;
     /// Removes the effect from the channel list
     void RemoveEffect(EffectPlayId playId);
     /// Add the sound to the list of loaded sounds and return a RawSoundHandle

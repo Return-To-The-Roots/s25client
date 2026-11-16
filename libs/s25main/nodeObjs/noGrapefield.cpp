@@ -25,14 +25,14 @@ using namespace wineaddon;
 noGrapefield::noGrapefield(const MapPoint pos)
     : noCoordBase(NodalObjectType::Grapefield, pos), type(RANDOM_RAND(2)), state(State::GrowingWaiting), size(0)
 {
-    event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
+    event = getEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
 }
 
 noGrapefield::~noGrapefield() = default;
 
 void noGrapefield::Destroy()
 {
-    GetEvMgr().RemoveEvent(event);
+    getEvMgr().RemoveEvent(event);
 
     // recompute BQ around
     world->RecalcBQAroundPoint(pos);
@@ -94,7 +94,7 @@ void noGrapefield::HandleEvent(const unsigned /*id*/)
         case State::GrowingWaiting:
         {
             // Field was waiting, so it is growing now
-            event = GetEvMgr().AddEvent(this, GROWING_LENGTH);
+            event = getEvMgr().AddEvent(this, GROWING_LENGTH);
             state = State::Growing;
         }
         break;
@@ -103,7 +103,7 @@ void noGrapefield::HandleEvent(const unsigned /*id*/)
             // When not fully grown, add an additional wait event, so the field can grow further
             if(++size != 3)
             {
-                event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
+                event = getEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
                 // Wait until the next growing phase
                 state = State::GrowingWaiting;
             } else
@@ -111,7 +111,7 @@ void noGrapefield::HandleEvent(const unsigned /*id*/)
                 // Fully grown
                 state = State::Normal;
                 // wither after large time
-                event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
+                event = getEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
             }
         }
         break;
@@ -119,21 +119,21 @@ void noGrapefield::HandleEvent(const unsigned /*id*/)
         {
             // Living to long --> start vanishing
             state = State::Withering;
-            event = GetEvMgr().AddEvent(this, 20);
+            event = getEvMgr().AddEvent(this, 20);
         }
         break;
         case State::Withering:
         {
             // Self destruction
             event = nullptr;
-            world->SetNO(pos, nullptr);
-            GetEvMgr().AddToKillList(this);
+            world->setNO(pos, nullptr);
+            getEvMgr().AddToKillList(this);
         }
         break;
     }
 }
 
-unsigned noGrapefield::GetHarvestID() const
+unsigned noGrapefield::getHarvestID() const
 {
     return bobIndex[BobTypes(rttr::enum_cast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE) + type)] + 4;
 }
@@ -141,7 +141,7 @@ unsigned noGrapefield::GetHarvestID() const
 void noGrapefield::BeginHarvesting()
 {
     // Kill event, so we do not disappear when we are harvested
-    GetEvMgr().RemoveEvent(event);
+    getEvMgr().RemoveEvent(event);
     event = nullptr;
     state = State::Normal;
 }
@@ -149,5 +149,5 @@ void noGrapefield::BeginHarvesting()
 void noGrapefield::AbortHarvesting()
 {
     // Wither after long time
-    event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
+    event = getEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
 }

@@ -15,15 +15,15 @@ public:
     noExtension(SerializedGameData& sgd, unsigned obj_id);
     ~noExtension() override;
 
-    noBase* GetBaseObject() const { return base; }
+    noBase* getBaseObject() const { return base; }
     void Draw(DrawPoint /*drawPt*/) override {}
 
     void Destroy() override {}
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Extension; }
+    GO_Type getGOT() const final { return GO_Type::Extension; }
 
-    BlockingManner GetBM() const override { return BlockingManner::Single; }
+    BlockingManner getBM() const override { return BlockingManner::Single; }
 
 private:
     noBase* const base;

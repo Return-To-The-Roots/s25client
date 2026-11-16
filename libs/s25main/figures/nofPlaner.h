@@ -46,7 +46,7 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofPlaner; }
+    GO_Type getGOT() const final { return GO_Type::NofPlaner; }
 
     void Draw(DrawPoint drawPt) override;
 

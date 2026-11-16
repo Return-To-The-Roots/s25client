@@ -48,7 +48,7 @@ bool VideoDriverWrapper::Initialize()
         return false;
     }
 
-    LOG.write(_("Loaded video driver \"%1%\"\n")) % GetName();
+    LOG.write(_("Loaded video driver \"%1%\"\n")) % getName();
 
     frameCtr_ = std::make_unique<FrameCounter>();
     frameLimiter_ = std::make_unique<FrameLimiter>();
@@ -70,8 +70,8 @@ bool VideoDriverWrapper::LoadDriver(std::string& preference)
     if(!driver_wrapper.Load(drivers::DriverType::Video, preference))
         return false;
 
-    auto createVideoInstance = driver_wrapper.GetFunction<CreateVideoInstance_t>("CreateVideoInstance");
-    auto freeVideoInstance = driver_wrapper.GetFunction<FreeVideoInstance_t>("FreeVideoInstance");
+    auto createVideoInstance = driver_wrapper.getFunction<CreateVideoInstance_t>("CreateVideoInstance");
+    auto freeVideoInstance = driver_wrapper.getFunction<FreeVideoInstance_t>("FreeVideoInstance");
     RTTR_Assert(createVideoInstance && freeVideoInstance);
 
     videodriver = Handle(createVideoInstance(&WINDOWMANAGER), freeVideoInstance);
@@ -93,7 +93,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode di
         return false;
     }
 
-    if(!videodriver->CreateScreen(rttr::version::GetTitle(), size, displayMode))
+    if(!videodriver->CreateScreen(rttr::version::getTitle(), size, displayMode))
     {
         s25util::fatal_error("Could not create window!");
         return false;
@@ -113,7 +113,7 @@ bool VideoDriverWrapper::CreateScreen(const VideoMode size, const DisplayMode di
     SwapBuffers();
 
     // WindowManager informieren
-    WINDOWMANAGER.msgScreenResize(GetRenderSize());
+    WINDOWMANAGER.msgScreenResize(getRenderSize());
 
     return true;
 }
@@ -128,14 +128,14 @@ bool VideoDriverWrapper::ResizeScreen(const VideoMode size, const DisplayMode di
 
     const bool result = videodriver->ResizeScreen(size, displayMode);
 #ifdef _WIN32
-    if(videodriver->GetDisplayMode() != DisplayMode::Fullscreen)
+    if(videodriver->getDisplayMode() != DisplayMode::Fullscreen)
     {
         // We cannot change the size of a maximized window. So restore it here
         WINDOWPLACEMENT wp;
         wp.length = sizeof(WINDOWPLACEMENT);
 
-        if(GetWindowPlacement((HWND)GetMapPointer(), &wp) && ((wp.showCmd & SW_MAXIMIZE) == SW_MAXIMIZE))
-            ShowWindow((HWND)GetMapPointer(), SW_RESTORE);
+        if(GetWindowPlacement((HWND)getMapPointer(), &wp) && ((wp.showCmd & SW_MAXIMIZE) == SW_MAXIMIZE))
+            ShowWindow((HWND)getMapPointer(), SW_RESTORE);
     }
 #endif
     WINDOWMANAGER.WindowResized();
@@ -151,9 +151,9 @@ bool VideoDriverWrapper::DestroyScreen()
     }
 
     LOG.write("Clearing textures: ");
-    unsigned ladezeit = GetTickCount();
+    unsigned ladezeit = getTickCount();
     CleanUp();
-    LOG.write("Finished in %dms\n") % (GetTickCount() - ladezeit);
+    LOG.write("Finished in %dms\n") % (getTickCount() - ladezeit);
 
     // Videotreiber zurücksetzen
     videodriver->DestroyScreen();
@@ -174,7 +174,7 @@ void VideoDriverWrapper::setTargetFramerate(int target)
         frameLimiter_->setTargetFramerate(60);
 }
 
-unsigned VideoDriverWrapper::GetFPS() const
+unsigned VideoDriverWrapper::getFPS() const
 {
     return frameCtr_->getFrameRate();
 }
@@ -225,10 +225,10 @@ void VideoDriverWrapper::DeleteTexture(unsigned t)
     }
 }
 
-KeyEvent VideoDriverWrapper::GetModKeyState() const
+KeyEvent VideoDriverWrapper::getModKeyState() const
 {
     if(videodriver)
-        return videodriver->GetModKeyState();
+        return videodriver->getModKeyState();
     return KeyEvent();
 }
 
@@ -276,11 +276,11 @@ bool VideoDriverWrapper::setHwVSync(bool enabled)
 
 void VideoDriverWrapper::RenewViewport()
 {
-    if(!videodriver->IsOpenGL() || !renderer_)
+    if(!videodriver->isOpenGL() || !renderer_)
         return;
 
-    const Extent renderSize = videodriver->GetRenderSize();
-    const VideoMode windowSize = videodriver->GetWindowSize();
+    const Extent renderSize = videodriver->getRenderSize();
+    const VideoMode windowSize = videodriver->getWindowSize();
 
     // Set the viewport and scissor area to the entire window
     glViewport(0, 0, windowSize.width, windowSize.height);
@@ -333,11 +333,11 @@ void VideoDriverWrapper::RenewViewport()
 
 bool VideoDriverWrapper::LoadAllExtensions()
 {
-    if(videodriver->IsOpenGL())
+    if(videodriver->isOpenGL())
         renderer_ = std::make_unique<OpenGLRenderer>();
     else
         renderer_ = std::make_unique<DummyRenderer>();
-    if(!renderer_->initOpenGL(videodriver->GetLoaderFunction()))
+    if(!renderer_->initOpenGL(videodriver->getLoaderFunction()))
         return false;
     LOG.write(_("OpenGL %1%.%2% supported\n")) % GLVersion.major % GLVersion.minor;
     if(GLVersion.major < RTTR_OGL_MAJOR || (GLVersion.major == RTTR_OGL_MAJOR && GLVersion.minor < RTTR_OGL_MINOR))
@@ -357,17 +357,17 @@ bool VideoDriverWrapper::LoadAllExtensions()
     return true;
 }
 
-unsigned VideoDriverWrapper::GetTickCount()
+unsigned VideoDriverWrapper::getTickCount()
 {
     if(!videodriver)
         return (unsigned)time(nullptr);
 
-    return (unsigned)videodriver->GetTickCount();
+    return (unsigned)videodriver->getTickCount();
 }
 
-std::string VideoDriverWrapper::GetName() const
+std::string VideoDriverWrapper::getName() const
 {
-    const char* name = (videodriver) ? videodriver->GetName() : nullptr;
+    const char* name = (videodriver) ? videodriver->getName() : nullptr;
     return (name) ? name : "";
 }
 
@@ -386,46 +386,46 @@ void* VideoDriverWrapper::loadExtension(const std::string& extension)
         return (nullptr);
     }
 
-    return videodriver->GetLoaderFunction()(extension.c_str());
+    return videodriver->getLoaderFunction()(extension.c_str());
 }
 
-Position VideoDriverWrapper::GetMousePos() const
+Position VideoDriverWrapper::getMousePos() const
 {
     if(!videodriver)
         return Position::Invalid();
-    return videodriver->GetMousePos();
+    return videodriver->getMousePos();
 }
 
-bool VideoDriverWrapper::IsLeftDown()
+bool VideoDriverWrapper::isLeftDown()
 {
     if(!videodriver)
         return false;
 
-    return videodriver->GetMouseStateL();
+    return videodriver->getMouseStateL();
 }
 
-bool VideoDriverWrapper::IsRightDown()
+bool VideoDriverWrapper::isRightDown()
 {
     if(!videodriver)
         return false;
 
-    return videodriver->GetMouseStateR();
+    return videodriver->getMouseStateR();
 }
 
-bool VideoDriverWrapper::IsTouch()
+bool VideoDriverWrapper::isTouch()
 {
     if(!videodriver)
         return false;
 
-    return videodriver->IsTouchEvent();
+    return videodriver->isTouchEvent();
 }
 
-void VideoDriverWrapper::SetMousePos(const Position& newPos)
+void VideoDriverWrapper::setMousePos(const Position& newPos)
 {
     if(!videodriver || !enableMouseWarping)
         return;
 
-    videodriver->SetMousePos(newPos);
+    videodriver->setMousePos(newPos);
 }
 
 std::set<VideoMode> VideoDriverWrapper::ListVideoModes() const
@@ -441,7 +441,7 @@ std::set<VideoMode> VideoDriverWrapper::ListVideoModes() const
     return result;
 }
 
-std::set<VideoMode> VideoDriverWrapper::GetDefaultWindowSizes() const
+std::set<VideoMode> VideoDriverWrapper::getDefaultWindowSizes() const
 {
     // clang-format off
     std::array defaultWindowSizes = {
@@ -462,36 +462,36 @@ std::set<VideoMode> VideoDriverWrapper::GetDefaultWindowSizes() const
     return windowSizes;
 }
 
-bool VideoDriverWrapper::HasVSync() const
+bool VideoDriverWrapper::hasVSync() const
 {
     return wglSwapIntervalEXT != nullptr;
 }
 
-void* VideoDriverWrapper::GetMapPointer() const
+void* VideoDriverWrapper::getMapPointer() const
 {
     if(!videodriver)
         return nullptr;
 
-    return videodriver->GetMapPointer();
+    return videodriver->getMapPointer();
 }
 
-VideoMode VideoDriverWrapper::GetWindowSize() const
+VideoMode VideoDriverWrapper::getWindowSize() const
 {
     // Always return at least MinWindowSize even if real window is smaller
-    VideoMode windowSize = videodriver->GetWindowSize();
+    VideoMode windowSize = videodriver->getWindowSize();
     windowSize.width = std::max(MinWindowSize.width, windowSize.width);
     windowSize.height = std::max(MinWindowSize.height, windowSize.height);
     return windowSize;
 }
 
-Extent VideoDriverWrapper::GetRenderSize() const
+Extent VideoDriverWrapper::getRenderSize() const
 {
-    return videodriver->GetRenderSize();
+    return videodriver->getRenderSize();
 }
 
-DisplayMode VideoDriverWrapper::GetDisplayMode() const
+DisplayMode VideoDriverWrapper::getDisplayMode() const
 {
-    return videodriver->GetDisplayMode();
+    return videodriver->getDisplayMode();
 }
 
 float VideoDriverWrapper::getDpiScale() const

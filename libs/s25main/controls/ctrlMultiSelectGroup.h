@@ -23,11 +23,11 @@ public:
     /// Wechselt zwischen selektiert/nicht selektiert
     void ToggleSelection(unsigned selection, bool notify = false);
     /// Gibt Liste der aktuell selektierten Buttons zurück
-    const std::set<unsigned>& GetSelection() const { return selectedItems_; }
+    const std::set<unsigned>& getSelection() const { return selectedItems_; }
     /// Prüft ob ein Button ausgewählt ist
-    bool IsSelected(unsigned selection) const;
+    bool isSelected(unsigned selection) const;
     // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
-    ctrlButton* GetButton(unsigned id) { return GetCtrl<ctrlButton>(id); }
+    ctrlButton* getButton(unsigned id) { return getCtrl<ctrlButton>(id); }
 
     void msgButtonClick(unsigned ctrl_id) override;
     bool msgLeftDown(const MouseCoords& mc) override;

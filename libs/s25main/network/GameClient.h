@@ -64,19 +64,19 @@ public:
     GameClient();
     ~GameClient();
 
-    void SetInterface(ClientInterface* ci) { this->ci = ci; }
+    void setInterface(ClientInterface* ci) { this->ci = ci; }
     /// Removes the given interface (if it is not yet overwritten by another one)
     void RemoveInterface(ClientInterface* ci)
     {
         if(this->ci == ci)
             this->ci = nullptr;
     }
-    bool IsHost() const override { return clientconfig.isHost; }
+    bool isHost() const override { return clientconfig.isHost; }
     /// Manually set the host status. Normally done in connect call
-    void SetIsHost(bool isHost) { clientconfig.isHost = isHost; }
-    std::string GetGameName() const { return clientconfig.gameName; }
+    void setIsHost(bool isHost) { clientconfig.isHost = isHost; }
+    std::string getGameName() const { return clientconfig.gameName; }
 
-    unsigned GetPlayerId() const override { return mainPlayer.playerId; }
+    unsigned getPlayerId() const override { return mainPlayer.playerId; }
 
     bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port,
                  bool host, bool use_ipv6);
@@ -87,12 +87,12 @@ public:
     void Stop();
 
     /// Gibt Map-Titel zurück
-    const std::string& GetMapTitle() const { return mapinfo.title; }
+    const std::string& getMapTitle() const { return mapinfo.title; }
     /// Gibt Pfad zu der Map zurück
-    const boost::filesystem::path& GetMapPath() const { return mapinfo.filepath; }
+    const boost::filesystem::path& getMapPath() const { return mapinfo.filepath; }
     /// Gibt Map-Typ zurück
-    MapType GetMapType() const { return mapinfo.type; }
-    const boost::filesystem::path& GetLuaFilePath() const { return mapinfo.luaFilepath; }
+    MapType getMapType() const { return mapinfo.type; }
+    const boost::filesystem::path& getLuaFilePath() const { return mapinfo.luaFilepath; }
 
     // Initialisiert und startet das Spiel
     void StartGame(unsigned random_init);
@@ -102,17 +102,17 @@ public:
     /// Beendet das Spiel, zerstört die Spielstrukturen
     void ExitGame();
 
-    ClientState GetState() const { return state; }
-    Replay* GetReplay();
-    std::shared_ptr<const NWFInfo> GetNWFInfo() const;
-    std::shared_ptr<GameLobby> GetGameLobby();
-    const AIPlayer* GetAIPlayer(unsigned id) const;
+    ClientState getState() const { return state; }
+    Replay* getReplay();
+    std::shared_ptr<const NWFInfo> getNWFInfo() const;
+    std::shared_ptr<GameLobby> getGameLobby();
+    const AIPlayer* getAIPlayer(unsigned id) const;
 
-    unsigned GetGFNumber() const;
-    std::chrono::milliseconds GetGFLength() const { return framesinfo.gf_length; }
-    unsigned GetNWFLength() const { return framesinfo.nwf_length; }
-    std::chrono::milliseconds GetFrameTime() const { return framesinfo.frameTime; }
-    unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator,
+    unsigned getGFNumber() const;
+    std::chrono::milliseconds getGFLength() const { return framesinfo.gf_length; }
+    unsigned getNWFLength() const { return framesinfo.nwf_length; }
+    std::chrono::milliseconds getFrameTime() const { return framesinfo.frameTime; }
+    unsigned getGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator,
                                 unsigned offset);
     unsigned Interpolate(unsigned maxVal, const GameEvent* ev) const;
     int Interpolate(int x1, int x2, const GameEvent* ev) const;
@@ -130,36 +130,36 @@ public:
 
     void IncreaseSpeed(bool wraparound = false);
     void DecreaseSpeed();
-    void SetNewSpeed(std::chrono::milliseconds gfLength);
+    void setNewSpeed(std::chrono::milliseconds gfLength);
     // Used by tests (stinks, but what to do?)
-    std::chrono::milliseconds GetGFLengthReq() { return framesinfo.gfLengthReq; }
+    std::chrono::milliseconds getGFLengthReq() { return framesinfo.gfLengthReq; }
 
     /// Lädt ein Replay und startet dementsprechend das Spiel
     bool StartReplay(const boost::filesystem::path& path);
 
     /// When a non-empty vector is given then an AI battle with the given AIs is started
-    void SetAIBattlePlayers(std::vector<AI::Info> aiInfos);
-    const std::vector<AI::Info>& GetAIBattlePlayers() const { return aiBattlePlayers_; }
-    bool IsAIBattleModeOn() const { return !aiBattlePlayers_.empty(); }
+    void setAIBattlePlayers(std::vector<AI::Info> aiInfos);
+    const std::vector<AI::Info>& getAIBattlePlayers() const { return aiBattlePlayers_; }
+    bool isAIBattleModeOn() const { return !aiBattlePlayers_.empty(); }
 
-    void SetPause(bool pause);
-    void TogglePause() { SetPause(!framesinfo.isPaused); }
+    void setPause(bool pause);
+    void TogglePause() { setPause(!framesinfo.isPaused); }
     /// Hide or show the fog-of-war. Only in replay mode
-    void SetReplayFOW(bool hideFOW);
+    void setReplayFOW(bool hideFOW);
     /// Return whether we are in replay mode and fog-of-war is disabled
-    bool IsReplayFOWDisabled() const;
+    bool isReplayFOWDisabled() const;
     /// Gibt Replay-Ende (GF) zurück
-    unsigned GetLastReplayGF() const;
+    unsigned getLastReplayGF() const;
     /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
     std::string FormatGFTime(unsigned gf) const override;
 
     /// Gibt Replay-Dateiname zurück
-    const boost::filesystem::path& GetReplayFilename() const;
+    const boost::filesystem::path& getReplayFilename() const;
     /// Wird ein Replay abgespielt?
-    bool IsReplayModeOn() const { return replayMode; }
+    bool isReplayModeOn() const { return replayMode; }
 
     /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
-    unsigned GetTournamentModeDuration() const;
+    unsigned getTournamentModeDuration() const;
 
     void SkipGF(unsigned gf, GameWorldView& gwv);
 
@@ -169,7 +169,7 @@ public:
     void RequestSwapToPlayer(unsigned char newId);
 
     /// Spiel pausiert?
-    bool IsPaused() const { return framesinfo.isPaused; }
+    bool isPaused() const { return framesinfo.isPaused; }
     /// Schreibt Header der Save-Datei
     bool SaveToFile(const boost::filesystem::path& filepath);
     /// Visuelle Einstellungen aus den richtigen ableiten
@@ -180,7 +180,7 @@ public:
     /// Toggle current player to be an AI player of the given type
     void ToggleHumanAIPlayer(const AI::Info& aiInfo);
 
-    NetworkPlayer& GetMainPlayer() { return mainPlayer; }
+    NetworkPlayer& getMainPlayer() { return mainPlayer; }
 
 private:
     /// Create an AI player for the current world
@@ -189,9 +189,9 @@ private:
     /// Add the gamecommand. Return true in success, false otherwise (paused, or defeated)
     bool AddGC(gc::GameCommandPtr gc) override;
 
-    unsigned GetNumPlayers() const;
+    unsigned getNumPlayers() const;
     /// Liefert einen Player zurück
-    GamePlayer& GetPlayer(unsigned id);
+    GamePlayer& getPlayer(unsigned id);
 
     /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
     void ExecuteGameFrame();

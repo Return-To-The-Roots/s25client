@@ -60,12 +60,12 @@ public:
 
     /// Gibt Infos, über die Unterbrechungspunkte in einem Text, versucht Wörter nicht zu trennen, tut dies aber, falls
     /// es unumgänglich ist (Wort länger als die Zeile)
-    WrapInfo GetWrapInfo(const std::string& text, unsigned short primary_width, unsigned short secondary_width) const;
+    WrapInfo getWrapInfo(const std::string& text, unsigned short primary_width, unsigned short secondary_width) const;
 
     /// prüft ob ein Buchstabe existiert.
     bool CharExist(char32_t c) const;
     /// liefert die Breite eines Zeichens
-    unsigned CharWidth(char32_t c) const { return GetCharInfo(c).width; }
+    unsigned CharWidth(char32_t c) const { return getCharInfo(c).width; }
 
 private:
     struct CharInfo
@@ -84,7 +84,7 @@ private:
 
     void AddCharInfo(char32_t c, const CharInfo& info);
     /// liefert das Char-Info eines Zeichens
-    const CharInfo& GetCharInfo(char32_t c) const;
+    const CharInfo& getCharInfo(char32_t c) const;
     void DrawChar(char32_t curChar, VertexArrays& vertices, DrawPoint& curPos) const;
 
     Extent maxCharSize; // How big each char is at most (aka dx,dy)

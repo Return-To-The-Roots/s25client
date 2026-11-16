@@ -127,7 +127,7 @@ struct IsScoutable
     {
         // Liegt Punkt im Nebel und für Figuren begehbar?
         return world.CalcVisiblityWithAllies(pt, player) != Visibility::Visible
-               && PathConditionHuman(world).IsNodeOk(pt);
+               && PathConditionHuman(world).isNodeOk(pt);
     }
 };
 } // namespace
@@ -135,14 +135,14 @@ struct IsScoutable
 void nofScout_Free::GoToNewNode()
 {
     std::vector<MapPoint> available_points =
-      world->GetMatchingPointsInRadius<-1>(flag->GetPos(), SCOUT_RANGE, IsScoutable(player, *world));
+      world->GetMatchingPointsInRadius<-1>(flag->getPos(), SCOUT_RANGE, IsScoutable(player, *world));
     RANDOM_SHUFFLE(available_points);
     for(MapPoint pt : available_points)
     {
         // Is there a path to this point and is the point also not to far away from the flag?
         // (Second check avoids running around mountains with a very far way back)
         if(world->FindHumanPath(pos, pt, SCOUT_RANGE * 2)
-           && world->FindHumanPath(flag->GetPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4))
+           && world->FindHumanPath(flag->getPos(), pt, SCOUT_RANGE + SCOUT_RANGE / 4))
         {
             // Take it
             nextPos = pt;
@@ -157,7 +157,7 @@ void nofScout_Free::GoToNewNode()
 }
 
 /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
-unsigned nofScout_Free::GetVisualRange() const
+unsigned nofScout_Free::getVisualRange() const
 {
     return VISUALRANGE_SCOUT;
 }

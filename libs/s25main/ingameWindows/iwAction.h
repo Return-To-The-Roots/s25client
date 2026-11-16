@@ -80,7 +80,7 @@ public:
     void Close() override;
 
     /// Gibt zurück, auf welchen Punkt es sich bezieht
-    const MapPoint& GetSelectedPt() const { return selectedPt; }
+    const MapPoint& getSelectedPt() const { return selectedPt; }
 
 private:
     void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;

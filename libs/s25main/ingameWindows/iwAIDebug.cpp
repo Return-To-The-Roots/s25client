@@ -41,10 +41,10 @@ public:
         // Cache images
         for(const auto i : helpers::enumRange<BuildingQuality>())
         {
-            bqImgs[i] = LOADER.GetMapTexture(49 + rttr::enum_cast(i));
+            bqImgs[i] = LOADER.getMapTexture(49 + rttr::enum_cast(i));
         }
-        ticks[0] = LOADER.GetTextureN("io", 40);
-        ticks[1] = LOADER.GetTextureN("io", 32);
+        ticks[0] = LOADER.getTextureN("io", 40);
+        ticks[1] = LOADER.getTextureN("io", 32);
         bqImgs[BuildingQuality::Nothing] = nullptr;
         bqImgs[BuildingQuality::Harbor] = ticks[0]; // Invalid marker
     }
@@ -58,22 +58,22 @@ public:
             return;
         if(overlay == 1)
         {
-            auto* img = bqImgs[ai->GetAINode(pt).bq];
+            auto* img = bqImgs[ai->getAINode(pt).bq];
             if(img)
                 img->DrawFull(curPos);
         } else if(overlay == 2)
-            ticks[ai->GetAINode(pt).reachable]->DrawFull(curPos);
+            ticks[ai->getAINode(pt).reachable]->DrawFull(curPos);
         else if(overlay == 3)
-            ticks[ai->GetAINode(pt).farmed]->DrawFull(curPos);
+            ticks[ai->getAINode(pt).farmed]->DrawFull(curPos);
         else if(overlay < 13)
-            font.Draw(curPos, helpers::toString(ai->GetResMapValue(pt, AIResource(overlay - 4))), FontStyle{},
+            font.Draw(curPos, helpers::toString(ai->getResMapValue(pt, AIResource(overlay - 4))), FontStyle{},
                       COLOR_YELLOW);
     }
 };
 
 iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais)
     : IngameWindow(CGI_AI_DEBUG, IngameWindow::posLastOrCenter, Extent(280, 515), _("AI Debug"),
-                   LOADER.GetImageN("resource", 41)),
+                   LOADER.getImageN("resource", 41)),
       gwv(gwv), text(nullptr), printer(nullptr)
 {
     for(const AIPlayer* ai : ais)
@@ -93,7 +93,7 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
       AddComboBox(ID_CbPlayer, DrawPoint(15, 30), Extent(250, 20), TextureColor::Grey, NormalFont, 100);
     for(const AIJH::AIPlayerJH* ai : ais_)
     {
-        players->AddItem(ai->GetPlayerName());
+        players->AddItem(ai->getPlayerName());
     }
 
     ctrlComboBox* overlays =
@@ -116,10 +116,10 @@ iwAIDebug::iwAIDebug(GameWorldView& gwv, const std::vector<const AIPlayer*>& ais
     text = AddMultiline(ID_Text, DrawPoint(15, 120), Extent(250, 8 * NormalFont->getHeight()), TextureColor::Grey,
                         NormalFont, FontStyle::NO_OUTLINE);
 
-    SetIwSize(Extent(GetIwSize().x, text->GetPos().y + text->GetSize().y));
+    setIwSize(Extent(getIwSize().x, text->getPos().y + text->getSize().y));
 
-    players->SetSelection(0);
-    overlays->SetSelection(0);
+    players->setSelection(0);
+    overlays->setSelection(0);
     printer = new DebugPrinter(ais_[0], 0);
     gwv.AddDrawNodeCallback(printer);
 }
@@ -147,7 +147,7 @@ void iwAIDebug::msgPaintBefore()
     IngameWindow::msgPaintBefore();
     std::stringstream ss;
 
-    const AIJH::AIJob* currentJob = printer->ai->GetCurrentJob();
+    const AIJH::AIJob* currentJob = printer->ai->getCurrentJob();
     if(!currentJob)
     {
         text->Clear();
@@ -155,7 +155,7 @@ void iwAIDebug::msgPaintBefore()
         return;
     }
 
-    ss << "Jobs to do: " << printer->ai->GetNumJobs() << std::endl << std::endl;
+    ss << "Jobs to do: " << printer->ai->getNumJobs() << std::endl << std::endl;
 
     const auto* bj = dynamic_cast<const AIJH::BuildJob*>(currentJob);
     const auto* ej = dynamic_cast<const AIJH::EventJob*>(currentJob);
@@ -163,13 +163,13 @@ void iwAIDebug::msgPaintBefore()
     if(bj)
     {
         ss << "BuildJob:" << std::endl;
-        ss << BUILDING_NAMES[bj->GetType()] << std::endl;
-        ss << bj->GetTarget().x << " / " << bj->GetTarget().y << std::endl;
+        ss << BUILDING_NAMES[bj->getType()] << std::endl;
+        ss << bj->getTarget().x << " / " << bj->getTarget().y << std::endl;
     } else if(ej)
     {
 #define RTTR_PRINT_EV(ev) \
     case AIEvent::EventType::ev: ss << #ev << std::endl; break
-        switch(ej->GetEvent().GetType())
+        switch(ej->getEvent().getType())
         {
             RTTR_PRINT_EV(BuildingDestroyed);
             RTTR_PRINT_EV(BuildingConquered);
@@ -191,17 +191,17 @@ void iwAIDebug::msgPaintBefore()
         }
 #undef RTTR_PRINT_EV
 
-        const auto* evb = dynamic_cast<const AIEvent::Building*>(&ej->GetEvent());
+        const auto* evb = dynamic_cast<const AIEvent::Building*>(&ej->getEvent());
         if(evb)
         {
-            ss << evb->GetX() << " / " << evb->GetY() << std::endl;
-            ss << BUILDING_NAMES[evb->GetBuildingType()] << std::endl;
+            ss << evb->getX() << " / " << evb->getY() << std::endl;
+            ss << BUILDING_NAMES[evb->getBuildingType()] << std::endl;
         }
     }
 
 #define RTTR_PRINT_STATUS(state) \
     case AIJH::state: ss << #state << std::endl; break
-    switch(currentJob->GetState())
+    switch(currentJob->getState())
     {
         RTTR_PRINT_STATUS(JobState::Waiting);
         RTTR_PRINT_STATUS(JobState::Start);

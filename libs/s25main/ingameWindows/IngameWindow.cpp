@@ -40,18 +40,18 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
       isMoving(false)
 {
     std::fill(buttonStates_.begin(), buttonStates_.end(), ButtonState::Up);
-    contentOffset.x = LOADER.GetImageN("resource", 38)->getWidth();     // left border
-    contentOffset.y = LOADER.GetImageN("resource", 42)->getHeight();    // title bar
-    contentOffsetEnd.x = LOADER.GetImageN("resource", 39)->getWidth();  // right border
-    contentOffsetEnd.y = LOADER.GetImageN("resource", 40)->getHeight(); // bottom bar
+    contentOffset.x = LOADER.getImageN("resource", 38)->getWidth();     // left border
+    contentOffset.y = LOADER.getImageN("resource", 42)->getHeight();    // title bar
+    contentOffsetEnd.x = LOADER.getImageN("resource", 39)->getWidth();  // right border
+    contentOffsetEnd.y = LOADER.getImageN("resource", 40)->getHeight(); // bottom bar
 
-    const auto it = SETTINGS.windows.persistentSettings.find(GetGUIID());
+    const auto it = SETTINGS.windows.persistentSettings.find(getGUIID());
     windowSettings_ = (it == SETTINGS.windows.persistentSettings.cend() ? nullptr : &it->second);
 
     // For compatibility we treat the given height as the window height, not the content height
     // First we have to make sure the size is not to small
-    Window::Resize(elMax(contentOffset + contentOffsetEnd, GetSize()));
-    iwHeight = GetSize().y - contentOffset.y - contentOffsetEnd.y;
+    Window::Resize(elMax(contentOffset + contentOffsetEnd, getSize()));
+    iwHeight = getSize().y - contentOffset.y - contentOffsetEnd.y;
 
     // Save to settings that window is open
     SaveOpenStatus(true);
@@ -62,7 +62,7 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
         if(windowSettings_->isMinimized)
         {
             isMinimized_ = true;
-            Extent minimizedSize(GetSize().x, contentOffset.y + contentOffsetEnd.y);
+            Extent minimizedSize(getSize().x, contentOffset.y + contentOffsetEnd.y);
             Window::Resize(minimizedSize);
         }
         isPinned_ = windowSettings_->isPinned;     // Restore pinned state
@@ -73,7 +73,7 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     if(pos == posLastOrCenter)
     {
         if(windowSettings_ && windowSettings_->lastPos.isValid())
-            SetPos(windowSettings_->lastPos, !restorePos_.isValid());
+            setPos(windowSettings_->lastPos, !restorePos_.isValid());
         else
             MoveToCenter();
     } else if(pos == posCenter)
@@ -81,20 +81,20 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     else if(pos == posAtMouse)
         MoveNextToMouse();
     else
-        SetPos(pos); // always call SetPos() to update restorePos
+        setPos(pos); // always call SetPos() to update restorePos
 }
 
 void IngameWindow::Resize(const Extent& newSize)
 {
     DrawPoint iSize(newSize);
     iSize = elMax(DrawPoint(0, 0), iSize - DrawPoint(contentOffset + contentOffsetEnd));
-    SetIwSize(Extent(iSize));
+    setIwSize(Extent(iSize));
 }
 
-void IngameWindow::SetIwSize(const Extent& newSize)
+void IngameWindow::setIwSize(const Extent& newSize)
 {
     // Is the window connecting with the bottom screen edge?
-    const auto atBottom = (GetPos().y + GetSize().y) >= VIDEODRIVER.GetRenderSize().y;
+    const auto atBottom = (getPos().y + getSize().y) >= VIDEODRIVER.getRenderSize().y;
 
     iwHeight = newSize.y;
     Extent wndSize = newSize;
@@ -109,43 +109,43 @@ void IngameWindow::SetIwSize(const Extent& newSize)
     // Reset the position
     // 1) to check if parts of the window are out of the visible area
     // 2) to re-connect the window with the bottom screen edge, if needed
-    SetPos(pos, false);
+    setPos(pos, false);
 }
 
-Extent IngameWindow::GetIwSize() const
+Extent IngameWindow::getIwSize() const
 {
-    return Extent(GetSize().x - contentOffset.x - contentOffsetEnd.x, iwHeight);
+    return Extent(getSize().x - contentOffset.x - contentOffsetEnd.x, iwHeight);
 }
 
-Extent IngameWindow::GetFullSize() const
+Extent IngameWindow::getFullSize() const
 {
-    return Extent(GetSize().x, contentOffset.y + contentOffsetEnd.y + iwHeight);
+    return Extent(getSize().x, contentOffset.y + contentOffsetEnd.y + iwHeight);
 }
 
-DrawPoint IngameWindow::GetRightBottomBoundary()
+DrawPoint IngameWindow::getRightBottomBoundary()
 {
-    return DrawPoint(GetSize() - contentOffsetEnd);
+    return DrawPoint(getSize() - contentOffsetEnd);
 }
 
-void IngameWindow::SetPos(DrawPoint newPos, bool saveRestorePos)
+void IngameWindow::setPos(DrawPoint newPos, bool saveRestorePos)
 {
-    const Extent screenSize = VIDEODRIVER.GetRenderSize();
+    const Extent screenSize = VIDEODRIVER.getRenderSize();
     DrawPoint newRestorePos = newPos;
     // Too far left or right?
     if(newPos.x < 0)
         newRestorePos.x = newPos.x = 0;
-    else if(newPos.x + GetSize().x >= screenSize.x)
+    else if(newPos.x + getSize().x >= screenSize.x)
     {
-        newPos.x = screenSize.x - GetSize().x;
+        newPos.x = screenSize.x - getSize().x;
         newRestorePos.x = DrawPoint::MaxElementValue; // make window stick to the right
     }
 
     // Too high or low?
     if(newPos.y < 0)
         newRestorePos.y = newPos.y = 0;
-    else if(newPos.y + GetSize().y >= screenSize.y)
+    else if(newPos.y + getSize().y >= screenSize.y)
     {
-        newPos.y = screenSize.y - GetSize().y;
+        newPos.y = screenSize.y - getSize().y;
         newRestorePos.y = DrawPoint::MaxElementValue; // make window stick to the bottom
     }
 
@@ -160,7 +160,7 @@ void IngameWindow::SetPos(DrawPoint newPos, bool saveRestorePos)
             windowSettings_->restorePos = newRestorePos;
     }
 
-    Window::SetPos(newPos);
+    Window::setPos(newPos);
 }
 
 void IngameWindow::Close()
@@ -169,9 +169,9 @@ void IngameWindow::Close()
     closeme = true;
 }
 
-void IngameWindow::SetMinimized(bool minimized)
+void IngameWindow::setMinimized(bool minimized)
 {
-    Extent fullSize = GetSize();
+    Extent fullSize = getSize();
     if(isMinimized_)
         fullSize.y = iwHeight + contentOffset.y + contentOffsetEnd.y;
     this->isMinimized_ = minimized;
@@ -182,7 +182,7 @@ void IngameWindow::SetMinimized(bool minimized)
         windowSettings_->isMinimized = isMinimized_;
 }
 
-void IngameWindow::SetPinned(bool pinned)
+void IngameWindow::setPinned(bool pinned)
 {
     isPinned_ = pinned;
 
@@ -195,7 +195,7 @@ bool IngameWindow::msgLeftDown(const MouseCoords& mc)
 {
     for(const auto btn : helpers::enumRange<IwButton>())
     {
-        if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
+        if(IsPointInRect(mc.pos, getButtonBounds(btn)))
         {
             buttonStates_[btn] = ButtonState::Pressed;
             if(btn == IwButton::Title)
@@ -225,7 +225,7 @@ bool IngameWindow::msgLeftUp(const MouseCoords& mc)
                && (btn == IwButton::Title || btn == IwButton::PinOrMinimize)))
             continue;
 
-        if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
+        if(IsPointInRect(mc.pos, getButtonBounds(btn)))
         {
             switch(btn)
             {
@@ -233,20 +233,20 @@ bool IngameWindow::msgLeftUp(const MouseCoords& mc)
                 case IwButton::Title:
                     if(SETTINGS.interface.enableWindowPinning && mc.dbl_click)
                     {
-                        SetMinimized(!IsMinimized());
-                        LOADER.GetSoundN("sound", 113)->Play(255, false);
+                        setMinimized(!isMinimized());
+                        LOADER.getSoundN("sound", 113)->Play(255, false);
                         return true;
                     }
                     break;
                 case IwButton::PinOrMinimize:
                     if(SETTINGS.interface.enableWindowPinning)
                     {
-                        SetPinned(!IsPinned());
-                        LOADER.GetSoundN("sound", 111)->Play(255, false);
+                        setPinned(!isPinned());
+                        LOADER.getSoundN("sound", 111)->Play(255, false);
                     } else
                     {
-                        SetMinimized(!IsMinimized());
-                        LOADER.GetSoundN("sound", 113)->Play(255, false);
+                        setMinimized(!isMinimized());
+                        LOADER.getSoundN("sound", 113)->Play(255, false);
                     }
                     return true;
             }
@@ -254,7 +254,7 @@ bool IngameWindow::msgLeftUp(const MouseCoords& mc)
     }
 
     // On touch devices dblclick closes window
-    if(VIDEODRIVER.IsTouch() && mc.dbl_click && closeBehavior_ != CloseBehavior::Custom)
+    if(VIDEODRIVER.isTouch() && mc.dbl_click && closeBehavior_ != CloseBehavior::Custom)
     {
         Close();
         return true;
@@ -279,8 +279,8 @@ bool IngameWindow::msgMouseMove(const MouseCoords& mc)
     {
         // Calculate new window boundary rectangle without snapping
         DrawPoint delta = mc.pos - lastMousePos;
-        Rect wndRect = GetBoundaryRect();
-        RTTR_Assert(wndRect.getOrigin() == GetPos()); // The rest of the code assumes this to be true
+        Rect wndRect = getBoundaryRect();
+        RTTR_Assert(wndRect.getOrigin() == getPos()); // The rest of the code assumes this to be true
         wndRect.move(delta - snapOffset_);
 
         // Try to snap this window to any other
@@ -290,14 +290,14 @@ bool IngameWindow::msgMouseMove(const MouseCoords& mc)
         // window position to the screen…
         DrawPoint newPos = wndRect.getOrigin();
         DrawPoint newPosBounded =
-          elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.GetRenderSize() - wndRect.getSize()));
+          elMin(elMax(newPos, DrawPoint::all(0)), DrawPoint(VIDEODRIVER.getRenderSize() - wndRect.getSize()));
         // …and use it to fix the mouse position if moved too far
         if(newPosBounded != newPos)
-            VIDEODRIVER.SetMousePos(newPosBounded - wndRect.getOrigin() + mc.pos);
+            VIDEODRIVER.setMousePos(newPosBounded - wndRect.getOrigin() + mc.pos);
 
         // Set new position and re-calculate snap offset (window position may have been out of bounds)
-        SetPos(newPos + snapOffset_);
-        snapOffset_ = GetPos() - newPosBounded;
+        setPos(newPos + snapOffset_);
+        snapOffset_ = getPos() - newPosBounded;
 
         lastMousePos = mc.pos;
         return true;
@@ -306,7 +306,7 @@ bool IngameWindow::msgMouseMove(const MouseCoords& mc)
         // Check the buttons
         for(const auto btn : helpers::enumRange<IwButton>())
         {
-            if(IsPointInRect(mc.pos, GetButtonBounds(btn)))
+            if(IsPointInRect(mc.pos, getButtonBounds(btn)))
             {
                 if(!mc.ldown)
                     buttonStates_[btn] = ButtonState::Hover;
@@ -320,7 +320,7 @@ bool IngameWindow::msgMouseMove(const MouseCoords& mc)
 void IngameWindow::Draw_()
 {
     if(isModal_ && !IsActive())
-        SetActive(true);
+        setActive(true);
     if(!isMinimized_)
         DrawBackground();
     // Black border
@@ -333,7 +333,7 @@ void IngameWindow::Draw_()
     //  This needs a change in GetDrawPos to add this offset and also change all control-add-calls but would be much
     //  cleaner (no more hard coded offsets and we could restyle the ingame windows easily)
     //
-    const Rect drawRect = GetDrawRect();
+    const Rect drawRect = getDrawRect();
     const Rect fullWndRect(drawRect.getOrigin() - borderSize, drawRect.getSize() + borderSize * 2u);
     // Top
     DrawRectangle(Rect(fullWndRect.getOrigin(), fullWndRect.getSize().x, borderSize.y), COLOR_BLACK);
@@ -347,10 +347,10 @@ void IngameWindow::Draw_()
                   COLOR_BLACK);
 
     // Upper parts
-    glArchivItem_Bitmap* leftUpperImg = LOADER.GetImageN("resource", 36);
-    leftUpperImg->DrawFull(GetPos());
-    glArchivItem_Bitmap* rightUpperImg = LOADER.GetImageN("resource", 37);
-    rightUpperImg->DrawFull(GetPos() + DrawPoint(GetSize().x - rightUpperImg->getWidth(), 0));
+    glArchivItem_Bitmap* leftUpperImg = LOADER.getImageN("resource", 36);
+    leftUpperImg->DrawFull(getPos());
+    glArchivItem_Bitmap* rightUpperImg = LOADER.getImageN("resource", 37);
+    rightUpperImg->DrawFull(getPos() + DrawPoint(getSize().x - rightUpperImg->getWidth(), 0));
 
     // The buttons
     using ButtonStateResIds = helpers::EnumArray<unsigned, ButtonState>;
@@ -360,21 +360,21 @@ void IngameWindow::Draw_()
     constexpr ButtonStateResIds pinOverlayResIds = {15, 16, 17};
     constexpr ButtonStateResIds unpinOverlayResIds = {18, 19, 20};
     if(closeBehavior_ != CloseBehavior::Custom)
-        LOADER.GetImageN("resource", closeResIds[buttonStates_[IwButton::Close]])
-          ->DrawFull(GetButtonBounds(IwButton::Close));
-    if(!IsModal())
+        LOADER.getImageN("resource", closeResIds[buttonStates_[IwButton::Close]])
+          ->DrawFull(getButtonBounds(IwButton::Close));
+    if(!isModal())
     {
         const auto buttonState = buttonStates_[IwButton::PinOrMinimize];
-        const auto bounds = GetButtonBounds(IwButton::PinOrMinimize);
+        const auto bounds = getButtonBounds(IwButton::PinOrMinimize);
         if(SETTINGS.interface.enableWindowPinning)
         {
-            LOADER.GetImageN("resource", pinBaseResIds[buttonState])->DrawFull(bounds);
+            LOADER.getImageN("resource", pinBaseResIds[buttonState])->DrawFull(bounds);
             if(isPinned_)
-                LOADER.GetImageN("io_new", unpinOverlayResIds[buttonState])->DrawFull(bounds);
+                LOADER.getImageN("io_new", unpinOverlayResIds[buttonState])->DrawFull(bounds);
             else
-                LOADER.GetImageN("io_new", pinOverlayResIds[buttonState])->DrawFull(bounds);
+                LOADER.getImageN("io_new", pinOverlayResIds[buttonState])->DrawFull(bounds);
         } else
-            LOADER.GetImageN("resource", minimizeResIds[buttonState])->DrawFull(bounds);
+            LOADER.getImageN("resource", minimizeResIds[buttonState])->DrawFull(bounds);
     }
 
     // The title bar
@@ -384,9 +384,9 @@ void IngameWindow::Draw_()
     else
         titleIndex = 42;
 
-    glArchivItem_Bitmap& titleImg = *LOADER.GetImageN("resource", titleIndex);
-    DrawPoint titleImgPos = GetPos() + DrawPoint(leftUpperImg->getWidth(), 0);
-    const unsigned titleWidth = GetSize().x - leftUpperImg->getWidth() - rightUpperImg->getWidth();
+    glArchivItem_Bitmap& titleImg = *LOADER.getImageN("resource", titleIndex);
+    DrawPoint titleImgPos = getPos() + DrawPoint(leftUpperImg->getWidth(), 0);
+    const unsigned titleWidth = getSize().x - leftUpperImg->getWidth() - rightUpperImg->getWidth();
     // How often should the image be drawn to get the full width
     unsigned tileCount = titleWidth / titleImg.getWidth();
     for(unsigned i = 0; i < tileCount; ++i)
@@ -401,22 +401,22 @@ void IngameWindow::Draw_()
         titleImg.DrawPart(Rect(titleImgPos, remainingTileSize, titleImg.getHeight()));
 
     // Text on the title bar
-    NormalFont->Draw(GetPos() + DrawPoint(GetSize().x, titleImg.getHeight()) / 2, title_,
+    NormalFont->Draw(getPos() + DrawPoint(getSize().x, titleImg.getHeight()) / 2, title_,
                      FontStyle::CENTER | FontStyle::VCENTER, COLOR_YELLOW);
 
-    glArchivItem_Bitmap* bottomBorderSideImg = LOADER.GetImageN("resource", 45);
-    glArchivItem_Bitmap* bottomBarImg = LOADER.GetImageN("resource", 40);
+    glArchivItem_Bitmap* bottomBorderSideImg = LOADER.getImageN("resource", 45);
+    glArchivItem_Bitmap* bottomBarImg = LOADER.getImageN("resource", 40);
 
     // Side bars
     if(!isMinimized_)
     {
-        unsigned sideHeight = GetSize().y - leftUpperImg->getHeight() - bottomBorderSideImg->getHeight();
+        unsigned sideHeight = getSize().y - leftUpperImg->getHeight() - bottomBorderSideImg->getHeight();
 
-        glArchivItem_Bitmap* leftSideImg = LOADER.GetImageN("resource", 38);
-        glArchivItem_Bitmap* rightSideImg = LOADER.GetImageN("resource", 39);
+        glArchivItem_Bitmap* leftSideImg = LOADER.getImageN("resource", 38);
+        glArchivItem_Bitmap* rightSideImg = LOADER.getImageN("resource", 39);
         tileCount = sideHeight / leftSideImg->getHeight();
-        DrawPoint leftImgPos = GetPos() + DrawPoint(0, leftUpperImg->getHeight());
-        DrawPoint rightImgPos = leftImgPos + DrawPoint(GetSize().x - leftSideImg->getWidth(), 0);
+        DrawPoint leftImgPos = getPos() + DrawPoint(0, leftUpperImg->getHeight());
+        DrawPoint rightImgPos = leftImgPos + DrawPoint(getSize().x - leftSideImg->getWidth(), 0);
         for(unsigned i = 0; i < tileCount; ++i)
         {
             leftSideImg->DrawFull(leftImgPos);
@@ -434,9 +434,9 @@ void IngameWindow::Draw_()
     }
 
     // Lower bar
-    const unsigned bottomBarWidth = GetSize().x - bottomBorderSideImg->getWidth() * 2;
+    const unsigned bottomBarWidth = getSize().x - bottomBorderSideImg->getWidth() * 2;
     tileCount = bottomBarWidth / bottomBarImg->getWidth();
-    DrawPoint bottomImgPos = GetPos() + DrawPoint(bottomBorderSideImg->getWidth(), GetRightBottomBoundary().y);
+    DrawPoint bottomImgPos = getPos() + DrawPoint(bottomBorderSideImg->getWidth(), getRightBottomBoundary().y);
     for(unsigned i = 0; i < tileCount; ++i)
     {
         bottomBarImg->DrawFull(bottomImgPos);
@@ -455,29 +455,29 @@ void IngameWindow::Draw_()
     }
 
     // The 2 rects on the bottom left and right
-    bottomBorderSideImg->DrawFull(GetPos() + DrawPoint(0, GetSize().y - bottomBorderSideImg->getHeight()));
-    bottomBorderSideImg->DrawFull(GetPos() + GetSize() - bottomBorderSideImg->GetSize());
+    bottomBorderSideImg->DrawFull(getPos() + DrawPoint(0, getSize().y - bottomBorderSideImg->getHeight()));
+    bottomBorderSideImg->DrawFull(getPos() + getSize() - bottomBorderSideImg->getSize());
 }
 
 void IngameWindow::DrawBackground()
 {
     if(background)
-        background->DrawPart(Rect(GetPos() + DrawPoint(contentOffset), GetIwSize()));
+        background->DrawPart(Rect(getPos() + DrawPoint(contentOffset), getIwSize()));
 }
 
 void IngameWindow::MoveToCenter()
 {
-    SetPos(DrawPoint(VIDEODRIVER.GetRenderSize() - GetSize()) / 2);
+    setPos(DrawPoint(VIDEODRIVER.getRenderSize() - getSize()) / 2);
 }
 
 void IngameWindow::MoveNextToMouse()
 {
     // Center vertically and move slightly right
-    DrawPoint newPos = VIDEODRIVER.GetMousePos() - DrawPoint(-20, GetSize().y / 2);
-    SetPos(newPos);
+    DrawPoint newPos = VIDEODRIVER.getMousePos() - DrawPoint(-20, getSize().y / 2);
+    setPos(newPos);
 }
 
-bool IngameWindow::IsMessageRelayAllowed() const
+bool IngameWindow::isMessageRelayAllowed() const
 {
     return !isMinimized_ && !isMoving;
 }
@@ -488,18 +488,18 @@ void IngameWindow::SaveOpenStatus(bool isOpen) const
         windowSettings_->isOpen = isOpen;
 }
 
-Rect IngameWindow::GetButtonBounds(IwButton btn) const
+Rect IngameWindow::getButtonBounds(IwButton btn) const
 {
-    auto pos = GetPos();
+    auto pos = getPos();
     auto size = ButtonSize;
     switch(btn)
     {
         case IwButton::Close: break;
         case IwButton::Title:
             pos.x += TitleMargin;
-            size.x = GetSize().x - TitleMargin * 2;
+            size.x = getSize().x - TitleMargin * 2;
             break;
-        case IwButton::PinOrMinimize: pos.x += GetSize().x - ButtonSize.x; break;
+        case IwButton::PinOrMinimize: pos.x += getSize().x - ButtonSize.x; break;
     }
     return Rect(pos, size);
 }

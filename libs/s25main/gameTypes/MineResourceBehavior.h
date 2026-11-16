@@ -27,12 +27,12 @@ constexpr auto maxEnumValue(MineResourceBehavior)
     return MineResourceBehavior::WorkEverywhere;
 }
 
-AddonId GetMineResourceBehaviorAddonId(BuildingType buildingType);
-ResourceType GetMineResourceType(BuildingType buildingType);
+AddonId getMineResourceBehaviorAddonId(BuildingType buildingType);
+ResourceType getMineResourceType(BuildingType buildingType);
 /// The ware a mine of the given type produces (granite/stones for any non-mineral mine)
-GoodType GetMineOutput(BuildingType buildingType);
+GoodType getMineOutput(BuildingType buildingType);
 helpers::OptionalEnum<BuildingType> GetMineBuildingType(ResourceType resourceType);
-unsigned GetRemainingMineResources(const GameWorld& world, MapPoint pos, ResourceType resourceType);
-unsigned GetS4LikeMineProductionChance(unsigned remainingMatchingResources);
-MineResourceBehavior GetMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
-bool IsMineResourceDepletable(const GlobalGameSettings& settings, BuildingType buildingType);
+unsigned getRemainingMineResources(const GameWorld& world, MapPoint pos, ResourceType resourceType);
+unsigned getS4LikeMineProductionChance(unsigned remainingMatchingResources);
+MineResourceBehavior getMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);
+bool isMineResourceDepletable(const GlobalGameSettings& settings, BuildingType buildingType);

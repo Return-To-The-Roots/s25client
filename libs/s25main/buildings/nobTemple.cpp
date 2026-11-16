@@ -24,7 +24,7 @@ void nobTemple::Serialize(SerializedGameData& sgd) const
     sgd.PushEnum<uint8_t>(productionMode);
 }
 
-void nobTemple::SetProductionMode(ProductionMode newProductionMode)
+void nobTemple::setProductionMode(ProductionMode newProductionMode)
 {
     productionMode = newProductionMode;
 }

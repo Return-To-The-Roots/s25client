@@ -23,9 +23,9 @@ public:
     Savegame();
     ~Savegame() override;
 
-    std::string GetSignature() const override;
-    uint8_t GetLatestMinorVersion() const override;
-    uint8_t GetLatestMajorVersion() const override;
+    std::string getSignature() const override;
+    uint8_t getLatestMinorVersion() const override;
+    uint8_t getLatestMajorVersion() const override;
 
     /// Schreibst Savegame oder Teile davon
     bool Save(const boost::filesystem::path& filepath, const std::string& mapName);

@@ -49,24 +49,24 @@ void dskTextureTest::Load()
     }
     desc = newDesc;
 
-    auto* cb = GetCtrl<ctrlComboBox>(ID_cbTexture);
-    const unsigned selection = cb->GetSelection().value_or(0);
+    auto* cb = getCtrl<ctrlComboBox>(ID_cbTexture);
+    const unsigned selection = cb->getSelection().value_or(0);
     cb->DeleteAllItems();
     for(const auto& t : desc.terrain)
         cb->AddItem(t.name);
-    cb->SetSelection(selection);
+    cb->setSelection(selection);
     msgComboSelectItem(ID_cbTexture, selection);
 }
 
 void dskTextureTest::msgComboSelectItem(const unsigned ctrl_id, const unsigned selection)
 {
-    curTerrainIdx = desc.terrain.getIndex(GetCtrl<ctrlComboBox>(ctrl_id)->GetText(selection));
+    curTerrainIdx = desc.terrain.getIndex(getCtrl<ctrlComboBox>(ctrl_id)->getText(selection));
     if(!curTerrainIdx)
         return;
     const TerrainDesc& cur = desc.get(curTerrainIdx);
     LOADER.Load(RTTRCONFIG.ExpandPath(cur.texturePath));
     const auto textureName = ResourceId::make(bfs::path(cur.texturePath));
-    glArchivItem_Bitmap* texBmp = LOADER.GetImageN(textureName, 0);
+    glArchivItem_Bitmap* texBmp = LOADER.getImageN(textureName, 0);
     curTexture = LOADER.ExtractTexture(*texBmp, cur.posInTexture);
 }
 
@@ -84,12 +84,12 @@ void dskTextureTest::msgPaintAfter()
     if(!curTexture)
         return;
     DrawRectangle(Rect(0, 50, 800, 550), COLOR_BLACK);
-    VIDEODRIVER.BindTexture(curTexture->GetTexture());
+    VIDEODRIVER.BindTexture(curTexture->getTexture());
     const TerrainDesc& cur = desc.get(curTerrainIdx);
     Position texOrigin = cur.posInTexture.getOrigin();
-    PointF texSize(curTexture->GetTexSize());
+    PointF texSize(curTexture->getTexSize());
 
-    TerrainDesc::Triangle trianglePos = cur.GetRSUTriangle();
+    TerrainDesc::Triangle trianglePos = cur.getRSUTriangle();
     std::array<Triangle, 2> texCoords;
 
     Triangle& rsuCoord = texCoords[0];
@@ -101,7 +101,7 @@ void dskTextureTest::msgPaintAfter()
         rsuCoord[i] /= texSize;
 
     Triangle& usdCoord = texCoords[1];
-    trianglePos = cur.GetUSDTriangle();
+    trianglePos = cur.getUSDTriangle();
     usdCoord[0] = PointF(trianglePos.left - texOrigin);
     usdCoord[1] = PointF(trianglePos.tip - texOrigin);
     usdCoord[2] = PointF(trianglePos.right - texOrigin);

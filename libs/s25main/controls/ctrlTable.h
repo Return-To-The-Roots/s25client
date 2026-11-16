@@ -53,15 +53,15 @@ public:
     void AddRow(std::vector<std::string> row);
     void RemoveRow(unsigned rowIdx);
     /// liefert den Wert eines Feldes.
-    const std::string& GetItemText(unsigned short row, unsigned short column) const;
+    const std::string& getItemText(unsigned short row, unsigned short column) const;
     /// sortiert die Zeilen.
     void SortRows(unsigned column, TableSortDir sortDir);
-    int GetSortColumn() const { return sortColumn_; }
-    TableSortDir GetSortDirection() const { return sortDir_; }
-    unsigned short GetNumRows() const { return static_cast<unsigned short>(rows_.size()); }
-    unsigned short GetNumColumns() const { return static_cast<unsigned short>(columns_.size()); }
-    const std::optional<unsigned>& GetSelection() const { return selection_; }
-    void SetSelection(const std::optional<unsigned>& selection);
+    int getSortColumn() const { return sortColumn_; }
+    TableSortDir getSortDirection() const { return sortDir_; }
+    unsigned short getNumRows() const { return static_cast<unsigned short>(rows_.size()); }
+    unsigned short getNumColumns() const { return static_cast<unsigned short>(columns_.size()); }
+    const std::optional<unsigned>& getSelection() const { return selection_; }
+    void setSelection(const std::optional<unsigned>& selection);
 
     bool msgLeftDown(const MouseCoords& mc) override;
     bool msgRightDown(const MouseCoords& mc) override;
@@ -78,11 +78,11 @@ protected:
 
     /// Setzt die Breite und Position der Buttons ohne Scrolleiste
     void ResetButtonWidths();
-    std::optional<unsigned> GetSelectionFromMouse(const MouseCoords& mc) const;
+    std::optional<unsigned> getSelectionFromMouse(const MouseCoords& mc) const;
     /// Get the area of the content (table itself w/o header)
-    Rect GetContentDrawArea() const;
+    Rect getContentDrawArea() const;
     /// Get the full area (element less spacing)
-    Rect GetFullDrawArea() const;
+    Rect getFullDrawArea() const;
 
 private:
     TextureColor tc;

@@ -25,11 +25,11 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
       planer(nullptr), builder(nullptr), boards(0), stones(0), used_boards(0), used_stones(0), build_progress(0)
 {
     // Überprüfen, ob die Baustelle erst noch planiert werden muss (nur bei mittleren/großen Gebäuden)
-    if(GetSize() == BuildingQuality::House || GetSize() == BuildingQuality::Castle
-       || GetSize() == BuildingQuality::Harbor)
+    if(getSize() == BuildingQuality::House || getSize() == BuildingQuality::Castle
+       || getSize() == BuildingQuality::Harbor)
     {
         // Höhe auf dem Punkt, wo die Baustelle steht
-        int altitude = world->GetNode(pos).altitude;
+        int altitude = world->getNode(pos).altitude;
 
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
@@ -37,20 +37,20 @@ noBuildingSite::noBuildingSite(const BuildingType type, const MapPoint pos, cons
             if(dir != Direction::SouthEast)
             {
                 // Gibt es da Differenzen?
-                if(altitude - world->GetNeighbourNode(pos, dir).altitude != 0)
+                if(altitude - world->getNeighbourNode(pos, dir).altitude != 0)
                     state = BuildingSiteState::Planing;
             }
         }
     }
 
     // Wir hätten gerne einen Planierer/Bauarbeiter...
-    world->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
+    world->getPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
 
     // Bauwaren anfordern
     OrderConstructionMaterial();
 
     // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
-    world->GetPlayer(player).AddBuildingSite(this);
+    world->getPlayer(player).AddBuildingSite(this);
 }
 
 /// Konstruktor für Hafenbaustellen vom Schiff aus
@@ -59,7 +59,7 @@ noBuildingSite::noBuildingSite(const MapPoint pos, const unsigned char player)
       state(BuildingSiteState::Building), planer(nullptr), boards(BUILDING_COSTS[BuildingType::HarborBuilding].boards),
       stones(BUILDING_COSTS[BuildingType::HarborBuilding].stones), used_boards(0), used_stones(0), build_progress(0)
 {
-    GamePlayer& owner = world->GetPlayer(player);
+    GamePlayer& owner = world->getPlayer(player);
     // Baustelle in den Index eintragen, damit die Wirtschaft auch Bescheid weiß
     owner.AddBuildingSite(this);
     // Bauarbeiter auch auf der Karte auftragen
@@ -84,7 +84,7 @@ void noBuildingSite::Destroy()
         planer->LostWork();
         planer = nullptr;
     } else
-        world->GetPlayer(player).JobNotWanted(this);
+        world->getPlayer(player).JobNotWanted(this);
 
     RTTR_Assert(!builder);
     RTTR_Assert(!planer);
@@ -98,11 +98,11 @@ void noBuildingSite::Destroy()
     ordered_stones.clear();
 
     // und Feld wird leer
-    world->SetNO(pos, nullptr);
+    world->setNO(pos, nullptr);
 
     // Baustelle wieder aus der Liste entfernen - dont forget about expedition harbor status
-    bool expeditionharbor = IsHarborBuildingSiteFromSea();
-    world->GetPlayer(player).RemoveBuildingSite(this);
+    bool expeditionharbor = isHarborBuildingSiteFromSea();
+    world->getPlayer(player).RemoveBuildingSite(this);
 
     noBaseBuilding::Destroy();
 
@@ -149,11 +149,11 @@ void noBuildingSite::OrderConstructionMaterial()
         return;
 
     // Optimization: return early if building is isolated
-    if(!IsConnected())
+    if(!isConnected())
         return;
 
     // Bretter
-    GamePlayer& owner = world->GetPlayer(player);
+    GamePlayer& owner = world->getPlayer(player);
     for(int i = used_boards + boards + ordered_boards.size(); i < BUILDING_COSTS[bldType_].boards; ++i)
     {
         Ware* w = owner.OrderWare(GoodType::Boards, *this);
@@ -171,7 +171,7 @@ void noBuildingSite::OrderConstructionMaterial()
     }
 }
 
-unsigned noBuildingSite::GetMilitaryRadius() const
+unsigned noBuildingSite::getMilitaryRadius() const
 {
     /// Note: This actually only applies to harbor buildings made from expeditions. We rely on the calling functions to
     /// only take those into account
@@ -183,23 +183,23 @@ void noBuildingSite::Draw(DrawPoint drawPt)
     if(state == BuildingSiteState::Planing)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImage(world->GetPlayer(player).nation, 450)->DrawFull(drawPt);
-        LOADER.GetNationImage(world->GetPlayer(player).nation, 451)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getNationImage(world->getPlayer(player).nation, 450)->DrawFull(drawPt);
+        LOADER.getNationImage(world->getPlayer(player).nation, 451)->DrawFull(drawPt, COLOR_SHADOW);
     } else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImage(world->GetPlayer(player).nation, 455)->DrawFull(drawPt);
-        LOADER.GetNationImage(world->GetPlayer(player).nation, 456)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getNationImage(world->getPlayer(player).nation, 455)->DrawFull(drawPt);
+        LOADER.getNationImage(world->getPlayer(player).nation, 456)->DrawFull(drawPt, COLOR_SHADOW);
 
         // Waren auf der Baustelle
 
         // Bretter
-        DrawPoint doorPos = drawPt + DrawPoint(GetDoorPointX(), GetDoorPointY());
+        DrawPoint doorPos = drawPt + DrawPoint(getDoorPointX(), getDoorPointY());
         for(unsigned char i = 0; i < boards; ++i)
-            LOADER.GetWareStackTex(GoodType::Boards)->DrawFull(doorPos - DrawPoint(5, 10 + i * 4));
+            LOADER.getWareStackTex(GoodType::Boards)->DrawFull(doorPos - DrawPoint(5, 10 + i * 4));
         // Steine
         for(unsigned char i = 0; i < stones; ++i)
-            LOADER.GetWareStackTex(GoodType::Stones)->DrawFull(doorPos + DrawPoint(8, -12 - i * 4));
+            LOADER.getWareStackTex(GoodType::Stones)->DrawFull(doorPos + DrawPoint(8, -12 - i * 4));
 
         // bis dahin gebautes Haus zeichnen
 
@@ -238,11 +238,11 @@ void noBuildingSite::GotWorker(Job /*job*/, noFigure& worker)
     // Aha, wir haben nen Planierer/Bauarbeiter bekommen
     if(state == BuildingSiteState::Planing)
     {
-        RTTR_Assert(worker.GetGOT() == GO_Type::NofPlaner);
+        RTTR_Assert(worker.getGOT() == GO_Type::NofPlaner);
         planer = static_cast<nofPlaner*>(&worker);
     } else
     {
-        RTTR_Assert(worker.GetGOT() == GO_Type::NofBuilder);
+        RTTR_Assert(worker.getGOT() == GO_Type::NofBuilder);
         builder = static_cast<nofBuilder*>(&worker);
     }
 }
@@ -252,7 +252,7 @@ void noBuildingSite::Abrogate()
     planer = nullptr;
     builder = nullptr;
 
-    world->GetPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
+    world->getPlayer(player).AddJobWanted((state == BuildingSiteState::Planing) ? Job::Planer : Job::Builder, this);
 }
 
 unsigned noBuildingSite::CalcDistributionPoints(const GoodType goodtype)
@@ -285,7 +285,7 @@ unsigned noBuildingSite::CalcDistributionPoints(const GoodType goodtype)
     points -= (BUILDING_COSTS[bldType_].stones - curStones) * 20;
 
     // Baupriorität mit einberechnen (niedriger = höhere Priorität, daher - !)
-    const unsigned buildingSitePrio = world->GetPlayer(player).GetBuidingSitePriority(this) * 30;
+    const unsigned buildingSitePrio = world->getPlayer(player).getBuidingSitePriority(this) * 30;
 
     if(points > buildingSitePrio)
         points -= buildingSitePrio;
@@ -315,8 +315,8 @@ void noBuildingSite::AddWare(std::unique_ptr<Ware> ware)
         throw std::logic_error("Wrong ware type " + helpers::toString(ware->type));
 
     // Inventur entsprechend verringern
-    world->GetPlayer(player).DecreaseInventoryWare(ware->type, 1);
-    world->GetPlayer(player).RemoveWare(*ware);
+    world->getPlayer(player).DecreaseInventoryWare(ware->type, 1);
+    world->getPlayer(player).RemoveWare(*ware);
 }
 
 void noBuildingSite::WareLost(Ware& ware)
@@ -354,12 +354,12 @@ void noBuildingSite::TakeWare(Ware* ware)
         throw std::logic_error("Wrong ware type " + helpers::toString(ware->type));
 }
 
-bool noBuildingSite::IsBuildingComplete()
+bool noBuildingSite::isBuildingComplete()
 {
     return (build_progress == BUILDING_COSTS[bldType_].boards * 8 + BUILDING_COSTS[bldType_].stones * 8);
 }
 
-unsigned char noBuildingSite::GetBuildProgress(bool percent) const
+unsigned char noBuildingSite::getBuildProgress(bool percent) const
 {
     if(!percent)
         return build_progress;
@@ -378,17 +378,17 @@ void noBuildingSite::PlaningFinished()
     planer = nullptr;
 
     // Wir hätten gerne einen Bauarbeiter...
-    world->GetPlayer(player).AddJobWanted(Job::Builder, this);
+    world->getPlayer(player).AddJobWanted(Job::Builder, this);
 
     // Bauwaren anfordern
     OrderConstructionMaterial();
 }
 
 /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
-bool noBuildingSite::IsHarborBuildingSiteFromSea() const
+bool noBuildingSite::isHarborBuildingSiteFromSea() const
 {
     if(this->bldType_ == BuildingType::HarborBuilding)
-        return world->IsHarborBuildingSiteFromSea(this);
+        return world->isHarborBuildingSiteFromSea(this);
     else
         return false;
 }

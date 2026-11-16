@@ -43,33 +43,33 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    RoadSegment* GetRoute(const Direction dir) const { return routes[dir]; }
-    void SetRoute(const Direction dir, RoadSegment* route) { routes[dir] = route; }
+    RoadSegment* getRoute(const Direction dir) const { return routes[dir]; }
+    void setRoute(const Direction dir, RoadSegment* route) { routes[dir] = route; }
     const auto& getRoutes() const { return routes; }
-    noRoadNode* GetNeighbour(Direction dir) const;
+    noRoadNode* getNeighbour(Direction dir) const;
 
     void DestroyRoad(Direction dir);
     void UpgradeRoad(Direction dir) const;
     /// Vernichtet Alle Straße um diesen Knoten
     void DestroyAllRoads();
 
-    unsigned char GetPlayer() const { return player; }
+    unsigned char getPlayer() const { return player; }
 
     /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
     virtual void AddWare(std::unique_ptr<Ware> ware) = 0;
 
     /// Nur für Flagge, Gebäude können 0 zurückgeben, gibt Wegstrafpunkte für das Pathfinden für Waren, die in eine
     /// bestimmte Richtung noch transportiert werden müssen
-    virtual unsigned GetPunishmentPoints(Direction) const { return 0; }
+    virtual unsigned getPunishmentPoints(Direction) const { return 0; }
 };
 
-inline noRoadNode* noRoadNode::GetNeighbour(const Direction dir) const
+inline noRoadNode* noRoadNode::getNeighbour(const Direction dir) const
 {
-    const RoadSegment* route = GetRoute(dir);
+    const RoadSegment* route = getRoute(dir);
     if(!route)
         return nullptr;
-    else if(route->GetF1() == this)
-        return route->GetF2();
+    else if(route->getF1() == this)
+        return route->getF2();
     else
-        return route->GetF1();
+        return route->getF1();
 }

@@ -56,19 +56,19 @@ void PostBox::Clear()
         DeleteMsg(i - 1);
 }
 
-const PostMsg* PostBox::GetMsg(unsigned idx) const
+const PostMsg* PostBox::getMsg(unsigned idx) const
 {
     if(idx >= numMessages)
         return nullptr;
     return messages[idx].get();
 }
 
-void PostBox::SetCurrentMissionGoal(const std::string& goal)
+void PostBox::setCurrentMissionGoal(const std::string& goal)
 {
     currentMissionGoal = goal;
 }
 
-std::string PostBox::GetCurrentMissionGoal() const
+std::string PostBox::getCurrentMissionGoal() const
 {
     return currentMissionGoal;
 }

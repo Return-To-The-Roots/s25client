@@ -54,7 +54,7 @@ public:
         void Serialize(Serializer& ser) const;
         void Deserialize(Serializer& ser);
 
-        int GetValue() const;
+        int getValue() const;
     };
 
     Random();
@@ -66,11 +66,11 @@ public:
     int Rand(const RandomContext& context, int maxExcl);
 
     /// Get a checksum of the RNG
-    unsigned GetChecksum() const;
+    unsigned getChecksum() const;
     static unsigned CalcChecksum(const PRNG& rng);
 
     /// Get current rng state
-    const PRNG& GetCurrentState() const;
+    const PRNG& getCurrentState() const;
 
     std::vector<RandomEntry> GetAsyncLog();
 
@@ -91,7 +91,7 @@ using RandomEntry = UsedRandom::RandomEntry;
 // Macros / Defines
 #define RANDOM UsedRandom::inst()
 #define RANDOM_CONTEXT() \
-    RandomContext { __FILE__, __LINE__, GetObjId() }
+    RandomContext { __FILE__, __LINE__, getObjId() }
 #define RANDOM_CONTEXT2(objId) \
     RandomContext { __FILE__, __LINE__, objId }
 /// Shortcut to get a new random value in range [0, maxVal) for a given object id

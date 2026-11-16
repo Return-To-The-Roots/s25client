@@ -86,7 +86,7 @@ bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
     return in.eof();
 }
 
-void Playlist::SetStartSong(const unsigned id)
+void Playlist::setStartSong(const unsigned id)
 {
     if(order_.empty())
         Prepare();

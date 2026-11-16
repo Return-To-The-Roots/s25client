@@ -33,12 +33,12 @@ void Window::Draw()
         Draw_();
 }
 
-DrawPoint Window::GetPos() const
+DrawPoint Window::getPos() const
 {
     return pos_;
 }
 
-DrawPoint Window::GetDrawPos() const
+DrawPoint Window::getDrawPos() const
 {
     DrawPoint result = pos_;
     const Window* temp = this;
@@ -53,27 +53,27 @@ DrawPoint Window::GetDrawPos() const
     return result;
 }
 
-Extent Window::GetSize() const
+Extent Window::getSize() const
 {
     return size_;
 }
 
-Rect Window::GetDrawRect() const
+Rect Window::getDrawRect() const
 {
-    return Rect(GetDrawPos(), GetSize());
+    return Rect(getDrawPos(), getSize());
 }
 
-Rect Window::GetBoundaryRect() const
+Rect Window::getBoundaryRect() const
 {
     // Default to draw rect
-    return GetDrawRect();
+    return getDrawRect();
 }
 
 bool Window::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 {
     // Ask derived classes whether relaying messages is allowed
     // (For example, ingame windows might not want to receive keyboard messages when they are minimized)
-    if(!IsMessageRelayAllowed())
+    if(!isMessageRelayAllowed())
         return false;
 
     for(auto& wnd : childIdToWnd_ | boost::adaptors::map_values)
@@ -88,7 +88,7 @@ bool Window::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
 {
     // Ask derived classes whether relaying messages is allowed
-    if(!IsMessageRelayAllowed())
+    if(!isMessageRelayAllowed())
         return false;
 
     bool processed = false;
@@ -97,7 +97,7 @@ bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
     // Use reverse iterator because the topmost (=last elements) should receive the messages first!
     for(auto& wnd : childIdToWnd_ | boost::adaptors::map_values | boost::adaptors::reversed)
     {
-        if(!lockedAreas_.empty() && IsInLockedRegion(mc.pos, wnd.get()))
+        if(!lockedAreas_.empty() && isInLockedRegion(mc.pos, wnd.get()))
             continue;
 
         if(wnd->visible_ && wnd->active_ && CALL_MEMBER_FN(*wnd, msg)(mc))
@@ -117,7 +117,7 @@ bool Window::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc)
  *
  *  @param[in] activate Fenster aktivieren?
  */
-void Window::SetActive(bool activate)
+void Window::setActive(bool activate)
 {
     active_ = activate;
     ActivateControls(activate);
@@ -131,7 +131,7 @@ void Window::SetActive(bool activate)
 void Window::ActivateControls(bool activate)
 {
     for(auto& it : childIdToWnd_)
-        it.second->SetActive(activate);
+        it.second->setActive(activate);
 }
 
 /**
@@ -148,8 +148,8 @@ void Window::LockRegion(Window* window, const Rect& rect)
         tofreeAreas_.erase(it);
 
     // Also lock the region for all parents
-    if(GetParent())
-        GetParent()->LockRegion(this, rect);
+    if(getParent())
+        getParent()->LockRegion(this, rect);
 }
 
 /**
@@ -166,16 +166,16 @@ void Window::FreeRegion(Window* window)
         lockedAreas_.erase(window);
 
     // Also free the locked region for all parents
-    if(GetParent())
-        GetParent()->FreeRegion(this);
+    if(getParent())
+        getParent()->FreeRegion(this);
 }
 
-void Window::SetPos(const DrawPoint& newPos)
+void Window::setPos(const DrawPoint& newPos)
 {
     pos_ = newPos;
 }
 
-bool Window::IsMessageRelayAllowed() const
+bool Window::isMessageRelayAllowed() const
 {
     return true;
 }
@@ -414,8 +414,8 @@ void Window::Draw3DBorder(const Rect& rect, TextureColor tc, bool elevated)
 {
     if(tc == TextureColor::Invisible)
         return;
-    glArchivItem_Bitmap* borderImg = LOADER.GetImageN("io", 12 + rttr::enum_cast(tc));
-    VIDEODRIVER.GetRenderer()->Draw3DBorder(rect, elevated, *borderImg);
+    glArchivItem_Bitmap* borderImg = LOADER.getImageN("io", 12 + rttr::enum_cast(tc));
+    VIDEODRIVER.getRenderer()->Draw3DBorder(rect, elevated, *borderImg);
 }
 
 void Window::Draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted, bool illuminated,
@@ -423,23 +423,23 @@ void Window::Draw3DContent(const Rect& rect, TextureColor tc, bool elevated, boo
 {
     if(tc == TextureColor::Invisible)
         return;
-    glArchivItem_Bitmap* contentImg = LOADER.GetImageN("io", rttr::enum_cast(tc) * 2 + (highlighted ? 0 : 1));
-    VIDEODRIVER.GetRenderer()->Draw3DContent(rect, elevated, *contentImg, illuminated, contentColor);
+    glArchivItem_Bitmap* contentImg = LOADER.getImageN("io", rttr::enum_cast(tc) * 2 + (highlighted ? 0 : 1));
+    VIDEODRIVER.getRenderer()->Draw3DContent(rect, elevated, *contentImg, illuminated, contentColor);
 }
 
 void Window::DrawRectangle(const Rect& rect, unsigned color)
 {
-    VIDEODRIVER.GetRenderer()->DrawRect(rect, color);
+    VIDEODRIVER.getRenderer()->DrawRect(rect, color);
 }
 
 void Window::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsigned color)
 {
-    VIDEODRIVER.GetRenderer()->DrawLine(pt1, pt2, width, color);
+    VIDEODRIVER.getRenderer()->DrawLine(pt1, pt2, width, color);
 }
 
 void Window::msgPaintBefore()
 {
-    animations_.update(VIDEODRIVER.GetTickCount());
+    animations_.update(VIDEODRIVER.getTickCount());
     for(auto& control : childIdToWnd_ | boost::adaptors::map_values)
         control->msgPaintBefore();
 }
@@ -465,8 +465,8 @@ void Window::msgScreenResize(const ScreenResizeEvent& sr)
     for(auto& ctrl : childIdToWnd_ | boost::adaptors::map_values)
     {
         // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
-        Extent newSize = rescale(ctrl->GetSize());
-        ctrl->SetPos(rescale(ctrl->GetPos()));
+        Extent newSize = rescale(ctrl->getSize());
+        ctrl->setPos(rescale(ctrl->getPos()));
         ctrl->msgScreenResize(sr);
         ctrl->Resize(newSize);
     }
@@ -476,7 +476,7 @@ void Window::msgScreenResize(const ScreenResizeEvent& sr)
 template<class T_Pt>
 T_Pt Window::Scale(const T_Pt& pt)
 {
-    return ScaleWindowPropUp::scale(pt, VIDEODRIVER.GetRenderSize());
+    return ScaleWindowPropUp::scale(pt, VIDEODRIVER.getRenderSize());
 }
 
 template<class T_Pt>
@@ -491,7 +491,7 @@ template Extent Window::Scale(const Extent&);
 template DrawPoint Window::ScaleIf(const DrawPoint&) const;
 template Extent Window::ScaleIf(const Extent&) const;
 
-bool Window::IsInLockedRegion(const Position& pos, const Window* exception) const
+bool Window::isInLockedRegion(const Position& pos, const Window* exception) const
 {
     for(const auto& lockEntry : lockedAreas_)
     {
@@ -504,12 +504,12 @@ bool Window::IsInLockedRegion(const Position& pos, const Window* exception) cons
     return false;
 }
 
-bool Window::IsMouseOver() const
+bool Window::isMouseOver() const
 {
-    return IsMouseOver(VIDEODRIVER.GetMousePos());
+    return isMouseOver(VIDEODRIVER.getMousePos());
 }
 
-bool Window::IsMouseOver(const MouseCoords& mousePos) const
+bool Window::isMouseOver(const MouseCoords& mousePos) const
 {
-    return IsPointInRect(mousePos.pos, GetBoundaryRect());
+    return IsPointInRect(mousePos.pos, getBoundaryRect());
 }

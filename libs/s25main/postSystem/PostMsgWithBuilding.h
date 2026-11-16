@@ -22,7 +22,7 @@ public:
     PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, BuildingType bld, Nation nation,
                         const MapPoint& pos = MapPoint::Invalid());
 
-    ITexture* GetImage_() const override;
+    ITexture* getImage() const override;
 
 private:
     const BuildingType bldType;

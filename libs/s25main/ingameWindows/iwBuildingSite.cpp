@@ -16,24 +16,24 @@
 #include "gameData/const_gui_ids.h"
 
 iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite)
-    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(buildingsite->GetPos()), IngameWindow::posAtMouse,
-                   Extent(226, 194), _(BUILDING_NAMES[buildingsite->GetBuildingType()]),
-                   LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(buildingsite->getPos()), IngameWindow::posAtMouse,
+                   Extent(226, 194), _(BUILDING_NAMES[buildingsite->getBuildingType()]),
+                   LOADER.getImageN("resource", 41)),
       gwv(gwv), buildingsite(buildingsite)
 {
     // Bild des Gebäudes
-    AddImage(0, DrawPoint(113, 130), &buildingsite->GetBuildingImage());
+    AddImage(0, DrawPoint(113, 130), &buildingsite->getBuildingImage());
     // Gebäudename
     AddText(1, DrawPoint(113, 44), _("Order of building site"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
     // Hilfe
-    AddImageButton(2, DrawPoint(16, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(2, DrawPoint(16, 147), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225), _("Help"));
     // Gebäude abbrennen
-    AddImageButton(3, DrawPoint(50, 147), Extent(34, 32), TextureColor::Grey, LOADER.GetImageN("io", 23),
+    AddImageButton(3, DrawPoint(50, 147), Extent(34, 32), TextureColor::Grey, LOADER.getImageN("io", 23),
                    _("Demolish house"));
 
     // "Gehe Zu Ort"
-    AddImageButton(4, DrawPoint(179, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 107),
+    AddImageButton(4, DrawPoint(179, 147), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 107),
                    _("Go to place"));
 }
 
@@ -44,7 +44,7 @@ void iwBuildingSite::msgButtonClick(const unsigned ctrl_id)
         case 2: // Hilfe
         {
             WINDOWMANAGER.ReplaceWindow(
-              std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()])));
+              std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[buildingsite->getBuildingType()])));
         }
         break;
         case 3: // Gebäude abbrennen
@@ -56,7 +56,7 @@ void iwBuildingSite::msgButtonClick(const unsigned ctrl_id)
         break;
         case 4: // "Gehe Zu Ort"
         {
-            gwv.MoveToMapPt(buildingsite->GetPos());
+            gwv.MoveToMapPt(buildingsite->getPos());
         }
         break;
     }
@@ -66,7 +66,7 @@ void iwBuildingSite::msgPaintAfter()
 {
     IngameWindow::msgPaintAfter();
     // Baukosten zeichnen
-    DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
+    DrawPoint curPos = getDrawPos() + DrawPoint(getSize().x / 2, 60);
     for(unsigned char i = 0; i < 2; ++i)
     {
         unsigned wares_count = 0;
@@ -75,12 +75,12 @@ void iwBuildingSite::msgPaintAfter()
 
         if(i == 0)
         {
-            wares_count = BUILDING_COSTS[buildingsite->GetBuildingType()].boards;
+            wares_count = BUILDING_COSTS[buildingsite->getBuildingType()].boards;
             wares_used = buildingsite->getUsedBoards();
             wares_delivered = buildingsite->getBoards() + wares_used;
         } else
         {
-            wares_count = BUILDING_COSTS[buildingsite->GetBuildingType()].stones;
+            wares_count = BUILDING_COSTS[buildingsite->getBuildingType()].stones;
             wares_used = buildingsite->getUsedStones();
             wares_delivered = buildingsite->getStones() + wares_used;
         }
@@ -96,12 +96,12 @@ void iwBuildingSite::msgPaintAfter()
         // Die Waren
         for(unsigned char z = 0; z < wares_count; ++z)
         {
-            LOADER.GetWareTex(i == 0 ? GoodType::Boards : GoodType::Stones)
+            LOADER.getWareTex(i == 0 ? GoodType::Boards : GoodType::Stones)
               ->DrawFull(waresPos, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040));
 
             // Hammer wenn Ware verbaut
             if(z < wares_used)
-                LOADER.GetWareTex(GoodType::Hammer)->DrawFull(waresPos);
+                LOADER.getWareTex(GoodType::Hammer)->DrawFull(waresPos);
             waresPos.x += 24;
         }
         curPos.y += 29;

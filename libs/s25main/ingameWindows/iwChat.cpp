@@ -16,7 +16,7 @@ ChatDestination lastChatDestination = ChatDestination::All;
 
 iwChat::iwChat(Window* parent)
     : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, Extent(300, 150), _("Chat Window"),
-                   LOADER.GetImageN("resource", 41), false, CloseBehavior::Regular, parent)
+                   LOADER.getImageN("resource", 41), false, CloseBehavior::Regular, parent)
 {
     // Eingabefeld für Chattext
     AddEdit(0, DrawPoint(20, 30), Extent(260, 22), TextureColor::Grey, NormalFont);
@@ -33,33 +33,33 @@ iwChat::iwChat(Window* parent)
                          TextureColor::Red1, _("Enemies"), NormalFont);
 
     // Entspr. vom letzten Mal auswählen auswählen
-    group->SetSelection(rttr::enum_cast(lastChatDestination));
+    group->setSelection(rttr::enum_cast(lastChatDestination));
 }
 
 void iwChat::msgPaintBefore()
 {
     IngameWindow::msgPaintBefore();
-    GetCtrl<ctrlEdit>(0)->SetFocus();
+    getCtrl<ctrlEdit>(0)->setFocus();
 }
 
 void iwChat::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
     RTTR_Assert(selection <= helpers::MaxEnumValue_v<ChatDestination>);
     lastChatDestination = static_cast<ChatDestination>(selection);
-    GetCtrl<ctrlEdit>(0)->SetFocus();
+    getCtrl<ctrlEdit>(0)->setFocus();
 }
 
 void iwChat::msgEditEnter(const unsigned /*ctrl_id*/)
 {
     Close();
 
-    auto* edit = GetCtrl<ctrlEdit>(0);
-    std::string text = edit->GetText();
-    edit->SetText("");
+    auto* edit = getCtrl<ctrlEdit>(0);
+    std::string text = edit->getText();
+    edit->setText("");
 
     if(text.size() > 3u && text[0] == '!')
     {
-        auto* listener = dynamic_cast<IChatCmdListener*>(GetParent());
+        auto* listener = dynamic_cast<IChatCmdListener*>(getParent());
         if(listener)
             listener->OnChatCommand(text.substr(1));
     } else

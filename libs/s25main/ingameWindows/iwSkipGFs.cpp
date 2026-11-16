@@ -32,18 +32,18 @@ constexpr std::array jumpPresets = {
 
 iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
     : IngameWindow(CGI_SKIPGFS, IngameWindow::posLastOrCenter, Extent(300, 120), _("Skip GameFrames"),
-                   LOADER.GetImageN("resource", 41)),
+                   LOADER.getImageN("resource", 41)),
       gwv(gwv)
 {
     constexpr auto lblWidth = 135;
     const auto edtOffset = contentOffset.x + lblWidth;
     constexpr auto spacing = 5;
     constexpr Extent edtSize(100, 20);
-    Extent btSize(GetIwSize().x - edtOffset - edtSize.x - spacing, edtSize.y);
+    Extent btSize(getIwSize().x - edtOffset - edtSize.x - spacing, edtSize.y);
 
     DrawPoint curPos(edtOffset, 28);
     ctrlEdit* edit = AddEdit(ID_edtToGf, curPos, edtSize, TextureColor::Grey, NormalFont);
-    edit->SetFocus();
+    edit->setFocus();
     curPos.x -= spacing;
     AddText(ID_lblToGf, curPos + DrawPoint(0, 4), _("to GameFrame:"), COLOR_YELLOW, FontStyle::RIGHT, NormalFont);
     curPos.x += edtSize.x + spacing * 2;
@@ -60,7 +60,7 @@ iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
 
     curPos.x = contentOffset.x + spacing;
     curPos.y += edtSize.y + 5;
-    const auto availWidth = GetIwSize().x - spacing * 2;
+    const auto availWidth = getIwSize().x - spacing * 2;
     btSize.x = (availWidth - spacing * (jumpPresets.size() - 1)) / jumpPresets.size();
     for(auto i : jumpPresets)
     {
@@ -72,9 +72,9 @@ iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
 
 void iwSkipGFs::SkipGFs(const unsigned edtCtrlId)
 {
-    int targetGF = s25util::fromStringClassicDef(GetCtrl<ctrlEdit>(edtCtrlId)->GetText(), 0);
+    int targetGF = s25util::fromStringClassicDef(getCtrl<ctrlEdit>(edtCtrlId)->getText(), 0);
     if(edtCtrlId == ID_edtByGf)
-        targetGF += GAMECLIENT.GetGFNumber();
+        targetGF += GAMECLIENT.getGFNumber();
     GAMECLIENT.SkipGF(targetGF, gwv);
 }
 
@@ -84,7 +84,7 @@ void iwSkipGFs::msgButtonClick(const unsigned ctrlId)
         SkipGFs((ctrlId == ID_btByGf) ? ID_edtByGf : ID_edtToGf);
     else
     {
-        const unsigned targetGF = GAMECLIENT.GetGFNumber() + ctrlId - ID_btJumpPresetStart;
+        const unsigned targetGF = GAMECLIENT.getGFNumber() + ctrlId - ID_btJumpPresetStart;
         GAMECLIENT.SkipGF(targetGF, gwv);
     }
 }

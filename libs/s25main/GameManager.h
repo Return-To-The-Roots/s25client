@@ -28,9 +28,9 @@ public:
 
     /// Average FPS Zähler zurücksetzen.
     void ResetAverageGFPS();
-    FrameCounter::clock::duration GetRuntime() { return gfCounter_.getCurIntervalLength(); }
-    unsigned GetNumFrames() { return gfCounter_.getCurNumFrames(); }
-    unsigned GetAverageGFPS() { return gfCounter_.getCurFrameRate(); }
+    FrameCounter::clock::duration getRuntime() { return gfCounter_.getCurIntervalLength(); }
+    unsigned getNumFrames() { return gfCounter_.getCurNumFrames(); }
+    unsigned getAverageGFPS() { return gfCounter_.getCurFrameRate(); }
 
 private:
     bool ShowSplashscreen();

@@ -49,7 +49,7 @@ public:
 
     bool msgKeyDown(const KeyEvent& ke) override;
     void msgPaintAfter() override;
-    void SetActive(bool activate) override;
+    void setActive(bool activate) override;
 
 private:
     Benchmark curTest_;

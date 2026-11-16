@@ -55,19 +55,19 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
         return false;
 
     /// Suche, ob der Treiber dabei ist, den wir wünschen
-    const auto it = helpers::find_if(drivers, [preference](const auto& it) { return it.GetName() == preference; });
+    const auto it = helpers::find_if(drivers, [preference](const auto& it) { return it.getName() == preference; });
     if(it != drivers.end())
     {
         // Dann den gleich nehmen
-        dll = tryLoadLibrary(it->GetFile());
+        dll = tryLoadLibrary(it->getFile());
     }
 
     // ersten Treiber laden
     if(!dll)
     {
-        dll = tryLoadLibrary(drivers.front().GetFile());
+        dll = tryLoadLibrary(drivers.front().getFile());
         // Standardwert zuweisen
-        preference = drivers.front().GetName();
+        preference = drivers.front().getName();
     }
 
     if(!dll)
@@ -79,7 +79,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     return true;
 }
 
-bool DriverWrapper::IsLoaded() const
+bool DriverWrapper::isLoaded() const
 {
     return dll.is_loaded();
 }

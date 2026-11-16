@@ -27,12 +27,12 @@ protected:
         gc->Serialize(ser2);
         BOOST_TEST_REQUIRE(ser2.GetLength() == ser.GetLength());
         BOOST_TEST_REQUIRE(memcmp(ser2.GetData(), ser.GetData(), ser.GetLength()) == 0);
-        gc->Execute(GetWorld(), curPlayer);
+        gc->Execute(getWorld(), curPlayer);
         return true;
     }
 
     /// Constructs a road connecting 2 buildings and checks for success
     void BuildRoadForBlds(MapPoint bldPosFrom, MapPoint bldPosTo);
 
-    virtual GameWorld& GetWorld() = 0;
+    virtual GameWorld& getWorld() = 0;
 };

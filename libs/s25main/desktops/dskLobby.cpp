@@ -40,7 +40,7 @@ enum
 };
 }
 
-dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoWnd(nullptr), createServerWnd(nullptr)
+dskLobby::dskLobby() : dskMenuBase(LOADER.getImageN("setup013", 0)), serverInfoWnd(nullptr), createServerWnd(nullptr)
 {
     AddTextButton(ID_btBack, DrawPoint(530, 530), Extent(250, 22), TextureColor::Red1, _("Back"), NormalFont);
     AddTextButton(ID_btConnect, DrawPoint(530, 470), Extent(250, 22), TextureColor::Green2, _("Connect"), NormalFont);
@@ -94,7 +94,7 @@ void dskLobby::msgPaintBefore()
     dskMenuBase::msgPaintBefore();
     UpdateServerList();
     UpdatePlayerList();
-    GetCtrl<ctrlEdit>(ID_edtChat)->SetFocus();
+    getCtrl<ctrlEdit>(ID_edtChat)->setFocus();
 }
 
 void dskLobby::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
@@ -135,9 +135,9 @@ void dskLobby::msgEditEnter(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_edtChat)
     {
-        auto* edit = GetCtrl<ctrlEdit>(ID_edtChat);
-        LOBBYCLIENT.SendChat(edit->GetText());
-        edit->SetText("");
+        auto* edit = getCtrl<ctrlEdit>(ID_edtChat);
+        LOBBYCLIENT.SendChat(edit->getText());
+        edit->setText("");
     }
 }
 
@@ -145,21 +145,21 @@ void dskLobby::msgTableRightButton(const unsigned ctrl_id, const std::optional<u
 {
     if(!selection)
         return;
-    auto* table = GetCtrl<ctrlTable>(ctrl_id);
+    auto* table = getCtrl<ctrlTable>(ctrl_id);
     switch(ctrl_id)
     {
         case ID_tblGames: // Server list
         {
-            const std::string& item = table->GetItemText(*selection, 0);
+            const std::string& item = table->getItemText(*selection, 0);
 
             if(boost::lexical_cast<unsigned>(item.c_str()) != 0)
             {
-                if(serverInfoWnd && serverInfoWnd->GetServerId() == boost::lexical_cast<unsigned>(item))
+                if(serverInfoWnd && serverInfoWnd->getServerId() == boost::lexical_cast<unsigned>(item))
                     return; // Already open -> Nothing to do
 
                 serverInfoWnd = &WINDOWMANAGER.ReplaceWindow(
                   std::make_unique<iwLobbyServerInfo>(boost::lexical_cast<unsigned>(item)));
-                serverInfoWnd->SetTitle(table->GetItemText(*selection, 1));
+                serverInfoWnd->setTitle(table->getItemText(*selection, 1));
             }
         }
         break;
@@ -197,13 +197,13 @@ void dskLobby::msgWindowClosed(IngameWindow& wnd)
 bool isServerVersionValid(const LobbyServerInfo& serverInfo)
 {
     // The server version is/should be rttr::version::GetReadableVersion()
-    if(serverInfo.getVersion() == rttr::version::GetReadableVersion())
+    if(serverInfo.getVersion() == rttr::version::getReadableVersion())
         return true;
     // If we don't have an exact match we allow at least the same revision.
     // The short revision is the part after " - "
     const auto pos = serverInfo.getVersion().rfind(" - ");
     if(pos != std::string::npos)
-        return serverInfo.getVersion().substr(pos + 3) == rttr::version::GetShortRevision();
+        return serverInfo.getVersion().substr(pos + 3) == rttr::version::getShortRevision();
     else
     {
         LOG.writeToFile("Can't get server revision from version %1%") % serverInfo.getVersion();
@@ -213,11 +213,11 @@ bool isServerVersionValid(const LobbyServerInfo& serverInfo)
 
 bool dskLobby::ConnectToSelectedGame()
 {
-    const auto* table = GetCtrl<ctrlTable>(ID_tblGames);
-    const auto& selectedRow = table->GetSelection();
+    const auto* table = getCtrl<ctrlTable>(ID_tblGames);
+    const auto& selectedRow = table->getSelection();
     if(!selectedRow)
         return false;
-    const auto selectedId = boost::lexical_cast<unsigned>(table->GetItemText(*selectedRow, 0));
+    const auto selectedId = boost::lexical_cast<unsigned>(table->getItemText(*selectedRow, 0));
     const auto serverList = LOBBYCLIENT.GetServerList();
     const auto itServer = helpers::find_if(
       serverList, [selectedId](const LobbyServerInfo& server) { return server.getId() == selectedId; });
@@ -292,7 +292,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
                                                                   MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 2));
                 } else if(text.substr(self.length() + 1, 2) == ", ")
                 {
-                    GetCtrl<ctrlChat>(ID_Chat)->AddMessage(time, player, playerColor, text.substr(self.length() + 3),
+                    getCtrl<ctrlChat>(ID_Chat)->AddMessage(time, player, playerColor, text.substr(self.length() + 3),
                                                            COLOR_YELLOW);
                 }
             }
@@ -301,19 +301,19 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
         }
     }
 
-    GetCtrl<ctrlChat>(ID_Chat)->AddMessage(time, player, playerColor, text, COLOR_YELLOW);
+    getCtrl<ctrlChat>(ID_Chat)->AddMessage(time, player, playerColor, text, COLOR_YELLOW);
 }
 
 void dskLobby::LC_ServerList(const LobbyServerList& servers)
 {
-    auto* servertable = GetCtrl<ctrlTable>(ID_tblGames);
-    bool first = servertable->GetNumRows() == 0;
+    auto* servertable = getCtrl<ctrlTable>(ID_tblGames);
+    bool first = servertable->getNumRows() == 0;
 
-    const unsigned selection = servertable->GetSelection().value_or(0u);
-    int sortColumn = servertable->GetSortColumn();
+    const unsigned selection = servertable->getSelection().value_or(0u);
+    int sortColumn = servertable->getSortColumn();
     if(sortColumn == -1)
         sortColumn = 0;
-    const auto direction = servertable->GetSortDirection();
+    const auto direction = servertable->getSortDirection();
     servertable->DeleteAllItems();
 
     std::set<unsigned> ids;
@@ -339,24 +339,24 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
         servertable->SortRows(0, TableSortDir::Ascending);
     else
         servertable->SortRows(sortColumn, direction);
-    servertable->SetSelection(selection);
+    servertable->setSelection(selection);
 }
 
 void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
 {
-    auto* playertable = GetCtrl<ctrlTable>(ID_tblPlayers);
-    bool first = playertable->GetNumRows() == 0;
+    auto* playertable = getCtrl<ctrlTable>(ID_tblPlayers);
+    bool first = playertable->getNumRows() == 0;
 
-    if((playertable->GetNumRows() > 0) && (playertable->GetNumRows() < players.size()))
+    if((playertable->getNumRows() > 0) && (playertable->getNumRows() < players.size()))
     {
-        LOADER.GetSoundN("sound", 114)->Play(255, false);
+        LOADER.getSoundN("sound", 114)->Play(255, false);
     }
 
-    const unsigned selection = playertable->GetSelection().value_or(0u);
-    int sortColumn = playertable->GetSortColumn();
+    const unsigned selection = playertable->getSelection().value_or(0u);
+    int sortColumn = playertable->getSortColumn();
     if(sortColumn == -1)
         sortColumn = 0;
-    const auto direction = playertable->GetSortDirection();
+    const auto direction = playertable->getSortDirection();
     playertable->DeleteAllItems();
 
     for(const LobbyPlayerInfo& player : players)
@@ -373,7 +373,7 @@ void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
         playertable->SortRows(0, TableSortDir::Ascending);
     else
         playertable->SortRows(sortColumn, direction);
-    playertable->SetSelection(selection);
+    playertable->setSelection(selection);
 }
 
 void dskLobby::LC_ServerInfo(const LobbyServerInfo&)

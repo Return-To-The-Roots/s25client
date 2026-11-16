@@ -9,42 +9,42 @@
 #include "s25util/colors.h"
 #include <kaguya/kaguya.hpp>
 
-const BasePlayerInfo& LuaServerPlayer::GetPlayer() const
+const BasePlayerInfo& LuaServerPlayer::getPlayer() const
 {
     return player;
 }
 
 LuaServerPlayer::LuaServerPlayer(IGameLobbyController& lobbyServerController, unsigned playerId)
     : lobbyServerController_(lobbyServerController), playerId(playerId),
-      player(lobbyServerController_.GetJoinPlayer(playerId))
+      player(lobbyServerController_.getJoinPlayer(playerId))
 {}
 
 void LuaServerPlayer::Register(kaguya::State& state)
 {
     LuaPlayerBase::Register(state);
     state["Player"].setClass(kaguya::UserdataMetatable<LuaServerPlayer, LuaPlayerBase>()
-                               .addFunction("SetNation", &LuaServerPlayer::SetNation)
-                               .addFunction("SetTeam", &LuaServerPlayer::SetTeam)
-                               .addFunction("SetColor", &LuaServerPlayer::SetColor)
+                               .addFunction("SetNation", &LuaServerPlayer::setNation)
+                               .addFunction("SetTeam", &LuaServerPlayer::setTeam)
+                               .addFunction("SetColor", &LuaServerPlayer::setColor)
                                .addFunction("Close", &LuaServerPlayer::Close)
-                               .addFunction("SetAI", &LuaServerPlayer::SetAI)
-                               .addFunction("SetName", &LuaServerPlayer::SetName)
-                               .addFunction("SetPortrait", &LuaServerPlayer::SetPortrait));
+                               .addFunction("SetAI", &LuaServerPlayer::setAI)
+                               .addFunction("SetName", &LuaServerPlayer::setName)
+                               .addFunction("SetPortrait", &LuaServerPlayer::setPortrait));
 }
 
-void LuaServerPlayer::SetNation(lua::SafeEnum<Nation> nat)
+void LuaServerPlayer::setNation(lua::SafeEnum<Nation> nat)
 {
     player.nation = nat;
-    lobbyServerController_.SetNation(playerId, nat);
+    lobbyServerController_.setNation(playerId, nat);
 }
 
-void LuaServerPlayer::SetTeam(lua::SafeEnum<Team> team)
+void LuaServerPlayer::setTeam(lua::SafeEnum<Team> team)
 {
     player.team = team;
-    lobbyServerController_.SetTeam(playerId, team);
+    lobbyServerController_.setTeam(playerId, team);
 }
 
-void LuaServerPlayer::SetColor(unsigned colorOrIdx)
+void LuaServerPlayer::setColor(unsigned colorOrIdx)
 {
     if(GetAlpha(colorOrIdx) == 0)
     {
@@ -52,7 +52,7 @@ void LuaServerPlayer::SetColor(unsigned colorOrIdx)
         player.color = PLAYER_COLORS[colorOrIdx];
     } else
         player.color = colorOrIdx;
-    lobbyServerController_.SetColor(playerId, player.color);
+    lobbyServerController_.setColor(playerId, player.color);
 }
 
 void LuaServerPlayer::Close()
@@ -62,7 +62,7 @@ void LuaServerPlayer::Close()
     lobbyServerController_.CloseSlot(playerId);
 }
 
-void LuaServerPlayer::SetAI(unsigned level)
+void LuaServerPlayer::setAI(unsigned level)
 {
     AI::Info info(AI::Type::Default);
     switch(level)
@@ -73,15 +73,15 @@ void LuaServerPlayer::SetAI(unsigned level)
         case 3: info.level = AI::Level::Hard; break;
         default: lua::assertTrue(false, "Invalid AI level");
     }
-    lobbyServerController_.SetPlayerState(playerId, PlayerState::AI, info);
+    lobbyServerController_.setPlayerState(playerId, PlayerState::AI, info);
 }
 
-void LuaServerPlayer::SetName(const std::string& name)
+void LuaServerPlayer::setName(const std::string& name)
 {
-    lobbyServerController_.SetName(playerId, name);
+    lobbyServerController_.setName(playerId, name);
 }
 
-void LuaServerPlayer::SetPortrait(unsigned int portraitIndex)
+void LuaServerPlayer::setPortrait(unsigned int portraitIndex)
 {
-    lobbyServerController_.SetPortrait(playerId, portraitIndex);
+    lobbyServerController_.setPortrait(playerId, portraitIndex);
 }

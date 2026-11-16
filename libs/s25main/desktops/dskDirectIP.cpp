@@ -30,7 +30,7 @@ dskDirectIP::dskDirectIP()
 
     AddTextButton(ID_btBack, DrawPoint(115, 250), Extent(220, 22), TextureColor::Red1, _("Back"), NormalFont);
 
-    AddImage(ID_imgLogo, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
+    AddImage(ID_imgLogo, DrawPoint(20, 20), LOADER.getImageN("logo", 0));
 }
 
 void dskDirectIP::msgButtonClick(const unsigned ctrl_id)

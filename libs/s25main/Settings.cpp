@@ -93,13 +93,13 @@ void Settings::LoadDefaults()
 
     // video
     // {
-    if(VIDEODRIVER.IsLoaded())
+    if(VIDEODRIVER.isLoaded())
     {
-        video.fullscreenSize = (VIDEODRIVER.GetDisplayMode() == DisplayMode::Fullscreen) ? VIDEODRIVER.GetWindowSize() :
+        video.fullscreenSize = (VIDEODRIVER.getDisplayMode() == DisplayMode::Fullscreen) ? VIDEODRIVER.getWindowSize() :
                                                                                            VIDEODRIVER.MinWindowSize;
-        video.windowedSize = (VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed) ? VIDEODRIVER.GetWindowSize() :
+        video.windowedSize = (VIDEODRIVER.getDisplayMode() == DisplayMode::Windowed) ? VIDEODRIVER.getWindowSize() :
                                                                                        VIDEODRIVER.MinWindowSize;
-        video.displayMode = VIDEODRIVER.GetDisplayMode();
+        video.displayMode = VIDEODRIVER.getDisplayMode();
     } else
     {
         video.windowedSize = video.fullscreenSize = VIDEODRIVER.MinWindowSize;
@@ -120,8 +120,8 @@ void Settings::LoadDefaults()
 
     // driver
     // {
-    driver.audio = AUDIODRIVER.GetName();
-    driver.video = VIDEODRIVER.GetName();
+    driver.audio = AUDIODRIVER.getName();
+    driver.video = VIDEODRIVER.getName();
     // }
 
     // sound
@@ -227,7 +227,7 @@ void Settings::Load()
 
         // global
         // {
-        if(iniGlobal->getValue("gameversion") != rttr::version::GetRevision())
+        if(iniGlobal->getValue("gameversion") != rttr::version::getRevision())
             s25util::warning("Your application version has changed - please recheck your settings!");
 
         unsigned submitDebugData = iniGlobal->getIntValue("submit_debug_data");
@@ -444,7 +444,7 @@ void Settings::Save()
     // global
     // {
     iniGlobal->setValue("version", VERSION);
-    iniGlobal->setValue("gameversion", rttr::version::GetRevision());
+    iniGlobal->setValue("gameversion", rttr::version::getRevision());
     iniGlobal->setValue("submit_debug_data", rttr::enum_cast(global.submitDebugData));
     iniGlobal->setValue("use_upnp", global.useUPNP);
     iniGlobal->setValue("smartCursor", global.smartCursor);

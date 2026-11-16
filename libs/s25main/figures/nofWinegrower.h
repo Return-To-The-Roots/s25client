@@ -18,7 +18,7 @@ private:
     /// Draw worker at work
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    [[noreturn]] unsigned short GetCarryID() const override;
+    [[noreturn]] unsigned short getCarryID() const override;
 
     /// Inform derived class, when working starts (preparing)
     void WorkStarted() override;
@@ -28,8 +28,8 @@ private:
     void WorkAborted() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
-    PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const override;
-    using nofFarmhand::GetPointQuality;
+    PointQuality getPointQuality(MapPoint pt, bool isBeforeWork) const override;
+    using nofFarmhand::getPointQuality;
 
     /// Inform derived class about the start of the whole working process (at the beginning when walking out of the
     /// house)
@@ -48,5 +48,5 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofWinegrower; }
+    GO_Type getGOT() const final { return GO_Type::NofWinegrower; }
 };

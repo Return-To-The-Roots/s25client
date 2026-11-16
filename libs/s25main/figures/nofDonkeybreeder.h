@@ -16,7 +16,7 @@ public:
     nofDonkeybreeder(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const final { return GO_Type::NofDonkeybreeder; }
+    GO_Type getGOT() const final { return GO_Type::NofDonkeybreeder; }
 
 private:
     /// Zeichnet ihn beim Arbeiten.
@@ -27,5 +27,5 @@ private:
     void WorkFinished() override;
 
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override { return 0; }
+    unsigned short getCarryID() const override { return 0; }
 };

@@ -22,9 +22,9 @@ public:
 
 protected:
     /// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll
-    unsigned GetDrawColor() const;
+    unsigned getDrawColor() const;
     /// Gibt Farbe zurück, mit der der Schatten des Objekts gezeichnet werden soll
-    unsigned GetDrawShadowColor() const;
+    unsigned getDrawShadowColor() const;
 
 private:
     /// Bin ich grad in der Sterbephase (in der das Schild immer transparenter wird, bevor es verschwindet)

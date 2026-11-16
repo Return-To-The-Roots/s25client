@@ -60,9 +60,9 @@ protected:
 
     bool isHeap() const;
     bool arePositionsValid() const;
-    static size_type& GetPos(T* el) { return static_cast<BinaryHeapPosMarker*>(el)->pos; }
-    key_type GetKey(T* el) const { return T_GetKey::operator()(*el); }
-    key_type GetKey(size_type idx) const { return GetKey(this->elements[idx].el); }
+    static size_type& getPos(T* el) { return static_cast<BinaryHeapPosMarker*>(el)->pos; }
+    key_type getKey(T* el) const { return T_GetKey::operator()(*el); }
+    key_type getKey(size_type idx) const { return getKey(this->elements[idx].el); }
 
     boost::container::small_vector<Element, 64> elements;
 };
@@ -88,9 +88,9 @@ bool OpenListBinaryHeap<T, T_GetKey>::isHeap() const
         const size_type left = LeftChildPos(i);
         const size_type right = RightChildPos(i);
         // If child exist, parent must be "less" than child
-        if(left < size && GetKey(left) < GetKey(i))
+        if(left < size && getKey(left) < getKey(i))
             return false;
-        if(right < size && GetKey(right) < GetKey(i))
+        if(right < size && getKey(right) < getKey(i))
             return false;
     }
     return true;
@@ -101,7 +101,7 @@ bool OpenListBinaryHeap<T, T_GetKey>::arePositionsValid() const
 {
     for(size_type i = 0; i < this->size(); i++)
     {
-        if(i != GetPos(this->elements[i].el))
+        if(i != getPos(this->elements[i].el))
             return false;
     }
     return true;
@@ -118,16 +118,16 @@ template<typename T, class T_GetKey>
 inline void OpenListBinaryHeap<T, T_GetKey>::push(T* newEl)
 {
     RTTR_VALIDATE_HEAP();
-    GetPos(newEl) = this->size();
-    this->elements.push_back(Element(GetKey(newEl), newEl));
+    getPos(newEl) = this->size();
+    this->elements.push_back(Element(getKey(newEl), newEl));
     decreasedKey(newEl);
 }
 
 template<typename T, class T_GetKey>
 inline void OpenListBinaryHeap<T, T_GetKey>::decreasedKey(T* el)
 {
-    size_type i = GetPos(el);
-    unsigned elVal = this->elements[i].key = GetKey(el);
+    size_type i = getPos(el);
+    unsigned elVal = this->elements[i].key = getKey(el);
     RTTR_Assert(i < this->size());
     while(i > 0)
     {
@@ -135,11 +135,11 @@ inline void OpenListBinaryHeap<T, T_GetKey>::decreasedKey(T* el)
         if(elVal >= this->elements[parentPos].key)
             break;
         using std::swap;
-        GetPos(this->elements[parentPos].el) = i;
+        getPos(this->elements[parentPos].el) = i;
         swap(this->elements[parentPos], this->elements[i]);
         i = parentPos;
     }
-    GetPos(el) = i;
+    getPos(el) = i;
     RTTR_VALIDATE_HEAP();
 }
 
@@ -180,7 +180,7 @@ inline T* OpenListBinaryHeap<T, T_GetKey>::pop()
             if(right >= size || leftVal < this->elements[right].key) // left < right
             {
                 this->elements[i] = this->elements[left];
-                GetPos(this->elements[i].el) = i;
+                getPos(this->elements[i].el) = i;
                 i = left;
                 continue;
             }
@@ -189,14 +189,14 @@ inline T* OpenListBinaryHeap<T, T_GetKey>::pop()
         if(right < size && this->elements[right].key < el.key) // right < i
         {
             this->elements[i] = this->elements[right];
-            GetPos(this->elements[i].el) = i;
+            getPos(this->elements[i].el) = i;
             i = right;
         } else
             break;
     } while(true);
 
     this->elements[i] = el;
-    GetPos(el.el) = i;
+    getPos(el.el) = i;
 
     return result;
 }

@@ -20,7 +20,7 @@ using namespace rttr::mapGenerator;
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
     : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 520), _("Map Generator"),
-                   LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom),
+                   LOADER.getImageN("resource", 41), true, CloseBehavior::Custom),
       mapSettings(settings)
 {
     WorldDescription desc;
@@ -133,94 +133,94 @@ void iwMapGenerator::msgButtonClick(const unsigned ctrl_id)
 
 void iwMapGenerator::Apply()
 {
-    mapSettings.numPlayers = GetCtrl<ctrlComboBox>(ID_cbNumPlayers)->GetSelection().value() + 2;
-    mapSettings.ratioGold = GetCtrl<ctrlProgress>(ID_pgGoldRatio)->GetPosition();
-    mapSettings.ratioIron = GetCtrl<ctrlProgress>(ID_pgIronRatio)->GetPosition();
-    mapSettings.ratioCoal = GetCtrl<ctrlProgress>(ID_pgCoalRatio)->GetPosition();
-    mapSettings.ratioGranite = GetCtrl<ctrlProgress>(ID_pgGraniteRatio)->GetPosition();
-    mapSettings.rivers = GetCtrl<ctrlProgress>(ID_pgRivers)->GetPosition();
-    mapSettings.trees = GetCtrl<ctrlProgress>(ID_pgTrees)->GetPosition();
-    mapSettings.stonePiles = GetCtrl<ctrlProgress>(ID_pgStonePiles)->GetPosition();
+    mapSettings.numPlayers = getCtrl<ctrlComboBox>(ID_cbNumPlayers)->getSelection().value() + 2;
+    mapSettings.ratioGold = getCtrl<ctrlProgress>(ID_pgGoldRatio)->getPosition();
+    mapSettings.ratioIron = getCtrl<ctrlProgress>(ID_pgIronRatio)->getPosition();
+    mapSettings.ratioCoal = getCtrl<ctrlProgress>(ID_pgCoalRatio)->getPosition();
+    mapSettings.ratioGranite = getCtrl<ctrlProgress>(ID_pgGraniteRatio)->getPosition();
+    mapSettings.rivers = getCtrl<ctrlProgress>(ID_pgRivers)->getPosition();
+    mapSettings.trees = getCtrl<ctrlProgress>(ID_pgTrees)->getPosition();
+    mapSettings.stonePiles = getCtrl<ctrlProgress>(ID_pgStonePiles)->getPosition();
 
-    switch(GetCtrl<ctrlComboBox>(ID_cbMountainDist)->GetSelection().value())
+    switch(getCtrl<ctrlComboBox>(ID_cbMountainDist)->getSelection().value())
     {
         case 0: mapSettings.mountainDistance = MountainDistance::Close; break;
         case 1: mapSettings.mountainDistance = MountainDistance::Normal; break;
         case 2: mapSettings.mountainDistance = MountainDistance::Far; break;
         case 3: mapSettings.mountainDistance = MountainDistance::VeryFar; break;
     }
-    switch(GetCtrl<ctrlComboBox>(ID_cbMapStyle)->GetSelection().value())
+    switch(getCtrl<ctrlComboBox>(ID_cbMapStyle)->getSelection().value())
     {
         case 0: mapSettings.style = MapStyle::Water; break;
         case 1: mapSettings.style = MapStyle::Land; break;
         case 2: mapSettings.style = MapStyle::Mixed; break;
     }
     mapSettings.size.x =
-      s25util::fromStringClassic<unsigned>(GetCtrl<ctrlComboBox>(ID_cbMapSizeX)->GetSelectedText().value_or("128"));
+      s25util::fromStringClassic<unsigned>(getCtrl<ctrlComboBox>(ID_cbMapSizeX)->getSelectedText().value_or("128"));
     mapSettings.size.y =
-      s25util::fromStringClassic<unsigned>(GetCtrl<ctrlComboBox>(ID_cbMapSizeY)->GetSelectedText().value_or("128"));
-    switch(GetCtrl<ctrlComboBox>(ID_cbIslands)->GetSelection().value())
+      s25util::fromStringClassic<unsigned>(getCtrl<ctrlComboBox>(ID_cbMapSizeY)->getSelectedText().value_or("128"));
+    switch(getCtrl<ctrlComboBox>(ID_cbIslands)->getSelection().value())
     {
         case 0: mapSettings.islands = IslandAmount::Few; break;
         case 1: mapSettings.islands = IslandAmount::Normal; break;
         case 2: mapSettings.islands = IslandAmount::Many; break;
     }
-    const auto& mapType = GetCtrl<ctrlComboBox>(ID_cbMapType)->GetSelection();
+    const auto& mapType = getCtrl<ctrlComboBox>(ID_cbMapType)->getSelection();
     if(mapType)
         mapSettings.type = DescIdx<LandscapeDesc>(*mapType);
 }
 
 void iwMapGenerator::Reset()
 {
-    GetCtrl<ctrlComboBox>(ID_cbNumPlayers)
-      ->SetSelection(std::min(mapSettings.numPlayers, MAX_PLAYERS) - 2); // List starts at 2 players
+    getCtrl<ctrlComboBox>(ID_cbNumPlayers)
+      ->setSelection(std::min(mapSettings.numPlayers, MAX_PLAYERS) - 2); // List starts at 2 players
 
-    GetCtrl<ctrlProgress>(ID_pgGoldRatio)->SetPosition(mapSettings.ratioGold);
-    GetCtrl<ctrlProgress>(ID_pgIronRatio)->SetPosition(mapSettings.ratioIron);
-    GetCtrl<ctrlProgress>(ID_pgCoalRatio)->SetPosition(mapSettings.ratioCoal);
-    GetCtrl<ctrlProgress>(ID_pgGraniteRatio)->SetPosition(mapSettings.ratioGranite);
-    GetCtrl<ctrlProgress>(ID_pgRivers)->SetPosition(mapSettings.rivers);
-    GetCtrl<ctrlProgress>(ID_pgTrees)->SetPosition(mapSettings.trees);
-    GetCtrl<ctrlProgress>(ID_pgStonePiles)->SetPosition(mapSettings.stonePiles);
+    getCtrl<ctrlProgress>(ID_pgGoldRatio)->setPosition(mapSettings.ratioGold);
+    getCtrl<ctrlProgress>(ID_pgIronRatio)->setPosition(mapSettings.ratioIron);
+    getCtrl<ctrlProgress>(ID_pgCoalRatio)->setPosition(mapSettings.ratioCoal);
+    getCtrl<ctrlProgress>(ID_pgGraniteRatio)->setPosition(mapSettings.ratioGranite);
+    getCtrl<ctrlProgress>(ID_pgRivers)->setPosition(mapSettings.rivers);
+    getCtrl<ctrlProgress>(ID_pgTrees)->setPosition(mapSettings.trees);
+    getCtrl<ctrlProgress>(ID_pgStonePiles)->setPosition(mapSettings.stonePiles);
 
-    auto* combo = GetCtrl<ctrlComboBox>(ID_cbMountainDist);
+    auto* combo = getCtrl<ctrlComboBox>(ID_cbMountainDist);
     switch(mapSettings.mountainDistance)
     {
-        case MountainDistance::Close: combo->SetSelection(0); break;
-        case MountainDistance::Normal: combo->SetSelection(1); break;
-        case MountainDistance::Far: combo->SetSelection(2); break;
-        case MountainDistance::VeryFar: combo->SetSelection(3); break;
+        case MountainDistance::Close: combo->setSelection(0); break;
+        case MountainDistance::Normal: combo->setSelection(1); break;
+        case MountainDistance::Far: combo->setSelection(2); break;
+        case MountainDistance::VeryFar: combo->setSelection(3); break;
     }
 
-    combo = GetCtrl<ctrlComboBox>(ID_cbMapStyle);
+    combo = getCtrl<ctrlComboBox>(ID_cbMapStyle);
     switch(mapSettings.style)
     {
-        case MapStyle::Water: combo->SetSelection(0); break;
-        case MapStyle::Land: combo->SetSelection(1); break;
-        case MapStyle::Mixed: combo->SetSelection(2); break;
+        case MapStyle::Water: combo->setSelection(0); break;
+        case MapStyle::Land: combo->setSelection(1); break;
+        case MapStyle::Mixed: combo->setSelection(2); break;
     }
 
     const auto strSizeX = s25util::toStringClassic(mapSettings.size.x);
     const auto strSizeY = s25util::toStringClassic(mapSettings.size.y);
-    auto* cbSizeX = GetCtrl<ctrlComboBox>(ID_cbMapSizeX);
-    auto* cbSizeY = GetCtrl<ctrlComboBox>(ID_cbMapSizeY);
-    const auto numSizes = cbSizeX->GetNumItems();
-    RTTR_Assert(numSizes == cbSizeY->GetNumItems());
+    auto* cbSizeX = getCtrl<ctrlComboBox>(ID_cbMapSizeX);
+    auto* cbSizeY = getCtrl<ctrlComboBox>(ID_cbMapSizeY);
+    const auto numSizes = cbSizeX->getNumItems();
+    RTTR_Assert(numSizes == cbSizeY->getNumItems());
     for(unsigned i = 0; i < numSizes; ++i)
     {
-        if(cbSizeX->GetText(i) == strSizeX)
-            cbSizeX->SetSelection(i);
-        if(cbSizeY->GetText(i) == strSizeY)
-            cbSizeY->SetSelection(i);
+        if(cbSizeX->getText(i) == strSizeX)
+            cbSizeX->setSelection(i);
+        if(cbSizeY->getText(i) == strSizeY)
+            cbSizeY->setSelection(i);
     }
 
-    combo = GetCtrl<ctrlComboBox>(ID_cbIslands);
+    combo = getCtrl<ctrlComboBox>(ID_cbIslands);
     switch(mapSettings.islands)
     {
-        case IslandAmount::Few: combo->SetSelection(0); break;
-        case IslandAmount::Normal: combo->SetSelection(1); break;
-        case IslandAmount::Many: combo->SetSelection(2); break;
+        case IslandAmount::Few: combo->setSelection(0); break;
+        case IslandAmount::Normal: combo->setSelection(1); break;
+        case IslandAmount::Many: combo->setSelection(2); break;
     }
 
-    GetCtrl<ctrlComboBox>(ID_cbMapType)->SetSelection(mapSettings.type.value);
+    getCtrl<ctrlComboBox>(ID_cbMapType)->setSelection(mapSettings.type.value);
 }

@@ -18,7 +18,7 @@ ctrlTextButton::ctrlTextButton(Window* parent, unsigned id, const DrawPoint& pos
 void ctrlTextButton::ResizeForMaxChars(unsigned numChars)
 {
     const auto maxTextWidth = font->getDx() * numChars;
-    Resize(Extent(maxTextWidth + contentOffset * 2, GetSize().y));
+    Resize(Extent(maxTextWidth + contentOffset * 2, getSize().y));
 }
 
 void ctrlTextButton::DrawContent() const
@@ -32,9 +32,9 @@ void ctrlTextButton::DrawContent() const
     else
         color = this->color_;
 
-    const unsigned short maxTextWidth = GetSize().x - contentOffset * 2; // reduced by border
+    const unsigned short maxTextWidth = getSize().x - contentOffset * 2; // reduced by border
 
-    if(GetTooltip().empty() && state == ButtonState::Hover)
+    if(getTooltip().empty() && state == ButtonState::Hover)
     {
         unsigned maxNumChars;
         font->getWidth(text, maxTextWidth, &maxNumChars);
@@ -43,6 +43,6 @@ void ctrlTextButton::DrawContent() const
     }
 
     const unsigned short offset = isPressed ? contentOffset : 0;
-    font->Draw(GetDrawPos() + GetSize() / 2u + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER,
+    font->Draw(getDrawPos() + getSize() / 2u + DrawPoint(offset, offset), text, FontStyle::CENTER | FontStyle::VCENTER,
                color, maxTextWidth);
 }

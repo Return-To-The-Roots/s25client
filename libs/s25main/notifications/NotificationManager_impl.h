@@ -17,7 +17,7 @@
 struct NotificationManager::NoteCallbackBase
 {
     NoteCallbackBase() noexcept : isSubscribed(true) {}
-    void SetUnsubscribed() noexcept { isSubscribed = false; }
+    void setUnsubscribed() noexcept { isSubscribed = false; }
     bool IsSubscribed() const noexcept { return isSubscribed; }
 
 private:
@@ -43,7 +43,7 @@ inline NotificationManager::~NotificationManager()
         for(void* callback : subscribers.second.callbacks)
         {
             if(callback)
-                static_cast<NoteCallbackBase*>(callback)->SetUnsubscribed();
+                static_cast<NoteCallbackBase*>(callback)->setUnsubscribed();
         }
     }
 }
@@ -83,7 +83,7 @@ void NotificationManager::unsubscribe(NoteCallback<T_Note>* callback) noexcept
     else
         callbacks.erase(itEl);
     // Set only the flag. Actual deletion of the callback must be handled by the shared_ptr deleter
-    callback->SetUnsubscribed();
+    callback->setUnsubscribed();
 }
 
 template<class T_Note>

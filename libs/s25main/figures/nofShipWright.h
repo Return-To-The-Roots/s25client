@@ -18,7 +18,7 @@ private:
     /// Zeichnet ihn beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override { return 90; }
+    unsigned short getCarryID() const override { return 90; }
     /// Der Arbeiter erzeugt eine Ware
     helpers::OptionalEnum<GoodType> ProduceWare() override { return GoodType::Boat; }
 
@@ -26,7 +26,7 @@ private:
     void StartWalkingToShip();
 
     /// Ist ein bestimmter Punkt auf der Karte für den Schiffsbau geeignet
-    bool IsPointGood(MapPoint pt) const;
+    bool isPointGood(MapPoint pt) const;
 
     /// Der Schiffsbauer hat einen Bauschritt bewältigt und geht wieder zurück zum Haus
     void WorkFinished() override;
@@ -43,7 +43,7 @@ private:
 public:
     nofShipWright(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofShipWright(SerializedGameData& sgd, unsigned obj_id);
-    GO_Type GetGOT() const final { return GO_Type::NofShipwright; }
+    GO_Type getGOT() const final { return GO_Type::NofShipwright; }
     void HandleDerivedEvent(unsigned id) override;
     void Serialize(SerializedGameData& sgd) const override;
 };

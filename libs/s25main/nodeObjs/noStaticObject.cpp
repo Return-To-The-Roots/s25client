@@ -26,13 +26,13 @@ noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned s
     : noCoordBase(type, pos), id(id), file(file), size(size)
 {
     // sind wir ein "Schloss" Objekt?
-    if(GetSize() == 2)
+    if(getSize() == 2)
     {
         for(const Direction dir : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
-            MapPoint nb = world->GetNeighbour(pos, dir);
+            MapPoint nb = world->getNeighbour(pos, dir);
             world->DestroyNO(nb, false);
-            world->SetNO(nb, new noExtension(this));
+            world->setNO(nb, new noExtension(this));
         }
     }
 }
@@ -53,16 +53,16 @@ void noStaticObject::Serialize(SerializedGameData& sgd) const
 void noStaticObject::Destroy()
 {
     // waren wir ein "Schloss" Objekt?
-    if(GetSize() == 2)
+    if(getSize() == 2)
     {
         for(const Direction i : {Direction::West, Direction::NorthWest, Direction::NorthEast})
-            world->DestroyNO(world->GetNeighbour(pos, i));
+            world->DestroyNO(world->getNeighbour(pos, i));
     }
 
     noCoordBase::Destroy();
 }
 
-BlockingManner noStaticObject::GetBM() const
+BlockingManner noStaticObject::getBM() const
 {
     return (size == 0) ? BlockingManner::None : BlockingManner::Single;
 }
@@ -75,7 +75,7 @@ BlockingManner noStaticObject::GetBM() const
  */
 void noStaticObject::Draw(DrawPoint drawPt)
 {
-    if(IsAnimated() || !textures.bmp)
+    if(isAnimated() || !textures.bmp)
     {
         textures = getTextures(file, id);
         RTTR_Assert(textures.bmp);
@@ -92,32 +92,32 @@ void noStaticObject::Draw(DrawPoint drawPt)
 noStaticObject::Textures noStaticObject::getTextures(unsigned short file, unsigned short id)
 {
     Textures textures{};
-    if(IsOpenGateway(file, id))
-        textures.bmp = &LOADER.gateway_cache[GAMECLIENT.GetGlobalAnimation(4, 5, 4, 0) + 1];
+    if(isOpenGateway(file, id))
+        textures.bmp = &LOADER.gateway_cache[GAMECLIENT.getGlobalAnimation(4, 5, 4, 0) + 1];
     else if(file == 0xFFFF)
-        textures = {LOADER.GetMapTexture(id), LOADER.GetMapTexture(id + 100)};
+        textures = {LOADER.getMapTexture(id), LOADER.getMapTexture(id + 100)};
     else if(file < 8)
     {
         static const std::array<ResourceId, 8> files = {"mis0bobs", "mis1bobs", "mis2bobs",        "mis3bobs",
                                                         "mis4bobs", "mis5bobs", "charburner_bobs", "wine_bobs"};
-        textures.bmp = LOADER.GetTextureN(files[file], id);
+        textures.bmp = LOADER.getTextureN(files[file], id);
         // Use only shadows where available
         if(file < 6)
-            textures.shadow = LOADER.GetTextureN(files[file], id + 1);
+            textures.shadow = LOADER.getTextureN(files[file], id + 1);
         else if(file == 7)
-            textures.shadow = LOADER.GetTextureN(files[file], id + 10);
+            textures.shadow = LOADER.getTextureN(files[file], id + 10);
     } else
         throw std::runtime_error("Invalid file number for static object");
 
     return textures;
 }
 
-bool noStaticObject::IsAnimated() const
+bool noStaticObject::isAnimated() const
 {
-    return IsOpenGateway(file, id);
+    return isOpenGateway(file, id);
 }
 
-bool noStaticObject::IsOpenGateway(unsigned short file, unsigned short id)
+bool noStaticObject::isOpenGateway(unsigned short file, unsigned short id)
 {
     return file == 0xFFFF && id == 561;
 }

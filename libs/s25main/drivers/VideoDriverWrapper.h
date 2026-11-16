@@ -36,7 +36,7 @@ public:
     bool LoadDriver(IVideoDriver* existingDriver);
     bool LoadDriver(std::string& preference);
     void UnloadDriver();
-    IVideoDriver* GetDriver() const { return videodriver.get(); }
+    IVideoDriver* getDriver() const { return videodriver.get(); }
 
     /// Erstellt das Fenster.
     bool CreateScreen(VideoMode size, DisplayMode displayMode);
@@ -53,27 +53,27 @@ public:
     void BindTexture(unsigned t);
     void DeleteTexture(unsigned t);
 
-    IRenderer* GetRenderer() { return renderer_.get(); }
+    IRenderer* getRenderer() { return renderer_.get(); }
 
     /// Swapped den Buffer
     void SwapBuffers();
     /// Clears the screen (glClear)
     void ClearScreen();
     // Should only be used to draw the mouse. For everything else use the events
-    Position GetMousePos() const;
+    Position getMousePos() const;
 
     /// Get supported resolutions
     std::set<VideoMode> ListVideoModes() const;
-    std::set<VideoMode> GetDefaultWindowSizes() const;
-    bool HasVSync() const;
+    std::set<VideoMode> getDefaultWindowSizes() const;
+    bool hasVSync() const;
 
     /// Gibt Pointer auf ein Fenster zurück (device-dependent!), HWND unter Windows
-    void* GetMapPointer() const;
+    void* getMapPointer() const;
     /// Get the size/resolution of the window in screen coordinates
-    VideoMode GetWindowSize() const;
+    VideoMode getWindowSize() const;
     /// Get the renderer size in pixels
-    Extent GetRenderSize() const;
-    DisplayMode GetDisplayMode() const;
+    Extent getRenderSize() const;
+    DisplayMode getDisplayMode() const;
 
     /// Get the factor required to scale "normal" DPI to the display DPI
     float getDpiScale() const;
@@ -87,28 +87,28 @@ public:
     /// Get minimum, maximum, and recommended GUI scale percentages for the current window and render size
     GuiScaleRange getGuiScaleRange() const;
 
-    bool IsLeftDown();
-    bool IsRightDown();
-    bool IsTouch();
+    bool isLeftDown();
+    bool isRightDown();
+    bool isTouch();
     // setzt den Mausstatus
-    void SetMousePos(const Position& newPos);
-    void SetMouseWarping(bool enabled) { enableMouseWarping = enabled; }
+    void setMousePos(const Position& newPos);
+    void setMouseWarping(bool enabled) { enableMouseWarping = enabled; }
     /// Get state of the modifier keys
-    KeyEvent GetModKeyState() const;
+    KeyEvent getModKeyState() const;
 
     // Nachrichtenschleife
     bool Run();
 
     void ShowErrorMessage(const std::string& title, const std::string& message);
 
-    unsigned GetTickCount();
+    unsigned getTickCount();
     /// Set framerate target (FPS)
     /// negative for unlimited, 0 for hardware VSync
     void setTargetFramerate(int target);
-    unsigned GetFPS() const;
+    unsigned getFPS() const;
 
-    std::string GetName() const;
-    bool IsLoaded() const { return videodriver != nullptr; }
+    std::string getName() const;
+    bool isLoaded() const { return videodriver != nullptr; }
 
     /// Calculate the size of the texture which is optimal for the driver and at least minSize
     Extent calcPreferredTextureSize(const Extent& minSize) const;

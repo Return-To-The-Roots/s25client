@@ -22,7 +22,7 @@ void nobShipYard::Serialize(SerializedGameData& sgd) const
 }
 
 /// Schaltet Modus entsprechend um
-void nobShipYard::SetMode(Mode newMode)
+void nobShipYard::setMode(Mode newMode)
 {
     mode = newMode;
 }

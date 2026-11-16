@@ -19,18 +19,18 @@ protected:
     LuaPlayerBase() = default;
     virtual ~LuaPlayerBase() = default;
 
-    virtual const BasePlayerInfo& GetPlayer() const = 0;
+    virtual const BasePlayerInfo& getPlayer() const = 0;
 
 public:
     static void Register(kaguya::State& state);
 
-    std::string GetName() const;
-    Nation GetNation() const;
-    Team GetTeam() const;
-    unsigned GetColor() const;
-    bool IsHuman() const;
-    bool IsAI() const;
-    bool IsClosed() const;
-    bool IsFree() const;
-    int GetAILevel() const;
+    std::string getName() const;
+    Nation getNation() const;
+    Team getTeam() const;
+    unsigned getColor() const;
+    bool isHuman() const;
+    bool isAI() const;
+    bool isClosed() const;
+    bool isFree() const;
+    int getAILevel() const;
 };

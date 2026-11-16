@@ -45,7 +45,7 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
     altitude = sgd.PopUnsignedChar();
     shadow = sgd.PopUnsignedChar();
 
-    if(sgd.GetGameDataVersion() < 3)
+    if(sgd.getGameDataVersion() < 3)
     {
         // TODO: Remove this and lt param
         t1 = landscapeTerrains[sgd.PopUnsignedChar()];
@@ -65,7 +65,7 @@ void MapNode::Deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
     reserved = sgd.PopBool();
     owner = sgd.PopUnsignedChar();
     helpers::popContainer(sgd, boundary_stones);
-    if(sgd.GetGameDataVersion() < 9)
+    if(sgd.getGameDataVersion() < 9)
         bq = sgd.Pop<BuildingQuality>();
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)

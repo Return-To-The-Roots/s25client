@@ -39,7 +39,7 @@ enum : unsigned
 
 iwDirectIPConnect::iwDirectIPConnect(ServerType serverType)
     : IngameWindow(CGI_DIRECTIPCONNECT, IngameWindow::posLastOrCenter, Extent(300, 285), _("Join Game"),
-                   LOADER.GetImageN("resource", 41), true),
+                   LOADER.getImageN("resource", 41), true),
       serverType_(serverType)
 {
     AddText(ID_txtIp, DrawPoint(20, 30), _("IP Address of Host:"), COLOR_YELLOW, FontStyle{}, NormalFont);
@@ -58,30 +58,30 @@ iwDirectIPConnect::iwDirectIPConnect(ServerType serverType)
     ctrlOptionGroup* ipv6 = AddOptionGroup(ID_grpIpv6, GroupSelectType::Check);
     ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TextureColor::Green2, _("IPv4"), NormalFont);
     ipv6->AddTextButton(1, DrawPoint(205, 180), Extent(75, 22), TextureColor::Green2, _("IPv6"), NormalFont);
-    ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
+    ipv6->setSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     AddText(ID_txtStatus, DrawPoint(150, 215), "", COLOR_RED, FontStyle::CENTER, NormalFont);
     AddTextButton(ID_btConnect, DrawPoint(20, 240), Extent(125, 22), TextureColor::Green2, _("Connect"), NormalFont);
     AddTextButton(ID_btBack, DrawPoint(155, 240), Extent(125, 22), TextureColor::Red1, _("Back"), NormalFont);
 
-    host->SetFocus();
-    host->SetText(SETTINGS.server.lastIP);
-    port->SetText(SETTINGS.server.localPort);
+    host->setFocus();
+    host->setText(SETTINGS.server.lastIP);
+    port->setText(SETTINGS.server.localPort);
 }
 
 void iwDirectIPConnect::msgEditChange(const unsigned /*ctrl_id*/)
 {
     // Reset status
-    SetStatus("", COLOR_RED);
+    setStatus("", COLOR_RED);
 }
 
 void iwDirectIPConnect::msgEditEnter(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_edtIp: GetCtrl<ctrlEdit>(ID_edtPort)->SetFocus(true); break;
-        case ID_edtPort: GetCtrl<ctrlEdit>(ID_edtPw)->SetFocus(true); break;
-        case ID_edtPw: GetCtrl<ctrlEdit>(ID_btConnect)->SetFocus(true); break;
+        case ID_edtIp: getCtrl<ctrlEdit>(ID_edtPort)->setFocus(true); break;
+        case ID_edtPort: getCtrl<ctrlEdit>(ID_edtPw)->setFocus(true); break;
+        case ID_edtPw: getCtrl<ctrlEdit>(ID_btConnect)->setFocus(true); break;
     }
 }
 
@@ -91,38 +91,38 @@ void iwDirectIPConnect::msgButtonClick(const unsigned ctrl_id)
     {
         case ID_btConnect:
         {
-            auto* edtHost = GetCtrl<ctrlEdit>(ID_edtIp);
-            auto* edtPort = GetCtrl<ctrlEdit>(ID_edtPort);
-            auto* edtPw = GetCtrl<ctrlEdit>(ID_edtPw);
-            std::optional<uint16_t> port = validate::checkPort(edtPort->GetText());
+            auto* edtHost = getCtrl<ctrlEdit>(ID_edtIp);
+            auto* edtPort = getCtrl<ctrlEdit>(ID_edtPort);
+            auto* edtPw = getCtrl<ctrlEdit>(ID_edtPw);
+            std::optional<uint16_t> port = validate::checkPort(edtPort->getText());
             if(!port)
             {
-                SetStatus(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED);
-                edtHost->SetFocus(false);
-                edtPort->SetFocus(true);
-                edtPw->SetFocus(false);
+                setStatus(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED);
+                edtHost->setFocus(false);
+                edtPort->setFocus(true);
+                edtPw->setFocus(false);
                 break;
             }
 
             // save settings
-            SETTINGS.server.lastIP = edtHost->GetText();
+            SETTINGS.server.lastIP = edtHost->getText();
 
-            if(!GAMECLIENT.Connect(edtHost->GetText(), edtPw->GetText(), serverType_, *port, false,
+            if(!GAMECLIENT.Connect(edtHost->getText(), edtPw->getText(), serverType_, *port, false,
                                    SETTINGS.server.ipv6))
             {
-                SetStatus(_("Connection failed!"), COLOR_RED);
+                setStatus(_("Connection failed!"), COLOR_RED);
             } else
             {
-                SetStatus(_("Connecting with Host..."), COLOR_YELLOW);
-                GetCtrl<ctrlButton>(ID_btConnect)->SetEnabled(false);
+                setStatus(_("Connecting with Host..."), COLOR_YELLOW);
+                getCtrl<ctrlButton>(ID_btConnect)->setEnabled(false);
                 std::unique_ptr<ILobbyClient> lobbyClient;
                 if(serverType_ == ServerType::Lobby)
                     lobbyClient = std::make_unique<RttrLobbyClient>(LOBBYCLIENT);
                 iwConnecting& wnd =
                   WINDOWMANAGER.Show(std::make_unique<iwConnecting>(serverType_, std::move(lobbyClient)));
                 onErrorConnection_ = wnd.onError.connect([this](ClientError error) {
-                    SetStatus(ClientErrorToStr(error), COLOR_RED);
-                    this->GetCtrl<ctrlButton>(ID_btConnect)->SetEnabled();
+                    setStatus(ClientErrorToStr(error), COLOR_RED);
+                    this->getCtrl<ctrlButton>(ID_btConnect)->setEnabled();
                 });
             }
         }
@@ -137,23 +137,23 @@ void iwDirectIPConnect::msgOptionGroupChange(const unsigned ctrl_id, const unsig
         SETTINGS.server.ipv6 = (selection == 1);
 }
 
-void iwDirectIPConnect::SetStatus(const std::string& text, unsigned color)
+void iwDirectIPConnect::setStatus(const std::string& text, unsigned color)
 {
-    auto* txtStatus = GetCtrl<ctrlText>(ID_txtStatus);
-    txtStatus->SetTextColor(color);
-    txtStatus->SetText(text);
+    auto* txtStatus = getCtrl<ctrlText>(ID_txtStatus);
+    txtStatus->setTextColor(color);
+    txtStatus->setText(text);
 }
 
 void iwDirectIPConnect::Connect(const std::string& hostOrIp, const unsigned short port, const bool isIPv6,
                                 const bool hasPwd)
 {
-    GetCtrl<ctrlEdit>(ID_edtIp)->SetText(hostOrIp);
-    GetCtrl<ctrlEdit>(ID_edtPort)->SetText(s25util::toStringClassic(port));
-    GetCtrl<ctrlOptionGroup>(ID_grpIpv6)->SetSelection(isIPv6 ? 1 : 0, true);
-    auto* btConnect = GetCtrl<ctrlButton>(ID_btConnect);
-    VIDEODRIVER.SetMousePos(btConnect->GetDrawPos() + DrawPoint(btConnect->GetSize()) / 2);
+    getCtrl<ctrlEdit>(ID_edtIp)->setText(hostOrIp);
+    getCtrl<ctrlEdit>(ID_edtPort)->setText(s25util::toStringClassic(port));
+    getCtrl<ctrlOptionGroup>(ID_grpIpv6)->setSelection(isIPv6 ? 1 : 0, true);
+    auto* btConnect = getCtrl<ctrlButton>(ID_btConnect);
+    VIDEODRIVER.setMousePos(btConnect->getDrawPos() + DrawPoint(btConnect->getSize()) / 2);
     if(hasPwd)
-        GetCtrl<ctrlEdit>(ID_edtPw)->SetFocus(true);
+        getCtrl<ctrlEdit>(ID_edtPw)->setFocus(true);
     else
         msgButtonClick(ID_btConnect);
 }

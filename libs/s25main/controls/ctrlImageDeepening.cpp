@@ -13,5 +13,5 @@ ctrlImageDeepening::ctrlImageDeepening(Window* parent, unsigned id, DrawPoint po
 void ctrlImageDeepening::DrawContent() const
 {
     // Adding of origin compensates for its substraction inside ITexture::Draw()
-    DrawImage(Rect(GetDrawPos() + GetImage()->GetOrigin(), GetSize()));
+    DrawImage(Rect(getDrawPos() + getImage()->getOrigin(), getSize()));
 }

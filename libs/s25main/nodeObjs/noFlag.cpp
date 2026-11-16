@@ -32,13 +32,13 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player)
 
     // Gucken, ob die Flagge auf einen bereits bestehenden Weg gesetzt wurde
     Direction dir;
-    noFlag* flag = world->GetRoadFlag(pos, dir);
+    noFlag* flag = world->getRoadFlag(pos, dir);
 
-    if(flag && flag->GetRoute(dir))
-        flag->GetRoute(dir)->SplitRoad(this);
+    if(flag && flag->getRoute(dir))
+        flag->getRoute(dir)->SplitRoad(this);
 
     // auf Wasseranteile prüfen
-    if(world->HasTerrain(pos, [](const auto& desc) { return desc.kind == TerrainKind::Water; }))
+    if(world->hasTerrain(pos, [](const auto& desc) { return desc.kind == TerrainKind::Water; }))
         flagtype = FlagType::Water;
     else
         flagtype = FlagType::Normal;
@@ -47,7 +47,7 @@ noFlag::noFlag(const MapPoint pos, const unsigned char player)
 noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
     : noRoadNode(sgd, obj_id), ani_offset(rand() % 20000), flagtype(sgd.Pop<FlagType>())
 {
-    if(sgd.GetGameDataVersion() < 8)
+    if(sgd.getGameDataVersion() < 8)
     {
         for(unsigned i = 0; i < wares.max_size(); i++)
         {
@@ -71,7 +71,7 @@ noFlag::~noFlag() = default;
 void noFlag::Destroy()
 {
     /// Da ist dann nichts
-    world->SetNO(pos, nullptr);
+    world->setNO(pos, nullptr);
 
     // Waren vernichten
     for(auto& ware : wares)
@@ -83,7 +83,7 @@ void noFlag::Destroy()
     wares.clear();
 
     // Den Flag-Workern Bescheid sagen, die hier ggf. arbeiten
-    world->GetPlayer(player).FlagDestroyed(this);
+    world->getPlayer(player).FlagDestroyed(this);
 
     noRoadNode::Destroy();
 }
@@ -109,15 +109,15 @@ void noFlag::Draw(DrawPoint drawPt)
     static constexpr std::array<DrawPoint, 8> WARES_POS = {
       {{0, 0}, {-4, 0}, {3, -1}, {-7, -1}, {6, -2}, {-10, -2}, {9, -5}, {-13, -5}}};
 
-    unsigned ani_step = GAMECLIENT.GetGlobalAnimation(8, 2, 1, ani_offset);
+    unsigned ani_step = GAMECLIENT.getGlobalAnimation(8, 2, 1, ani_offset);
 
-    LOADER.flag_cache[world->GetPlayer(player).nation][flagtype][ani_step].draw(drawPt, 0xFFFFFFFF,
-                                                                                world->GetPlayer(player).color);
+    LOADER.flag_cache[world->getPlayer(player).nation][flagtype][ani_step].draw(drawPt, 0xFFFFFFFF,
+                                                                                world->getPlayer(player).color);
 
     // Waren (von hinten anfangen zu zeichnen)
     for(unsigned i = wares.size(); i > 0; --i)
     {
-        LOADER.GetWareStackTex(wares[i - 1]->type)->DrawFull(drawPt + WARES_POS[i - 1]);
+        LOADER.getWareStackTex(wares[i - 1]->type)->DrawFull(drawPt + WARES_POS[i - 1]);
     }
 }
 
@@ -127,7 +127,7 @@ void noFlag::Draw(DrawPoint drawPt)
  */
 std::unique_ptr<FOWObject> noFlag::CreateFOWObject() const
 {
-    const GamePlayer& owner = world->GetPlayer(player);
+    const GamePlayer& owner = world->getPlayer(player);
     return std::make_unique<fowFlag>(owner.color, owner.nation, flagtype);
 }
 
@@ -137,11 +137,11 @@ std::unique_ptr<FOWObject> noFlag::CreateFOWObject() const
 void noFlag::AddWare(std::unique_ptr<Ware> ware)
 {
     // First add ware, then tell carrier. So get the info from the ware first
-    const RoadPathDirection nextDir = ware->GetNextDir();
+    const RoadPathDirection nextDir = ware->getNextDir();
     wares.push_back(std::move(ware));
 
     if(nextDir != RoadPathDirection::None)
-        GetRoute(toDirection(nextDir))->AddWareJob(this);
+        getRoute(toDirection(nextDir))->AddWareJob(this);
 }
 
 /**
@@ -159,12 +159,12 @@ std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swa
     // Die mit der niedrigsten, d.h. höchsten Priorität wird als erstes transportiert
     for(unsigned i = 0; i < wares.size(); ++i)
     {
-        if(wares[i]->GetNextDir() == toRoadPathDirection(roadDir))
+        if(wares[i]->getNextDir() == toRoadPathDirection(roadDir))
         {
             if(best_ware_index >= 0)
             {
-                if(world->GetPlayer(player).GetTransportPriority(wares[i]->type)
-                   < world->GetPlayer(player).GetTransportPriority(wares[best_ware_index]->type))
+                if(world->getPlayer(player).getTransportPriority(wares[i]->type)
+                   < world->getPlayer(player).getTransportPriority(wares[best_ware_index]->type))
                 {
                     best_ware_index = i;
                 }
@@ -182,7 +182,7 @@ std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swa
     }
 
     // ggf. anderen Trägern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
-    GetRoute(roadDir)->WareJobRemoved(carrier);
+    getRoute(roadDir)->WareJobRemoved(carrier);
 
     if(!swap_wares && bestWare)
     {
@@ -190,7 +190,7 @@ std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swa
         // Bescheid sagen, die evtl waren, dass sie wieder was ablegen können
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            const auto* route = GetRoute(dir);
+            const auto* route = getRoute(dir);
             if(!route)
                 continue;
 
@@ -198,10 +198,10 @@ std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swa
             {
                 // Gebäude?
 
-                if(world->GetSpecObj<noBase>(world->GetNeighbour(pos, Direction::NorthWest))->GetType()
+                if(world->getSpecObj<noBase>(world->getNeighbour(pos, Direction::NorthWest))->getType()
                    == NodalObjectType::Building)
                 {
-                    if(world->GetSpecObj<noBuilding>(world->GetNeighbour(pos, Direction::NorthWest))->FreePlaceAtFlag())
+                    if(world->getSpecObj<noBuilding>(world->getNeighbour(pos, Direction::NorthWest))->FreePlaceAtFlag())
                         break;
                 }
             } else
@@ -211,7 +211,7 @@ std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swa
                 {
                     if(route->hasCarrier(c))
                     {
-                        if(route->getCarrier(c)->SpaceAtFlag(this == route->GetF2()))
+                        if(route->getCarrier(c)->SpaceAtFlag(this == route->getF2()))
                             break;
                     }
                 }
@@ -222,13 +222,13 @@ std::unique_ptr<Ware> noFlag::SelectWare(const Direction roadDir, const bool swa
     return bestWare;
 }
 
-unsigned noFlag::GetNumWaresForRoad(const Direction dir) const
+unsigned noFlag::getNumWaresForRoad(const Direction dir) const
 {
     const auto roadDir = toRoadPathDirection(dir);
-    return helpers::count_if(wares, [roadDir](const auto& ware) { return ware->GetNextDir() == roadDir; });
+    return helpers::count_if(wares, [roadDir](const auto& ware) { return ware->getNextDir() == roadDir; });
 }
 
-unsigned noFlag::GetPunishmentPoints(const Direction dir) const
+unsigned noFlag::getPunishmentPoints(const Direction dir) const
 {
     constexpr auto PATHFINDING_PENALTY_CARRIER_ARRIVING = 50;
     constexpr auto PATHFINDING_PENALTY_NO_CARRIER = 500;
@@ -236,24 +236,24 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
     // TODO(Replay): Move to `way_costs` in nobHarborBuilding::GetShipConnections
     constexpr auto PATHFINDING_PENALTY_START_SHIPPING = 500;
     // 2 Points per ware as carrier has to walk to other point and back for each ware
-    unsigned points = GetNumWaresForRoad(dir) * 2;
+    unsigned points = getNumWaresForRoad(dir) * 2;
 
-    const RoadSegment* routeInDir = GetRoute(dir);
+    const RoadSegment* routeInDir = getRoute(dir);
     const nofCarrier* humanCarrier = routeInDir->getCarrier(0);
     if(humanCarrier)
     {
         // normal carrier has been ordered from the warehouse but has not yet arrived and no donkey
-        if(humanCarrier->GetCarrierState() == CarrierState::FigureWork && !routeInDir->hasCarrier(1))
+        if(humanCarrier->getCarrierState() == CarrierState::FigureWork && !routeInDir->hasCarrier(1))
             points += PATHFINDING_PENALTY_CARRIER_ARRIVING;
     } else if(!routeInDir->hasCarrier(1))
     {
         // Routes are either between flags or from a flag to a building, see the ctor of noBaseBuilding
-        const bool isBuildingEntry = (dir == Direction::NorthWest) && (routeInDir->GetF2()->GetGOT() != GO_Type::Flag);
+        const bool isBuildingEntry = (dir == Direction::NorthWest) && (routeInDir->getF2()->getGOT() != GO_Type::Flag);
         // For entering a building no carrier is required
         // Only roads to buildings considered by path finding are those to harbors
         if(isBuildingEntry)
         {
-            RTTR_Assert(routeInDir->GetF2()->GetGOT() == GO_Type::NobHarborbuilding);
+            RTTR_Assert(routeInDir->getF2()->getGOT() == GO_Type::NobHarborbuilding);
             points += PATHFINDING_PENALTY_START_SHIPPING;
         } else
             points += PATHFINDING_PENALTY_NO_CARRIER;
@@ -268,8 +268,8 @@ unsigned noFlag::GetPunishmentPoints(const Direction dir) const
 void noFlag::DestroyAttachedBuilding()
 {
     // Achtung es wird ein Feuer durch Destroy gesetzt, daher Objekt merken!
-    noBase* no = world->GetNO(world->GetNeighbour(pos, Direction::NorthWest));
-    if(no->GetType() == NodalObjectType::Buildingsite || no->GetType() == NodalObjectType::Building)
+    noBase* no = world->getNO(world->getNeighbour(pos, Direction::NorthWest));
+    if(no->getType() == NodalObjectType::Buildingsite || no->getType() == NodalObjectType::Building)
     {
         no->Destroy();
         delete no;
@@ -306,14 +306,14 @@ void noFlag::Capture(const unsigned char new_owner)
     wares.clear();
 
     // Unregister this flag in the players flags
-    world->GetPlayer(player).FlagDestroyed(this);
+    world->getPlayer(player).FlagDestroyed(this);
     this->player = new_owner;
 }
 
 /**
  *  Ist diese Flagge für eine bestimmte Lagerhausflüchtlingsgruppe (BWU) nicht zugänglich?
  */
-bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
+bool noFlag::isImpossibleForBWU(const unsigned bwu_id) const
 {
     // Zeitintervall, in der die Zugänglichkeit der Flaggen von einer bestimmten BWU überprüft wird
     const unsigned MAX_BWU_INTERVAL = 2000;
@@ -324,7 +324,7 @@ bool noFlag::IsImpossibleForBWU(const unsigned bwu_id) const
         if(bwu.id == bwu_id)
         {
             // Wenn letzter TÜV noch nicht zu lange zurückliegt, können wir sie als unzugänglich zurückgeben
-            return GetEvMgr().GetCurrentGF() - bwu.last_gf <= MAX_BWU_INTERVAL;
+            return getEvMgr().getCurrentGF() - bwu.last_gf <= MAX_BWU_INTERVAL;
         }
     }
 
@@ -341,7 +341,7 @@ void noFlag::ImpossibleForBWU(const unsigned bwu_id)
     {
         if(bwu.id == bwu_id)
         {
-            bwu.last_gf = GetEvMgr().GetCurrentGF();
+            bwu.last_gf = getEvMgr().getCurrentGF();
             return;
         }
     }

@@ -25,9 +25,9 @@ void nofTanner::DrawWorking(DrawPoint drawPt)
     const unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
 
     LOADER
-      .GetPlayerImage("leather_bobs",
+      .getPlayerImage("leather_bobs",
                       leatheraddon::bobIndex[leatheraddon::BobType::TanneryWorkWindowAnimation] + (now_id) % 8)
-      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
+      ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     last_id = now_id;
 }
@@ -37,7 +37,7 @@ void nofTanner::DrawWorking(DrawPoint drawPt)
 #    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
 #endif
 
-unsigned short nofTanner::GetCarryID() const
+unsigned short nofTanner::getCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }

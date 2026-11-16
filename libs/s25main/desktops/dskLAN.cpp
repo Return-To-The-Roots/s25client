@@ -29,7 +29,7 @@ enum
 };
 }
 
-dskLAN::dskLAN() : dskMenuBase(LOADER.GetImageN("setup013", 0)), discovery(LAN_DISCOVERY_CFG)
+dskLAN::dskLAN() : dskMenuBase(LOADER.getImageN("setup013", 0)), discovery(LAN_DISCOVERY_CFG)
 {
     // "Server hinzufügen"
     AddTextButton(ID_btAddServer, DrawPoint(530, 250), Extent(250, 22), TextureColor::Green2, _("Add Server"),
@@ -114,13 +114,13 @@ void dskLAN::UpdateServerList()
 {
     ReadOpenGames();
 
-    auto* servertable = GetCtrl<ctrlTable>(ID_tblServer);
+    auto* servertable = getCtrl<ctrlTable>(ID_tblServer);
 
-    const unsigned selection = servertable->GetSelection().value_or(0u);
-    int sortColumn = servertable->GetSortColumn();
+    const unsigned selection = servertable->getSelection().value_or(0u);
+    int sortColumn = servertable->getSortColumn();
     if(sortColumn == -1)
         sortColumn = 0;
-    const auto direction = servertable->GetSortDirection();
+    const auto direction = servertable->getSortDirection();
     servertable->DeleteAllItems();
 
     unsigned curId = 0;
@@ -135,7 +135,7 @@ void dskLAN::UpdateServerList()
 
     if(sortColumn >= 0)
         servertable->SortRows(sortColumn, direction);
-    servertable->SetSelection(selection);
+    servertable->setSelection(selection);
 }
 
 bool dskLAN::ConnectToSelectedGame()
@@ -143,17 +143,17 @@ bool dskLAN::ConnectToSelectedGame()
     if(openGames.empty())
         return false;
 
-    const auto* table = GetCtrl<ctrlTable>(ID_tblServer);
-    const auto& selectedRow = table->GetSelection();
+    const auto* table = getCtrl<ctrlTable>(ID_tblServer);
+    const auto& selectedRow = table->getSelection();
     if(!selectedRow)
         return false;
-    const auto selectedId = boost::lexical_cast<unsigned>(table->GetItemText(*selectedRow, 0));
+    const auto selectedId = boost::lexical_cast<unsigned>(table->getItemText(*selectedRow, 0));
 
     if(selectedId >= openGames.size())
         return false;
 
     const GameInfo& game = openGames[selectedId];
-    if(game.info.revision == rttr::version::GetRevision())
+    if(game.info.revision == rttr::version::getRevision())
     {
         auto connect = std::make_unique<iwDirectIPConnect>(ServerType::LAN);
         connect->Connect(game.ip, game.info.port, game.info.isIPv6, game.info.hasPwd);

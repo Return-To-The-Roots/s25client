@@ -61,12 +61,12 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::NobUsual; }
-    unsigned GetMilitaryRadius() const override { return 0; }
+    GO_Type getGOT() const override { return GO_Type::NobUsual; }
+    unsigned getMilitaryRadius() const override { return 0; }
 
     void Draw(DrawPoint drawPt) override;
 
-    bool HasWorker() const;
+    bool hasWorker() const;
 
     /// Event-Handler
     void HandleEvent(unsigned id) override;
@@ -84,7 +84,7 @@ public:
     void WorkerLost();
 
     /// Gibt den Warenbestand (eingehende Waren - Rohstoffe) zurück
-    unsigned char GetNumWares(unsigned id) const { return numWares[id]; }
+    unsigned char getNumWares(unsigned id) const { return numWares[id]; }
     /// Prüft, ob Waren für einen Arbeitsschritt vorhanden sind
     bool WaresAvailable();
     /// Verbraucht Waren
@@ -99,17 +99,17 @@ public:
     /// Bestellte Waren
     bool AreThereAnyOrderedWares() const;
 
-    unsigned short GetProductivity() const;
-    const nofBuildingWorker* GetWorker() const { return worker; }
+    unsigned short getProductivity() const;
+    const nofBuildingWorker* getWorker() const { return worker; }
 
     /// Stoppt/Erlaubt Produktion (visuell)
     void ToggleProductionVirtual() { disableProductionVirtual = !disableProductionVirtual; }
     /// Stoppt/Erlaubt Produktion (real)
     void SetProductionEnabled(bool enabled);
     /// Fragt ab, ob Produktion ausgeschaltet ist (visuell)
-    bool IsProductionDisabledVirtual() const { return disableProductionVirtual; }
+    bool isProductionDisabledVirtual() const { return disableProductionVirtual; }
     /// Fragt ab, ob Produktion ausgeschaltet ist (real)
-    bool IsProductionDisabled() const { return disableProduction; }
+    bool isProductionDisabled() const { return disableProduction; }
     /// Called when there are no more resources
     void OnOutOfResources();
     /// Fängt an NICHT zu arbeiten (wird gemessen fürs Ausrechnen der Produktivität)

@@ -28,7 +28,7 @@ void nofWorkman::HandleDerivedEvent(const unsigned /*id*/)
 
 bool nofWorkman::StartWorking()
 {
-    current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
+    current_ev = getEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
     state = State::Work;
     workplace->is_working = true;
     // Waren verbrauchen
@@ -69,7 +69,7 @@ void nofWorkman::HandleStateWork()
 {
     // Nach Arbeiten wird noch ein bisschen gewartet, bevor das Produkt herausgetragen wird
     // Bei 0 mind. 1 GF
-    current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait2_length ? JOB_CONSTS[job_].wait2_length : 1, 1);
+    current_ev = getEvMgr().AddEvent(this, JOB_CONSTS[job_].wait2_length ? JOB_CONSTS[job_].wait2_length : 1, 1);
     state = State::Waiting2;
     // wir arbeiten nicht mehr
     workplace->is_working = false;
@@ -77,7 +77,7 @@ void nofWorkman::HandleStateWork()
     // Evtl. Sounds löschen
     if(was_sounding)
     {
-        world->GetSoundMgr().stopSounds(*this);
+        world->getSoundMgr().stopSounds(*this);
         was_sounding = false;
     }
 }
@@ -89,7 +89,7 @@ struct NodeHasResource
     const ResourceType res;
     NodeHasResource(const GameWorld& world, const ResourceType res) : world(world), res(res) {}
 
-    bool operator()(const MapPoint pt) { return world.GetNode(pt).resources.has(res); }
+    bool operator()(const MapPoint pt) { return world.getNode(pt).resources.has(res); }
 };
 } // namespace
 

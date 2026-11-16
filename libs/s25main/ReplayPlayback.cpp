@@ -12,7 +12,7 @@ ReplayCommandsResult ExecuteReplayCommands(Replay& replay, std::optional<unsigne
                                            const std::function<void(const Replay::ChatCommand&)>& onChat)
 {
     ReplayCommandsResult result;
-    const unsigned curGF = game.em_->GetCurrentGF();
+    const unsigned curGF = game.em_->getCurrentGF();
     if(nextGF != curGF)
         return result;
 

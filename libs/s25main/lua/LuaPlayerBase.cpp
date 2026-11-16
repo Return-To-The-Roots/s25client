@@ -11,15 +11,15 @@
 void LuaPlayerBase::Register(kaguya::State& state)
 {
     state["PlayerBase"].setClass(kaguya::UserdataMetatable<LuaPlayerBase>()
-                                   .addFunction("GetName", &LuaPlayerBase::GetName)
-                                   .addFunction("GetNation", &LuaPlayerBase::GetNation)
-                                   .addFunction("GetTeam", &LuaPlayerBase::GetTeam)
-                                   .addFunction("GetColor", &LuaPlayerBase::GetColor)
-                                   .addFunction("IsFree", &LuaPlayerBase::IsFree)
-                                   .addFunction("IsHuman", &LuaPlayerBase::IsHuman)
-                                   .addFunction("IsAI", &LuaPlayerBase::IsAI)
-                                   .addFunction("IsClosed", &LuaPlayerBase::IsClosed)
-                                   .addFunction("GetAILevel", &LuaPlayerBase::GetAILevel));
+                                   .addFunction("GetName", &LuaPlayerBase::getName)
+                                   .addFunction("GetNation", &LuaPlayerBase::getNation)
+                                   .addFunction("GetTeam", &LuaPlayerBase::getTeam)
+                                   .addFunction("GetColor", &LuaPlayerBase::getColor)
+                                   .addFunction("IsFree", &LuaPlayerBase::isFree)
+                                   .addFunction("IsHuman", &LuaPlayerBase::isHuman)
+                                   .addFunction("IsAI", &LuaPlayerBase::isAI)
+                                   .addFunction("IsClosed", &LuaPlayerBase::isClosed)
+                                   .addFunction("GetAILevel", &LuaPlayerBase::getAILevel));
 
 #pragma region ConstDefs
 
@@ -35,57 +35,57 @@ void LuaPlayerBase::Register(kaguya::State& state)
 #pragma endregion ConstDefs
 }
 
-std::string LuaPlayerBase::GetName() const
+std::string LuaPlayerBase::getName() const
 {
-    return GetPlayer().name;
+    return getPlayer().name;
 }
 
-Nation LuaPlayerBase::GetNation() const
+Nation LuaPlayerBase::getNation() const
 {
-    return GetPlayer().nation;
+    return getPlayer().nation;
 }
 
-Team LuaPlayerBase::GetTeam() const
+Team LuaPlayerBase::getTeam() const
 {
-    return GetPlayer().team;
+    return getPlayer().team;
 }
 
-unsigned LuaPlayerBase::GetColor() const
+unsigned LuaPlayerBase::getColor() const
 {
-    int colorIdx = GetPlayer().GetColorIdx();
+    int colorIdx = getPlayer().getColorIdx();
     if(colorIdx < 0)
-        return GetPlayer().color;
+        return getPlayer().color;
     else
         return static_cast<unsigned>(colorIdx);
 }
 
-bool LuaPlayerBase::IsHuman() const
+bool LuaPlayerBase::isHuman() const
 {
-    return GetPlayer().ps == PlayerState::Occupied;
+    return getPlayer().ps == PlayerState::Occupied;
 }
 
-bool LuaPlayerBase::IsAI() const
+bool LuaPlayerBase::isAI() const
 {
-    return GetPlayer().ps == PlayerState::AI;
+    return getPlayer().ps == PlayerState::AI;
 }
 
-bool LuaPlayerBase::IsClosed() const
+bool LuaPlayerBase::isClosed() const
 {
-    return GetPlayer().ps == PlayerState::Locked;
+    return getPlayer().ps == PlayerState::Locked;
 }
 
-bool LuaPlayerBase::IsFree() const
+bool LuaPlayerBase::isFree() const
 {
-    return GetPlayer().ps == PlayerState::Free;
+    return getPlayer().ps == PlayerState::Free;
 }
 
-int LuaPlayerBase::GetAILevel() const
+int LuaPlayerBase::getAILevel() const
 {
-    if(GetPlayer().ps != PlayerState::AI)
+    if(getPlayer().ps != PlayerState::AI)
         return -1;
-    if(GetPlayer().aiInfo.type == AI::Type::Dummy)
+    if(getPlayer().aiInfo.type == AI::Type::Dummy)
         return 0;
-    switch(GetPlayer().aiInfo.level)
+    switch(getPlayer().aiInfo.level)
     {
         case AI::Level::Easy: return 1;
         case AI::Level::Medium: return 2;

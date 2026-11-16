@@ -9,22 +9,22 @@
 
 unsigned TestEventManager::doExecuteNextEvent(unsigned maxGF)
 {
-    if(GetCurrentGF() >= maxGF)
+    if(getCurrentGF() >= maxGF)
         return 0;
     if(events.empty())
     {
-        unsigned numGFs = maxGF - GetCurrentGF();
+        unsigned numGFs = maxGF - getCurrentGF();
         currentGF = maxGF;
         return numGFs;
     }
     auto itEvents = events.begin();
     if(itEvents->first > maxGF)
     {
-        unsigned numGFs = maxGF - GetCurrentGF();
+        unsigned numGFs = maxGF - getCurrentGF();
         currentGF = maxGF;
         return numGFs;
     }
-    unsigned numGFs = itEvents->first - GetCurrentGF();
+    unsigned numGFs = itEvents->first - getCurrentGF();
     currentGF = itEvents->first;
     ExecuteEvents(itEvents);
     DestroyCurrentObjects();
@@ -48,7 +48,7 @@ unsigned TestEventManager::ExecuteNextEvent(unsigned maxGF)
     return numGFs;
 }
 
-std::vector<const GameEvent*> TestEventManager::GetObjEvents(const GameObject& obj) const
+std::vector<const GameEvent*> TestEventManager::getObjEvents(const GameObject& obj) const
 {
     std::vector<const GameEvent*> objEvnts;
     for(const auto& event : events)
@@ -62,7 +62,7 @@ std::vector<const GameEvent*> TestEventManager::GetObjEvents(const GameObject& o
     return objEvnts;
 }
 
-bool TestEventManager::IsEventActive(const GameObject& obj, const unsigned id) const
+bool TestEventManager::isEventActive(const GameObject& obj, const unsigned id) const
 {
     for(const auto& event : events)
     {
@@ -84,7 +84,7 @@ const GameEvent* TestEventManager::RescheduleEvent(const GameEvent* event, unsig
     return AddEventToQueue(event);
 }
 
-std::vector<const GameEvent*> TestEventManager::GetEvents() const
+std::vector<const GameEvent*> TestEventManager::getEvents() const
 {
-    return EventManager::GetEvents();
+    return EventManager::getEvents();
 }

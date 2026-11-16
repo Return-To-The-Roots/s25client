@@ -23,13 +23,13 @@ void nofCarpenter::DrawWorking(DrawPoint drawPt)
 
     unsigned now_id;
 
-    LOADER.GetPlayerImage("rom_bobs", 32 + ((now_id = GAMECLIENT.Interpolate(136, current_ev)) % 8))
-      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
+    LOADER.getPlayerImage("rom_bobs", 32 + ((now_id = GAMECLIENT.Interpolate(136, current_ev)) % 8))
+      ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     // Evtl Sound abspielen
     if(now_id % 8 == 3 || now_id % 8 == 7)
     {
-        world->GetSoundMgr().playNOSound(54 + ((now_id) % 8) / 4, *this, now_id / 4);
+        world->getSoundMgr().playNOSound(54 + ((now_id) % 8) / 4, *this, now_id / 4);
         was_sounding = true;
     }
 

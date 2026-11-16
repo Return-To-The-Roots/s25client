@@ -27,7 +27,7 @@ namespace {
 class SwitchOnStart : public ClientInterface
 {
 public:
-    SwitchOnStart() { GAMECLIENT.SetInterface(this); }
+    SwitchOnStart() { GAMECLIENT.setInterface(this); }
     ~SwitchOnStart() override { GAMECLIENT.RemoveInterface(this); }
 
     void CI_GameLoading(std::shared_ptr<Game> game) override
@@ -44,7 +44,7 @@ std::vector<bfs::path> GetReplays()
 
 iwPlayReplay::iwPlayReplay()
     : IngameWindow(CGI_PLAYREPLAY, IngameWindow::posLastOrCenter, Extent(600, 330), _("Play Replay"),
-                   LOADER.GetImageN("resource", 41))
+                   LOADER.getImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
     AddTable(0, DrawPoint(20, 30), Extent(560, 220), TextureColor::Green2, NormalFont,
@@ -64,18 +64,18 @@ iwPlayReplay::iwPlayReplay()
     PopulateTable();
 
     // Nach Zeit Sortieren
-    GetCtrl<ctrlTable>(0)->SortRows(1, TableSortDir::Descending);
+    getCtrl<ctrlTable>(0)->SortRows(1, TableSortDir::Descending);
 }
 
 void iwPlayReplay::PopulateTable()
 {
     static bool loadedOnce = false;
 
-    auto* table = GetCtrl<ctrlTable>(0);
-    int sortCol = table->GetSortColumn();
+    auto* table = getCtrl<ctrlTable>(0);
+    int sortCol = table->getSortColumn();
     if(sortCol == -1)
         sortCol = 0;
-    const auto sortDir = table->GetSortDirection();
+    const auto sortDir = table->getSortDirection();
     table->DeleteAllItems();
 
     unsigned numInvalid = 0;
@@ -92,18 +92,18 @@ void iwPlayReplay::PopulateTable()
             if(!loadedOnce)
             {
                 LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % path
-                  % (replay.GetLastErrorMsg().empty() ? _("Unknown") : replay.GetLastErrorMsg());
+                  % (replay.getLastErrorMsg().empty() ? _("Unknown") : replay.getLastErrorMsg());
             }
             numInvalid++;
             continue;
         }
 
         // Zeitstamp benutzen
-        std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", replay.GetSaveTime());
+        std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", replay.getSaveTime());
 
         // Spielernamen auslesen
         std::string tmp_players;
-        for(const std::string& playerName : replay.GetPlayerNames())
+        for(const std::string& playerName : replay.getPlayerNames())
         {
             if(!tmp_players.empty())
                 tmp_players += ", ";
@@ -115,7 +115,7 @@ void iwPlayReplay::PopulateTable()
         if(!path.has_filename())
             continue;
         std::string fileName = path.filename().string();
-        std::string length = GAMECLIENT.FormatGFTime(replay.GetLastGF());
+        std::string length = GAMECLIENT.FormatGFTime(replay.getLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
         table->AddRow({fileName, dateStr, tmp_players, length, path.string()});
@@ -124,13 +124,13 @@ void iwPlayReplay::PopulateTable()
     // Erst einmal nach Dateiname sortieren
     table->SortRows(sortCol, sortDir);
 
-    auto* btDelInvalid = GetCtrl<ctrlTextButton>(5);
+    auto* btDelInvalid = getCtrl<ctrlTextButton>(5);
     if(numInvalid == 0)
-        btDelInvalid->SetVisible(false);
+        btDelInvalid->setVisible(false);
     else
     {
-        btDelInvalid->SetVisible(true);
-        btDelInvalid->SetText((boost::format(_("Delete Invalid (%u)")) % numInvalid).str());
+        btDelInvalid->setVisible(true);
+        btDelInvalid->setText((boost::format(_("Delete Invalid (%u)")) % numInvalid).str());
     }
     loadedOnce = true;
 }
@@ -147,8 +147,8 @@ void iwPlayReplay::msgButtonClick(const unsigned ctrl_id)
             break;
         case 3:
         {
-            auto* table = GetCtrl<ctrlTable>(0);
-            if(table->GetSelection())
+            auto* table = getCtrl<ctrlTable>(0);
+            if(table->getSelection())
                 WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Delete selected"),
                                                               _("Are you sure you want to remove the selected replay?"),
                                                               this, MsgboxButton::YesNo, MsgboxIcon::QuestionRed, 2));
@@ -171,14 +171,14 @@ void iwPlayReplay::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned
 void iwPlayReplay::StartReplay()
 {
     // Mond malen
-    LOADER.GetImageN("resource", 33)->DrawFull(VIDEODRIVER.GetMousePos() - DrawPoint(0, 40));
+    LOADER.getImageN("resource", 33)->DrawFull(VIDEODRIVER.getMousePos() - DrawPoint(0, 40));
     VIDEODRIVER.SwapBuffers();
 
-    auto* table = GetCtrl<ctrlTable>(0);
-    if(table->GetSelection())
+    auto* table = getCtrl<ctrlTable>(0);
+    if(table->getSelection())
     {
         SwitchOnStart switchOnStart;
-        if(!GAMECLIENT.StartReplay(table->GetItemText(*table->GetSelection(), 4)))
+        if(!GAMECLIENT.StartReplay(table->getItemText(*table->getSelection(), 4)))
             WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error while playing replay!"), _("Invalid Replay!"), this,
                                                           MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
     }
@@ -197,7 +197,7 @@ void iwPlayReplay::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         }
 
         // Tabelle leeren
-        GetCtrl<ctrlTable>(0)->DeleteAllItems();
+        getCtrl<ctrlTable>(0)->DeleteAllItems();
     } else if(msgbox_id == 3 && mbr == MsgboxResult::Yes)
     {
         const std::vector<bfs::path> replays = GetReplays();
@@ -215,11 +215,11 @@ void iwPlayReplay::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         PopulateTable();
     } else if(msgbox_id == 2 && mbr == MsgboxResult::Yes)
     {
-        auto* table = GetCtrl<ctrlTable>(0);
-        if(table->GetSelection())
+        auto* table = getCtrl<ctrlTable>(0);
+        if(table->getSelection())
         {
             boost::system::error_code ec;
-            bfs::remove(table->GetItemText(*table->GetSelection(), 4), ec);
+            bfs::remove(table->getItemText(*table->getSelection(), 4), ec);
             PopulateTable();
         }
     }

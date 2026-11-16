@@ -35,9 +35,9 @@ public:
           terrains_(worldDesc_.terrain.findAll([landscape](const TerrainDesc& t) { return t.landscape == landscape; }))
     {}
 
-    uint8_t GetTextureId(DescIdx<TerrainDesc> texture) const { return worldDesc_.get(texture).s2Id; }
+    uint8_t getTextureId(DescIdx<TerrainDesc> texture) const { return worldDesc_.get(texture).s2Id; }
 
-    uint8_t GetLandscapeId() const { return worldDesc_.get(landscape_).s2Id; }
+    uint8_t getLandscapeId() const { return worldDesc_.get(landscape_).s2Id; }
 
     template<class T_Predicate>
     DescIdx<TerrainDesc> Find(T_Predicate predicate) const
@@ -108,14 +108,14 @@ public:
     bool Any(const MapPoint& point, T_Predicate predicate) const
     {
         auto condition = [this, &predicate](auto triangle) { return this->Check(triangle, predicate); };
-        return helpers::contains_if(GetTriangles(point, textures_.GetSize()), condition);
+        return helpers::contains_if(GetTriangles(point, textures_.getSize()), condition);
     }
 
     template<class T_Predicate>
     bool All(const MapPoint& point, T_Predicate predicate) const
     {
         auto condition = [this, &predicate](auto triangle) { return !this->Check(triangle, predicate); };
-        return !helpers::contains_if(GetTriangles(point, textures_.GetSize()), condition);
+        return !helpers::contains_if(GetTriangles(point, textures_.getSize()), condition);
     }
 
     /**
@@ -124,7 +124,7 @@ public:
      * @param triangle triangle to update
      * @param texture texture to place on the triangle
      */
-    void Set(const Triangle& triangle, DescIdx<TerrainDesc> texture);
+    void set(const Triangle& triangle, DescIdx<TerrainDesc> texture);
 
     /**
      * Updates all textures around the specified node.
@@ -132,7 +132,7 @@ public:
      * @param pt position of the node
      * @param texture texture to place
      */
-    void Set(const MapPoint& pt, DescIdx<TerrainDesc> texture);
+    void set(const MapPoint& pt, DescIdx<TerrainDesc> texture);
 
     /**
      * Gets the texture of the specified triangle.
@@ -141,7 +141,7 @@ public:
      *
      * @returns the texture of the triangle.
      */
-    DescIdx<TerrainDesc> Get(const Triangle& triangle) const;
+    DescIdx<TerrainDesc> get(const Triangle& triangle) const;
 };
 
 class Texturizer

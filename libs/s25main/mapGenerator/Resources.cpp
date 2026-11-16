@@ -14,7 +14,7 @@ namespace rttr::mapGenerator {
 
 std::vector<Tree> CreateTrees(const TextureMap& textures)
 {
-    const auto landscapeId = textures.GetLandscapeId();
+    const auto landscapeId = textures.getLandscapeId();
 
     Tree pineApple(libsiedler2::OT_Palm, libsiedler2::OI_Tree1_Begin);
     Tree palm1(libsiedler2::OT_TreeOrPalm, libsiedler2::OI_Palm_Begin);
@@ -66,7 +66,7 @@ void AddObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
         {
             auto suroundingArea = map.getTextures().GetPointsInRadiusWithCenter(pt, 5);
             excludedArea.insert(suroundingArea.begin(), suroundingArea.end());
-        } else if(map.textureMap.Any(pt, IsSnowOrLava))
+        } else if(map.textureMap.Any(pt, isSnowOrLava))
         {
             excludedArea.insert(pt);
         }
@@ -84,7 +84,7 @@ void AddObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
     // 3b) mountains: last element of trees
 
     auto& textureMap = map.textureMap;
-    const auto mountain = [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsMountainOrSnowOrLava); };
+    const auto mountain = [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, isMountainOrSnowOrLava); };
     const auto mountainDistance = DistancesTo(map.size, mountain);
 
     const auto water = [&textureMap](const MapPoint& pt) { return textureMap.Any(pt, IsWater); };
@@ -102,9 +102,9 @@ void AddObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
 
     const auto range = GetRange(waterDistance);
     const auto probRange = ValueRange<unsigned>(settings.trees / 2, settings.trees);
-    const unsigned probDiff = probRange.GetDifference();
+    const unsigned probDiff = probRange.getDifference();
 
-    const auto mountainFoot = [&map](const MapPoint& pt) { return !map.textureMap.All(pt, IsMountainOrSnowOrLava); };
+    const auto mountainFoot = [&map](const MapPoint& pt) { return !map.textureMap.All(pt, isMountainOrSnowOrLava); };
     const auto mountainDepth = DistancesTo(map.size, mountainFoot);
     const auto mountainRange = GetRange(mountainDepth);
 
@@ -196,7 +196,7 @@ void AddResources(Map& map, RandomUtility& rnd, const MapSettings& settings)
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
-        if(textures.All(pt, IsMinableMountain))
+        if(textures.All(pt, isMinableMountain))
         {
             // No mineable resources wanted.
             if(total == 0)
@@ -226,7 +226,7 @@ void AddResources(Map& map, RandomUtility& rnd, const MapSettings& settings)
                     const MapPoint pt_d = resources.MakeMapPoint(pt + Position(xd, yd));
                     // Only place it on mines that have no resource yet, adjust the budget for each placed
                     // resource.
-                    if(!resources[pt_d] && textures.All(pt_d, IsMinableMountain))
+                    if(!resources[pt_d] && textures.All(pt_d, isMinableMountain))
                     {
                         --mRI.budget;
                         resources[pt_d] = mRI.resource + rnd.RandomValue(1, 8);
@@ -256,7 +256,7 @@ void AddAnimals(Map& map, RandomUtility& rnd)
             if(textures.All(pt, IsWater))
             {
                 map.animals[pt] = libsiedler2::Animal::Duck;
-            } else if(textures.All(pt, IsLand))
+            } else if(textures.All(pt, isLand))
             {
                 map.animals[pt] = rnd.RandomItem(landAnimals);
             }

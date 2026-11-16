@@ -53,13 +53,13 @@ public:
     bool PlaceHQs(bool addStartWares = true);
     /// Setup resources like gold and water after loading a new map.
     /// TODO(Replay): Remove fixFish (always set to true)
-    static void SetupResources(GameWorldBase& world, bool fixFish = true);
+    static void setupResources(GameWorldBase& world, bool fixFish = true);
 
     /// Return the (original/unshuffled) position of the players HQ (only valid after successful load)
-    MapPoint GetOriginalHQPos(unsigned player) const { return hqPositions_[player]; }
+    MapPoint getOriginalHQPos(unsigned player) const { return hqPositions_[player]; }
 
     static void InitShadows(World& world);
-    static void SetMapExplored(World& world);
+    static void setMapExplored(World& world);
     static bool InitSeasAndHarbors(World& world,
                                    const std::vector<MapPoint>& additionalHarbors = std::vector<MapPoint>());
     /// Place the HQs on a loaded map and add starting wares if desired.

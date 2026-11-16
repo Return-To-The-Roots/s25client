@@ -8,18 +8,18 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/nowide/fstream.hpp>
 
-std::string Savegame::GetSignature() const
+std::string Savegame::getSignature() const
 {
     return "RTTRSV";
 }
 
-uint8_t Savegame::GetLatestMinorVersion() const
+uint8_t Savegame::getLatestMinorVersion() const
 {
     // 4.1: Portraits support
     return 1;
 }
 
-uint8_t Savegame::GetLatestMajorVersion() const
+uint8_t Savegame::getLatestMajorVersion() const
 {
     // Note: If you increase the version, reset currentGameDataVersion in SerializedGameData.cpp (see note there)
     // Note2: Also remove the workaround for the team in BasePlayerInfo & CompressedFlag here

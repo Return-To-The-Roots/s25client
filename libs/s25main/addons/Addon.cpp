@@ -11,6 +11,6 @@ AddonGui::AddonGui(const Addon& addon, Window& window, bool /*readonly*/) : addo
 {
     DrawPoint btPos(20, 0), txtPos(52, 4);
     window.AddText(0, txtPos, addon.getName(), COLOR_YELLOW, FontStyle{}, NormalFont);
-    window.AddImageButton(1, btPos, Extent(22, 22), TextureColor::Grey, LOADER.GetImageN("io", 21),
+    window.AddImageButton(1, btPos, Extent(22, 22), TextureColor::Grey, LOADER.getImageN("io", 21),
                           addon.getDescription());
 }

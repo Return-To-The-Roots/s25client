@@ -69,62 +69,62 @@ BOOST_AUTO_TEST_CASE(GetShipDir)
     MapBase world;
     world.Resize(MapExtent(202, 350));
     // Basic case
-    testShipDir(world, MapPoint(world.GetWidth() / 2, world.GetHeight() / 2));
+    testShipDir(world, MapPoint(world.getWidth() / 2, world.getHeight() / 2));
     // Left/Right border
-    testShipDir(world, MapPoint(0, world.GetHeight() / 2));
-    testShipDir(world, MapPoint(world.GetWidth() - 1, world.GetHeight() / 2));
+    testShipDir(world, MapPoint(0, world.getHeight() / 2));
+    testShipDir(world, MapPoint(world.getWidth() - 1, world.getHeight() / 2));
     // Top/Bottom border
-    testShipDir(world, MapPoint(world.GetWidth() / 2, 0));
-    testShipDir(world, MapPoint(world.GetWidth() / 2, world.GetHeight() - 1));
+    testShipDir(world, MapPoint(world.getWidth() / 2, 0));
+    testShipDir(world, MapPoint(world.getWidth() / 2, world.getHeight() - 1));
     // Diagonal ends
     testShipDir(world, MapPoint(0, 0));
-    testShipDir(world, MapPoint(world.GetWidth() - 1, world.GetHeight() - 1));
+    testShipDir(world, MapPoint(world.getWidth() - 1, world.getHeight() - 1));
 }
 
 BOOST_FIXTURE_TEST_CASE(HarborSpotCreation, SeaWorldWithGCExecution<>)
 {
     rttr::test::LogAccessor logAcc;
     // Point 0,0 is definitely inside the sea
-    BOOST_TEST_REQUIRE(world.IsWaterPoint(MapPoint(0, 0)));
-    BOOST_TEST_REQUIRE(world.IsSeaPoint(MapPoint(0, 0)));
+    BOOST_TEST_REQUIRE(world.isWaterPoint(MapPoint(0, 0)));
+    BOOST_TEST_REQUIRE(world.isSeaPoint(MapPoint(0, 0)));
     // 2 harbors for each of the 4 player spots
-    BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == 8u);
+    BOOST_TEST_REQUIRE(world.getNumHarborPoints() == 8u);
     // 2 seas: 1 outside, 1 inside
-    BOOST_TEST_REQUIRE(world.GetNumSeas() == 2u);
+    BOOST_TEST_REQUIRE(world.getNumSeas() == 2u);
 // Harbor ID 0 is means invalid harbor
 #if RTTR_ENABLE_ASSERTS
-    RTTR_REQUIRE_ASSERT(world.GetHarborPoint(HarborId::invalidValue()));
+    RTTR_REQUIRE_ASSERT(world.getHarborPoint(HarborId::invalidValue()));
 #endif
-    for(const auto curHarborId : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
+    for(const auto curHarborId : helpers::idRange<HarborId>(world.getNumHarborPoints()))
     {
-        const MapPoint curHarborPt = world.GetHarborPoint(curHarborId);
+        const MapPoint curHarborPt = world.getHarborPoint(curHarborId);
         BOOST_TEST_REQUIRE(curHarborPt.isValid());
         // Reverse mapping must match
-        BOOST_TEST_REQUIRE(world.GetHarborPointID(curHarborPt) == curHarborId);
+        BOOST_TEST_REQUIRE(world.getHarborPointID(curHarborPt) == curHarborId);
         // We must be at one of the 2 seas
         SeaId seaId(1);
-        if(!world.IsHarborAtSea(curHarborId, seaId))
+        if(!world.isHarborAtSea(curHarborId, seaId))
         {
             seaId = SeaId(2);
-            BOOST_TEST_REQUIRE(world.IsHarborAtSea(curHarborId, seaId));
+            BOOST_TEST_REQUIRE(world.isHarborAtSea(curHarborId, seaId));
         }
         // We must have a coast point at that sea
-        const MapPoint coastPt = world.GetCoastalPoint(curHarborId, seaId);
+        const MapPoint coastPt = world.getCoastalPoint(curHarborId, seaId);
         BOOST_TEST_REQUIRE(coastPt.isValid());
-        BOOST_TEST_REQUIRE(world.GetSeaFromCoastalPoint(coastPt).isValid());
+        BOOST_TEST_REQUIRE(world.getSeaFromCoastalPoint(coastPt).isValid());
         // Sea in the direction of the coast must match
         bool coastPtFound = false;
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            if(world.GetNeighbour(curHarborPt, dir) == coastPt)
+            if(world.getNeighbour(curHarborPt, dir) == coastPt)
             {
-                BOOST_TEST_REQUIRE(world.GetSeaId(curHarborId, dir) == seaId);
+                BOOST_TEST_REQUIRE(world.getSeaId(curHarborId, dir) == seaId);
                 coastPtFound = true;
                 break;
             }
         }
         BOOST_TEST_REQUIRE(coastPtFound);
-        BOOST_TEST_REQUIRE(world.GetNode(curHarborPt).bq == BuildingQuality::Harbor);
+        BOOST_TEST_REQUIRE(world.getNode(curHarborPt).bq == BuildingQuality::Harbor);
     }
 }
 
@@ -133,47 +133,47 @@ BOOST_FIXTURE_TEST_CASE(HarborNeighbors, SeaWorldWithGCExecution<>)
     // Now just test some assumptions: 2 harbor spots per possible HQ.
     // Square land, 1 HQ on each side, harbors top and bottom or left and right of it
     // 1) Compare those around each HQ
-    BOOST_TEST_REQUIRE(world.GetHarborPoint(HarborId(1)).y < world.GetHarborPoint(HarborId(2)).y); //-V807
-    BOOST_TEST_REQUIRE(world.GetHarborPoint(HarborId(7)).y < world.GetHarborPoint(HarborId(8)).y);
-    BOOST_TEST_REQUIRE(world.GetHarborPoint(HarborId(3)).x < world.GetHarborPoint(HarborId(4)).x);
-    BOOST_TEST_REQUIRE(world.GetHarborPoint(HarborId(5)).x < world.GetHarborPoint(HarborId(6)).x); //-V807
+    BOOST_TEST_REQUIRE(world.getHarborPoint(HarborId(1)).y < world.getHarborPoint(HarborId(2)).y); //-V807
+    BOOST_TEST_REQUIRE(world.getHarborPoint(HarborId(7)).y < world.getHarborPoint(HarborId(8)).y);
+    BOOST_TEST_REQUIRE(world.getHarborPoint(HarborId(3)).x < world.getHarborPoint(HarborId(4)).x);
+    BOOST_TEST_REQUIRE(world.getHarborPoint(HarborId(5)).x < world.getHarborPoint(HarborId(6)).x); //-V807
     // 2) Compare between them
-    BOOST_TEST_REQUIRE(world.GetHarborPoint(HarborId(2)).y < world.GetHarborPoint(HarborId(7)).y);
-    BOOST_TEST_REQUIRE(world.GetHarborPoint(HarborId(4)).x < world.GetHarborPoint(HarborId(5)).x);
-    BOOST_TEST_REQUIRE(world.GetHarborPoint(HarborId(3)).x < world.GetHarborPoint(HarborId(1)).x);
-    BOOST_TEST_REQUIRE(world.GetHarborPoint(HarborId(1)).x < world.GetHarborPoint(HarborId(5)).x);
+    BOOST_TEST_REQUIRE(world.getHarborPoint(HarborId(2)).y < world.getHarborPoint(HarborId(7)).y);
+    BOOST_TEST_REQUIRE(world.getHarborPoint(HarborId(4)).x < world.getHarborPoint(HarborId(5)).x);
+    BOOST_TEST_REQUIRE(world.getHarborPoint(HarborId(3)).x < world.getHarborPoint(HarborId(1)).x);
+    BOOST_TEST_REQUIRE(world.getHarborPoint(HarborId(1)).x < world.getHarborPoint(HarborId(5)).x);
 
     // Test neighbors
     std::vector<HarborPos::Neighbor> nb;
     // Hb 1 (outside)
     HarborId hbId(1);
-    nb = world.GetHarborNeighbors(hbId, ShipDirection::SouthWest);
+    nb = world.getHarborNeighbors(hbId, ShipDirection::SouthWest);
     BOOST_TEST_REQUIRE(nb.size() == 1u);
     BOOST_TEST(nb[0].id == HarborId(3));
-    nb = world.GetHarborNeighbors(hbId, ShipDirection::SouthEast);
+    nb = world.getHarborNeighbors(hbId, ShipDirection::SouthEast);
     BOOST_TEST_REQUIRE(nb.size() == 1u);
     BOOST_TEST(nb[0].id == HarborId(6));
-    nb = world.GetHarborNeighbors(hbId, ShipDirection::North);
+    nb = world.getHarborNeighbors(hbId, ShipDirection::North);
     BOOST_TEST_REQUIRE(nb.size() == 1u);
     BOOST_TEST(nb[0].id == HarborId(8));
-    BOOST_TEST_REQUIRE(world.GetHarborNeighbors(hbId, ShipDirection::South).size() == 0u);
-    BOOST_TEST_REQUIRE(world.GetHarborNeighbors(hbId, ShipDirection::NorthEast).size() == 0u);
-    BOOST_TEST_REQUIRE(world.GetHarborNeighbors(hbId, ShipDirection::NorthWest).size() == 0u);
+    BOOST_TEST_REQUIRE(world.getHarborNeighbors(hbId, ShipDirection::South).size() == 0u);
+    BOOST_TEST_REQUIRE(world.getHarborNeighbors(hbId, ShipDirection::NorthEast).size() == 0u);
+    BOOST_TEST_REQUIRE(world.getHarborNeighbors(hbId, ShipDirection::NorthWest).size() == 0u);
 
     // Hb 7 (inside)
     hbId = HarborId(7);
-    nb = world.GetHarborNeighbors(hbId, ShipDirection::NorthWest);
+    nb = world.getHarborNeighbors(hbId, ShipDirection::NorthWest);
     BOOST_TEST_REQUIRE(nb.size() == 1u);
     BOOST_TEST(nb[0].id == HarborId(4));
-    nb = world.GetHarborNeighbors(hbId, ShipDirection::NorthEast);
+    nb = world.getHarborNeighbors(hbId, ShipDirection::NorthEast);
     BOOST_TEST_REQUIRE(nb.size() == 1u);
     BOOST_TEST(nb[0].id == HarborId(5));
-    nb = world.GetHarborNeighbors(hbId, ShipDirection::North);
+    nb = world.getHarborNeighbors(hbId, ShipDirection::North);
     BOOST_TEST_REQUIRE(nb.size() == 1u);
     BOOST_TEST(nb[0].id == HarborId(2));
-    BOOST_TEST_REQUIRE(world.GetHarborNeighbors(hbId, ShipDirection::South).size() == 0u);
-    BOOST_TEST_REQUIRE(world.GetHarborNeighbors(hbId, ShipDirection::SouthEast).size() == 0u);
-    BOOST_TEST_REQUIRE(world.GetHarborNeighbors(hbId, ShipDirection::SouthWest).size() == 0u);
+    BOOST_TEST_REQUIRE(world.getHarborNeighbors(hbId, ShipDirection::South).size() == 0u);
+    BOOST_TEST_REQUIRE(world.getHarborNeighbors(hbId, ShipDirection::SouthEast).size() == 0u);
+    BOOST_TEST_REQUIRE(world.getHarborNeighbors(hbId, ShipDirection::SouthWest).size() == 0u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -63,7 +63,7 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofBuilder; }
+    GO_Type getGOT() const final { return GO_Type::NofBuilder; }
 
     void Draw(DrawPoint drawPt) override;
 

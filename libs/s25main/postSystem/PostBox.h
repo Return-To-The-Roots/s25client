@@ -28,19 +28,19 @@ public:
     /// Oldest message is at index 0
     bool DeleteMsg(unsigned idx);
     void Clear();
-    unsigned GetNumMsgs() const { return numMessages; }
-    static constexpr unsigned GetMaxMsgs() { return MAX_MESSAGES; }
+    unsigned getNumMsgs() const { return numMessages; }
+    static constexpr unsigned getMaxMsgs() { return MAX_MESSAGES; }
     /// Get message by index or nullptr if invalid index
     /// Oldest message is at index 0
-    const PostMsg* GetMsg(unsigned idx) const;
+    const PostMsg* getMsg(unsigned idx) const;
     /// Set callback that receives new message and message count everytime a message is added
     void ObserveNewMsg(const NewMsgCallback& callback) { evNewMsg = callback; }
     /// Set callback that receives new message count everytime a message is deleted
     void ObserveDeletedMsg(const MsgDeletedCallback& callback) { evDelMsg = callback; }
 
     /// Sets the current goal as shown in the post window
-    void SetCurrentMissionGoal(const std::string& goal);
-    std::string GetCurrentMissionGoal() const;
+    void setCurrentMissionGoal(const std::string& goal);
+    std::string getCurrentMissionGoal() const;
 
 private:
     static constexpr unsigned MAX_MESSAGES = 20;

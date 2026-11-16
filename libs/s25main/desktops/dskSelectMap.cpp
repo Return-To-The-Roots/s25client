@@ -56,7 +56,7 @@ constexpr unsigned ID_msgBoxError = 0;
  *  @param[in] pass Server-Passwort
  */
 dskSelectMap::dskSelectMap(CreateServerInfo csi)
-    : Desktop(LOADER.GetImageN("setup015", 0)), csi(std::move(csi)), mapGenThread(nullptr), waitWnd(nullptr)
+    : Desktop(LOADER.getImageN("setup015", 0)), csi(std::move(csi)), mapGenThread(nullptr), waitWnd(nullptr)
 {
     WorldDescription desc;
     GameDataLoader gdLoader(desc);
@@ -128,7 +128,7 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
     AddText(13, DrawPoint(260, 490), _("Mapfile: "), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
     // "Eigene" auswählen
-    optiongroup->SetSelection(5, true);
+    optiongroup->setSelection(5, true);
 
     LOBBYCLIENT.AddListener(this);
 }
@@ -142,7 +142,7 @@ dskSelectMap::~dskSelectMap()
 
 void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
-    auto* table = GetCtrl<ctrlTable>(1);
+    auto* table = getCtrl<ctrlTable>(1);
 
     // Tabelle leeren
     table->DeleteAllItems();
@@ -177,7 +177,7 @@ void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned sel
     table->SortRows(0, TableSortDir::Ascending);
 
     // und Auswahl zurücksetzen
-    table->SetSelection(std::nullopt);
+    table->setSelection(std::nullopt);
 }
 
 /// Load a map, throw on error
@@ -204,30 +204,30 @@ void dskSelectMap::msgTableSelectItem(const unsigned ctrl_id, const std::optiona
     if(ctrl_id != 1)
         return;
 
-    ctrlPreviewMinimap& preview = *GetCtrl<ctrlPreviewMinimap>(11);
-    ctrlText& txtMapName = *GetCtrl<ctrlText>(12);
-    ctrlText& txtMapPath = *GetCtrl<ctrlText>(13);
-    ctrlButton& btContinue = *GetCtrl<ctrlButton>(5);
-    preview.SetMap(nullptr);
-    txtMapName.SetText("");
-    txtMapPath.SetText("");
-    btContinue.SetEnabled(false);
+    ctrlPreviewMinimap& preview = *getCtrl<ctrlPreviewMinimap>(11);
+    ctrlText& txtMapName = *getCtrl<ctrlText>(12);
+    ctrlText& txtMapPath = *getCtrl<ctrlText>(13);
+    ctrlButton& btContinue = *getCtrl<ctrlButton>(5);
+    preview.setMap(nullptr);
+    txtMapName.setText("");
+    txtMapPath.setText("");
+    btContinue.setEnabled(false);
 
     // is the selection valid?
     if(selection)
     {
-        ctrlTable& table = *GetCtrl<ctrlTable>(1);
-        const std::string& path = table.GetItemText(*selection, 5);
+        ctrlTable& table = *getCtrl<ctrlTable>(1);
+        const std::string& path = table.getItemText(*selection, 5);
         if(!path.empty())
         {
             try
             {
                 std::unique_ptr<libsiedler2::ArchivItem_Map> map = loadAndVerifyMap(path);
                 RTTR_Assert(map);
-                preview.SetMap(map.get());
-                txtMapName.SetText(s25util::ansiToUTF8(map->getHeader().getName()));
-                txtMapPath.SetText(path);
-                btContinue.SetEnabled(true);
+                preview.setMap(map.get());
+                txtMapName.setText(s25util::ansiToUTF8(map->getHeader().getName()));
+                txtMapPath.setText(path);
+                btContinue.setEnabled(true);
             } catch(const std::runtime_error& e)
             {
                 const std::string errorTxt = helpers::format(_("Could not load map:\n%1%\n%2%"), path, e.what());
@@ -239,9 +239,9 @@ void dskSelectMap::msgTableSelectItem(const unsigned ctrl_id, const std::optiona
             }
         }
     }
-    const unsigned txtXPos = preview.GetPos().x + preview.GetSize().x + 10;
-    txtMapName.SetPos(DrawPoint(txtXPos, txtMapName.GetPos().y));
-    txtMapPath.SetPos(DrawPoint(txtXPos, txtMapPath.GetPos().y));
+    const unsigned txtXPos = preview.getPos().x + preview.getSize().x + 10;
+    txtMapName.setPos(DrawPoint(txtXPos, txtMapName.getPos().y));
+    txtMapPath.setPos(DrawPoint(txtXPos, txtMapPath.getPos().y));
 }
 
 void dskSelectMap::GoBack() const
@@ -321,17 +321,17 @@ void dskSelectMap::CreateRandomMap()
 void dskSelectMap::OnMapCreated(const boost::filesystem::path& mapPath)
 {
     // select the "played maps" entry
-    auto* optionGroup = GetCtrl<ctrlOptionGroup>(10);
-    optionGroup->SetSelection(8, true);
+    auto* optionGroup = getCtrl<ctrlOptionGroup>(10);
+    optionGroup->setSelection(8, true);
 
     // search for the random map entry and select it in the table
-    auto* table = GetCtrl<ctrlTable>(1);
+    auto* table = getCtrl<ctrlTable>(1);
     const auto& mapPathString = mapPath.string();
-    for(int i = 0; i < table->GetNumRows(); i++)
+    for(int i = 0; i < table->getNumRows(); i++)
     {
-        if(table->GetItemText(i, 5) == mapPathString)
+        if(table->getItemText(i, 5) == mapPathString)
         {
-            table->SetSelection(i);
+            table->setSelection(i);
             break;
         }
     }
@@ -340,14 +340,14 @@ void dskSelectMap::OnMapCreated(const boost::filesystem::path& mapPath)
 /// Startet das Spiel mit einer bestimmten Auswahl in der Tabelle
 void dskSelectMap::StartServer()
 {
-    auto* table = GetCtrl<ctrlTable>(1);
-    const auto& selection = table->GetSelection();
+    auto* table = getCtrl<ctrlTable>(1);
+    const auto& selection = table->getSelection();
 
     // Ist die Auswahl gültig?
     if(selection)
     {
         // Kartenpfad aus Tabelle holen
-        const std::string& mapPath = table->GetItemText(*selection, 5);
+        const std::string& mapPath = table->getItemText(*selection, 5);
 
         // Server starten
         if(!GAMECLIENT.HostGame(csi, {mapPath, MapType::OldMap}))
@@ -417,7 +417,7 @@ void dskSelectMap::Draw_()
 
 void dskSelectMap::FillTable(const std::vector<bfs::path>& files)
 {
-    auto* table = GetCtrl<ctrlTable>(1);
+    auto* table = getCtrl<ctrlTable>(1);
 
     for(const bfs::path& filePath : files)
     {

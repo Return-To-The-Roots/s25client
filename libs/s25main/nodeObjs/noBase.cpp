@@ -20,13 +20,13 @@ std::unique_ptr<FOWObject> noBase::CreateFOWObject() const
     return nullptr;
 }
 
-BlockingManner noBase::GetBM() const
+BlockingManner noBase::getBM() const
 {
     return BlockingManner::None;
 }
 
 /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
-bool noBase::IsMoving() const
+bool noBase::isMoving() const
 {
     return false;
 }

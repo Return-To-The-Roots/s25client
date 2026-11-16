@@ -32,12 +32,12 @@ nofFarmhand::nofFarmhand(SerializedGameData& sgd, const unsigned obj_id)
     : nofBuildingWorker(sgd, obj_id), dest(sgd.PopMapPoint())
 {}
 
-unsigned nofFarmhand::GetWorkRadius(const Job job)
+unsigned nofFarmhand::getWorkRadius(const Job job)
 {
-    return GetWorkRadius(world->GetGGS(), job);
+    return getWorkRadius(world->getGGS(), job);
 }
 
-unsigned nofFarmhand::GetWorkRadius(const GlobalGameSettings& ggs, const Job job)
+unsigned nofFarmhand::getWorkRadius(const GlobalGameSettings& ggs, const Job job)
 {
     switch(job)
     {
@@ -82,12 +82,12 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
         {
             // Done working -> Handle results of the work (step)
             WorkFinished();
-            world->SetReserved(pos, false);
+            world->setReserved(pos, false);
             StartWalkingHome();
 
             if(was_sounding)
             {
-                world->GetSoundMgr().stopSounds(*this);
+                world->getSoundMgr().stopSounds(*this);
                 was_sounding = false;
             }
         }
@@ -96,7 +96,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
         {
             // Start working after the initial wait period
             // Work radius
-            const unsigned max_radius = GetWorkRadius(job_);
+            const unsigned max_radius = getWorkRadius(job_);
             // Number of additional radii in which points should be found
             // I.e. 0 => Don't search for points further away than ones already found
             const unsigned additionalRadiiToFind = [](Job job) {
@@ -121,20 +121,20 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
 
             helpers::EnumArray<std::vector<MapPoint>, PointQuality> available_points;
 
-            for(MapCoord tx = world->GetXA(pos, Direction::West), r = 1; r <= max_radius;
-                tx = world->GetXA(MapPoint(tx, pos.y), Direction::West), ++r)
+            for(MapCoord tx = world->getXA(pos, Direction::West), r = 1; r <= max_radius;
+                tx = world->getXA(MapPoint(tx, pos.y), Direction::West), ++r)
             {
                 bool pointFound = false;
 
                 MapPoint pt(tx, pos.y);
                 for(const auto dir : helpers::enumRange(Direction::NorthEast))
                 {
-                    for(MapCoord r2 = 0; r2 < r; pt = world->GetNeighbour(pt, dir), ++r2)
+                    for(MapCoord r2 = 0; r2 < r; pt = world->getNeighbour(pt, dir), ++r2)
                     {
-                        const auto quality = GetPointQuality(pt, true);
+                        const auto quality = getPointQuality(pt, true);
                         if(quality != PointQuality::NotPossible && world->FindHumanPath(this->pos, pt, 20))
                         {
-                            if(!world->GetNode(pt).reserved)
+                            if(!world->getNode(pt).reserved)
                             {
                                 available_points[quality].push_back(pt);
                                 pointFound = true;
@@ -169,7 +169,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                 workplace->StopNotWorking();
 
                 // Avoid others taking this point too
-                world->SetReserved(dest, true);
+                world->setReserved(dest, true);
 
                 // Walk out of the building first
                 state = State::WalkToWorkpoint;
@@ -184,15 +184,15 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
                         case Job::Stonemason:
                         case Job::Fisher: workplace->OnOutOfResources(); break;
                         case Job::Woodcutter:
-                            world->GetNotifications().publish(BuildingNote(
-                              BuildingNote::NoRessources, player, workplace->GetPos(), workplace->GetBuildingType()));
+                            world->getNotifications().publish(BuildingNote(
+                              BuildingNote::NoRessources, player, workplace->getPos(), workplace->getBuildingType()));
                             break;
                         default: break;
                     }
                 }
 
                 // Try to find something later
-                current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+                current_ev = getEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
                 workplace->StartNotWorking();
             }
         }
@@ -203,7 +203,7 @@ void nofFarmhand::HandleDerivedEvent(const unsigned /*id*/)
 
 void nofFarmhand::WalkToWorkpoint()
 {
-    if(GetPointQuality(dest) == PointQuality::NotPossible)
+    if(getPointQuality(dest) == PointQuality::NotPossible)
     {
         // Point became invalid -> Abort and go home
         WorkAborted();
@@ -212,7 +212,7 @@ void nofFarmhand::WalkToWorkpoint()
     {
         // Arrived at target -> Start working
         state = State::Work;
-        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
+        current_ev = getEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
         WorkStarted();
     } else
     {
@@ -233,7 +233,7 @@ void nofFarmhand::StartWalkingHome()
 {
     state = State::WalkingHome;
     // Fahne vor dem Gebäude anpeilen
-    dest = world->GetNeighbour(workplace->GetPos(), Direction::SouthEast);
+    dest = world->getNeighbour(workplace->getPos(), Direction::SouthEast);
 
     // Zu Laufen anfangen
     WalkHome();
@@ -268,7 +268,7 @@ void nofFarmhand::WorkAborted()
 {
     // Platz freigeben, falls man gerade arbeitet
     if(state == State::Work || state == State::WalkToWorkpoint)
-        world->SetReserved(dest, false);
+        world->setReserved(dest, false);
 }
 
 /// Zeichnen der Figur in sonstigen Arbeitslagen

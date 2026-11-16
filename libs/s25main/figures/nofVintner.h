@@ -14,7 +14,7 @@ class nofVintner : public nofWorkman
     /// Draw worker at work
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    [[noreturn]] unsigned short GetCarryID() const override;
+    [[noreturn]] unsigned short getCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
     helpers::OptionalEnum<GoodType> ProduceWare() override;
 
@@ -25,5 +25,5 @@ public:
     nofVintner(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofVintner(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const final { return GO_Type::NofVintner; }
+    GO_Type getGOT() const final { return GO_Type::NofVintner; }
 };

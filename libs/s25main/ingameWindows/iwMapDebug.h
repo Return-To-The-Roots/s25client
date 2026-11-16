@@ -25,7 +25,7 @@ private:
     void msgEditEnter(unsigned ctrl_id) override;
     bool msgKeyDown(const KeyEvent& ke) override;
 
-    void SetActive(bool activate) override;
+    void setActive(bool activate) override;
 
     GameWorldView& gwv;
     std::unique_ptr<DebugPrinter> printer;

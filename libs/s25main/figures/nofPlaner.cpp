@@ -50,7 +50,7 @@ void nofPlaner::GoalReached()
 void nofPlaner::Walked()
 {
     /// Zur Baustelle zurückgelaufen? (=fertig)
-    if(pos == building_site->GetPos())
+    if(pos == building_site->getPos())
     {
         // Baustelle Bescheid sagen
         building_site->PlaningFinished();
@@ -60,7 +60,7 @@ void nofPlaner::Walked()
         // Nach Hause laufen bzw. auch rumirren
         rs_pos = 0;
         rs_dir = true;
-        cur_rs = world->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast);
+        cur_rs = world->getSpecObj<noRoadNode>(pos)->getRoute(Direction::SouthEast);
         building_site = nullptr;
 
         GoHome();
@@ -68,7 +68,7 @@ void nofPlaner::Walked()
     } else
     {
         /// Anfangen zu arbeiten
-        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[Job::Planer].work_length, 1);
+        current_ev = getEvMgr().AddEvent(this, JOB_CONSTS[Job::Planer].work_length, 1);
         state = PlanerState::Planing;
     }
 }
@@ -94,9 +94,9 @@ void nofPlaner::LostWork()
         // Event ggf. abmelden
         if(state == PlanerState::Planing)
         {
-            GetEvMgr().RemoveEvent(current_ev);
+            getEvMgr().RemoveEvent(current_ev);
             /// Sounds abmelden
-            world->GetSoundMgr().stopSounds(*this);
+            world->getSoundMgr().stopSounds(*this);
         }
 
         StartWandering();
@@ -138,15 +138,15 @@ void nofPlaner::Draw(DrawPoint drawPt)
                 bobId = 253 + now_id - 41;
             else
                 bobId = 253 + now_id - 55;
-            LOADER.GetPlayerImage("rom_bobs", bobId)
-              ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(building_site->GetPlayer()).color);
+            LOADER.getPlayerImage("rom_bobs", bobId)
+              ->DrawFull(drawPt, COLOR_WHITE, world->getPlayer(building_site->getPlayer()).color);
 
             // Schaufel-Sound
             if(now_id == 5 || now_id == 46 || now_id == 60)
-                world->GetSoundMgr().playNOSound(76, *this, now_id, 200);
+                world->getSoundMgr().playNOSound(76, *this, now_id, 200);
             // Tret-Sound
             else if(now_id == 20 || now_id == 28)
-                world->GetSoundMgr().playNOSound(66, *this, now_id, 200);
+                world->getSoundMgr().playNOSound(66, *this, now_id, 200);
         }
         break;
     }
@@ -158,14 +158,14 @@ void nofPlaner::HandleDerivedEvent(const unsigned id)
     {
         // Planieren (falls Baustelle noch existiert)
         if(building_site)
-            world->ChangeAltitude(pos, world->GetNode(building_site->GetPos()).altitude);
+            world->ChangeAltitude(pos, world->getNode(building_site->getPos()).altitude);
         /// Sounds abmelden
-        world->GetSoundMgr().stopSounds(*this);
+        world->getSoundMgr().stopSounds(*this);
 
         state = PlanerState::Walking;
 
         // Planierung fertig --> weiterlaufen
-        Direction curDir = GetCurMoveDir();
+        Direction curDir = getCurMoveDir();
 
         // Das erste Mal gelaufen?
         if((pd == PlaningDir::Clockwise && curDir == Direction::SouthWest)

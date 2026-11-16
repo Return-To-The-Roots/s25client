@@ -40,15 +40,15 @@ AddonList::Gui::Gui(const AddonList& addon, Window& window, bool readonly)
     for(const auto& option : addon.options)
         cb_.AddItem(option);
     if(readonly)
-        window.AddImage(3, cb_.GetPos() - DrawPoint(1, 0), LOADER.GetImageN("io_new", 14), _("Locked"));
+        window.AddImage(3, cb_.getPos() - DrawPoint(1, 0), LOADER.getImageN("io_new", 14), _("Locked"));
 }
 
 void AddonList::Gui::setStatus(unsigned status)
 {
-    cb_.SetSelection(status);
+    cb_.setSelection(status);
 }
 
 unsigned AddonList::Gui::getStatus() const
 {
-    return cb_.GetSelection().value();
+    return cb_.getSelection().value();
 }

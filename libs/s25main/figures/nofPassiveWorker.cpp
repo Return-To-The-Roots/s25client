@@ -22,7 +22,7 @@ void nofPassiveWorker::Walked() {}
 void nofPassiveWorker::GoalReached()
 {
     // Mich hier einquartieren
-    auto* wh = world->GetSpecObj<nobBaseWarehouse>(pos);
+    auto* wh = world->getSpecObj<nobBaseWarehouse>(pos);
     RTTR_Assert(wh);
     wh->AddFigure(world->RemoveFigure(pos, *this));
 }

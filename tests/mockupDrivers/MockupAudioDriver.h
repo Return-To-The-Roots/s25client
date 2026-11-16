@@ -25,10 +25,10 @@ MOCK_BASE_CLASS(MockupAudioDriver, driver::AudioDriver)
 {
     MockupAudioDriver(IAudioDriverCallback * callback) : AudioDriver(callback) {}
     ~MockupAudioDriver() override { CleanUp(); }
-    const char* GetName() const override { return "MockupAudio"; }
+    const char* getName() const override { return "MockupAudio"; }
     bool Initialize() override
     {
-        SetNumChannels(DEFAULT_NUM_CHANNELS);
+        setNumChannels(DEFAULT_NUM_CHANNELS);
         initialized = true;
         return true;
     }
@@ -42,15 +42,15 @@ MOCK_BASE_CLASS(MockupAudioDriver, driver::AudioDriver)
     MOCK_NON_CONST_METHOD(PlayMusic, 2);
     MOCK_NON_CONST_METHOD(StopMusic, 0);
     MOCK_NON_CONST_METHOD(doStopEffect, 1, void(int));
-    MOCK_NON_CONST_METHOD(IsEffectPlaying, 1);
+    MOCK_NON_CONST_METHOD(isEffectPlaying, 1);
     MOCK_NON_CONST_METHOD(ChangeVolume, 2);
-    MOCK_NON_CONST_METHOD(SetMasterEffectVolume, 1);
-    MOCK_NON_CONST_METHOD(SetMusicVolume, 1);
+    MOCK_NON_CONST_METHOD(setMasterEffectVolume, 1);
+    MOCK_NON_CONST_METHOD(setMusicVolume, 1);
     MOCK_NON_CONST_METHOD(doUnloadSound, 1, void(driver::RawSoundHandle sound));
 
     driver::RawSoundHandle doLoad(driver::SoundType type)
     {
         return createRawSoundHandle(new MockupSoundData(type), type);
     }
-    using driver::AudioDriver::GetEffectChannel;
+    using driver::AudioDriver::getEffectChannel;
 };

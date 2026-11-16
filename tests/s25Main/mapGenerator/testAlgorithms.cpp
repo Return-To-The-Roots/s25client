@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(Smooth_interpolates_values_around_peak)
 
     BOOST_TEST_REQUIRE(nodes[peak] < peakValue);
 
-    auto neighbors = nodes.GetPointsInRadius(peak, radius);
+    auto neighbors = nodes.getPointsInRadius(peak, radius);
 
     for(MapPoint p : neighbors)
     {
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(Collect_returns_only_connected_positive_map_points)
 
     // positive area around target point
     MapPoint point(3, 4);
-    auto neighbors = map.GetNeighbours(point);
+    auto neighbors = map.getNeighbours(point);
     for(auto neighbor : neighbors)
     {
         map[neighbor] = 1;
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(Collect_returns_only_connected_positive_map_points)
 
     // disconnected, positive area
     MapPoint other(12, 12);
-    auto otherNeighbors = map.GetNeighbours(other);
+    auto otherNeighbors = map.getNeighbours(other);
     for(auto neighbor : otherNeighbors)
     {
         map[neighbor] = 1;
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(DistancesTo_with_predicate_returns_expected_distance_for_ea
         return pt == MapPoint(3, 5); // compute distance to P(4/3)
     });
 
-    BOOST_TEST_REQUIRE(distances.GetSize() == size);
+    BOOST_TEST_REQUIRE(distances.getSize() == size);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(DistancesTo_returns_expected_distance_for_each_map_point)
     std::set<MapPoint, MapPointLess> flaggedPoints{MapPoint(3, 5)};
     auto distances = DistancesTo(flaggedPoints, size);
 
-    BOOST_TEST_REQUIRE(distances.GetSize() == size);
+    BOOST_TEST_REQUIRE(distances.getSize() == size);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {

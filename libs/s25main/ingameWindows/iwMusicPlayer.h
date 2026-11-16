@@ -34,12 +34,12 @@ public:
 
 private:
     /// Get the full path to a playlist by its name
-    static boost::filesystem::path GetFullPlaylistPath(const std::string& name);
+    static boost::filesystem::path getFullPlaylistPath(const std::string& name);
 
-    unsigned GetRepeats() const;
-    void SetRepeats(unsigned repeats);
-    bool GetRandomPlayback() const;
-    void SetRandomPlayback(bool random_playback);
+    unsigned getRepeats() const;
+    void setRepeats(unsigned repeats);
+    bool getRandomPlayback() const;
+    void setRandomPlayback(bool random_playback);
 
     /// Fill combobox with all playlists and selects given entry if present
     void UpdatePlaylistCombo(const std::string& highlight_entry);

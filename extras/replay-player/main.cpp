@@ -63,8 +63,8 @@ int main(int argc, char** argv)
         }
         if(options.count("version"))
         {
-            bnw::cout << rttr::version::GetTitle() << " v" << rttr::version::GetVersion() << "-"
-                      << rttr::version::GetRevision() << std::endl
+            bnw::cout << rttr::version::getTitle() << " v" << rttr::version::getVersion() << "-"
+                      << rttr::version::getRevision() << std::endl
                       << "Compiled with " << System::getCompilerName() << " for " << System::getOSName() << std::endl;
             return 0;
         }
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
         const auto printStats = [&] {
             HeadlessStats stats;
             stats.currentGF = replay.getCurrentGF();
-            stats.totalGFs = replay.getReplay().GetLastGF() + 1;
+            stats.totalGFs = replay.getReplay().getLastGF() + 1;
             stats.gameTime = std::chrono::duration_cast<std::chrono::milliseconds>(SPEED_GF_LENGTHS[GameSpeed::Normal]
                                                                                    * stats.currentGF);
             stats.wallTime =

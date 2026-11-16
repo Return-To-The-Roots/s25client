@@ -41,8 +41,8 @@ public:
     ~glSmartBitmap();
     void reset();
 
-    Position GetOrigin() const override { return origin_; }
-    Extent GetSize() const override { return size_; }
+    Position getOrigin() const override { return origin_; }
+    Extent getSize() const override { return size_; }
     /// Return the space required on the texture
     Extent getRequiredTexSize() const;
 

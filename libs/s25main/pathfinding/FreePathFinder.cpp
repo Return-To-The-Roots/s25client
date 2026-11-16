@@ -32,7 +32,7 @@ void FreePathFinder::Init(const MapExtent& mapSize)
     fpNodes.resize(nodes.size());
     RTTR_FOREACH_PT(MapPoint, size_)
     {
-        const unsigned idx = gwb_.GetIdx(pt);
+        const unsigned idx = gwb_.getIdx(pt);
         nodes[idx].mapPt = pt;
         fpNodes[idx].lastVisited = 0;
         fpNodes[idx].mapPt = pt;
@@ -71,7 +71,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         RTTR_Assert(false);
         LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in "
                   "pathfinding %u,%u)\n")
-          % gwb_.GetEvMgr().GetCurrentGF() % unsigned(start.x) % unsigned(start.y);
+          % gwb_.getEvMgr().getCurrentGF() % unsigned(start.x) % unsigned(start.y);
         // But for now we assume it to be valid and return (kind of) correct values
         if(route)
             route->clear();
@@ -86,13 +86,13 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     IncreaseCurrentVisit();
 
     std::list<PathfindingPoint> todo;
-    const unsigned destId = gwb_.GetIdx(dest);
+    const unsigned destId = gwb_.getIdx(dest);
 
     bool prevStepEven = true; // flips between even and odd
     unsigned stepsTilSwitch = 1;
 
     // Add start node
-    unsigned startId = gwb_.GetIdx(start);
+    unsigned startId = gwb_.getIdx(start);
     todo.push_back(PathfindingPoint(startId, gwb_.CalcDistance(start, dest), 0));
     // And init it
     nodes[startId].prevEven = INVALID_PREV;
@@ -102,7 +102,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
 
     // Start at random dir (so different jobs may use different roads)
     const Direction startDir =
-      randomRoute ? convertToDirection(gwb_.GetIdx(start) * gwb_.GetEvMgr().GetCurrentGF()) : Direction::West;
+      randomRoute ? convertToDirection(gwb_.getIdx(start) * gwb_.getEvMgr().getCurrentGF()) : Direction::West;
 
     while(!todo.empty())
     {
@@ -170,10 +170,10 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         for(const auto dir : helpers::enumRange(startDir))
         {
             // Koordinaten des entsprechenden umliegenden Punktes bilden
-            MapPoint neighbourPos = gwb_.GetNeighbour(nodes[bestId].mapPt, dir);
+            MapPoint neighbourPos = gwb_.getNeighbour(nodes[bestId].mapPt, dir);
 
             // ID des umliegenden Knotens bilden
-            unsigned nbId = gwb_.GetIdx(neighbourPos);
+            unsigned nbId = gwb_.getIdx(neighbourPos);
 
             // Knoten schon auf dem Feld gebildet ?
             if((prevStepEven && nodes[nbId].lastVisited == currentVisit)
@@ -202,7 +202,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                         i--) // backtrack the plannend route and check if another "even" position is too close
                     {
                         Direction pdir = alternate ? nodes[back_id].dirEven : nodes[back_id].dir;
-                        p = gwb_.GetNeighbour(p, pdir + 3u);
+                        p = gwb_.getNeighbour(p, pdir + 3u);
                         if(i % 2 == 0) // even step
                         {
                             evenLocationsOnRoute.push_back(p);

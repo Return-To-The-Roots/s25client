@@ -57,7 +57,7 @@ private:
 
     unsigned CalcNWFLength(std::chrono::milliseconds minDuration) const;
 
-    GameServerPlayer* GetNetworkPlayer(unsigned playerId);
+    GameServerPlayer* getNetworkPlayer(unsigned playerId);
     /// Swap players ingame or during config
     void SwapPlayer(uint8_t player1, uint8_t player2);
 
@@ -72,10 +72,10 @@ private:
     void WaitForClients();
     void FillPlayerQueues();
 
-    unsigned GetNumFilledSlots() const;
+    unsigned getNumFilledSlots() const;
     /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
     void AnnounceStatusChange();
-    void SetPaused(bool paused);
+    void setPaused(bool paused);
 
     void LC_Status_Error(const std::string& error) override;
     void LC_Created() override;
@@ -107,7 +107,7 @@ private:
     bool OnGameMessage(const GameMessage_SkipToGF& msg) override;
     RTTR_POP_DIAGNOSTIC
 
-    void CancelCountdown();
+    void cancelCountdown();
     bool ArePlayersReady() const;
     /// Some player data has changed. Set non-ready and cancel countdown
     void PlayerDataChanged(unsigned playerIdx);
@@ -127,12 +127,12 @@ private:
 
     void CheckAndKickLaggingPlayers();
     bool CheckForLaggingPlayers();
-    JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx);
+    JoinPlayerInfo& getJoinPlayer(unsigned playerIdx);
 
     /// Is the player with the given idx the host?
-    bool IsHost(unsigned playerIdx) const;
+    bool isHost(unsigned playerIdx) const;
     /// Get the player this message concerns. which is msg.player, msg.senderPlayer or -1 on error/wrong values
-    int GetTargetPlayer(const GameMessageWithPlayer& msg);
+    int getTargetPlayer(const GameMessageWithPlayer& msg);
 
     unsigned skiptogf;
 
@@ -182,7 +182,7 @@ private:
         /// Updates the state and returns true on change. Stops 1s after remainingSecs reached zero
         bool Update();
         bool IsActive() const { return isActive; }
-        unsigned GetRemainingSecs() const { return remainingSecs; }
+        unsigned getRemainingSecs() const { return remainingSecs; }
     } countdown;
 
     struct AsyncLog;

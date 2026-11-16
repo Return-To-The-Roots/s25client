@@ -29,7 +29,7 @@ private:
     /// Tries to go to the home ware house and returns whether this is possible
     bool TryToGoHome();
     /// Inform successor that the caravane is canceled
-    void CancelTradeCaravane();
+    void cancelTradeCaravane();
 
 public:
     nofTradeLeader(MapPoint pos, unsigned char player, TradeRoute tr, MapPoint homePos, MapPoint goalPos);
@@ -44,7 +44,7 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofTradeleader; }
+    GO_Type getGOT() const final { return GO_Type::NofTradeleader; }
 
     void Draw(DrawPoint drawPt) override;
 
@@ -52,5 +52,5 @@ public:
     void LostWork();
 
     /// Sets the sucessor in the caravane
-    void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
+    void setSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
 };

@@ -37,12 +37,12 @@ auto join(const T& container)
 template<typename T>
 void Smooth(unsigned iterations, unsigned radius, NodeMapBase<T>& nodes)
 {
-    const MapExtent& size = nodes.GetSize();
+    const MapExtent& size = nodes.getSize();
     std::vector<std::vector<MapPoint>> neighbors(size.x * size.y);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        neighbors[nodes.GetIdx(pt)] = nodes.GetPointsInRadius(pt, radius);
+        neighbors[nodes.getIdx(pt)] = nodes.getPointsInRadius(pt, radius);
     }
 
     for(unsigned i = 0; i < iterations; ++i)
@@ -50,7 +50,7 @@ void Smooth(unsigned iterations, unsigned radius, NodeMapBase<T>& nodes)
         RTTR_FOREACH_PT(MapPoint, size)
         {
             int sum = static_cast<int>(nodes[pt]);
-            const auto& neighborPoints = neighbors[nodes.GetIdx(pt)];
+            const auto& neighborPoints = neighbors[nodes.getIdx(pt)];
 
             for(const MapPoint& p : neighborPoints)
             {
@@ -76,7 +76,7 @@ template<typename T>
 void Scale(NodeMapBase<T>& values, T minimum, T maximum)
 {
     auto range = GetRange(values);
-    auto actualRange = range.GetDifference();
+    auto actualRange = range.getDifference();
     auto actualMinimum = range.minimum;
 
     if(actualRange == 0)
@@ -86,7 +86,7 @@ void Scale(NodeMapBase<T>& values, T minimum, T maximum)
 
     auto scaledRange = maximum - minimum;
 
-    RTTR_FOREACH_PT(MapPoint, values.GetSize())
+    RTTR_FOREACH_PT(MapPoint, values.getSize())
     {
         auto normalizer = static_cast<double>(values[pt] - actualMinimum) / actualRange;
         auto offset = round(normalizer * scaledRange);
@@ -128,7 +128,7 @@ std::vector<MapPoint> Collect(const MapBase& map, const MapPoint& pt, T&& evalua
             {
                 body.push_back(currentPoint);
 
-                const auto& neighbors = map.GetNeighbours(currentPoint);
+                const auto& neighbors = map.getNeighbours(currentPoint);
                 for(MapPoint neighbor : neighbors)
                 {
                     searchSpace.push(neighbor);
@@ -243,7 +243,7 @@ T LimitFor(const NodeMapBase<T>& values, double coverage, T minimum)
         return maximum;
     }
 
-    const auto nodes = values.GetWidth() * values.GetHeight();
+    const auto nodes = values.getWidth() * values.getHeight();
     const auto expectedNodes = static_cast<unsigned>(coverage * nodes);
 
     unsigned currentNodes = 0;
@@ -293,7 +293,7 @@ T LimitFor(const NodeMapBase<T>& values, const T_Area& area, double coverage, T 
         return maximum;
     }
 
-    const auto nodes = area.empty() ? values.GetWidth() * values.GetHeight() : area.size();
+    const auto nodes = area.empty() ? values.getWidth() * values.getHeight() : area.size();
     const auto expectedNodes = static_cast<unsigned>(coverage * nodes);
 
     unsigned currentNodes = 0;

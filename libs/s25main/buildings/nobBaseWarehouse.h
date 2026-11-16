@@ -82,7 +82,7 @@ protected:
 
 private:
     /// Check if soldiers can be recruited
-    bool CanRecruitSoldiers();
+    bool canRecruitSoldiers();
     /// Derived classes may use ordered wares immediately, e.g. for sending via ship instead of by road
     /// Return true if so and take ownership of the ware
     virtual bool UseWareAtOnce(std::unique_ptr<Ware>& /*ware*/, noBaseBuilding& /*goal*/) { return false; }
@@ -143,7 +143,7 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override;
 
-    const Inventory& GetInventory() const;
+    const Inventory& getInventory() const;
 
     /// Adds specified goods and people. If addToPlayer is true,
     /// then they are also added to the owners inventory (for newly created/arrived goods)
@@ -153,37 +153,37 @@ public:
     void AddToInventory(const GoodCounts& goods, bool addToPlayer);
 
     /// Gibt Anzahl der Waren bzw. Figuren zurück
-    unsigned GetNumRealWares(GoodType type) const { return inventory.real[type]; }
-    unsigned GetNumRealFigures(Job job) const { return inventory.real[job]; }
-    unsigned GetNumRealArmoredFigures(ArmoredSoldier job) const { return inventory.real[job]; }
-    unsigned GetNumVisualWares(GoodType type) const { return inventory.visual[type]; }
-    unsigned GetNumVisualFigures(Job job) const { return inventory.visual[job]; }
-    unsigned GetNumVisualArmoredFigures(ArmoredSoldier job) const { return inventory.visual[job]; }
+    unsigned getNumRealWares(GoodType type) const { return inventory.real[type]; }
+    unsigned getNumRealFigures(Job job) const { return inventory.real[job]; }
+    unsigned getNumRealArmoredFigures(ArmoredSoldier job) const { return inventory.real[job]; }
+    unsigned getNumVisualWares(GoodType type) const { return inventory.visual[type]; }
+    unsigned getNumVisualFigures(Job job) const { return inventory.visual[job]; }
+    unsigned getNumVisualArmoredFigures(ArmoredSoldier job) const { return inventory.visual[job]; }
 
     /// Gibt Ein/Auslagerungseinstellungen zurück
-    InventorySetting GetInventorySettingVisual(Job job) const;
-    InventorySetting GetInventorySettingVisual(GoodType ware) const;
-    InventorySetting GetInventorySetting(Job job) const;
-    InventorySetting GetInventorySetting(GoodType ware) const;
+    InventorySetting getInventorySettingVisual(Job job) const;
+    InventorySetting getInventorySettingVisual(GoodType ware) const;
+    InventorySetting getInventorySetting(Job job) const;
+    InventorySetting getInventorySetting(GoodType ware) const;
     // Convenience functions
-    bool IsInventorySettingVisual(const Job job, const EInventorySetting setting) const
+    bool isInventorySettingVisual(const Job job, const EInventorySetting setting) const
     {
-        return GetInventorySettingVisual(job).IsSet(setting);
+        return getInventorySettingVisual(job).isSet(setting);
     }
-    bool IsInventorySettingVisual(const GoodType ware, const EInventorySetting setting) const
+    bool isInventorySettingVisual(const GoodType ware, const EInventorySetting setting) const
     {
-        return GetInventorySettingVisual(ware).IsSet(setting);
+        return getInventorySettingVisual(ware).isSet(setting);
     }
-    bool IsInventorySetting(const Job job, const EInventorySetting setting) const
+    bool isInventorySetting(const Job job, const EInventorySetting setting) const
     {
-        return GetInventorySetting(job).IsSet(setting);
+        return getInventorySetting(job).isSet(setting);
     }
-    bool IsInventorySetting(const GoodType ware, const EInventorySetting setting) const
+    bool isInventorySetting(const GoodType ware, const EInventorySetting setting) const
     {
-        return GetInventorySetting(ware).IsSet(setting);
+        return getInventorySetting(ware).isSet(setting);
     }
 
-    void SetInventorySettingVisual(const boost_variant2<GoodType, Job>& what, InventorySetting state);
+    void setInventorySettingVisual(const boost_variant2<GoodType, Job>& what, InventorySetting state);
 
     /// Bestellt einen Träger
     void OrderCarrier(noRoadNode& goal, RoadSegment& workplace);
@@ -194,7 +194,7 @@ public:
     /// "Bestellt" eine Ware --> gibt den Pointer auf die Ware zurück
     Ware* OrderWare(GoodType good, noBaseBuilding& goal);
     /// Returns true, if the given job can be recruited. Excludes soldiers and carriers!
-    bool CanRecruit(Job job) const;
+    bool canRecruit(Job job) const;
 
     /// Wird von den Lagerhaus-Arbeitern aufgerufen, wenn sie ein Ware wieder zurückbringen, die sie vorne nicht ablegen
     /// konnten
@@ -215,9 +215,9 @@ public:
     /// Eine bestellte Ware konnte doch nicht kommen
     void WareLost(Ware& ware) override;
     /// Bestellte Ware, die sich noch hier drin befindet, storniert ihre Auslieferung
-    void CancelWare(Ware*& ware);
+    void cancelWare(Ware*& ware);
     /// Bestellte Figur, die sich noch ind er Warteschlange befindet, kommt nicht mehr und will rausgehauen werden
-    virtual void CancelFigure(noFigure* figure);
+    virtual void cancelFigure(noFigure* figure);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
     void TakeWare(Ware* ware) override;
@@ -225,30 +225,30 @@ public:
     /// Fügt eine Figur hinzu, die auf dem Weg zum Lagerhaus ist
     void AddDependentFigure(noFigure& figure)
     {
-        RTTR_Assert(!IsDependentFigure(figure));
+        RTTR_Assert(!isDependentFigure(figure));
         dependent_figures.push_back(&figure);
     }
     //// Entfernt eine abhängige Figur wieder aus der Liste
     virtual void RemoveDependentFigure(noFigure& figure)
     {
-        RTTR_Assert(IsDependentFigure(figure));
+        RTTR_Assert(isDependentFigure(figure));
         dependent_figures.remove(&figure);
     }
     /// Wird aufgerufen, wenn ein Arbeiter hierher kommt
     void GotWorker(Job /*job*/, noFigure& worker) override
     {
-        RTTR_Assert(!IsDependentFigure(worker));
+        RTTR_Assert(!isDependentFigure(worker));
         dependent_figures.push_back(&worker);
     }
 
     //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit TakeWare hinzugefügt)
     void RemoveDependentWare(Ware& ware)
     {
-        RTTR_Assert(IsWareDependent(ware));
+        RTTR_Assert(isWareDependent(ware));
         dependent_wares.remove(&ware);
     }
     /// Überprüft, ob Ware abhängig ist
-    bool IsWareDependent(const Ware& ware);
+    bool isWareDependent(const Ware& ware);
     /// Prüft, ob es Waren zum Auslagern gibt
     bool AreWaresToEmpty() const;
 
@@ -256,10 +256,10 @@ public:
     /// Fügt aktiven Soldaten (der aus von einer Mission) zum Militärgebäude hinzu
     void AddActiveSoldier(std::unique_ptr<nofActiveSoldier> soldier) override;
     /// Gibt Gesamtanzahl aller im Lager befindlichen Soldaten zurück
-    unsigned GetNumSoldiers() const
+    unsigned getNumSoldiers() const
     {
-        return GetNumRealFigures(Job::Private) + GetNumRealFigures(Job::PrivateFirstClass)
-               + GetNumRealFigures(Job::Sergeant) + GetNumRealFigures(Job::Officer) + GetNumRealFigures(Job::General);
+        return getNumRealFigures(Job::Private) + getNumRealFigures(Job::PrivateFirstClass)
+               + getNumRealFigures(Job::Sergeant) + getNumRealFigures(Job::Officer) + getNumRealFigures(Job::General);
     }
     /// Order troops of each rank according to `counts` without exceeding `max` in total. The number of soldiers
     /// of each rank that is sent out is subtracted from the corresponding count in `counts` and from `max`.
@@ -274,32 +274,32 @@ public:
     bool DefendersAvailable() const override;
 
     /// Verändert Reserveeinstellung
-    void SetReserveVisual(unsigned rank, unsigned count);
-    void SetRealReserve(unsigned rank, unsigned count);
+    void setReserveVisual(unsigned rank, unsigned count);
+    void setRealReserve(unsigned rank, unsigned count);
 
     /// Versucht, die geforderten Reserve-Soldaten bereitzustellen
     void RefreshReserve(unsigned rank);
 
     /// Gibt Zeiger auf dir Reserve zurück für das GUI
-    const unsigned* GetReserveAvailablePointer(unsigned rank) const { return &reserve_soldiers_available[rank]; }
-    const unsigned* GetReserveArmoredAvailablePointer(unsigned rank) const
+    const unsigned* getReserveAvailablePointer(unsigned rank) const { return &reserve_soldiers_available[rank]; }
+    const unsigned* getReserveArmoredAvailablePointer(unsigned rank) const
     {
         return &reserve_soldiers_available_with_armor[rank];
     }
-    const unsigned* GetReserveClaimedVisualPointer(unsigned rank) const
+    const unsigned* getReserveClaimedVisualPointer(unsigned rank) const
     {
         return &reserve_soldiers_claimed_visual[rank];
     }
-    unsigned GetReserveClaimed(unsigned rank) const { return reserve_soldiers_claimed_real[rank]; }
+    unsigned getReserveClaimed(unsigned rank) const { return reserve_soldiers_claimed_real[rank]; }
 
     /// Available goods of a specific type that can be used for trading
-    unsigned GetAvailableWaresForTrading(GoodType gt) const;
+    unsigned getAvailableWaresForTrading(GoodType gt) const;
     /// Available figures of a specific type that can be used for trading
-    unsigned GetAvailableFiguresForTrading(Job job) const;
+    unsigned getAvailableFiguresForTrading(Job job) const;
     /// Starts a trade caravane from this warehouse
     void StartTradeCaravane(const boost_variant2<GoodType, Job>& what, unsigned count, const TradeRoute& tr,
                             nobBaseWarehouse* goal);
 
     /// For debug only
-    bool IsDependentFigure(const noFigure& fig) const;
+    bool isDependentFigure(const noFigure& fig) const;
 };

@@ -30,6 +30,6 @@ public:
 private:
     void msgButtonClick(unsigned ctrl_id) override;
     void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
-    unsigned GetPossibleTradeAmount(Job job) const;
-    unsigned GetPossibleTradeAmount(GoodType good) const;
+    unsigned getPossibleTradeAmount(Job job) const;
+    unsigned getPossibleTradeAmount(GoodType good) const;
 };

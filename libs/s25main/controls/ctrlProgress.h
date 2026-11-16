@@ -17,8 +17,8 @@ public:
                  const std::string& button_plus_tooltip = "", unsigned short* write_val = nullptr);
 
     void Resize(const Extent& newSize) override;
-    void SetPosition(unsigned short position);
-    const unsigned short& GetPosition() const { return position; }
+    void setPosition(unsigned short position);
+    const unsigned short& getPosition() const { return position; }
 
     void msgButtonClick(unsigned ctrl_id) override;
     bool msgLeftDown(const MouseCoords& mc) override;

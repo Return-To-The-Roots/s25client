@@ -28,7 +28,7 @@ River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Directi
 
         for(const auto& triangle : triangles)
         {
-            textures.Set(triangle, water);
+            textures.set(triangle, water);
 
             const auto& edges = GetTriangleEdges(triangle, size);
             for(const MapPoint& edge : edges)
@@ -49,7 +49,7 @@ River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Directi
             currentDir = lastDir + (rnd.ByChance(50) ? 5 : 1);
         }
 
-        currentNode = map.getTextures().GetNeighbour(currentNode, lastDir);
+        currentNode = map.getTextures().getNeighbour(currentNode, lastDir);
 
         if(rnd.ByChance(splitRate))
         {

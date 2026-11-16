@@ -40,18 +40,18 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Grapefield; }
+    GO_Type getGOT() const final { return GO_Type::Grapefield; }
 
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;
 
-    BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
+    BlockingManner getBM() const override { return BlockingManner::FlagsAround; }
 
     /// Can we harvest it?
-    bool IsHarvestable() const { return size == 3 && state == State::Normal; }
+    bool isHarvestable() const { return size == 3 && state == State::Normal; }
 
     /// Return the ID of the withered grape field in the wine_bobs
-    unsigned GetHarvestID() const;
+    unsigned getHarvestID() const;
 
     /// Winegrower starts harvesting the field
     void BeginHarvesting();

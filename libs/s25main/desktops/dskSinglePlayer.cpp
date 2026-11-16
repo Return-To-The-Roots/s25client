@@ -48,7 +48,7 @@ dskSinglePlayer::dskSinglePlayer()
 
     AddTextButton(8, DrawPoint(115, 390), Extent(220, 22), TextureColor::Red1, _("Back"), NormalFont);
 
-    AddImage(11, DrawPoint(20, 20), LOADER.GetImageN("logo", 0));
+    AddImage(11, DrawPoint(20, 20), LOADER.getImageN("logo", 0));
 }
 
 void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
@@ -69,9 +69,9 @@ void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
                 if(!save.Load(savFile, SaveGameDataToLoad::Header))
                     continue;
 
-                if(save.GetSaveTime() > recent)
+                if(save.getSaveTime() > recent)
                 {
-                    recent = save.GetSaveTime();
+                    recent = save.getSaveTime();
                     mostRecentFilepath = savFile;
                 }
             }

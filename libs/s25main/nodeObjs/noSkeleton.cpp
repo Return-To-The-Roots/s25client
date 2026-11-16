@@ -12,7 +12,7 @@
 
 noSkeleton::noSkeleton(const MapPoint pos) : noCoordBase(NodalObjectType::Environment, pos), type(0)
 {
-    current_event = GetEvMgr().AddEvent(this, 15000 + RANDOM_RAND(10000));
+    current_event = getEvMgr().AddEvent(this, 15000 + RANDOM_RAND(10000));
 }
 
 noSkeleton::~noSkeleton() = default;
@@ -20,10 +20,10 @@ noSkeleton::~noSkeleton() = default;
 void noSkeleton::Destroy()
 {
     // Remove from map if still present
-    if(world->GetNode(pos).obj == this)
-        world->SetNO(pos, nullptr);
+    if(world->getNode(pos).obj == this)
+        world->setNO(pos, nullptr);
 
-    GetEvMgr().RemoveEvent(current_event);
+    getEvMgr().RemoveEvent(current_event);
 
     noCoordBase::Destroy();
 }
@@ -42,7 +42,7 @@ noSkeleton::noSkeleton(SerializedGameData& sgd, const unsigned obj_id)
 
 void noSkeleton::Draw(DrawPoint drawPt)
 {
-    LOADER.GetMapTexture(547 + type)->DrawFull(drawPt);
+    LOADER.getMapTexture(547 + type)->DrawFull(drawPt);
 }
 
 void noSkeleton::HandleEvent(const unsigned /*id*/)
@@ -51,13 +51,13 @@ void noSkeleton::HandleEvent(const unsigned /*id*/)
     {
         // weiter verwesen, dann später sterben nach ner zufälligen Zeit
         type = 1;
-        current_event = GetEvMgr().AddEvent(this, 10000 + RANDOM_RAND(10000));
+        current_event = getEvMgr().AddEvent(this, 10000 + RANDOM_RAND(10000));
     } else
     {
         // Remove from map and destroy
-        RTTR_Assert(world->GetNode(pos).obj == this);
-        world->SetNO(pos, nullptr);
-        GetEvMgr().AddToKillList(this);
+        RTTR_Assert(world->getNode(pos).obj == this);
+        world->setNO(pos, nullptr);
+        getEvMgr().AddToKillList(this);
         current_event = nullptr;
     }
 }

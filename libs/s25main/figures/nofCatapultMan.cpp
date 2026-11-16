@@ -65,7 +65,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
                     step = -step;
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen
-                LOADER.GetPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->DrawFull(drawPt);
+                LOADER.getPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->DrawFull(drawPt);
             }
             // else
             //  // Katapult schießend zeichnen
@@ -78,7 +78,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
 
             if(step < 2 * 3)
                 // Katapult nach Schießen zeichnen (hin und her wippen
-                LOADER.GetPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->DrawFull(drawPt);
+                LOADER.getPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->DrawFull(drawPt);
             else
             {
                 step = (step - 6) / 2;
@@ -87,7 +87,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
                     step = -(step);
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen (zurück in Ausgangsposition: Richtung 4)
-                LOADER.GetPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->DrawFull(drawPt);
+                LOADER.getPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->DrawFull(drawPt);
             }
         }
         break;
@@ -110,21 +110,21 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             for(auto* building : buildings)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
-                if(building->GetGOT() == GO_Type::NobMilitary
-                   && world->GetPlayer(player).IsAttackable(building->GetPlayer()))
+                if(building->getGOT() == GO_Type::NobMilitary
+                   && world->getPlayer(player).isAttackable(building->getPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
-                    if(world->GetNode(building->GetPos()).fow[player].visibility == Visibility::Visible
-                       && !static_cast<nobMilitary*>(building)->IsNewBuilt())
+                    if(world->getNode(building->getPos()).fow[player].visibility == Visibility::Visible
+                       && !static_cast<nobMilitary*>(building)->isNewBuilt())
                     {
                         // Entfernung ausrechnen
-                        unsigned distance = world->CalcDistance(pos, building->GetPos());
+                        unsigned distance = world->CalcDistance(pos, building->getPos());
 
                         // Entfernung nicht zu hoch?
                         if(distance <= CATAPULT_MAX_TARGET_RANGE)
                         {
                             // Mit in die Liste aufnehmen
-                            possibleTargets.push_back(PossibleTarget(building->GetPos(), distance));
+                            possibleTargets.push_back(PossibleTarget(building->getPos(), distance));
                         }
                     }
                 }
@@ -134,7 +134,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             if(possibleTargets.empty())
             {
                 // Weiter warten, vielleicht gibts ja später wieder mal was
-                current_ev = GetEvMgr().AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
+                current_ev = getEvMgr().AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
                 workplace->StartNotWorking();
                 return;
             }
@@ -158,9 +158,9 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                 targetIsRight = false;
             }
             // Distance over map border is closer (max distance is size/2 due to wrap around)
-            if(distX > world->GetWidth() / 2)
+            if(distX > world->getWidth() / 2)
             {
-                distX -= world->GetWidth() / 2;
+                distX -= world->getWidth() / 2;
                 targetIsRight = !targetIsRight; // Reverse direction
             }
 
@@ -177,9 +177,9 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                 targetIsDown = false;
             }
             // Distance over map border is closer (max distance is size/2 due to wrap around)
-            if(distY > world->GetHeight() / 2)
+            if(distY > world->getHeight() / 2)
             {
-                distY -= world->GetHeight() / 2;
+                distY -= world->getHeight() / 2;
                 targetIsDown = !targetIsDown; // Reverse direction
             }
 
@@ -203,7 +203,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             if(wheel_steps < -3)
                 wheel_steps = 6 + wheel_steps;
 
-            current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 1), 1);
+            current_ev = getEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 1), 1);
 
             state = State::CatapultTargetBuilding;
 
@@ -231,19 +231,19 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             } else
             {
                 // Ansonsten zufälligen Punkt rundrum heraussuchen
-                destMap = world->GetNeighbour(target.pos, RANDOM_ENUM(Direction));
+                destMap = world->getNeighbour(target.pos, RANDOM_ENUM(Direction));
             }
 
             unsigned shooting_dir = (7 + wheel_steps) % 6;
 
             // Größe der Welt in Pixeln bestimmen
-            int worldWidth = world->GetWidth() * TR_W;
-            int worldHeight = world->GetHeight() * TR_H;
+            int worldWidth = world->getWidth() * TR_W;
+            int worldHeight = world->getHeight() * TR_H;
 
             // Startpunkt bestimmen
-            Position start = world->GetNodePos(pos) + STONE_STARTS[shooting_dir]; //-V557
+            Position start = world->getNodePos(pos) + STONE_STARTS[shooting_dir]; //-V557
             // (Visuellen) Aufschlagpunkt bestimmen
-            Position dest = world->GetNodePos(destMap);
+            Position dest = world->getNodePos(destMap);
 
             // Kartenränder beachten
             // Wenn Abstand kleiner is, den kürzeren Abstand über den Kartenrand wählen
@@ -269,7 +269,7 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             world->AddCatapultStone(new CatapultStone(target.pos, destMap, start, dest, 80));
 
             // Katapult wieder in Ausgangslage zurückdrehen
-            current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
+            current_ev = getEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
 
             state = State::CatapultBackoff;
         }

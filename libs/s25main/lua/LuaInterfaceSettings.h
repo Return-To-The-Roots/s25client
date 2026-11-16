@@ -32,21 +32,21 @@ public:
     void EventPlayerLeft(unsigned playerIdx);
     void EventPlayerReady(unsigned playerIdx);
     /// Return whether the named change is allowed
-    bool IsChangeAllowed(const std::string& name, bool defaultVal = false);
+    bool isChangeAllowed(const std::string& name, bool defaultVal = false);
     /// Get addons that are allowed to be changed
-    std::vector<AddonId> GetAllowedAddons();
-    bool IsMapPreviewEnabled();
+    std::vector<AddonId> getAllowedAddons();
+    bool isMapPreviewEnabled();
 
 private:
     IGameLobbyController& lobbyServerController_;
-    kaguya::LuaRef GetAllowedChanges();
+    kaguya::LuaRef getAllowedChanges();
 
     // Callable from Lua
-    unsigned GetNumPlayers() const;
-    LuaServerPlayer GetPlayer(int idx);
-    void SetAddon(AddonIdWrapper id, unsigned value);
-    void SetBoolAddon(AddonIdWrapper id, bool value); // Alias
+    unsigned getNumPlayers() const;
+    LuaServerPlayer getPlayer(int idx);
+    void setAddon(AddonIdWrapper id, unsigned value);
+    void setBoolAddon(AddonIdWrapper id, bool value); // Alias
     void ResetAddons();
     void ResetGameSettings();
-    void SetGameSettings(const kaguya::LuaTable& settings);
+    void setGameSettings(const kaguya::LuaTable& settings);
 };

@@ -24,7 +24,7 @@ void initGUITests()
 {
     libsiedler2::setAllocator(new GlAllocator);
     BOOST_TEST_CHECKPOINT("Load video driver");
-    if(!dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver()))
+    if(!dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.getDriver()))
     {
         rttr::test::LogAccessor logAcc;
         VIDEODRIVER.LoadDriver(new MockupVideoDriver(&WINDOWMANAGER));
@@ -44,20 +44,20 @@ void initGUITests()
     BOOST_TEST_CHECKPOINT("GUI test initialized");
 }
 
-MockupVideoDriver* GetVideoDriver()
+MockupVideoDriver* getVideoDriver()
 {
-    auto* video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver());
+    auto* video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.getDriver());
     if(!video)
     {
         initGUITests();
-        video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.GetDriver());
+        video = dynamic_cast<MockupVideoDriver*>(VIDEODRIVER.getDriver());
     }
     return video;
 }
 
 Fixture::~Fixture()
 {
-    if(!dynamic_cast<DummyDesktop*>(WINDOWMANAGER.GetCurrentDesktop()) || WINDOWMANAGER.GetTopMostWindow())
+    if(!dynamic_cast<DummyDesktop*>(WINDOWMANAGER.getCurrentDesktop()) || WINDOWMANAGER.getTopMostWindow())
     {
         // Switch back to new, empty desktop to clean up active windows
         WINDOWMANAGER.Switch(std::make_unique<DummyDesktop>());

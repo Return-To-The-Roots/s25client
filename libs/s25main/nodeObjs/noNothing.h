@@ -12,6 +12,6 @@ public:
     noNothing() : noBase(NodalObjectType::Nothing) {}
 
     void Destroy() override {}
-    GO_Type GetGOT() const final { return GO_Type::Nothing; }
+    GO_Type getGOT() const final { return GO_Type::Nothing; }
     void Draw(DrawPoint) override {}
 };

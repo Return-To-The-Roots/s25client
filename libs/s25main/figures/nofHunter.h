@@ -29,7 +29,7 @@ private:
     /// Malt den Arbeiter beim Arbeiten
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override { return 89; }
+    unsigned short getCarryID() const override { return 89; }
 
     /// Trifft Vorbereitungen fürs nach Hause - Laufen
     void StartWalkingHome();
@@ -37,7 +37,7 @@ private:
     void HandleStateWalkingHome();
 
     /// Prüft, ob der Schießpunkt geeignet ist
-    bool IsShootingPointGood(MapPoint pt);
+    bool isShootingPointGood(MapPoint pt);
 
     /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen
     /// ausführen
@@ -60,16 +60,16 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofHunter; }
+    GO_Type getGOT() const final { return GO_Type::NofHunter; }
 
     void HandleDerivedEvent(unsigned id) override;
 
     void TryStartHunting();
 
     /// Find animals in a radius around a position that satisfy a predicate and are reachable
-    static std::vector<noAnimal*> GetAnimalsInRange(const GameWorldBase& world, MapPoint pos, unsigned radius,
+    static std::vector<noAnimal*> getAnimalsInRange(const GameWorldBase& world, MapPoint pos, unsigned radius,
                                                     unsigned maxDistance, bool (*isValidAnimal)(const noAnimal*));
-    static std::vector<noAnimal*> GetHuntableAnimalsInRange(const GameWorldBase& world, MapPoint pos);
+    static std::vector<noAnimal*> getHuntableAnimalsInRange(const GameWorldBase& world, MapPoint pos);
 
     /// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
     void AnimalLost();

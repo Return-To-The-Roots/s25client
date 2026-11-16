@@ -45,7 +45,7 @@ public:
     /// Zeichnet Desktop und alle Fenster.
     void Draw();
     /// liefert ob der aktuelle Desktop den Focus besitzt oder nicht.
-    bool IsDesktopActive() const;
+    bool isDesktopActive() const;
 
     /// schickt eine Nachricht an das aktive Fenster bzw den aktiven Desktop.
     /// Sendet eine Tastaturnachricht an die Steuerelemente.
@@ -63,7 +63,7 @@ public:
     template<typename T>
     T& ReplaceWindow(std::unique_ptr<T> window)
     {
-        auto* oldWnd = FindNonModalWindow(window->GetID());
+        auto* oldWnd = FindNonModalWindow(window->getID());
         if(oldWnd)
             oldWnd->Close();
         return Show(std::move(window));
@@ -71,7 +71,7 @@ public:
     template<typename T>
     T* ToggleWindow(std::unique_ptr<T> window)
     {
-        auto* oldWnd = FindNonModalWindow(window->GetID());
+        auto* oldWnd = FindNonModalWindow(window->getID());
         if(oldWnd)
         {
             oldWnd->Close();
@@ -111,7 +111,7 @@ public:
     // ttw: Window that the tooltip is for, used when updating current tooltip
     // tooltip: The tooltip text, empty to hide
     // updateCurrent: If true, only update if the current tooltip is for ttw
-    void SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent = false);
+    void setToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent = false);
 
     /// Verarbeitung Spielfenstergröße verändert (vom Betriebssystem aus)
     void WindowResized() override;
@@ -120,16 +120,16 @@ public:
     void msgScreenResize(const Extent& newSize);
 
     /// Return the window currently on the top (probably active)
-    IngameWindow* GetTopMostWindow() const;
+    IngameWindow* getTopMostWindow() const;
     IngameWindow* FindWindowAtPos(const Position& pos) const;
     IngameWindow* FindNonModalWindow(unsigned id) const;
 
-    Desktop* GetCurrentDesktop() { return curDesktop.get(); }
+    Desktop* getCurrentDesktop() { return curDesktop.get(); }
     /// Makes the given window (desktop or ingame window) active and all others inactive
-    void SetActiveWindow(Window&);
+    void setActiveWindow(Window&);
 
-    void SetCursor(Cursor cursor = Cursor::Hand);
-    Cursor GetCursor() const { return cursor_; }
+    void setCursor(Cursor cursor = Cursor::Hand);
+    Cursor getCursor() const { return cursor_; }
 
     SnapOffset snapWindow(Window* wnd, const Rect& wndRect) const;
 

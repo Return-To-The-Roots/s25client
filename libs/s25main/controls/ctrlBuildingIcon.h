@@ -16,10 +16,10 @@ public:
     ctrlBuildingIcon(Window* parent, unsigned id, const DrawPoint& pos, BuildingType type, Nation nation,
                      unsigned short size = 36, const std::string& tooltip = "");
     /// liefert den GebäudeTyp des Icons.
-    BuildingType GetType() const { return type; }
+    BuildingType getType() const { return type; }
 
     /// Set callback for hover-state changes (called with true when hovered, false when not)
-    void SetOnHoverChanged(std::function<void(bool)> cb) { onHoverChanged_ = std::move(cb); }
+    void setOnHoverChanged(std::function<void(bool)> cb) { onHoverChanged_ = std::move(cb); }
 
 protected:
     /// zeichnet das Fenster.

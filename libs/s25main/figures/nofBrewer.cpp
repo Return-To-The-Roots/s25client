@@ -25,13 +25,13 @@ void nofBrewer::DrawWorking(DrawPoint drawPt)
     unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
 
     if(now_id < 16)
-        LOADER.GetPlayerImage("rom_bobs", now_id)
-          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     world->GetPlayer(workplace->GetPlayer()).color);
+        LOADER.getPlayerImage("rom_bobs", now_id)
+          ->DrawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+                     world->getPlayer(workplace->getPlayer()).color);
 
     if(now_id == 5)
     {
-        world->GetSoundMgr().playNOSound(51, *this, 0);
+        world->getSoundMgr().playNOSound(51, *this, 0);
         was_sounding = true;
     }
     last_id = now_id;

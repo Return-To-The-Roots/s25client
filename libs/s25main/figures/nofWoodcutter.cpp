@@ -27,45 +27,45 @@ void nofWoodcutter::DrawWorking(DrawPoint drawPt)
     if(nowId < 10)
     {
         // 1. Ein Stück vom Baum nach links laufen
-        LOADER.getBobSprite(world->GetPlayer(player).nation, Job::Woodcutter, Direction::West, nowId % 8)
-          .draw(drawPt - DrawPoint(nowId, 0), COLOR_WHITE, world->GetPlayer(player).color);
+        LOADER.getBobSprite(world->getPlayer(player).nation, Job::Woodcutter, Direction::West, nowId % 8)
+          .draw(drawPt - DrawPoint(nowId, 0), COLOR_WHITE, world->getPlayer(player).color);
     } else if(nowId < 82)
     {
         // 2. Hacken
-        LOADER.GetPlayerImage("rom_bobs", 24 + (nowId - 10) % 8)
-          ->DrawFull(drawPt - DrawPoint(9, 0), COLOR_WHITE, world->GetPlayer(player).color);
+        LOADER.getPlayerImage("rom_bobs", 24 + (nowId - 10) % 8)
+          ->DrawFull(drawPt - DrawPoint(9, 0), COLOR_WHITE, world->getPlayer(player).color);
 
         if((nowId - 10) % 8 == 3)
         {
-            world->GetSoundMgr().playNOSound(53, *this, nowId);
+            world->getSoundMgr().playNOSound(53, *this, nowId);
             was_sounding = true;
         }
 
     } else if(nowId < 105)
     {
         // 3. Warten bis Baum umfällt
-        LOADER.GetPlayerImage("rom_bobs", 24)
-          ->DrawFull(drawPt - DrawPoint(9, 0), COLOR_WHITE, world->GetPlayer(player).color);
+        LOADER.getPlayerImage("rom_bobs", 24)
+          ->DrawFull(drawPt - DrawPoint(9, 0), COLOR_WHITE, world->getPlayer(player).color);
 
         if(nowId == 90)
         {
-            world->GetSoundMgr().playNOSound(85, *this, nowId);
+            world->getSoundMgr().playNOSound(85, *this, nowId);
             was_sounding = true;
         }
     } else if(nowId < 115)
     {
         // 4. Wieder zurückgehen nach rechts
-        LOADER.getBobSprite(world->GetPlayer(player).nation, Job::Woodcutter, Direction::East, (nowId - 105) % 8)
-          .draw(drawPt - DrawPoint(9 - (nowId - 105), 0), COLOR_WHITE, world->GetPlayer(player).color);
+        LOADER.getBobSprite(world->getPlayer(player).nation, Job::Woodcutter, Direction::East, (nowId - 105) % 8)
+          .draw(drawPt - DrawPoint(9 - (nowId - 105), 0), COLOR_WHITE, world->getPlayer(player).color);
     } else
     {
         // 5. kurz am Baum warten (quasi Baumstamm in die Hand nehmen)
-        LOADER.getBobSprite(world->GetPlayer(player).nation, Job::Woodcutter, Direction::East, 1)
-          .draw(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
+        LOADER.getBobSprite(world->getPlayer(player).nation, Job::Woodcutter, Direction::East, 1)
+          .draw(drawPt, COLOR_WHITE, world->getPlayer(player).color);
     }
 }
 
-unsigned short nofWoodcutter::GetCarryID() const
+unsigned short nofWoodcutter::getCarryID() const
 {
     return 61;
 }
@@ -73,9 +73,9 @@ unsigned short nofWoodcutter::GetCarryID() const
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
 void nofWoodcutter::WorkStarted()
 {
-    RTTR_Assert(world->GetSpecObj<noTree>(dest)->GetType() == NodalObjectType::Tree);
+    RTTR_Assert(world->getSpecObj<noTree>(dest)->getType() == NodalObjectType::Tree);
 
-    world->GetSpecObj<noTree>(dest)->FallSoon();
+    world->getSpecObj<noTree>(dest)->FallSoon();
 }
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
@@ -86,14 +86,14 @@ void nofWoodcutter::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofWoodcutter::GetPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
+nofFarmhand::PointQuality nofWoodcutter::getPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
 {
     // Gibt es hier an dieser Position einen Baum und ist dieser ausgewachsen?
     // außerdem keine Ananas fällen!
-    const noBase* no = world->GetNO(pt);
-    if(no->GetType() == NodalObjectType::Tree)
+    const noBase* no = world->getNO(pt);
+    if(no->getType() == NodalObjectType::Tree)
     {
-        if(static_cast<const noTree*>(no)->IsFullyGrown() && static_cast<const noTree*>(no)->ProducesWood())
+        if(static_cast<const noTree*>(no)->isFullyGrown() && static_cast<const noTree*>(no)->ProducesWood())
             return PointQuality::Class1;
     }
 
@@ -105,5 +105,5 @@ void nofWoodcutter::WorkAborted()
     nofFarmhand::WorkAborted();
     // Dem Baum Bescheid sagen
     if(state == State::Work)
-        world->GetSpecObj<noTree>(pos)->DontFall();
+        world->getSpecObj<noTree>(pos)->DontFall();
 }

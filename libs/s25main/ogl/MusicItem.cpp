@@ -10,5 +10,5 @@ void MusicItem::Play(int repeats)
 {
     if(!SETTINGS.sound.musicEnabled)
         return;
-    AUDIODRIVER.PlayMusic(GetSoundHandle(), repeats);
+    AUDIODRIVER.PlayMusic(getSoundHandle(), repeats);
 }

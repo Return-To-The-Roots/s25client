@@ -12,8 +12,8 @@
 
 void GameClient::executeGameFrameReplay()
 {
-    const unsigned curGF = GetGFNumber();
-    RTTR_Assert(replayinfo->nextGF.value_or(curGF) >= curGF || curGF > replayinfo->replay.GetLastGF()); //-V807
+    const unsigned curGF = getGFNumber();
+    RTTR_Assert(replayinfo->nextGF.value_or(curGF) >= curGF || curGF > replayinfo->replay.getLastGF()); //-V807
 
     const ReplayCommandsResult result =
       ExecuteReplayCommands(replayinfo->replay, replayinfo->nextGF, *game, [this](const Replay::ChatCommand& cmd) {
@@ -47,19 +47,19 @@ void GameClient::executeGameFrameReplay()
     NextGF(result.executedGameCommands);
 
     // Check for game end
-    if(curGF == replayinfo->replay.GetLastGF())
+    if(curGF == replayinfo->replay.getLastGF())
     {
         if(ci)
         {
             using std::chrono::duration_cast;
-            std::chrono::seconds runtime = duration_cast<std::chrono::seconds>(GAMEMANAGER.GetRuntime());
+            std::chrono::seconds runtime = duration_cast<std::chrono::seconds>(GAMEMANAGER.getRuntime());
             std::chrono::hours hours = duration_cast<std::chrono::hours>(runtime);
             std::chrono::minutes mins = duration_cast<std::chrono::minutes>(runtime - hours);
             std::chrono::seconds secs = duration_cast<std::chrono::seconds>(runtime - hours - mins);
             const std::string text =
               (boost::format(_("Notice: The played replay has ended. (GF: %u, %dh %dmin %ds, TF: %u, AVG_FPS: %u)"))
-               % curGF % hours.count() % mins.count() % secs.count() % GAMEMANAGER.GetNumFrames()
-               % GAMEMANAGER.GetAverageGFPS())
+               % curGF % hours.count() % mins.count() % secs.count() % GAMEMANAGER.getNumFrames()
+               % GAMEMANAGER.getAverageGFPS())
                 .str();
 
             ci->CI_ReplayEndReached(text);
@@ -74,6 +74,6 @@ void GameClient::executeGameFrameReplay()
         replayinfo->nextGF.reset();
         framesinfo.isPaused = true;
         if(skiptogf)
-            skiptogf = GetGFNumber();
+            skiptogf = getGFNumber();
     }
 }

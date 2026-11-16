@@ -19,7 +19,7 @@ public:
     ~CampaignDataLoader() override;
 
     /// Return version of the interface. Changes here reflect breaking changes
-    static unsigned GetVersion();
+    static unsigned getVersion();
 
     bool Load();
 

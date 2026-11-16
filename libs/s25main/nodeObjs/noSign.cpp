@@ -15,7 +15,7 @@
 
 noSign::noSign(const MapPoint pos, Resource resource)
     : noDisappearingEnvObject(
-      pos, 8500 * (signDurabilityFactor[world->GetGGS().getSelection(AddonId::DURABLE_GEOLOGIST_SIGNS)]), 500),
+      pos, 8500 * (signDurabilityFactor[world->getGGS().getSelection(AddonId::DURABLE_GEOLOGIST_SIGNS)]), 500),
       resource(resource)
 {
     // As this is only for drawing we set the type to nothing if the resource is depleted
@@ -49,8 +49,8 @@ void noSign::Draw(DrawPoint drawPt)
         default: return;
     }
     imgId += std::min(resource.getAmount() / 3u, 2u);
-    LOADER.GetMapTexture(imgId)->DrawFull(drawPt, GetDrawColor());
+    LOADER.getMapTexture(imgId)->DrawFull(drawPt, getDrawColor());
 
     // Schatten des Schildes
-    LOADER.GetMapTexture(700)->DrawFull(drawPt, GetDrawShadowColor());
+    LOADER.getMapTexture(700)->DrawFull(drawPt, getDrawShadowColor());
 }

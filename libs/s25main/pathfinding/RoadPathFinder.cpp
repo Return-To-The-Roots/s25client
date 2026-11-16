@@ -22,7 +22,7 @@ struct RoadNodeComperatorGreater
         if(lhs->estimate == rhs->estimate)
         {
             // Use a tie-breaker to get strict ordering
-            return (lhs->GetObjId() > rhs->GetObjId());
+            return (lhs->getObjId() > rhs->getObjId());
         }
 
         return (lhs->estimate > rhs->estimate);
@@ -45,7 +45,7 @@ struct Carrier
     unsigned operator()(const noRoadNode& curNode, const Direction nextDir) const
     {
         // Add costs for busy carriers to allow alternative routes
-        return curNode.GetPunishmentPoints(nextDir);
+        return curNode.getPunishmentPoints(nextDir);
     }
 };
 } // namespace AdditonalCosts
@@ -70,7 +70,7 @@ struct AvoidSegment
 template<RoadType T_roadType>
 struct AvoidRoadType
 {
-    bool operator()(const RoadSegment& segment) const { return segment.GetRoadType() != T_roadType; }
+    bool operator()(const RoadSegment& segment) const { return segment.getRoadType() != T_roadType; }
 };
 
 /// Combines 2 functors by returning true only if both of them return true
@@ -115,29 +115,29 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         RTTR_Assert(false);
         LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Goal in "
                   "pathfinding %u,%u)\n")
-          % gwb_.GetEvMgr().GetCurrentGF() % unsigned(start.GetX()) % unsigned(start.GetY());
+          % gwb_.getEvMgr().getCurrentGF() % unsigned(start.getX()) % unsigned(start.getY());
         // But for now we assume it to be valid and return (kind of) correct values
         if(length)
             *length = 0;
         if(firstDir)
             *firstDir = RoadPathDirection::None;
         if(firstNodePos)
-            *firstNodePos = start.GetPos();
+            *firstNodePos = start.getPos();
         return true;
     }
 
     // If the goal is a flag (unlikely) we have no goal building
     // TODO(Replay): Change RoadPathFinder::FindPath to target flag instead of building for wares
-    const noRoadNode* goalBld = (goal.GetGOT() == GO_Type::Flag) ? nullptr : &goal;
+    const noRoadNode* goalBld = (goal.getGOT() == GO_Type::Flag) ? nullptr : &goal;
 
     // Use a counter for the visited-states so we don't have to reset them on every invocation
     currentVisit++;
     // if the counter reaches its maximum, tidy up
     if(currentVisit == std::numeric_limits<unsigned>::max())
     {
-        RTTR_FOREACH_PT(MapPoint, gwb_.GetSize())
+        RTTR_FOREACH_PT(MapPoint, gwb_.getSize())
         {
-            auto* const node = gwb_.GetSpecObj<noRoadNode>(pt);
+            auto* const node = gwb_.getSpecObj<noRoadNode>(pt);
             if(node)
                 node->last_visit = 0;
         }
@@ -147,8 +147,8 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
     // Add start node
     todo.clear();
 
-    const MapPoint goalPos = goal.GetPos();
-    start.targetDistance = gwb_.CalcDistance(start.GetPos(), goalPos);
+    const MapPoint goalPos = goal.getPos();
+    start.targetDistance = gwb_.CalcDistance(start.getPos(), goalPos);
     start.estimate = start.targetDistance;
     start.last_visit = currentVisit;
     start.prev = nullptr;
@@ -180,7 +180,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                     *firstDir = firstNode->dir_;
 
                 if(firstNodePos)
-                    *firstNodePos = firstNode->GetPos();
+                    *firstNodePos = firstNode->getPos();
             }
 
             // Done, path found
@@ -198,9 +198,9 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
                 continue;
 
             // Check the 2 flags, one is the current node, so we need the other
-            noRoadNode* neighbour = route->GetF1();
+            noRoadNode* neighbour = route->getF1();
             if(neighbour == &best)
-                neighbour = route->GetF2();
+                neighbour = route->getF2();
 
             // this eliminates 1/6 of all nodes and avoids cost calculation and further checks,
             if(neighbour == prevNode)
@@ -210,7 +210,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             if(dir == Direction::NorthWest && neighbour != &goal)
             {
                 // Flags and harbors are allowed
-                const GO_Type got = neighbour->GetGOT();
+                const GO_Type got = neighbour->getGOT();
                 if(got != GO_Type::Flag && got != GO_Type::NobHarborbuilding)
                     continue;
             }
@@ -240,7 +240,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             {
                 // Not visited yet -> Add to list
                 neighbour->cost = cost;
-                neighbour->targetDistance = gwb_.CalcDistance(neighbour->GetPos(), goalPos);
+                neighbour->targetDistance = gwb_.CalcDistance(neighbour->getPos(), goalPos);
                 neighbour->estimate = neighbour->targetDistance + cost;
                 neighbour->last_visit = currentVisit;
                 neighbour->prev = &best;
@@ -251,9 +251,9 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
         }
 
         // For harbors also consider ship connections
-        if(best.GetGOT() != GO_Type::NobHarborbuilding)
+        if(best.getGOT() != GO_Type::NobHarborbuilding)
             continue;
-        for(const auto& sc : static_cast<const nobHarborBuilding&>(best).GetShipConnections())
+        for(const auto& sc : static_cast<const nobHarborBuilding&>(best).getShipConnections())
         {
             unsigned cost = best.cost + sc.way_costs;
 
@@ -277,7 +277,7 @@ bool RoadPathFinder::FindPathImpl(const noRoadNode& start, const noRoadNode& goa
             {
                 // Not visited yet -> Add to list
                 dest.cost = cost;
-                dest.targetDistance = gwb_.CalcDistance(dest.GetPos(), goalPos);
+                dest.targetDistance = gwb_.CalcDistance(dest.getPos(), goalPos);
                 dest.estimate = dest.targetDistance + cost;
                 dest.last_visit = currentVisit;
                 dest.prev = &best;

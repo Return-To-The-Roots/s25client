@@ -45,12 +45,12 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
 
     /// Sets the position. Usually not required as all position changes are done by the walk functions
-    void SetPos(const MapPoint& pos) { this->pos = pos; }
+    void setPos(const MapPoint& pos) { this->pos = pos; }
 
     /// Returns the direction in which the object is moving/which it is facing
-    Direction GetCurMoveDir() const { return curMoveDir; }
-    uint8_t GetAscent() const { return ascent; }
-    const EventState& GetPausedEvent() { return pauseEv; }
+    Direction getCurMoveDir() const { return curMoveDir; }
+    uint8_t getAscent() const { return ascent; }
+    const EventState& getPausedEvent() { return pauseEv; }
     /// "Turns" the object in that direction without starting to walk
     void FaceDir(Direction newDir);
     /// In aktueller Richtung ein Stück zurücklegen
@@ -62,9 +62,9 @@ public:
     /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
     DrawPoint CalcWalkingRelative() const;
     // Steht er in der zwischen 2 Wegpunkten?
-    bool IsStoppedBetweenNodes() const { return pauseEv.elapsed > 0; }
+    bool isStoppedBetweenNodes() const { return pauseEv.elapsed > 0; }
     /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
-    MapPoint GetDestinationForCurrentMove() const;
+    MapPoint getDestinationForCurrentMove() const;
     /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
-    bool IsMoving() const override;
+    bool isMoving() const override;
 };

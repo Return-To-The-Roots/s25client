@@ -23,12 +23,12 @@
 void iwBuildOrder::fillBuildOrder(const BuildOrders& build_order)
 {
     pendingBuildOrder.assign(build_order.begin(), build_order.end());
-    helpers::erase_if(pendingBuildOrder, makeIsUnusedBuilding(gwv.GetWorld().GetGGS()));
+    helpers::erase_if(pendingBuildOrder, makeIsUnusedBuilding(gwv.getWorld().getGGS()));
 }
 
 iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
     : TransmitSettingsIgwAdapter(CGI_BUILDORDER, IngameWindow::posLastOrCenter, Extent(320, 300),
-                                 _("Building sequence"), LOADER.GetImageN("io", 5)),
+                                 _("Building sequence"), LOADER.getImageN("io", 5)),
       gwv(gwv)
 {
     ctrlList* list = AddList(0, DrawPoint(15, 60), Extent(150, 220), TextureColor::Grey, NormalFont);
@@ -39,17 +39,17 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
         list->AddItem(_(BUILDING_NAMES[buildOrder])); //-V807
 
     // Nach ganz oben
-    AddImageButton(1, DrawPoint(250, 194), Extent(48, 20), TextureColor::Grey, LOADER.GetImageN("io", 215), _("Top"));
+    AddImageButton(1, DrawPoint(250, 194), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 215), _("Top"));
     // Hoch
-    AddImageButton(2, DrawPoint(250, 216), Extent(48, 20), TextureColor::Grey, LOADER.GetImageN("io", 33), _("Up"));
+    AddImageButton(2, DrawPoint(250, 216), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 33), _("Up"));
     // Runter
-    AddImageButton(3, DrawPoint(250, 238), Extent(48, 20), TextureColor::Grey, LOADER.GetImageN("io", 34), _("Down"));
+    AddImageButton(3, DrawPoint(250, 238), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 34), _("Down"));
     // Nach ganz unten
-    AddImageButton(4, DrawPoint(250, 260), Extent(48, 20), TextureColor::Grey, LOADER.GetImageN("io", 216),
+    AddImageButton(4, DrawPoint(250, 260), Extent(48, 20), TextureColor::Grey, LOADER.getImageN("io", 216),
                    _("Bottom"));
 
     // Bild der Auswahl
-    AddImage(5, DrawPoint(240, 150), LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[0]));
+    AddImage(5, DrawPoint(240, 150), LOADER.getBuildingTex(gwv.getPlayer().nation, pendingBuildOrder[0]));
 
     ctrlComboBox* combo = AddComboBox(6, DrawPoint(15, 30), Extent(290, 20), TextureColor::Grey, NormalFont, 100);
     combo->AddItem(_("Sequence of given order"));   // "Reihenfolge der Auftraggebung"
@@ -57,30 +57,30 @@ iwBuildOrder::iwBuildOrder(const GameWorldViewer& gwv)
 
     // Eintrag in Combobox auswählen
     useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
-    combo->SetSelection(useCustomBuildOrder ? 1 : 0);
+    combo->setSelection(useCustomBuildOrder ? 1 : 0);
 
     // Standard
-    AddImageButton(10, DrawPoint(200, 250), Extent(48, 30), TextureColor::Grey, LOADER.GetImageN("io", 191),
+    AddImageButton(10, DrawPoint(200, 250), Extent(48, 30), TextureColor::Grey, LOADER.getImageN("io", 191),
                    _("Default"));
 
-    list->SetSelection(0);
+    list->setSelection(0);
 }
 
 void iwBuildOrder::TransmitSettings()
 {
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
         return;
     // Wurden Einstellungen geändert?
     if(settings_changed)
     {
         // Einstellungen speichern
-        useCustomBuildOrder = GetCtrl<ctrlComboBox>(6)->GetSelection() != 0u;
+        useCustomBuildOrder = getCtrl<ctrlComboBox>(6)->getSelection() != 0u;
         BuildOrders transmitPendingBuildOrder;
         unsigned int i = 0;
         for(; i < pendingBuildOrder.size(); i++)
             transmitPendingBuildOrder[i] = pendingBuildOrder[i];
 
-        if(!wineaddon::isAddonActive(gwv.GetWorld()))
+        if(!wineaddon::isAddonActive(gwv.getWorld()))
         {
             transmitPendingBuildOrder[i++] = BuildingType::Vineyard;
             transmitPendingBuildOrder[i++] = BuildingType::Winery;
@@ -90,10 +90,10 @@ void iwBuildOrder::TransmitSettings()
         // This is not an OBB write because pendingBuildOrder does not contain the leather/wine building
         // entries when the addon is inactive. So the pendingBuildOrder list is shorter then
         // the transmitPendingBuildOrder list. See fillBuildOrder at the top of this file.
-        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
+        if(!gwv.getWorld().getGGS().isEnabled(AddonId::CHARBURNER))
             transmitPendingBuildOrder[i++] = BuildingType::Charburner;
 
-        if(!leatheraddon::isAddonActive(gwv.GetWorld()))
+        if(!leatheraddon::isAddonActive(gwv.getWorld()))
         {
             transmitPendingBuildOrder[i++] = BuildingType::Skinner;
             transmitPendingBuildOrder[i++] = BuildingType::Tannery;
@@ -111,7 +111,7 @@ void iwBuildOrder::TransmitSettings()
 
 void iwBuildOrder::msgListSelectItem(const unsigned ctrl_id, const int selection)
 {
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
         return;
     switch(ctrl_id)
     {
@@ -119,8 +119,8 @@ void iwBuildOrder::msgListSelectItem(const unsigned ctrl_id, const int selection
 
         case 0:
         {
-            GetCtrl<ctrlImage>(5)->SetImage(
-              LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[selection]));
+            getCtrl<ctrlImage>(5)->setImage(
+              LOADER.getBuildingTex(gwv.getPlayer().nation, pendingBuildOrder[selection]));
         }
         break;
     }
@@ -137,15 +137,15 @@ void iwBuildOrder::msgComboSelectItem(unsigned ctrl_id, unsigned selection)
 
 void iwBuildOrder::msgButtonClick(const unsigned ctrl_id)
 {
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
         return;
-    auto* list = GetCtrl<ctrlList>(0);
+    auto* list = getCtrl<ctrlList>(0);
 
-    if(!list->GetSelection())
+    if(!list->getSelection())
         return;
 
-    unsigned selection = *list->GetSelection();
-    unsigned numOptions = list->GetNumLines();
+    unsigned selection = *list->getSelection();
+    unsigned numOptions = list->getNumLines();
 
     // Auswahl gültig?
 
@@ -200,15 +200,15 @@ void iwBuildOrder::msgButtonClick(const unsigned ctrl_id)
             // Baureihenfolge vom Spieler kopieren
             fillBuildOrder(GAMECLIENT.default_settings.build_order);
 
-            auto* list = GetCtrl<ctrlList>(0);
+            auto* list = getCtrl<ctrlList>(0);
             list->DeleteAllItems();
 
             // Liste füllen
             for(unsigned char i = 0; i < 31; ++i)
                 list->AddItem(_(BUILDING_NAMES[pendingBuildOrder[i]]));
-            list->SetSelection(0);
+            list->setSelection(0);
 
-            GetCtrl<ctrlImage>(5)->SetImage(LOADER.GetBuildingTex(gwv.GetPlayer().nation, pendingBuildOrder[0]));
+            getCtrl<ctrlImage>(5)->setImage(LOADER.getBuildingTex(gwv.getPlayer().nation, pendingBuildOrder[0]));
 
             settings_changed = true;
         }
@@ -218,13 +218,13 @@ void iwBuildOrder::msgButtonClick(const unsigned ctrl_id)
 
 void iwBuildOrder::UpdateSettings()
 {
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
     {
-        gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
+        gwv.getPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
         fillBuildOrder(GAMECLIENT.visual_settings.build_order);
         useCustomBuildOrder = GAMECLIENT.visual_settings.useCustomBuildOrder;
     }
-    GetCtrl<ctrlComboBox>(6)->SetSelection(useCustomBuildOrder ? 1 : 0);
+    getCtrl<ctrlComboBox>(6)->setSelection(useCustomBuildOrder ? 1 : 0);
     for(unsigned char i = 0; i < pendingBuildOrder.size(); ++i)
-        GetCtrl<ctrlList>(0)->SetItemText(i, _(BUILDING_NAMES[pendingBuildOrder[i]]));
+        getCtrl<ctrlList>(0)->setItemText(i, _(BUILDING_NAMES[pendingBuildOrder[i]]));
 }

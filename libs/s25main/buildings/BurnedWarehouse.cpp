@@ -23,14 +23,14 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
     : noCoordBase(NodalObjectType::BurnedWarehouse, pos), player(player), go_out_phase(0), people(people)
 {
     // First event
-    GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);
+    getEvMgr().AddEvent(this, PHASE_LENGTH, 0);
 }
 
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
     : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), go_out_phase(sgd.PopUnsignedInt())
 {
     helpers::popContainer(sgd, people.people);
-    if(sgd.GetGameDataVersion() >= 12)
+    if(sgd.getGameDataVersion() >= 12)
         helpers::popContainer(sgd, people.armoredSoldiers);
     else
         std::fill(people.armoredSoldiers.begin(), people.armoredSoldiers.end(), 0);
@@ -62,15 +62,15 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
     PathConditionHuman pathChecker(*world);
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(pathChecker.IsNodeOk(world->GetNeighbour(pos, dir)))
+        if(pathChecker.isNodeOk(world->getNeighbour(pos, dir)))
             possibleDirs.push_back(dir);
     }
 
     if(possibleDirs.empty())
     {
         // No way out for figures -> all die and we can remove this object
-        GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
-        auto& currentPlayer = world->GetPlayer(player);
+        getEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
+        auto& currentPlayer = world->getPlayer(player);
         for(const auto i : helpers::enumRange<Job>())
             currentPlayer.DecreaseInventoryJob(i, people[i]);
         for(const auto i : helpers::enumRange<ArmoredSoldier>())
@@ -114,11 +114,11 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
                     auto const armoredSoldier = jobEnumToAmoredSoldierEnum(job);
                     if(people[armoredSoldier] > 0)
                     {
-                        figure.SetArmor(true);
+                        figure.setArmor(true);
                         people[armoredSoldier]--;
                     }
                 }
-                figure.StartWandering(GetObjId());
+                figure.StartWandering(getObjId());
                 figure.StartWalking(curDir);
             }
         }
@@ -129,12 +129,12 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
     if(go_out_phase == GO_OUT_PHASES)
     {
         // All done
-        GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
+        getEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
         // There shouldn't be any more
         for(unsigned int num : people.people)
             RTTR_Assert(num == 0);
         for(unsigned int num : people.armoredSoldiers)
             RTTR_Assert(num == 0);
     } else // Not done yet
-        GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);
+        getEvMgr().AddEvent(this, PHASE_LENGTH, 0);
 }

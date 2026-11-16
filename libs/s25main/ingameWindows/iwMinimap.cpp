@@ -27,7 +27,7 @@ const unsigned short BUTTON_WINDOW_SPACE = 5;
 
 iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
     : IngameWindow(CGI_MINIMAP, IngameWindow::posLastOrCenter, MINIMAP_SIZE, _("Outline map"),
-                   LOADER.GetImageN("resource", 41)),
+                   LOADER.getImageN("resource", 41)),
       extended(SETTINGS.ingame.minimapExtended)
 {
     AddCtrl(std::make_unique<ctrlIngameMinimap>(this, 0, DrawPoint(contentOffset), Extent::all(WINDOW_MAP_SPACE),
@@ -37,12 +37,12 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
     DrawPoint curPos(contentOffset.x + WINDOW_MAP_SPACE, 0);
     for(unsigned i = 0; i < 3; ++i)
     {
-        AddImageButton(i + 1, curPos, BUTTON_SIZE, TextureColor::Grey, LOADER.GetImageN("io", 85 + i));
+        AddImageButton(i + 1, curPos, BUTTON_SIZE, TextureColor::Grey, LOADER.getImageN("io", 85 + i));
         curPos.x += BUTTON_SIZE.x;
     }
 
     // Fenster vergrößern/verkleinern
-    AddImageButton(4, DrawPoint(0, 0), BUTTON_SIZE, TextureColor::Grey, LOADER.GetImageN("io", 109));
+    AddImageButton(4, DrawPoint(0, 0), BUTTON_SIZE, TextureColor::Grey, LOADER.getImageN("io", 109));
 
     Resize(extended ? MINIMAP_SIZE_BIG : MINIMAP_SIZE);
 }
@@ -51,7 +51,7 @@ iwMinimap::iwMinimap(IngameMinimap& minimap, GameWorldView& gwv)
 void iwMinimap::Resize(const Extent& newSize)
 {
     IngameWindow::Resize(newSize);
-    auto* im = GetCtrl<ctrlIngameMinimap>(0);
+    auto* im = getCtrl<ctrlIngameMinimap>(0);
 
     im->Resize(newSize - contentOffset - contentOffsetEnd);
 
@@ -59,32 +59,32 @@ void iwMinimap::Resize(const Extent& newSize)
     im->RemoveBoundingBox(Extent(BUTTON_SIZE.x * 4 + WINDOW_MAP_SPACE * 2, 0));
 
     // Fensterbreite anpassen
-    SetIwSize(im->GetSize() + Extent(0, WINDOW_MAP_SPACE + BUTTON_MAP_SPACE + BUTTON_SIZE.y + BUTTON_WINDOW_SPACE));
+    setIwSize(im->getSize() + Extent(0, WINDOW_MAP_SPACE + BUTTON_MAP_SPACE + BUTTON_SIZE.y + BUTTON_WINDOW_SPACE));
 
     // Buttonpositionen anpassen, nach unten verschieben
     for(unsigned i = 1; i < 4; ++i)
     {
-        auto* ctrl = GetCtrl<Window>(i);
-        DrawPoint ctrlPos = ctrl->GetPos();
-        ctrlPos.y = GetRightBottomBoundary().y - BUTTON_SIZE.y - BUTTON_WINDOW_SPACE;
-        ctrl->SetPos(ctrlPos);
+        auto* ctrl = getCtrl<Window>(i);
+        DrawPoint ctrlPos = ctrl->getPos();
+        ctrlPos.y = getRightBottomBoundary().y - BUTTON_SIZE.y - BUTTON_WINDOW_SPACE;
+        ctrl->setPos(ctrlPos);
     }
 
     // Vergrößern/Verkleinern-Button nach unten rechts verschieben
-    GetCtrl<Window>(4)->SetPos(GetRightBottomBoundary() - BUTTON_SIZE
+    getCtrl<Window>(4)->setPos(getRightBottomBoundary() - BUTTON_SIZE
                                - DrawPoint(WINDOW_MAP_SPACE, BUTTON_WINDOW_SPACE));
 
     // Bild vom Vergrößern/Verkleinern-Button anpassen
-    GetCtrl<ctrlImageButton>(4)->SetImage(LOADER.GetTextureN("io", extended ? 108 : 109));
+    getCtrl<ctrlImageButton>(4)->setImage(LOADER.getTextureN("io", extended ? 108 : 109));
 }
 
 void iwMinimap::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case 1: GetCtrl<ctrlIngameMinimap>(0)->ToggleTerritory(); break;
-        case 2: GetCtrl<ctrlIngameMinimap>(0)->ToggleHouses(); break;
-        case 3: GetCtrl<ctrlIngameMinimap>(0)->ToggleRoads(); break;
+        case 1: getCtrl<ctrlIngameMinimap>(0)->ToggleTerritory(); break;
+        case 2: getCtrl<ctrlIngameMinimap>(0)->ToggleHouses(); break;
+        case 3: getCtrl<ctrlIngameMinimap>(0)->ToggleRoads(); break;
         case 4:
         {
             // Fenster vergrößern/verkleinern

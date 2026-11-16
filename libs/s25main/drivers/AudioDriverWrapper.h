@@ -57,15 +57,15 @@ public:
     void StopMusic();
 
     /// Wird ein Sound (noch) abgespielt?
-    bool IsEffectPlaying(EffectPlayId play_id);
+    bool isEffectPlaying(EffectPlayId play_id);
 
     /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
     void ChangeVolume(EffectPlayId play_id, uint8_t volume);
 
-    void SetMasterEffectVolume(uint8_t volume);
-    void SetMusicVolume(uint8_t volume);
+    void setMasterEffectVolume(uint8_t volume);
+    void setMusicVolume(uint8_t volume);
 
-    std::string GetName() const;
+    std::string getName() const;
 
 private:
     using Handle = std::unique_ptr<driver::IAudioDriver, void (*)(driver::IAudioDriver*)>;

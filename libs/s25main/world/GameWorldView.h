@@ -85,19 +85,19 @@ class GameWorldView
 public:
     GameWorldView(const GameWorldViewer& gwv, const Position& pos, const Extent& size);
 
-    const GameWorldViewer& GetViewer() const { return gwv; }
-    const GameWorldBase& GetWorld() const;
-    SoundManager& GetSoundMgr();
+    const GameWorldViewer& getViewer() const { return gwv; }
+    const GameWorldBase& getWorld() const;
+    SoundManager& getSoundMgr();
 
-    void SetPos(const Position& newPos) { origin_ = newPos; }
-    Position GetPos() const { return origin_; }
-    Extent GetSize() const { return size_; }
+    void setPos(const Position& newPos) { origin_ = newPos; }
+    Position getPos() const { return origin_; }
+    Extent getSize() const { return size_; }
 
     /// Set target zoom factor and start zooming if smoothTransition is true
     /// Returns actual zoom factor used, potentially clamped
-    float SetZoomFactor(float zoomFactor, bool smoothTransition = true);
-    float GetCurrentTargetZoomFactor() const;
-    void SetNextZoomFactor();
+    float setZoomFactor(float zoomFactor, bool smoothTransition = true);
+    float getCurrentTargetZoomFactor() const;
+    void setNextZoomFactor();
 
     // Converts a view coordinate to map position
     Position ViewPosToMap(Position pos) const;
@@ -125,10 +125,10 @@ public:
     /// Springt zur letzten Position, bevor man "weggesprungen" ist
     void MoveToLastPosition();
 
-    DrawPoint GetOffset() const { return offset; }
+    DrawPoint getOffset() const { return offset; }
 
     /// Get the radius in tiles for a building type (worker reach, territory influence, attack range, etc.)
-    unsigned GetBuildingRadius(BuildingType bld) const;
+    unsigned getBuildingRadius(BuildingType bld) const;
 
     /// Add a debug node printer
     void AddDrawNodeCallback(IDrawNodeCallback* newCallback);
@@ -148,12 +148,12 @@ public:
     static DrawPoint SnapToNearestCopy(DrawPoint pt, DrawPoint ref, Extent mapSize);
 
     /// Gibt selektierten Punkt zurück
-    MapPoint GetSelectedPt() const { return selPt; }
+    MapPoint getSelectedPt() const { return selPt; }
 
     /// Gibt ersten Punkt an, der beim Zeichnen angezeigt wird
-    Position GetFirstPt() const { return firstPt; }
+    Position getFirstPt() const { return firstPt; }
     /// Gibt letzten Punkt an, der beim Zeichnen angezeigt wird
-    Position GetLastPt() const { return lastPt; }
+    Position getLastPt() const { return lastPt; }
 
     void Resize(const Extent& newSize);
 

@@ -27,24 +27,24 @@ dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg)
     : Desktop(splashImg.get()), splashImg(std::move(splashImg)), isLoading(false), isLoaded(false)
 {
     background->setInterpolateTexture(false);
-    WINDOWMANAGER.SetCursor(Cursor::None);
+    WINDOWMANAGER.setCursor(Cursor::None);
 }
 
 dskSplash::~dskSplash()
 {
-    WINDOWMANAGER.SetCursor();
+    WINDOWMANAGER.setCursor();
 }
 
-void dskSplash::SetActive(bool activate)
+void dskSplash::setActive(bool activate)
 {
-    Desktop::SetActive(activate);
-    if(activate && !GetCtrl<ctrlTimer>(0))
+    Desktop::setActive(activate);
+    if(activate && !getCtrl<ctrlTimer>(0))
         AddTimer(0, 1ms);
 }
 
 void dskSplash::msgTimer(const unsigned ctrl_id)
 {
-    GetCtrl<ctrlTimer>(ctrl_id)->Stop();
+    getCtrl<ctrlTimer>(ctrl_id)->Stop();
     if(ctrl_id == 0)
         AddTimer(1, 1ms);
     else if(ctrl_id == 1 && !isLoaded && !isLoading)
@@ -70,9 +70,9 @@ void dskSplash::LoadFiles()
     {
         isLoaded = true;
         AddTimer(2, 5s);
-        SetFpsDisplay(true);
+        setFpsDisplay(true);
         if(loader.getPlaylist())
-            MUSICPLAYER.SetPlaylist(std::move(*loader.getPlaylist()));
+            MUSICPLAYER.setPlaylist(std::move(*loader.getPlaylist()));
         if(SETTINGS.sound.musicEnabled)
             MUSICPLAYER.Play();
 

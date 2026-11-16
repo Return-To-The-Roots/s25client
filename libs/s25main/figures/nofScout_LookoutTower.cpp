@@ -38,7 +38,7 @@ void nofScout_LookoutTower::WorkplaceReached()
 
     // Und Post versenden
     SendPostMessage(player,
-                    std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), _("Lookout-tower occupied"),
+                    std::make_unique<PostMsgWithBuilding>(getEvMgr().getCurrentGF(), _("Lookout-tower occupied"),
                                                           PostCategory::Military, *workplace));
 }
 

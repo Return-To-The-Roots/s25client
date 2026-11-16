@@ -16,14 +16,14 @@ void PlaceHarborPosition(Map& map, const MapPoint& position)
 
     auto& textures = map.textureMap;
 
-    auto harborTexture = textures.Find(IsBuildableCoast);
+    auto harborTexture = textures.Find(isBuildableCoast);
     auto triangles = GetTriangles(position, map.size);
 
     auto isWater = [&textures](const MapPoint& pt) { return textures.Any(pt, IsWater); };
 
     for(const Triangle& triangle : triangles)
     {
-        textures.Set(triangle, harborTexture);
+        textures.set(triangle, harborTexture);
     }
 
     for(const Triangle& triangle : triangles)
@@ -42,8 +42,8 @@ std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vec
 
     const auto isCoast = [&map](const MapPoint& pt) {
         const auto allWater = [&map](const MapPoint& p) { return map.textureMap.All(p, IsWater); };
-        return map.textureMap.Any(pt, IsLand) && map.textureMap.Any(pt, IsWater)
-               && helpers::contains_if(map.getTextures().GetNeighbours(pt), allWater);
+        return map.textureMap.Any(pt, isLand) && map.textureMap.Any(pt, IsWater)
+               && helpers::contains_if(map.getTextures().getNeighbours(pt), allWater);
     };
 
     RTTR_FOREACH_PT(MapPoint, map.size)

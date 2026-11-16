@@ -50,13 +50,13 @@ protected:
 public:
     void Serialize(SerializedGameData& sgd) const override;
 
-    auto GetLeavingFigures() const { return helpers::nonNullPtrSpan(leave_house); }
+    auto getLeavingFigures() const { return helpers::nonNullPtrSpan(leave_house); }
 
     /// Gibt Verteidiger zurück
-    const nofDefender* GetDefender() const { return defender_; }
+    const nofDefender* getDefender() const { return defender_; }
 
     /// Compares according to build time (Age): Bigger objIds are "younger"
-    bool operator<(const nobBaseMilitary& other) const noexcept { return GetObjId() > other.GetObjId(); }
+    bool operator<(const nobBaseMilitary& other) const noexcept { return getObjId() > other.getObjId(); }
 
     /// Meldet ein neues "Rausgeh"-Event an, falls gerade keiner rausgeht
     /// (damit nicht alle auf einmal rauskommen), für Lager- und Militärhäuser)
@@ -72,7 +72,7 @@ public:
     void LinkAggressor(nofAttacker& soldier) { aggressors.push_back(&soldier); }
     virtual void UnlinkAggressor(nofAttacker& soldier)
     {
-        RTTR_Assert(IsAggressor(soldier));
+        RTTR_Assert(isAggressor(soldier));
         aggressors.remove(&soldier);
     }
 
@@ -80,7 +80,7 @@ public:
     void LinkAggressiveDefender(nofAggressiveDefender& soldier) { aggressive_defenders.push_back(&soldier); }
     void UnlinkAggressiveDefender(nofAggressiveDefender& soldier)
     {
-        RTTR_Assert(IsAggressiveDefender(soldier));
+        RTTR_Assert(isAggressiveDefender(soldier));
         aggressive_defenders.remove(&soldier);
     }
 
@@ -112,19 +112,19 @@ public:
     virtual bool DefendersAvailable() const = 0;
 
     /// Return the list of all current aggressors, that is enemy soldiers currently attacking this military building.
-    const std::list<nofAttacker*>& GetAggressors() const { return aggressors; }
+    const std::list<nofAttacker*>& getAggressors() const { return aggressors; }
 
     /// Return true if the military building is under attack.
-    bool IsUnderAttack() const { return !aggressors.empty(); };
+    bool isUnderAttack() const { return !aggressors.empty(); };
 
     /// Return whether this building can be attacked by the given player.
-    virtual bool IsAttackable(unsigned playerIdx) const;
+    virtual bool isAttackable(unsigned playerIdx) const;
 
     /// Debugging
-    bool IsAggressor(const nofAttacker& attacker) const;
-    bool IsAggressiveDefender(const nofAggressiveDefender& soldier) const;
-    bool IsOnMission(const nofActiveSoldier& soldier) const;
-    const std::list<nofAggressiveDefender*>& GetAggresiveDefenders() const { return aggressive_defenders; }
+    bool isAggressor(const nofAttacker& attacker) const;
+    bool isAggressiveDefender(const nofAggressiveDefender& soldier) const;
+    bool isOnMission(const nofActiveSoldier& soldier) const;
+    const std::list<nofAggressiveDefender*>& getAggresiveDefenders() const { return aggressive_defenders; }
 
     // Vergleicht Gebäude anhand ihrer Bauzeit, um eine geordnete Reihenfolge hinzubekommen
     struct Comparer

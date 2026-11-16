@@ -22,8 +22,8 @@ public:
     /// Deletes all events and objects to be killed. Then resets counters
     void Clear();
 
-    unsigned GetNumActiveEvents() const { return numActiveEvents; }
-    unsigned GetEventInstanceCtr() const { return eventInstanceCtr; }
+    unsigned getNumActiveEvents() const { return numActiveEvents; }
+    unsigned getEventInstanceCtr() const { return eventInstanceCtr; }
 
     /// Increase the GF# and execute all events of that GF
     void ExecuteNextGF();
@@ -44,14 +44,14 @@ public:
     void Serialize(SerializedGameData& sgd) const;
     void Deserialize(SerializedGameData& sgd);
 
-    unsigned GetNextEventInstanceId();
+    unsigned getNextEventInstanceId();
 
-    unsigned GetCurrentGF() const { return currentGF; }
+    unsigned getCurrentGF() const { return currentGF; }
 
     /// Return true if the object has any active events. SLOW!
     bool ObjectHasEvents(const GameObject& obj);
     /// Return true if the object will be destroyed after the current GF
-    bool IsObjectInKillList(const GameObject& obj);
+    bool isObjectInKillList(const GameObject& obj);
 
 protected:
     // Use list to allow removing of events while iterating (Event A can cause Event B in the same GF to be removed)
@@ -76,5 +76,5 @@ protected:
     /// Destroy all objects in the kill list
     void DestroyCurrentObjects();
     /// Get all events in the order they will be processed
-    std::vector<const GameEvent*> GetEvents() const;
+    std::vector<const GameEvent*> getEvents() const;
 };

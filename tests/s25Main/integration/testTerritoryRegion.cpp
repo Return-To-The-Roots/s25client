@@ -23,7 +23,7 @@
 
 BOOST_AUTO_TEST_SUITE(TerritoryRegionTestSuite)
 
-BOOST_AUTO_TEST_CASE(IsPointValid)
+BOOST_AUTO_TEST_CASE(isPointValid)
 {
     // Max tested point is (20, 20) -> size > 20
     const MapExtent worldSize(24, 22);
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         {
             // Result for this particular point
             bool result = helpers::contains(results, pt);
-            BOOST_TEST_REQUIRE(TerritoryRegion::IsPointValid(worldSize, i, pt) == result);
+            BOOST_TEST_REQUIRE(TerritoryRegion::isPointValid(worldSize, i, pt) == result);
         }
     }
 
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
                     pt.x += y - 10;
                 else if(y >= 13)
                     pt.x += 15 - y;
-                BOOST_TEST_REQUIRE(TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt));
+                BOOST_TEST_REQUIRE(TerritoryRegion::isPointValid(worldSize, rectAreas[i], pt));
                 if(i == 0)
                     results.insert(pt);
             }
@@ -158,17 +158,17 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
         // Those must be outside
         for(MapPoint pt : outsidePts)
         {
-            BOOST_TEST_REQUIRE(!TerritoryRegion::IsPointValid(worldSize, rectArea, pt));
+            BOOST_TEST_REQUIRE(!TerritoryRegion::isPointValid(worldSize, rectArea, pt));
         }
     }
     // Border points are unspecified, but must be consistently either inside or outside
     for(MapPoint pt : borderPts)
     {
-        const bool isValid = TerritoryRegion::IsPointValid(worldSize, rectAreas[0], pt);
+        const bool isValid = TerritoryRegion::isPointValid(worldSize, rectAreas[0], pt);
         if(isValid)
             results.insert(pt);
         for(unsigned i = 1; i < rectAreas.size(); i++)
-            BOOST_TEST_REQUIRE(TerritoryRegion::IsPointValid(worldSize, rectAreas[i], pt) == isValid);
+            BOOST_TEST_REQUIRE(TerritoryRegion::isPointValid(worldSize, rectAreas[i], pt) == isValid);
     }
 
     // Note the usage of width and height to include the border points
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(IsPointValid)
                 // If the point is in the set, it is in the small rect and should not be in the big rect with this as a
                 // hole
                 const bool result = !helpers::contains(results, pt);
-                const bool isValid = TerritoryRegion::IsPointValid(worldSize, fullArea, pt);
+                const bool isValid = TerritoryRegion::isPointValid(worldSize, fullArea, pt);
                 BOOST_TEST_INFO(" at " << pt);
                 BOOST_TEST_REQUIRE(isValid == result);
             }
@@ -211,13 +211,13 @@ using WorldFixtureEmpty2P = WorldFixture<CreateEmptyWorld, 2, 30, 10>;
 BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
 {
     std::array<MapPoint, 3> milBldPos;
-    milBldPos[0] = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + Position(2, 0));
+    milBldPos[0] = world.MakeMapPoint(world.getPlayer(0).getHQPos() + Position(2, 0));
     milBldPos[1] = world.MakeMapPoint(milBldPos[0] + Position(5, 4));
     milBldPos[2] = world.MakeMapPoint(milBldPos[0] + Position(5, -4));
     // Distance to HQ must be less than distance to other blds or they will be destroyed on capture
-    BOOST_TEST_REQUIRE(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1
+    BOOST_TEST_REQUIRE(world.CalcDistance(milBldPos[0], world.getPlayer(0).getHQPos()) + 1
                        < world.CalcDistance(milBldPos[0], milBldPos[1]));
-    BOOST_TEST_REQUIRE(world.CalcDistance(milBldPos[0], world.GetPlayer(0).GetHQPos()) + 1
+    BOOST_TEST_REQUIRE(world.CalcDistance(milBldPos[0], world.getPlayer(0).getHQPos()) + 1
                        < world.CalcDistance(milBldPos[0], milBldPos[2]));
     // Create them in different orders. 3 blds -> 6 orders
     for(unsigned i = 0; i < 6; i++)
@@ -249,63 +249,63 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegion, WorldFixtureEmpty2P)
         // bld 0 last as it would destroy others
         for(int j = 2; j >= 0; --j)
         {
-            milBlds[j] = world.GetSpecObj<nobBaseMilitary>(milBldPos[j]);
-            MapPoint flagPt = milBlds[j]->GetFlagPos();
-            auto sld = std::make_unique<nofPassiveSoldier>(flagPt, milBlds[j]->GetPlayer(), milBlds[j],
+            milBlds[j] = world.getSpecObj<nobBaseMilitary>(milBldPos[j]);
+            MapPoint flagPt = milBlds[j]->getFlagPos();
+            auto sld = std::make_unique<nofPassiveSoldier>(flagPt, milBlds[j]->getPlayer(), milBlds[j],
                                                            static_cast<nobMilitary*>(milBlds[j]), 0);
             world.AddFigure(flagPt, std::move(sld)).ActAtFirst();
         }
-        milBlds[3] = world.GetSpecObj<nobBaseMilitary>(world.GetPlayer(0).GetHQPos());
-        milBlds[4] = world.GetSpecObj<nobBaseMilitary>(world.GetPlayer(1).GetHQPos());
+        milBlds[3] = world.getSpecObj<nobBaseMilitary>(world.getPlayer(0).getHQPos());
+        milBlds[4] = world.getSpecObj<nobBaseMilitary>(world.getPlayer(1).getHQPos());
         RTTR_SKIP_GFS(30);
 
-        TerritoryRegion region(Position(0, 0), Extent(world.GetSize()), world);
+        TerritoryRegion region(Position(0, 0), Extent(world.getSize()), world);
         sortedMilitaryBlds buildings = world.LookForMilitaryBuildings(MapPoint(0, 0), 99);
         BOOST_TEST_REQUIRE(buildings.size() == 5u);
         for(const nobBaseMilitary* bld : buildings)
             region.CalcTerritoryOfBuilding(*bld);
         // Check that TerritoryRegion assigned owners as expected
-        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        RTTR_FOREACH_PT(MapPoint, world.getSize())
         {
             uint8_t owner = 0;
             unsigned bestDist = 1000;
             unsigned bestID = 0;
             for(const nobBaseMilitary* bld : milBlds)
             {
-                unsigned distance = world.CalcDistance(pt, bld->GetPos());
+                unsigned distance = world.CalcDistance(pt, bld->getPos());
                 // The closest bld gets the point. If 2 players are tied, the younger bld gets it
-                if(distance > bestDist || distance > bld->GetMilitaryRadius())
+                if(distance > bestDist || distance > bld->getMilitaryRadius())
                     continue;
-                if(distance < bestDist || bld->GetObjId() > bestID)
+                if(distance < bestDist || bld->getObjId() > bestID)
                 {
-                    owner = bld->GetPlayer() + 1;
+                    owner = bld->getPlayer() + 1;
                     bestDist = distance;
-                    bestID = bld->GetObjId();
+                    bestID = bld->getObjId();
                 }
             }
             BOOST_TEST_INFO(pt << " iteration " << i);
-            BOOST_TEST_REQUIRE(region.GetOwner(Position(pt)) == owner);
+            BOOST_TEST_REQUIRE(region.getOwner(Position(pt)) == owner);
         }
         // Check that all world points that should have an owner do have one
-        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        RTTR_FOREACH_PT(MapPoint, world.getSize())
         {
-            uint8_t owner = region.GetOwner(Position(pt));
+            uint8_t owner = region.getOwner(Position(pt));
             BOOST_TEST_INFO(pt << " iteration " << i);
             if(!owner)
-                BOOST_TEST_REQUIRE(world.GetNode(pt).owner == 0u);
+                BOOST_TEST_REQUIRE(world.getNode(pt).owner == 0u);
             else
-                BOOST_TEST_REQUIRE(world.GetNode(pt).owner != 0u);
+                BOOST_TEST_REQUIRE(world.getNode(pt).owner != 0u);
         }
         for(const MapPoint pt : milBldPos)
         {
             world.DestroyNO(pt);
             world.DestroyNO(pt); // Destroy fire
             // Pause figure
-            for(const noBase& sld : world.GetFigures(pt))
+            for(const noBase& sld : world.getFigures(pt))
             {
-                std::vector<const GameEvent*> evts = em.GetObjEvents(sld);
+                std::vector<const GameEvent*> evts = em.getObjEvents(sld);
                 for(const GameEvent* ev : evts)
-                    em.RescheduleEvent(ev, em.GetCurrentGF() + 10000);
+                    em.RescheduleEvent(ev, em.getCurrentGF() + 10000);
             }
         }
     }
@@ -315,14 +315,14 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForHQs, WorldFixtureEmpty2P)
 {
     // All points should belong to the HQ closest with and without improved alliances
 
-    const MapPoint hq0Pos = world.GetPlayer(0).GetHQPos();
-    const MapPoint hq1Pos = world.GetPlayer(1).GetHQPos();
+    const MapPoint hq0Pos = world.getPlayer(0).getHQPos();
+    const MapPoint hq1Pos = world.getPlayer(1).getHQPos();
     auto distance = hq1Pos.x - hq0Pos.x;
 
     for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
-        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 1); }
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 1); }
     for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq1Pos, distance / 2))
-        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 2); }
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 2); }
 
     // Remove HQ 1 and its fire to place it closer to HQ 0
     world.DestroyNO(hq1Pos);
@@ -333,22 +333,22 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForHQs, WorldFixtureEmpty2P)
     const MapPoint newHq1Pos = hq0Pos + MapPoint(distance, 0);
     BuildingFactory::CreateBuilding(world, BuildingType::Headquarters, newHq1Pos, 1, Nation::Africans);
     for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
-        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 1); }
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 1); }
     for(const MapPoint pt : world.GetPointsInRadiusWithCenter(newHq1Pos, distance / 2))
-        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 2); }
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 2); }
 }
 
 // HQ radius = 9
 BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForDestroyedHQ, WorldFixtureEmpty2P)
 {
-    const MapPoint hq0Pos = world.GetPlayer(0).GetHQPos();
-    const MapPoint hq1Pos = world.GetPlayer(1).GetHQPos();
+    const MapPoint hq0Pos = world.getPlayer(0).getHQPos();
+    const MapPoint hq1Pos = world.getPlayer(1).getHQPos();
     auto distance = hq1Pos.x - hq0Pos.x;
 
     for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
-        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 1); }
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 1); }
     for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq1Pos, distance / 2))
-        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == 2); }
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 2); }
 
     this->ggs.setSelection(AddonId::NO_ALLIED_PUSH, true);
 
@@ -357,10 +357,10 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForDestroyedHQ, WorldFixtureEmpty2P
     world.DestroyNO(hq1Pos);
 
     auto hq0Region = world.GetPointsInRadiusWithCenter(hq0Pos, 9);
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         auto owner = std::find(std::begin(hq0Region), std::end(hq0Region), pt) != std::end(hq0Region) ? 1 : 0;
-        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.GetNode(pt).owner == owner); }
+        BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == owner); }
     }
 }
 

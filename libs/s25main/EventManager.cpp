@@ -50,8 +50,8 @@ void EventManager::Clear()
 const GameEvent* EventManager::AddEventToQueue(const GameEvent* event)
 {
     // Should be in the future!
-    RTTR_Assert(event->GetTargetGF() > currentGF);
-    events[event->GetTargetGF()].push_back(event);
+    RTTR_Assert(event->getTargetGF() > currentGF);
+    events[event->getTargetGF()].push_back(event);
     ++numActiveEvents;
     return event;
 }
@@ -61,7 +61,7 @@ const GameEvent* EventManager::AddEvent(GameObject* obj, unsigned gf_length, uns
     RTTR_Assert(obj);
     RTTR_Assert(gf_length);
 
-    return AddEventToQueue(new GameEvent(GetNextEventInstanceId(), obj, currentGF, gf_length, id));
+    return AddEventToQueue(new GameEvent(getNextEventInstanceId(), obj, currentGF, gf_length, id));
 }
 
 const GameEvent* EventManager::AddEvent(GameObject* obj, unsigned gf_length, unsigned id, unsigned gf_elapsed)
@@ -69,10 +69,10 @@ const GameEvent* EventManager::AddEvent(GameObject* obj, unsigned gf_length, uns
     RTTR_Assert(gf_length > gf_elapsed);
     // Anfang des Events in die Vergangenheit zurückverlegen
     RTTR_Assert(currentGF >= gf_elapsed);
-    return AddEventToQueue(new GameEvent(GetNextEventInstanceId(), obj, currentGF - gf_elapsed, gf_length, id));
+    return AddEventToQueue(new GameEvent(getNextEventInstanceId(), obj, currentGF - gf_elapsed, gf_length, id));
 }
 
-unsigned EventManager::GetNextEventInstanceId()
+unsigned EventManager::getNextEventInstanceId()
 {
     unsigned result = eventInstanceCtr++;
     // Overflow detection. Highly unlikely
@@ -104,7 +104,7 @@ void EventManager::DestroyCurrentObjects()
     killList.clear();
 }
 
-std::vector<const GameEvent*> EventManager::GetEvents() const
+std::vector<const GameEvent*> EventManager::getEvents() const
 {
     std::vector<const GameEvent*> nextEv;
     for(const auto& event : events)
@@ -135,7 +135,7 @@ void EventManager::ExecuteEvents(const EventMap::iterator& itEvents)
     {
         const GameEvent* ev = *e_it;
         RTTR_Assert(ev->obj);
-        RTTR_Assert(ev->obj->GetObjId() <= GameObject::GetObjIDCounter());
+        RTTR_Assert(ev->obj->getObjId() <= GameObject::getObjIDCounter());
 
         curActiveEvent = ev;
         ev->obj->HandleEvent(ev->id);
@@ -153,7 +153,7 @@ void EventManager::Serialize(SerializedGameData& sgd) const
     RTTR_Assert(killList.empty());
 
     // Gather all events in the correct order
-    std::vector<const GameEvent*> saveEvents = GetEvents();
+    std::vector<const GameEvent*> saveEvents = getEvents();
     if(saveEvents.size() != numActiveEvents)
     {
         boost::format eventCtError(_("Event count mismatch. Found events: %1%. Expected: %2%.\n"));
@@ -187,10 +187,10 @@ void EventManager::Deserialize(SerializedGameData& sgd)
     {
         for(const GameEvent* ev : it.second)
         {
-            if(ev->GetInstanceId() >= eventInstanceCtr)
+            if(ev->getInstanceId() >= eventInstanceCtr)
             {
                 boost::format eventIdError(_("Invalid event instance id. Found: %1%. Expected less than %2%.\n"));
-                throw SerializedGameData::Error((eventIdError % ev->GetInstanceId() % eventInstanceCtr).str());
+                throw SerializedGameData::Error((eventIdError % ev->getInstanceId() % eventInstanceCtr).str());
             }
         }
     }
@@ -209,7 +209,7 @@ bool EventManager::ObjectHasEvents(const GameObject& obj)
     return false;
 }
 
-bool EventManager::IsObjectInKillList(const GameObject& obj)
+bool EventManager::isObjectInKillList(const GameObject& obj)
 {
     return helpers::contains(killList, &obj);
 }
@@ -233,7 +233,7 @@ void EventManager::RemoveEvent(const GameEvent*& ep)
 void EventManager::RemoveEventFromQueue(const GameEvent& event)
 {
     RTTR_Assert(curActiveEvent != &event);
-    auto itEventsAtTime = events.find(event.GetTargetGF());
+    auto itEventsAtTime = events.find(event.getTargetGF());
     if(itEventsAtTime != events.end())
     {
         EventList& eventsAtTime = itEventsAtTime->second;
@@ -262,7 +262,7 @@ void EventManager::RemoveEventFromQueue(const GameEvent& event)
 
 void EventManager::AddToKillList(GameObject* obj)
 {
-    RTTR_Assert(!IsObjectInKillList(assertNonNull(obj)));
+    RTTR_Assert(!isObjectInKillList(assertNonNull(obj)));
     killList.emplace_back(obj);
 }
 

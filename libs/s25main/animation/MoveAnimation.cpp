@@ -9,7 +9,7 @@
 #include <cmath>
 
 MoveAnimation::MoveAnimation(Window* element, DrawPoint newPos, unsigned animTime, RepeatType repeat)
-    : Animation(element, 2, animTime, repeat), origPos_(element->GetPos()), newPos_(newPos)
+    : Animation(element, 2, animTime, repeat), origPos_(element->getPos()), newPos_(newPos)
 {
     Point<double> diff(newPos_ - origPos_);
     diff = elMax(Point<double>::all(1), diff); // Avoid division by zero
@@ -33,5 +33,5 @@ void MoveAnimation::doUpdate(Window* element, double nextFramepartTime)
     DrawPoint curDiffInt;
     curDiffInt.x = std::lround(curDiff.x);
     curDiffInt.y = std::lround(curDiff.y);
-    element->SetPos(curDiffInt + origPos_);
+    element->setPos(curDiffInt + origPos_);
 }

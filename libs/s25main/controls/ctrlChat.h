@@ -24,7 +24,7 @@ public:
     void AddMessage(const std::string& time_string, const std::string& player, unsigned player_color,
                     const std::string& msg, unsigned msg_color);
     /// Setzt Farbe der Zeitangaben.
-    void SetTimeColor(unsigned color) { time_color = color; }
+    void setTimeColor(unsigned color) { time_color = color; }
 
     bool msgMouseMove(const MouseCoords& mc) override;
     bool msgLeftDown(const MouseCoords& mc) override;

@@ -71,28 +71,28 @@ public:
     /// Draw all contained controls if the window is visible
     void Draw();
     /// Get the current position relative to the parent window
-    DrawPoint GetPos() const;
+    DrawPoint getPos() const;
     /// Get the absolute position for drawing
-    DrawPoint GetDrawPos() const;
+    DrawPoint getDrawPos() const;
     /// Get the size of the window
-    Extent GetSize() const;
+    Extent getSize() const;
     /// Get the extent of the window in absolute coordinates
-    Rect GetDrawRect() const;
+    Rect getDrawRect() const;
     /// Get the actual extents of the rect
     /// (might be different to the draw rect if the window resizes according to content)
-    virtual Rect GetBoundaryRect() const;
+    virtual Rect getBoundaryRect() const;
     /// Change the size
     virtual void Resize(const Extent& newSize) { size_ = newSize; }
     /// Change only the width
-    void SetWidth(unsigned width) { Resize(Extent(width, size_.y)); }
+    void setWidth(unsigned width) { Resize(Extent(width, size_.y)); }
     /// Change only the height
-    void SetHeight(unsigned height) { Resize(Extent(size_.x, height)); }
+    void setHeight(unsigned height) { Resize(Extent(size_.x, height)); }
     /// Send a keyboard message to all controls, return true if handled
     bool RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
     /// Send a mouse message to all controls, return true if handled
     bool RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
     /// Make the window active or inactive. Inactive controls e.g. don't react to events
-    virtual void SetActive(bool activate = true);
+    virtual void setActive(bool activate = true);
     /// Activate/deactivate only the elements of the window
     void ActivateControls(bool activate = true);
     /// Lock a region which won't react to mouse events anymore except for the given window/control.
@@ -101,39 +101,39 @@ public:
     /// Release the region locked for the given window/control.
     void FreeRegion(Window* window);
     /// Check if the given point is in a region locked by any window other than exception
-    bool IsInLockedRegion(const Position& pos, const Window* exception = nullptr) const;
+    bool isInLockedRegion(const Position& pos, const Window* exception = nullptr) const;
     /// Check if the mouse is hovering over this control, i.e. inside its boundary.
-    bool IsMouseOver() const;
+    bool isMouseOver() const;
     /// Check if the given mouse position inside the boundary of this control.
-    bool IsMouseOver(const MouseCoords& mousePos) const;
+    bool isMouseOver(const MouseCoords& mousePos) const;
 
     /// Set the position for the window
-    void SetPos(const DrawPoint& newPos);
+    void setPos(const DrawPoint& newPos);
 
     // Make the window visible or hide it
-    virtual void SetVisible(bool visible) { visible_ = visible; }
-    bool IsVisible() const { return visible_; }
+    virtual void setVisible(bool visible) { visible_ = visible; }
+    bool isVisible() const { return visible_; }
     bool IsActive() const { return active_; }
     /// Get the parent window (containing this) or nullptr if this is a top-level window
-    Window* GetParent() const { return parent_; }
-    unsigned GetID() const { return id_; }
+    Window* getParent() const { return parent_; }
+    unsigned getID() const { return id_; }
     /// Get control with given ID of given type or nullptr if not found or other type
     template<typename T>
-    T* GetCtrl(unsigned id);
+    T* getCtrl(unsigned id);
     /// Get control with given ID of given type or nullptr if not found or other type
     template<typename T>
-    const T* GetCtrl(unsigned id) const;
+    const T* getCtrl(unsigned id) const;
 
     /// Get all controls of given type
     template<typename T>
-    std::vector<T*> GetCtrls();
+    std::vector<T*> getCtrls();
     /// Get all controls of given type
     template<typename T>
-    std::vector<const T*> GetCtrls() const;
+    std::vector<const T*> getCtrls() const;
 
     void DeleteCtrl(unsigned id);
 
-    AnimationManager& GetAnimationManager() { return animations_; }
+    AnimationManager& getAnimationManager() { return animations_; }
 
     template<typename T>
     T* AddCtrl(std::unique_ptr<T> ctrl);
@@ -298,11 +298,11 @@ protected:
     template<class T_Pt>
     T_Pt ScaleIf(const T_Pt& pt) const;
     /// Set whether controls of this window shall be scaled
-    void SetScale(bool scale = true) { scale_ = scale; }
+    void setScale(bool scale = true) { scale_ = scale; }
     /// Implementation of drawing the window, derived classes can override this to draw custom backgrounds or similar
     virtual void Draw_();
     /// Shall messages be relayed to the controls of this window?
-    virtual bool IsMessageRelayAllowed() const;
+    virtual bool isMessageRelayAllowed() const;
 
 private:
     Window* const parent_; /// Handle to parent window
@@ -328,24 +328,24 @@ template<typename T>
 T* Window::AddCtrl(std::unique_ptr<T> ctrl)
 {
     RTTR_Assert(ctrl);
-    RTTR_Assert(childIdToWnd_.find(ctrl->GetID()) == childIdToWnd_.end());
+    RTTR_Assert(childIdToWnd_.find(ctrl->getID()) == childIdToWnd_.end());
 
     T* ctrlPtr = ctrl.get();
     ctrl->scale_ = scale_;
-    childIdToWnd_.emplace(ctrl->GetID(), std::move(ctrl));
+    childIdToWnd_.emplace(ctrl->getID(), std::move(ctrl));
 
-    ctrlPtr->SetActive(active_);
+    ctrlPtr->setActive(active_);
     return ctrlPtr;
 }
 
 template<typename T>
-T* Window::GetCtrl(unsigned id)
+T* Window::getCtrl(unsigned id)
 {
-    return const_cast<T*>(static_cast<const Window&>(*this).GetCtrl<T>(id));
+    return const_cast<T*>(static_cast<const Window&>(*this).getCtrl<T>(id));
 }
 
 template<typename T>
-const T* Window::GetCtrl(unsigned id) const
+const T* Window::getCtrl(unsigned id) const
 {
     auto it = childIdToWnd_.find(id);
     if(it == childIdToWnd_.end())
@@ -355,7 +355,7 @@ const T* Window::GetCtrl(unsigned id) const
 }
 
 template<typename T>
-std::vector<T*> Window::GetCtrls()
+std::vector<T*> Window::getCtrls()
 {
     std::vector<T*> result;
     for(const auto& wnd : childIdToWnd_ | boost::adaptors::map_values)
@@ -368,7 +368,7 @@ std::vector<T*> Window::GetCtrls()
 }
 
 template<typename T>
-std::vector<const T*> Window::GetCtrls() const
+std::vector<const T*> Window::getCtrls() const
 {
     std::vector<const T*> result;
     for(const auto& wnd : childIdToWnd_ | boost::adaptors::map_values)

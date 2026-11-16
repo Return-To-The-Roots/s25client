@@ -15,7 +15,7 @@ public:
     dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg);
     ~dskSplash() override;
 
-    void SetActive(bool activate) override;
+    void setActive(bool activate) override;
 
 private:
     void msgTimer(unsigned ctrl_id) override;

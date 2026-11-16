@@ -19,7 +19,7 @@ class PreviewMinimap : public Minimap
 public:
     explicit PreviewMinimap(const libsiedler2::ArchivItem_Map* s2map);
 
-    void SetMap(const libsiedler2::ArchivItem_Map& s2map);
+    void setMap(const libsiedler2::ArchivItem_Map& s2map);
 
 protected:
     /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)

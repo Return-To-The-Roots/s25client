@@ -15,17 +15,17 @@ public:
     bool CheckScriptVersion();
 
     /// Return version of the interface. Changes here reflect breaking changes
-    static unsigned GetVersion();
+    static unsigned getVersion();
     /// Get the feature level of this version. Reset on Version increase, increase for added features
-    static unsigned GetFeatureLevel();
+    static unsigned getFeatureLevel();
 
 protected:
     explicit LuaInterfaceGameBase(const ILocalGameState& localGameState);
 
     /// Return true, if local player is the host
-    bool IsHost() const;
+    bool isHost() const;
     /// Return the index of the local player
-    unsigned GetLocalPlayerIdx() const;
+    unsigned getLocalPlayerIdx() const;
     /// Show a message box with given title and text.
     /// If isError is true, a red exclamation mark is shown, otherwise a green one is shown
     void MsgBox(const std::string& title, const std::string& msg, bool isError);

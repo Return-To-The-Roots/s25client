@@ -83,7 +83,7 @@ std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, M
     }
 
     // 5. sort remaining points by how close they're to desired mountain distance
-    const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
+    const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, isMinableMountain); };
     const auto mountainDistances = DistancesTo(map.size, mountain);
     const auto desiredDistance = static_cast<unsigned>(distance);
     const auto desiredDistanceOffset = [&mountainDistances, desiredDistance](const MapPoint& pt) {

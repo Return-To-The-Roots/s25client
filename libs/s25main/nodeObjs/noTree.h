@@ -73,20 +73,20 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Tree; }
+    GO_Type getGOT() const final { return GO_Type::Tree; }
 
     void Draw(DrawPoint drawPt) override;
 
     void HandleEvent(unsigned id) override;
 
-    BlockingManner GetBM() const override { return BlockingManner::Tree; }
+    BlockingManner getBM() const override { return BlockingManner::Tree; }
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
     std::unique_ptr<FOWObject> CreateFOWObject() const override;
     /// Can this tree(type) produce wood?
     bool ProducesWood() const { return type != 5; }
     /// Return if this tree is fully grown
-    bool IsFullyGrown() const { return size == 3; }
+    bool isFullyGrown() const { return size == 3; }
 
     /// Vom Holzfäller aufgerufen: Wenn der Holzfäller anfängt und der Baum dann in einer bestimmten Zeit umfallen soll
     void FallSoon();

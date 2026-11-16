@@ -14,11 +14,11 @@ BOOST_AUTO_TEST_SUITE(GameEventsTestSuite)
 BOOST_AUTO_TEST_CASE(AdvanceGFs)
 {
     EventManager evMgr(42);
-    BOOST_TEST_REQUIRE(evMgr.GetCurrentGF() == 42u);
+    BOOST_TEST_REQUIRE(evMgr.getCurrentGF() == 42u);
     for(unsigned gf = 43; gf < 50; gf++)
     {
         evMgr.ExecuteNextGF();
-        BOOST_TEST_REQUIRE(evMgr.GetCurrentGF() == gf);
+        BOOST_TEST_REQUIRE(evMgr.getCurrentGF() == gf);
     }
 }
 
@@ -31,7 +31,7 @@ public:
     // LCOV_EXCL_START
     void Destroy() override {}
     void Serialize(SerializedGameData&) const override {}
-    GO_Type GetGOT() const final { return GO_Type::Staticobject; }
+    GO_Type getGOT() const final { return GO_Type::Staticobject; }
     // LCOV_EXCL_STOP
 };
 
@@ -46,24 +46,24 @@ BOOST_AUTO_TEST_CASE(AddAndExecuteEvent)
     BOOST_TEST_REQUIRE(ev->startGF == startGF);
     BOOST_TEST_REQUIRE(ev->length == 5u);
     BOOST_TEST_REQUIRE(ev->id == 42u);
-    BOOST_TEST_REQUIRE(ev->GetTargetGF() == startGF + ev->length);
-    BOOST_TEST(evMgr.IsEventActive(obj, 42));
-    BOOST_TEST(!evMgr.IsEventActive(obj, 43));
+    BOOST_TEST_REQUIRE(ev->getTargetGF() == startGF + ev->length);
+    BOOST_TEST(evMgr.isEventActive(obj, 42));
+    BOOST_TEST(!evMgr.isEventActive(obj, 43));
     BOOST_TEST(evMgr.ObjectHasEvents(obj));
     // Check that event is not executed before it is due
-    for(unsigned i = startGF + 1; i < ev->GetTargetGF(); i++)
+    for(unsigned i = startGF + 1; i < ev->getTargetGF(); i++)
     {
         evMgr.ExecuteNextGF();
-        BOOST_TEST_REQUIRE(evMgr.GetCurrentGF() == i); // Rechecked for clarity
+        BOOST_TEST_REQUIRE(evMgr.getCurrentGF() == i); // Rechecked for clarity
         BOOST_TEST_REQUIRE(obj.handledEventIds.size() == 0u);
     }
-    BOOST_TEST_REQUIRE(evMgr.GetCurrentGF() + 1u == ev->GetTargetGF());
+    BOOST_TEST_REQUIRE(evMgr.getCurrentGF() + 1u == ev->getTargetGF());
     // Now the event should be executed
     evMgr.ExecuteNextGF();
     BOOST_TEST_REQUIRE(obj.handledEventIds.size() == 1u);
     BOOST_TEST_REQUIRE(obj.handledEventIds.front() == 42u);
     // And nothing should be left
-    BOOST_TEST(!evMgr.IsEventActive(obj, 42));
+    BOOST_TEST(!evMgr.isEventActive(obj, 42));
     BOOST_TEST(!evMgr.ObjectHasEvents(obj));
 }
 
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(AddSuspendedEvent)
     BOOST_TEST_REQUIRE(ev->startGF == startGF - 48u); // "Started" 48 GFs ago
     BOOST_TEST_REQUIRE(ev->length == 50u);
     BOOST_TEST_REQUIRE(ev->id == 42u);
-    BOOST_TEST_REQUIRE(ev->GetTargetGF() == startGF + 2);
+    BOOST_TEST_REQUIRE(ev->getTargetGF() == startGF + 2);
     // Check that event is not executed before it is due
     evMgr.ExecuteNextGF();
     BOOST_TEST_REQUIRE(obj.handledEventIds.size() == 0u);
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(Reschedule)
     // Run 3 of the 5 GFs
     for(unsigned i = 1; i <= 3; i++)
         evMgr.ExecuteNextGF();
-    std::vector<const GameEvent*> evts = evMgr.GetObjEvents(obj);
+    std::vector<const GameEvent*> evts = evMgr.getObjEvents(obj);
     BOOST_TEST_REQUIRE(evts.size() == 1u);
     BOOST_TEST_REQUIRE(evts.front() == ev);
     // Execute at GF 7 instead
@@ -138,15 +138,15 @@ public:
     ~TestLogKill() override { killNum++; }
     void HandleEvent(unsigned /*evId*/) override
     {
-        BOOST_TEST_REQUIRE(!em.IsObjectInKillList(*this));
+        BOOST_TEST_REQUIRE(!em.isObjectInKillList(*this));
         // Kill this on event
         em.AddToKillList(this);
-        BOOST_TEST_REQUIRE(em.IsObjectInKillList(*this));
+        BOOST_TEST_REQUIRE(em.isObjectInKillList(*this));
     }
     // LCOV_EXCL_START
     void Destroy() override { destroyNum++; }
     void Serialize(SerializedGameData&) const override {}
-    GO_Type GetGOT() const final { return GO_Type::Staticobject; }
+    GO_Type getGOT() const final { return GO_Type::Staticobject; }
     // LCOV_EXCL_STOP
 };
 
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(KillList)
     evMgr.ExecuteNextGF();
     BOOST_TEST_REQUIRE(TestLogKill::killNum == 1u);
     BOOST_TEST_REQUIRE(TestLogKill::destroyNum == 1u);
-    BOOST_TEST_REQUIRE(!evMgr.IsObjectInKillList(*obj));
+    BOOST_TEST_REQUIRE(!evMgr.isObjectInKillList(*obj));
 }
 
 class TestRemoveEvent : public TestEventHandler

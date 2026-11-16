@@ -13,7 +13,7 @@ void AIEventManager::AddAIEvent(std::unique_ptr<AIEvent::Base> ev)
     events.push(std::move(ev));
 }
 
-std::unique_ptr<AIEvent::Base> AIEventManager::GetEvent()
+std::unique_ptr<AIEvent::Base> AIEventManager::getEvent()
 {
     if(events.empty())
         return nullptr;

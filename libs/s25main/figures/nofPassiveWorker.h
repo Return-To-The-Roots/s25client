@@ -29,5 +29,5 @@ public:
     /// Zeichnen
     void Draw(DrawPoint drawPt) override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofPassiveworker; }
+    GO_Type getGOT() const final { return GO_Type::NofPassiveworker; }
 };

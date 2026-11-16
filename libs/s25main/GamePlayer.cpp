@@ -57,7 +57,7 @@ GamePlayer::GamePlayer(unsigned playerId, const PlayerInfo& playerInfo, GameWorl
 
     LoadStandardDistribution();
     useCustomBuildOrder_ = false;
-    build_order = GetStandardBuildOrder();
+    build_order = getStandardBuildOrder();
     transportPrio = STD_TRANSPORT_PRIO;
     LoadStandardMilitarySettings();
     LoadStandardToolSettings();
@@ -109,7 +109,7 @@ void GamePlayer::LoadStandardMilitarySettings()
     militarySettings_[7] = MILITARY_SETTINGS_SCALE[7];
 }
 
-BuildOrders GamePlayer::GetStandardBuildOrder()
+BuildOrders GamePlayer::getStandardBuildOrder()
 {
     BuildOrders ordering;
 
@@ -117,7 +117,7 @@ BuildOrders GamePlayer::GetStandardBuildOrder()
     unsigned curPrio = 0;
     for(const auto bld : helpers::enumRange<BuildingType>())
     {
-        if(bld == BuildingType::Headquarters || !BuildingProperties::IsValid(bld))
+        if(bld == BuildingType::Headquarters || !BuildingProperties::isValid(bld))
             continue;
 
         RTTR_Assert(curPrio < ordering.size());
@@ -255,7 +255,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         job.workplace = sgd.PopObject<noRoadNode>();
     }
 
-    if(sgd.GetGameDataVersion() < 2)
+    if(sgd.getGameDataVersion() < 2)
         buildings.Deserialize2(sgd);
 
     sgd.PopObjectContainer(ware_list, GO_Type::Ware);
@@ -268,20 +268,20 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     for(const auto i : helpers::enumRange<GoodType>())
     {
-        if(sgd.GetGameDataVersion() < 11 && wineaddon::isWineAddonGoodType(i))
+        if(sgd.getGameDataVersion() < 11 && wineaddon::isWineAddonGoodType(i))
             continue;
 
-        if(sgd.GetGameDataVersion() < 12 && leatheraddon::isLeatherAddonGoodType(i))
+        if(sgd.getGameDataVersion() < 12 && leatheraddon::isLeatherAddonGoodType(i))
             continue;
 
         Distribution& dist = distribution[i];
         helpers::popContainer(sgd, dist.percent_buildings);
         // Set standard value otherwise its zero and Slaughterhouse never gets ham
         // because the ham distribution was not there in earlier versions
-        if(sgd.GetGameDataVersion() < 12 && i == GoodType::Ham)
+        if(sgd.getGameDataVersion() < 12 && i == GoodType::Ham)
             dist.percent_buildings[BuildingType::Slaughterhouse] = 8;
 
-        if(sgd.GetGameDataVersion() < 7)
+        if(sgd.getGameDataVersion() < 7)
         {
             dist.client_buildings.resize(sgd.PopUnsignedInt());
             helpers::popContainer(sgd, dist.client_buildings, true);
@@ -297,20 +297,20 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
 
     useCustomBuildOrder_ = sgd.PopBool();
 
-    if(sgd.GetGameDataVersion() < 12)
+    if(sgd.getGameDataVersion() < 12)
     {
         auto countOfNotAvailableBuildingsInSaveGame =
-          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonBuildings : numLeatherAddonBuildings;
+          sgd.getGameDataVersion() < 11 ? numWineAndLeatherAddonBuildings : numLeatherAddonBuildings;
         std::vector<BuildingType> build_order_raw(build_order.size() - countOfNotAvailableBuildingsInSaveGame);
         helpers::popContainer(sgd, build_order_raw, true);
 
-        if(sgd.GetGameDataVersion() < 11)
+        if(sgd.getGameDataVersion() < 11)
         {
             build_order_raw.insert(build_order_raw.end(),
                                    {BuildingType::Vineyard, BuildingType::Winery, BuildingType::Temple});
         }
 
-        if(sgd.GetGameDataVersion() < 12)
+        if(sgd.getGameDataVersion() < 12)
         {
             build_order_raw.insert(build_order_raw.end(),
                                    {BuildingType::Skinner, BuildingType::Tannery, BuildingType::LeatherWorks});
@@ -319,7 +319,7 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
         std::copy(build_order_raw.begin(), build_order_raw.end(), build_order.begin());
 
         auto countOfNotAvailableGoodsInSaveGame =
-          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonGoods : numLeatherAddonGoods;
+          sgd.getGameDataVersion() < 11 ? numWineAndLeatherAddonGoods : numLeatherAddonGoods;
         std::vector<uint8_t> transportPrio_raw(transportPrio.size() - countOfNotAvailableGoodsInSaveGame);
         helpers::popContainer(sgd, transportPrio_raw, true);
         std::copy(transportPrio_raw.begin(), transportPrio_raw.end(), transportPrio.begin());
@@ -339,17 +339,17 @@ void GamePlayer::Deserialize(SerializedGameData& sgd)
     helpers::popContainer(sgd, tools_ordered);
     tools_ordered_delta = {};
 
-    if(sgd.GetGameDataVersion() < 12)
+    if(sgd.getGameDataVersion() < 12)
     {
         auto countOfNotAvailableGoodsInSaveGame =
-          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonGoods : numLeatherAddonGoods;
+          sgd.getGameDataVersion() < 11 ? numWineAndLeatherAddonGoods : numLeatherAddonGoods;
         std::vector<unsigned int> global_inventory_good_raw(global_inventory.goods.size()
                                                             - countOfNotAvailableGoodsInSaveGame);
         helpers::popContainer(sgd, global_inventory_good_raw, true);
         std::copy(global_inventory_good_raw.begin(), global_inventory_good_raw.end(), global_inventory.goods.begin());
 
         auto countOfNotAvailableJobsInSaveGame =
-          sgd.GetGameDataVersion() < 11 ? numWineAndLeatherAddonJobs : numLeatherAddonJobs;
+          sgd.getGameDataVersion() < 11 ? numWineAndLeatherAddonJobs : numLeatherAddonJobs;
         std::vector<unsigned int> global_inventory_people_raw(global_inventory.people.size()
                                                               - countOfNotAvailableJobsInSaveGame);
         helpers::popContainer(sgd, global_inventory_people_raw, true);
@@ -402,13 +402,13 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
 
     unsigned best_length = std::numeric_limits<unsigned>::max();
 
-    for(nobBaseWarehouse* wh : buildings.GetStorehouses())
+    for(nobBaseWarehouse* wh : buildings.getStorehouses())
     {
         // Lagerhaus geeignet?
         if(!isWarehouseGood(assertNonNull(wh)))
             continue;
 
-        if(start.GetPos() == wh->GetPos())
+        if(start.getPos() == wh->getPos())
         {
             // We are already there -> Take it
             if(length)
@@ -418,12 +418,12 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
 
         // now check if there is at least a chance that the next wh is closer than current best because pathfinding
         // takes time
-        if(world.CalcDistance(start.GetPos(), wh->GetPos()) > best_length)
+        if(world.CalcDistance(start.getPos(), wh->getPos()) > best_length)
             continue;
         // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll
         // start <-> ziel tauschen bei der wegfindung
         unsigned tlength;
-        if(world.GetRoadPathFinder().FindPath(to_wh ? start : *wh, to_wh ? *wh : start, use_boat_roads, best_length,
+        if(world.getRoadPathFinder().FindPath(to_wh ? start : *wh, to_wh ? *wh : start, use_boat_roads, best_length,
                                               forbidden, &tlength))
         {
             if(tlength < best_length || !best)
@@ -442,32 +442,32 @@ nobBaseWarehouse* GamePlayer::FindWarehouse(const noRoadNode& start, const T_IsW
 
 void GamePlayer::AddBuildingSite(noBuildingSite* bldSite)
 {
-    RTTR_Assert(bldSite->GetPlayer() == GetPlayerId());
+    RTTR_Assert(bldSite->getPlayer() == getPlayerId());
     buildings.Add(bldSite);
 }
 
 void GamePlayer::RemoveBuildingSite(noBuildingSite* bldSite)
 {
-    RTTR_Assert(bldSite->GetPlayer() == GetPlayerId());
+    RTTR_Assert(bldSite->getPlayer() == getPlayerId());
     buildings.Remove(bldSite);
 }
 
-bool GamePlayer::IsHQTent() const
+bool GamePlayer::isHQTent() const
 {
-    if(const nobHQ* hq = GetHQ())
-        return hq->IsTent();
+    if(const nobHQ* hq = getHQ())
+        return hq->isTent();
     return false;
 }
 
-void GamePlayer::SetHQIsTent(bool isTent)
+void GamePlayer::setHQIsTent(bool isTent)
 {
-    if(nobHQ* hq = GetHQ())
-        hq->SetIsTent(isTent);
+    if(nobHQ* hq = getHQ())
+        hq->setIsTent(isTent);
 }
 
 void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
 {
-    RTTR_Assert(bld->GetPlayer() == GetPlayerId());
+    RTTR_Assert(bld->getPlayer() == getPlayerId());
     buildings.Add(bld, bldType);
     ChangeStatisticValue(StatisticType::Buildings, 1);
 
@@ -487,38 +487,38 @@ void GamePlayer::AddBuilding(noBuilding* bld, BuildingType bldType)
     {
         // If there is more than one HQ, keep the original position.
         if(!hqPos.isValid())
-            hqPos = bld->GetPos();
-    } else if(BuildingProperties::IsMilitary(bldType))
+            hqPos = bld->getPos();
+    } else if(BuildingProperties::isMilitary(bldType))
     {
         auto* milBld = static_cast<nobMilitary*>(bld);
         // New built? -> Calculate frontier distance
-        if(milBld->IsNewBuilt())
+        if(milBld->isNewBuilt())
             milBld->LookForEnemyBuildings();
     }
 }
 
 void GamePlayer::RemoveBuilding(noBuilding* bld, BuildingType bldType)
 {
-    RTTR_Assert(bld->GetPlayer() == GetPlayerId());
+    RTTR_Assert(bld->getPlayer() == getPlayerId());
     buildings.Remove(bld, bldType);
     ChangeStatisticValue(StatisticType::Buildings, -1);
     if(bldType == BuildingType::HarborBuilding)
     { // Schiffen Bescheid sagen
         for(noShip* ship : ships)
             ship->HarborDestroyed(static_cast<nobHarborBuilding*>(bld));
-    } else if(bldType == BuildingType::Headquarters && bld->GetPos() == hqPos)
+    } else if(bldType == BuildingType::Headquarters && bld->getPos() == hqPos)
     {
         hqPos = MapPoint::Invalid();
-        for(const noBaseBuilding* bld : buildings.GetStorehouses())
+        for(const noBaseBuilding* bld : buildings.getStorehouses())
         {
-            if(bld->GetBuildingType() == BuildingType::Headquarters)
+            if(bld->getBuildingType() == BuildingType::Headquarters)
             {
-                hqPos = bld->GetPos();
+                hqPos = bld->getPos();
                 break;
             }
         }
     }
-    if(BuildingProperties::IsWareHouse(bldType) || BuildingProperties::IsMilitary(bldType))
+    if(BuildingProperties::isWareHouse(bldType) || BuildingProperties::isMilitary(bldType))
         TestDefeat();
 }
 
@@ -546,7 +546,7 @@ void GamePlayer::NewRoadConnection(RoadSegment* rs)
 
     // Alle Militärgebäude müssen ihre Truppen überprüfen und können nun ggf. neue bestellen
     // und müssen prüfen, ob sie evtl Gold bekommen
-    for(nobMilitary* mil : buildings.GetMilitaryBuildings())
+    for(nobMilitary* mil : buildings.getMilitaryBuildings())
     {
         mil->RegulateTroops();
         mil->SearchCoins();
@@ -569,9 +569,9 @@ void GamePlayer::FindClientForLostWares()
     // Alle Lost-Wares müssen gucken, ob sie ein Lagerhaus finden
     for(Ware* ware : ware_list)
     {
-        if(ware->IsLostWare())
+        if(ware->isLostWare())
         {
-            if(ware->FindRouteToWarehouse() && ware->IsWaitingAtFlag())
+            if(ware->FindRouteToWarehouse() && ware->isWaitingAtFlag())
                 ware->CallCarrier();
         }
     }
@@ -584,29 +584,29 @@ void GamePlayer::RoadDestroyed()
     for(auto it = ware_list.begin(); it != ware_list.end();)
     {
         Ware* ware = *it;
-        if(ware->IsWaitingAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
+        if(ware->isWaitingAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
         {
-            RoadPathDirection last_next_dir = ware->GetNextDir();
+            RoadPathDirection last_next_dir = ware->getNextDir();
             ware->RecalcRoute();
             // special case: ware was lost some time ago and the new goal is at this flag and not a warehouse,hq,harbor
             // and the "flip-route" picked so a carrier would pick up the ware carry it away from goal then back and
             // drop  it off at the goal was just destroyed?
             // -> try to pick another flip route or tell the goal about failure.
-            noRoadNode& wareLocation = *ware->GetLocation();
-            noBaseBuilding* wareGoal = ware->GetGoal();
-            if(wareGoal && ware->GetNextDir() == RoadPathDirection::NorthWest
-               && wareLocation.GetPos() == wareGoal->GetFlagPos()
-               && ((wareGoal->GetBuildingType() != BuildingType::Storehouse
-                    && wareGoal->GetBuildingType() != BuildingType::Headquarters
-                    && wareGoal->GetBuildingType() != BuildingType::HarborBuilding)
-                   || wareGoal->GetType() == NodalObjectType::Buildingsite))
+            noRoadNode& wareLocation = *ware->getLocation();
+            noBaseBuilding* wareGoal = ware->getGoal();
+            if(wareGoal && ware->getNextDir() == RoadPathDirection::NorthWest
+               && wareLocation.getPos() == wareGoal->getFlagPos()
+               && ((wareGoal->getBuildingType() != BuildingType::Storehouse
+                    && wareGoal->getBuildingType() != BuildingType::Headquarters
+                    && wareGoal->getBuildingType() != BuildingType::HarborBuilding)
+                   || wareGoal->getType() == NodalObjectType::Buildingsite))
             {
                 Direction newWareDir = Direction::NorthWest;
                 for(auto dir : helpers::EnumRange<Direction>{})
                 {
                     dir += 2u; // Need to skip Direction::NorthWest and we used to start with an offset of 2. TODO:
                                // Increase gameDataVersion and just skip NW
-                    if(wareLocation.GetRoute(dir))
+                    if(wareLocation.getRoute(dir))
                     {
                         newWareDir = dir;
                         break;
@@ -614,7 +614,7 @@ void GamePlayer::RoadDestroyed()
                 }
                 if(newWareDir != Direction::NorthWest)
                 {
-                    ware->SetNextDir(toRoadPathDirection(newWareDir));
+                    ware->setNextDir(toRoadPathDirection(newWareDir));
                 } else // no route to goal -> notify goal, try to send ware to a warehouse
                 {
                     ware->NotifyGoalAboutLostWare();
@@ -624,26 +624,26 @@ void GamePlayer::RoadDestroyed()
             // end of special case
 
             // notify carriers/flags about news if there are any
-            if(ware->GetNextDir() != last_next_dir)
+            if(ware->getNextDir() != last_next_dir)
             {
                 // notify current flag that transport in the old direction might not longer be required
                 ware->RemoveWareJobForDir(last_next_dir);
-                if(ware->GetNextDir() != RoadPathDirection::None)
+                if(ware->getNextDir() != RoadPathDirection::None)
                     ware->CallCarrier();
             }
-        } else if(ware->IsWaitingInWarehouse())
+        } else if(ware->isWaitingInWarehouse())
         {
-            if(!ware->IsRouteToGoal())
+            if(!ware->isRouteToGoal())
             {
                 // Das Ziel wird nun nich mehr beliefert
                 ware->NotifyGoalAboutLostWare();
                 // Ware aus der Warteliste des Lagerhauses entfernen
-                static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
+                static_cast<nobBaseWarehouse*>(ware->getLocation())->cancelWare(ware);
                 // Ware aus der Liste raus
                 it = ware_list.erase(it);
                 continue;
             }
-        } else if(ware->IsWaitingForShip())
+        } else if(ware->isWaitingForShip())
         {
             // Weg neu berechnen
             ware->RecalcRoute();
@@ -653,7 +653,7 @@ void GamePlayer::RoadDestroyed()
     }
 
     // Alle Häfen müssen ihre Figuren den Weg überprüfen lassen
-    for(nobHarborBuilding* hb : buildings.GetHarbors())
+    for(nobHarborBuilding* hb : buildings.getHarbors())
     {
         hb->ExamineShipRouteOfPeople();
     }
@@ -661,41 +661,41 @@ void GamePlayer::RoadDestroyed()
 
 bool GamePlayer::FindCarrierForRoad(RoadSegment& rs) const
 {
-    RTTR_Assert(rs.GetF1() != nullptr && rs.GetF2() != nullptr);
+    RTTR_Assert(rs.getF1() != nullptr && rs.getF2() != nullptr);
     std::array<unsigned, 2> length;
     std::array<nobBaseWarehouse*, 2> best;
 
     // Braucht der ein Boot?
-    if(rs.GetRoadType() == RoadType::Water)
+    if(rs.getRoadType() == RoadType::Water)
     {
         // dann braucht man Träger UND Boot
-        best[0] = FindWarehouse(*rs.GetF1(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
+        best[0] = FindWarehouse(*rs.getF1(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
                                 length.data(), &rs);
         // 2. Flagge des Weges
-        best[1] = FindWarehouse(*rs.GetF2(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
+        best[1] = FindWarehouse(*rs.getF2(), FW::HasWareAndFigure(GoodType::Boat, Job::Helper, false), false, false,
                                 &length[1], &rs);
     } else
     {
         // 1. Flagge des Weges
-        best[0] = FindWarehouse(*rs.GetF1(), FW::HasFigure(Job::Helper, false), false, false, length.data(), &rs);
+        best[0] = FindWarehouse(*rs.getF1(), FW::HasFigure(Job::Helper, false), false, false, length.data(), &rs);
         // 2. Flagge des Weges
-        best[1] = FindWarehouse(*rs.GetF2(), FW::HasFigure(Job::Helper, false), false, false, &length[1], &rs);
+        best[1] = FindWarehouse(*rs.getF2(), FW::HasFigure(Job::Helper, false), false, false, &length[1], &rs);
     }
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
     if(best[0] && (!best[1] || length[0] < length[1]))
-        best[0]->OrderCarrier(*rs.GetF1(), rs);
+        best[0]->OrderCarrier(*rs.getF1(), rs);
     else if(best[1])
-        best[1]->OrderCarrier(*rs.GetF2(), rs);
+        best[1]->OrderCarrier(*rs.getF2(), rs);
     else
         return false;
     return true;
 }
 
-bool GamePlayer::IsWarehouseValid(nobBaseWarehouse* wh) const
+bool GamePlayer::isWarehouseValid(nobBaseWarehouse* wh) const
 {
-    return helpers::contains(buildings.GetStorehouses(), wh);
+    return helpers::contains(buildings.getStorehouses(), wh);
 }
 
 void GamePlayer::RecalcDistribution()
@@ -764,7 +764,7 @@ void GamePlayer::FindCarrierForAllRoads()
 
 void GamePlayer::FindMaterialForBuildingSites()
 {
-    for(noBuildingSite* bldSite : buildings.GetBuildingSites())
+    for(noBuildingSite* bldSite : buildings.getBuildingSites())
         bldSite->OrderConstructionMaterial();
 }
 
@@ -803,15 +803,15 @@ void GamePlayer::OneJobNotWanted(const Job job, noRoadNode* workplace)
 
 void GamePlayer::SendPostMessage(std::unique_ptr<PostMsg> msg)
 {
-    world.GetPostMgr().SendMsg(GetPlayerId(), std::move(msg));
+    world.getPostMgr().SendMsg(getPlayerId(), std::move(msg));
 }
 
-unsigned GamePlayer::GetToolsOrderedVisual(Tool tool) const
+unsigned GamePlayer::getToolsOrderedVisual(Tool tool) const
 {
     return std::max(0, int(tools_ordered[tool] + tools_ordered_delta[tool]));
 }
 
-unsigned GamePlayer::GetToolsOrdered(Tool tool) const
+unsigned GamePlayer::getToolsOrdered(Tool tool) const
 {
     return tools_ordered[tool];
 }
@@ -820,14 +820,14 @@ bool GamePlayer::ChangeToolOrderVisual(Tool tool, int changeAmount) const
 {
     if(std::abs(changeAmount) > 100)
         return false;
-    int newOrderAmount = int(GetToolsOrderedVisual(tool)) + changeAmount;
+    int newOrderAmount = int(getToolsOrderedVisual(tool)) + changeAmount;
     if(newOrderAmount < 0 || newOrderAmount > 100)
         return false;
     tools_ordered_delta[tool] += changeAmount;
     return true;
 }
 
-unsigned GamePlayer::GetToolPriority(Tool tool) const
+unsigned GamePlayer::getToolPriority(Tool tool) const
 {
     return toolsSettings_[tool];
 }
@@ -837,16 +837,16 @@ void GamePlayer::ToolOrderProcessed(Tool tool)
     if(tools_ordered[tool])
     {
         --tools_ordered[tool];
-        world.GetNotifications().publish(ToolNote(ToolNote::OrderCompleted, GetPlayerId()));
+        world.getNotifications().publish(ToolNote(ToolNote::OrderCompleted, getPlayerId()));
     }
 }
 
 bool GamePlayer::FindWarehouseForJob(const Job job, noRoadNode& goal) const
 {
     // Optimization: return early if building is isolated
-    if(goal.GetType() == NodalObjectType::Building || goal.GetType() == NodalObjectType::Buildingsite)
+    if(goal.getType() == NodalObjectType::Building || goal.getType() == NodalObjectType::Buildingsite)
     {
-        if(!static_cast<noBaseBuilding&>(goal).IsConnected())
+        if(!static_cast<noBaseBuilding&>(goal).isConnected())
             return false;
     }
 
@@ -891,7 +891,7 @@ void GamePlayer::FindWarehouseForAllJobs(const Job job)
 static bool IsWareFineWithEmergencyProtocol(GoodType goodType, const noBaseBuilding& goal)
 {
     return (goodType != GoodType::Boards && goodType != GoodType::Stones)
-           || goal.GetBuildingType() == BuildingType::Woodcutter || goal.GetBuildingType() == BuildingType::Sawmill;
+           || goal.getBuildingType() == BuildingType::Woodcutter || goal.getBuildingType() == BuildingType::Sawmill;
 }
 
 Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
@@ -918,7 +918,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
         Ware* bestWare = nullptr;
         for(Ware* curWare : ware_list)
         {
-            if(curWare->IsLostWare() && curWare->type == ware)
+            if(curWare->isLostWare() && curWare->type == ware)
             {
                 // got a lost ware with a road to goal -> find best
                 unsigned curLength = curWare->CheckNewGoalForLostWare(goal);
@@ -931,7 +931,7 @@ Ware* GamePlayer::OrderWare(const GoodType ware, noBaseBuilding& goal)
         }
         if(bestWare)
         {
-            bestWare->SetNewGoalForLostWare(goal);
+            bestWare->setNewGoalForLostWare(goal);
             return bestWare;
         }
     }
@@ -944,16 +944,16 @@ nofCarrier* GamePlayer::OrderDonkey(RoadSegment& road) const
     std::array<nobBaseWarehouse*, 2> best;
 
     // 1. Flagge des Weges
-    best[0] = FindWarehouse(*road.GetF1(), FW::HasFigure(Job::PackDonkey, false), false, false, length.data(), &road);
+    best[0] = FindWarehouse(*road.getF1(), FW::HasFigure(Job::PackDonkey, false), false, false, length.data(), &road);
     // 2. Flagge des Weges
-    best[1] = FindWarehouse(*road.GetF2(), FW::HasFigure(Job::PackDonkey, false), false, false, &length[1], &road);
+    best[1] = FindWarehouse(*road.getF2(), FW::HasFigure(Job::PackDonkey, false), false, false, &length[1], &road);
 
     // überhaupt nen Weg gefunden?
     // Welche Flagge benutzen?
     if(best[0] && (!best[1] || length[0] < length[1]))
-        return best[0]->OrderDonkey(road, *road.GetF1());
+        return best[0]->OrderDonkey(road, *road.getF1());
     else if(best[1])
-        return best[1]->OrderDonkey(road, *road.GetF2());
+        return best[1]->OrderDonkey(road, *road.getF2());
     else
         return nullptr;
 }
@@ -975,20 +975,20 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode& start, noRoadNode** goal)
             noRoadNode* current_best_goal = nullptr;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
-            bool isF1Reachable = world.FindHumanPathOnRoads(start, *roadSeg->GetF1(), &length1, nullptr, roadSeg)
+            bool isF1Reachable = world.FindHumanPathOnRoads(start, *roadSeg->getF1(), &length1, nullptr, roadSeg)
                                  != RoadPathDirection::None;
-            bool isF2Reachable = world.FindHumanPathOnRoads(start, *roadSeg->GetF2(), &length2, nullptr, roadSeg)
+            bool isF2Reachable = world.FindHumanPathOnRoads(start, *roadSeg->getF2(), &length2, nullptr, roadSeg)
                                  != RoadPathDirection::None;
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
             if(!isF1Reachable)
-                current_best_goal = (isF2Reachable) ? roadSeg->GetF2() : nullptr;
+                current_best_goal = (isF2Reachable) ? roadSeg->getF2() : nullptr;
             else if(!isF2Reachable)
-                current_best_goal = roadSeg->GetF1();
+                current_best_goal = roadSeg->getF1();
             else
             {
                 // ansonsten die kürzeste von beiden
-                current_best_goal = (length1 < length2) ? roadSeg->GetF1() : roadSeg->GetF2();
+                current_best_goal = (length1 < length2) ? roadSeg->getF1() : roadSeg->getF2();
             }
 
             // Kein Weg führt hin, nächste Straße bitte
@@ -996,11 +996,11 @@ RoadSegment* GamePlayer::FindRoadForDonkey(noRoadNode& start, noRoadNode** goal)
                 continue;
 
             // Jeweiligen Weg bestimmen
-            unsigned current_best_way = (roadSeg->GetF1() == current_best_goal) ? length1 : length2;
+            unsigned current_best_way = (roadSeg->getF1() == current_best_goal) ? length1 : length2;
 
             // Produktivität ausrechnen, *10 die Produktivität + die Wegstrecke, damit die
             // auch noch mit einberechnet wird
-            unsigned current_productivity = 10 * roadSeg->getCarrier(0)->GetProductivity() + current_best_way;
+            unsigned current_productivity = 10 * roadSeg->getCarrier(0)->getProductivity() + current_best_way;
 
             // Besser als der bisher beste?
             if(current_productivity > best_productivity)
@@ -1034,7 +1034,7 @@ struct ClientForWare
         else if(points != b.points)
             return points > b.points;
         else
-            return bld->GetObjId() > b.bld->GetObjId();
+            return bld->getObjId() > b.bld->getObjId();
     }
 };
 
@@ -1054,19 +1054,19 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
 
     std::vector<ClientForWare> possibleClients;
 
-    const noRoadNode* start = ware.GetLocation();
+    const noRoadNode* start = ware.getLocation();
 
     // Bretter und Steine können evtl. auch Häfen für Expeditionen gebrauchen
     if(gt == GoodType::Stones || gt == GoodType::Boards)
     {
-        for(nobHarborBuilding* harbor : buildings.GetHarbors())
+        for(nobHarborBuilding* harbor : buildings.getHarbors())
         {
             unsigned points = harbor->CalcDistributionPoints(gt);
             if(!points)
                 continue;
 
             points += 10 * 30; // Verteilung existiert nicht, Expeditionen haben allerdings hohe Priorität
-            unsigned distance = world.CalcDistance(start->GetPos(), harbor->GetPos()) / 2;
+            unsigned distance = world.CalcDistance(start->getPos(), harbor->getPos()) / 2;
             possibleClients.push_back(ClientForWare(harbor, points > distance ? points - distance : 0, points));
         }
     }
@@ -1077,10 +1077,10 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
         if(bldType == BuildingType::Headquarters)
         {
             // Bei Baustellen die Extraliste abfragen
-            for(noBuildingSite* bldSite : buildings.GetBuildingSites())
+            for(noBuildingSite* bldSite : buildings.getBuildingSites())
             {
                 // Optimization: Ignore if unconnected
-                if(!bldSite->IsConnected())
+                if(!bldSite->isConnected())
                     continue;
 
                 unsigned points = bldSite->CalcDistributionPoints(gt);
@@ -1088,16 +1088,16 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
                     continue;
 
                 points += wareDistribution.percent_buildings[BuildingType::Headquarters] * 30;
-                unsigned distance = world.CalcDistance(start->GetPos(), bldSite->GetPos()) / 2;
+                unsigned distance = world.CalcDistance(start->getPos(), bldSite->getPos()) / 2;
                 possibleClients.push_back(ClientForWare(bldSite, points > distance ? points - distance : 0, points));
             }
         } else
         {
             // Für übrige Gebäude
-            for(nobUsual* bld : buildings.GetBuildings(bldType))
+            for(nobUsual* bld : buildings.getBuildings(bldType))
             {
                 // Optimization: Ignore if unconnected
-                if(!bld->IsConnected())
+                if(!bld->isConnected())
                     continue;
 
                 unsigned points = bld->CalcDistributionPoints(gt);
@@ -1106,7 +1106,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
 
                 if(!wareDistribution.goals.empty())
                 {
-                    if(bld->GetBuildingType()
+                    if(bld->getBuildingType()
                        == static_cast<BuildingType>(wareDistribution.goals[wareDistribution.selected_goal]))
                         points += 300;
                     else if(points >= 300) // avoid overflows (async!)
@@ -1115,7 +1115,7 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
                         points = 0;
                 }
 
-                unsigned distance = world.CalcDistance(start->GetPos(), bld->GetPos()) / 2;
+                unsigned distance = world.CalcDistance(start->getPos(), bld->getPos()) / 2;
                 possibleClients.push_back(ClientForWare(bld, points > distance ? points - distance : 0, points));
             }
         }
@@ -1179,16 +1179,16 @@ noBaseBuilding* GamePlayer::FindClientForWare(const Ware& ware)
 nobBaseWarehouse* GamePlayer::FindWarehouseForWare(const Ware& ware) const
 {
     // Check whs that collect this ware
-    nobBaseWarehouse* wh = FindWarehouse(*ware.GetLocation(), FW::CollectsWare(ware.type), true, true);
+    nobBaseWarehouse* wh = FindWarehouse(*ware.getLocation(), FW::CollectsWare(ware.type), true, true);
     // If there is none, check those that accept it
     if(!wh)
     {
         // First find the ones, that do not send it right away (IMPORTANT: This avoids sending a ware to the wh that is
         // sending the ware out)
-        wh = FindWarehouse(*ware.GetLocation(), FW::AcceptsWareButNoSend(ware.type), true, true);
+        wh = FindWarehouse(*ware.getLocation(), FW::AcceptsWareButNoSend(ware.type), true, true);
         // The others only if this fails
         if(!wh)
-            wh = FindWarehouse(*ware.GetLocation(), FW::AcceptsWare(ware.type), true, true);
+            wh = FindWarehouse(*ware.getLocation(), FW::AcceptsWare(ware.type), true, true);
     }
     return wh;
 }
@@ -1201,12 +1201,12 @@ typename T_Buildings::value_type GamePlayer::FindClientImpl(const Ware& ware, T_
     // See PR #1720
     typename T_Buildings::value_type bestClient = nullptr;
     unsigned bestPoints = 0;
-    const auto& wareLocation = *ware.GetLocation();
-    const MapPoint warePos = wareLocation.GetPos();
+    const auto& wareLocation = *ware.getLocation();
+    const MapPoint warePos = wareLocation.getPos();
     for(auto* bld : buildings)
     {
         // Optimization: Ignore if unconnected
-        if(!bld->IsConnected())
+        if(!bld->isConnected())
             continue;
         const auto points = getPriority(*bld);
 
@@ -1216,7 +1216,7 @@ typename T_Buildings::value_type GamePlayer::FindClientImpl(const Ware& ware, T_
         if(points > bestPoints)
         {
             const unsigned maxPathCosts = points - bestPoints - 1;
-            const unsigned distance = world.CalcDistance(warePos, bld->GetPos());
+            const unsigned distance = world.CalcDistance(warePos, bld->getPos());
             if(distance > maxPathCosts)
                 continue;
             unsigned pathCosts;
@@ -1235,7 +1235,7 @@ typename T_Buildings::value_type GamePlayer::FindClientImpl(const Ware& ware, T_
 nobBaseMilitary* GamePlayer::FindClientForCoin(const Ware& ware) const
 {
     nobBaseMilitary* result = FindClientImpl(
-      ware, [](const nobMilitary& bld) { return bld.CalcCoinsPoints(); }, buildings.GetMilitaryBuildings());
+      ware, [](const nobMilitary& bld) { return bld.CalcCoinsPoints(); }, buildings.getMilitaryBuildings());
     // Send to warehouse if no military building needs the coins
     if(!result)
         result = FindWarehouseForWare(ware);
@@ -1246,7 +1246,7 @@ nobBaseMilitary* GamePlayer::FindClientForCoin(const Ware& ware) const
 nobBaseMilitary* GamePlayer::FindClientForArmor(const Ware& ware) const
 {
     nobBaseMilitary* result = FindClientImpl(
-      ware, [](const nobMilitary& bld) { return bld.CalcArmorPoints(); }, buildings.GetMilitaryBuildings());
+      ware, [](const nobMilitary& bld) { return bld.CalcArmorPoints(); }, buildings.getMilitaryBuildings());
     // Send to warehouse if no military building needs the coins
     if(!result)
         result = FindWarehouseForWare(ware);
@@ -1254,7 +1254,7 @@ nobBaseMilitary* GamePlayer::FindClientForArmor(const Ware& ware) const
     return result;
 }
 
-unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
+unsigned GamePlayer::getBuidingSitePriority(const noBuildingSite* building_site)
 {
     if(useCustomBuildOrder_)
     {
@@ -1263,14 +1263,14 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
         // Typ in der Reihenfolge suchen und Position als Priorität zurückgeben
         for(unsigned i = 0; i < build_order.size(); ++i)
         {
-            if(building_site->GetBuildingType() == build_order[i])
+            if(building_site->getBuildingType() == build_order[i])
                 return i;
         }
     } else
     {
         // Reihenfolge der Bauaufträge, also was zuerst in Auftrag gegeben wurde, wird zuerst gebaut
         unsigned i = 0;
-        for(noBuildingSite* bldSite : buildings.GetBuildingSites())
+        for(noBuildingSite* bldSite : buildings.getBuildingSites())
         {
             if(building_site == bldSite)
                 return i;
@@ -1287,26 +1287,26 @@ unsigned GamePlayer::GetBuidingSitePriority(const noBuildingSite* building_site)
 void GamePlayer::ConvertTransportData(const TransportOrders& transport_data)
 {
     for(const auto ware : helpers::EnumRange<GoodType>{})
-        transportPrio[ware] = GetTransportPrioFromOrdering(transport_data, ware);
+        transportPrio[ware] = getTransportPrioFromOrdering(transport_data, ware);
 }
 
-bool GamePlayer::IsAlly(const unsigned char playerId) const
+bool GamePlayer::isAlly(const unsigned char playerId) const
 {
     // Der Spieler ist ja auch zu sich selber verbündet
-    if(GetPlayerId() == playerId)
+    if(getPlayerId() == playerId)
         return true;
     else
-        return GetPactState(PactType::TreatyOfAlliance, playerId) == PactState::Accepted;
+        return getPactState(PactType::TreatyOfAlliance, playerId) == PactState::Accepted;
 }
 
-bool GamePlayer::IsAttackable(const unsigned char playerId) const
+bool GamePlayer::isAttackable(const unsigned char playerId) const
 {
     // Verbündete dürfen nicht angegriffen werden
-    if(IsAlly(playerId))
+    if(isAlly(playerId))
         return false;
     else
         // Ansonsten darf bei bestehendem Nichtangriffspakt ebenfalls nicht angegriffen werden
-        return GetPactState(PactType::NonAgressionPact, playerId) != PactState::Accepted;
+        return getPactState(PactType::NonAgressionPact, playerId) != PactState::Accepted;
 }
 
 void GamePlayer::OrderTroops(nobMilitary& goal, std::array<unsigned, NUM_SOLDIER_RANKS> counts,
@@ -1332,13 +1332,13 @@ void GamePlayer::OrderTroops(nobMilitary& goal, std::array<unsigned, NUM_SOLDIER
 
 void GamePlayer::RegulateAllTroops()
 {
-    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
+    for(nobMilitary* milBld : buildings.getMilitaryBuildings())
         milBld->RegulateTroops();
 }
 
 void GamePlayer::RecalcMilitaryFlags()
 {
-    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
+    for(nobMilitary* milBld : buildings.getMilitaryBuildings())
         milBld->LookForEnemyBuildings(nullptr);
 }
 
@@ -1347,9 +1347,9 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     RTTR_Assert(soldier_count > 0);
     // solange laufen lassen, bis soldier_count = 0, d.h. der Soldat irgendwohin geschickt wurde
     // Zuerst nach unbesetzten Militärgebäude schauen
-    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
+    for(nobMilitary* milBld : buildings.getMilitaryBuildings())
     {
-        if(milBld->IsNewBuilt())
+        if(milBld->isNewBuilt())
         {
             milBld->RegulateTroops();
             // Used that soldier? Go out
@@ -1359,9 +1359,9 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     }
 
     // Als nächstes Gebäude in Grenznähe
-    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
+    for(nobMilitary* milBld : buildings.getMilitaryBuildings())
     {
-        if(milBld->GetFrontierDistance() == FrontierDistance::Near)
+        if(milBld->getFrontierDistance() == FrontierDistance::Near)
         {
             milBld->RegulateTroops();
             // Used that soldier? Go out
@@ -1371,10 +1371,10 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
     }
 
     // Und den Rest ggf.
-    for(nobMilitary* milBld : buildings.GetMilitaryBuildings())
+    for(nobMilitary* milBld : buildings.getMilitaryBuildings())
     {
         // already checked? -> skip
-        if(milBld->GetFrontierDistance() == FrontierDistance::Near || milBld->IsNewBuilt())
+        if(milBld->getFrontierDistance() == FrontierDistance::Near || milBld->isNewBuilt())
             continue;
         milBld->RegulateTroops();
         if(!soldier_count) // used the soldier?
@@ -1384,7 +1384,7 @@ void GamePlayer::NewSoldiersAvailable(const unsigned& soldier_count)
 
 void GamePlayer::CallFlagWorker(const MapPoint pt, const Job job)
 {
-    auto* flag = world.GetSpecObj<noFlag>(pt);
+    auto* flag = world.getSpecObj<noFlag>(pt);
     if(!flag)
         return;
     /// Find wh with given job type (e.g. geologist, scout, ...)
@@ -1394,7 +1394,7 @@ void GamePlayer::CallFlagWorker(const MapPoint pt, const Job job)
         wh->OrderJob(job, *flag, true);
 }
 
-bool GamePlayer::IsFlagWorker(const nofFlagWorker* flagworker)
+bool GamePlayer::isFlagWorker(const nofFlagWorker* flagworker)
 {
     return helpers::contains(flagworkers, flagworker);
 }
@@ -1404,7 +1404,7 @@ void GamePlayer::FlagDestroyed(noFlag* flag)
     // Alle durchgehen und ggf. sagen, dass sie keine Flagge mehr haben, wenn das ihre Flagge war, die zerstört wurde
     for(auto it = flagworkers.begin(); it != flagworkers.end();)
     {
-        if((*it)->GetFlag() == flag)
+        if((*it)->getFlag() == flag)
         {
             (*it)->LostWork();
             it = flagworkers.erase(it);
@@ -1443,7 +1443,7 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings,
     const bool settingsChanged = toolsSettings_ != tools_settings;
     toolsSettings_ = tools_settings;
     if(settingsChanged)
-        world.GetNotifications().publish(ToolNote(ToolNote::SettingsChanged, GetPlayerId()));
+        world.getNotifications().publish(ToolNote(ToolNote::SettingsChanged, getPlayerId()));
 
     for(const auto tool : helpers::enumRange<Tool>())
     {
@@ -1454,7 +1454,7 @@ void GamePlayer::ChangeToolsSettings(const ToolSettings& tools_settings,
         {
             LOG.write(">> Committing an order of %1% for tool #%2%(%3%)\n", LogTarget::File) % (int)orderChanges[tool]
               % static_cast<unsigned>(tool) % _(WARE_NAMES[TOOL_TO_GOOD[tool]]);
-            world.GetNotifications().publish(ToolNote(ToolNote::OrderPlaced, GetPlayerId()));
+            world.getNotifications().publish(ToolNote(ToolNote::OrderPlaced, getPlayerId()));
         }
     }
 }
@@ -1491,18 +1491,18 @@ void GamePlayer::TestDefeat()
 {
     // Nicht schon besiegt?
     // Keine Militärgebäude, keine Lagerhäuser (HQ,Häfen) -> kein Land --> verloren
-    if(!isDefeated && buildings.GetMilitaryBuildings().empty() && buildings.GetStorehouses().empty())
+    if(!isDefeated && buildings.getMilitaryBuildings().empty() && buildings.getStorehouses().empty())
         Surrender();
 }
 
-const nobHQ* GamePlayer::GetHQ() const
+const nobHQ* GamePlayer::getHQ() const
 {
-    return hqPos.isValid() ? GetGameWorld().GetSpecObj<nobHQ>(hqPos) : nullptr;
+    return hqPos.isValid() ? getGameWorld().getSpecObj<nobHQ>(hqPos) : nullptr;
 }
 
-nobHQ* GamePlayer::GetHQ()
+nobHQ* GamePlayer::getHQ()
 {
-    return const_cast<nobHQ*>(std::as_const(*this).GetHQ());
+    return const_cast<nobHQ*>(std::as_const(*this).getHQ());
 }
 
 void GamePlayer::Surrender()
@@ -1513,11 +1513,11 @@ void GamePlayer::Surrender()
     isDefeated = true;
 
     // GUI Bescheid sagen
-    if(world.GetGameInterface())
-        world.GetGameInterface()->GI_PlayerDefeated(GetPlayerId());
+    if(world.getGameInterface())
+        world.getGameInterface()->GI_PlayerDefeated(getPlayerId());
 }
 
-void GamePlayer::SetStatisticValue(StatisticType type, unsigned value)
+void GamePlayer::setStatisticValue(StatisticType type, unsigned value)
 {
     statisticCurrentData[type] = value;
 }
@@ -1670,27 +1670,27 @@ void GamePlayer::PactChanged(const PactType pt)
     // Ggf. den GUI Bescheid sagen, um Sichtbarkeiten etc. neu zu berechnen
     if(pt == PactType::TreatyOfAlliance)
     {
-        if(world.GetGameInterface())
-            world.GetGameInterface()->GI_TreatyOfAllianceChanged(GetPlayerId());
+        if(world.getGameInterface())
+            world.getGameInterface()->GI_TreatyOfAllianceChanged(getPlayerId());
     }
 }
 
 void GamePlayer::SuggestPact(const unsigned char targetPlayerId, const PactType pt, const unsigned duration)
 {
     // Don't try to make pact with self
-    if(targetPlayerId == GetPlayerId())
+    if(targetPlayerId == getPlayerId())
         return;
 
     if(!pacts[targetPlayerId][pt].accepted && duration > 0)
     {
         pacts[targetPlayerId][pt].duration = duration;
-        pacts[targetPlayerId][pt].start = world.GetEvMgr().GetCurrentGF();
-        GamePlayer targetPlayer = world.GetPlayer(targetPlayerId);
+        pacts[targetPlayerId][pt].start = world.getEvMgr().getCurrentGF();
+        GamePlayer targetPlayer = world.getPlayer(targetPlayerId);
         if(targetPlayer.isHuman())
             targetPlayer.SendPostMessage(std::make_unique<DiplomacyPostQuestion>(
-              world.GetEvMgr().GetCurrentGF(), pt, pacts[targetPlayerId][pt].start, *this, duration));
-        else if(world.HasLua())
-            world.GetLua().EventSuggestPact(pt, GetPlayerId(), targetPlayerId, duration);
+              world.getEvMgr().getCurrentGF(), pt, pacts[targetPlayerId][pt].start, *this, duration));
+        else if(world.hasLua())
+            world.getLua().EventSuggestPact(pt, getPlayerId(), targetPlayerId, duration);
     }
 }
 
@@ -1699,26 +1699,26 @@ void GamePlayer::AcceptPact(const unsigned id, const PactType pt, const unsigned
     if(!pacts[targetPlayer][pt].accepted && pacts[targetPlayer][pt].duration > 0 && pacts[targetPlayer][pt].start == id)
     {
         MakePact(pt, targetPlayer, pacts[targetPlayer][pt].duration);
-        world.GetPlayer(targetPlayer).MakePact(pt, GetPlayerId(), pacts[targetPlayer][pt].duration);
+        world.getPlayer(targetPlayer).MakePact(pt, getPlayerId(), pacts[targetPlayer][pt].duration);
         PactChanged(pt);
-        world.GetPlayer(targetPlayer).PactChanged(pt);
-        if(world.HasLua())
-            world.GetLua().EventPactCreated(pt, GetPlayerId(), targetPlayer, pacts[targetPlayer][pt].duration);
+        world.getPlayer(targetPlayer).PactChanged(pt);
+        if(world.hasLua())
+            world.getLua().EventPactCreated(pt, getPlayerId(), targetPlayer, pacts[targetPlayer][pt].duration);
     }
 }
 
 void GamePlayer::MakePact(const PactType pt, const unsigned char other_player, const unsigned duration)
 {
     pacts[other_player][pt].accepted = true;
-    pacts[other_player][pt].start = world.GetEvMgr().GetCurrentGF();
+    pacts[other_player][pt].start = world.getEvMgr().getCurrentGF();
     pacts[other_player][pt].duration = duration;
     pacts[other_player][pt].want_cancel = false;
 
     SendPostMessage(
-      std::make_unique<PostMsg>(world.GetEvMgr().GetCurrentGF(), pt, world.GetPlayer(other_player), true));
+      std::make_unique<PostMsg>(world.getEvMgr().getCurrentGF(), pt, world.getPlayer(other_player), true));
 }
 
-PactState GamePlayer::GetPactState(const PactType pt, const unsigned char other_player) const
+PactState GamePlayer::getPactState(const PactType pt, const unsigned char other_player) const
 {
     // Prüfen, ob Bündnis in Kraft ist
     if(pacts[other_player][pt].duration)
@@ -1727,7 +1727,7 @@ PactState GamePlayer::GetPactState(const PactType pt, const unsigned char other_
             return PactState::InProgress;
 
         if(pacts[other_player][pt].duration == DURATION_INFINITE
-           || world.GetEvMgr().GetCurrentGF() < pacts[other_player][pt].start + pacts[other_player][pt].duration)
+           || world.getEvMgr().getCurrentGF() < pacts[other_player][pt].start + pacts[other_player][pt].duration)
             return PactState::Accepted;
     }
 
@@ -1736,16 +1736,16 @@ PactState GamePlayer::GetPactState(const PactType pt, const unsigned char other_
 
 void GamePlayer::NotifyAlliesOfLocation(const MapPoint pt)
 {
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world.getNumPlayers(); ++i)
     {
-        if(i != GetPlayerId() && IsAlly(i))
-            world.GetPlayer(i).SendPostMessage(std::make_unique<PostMsg>(
-              world.GetEvMgr().GetCurrentGF(), _("Your ally wishes to notify you of this location"),
+        if(i != getPlayerId() && isAlly(i))
+            world.getPlayer(i).SendPostMessage(std::make_unique<PostMsg>(
+              world.getEvMgr().getCurrentGF(), _("Your ally wishes to notify you of this location"),
               PostCategory::Diplomacy, pt));
     }
 }
 
-unsigned GamePlayer::GetRemainingPactTime(const PactType pt, const unsigned char other_player) const
+unsigned GamePlayer::getRemainingPactTime(const PactType pt, const unsigned char other_player) const
 {
     if(pacts[other_player][pt].duration)
     {
@@ -1753,9 +1753,9 @@ unsigned GamePlayer::GetRemainingPactTime(const PactType pt, const unsigned char
         {
             if(pacts[other_player][pt].duration == DURATION_INFINITE)
                 return DURATION_INFINITE;
-            else if(world.GetEvMgr().GetCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration)
+            else if(world.getEvMgr().getCurrentGF() <= pacts[other_player][pt].start + pacts[other_player][pt].duration)
                 return ((pacts[other_player][pt].start + pacts[other_player][pt].duration)
-                        - world.GetEvMgr().GetCurrentGF());
+                        - world.getEvMgr().getCurrentGF());
         }
     }
 
@@ -1765,7 +1765,7 @@ unsigned GamePlayer::GetRemainingPactTime(const PactType pt, const unsigned char
 void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerIdx)
 {
     // Don't try to cancel pact with self
-    if(otherPlayerIdx == GetPlayerId())
+    if(otherPlayerIdx == getPlayerId())
         return;
 
     // Besteht bereits ein Bündnis?
@@ -1775,46 +1775,46 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
         pacts[otherPlayerIdx][pt].want_cancel = true;
 
         // Will der andere Spieler das Bündnis auch auflösen?
-        GamePlayer& otherPlayer = world.GetPlayer(otherPlayerIdx);
-        if(otherPlayer.pacts[GetPlayerId()][pt].want_cancel)
+        GamePlayer& otherPlayer = world.getPlayer(otherPlayerIdx);
+        if(otherPlayer.pacts[getPlayerId()][pt].want_cancel)
         {
             // Dann wird das Bündnis aufgelöst
             pacts[otherPlayerIdx][pt].accepted = false;
             pacts[otherPlayerIdx][pt].duration = 0;
             pacts[otherPlayerIdx][pt].want_cancel = false;
 
-            otherPlayer.pacts[GetPlayerId()][pt].accepted = false;
-            otherPlayer.pacts[GetPlayerId()][pt].duration = 0;
-            otherPlayer.pacts[GetPlayerId()][pt].want_cancel = false;
+            otherPlayer.pacts[getPlayerId()][pt].accepted = false;
+            otherPlayer.pacts[getPlayerId()][pt].duration = 0;
+            otherPlayer.pacts[getPlayerId()][pt].want_cancel = false;
 
             // Den Spielern eine Informationsnachricht schicken
-            world.GetPlayer(otherPlayerIdx)
-              .SendPostMessage(std::make_unique<PostMsg>(world.GetEvMgr().GetCurrentGF(), pt, *this, false));
+            world.getPlayer(otherPlayerIdx)
+              .SendPostMessage(std::make_unique<PostMsg>(world.getEvMgr().getCurrentGF(), pt, *this, false));
             SendPostMessage(
-              std::make_unique<PostMsg>(world.GetEvMgr().GetCurrentGF(), pt, world.GetPlayer(otherPlayerIdx), false));
+              std::make_unique<PostMsg>(world.getEvMgr().getCurrentGF(), pt, world.getPlayer(otherPlayerIdx), false));
             PactChanged(pt);
             otherPlayer.PactChanged(pt);
-            if(world.HasLua())
-                world.GetLua().EventPactCanceled(pt, GetPlayerId(), otherPlayerIdx);
+            if(world.hasLua())
+                world.getLua().EventPactCanceled(pt, getPlayerId(), otherPlayerIdx);
         } else
         {
             // Ansonsten den anderen Spieler fragen, ob der das auch so sieht
             if(otherPlayer.isHuman())
                 otherPlayer.SendPostMessage(std::make_unique<DiplomacyPostQuestion>(
-                  world.GetEvMgr().GetCurrentGF(), pt, pacts[otherPlayerIdx][pt].start, *this));
-            else if(!world.HasLua() || world.GetLua().EventCancelPactRequest(pt, GetPlayerId(), otherPlayerIdx))
+                  world.getEvMgr().getCurrentGF(), pt, pacts[otherPlayerIdx][pt].start, *this));
+            else if(!world.hasLua() || world.getLua().EventCancelPactRequest(pt, getPlayerId(), otherPlayerIdx))
             {
                 // AI accepts cancels, if there is no lua-interace
                 pacts[otherPlayerIdx][pt].accepted = false;
                 pacts[otherPlayerIdx][pt].duration = 0;
                 pacts[otherPlayerIdx][pt].want_cancel = false;
 
-                otherPlayer.pacts[GetPlayerId()][pt].accepted = false;
-                otherPlayer.pacts[GetPlayerId()][pt].duration = 0;
-                otherPlayer.pacts[GetPlayerId()][pt].want_cancel = false;
+                otherPlayer.pacts[getPlayerId()][pt].accepted = false;
+                otherPlayer.pacts[getPlayerId()][pt].duration = 0;
+                otherPlayer.pacts[getPlayerId()][pt].want_cancel = false;
 
-                if(world.HasLua())
-                    world.GetLua().EventPactCanceled(pt, GetPlayerId(), otherPlayerIdx);
+                if(world.hasLua())
+                    world.getLua().EventPactCanceled(pt, getPlayerId(), otherPlayerIdx);
             }
         }
     } else
@@ -1827,7 +1827,7 @@ void GamePlayer::CancelPact(const PactType pt, const unsigned char otherPlayerId
 void GamePlayer::MakeStartPacts()
 {
     // Reset pacts
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world.getNumPlayers(); ++i)
     {
         for(const auto z : helpers::enumRange<PactType>())
             pacts[i][z] = Pact();
@@ -1839,9 +1839,9 @@ void GamePlayer::MakeStartPacts()
     RTTR_Assert(isTeam(team));
 
     // Create ally- and non-aggression-pact for all players of same team
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world.getNumPlayers(); ++i)
     {
-        if(team != world.GetPlayer(i).team)
+        if(team != world.getPlayer(i).team)
             continue;
         for(const auto z : helpers::enumRange<PactType>())
         {
@@ -1853,16 +1853,16 @@ void GamePlayer::MakeStartPacts()
     }
 }
 
-bool GamePlayer::IsWareRegistred(const Ware& ware)
+bool GamePlayer::isWareRegistred(const Ware& ware)
 {
     return helpers::contains(ware_list, &ware);
 }
 
-bool GamePlayer::IsWareDependent(const Ware& ware)
+bool GamePlayer::isWareDependent(const Ware& ware)
 {
-    for(nobBaseWarehouse* wh : buildings.GetStorehouses())
+    for(nobBaseWarehouse* wh : buildings.getStorehouses())
     {
-        if(wh->IsWareDependent(ware))
+        if(wh->isWareDependent(ware))
             return true;
     }
 
@@ -1882,7 +1882,7 @@ void GamePlayer::DecreaseInventoryWare(const GoodType ware, const unsigned count
 void GamePlayer::RegisterShip(noShip& ship)
 {
     ships.push_back(&ship);
-    GetJobForShip(ship);
+    getJobForShip(ship);
 }
 
 struct ShipForHarbor
@@ -1894,7 +1894,7 @@ struct ShipForHarbor
 
     bool operator<(const ShipForHarbor& b) const noexcept
     {
-        return (estimate < b.estimate) || (estimate == b.estimate && ship->GetObjId() < b.ship->GetObjId());
+        return (estimate < b.estimate) || (estimate == b.estimate && ship->getObjId() < b.ship->getObjId());
     }
 };
 
@@ -1903,21 +1903,21 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     std::vector<ShipForHarbor> sfh;
 
     // we need more ships than those that are already on their way? limit search to idle ships
-    if(GetShipsToHarbor(hb) < hb.GetNumNeededShips())
+    if(getShipsToHarbor(hb) < hb.getNumNeededShips())
     {
         for(noShip* ship : ships)
         {
-            if(ship->IsIdling() && world.IsHarborAtSea(world.GetHarborPointID(hb.GetPos()), ship->GetSeaID()))
-                sfh.push_back(ShipForHarbor(ship, world.CalcDistance(hb.GetPos(), ship->GetPos())));
+            if(ship->isIdling() && world.isHarborAtSea(world.getHarborPointID(hb.getPos()), ship->getSeaID()))
+                sfh.push_back(ShipForHarbor(ship, world.CalcDistance(hb.getPos(), ship->getPos())));
         }
     } else
     {
         for(noShip* ship : ships)
         {
-            if((ship->IsIdling() && world.IsHarborAtSea(world.GetHarborPointID(hb.GetPos()), ship->GetSeaID()))
-               || ship->IsGoingToHarbor(hb))
+            if((ship->isIdling() && world.isHarborAtSea(world.getHarborPointID(hb.getPos()), ship->getSeaID()))
+               || ship->isGoingToHarbor(hb))
             {
-                sfh.push_back(ShipForHarbor(ship, world.CalcDistance(hb.GetPos(), ship->GetPos())));
+                sfh.push_back(ShipForHarbor(ship, world.CalcDistance(hb.getPos(), ship->getPos())));
             }
         }
     }
@@ -1940,7 +1940,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
 
         noShip& ship = *it.ship;
 
-        if(world.FindShipPathToHarbor(ship.GetPos(), hb.GetHarborPosID(), ship.GetSeaID(), &route, &distance))
+        if(world.FindShipPathToHarbor(ship.getPos(), hb.getHarborPosID(), ship.getSeaID(), &route, &distance))
         {
             // ship already there?
             if(distance == 0)
@@ -1959,7 +1959,7 @@ bool GamePlayer::OrderShip(nobHarborBuilding& hb)
     }
 
     // only order ships not already on their way
-    if(best_ship && best_ship->IsIdling())
+    if(best_ship && best_ship->isIdling())
     {
         best_ship->GoToHarbor(hb, best_route);
 
@@ -1976,33 +1976,33 @@ void GamePlayer::RemoveShip(noShip* ship)
     ships.erase(it);
 }
 
-void GamePlayer::GetJobForShip(noShip& ship)
+void GamePlayer::getJobForShip(noShip& ship)
 {
     nobHarborBuilding* best = nullptr;
     int best_points = 0;
     std::vector<Direction> best_route;
 
     // Beste Weglänge, die ein Schiff zurücklegen muss, welches gerade nichts zu tun hat
-    for(nobHarborBuilding* harbor : buildings.GetHarbors())
+    for(nobHarborBuilding* harbor : buildings.getHarbors())
     {
         // Braucht der Hafen noch Schiffe?
-        if(harbor->GetNumNeededShips() == 0)
+        if(harbor->getNumNeededShips() == 0)
             continue;
 
         // Anzahl der Schiffe ermitteln, die diesen Hafen bereits anfahren
-        unsigned ships_coming = GetShipsToHarbor(*harbor);
+        unsigned ships_coming = getShipsToHarbor(*harbor);
 
         // Evtl. kommen schon genug?
-        if(harbor->GetNumNeededShips() <= ships_coming)
+        if(harbor->getNumNeededShips() <= ships_coming)
             continue;
 
         // liegen wir am gleichen Meer?
-        if(world.IsHarborAtSea(harbor->GetHarborPosID(), ship.GetSeaID()))
+        if(world.isHarborAtSea(harbor->getHarborPosID(), ship.getSeaID()))
         {
             unsigned length;
             std::vector<Direction> route;
 
-            if(world.FindShipPathToHarbor(ship.GetPos(), harbor->GetHarborPosID(), ship.GetSeaID(), &route, &length))
+            if(world.FindShipPathToHarbor(ship.getPos(), harbor->getHarborPosID(), ship.getSeaID(), &route, &length))
             {
                 // ship already there?
                 if(length == 0)
@@ -2012,7 +2012,7 @@ void GamePlayer::GetJobForShip(noShip& ship)
                 }
 
                 // Punkte ausrechnen
-                int points = harbor->GetNeedForShip(ships_coming) - length;
+                int points = harbor->getNeedForShip(ships_coming) - length;
                 if(points > best_points || !best)
                 {
                     best = harbor;
@@ -2028,12 +2028,12 @@ void GamePlayer::GetJobForShip(noShip& ship)
         ship.GoToHarbor(*best, best_route);
 }
 
-unsigned GamePlayer::GetShipID(const noShip& ship) const
+unsigned GamePlayer::getShipID(const noShip& ship) const
 {
     return static_cast<unsigned>(helpers::indexOf(ships, &ship));
 }
 
-noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
+noShip* GamePlayer::getShipByID(const unsigned ship_id) const
 {
     if(ship_id >= ships.size())
         return nullptr;
@@ -2041,12 +2041,12 @@ noShip* GamePlayer::GetShipByID(const unsigned ship_id) const
         return ships[ship_id];
 }
 
-unsigned GamePlayer::GetShipsToHarbor(const nobHarborBuilding& hb) const
+unsigned GamePlayer::getShipsToHarbor(const nobHarborBuilding& hb) const
 {
     unsigned count = 0;
     for(const auto* ship : ships)
     {
-        if(ship->IsGoingToHarbor(hb))
+        if(ship->isGoingToHarbor(hb))
             ++count;
     }
 
@@ -2059,18 +2059,18 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, Harb
     nobHarborBuilding* best = nullptr;
     unsigned best_distance = 0xffffffff;
 
-    for(nobHarborBuilding* hb : buildings.GetHarbors())
+    for(nobHarborBuilding* hb : buildings.getHarbors())
     {
         // Bestimmten Hafen ausschließen
         if(hb == exception)
             continue;
 
         // Prüfen, ob Hafen an das Meer, wo sich das Schiff gerade befindet, angrenzt
-        if(!world.IsHarborAtSea(hb->GetHarborPosID(), ship->GetSeaID()))
+        if(!world.isHarborAtSea(hb->getHarborPosID(), ship->getSeaID()))
             continue;
 
         // Distanz ermitteln zwischen Schiff und Hafen, Schiff kann natürlich auch über Kartenränder fahren
-        unsigned distance = world.CalcDistance(ship->GetPos(), hb->GetPos());
+        unsigned distance = world.CalcDistance(ship->getPos(), hb->getPos());
 
         // Kürzerer Weg als bisher bestes Ziel?
         if(distance < best_distance)
@@ -2085,24 +2085,24 @@ bool GamePlayer::FindHarborForUnloading(noShip* ship, const MapPoint start, Harb
     {
         // Weg dorthin suchen
         route->clear();
-        *goalHarborId = best->GetHarborPosID();
-        if(world.FindShipPathToHarbor(start, best->GetHarborPosID(), ship->GetSeaID(), route, nullptr))
+        *goalHarborId = best->getHarborPosID();
+        if(world.FindShipPathToHarbor(start, best->getHarborPosID(), ship->getSeaID(), route, nullptr))
             return true;
     }
 
     return false;
 }
 
-void GamePlayer::CancelWaresForEmergencyProtocol()
+void GamePlayer::cancelWaresForEmergencyProtocol()
 {
     for(auto it = ware_list.begin(); it != ware_list.end();)
     {
         Ware* ware = *it;
-        if(ware->IsWaitingInWarehouse() && ware->GetGoal()
-           && !IsWareFineWithEmergencyProtocol(ware->type, *ware->GetGoal()))
+        if(ware->isWaitingInWarehouse() && ware->getGoal()
+           && !IsWareFineWithEmergencyProtocol(ware->type, *ware->getGoal()))
         {
             ware->NotifyGoalAboutLostWare();
-            static_cast<nobBaseWarehouse*>(ware->GetLocation())->CancelWare(ware);
+            static_cast<nobBaseWarehouse*>(ware->getLocation())->cancelWare(ware);
             it = ware_list.erase(it);
             continue;
         }
@@ -2119,17 +2119,17 @@ void GamePlayer::TestForEmergencyProgramm()
     // In Lagern vorhandene Bretter und Steine zählen
     unsigned boards = 0;
     unsigned stones = 0;
-    for(nobBaseWarehouse* wh : buildings.GetStorehouses())
+    for(nobBaseWarehouse* wh : buildings.getStorehouses())
     {
-        boards += wh->GetInventory().goods[GoodType::Boards];
-        stones += wh->GetInventory().goods[GoodType::Stones];
+        boards += wh->getInventory().goods[GoodType::Boards];
+        stones += wh->getInventory().goods[GoodType::Stones];
     }
 
     // Emergency happens, if we have less than 10 boards or stones...
     bool isNewEmergency = boards <= 10 || stones <= 10;
     // ...and no woddcutter or sawmill
     isNewEmergency &=
-      buildings.GetBuildings(BuildingType::Woodcutter).empty() || buildings.GetBuildings(BuildingType::Sawmill).empty();
+      buildings.getBuildings(BuildingType::Woodcutter).empty() || buildings.getBuildings(BuildingType::Sawmill).empty();
 
     // Wenn nötig, Notfallprogramm auslösen
     if(isNewEmergency)
@@ -2138,10 +2138,10 @@ void GamePlayer::TestForEmergencyProgramm()
         {
             emergency = true;
             SendPostMessage(std::make_unique<PostMsg>(
-              world.GetEvMgr().GetCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
+              world.getEvMgr().getCurrentGF(), _("The emergency program has been activated."), PostCategory::Economy));
 
             // Handle wares already ordered
-            CancelWaresForEmergencyProtocol();
+            cancelWaresForEmergencyProtocol();
         }
     } else
     {
@@ -2149,7 +2149,7 @@ void GamePlayer::TestForEmergencyProgramm()
         if(emergency)
         {
             emergency = false;
-            SendPostMessage(std::make_unique<PostMsg>(world.GetEvMgr().GetCurrentGF(),
+            SendPostMessage(std::make_unique<PostMsg>(world.getEvMgr().getCurrentGF(),
                                                       _("The emergency program has been deactivated."),
                                                       PostCategory::Economy));
             FindMaterialForBuildingSites();
@@ -2159,9 +2159,9 @@ void GamePlayer::TestForEmergencyProgramm()
 
 void GamePlayer::TestPacts()
 {
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world.getNumPlayers(); ++i)
     {
-        if(i == GetPlayerId())
+        if(i == getPlayerId())
             continue;
 
         for(const auto pact : helpers::enumRange<PactType>())
@@ -2169,16 +2169,16 @@ void GamePlayer::TestPacts()
             // Pact not running
             if(pacts[i][pact].duration == 0)
                 continue;
-            if(GetPactState(pact, i) == PactState::None)
+            if(getPactState(pact, i) == PactState::None)
             {
                 // Pact was running but is expired -> Cancel for both players
                 pacts[i][pact].duration = 0;
                 pacts[i][pact].accepted = false;
-                GamePlayer& otherPlayer = world.GetPlayer(i);
-                RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pact].duration);
-                RTTR_Assert(otherPlayer.pacts[GetPlayerId()][pact].accepted);
-                otherPlayer.pacts[GetPlayerId()][pact].duration = 0;
-                otherPlayer.pacts[GetPlayerId()][pact].accepted = false;
+                GamePlayer& otherPlayer = world.getPlayer(i);
+                RTTR_Assert(otherPlayer.pacts[getPlayerId()][pact].duration);
+                RTTR_Assert(otherPlayer.pacts[getPlayerId()][pact].accepted);
+                otherPlayer.pacts[getPlayerId()][pact].duration = 0;
+                otherPlayer.pacts[getPlayerId()][pact].accepted = false;
                 // And notify
                 PactChanged(pact);
                 otherPlayer.PactChanged(pact);
@@ -2187,25 +2187,25 @@ void GamePlayer::TestPacts()
     }
 }
 
-bool GamePlayer::CanBuildCatapult() const
+bool GamePlayer::canBuildCatapult() const
 {
     // Wenn AddonId::LIMIT_CATAPULTS nicht aktiv ist, bauen immer erlaubt
-    if(!world.GetGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
+    if(!world.getGGS().isEnabled(AddonId::LIMIT_CATAPULTS)) //-V807
         return true;
 
-    BuildingCount bc = buildings.GetBuildingNums();
+    BuildingCount bc = buildings.getBuildingNums();
 
     unsigned max = 0;
     // proportional?
-    if(world.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
+    if(world.getGGS().getSelection(AddonId::LIMIT_CATAPULTS) == 1)
     {
         max = int(bc.buildings[BuildingType::Barracks] * 0.125 + bc.buildings[BuildingType::Guardhouse] * 0.25
                   + bc.buildings[BuildingType::Watchtower] * 0.5 + bc.buildings[BuildingType::Fortress]
                   + 0.111); // to avoid rounding errors
-    } else if(world.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
+    } else if(world.getGGS().getSelection(AddonId::LIMIT_CATAPULTS) < 8)
     {
         const std::array<unsigned, 6> limits = {{0, 3, 5, 10, 20, 30}};
-        max = limits[world.GetGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
+        max = limits[world.getGGS().getSelection(AddonId::LIMIT_CATAPULTS) - 2];
     }
 
     return bc.buildings[BuildingType::Catapult] + bc.buildingSites[BuildingType::Catapult] < max;
@@ -2226,31 +2226,31 @@ bool GamePlayer::ShipDiscoveredHostileTerritory(const MapPoint location)
     return true;
 }
 
-bool GamePlayer::IsDependentFigure(const noFigure& fig)
+bool GamePlayer::isDependentFigure(const noFigure& fig)
 {
-    for(const nobBaseWarehouse* wh : buildings.GetStorehouses())
+    for(const nobBaseWarehouse* wh : buildings.getStorehouses())
     {
-        if(wh->IsDependentFigure(fig))
+        if(wh->isDependentFigure(fig))
             return true;
     }
     return false;
 }
 
-std::vector<nobBaseWarehouse*> GamePlayer::GetWarehousesForTrading(const nobBaseWarehouse& goalWh) const
+std::vector<nobBaseWarehouse*> GamePlayer::getWarehousesForTrading(const nobBaseWarehouse& goalWh) const
 {
     std::vector<nobBaseWarehouse*> result;
 
     // Don't try to trade with us!
-    if(goalWh.GetPlayer() == GetPlayerId())
+    if(goalWh.getPlayer() == getPlayerId())
         return result;
 
-    const MapPoint goalFlagPos = goalWh.GetFlagPos();
+    const MapPoint goalFlagPos = goalWh.getFlagPos();
 
-    TradePathCache& tradePathCache = world.GetTradePathCache();
-    for(nobBaseWarehouse* wh : buildings.GetStorehouses())
+    TradePathCache& tradePathCache = world.getTradePathCache();
+    for(nobBaseWarehouse* wh : buildings.getStorehouses())
     {
         // Is there a trade path from this warehouse to wh? (flag to flag)
-        if(tradePathCache.pathExists(wh->GetFlagPos(), goalFlagPos, GetPlayerId()))
+        if(tradePathCache.pathExists(wh->getFlagPos(), goalFlagPos, getPlayerId()))
             result.push_back(wh);
     }
 
@@ -2265,44 +2265,44 @@ struct WarehouseDistanceComparator
     const GameWorld& gwg_;
 
     WarehouseDistanceComparator(const nobBaseWarehouse& refWareHouse, const GameWorld& world)
-        : refWareHousePos_(refWareHouse.GetPos()), gwg_(world)
+        : refWareHousePos_(refWareHouse.getPos()), gwg_(world)
     {}
 
     bool operator()(nobBaseWarehouse* const wh1, nobBaseWarehouse* const wh2) const
     {
-        unsigned dist1 = gwg_.CalcDistance(wh1->GetPos(), refWareHousePos_);
-        unsigned dist2 = gwg_.CalcDistance(wh2->GetPos(), refWareHousePos_);
-        return (dist1 < dist2) || (dist1 == dist2 && wh1->GetObjId() < wh2->GetObjId());
+        unsigned dist1 = gwg_.CalcDistance(wh1->getPos(), refWareHousePos_);
+        unsigned dist2 = gwg_.CalcDistance(wh2->getPos(), refWareHousePos_);
+        return (dist1 < dist2) || (dist1 == dist2 && wh1->getObjId() < wh2->getObjId());
     }
 };
 
 void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, Job>& what, unsigned count) const
 {
-    if(!world.GetGGS().isEnabled(AddonId::TRADE))
+    if(!world.getGGS().isEnabled(AddonId::TRADE))
         return;
 
     if(count == 0)
         return;
 
     // Don't try to trade with us!
-    if(goalWh->GetPlayer() == GetPlayerId())
+    if(goalWh->getPlayer() == getPlayerId())
         return;
 
     // No trades with enemies
-    if(!IsAlly(goalWh->GetPlayer()))
+    if(!isAlly(goalWh->getPlayer()))
         return;
 
-    const MapPoint goalFlagPos = goalWh->GetFlagPos();
+    const MapPoint goalFlagPos = goalWh->getFlagPos();
 
-    std::vector<nobBaseWarehouse*> whs(buildings.GetStorehouses().begin(), buildings.GetStorehouses().end());
+    std::vector<nobBaseWarehouse*> whs(buildings.getStorehouses().begin(), buildings.getStorehouses().end());
     helpers::sort(whs, WarehouseDistanceComparator(*goalWh, world));
-    TradePathCache& tradePathCache = world.GetTradePathCache();
+    TradePathCache& tradePathCache = world.getTradePathCache();
     for(nobBaseWarehouse* wh : whs)
     {
         // Get available wares
         const unsigned available =
-          boost::variant2::visit(composeVisitor([wh](GoodType gt) { return wh->GetAvailableWaresForTrading(gt); },
-                                                [wh](Job job) { return wh->GetAvailableFiguresForTrading(job); }),
+          boost::variant2::visit(composeVisitor([wh](GoodType gt) { return wh->getAvailableWaresForTrading(gt); },
+                                                [wh](Job job) { return wh->getAvailableFiguresForTrading(job); }),
                                  what);
         if(available == 0)
             continue;
@@ -2310,13 +2310,13 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, 
         const unsigned actualCount = std::min(available, count);
 
         // Find a trade path from flag to flag
-        TradeRoute tr(world, GetPlayerId(), wh->GetFlagPos(), goalFlagPos);
+        TradeRoute tr(world, getPlayerId(), wh->getFlagPos(), goalFlagPos);
 
         // Found a path?
-        if(tr.IsValid())
+        if(tr.isValid())
         {
             // Add to cache for future searches
-            tradePathCache.addEntry(tr.GetTradePath(), GetPlayerId());
+            tradePathCache.addEntry(tr.getTradePath(), getPlayerId());
 
             wh->StartTradeCaravane(what, actualCount, tr, goalWh);
             count -= actualCount;
@@ -2326,12 +2326,12 @@ void GamePlayer::Trade(nobBaseWarehouse* goalWh, const boost_variant2<GoodType, 
     }
 }
 
-bool GamePlayer::IsBuildingEnabled(BuildingType type) const
+bool GamePlayer::isBuildingEnabled(BuildingType type) const
 {
     // No game interface without a GUI (headless runs, tests): no cheats either
     return building_enabled[type]
-           || (isHuman() && world.GetGameInterface()
-               && world.GetGameInterface()->GI_GetCheats().areAllBuildingsEnabled());
+           || (isHuman() && world.getGameInterface()
+               && world.getGameInterface()->GI_GetCheats().areAllBuildingsEnabled());
 }
 
 void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
@@ -2346,7 +2346,7 @@ void GamePlayer::FillVisualSettings(VisualSettings& visualSettings) const
     visualSettings.useCustomBuildOrder = useCustomBuildOrder_;
     visualSettings.build_order = build_order;
 
-    visualSettings.transport_order = GetOrderingFromTransportPrio(transportPrio);
+    visualSettings.transport_order = getOrderingFromTransportPrio(transportPrio);
 
     visualSettings.military_settings = militarySettings_;
     visualSettings.tools_settings = toolsSettings_;

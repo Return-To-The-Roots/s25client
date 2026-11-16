@@ -33,10 +33,10 @@ class SerializedGameData;
 class GlobalGameSettings;
 
 /// Number of flag-search attempts for stranded soldiers looking for a return path to an own warehouse.
-unsigned short GetStrandedSoldierReturnSearchTryings(const GlobalGameSettings& ggs);
+unsigned short getStrandedSoldierReturnSearchTryings(const GlobalGameSettings& ggs);
 /// Radius used only for stranded soldiers looking for a return path to an own warehouse.
 /// Normal worker wandering keeps using WANDER_RADIUS and is not affected by this addon.
-unsigned short GetStrandedSoldierReturnSearchRadius(const GlobalGameSettings& ggs, unsigned short wanderTriesLeft);
+unsigned short getStrandedSoldierReturnSearchRadius(const GlobalGameSettings& ggs, unsigned short wanderTriesLeft);
 
 // Stellt einen Menschen dar
 class noFigure : public noMovable
@@ -118,7 +118,7 @@ private:
     virtual void HandleDerivedEvent(unsigned id) = 0;
 
     /// Gibt den Sichtradius dieser Figur zurück (0, falls nicht-spähend)
-    virtual unsigned GetVisualRange() const;
+    virtual unsigned getVisualRange() const;
 
     /// Unterfunktion von Wander --> zur Flagge irren
     void WanderToFlag();
@@ -156,23 +156,23 @@ public:
     void HandleEvent(unsigned id) override;
 
     /// Ziel setzen
-    void SetGoalTonullptr() { goal_ = nullptr; }
+    void setGoalTonullptr() { goal_ = nullptr; }
     /// Ziel zurückgeben
-    noRoadNode* GetGoal() const { return goal_; }
+    noRoadNode* getGoal() const { return goal_; }
 
-    bool HasArmor() const { return hasArmor_; };
-    void SetArmor(bool armor) { hasArmor_ = armor; };
+    bool hasArmor() const { return hasArmor_; };
+    void setArmor(bool armor) { hasArmor_ = armor; };
 
     /// Getter
-    bool GetRoadDir() const { return rs_dir; }
-    const RoadSegment* GetCurrentRoad() const { return cur_rs; }
-    bool IsWandering() const { return fs == FigureState::Wander; }
+    bool getRoadDir() const { return rs_dir; }
+    const RoadSegment* getCurrentRoad() const { return cur_rs; }
+    bool isWandering() const { return fs == FigureState::Wander; }
     /// Tut was, nachdem er rausgehen soll
     void ActAtFirst();
     /// Legt die Anfangsdaten für das Laufen auf Wegen fest
     void InitializeRoadWalking(const RoadSegment* road, unsigned short rs_pos, bool rs_dir);
     /// Gibt Job-Typ zurück
-    Job GetJobType() const { return job_; }
+    Job getJobType() const { return job_; }
     /// Returns true if this is a soldier (they get some special handling at some points)
     bool IsSoldier() const;
 
@@ -206,7 +206,7 @@ public:
     /// Auf Straßen zur Zielflagge laufen
     void WalkToGoal();
     /// Gibt die Straße zurück, auf der man gerade läuft
-    const RoadSegment* GetCurrentRoad() { return cur_rs; }
+    const RoadSegment* getCurrentRoad() { return cur_rs; }
     /// Wird aufgerufen, wenn die Straße unter der Figur geteilt wurde, setzt vorraus, dass die Figur auf der geteilten
     /// Straße läuft!
     void CorrectSplitData(const RoadSegment* rs2);
@@ -228,13 +228,13 @@ public:
     void NodeFreed(MapPoint pt);
 
     /// Wartet sie auf einen freien Platz?
-    bool IsWaitingForFreeNode() const { return waiting_for_free_node; }
+    bool isWaitingForFreeNode() const { return waiting_for_free_node; }
     /// Stoppt, wenn er auf diesen Punkt zuläuft
     void StopIfNecessary(MapPoint pt);
 
-    unsigned char GetPlayer() const { return player; }
+    unsigned char getPlayer() const { return player; }
 
-    bool IsDoingJobWorks() const { return fs == FigureState::Job; }
+    bool isDoingJobWorks() const { return fs == FigureState::Job; }
 
     void Abrogate(); // beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
 
@@ -243,11 +243,11 @@ public:
     /// Tells the figure it arrived at a harbor at the given position
     void ArrivedByShip(MapPoint harborPos);
     /// Gibt zurück, ob die Figur auf Straßen läuft zu ihrem Arbeitsplatz o.Ä.
-    bool IsWalkingOnRoad() const
+    bool isWalkingOnRoad() const
     {
         // Nur Träger arbeiten richtig auf Straßen
         if(fs == FigureState::Job)
-            return (GetGOT() == GO_Type::NofCarrier);
+            return (getGOT() == GO_Type::NofCarrier);
         else if(fs == FigureState::GoHome || fs == FigureState::GotToGoal)
             return true;
         else

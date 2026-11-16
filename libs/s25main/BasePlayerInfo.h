@@ -36,8 +36,8 @@ struct BasePlayerInfo
     bool isUsed() const { return (ps == PlayerState::AI || ps == PlayerState::Occupied); }
 
     /// Returns index of color in PLAYER_COLORS array or -1 if not found
-    int GetColorIdx() const;
-    static int GetColorIdx(unsigned color);
+    int getColorIdx() const;
+    static int getColorIdx(unsigned color);
 
     static int getCurrentVersion();
 };

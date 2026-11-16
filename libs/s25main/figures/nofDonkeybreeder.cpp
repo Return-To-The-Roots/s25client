@@ -25,10 +25,10 @@ nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id) : n
  */
 void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
 {
-    const Nation nation = workplace->GetNation();
+    const Nation nation = workplace->getNation();
     constexpr helpers::EnumArray<DrawPoint, Nation> walk_start = {{{2, 2}, {-6, -6}, {-7, -7}, {-7, -7}, {-6, -6}}};
     const helpers::EnumArray<int8_t, Nation> walk_length = {22, 19, 19, 23, 19};
-    const unsigned color = world->GetPlayer(player).color;
+    const unsigned color = world->getPlayer(player).color;
 
     unsigned now_id = GAMECLIENT.Interpolate(9600, current_ev);
     DrawPoint walkBasePos = drawPt + walk_start[nation];
@@ -42,7 +42,7 @@ void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
         LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::East, ((now_id - 400) / 70) % 8)
           .draw(walkBasePos + DrawPoint((now_id - 400) / 800, 4), COLOR_WHITE, color);
     else if(now_id < 2000)
-        LOADER.GetPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)
+        LOADER.getPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)
           ->DrawFull(walkBasePos + DrawPoint(walk_length[nation] + 4, 4), COLOR_WHITE, color);
     else if(now_id < 2800)
         LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::West, ((now_id - 2000) / 70) % 8)
@@ -68,12 +68,12 @@ void nofDonkeybreeder::WorkFinished()
 {
     // Straße und Zielflagge für Esel suchen
     noRoadNode* flag_goal;
-    RoadSegment* road = world->GetPlayer(player).FindRoadForDonkey(*workplace, &flag_goal);
+    RoadSegment* road = world->getPlayer(player).FindRoadForDonkey(*workplace, &flag_goal);
 
     // Esel erzeugen und zum Ziel beordern
     auto donkey = std::make_unique<nofCarrier>(CarrierType::Donkey, pos, player, road, flag_goal);
-    world->GetPlayer(player).IncreaseInventoryJob(Job::PackDonkey, 1);
-    donkey->InitializeRoadWalking(world->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast), 0, true);
+    world->getPlayer(player).IncreaseInventoryJob(Job::PackDonkey, 1);
+    donkey->InitializeRoadWalking(world->getSpecObj<noRoadNode>(pos)->getRoute(Direction::SouthEast), 0, true);
 
     // Wenn keine Straße gefunden wurde, muss er nach Hause gehen
     if(!road)

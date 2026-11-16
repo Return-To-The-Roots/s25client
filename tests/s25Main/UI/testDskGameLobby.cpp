@@ -57,9 +57,9 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
     auto* ci = dynamic_cast<ClientInterface*>(desktop);
     auto* li = dynamic_cast<LobbyInterface*>(desktop);
     BOOST_TEST_REQUIRE((ci && li));
-    std::vector<ctrlOptionGroup*> chatTab = desktop->GetCtrls<ctrlOptionGroup>();
+    std::vector<ctrlOptionGroup*> chatTab = desktop->getCtrls<ctrlOptionGroup>();
     BOOST_TEST_REQUIRE(chatTab.size() == 1u);
-    std::vector<ctrlButton*> chatBts = chatTab.front()->GetCtrls<ctrlButton>();
+    std::vector<ctrlButton*> chatBts = chatTab.front()->getCtrls<ctrlButton>();
     BOOST_TEST_REQUIRE(chatBts.size() == 2u);
 
     WINDOWMANAGER.Draw();
@@ -71,7 +71,7 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
         RTTR_REQUIRE_LOG_CONTAINS("<TestName>", false);
         li->LC_Chat("OtherPlayer", "Test");
         RTTR_REQUIRE_LOG_CONTAINS("<OtherPlayer>", false);
-        desktop->msgOptionGroupChange(chatTab.front()->GetID(), chatBts[i % 2]->GetID());
+        desktop->msgOptionGroupChange(chatTab.front()->getID(), chatBts[i % 2]->getID());
     }
     // Free desktop etc to trigger mock verification
     WINDOWMANAGER.CleanUp();
@@ -84,20 +84,20 @@ BOOST_AUTO_TEST_CASE(CheckServerVersionValidity)
     info.setVersion("");
     BOOST_TEST(!isServerVersionValid(info));
     // Exact match
-    info.setVersion(rttr::version::GetReadableVersion());
+    info.setVersion(rttr::version::getReadableVersion());
     BOOST_TEST(isServerVersionValid(info));
     // Build with same revision but on 30.07.2012
-    info.setVersion("v20120730 - " + rttr::version::GetShortRevision());
+    info.setVersion("v20120730 - " + rttr::version::getShortRevision());
     BOOST_TEST(isServerVersionValid(info));
     // Build with same revision on a tag
-    info.setVersion("v0.8.9 - " + rttr::version::GetShortRevision());
+    info.setVersion("v0.8.9 - " + rttr::version::getShortRevision());
     BOOST_TEST(isServerVersionValid(info));
     // Wrong revision (purposely non-hex char to avoid accidental match)
     info.setVersion("v0.8.9 - a1b2z3d");
     BOOST_TEST(!isServerVersionValid(info));
     rttr::test::LogAccessor logAcc;
     // Invalid format (can't get revision)
-    info.setVersion("v20120730 " + rttr::version::GetShortRevision());
+    info.setVersion("v20120730 " + rttr::version::getShortRevision());
     BOOST_TEST(!isServerVersionValid(info));
     RTTR_REQUIRE_LOG_CONTAINS("Can't get server revision", true);
 }

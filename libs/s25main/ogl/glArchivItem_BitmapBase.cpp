@@ -32,7 +32,7 @@ glArchivItem_BitmapBase::~glArchivItem_BitmapBase()
 /**
  *  Liefert das GL-Textur-Handle.
  */
-unsigned glArchivItem_BitmapBase::GetTexture()
+unsigned glArchivItem_BitmapBase::getTexture()
 {
     if(texture == 0)
         GenerateTexture();
@@ -60,7 +60,7 @@ void glArchivItem_BitmapBase::setInterpolateTexture(bool interpolate)
         DeleteTexture();
 }
 
-Extent glArchivItem_BitmapBase::GetTexSize() const
+Extent glArchivItem_BitmapBase::getTexSize() const
 {
     RTTR_Assert(texture); // Invalid if no texture exists
     return textureSize_;
@@ -80,7 +80,7 @@ void glArchivItem_BitmapBase::GenerateTexture()
         return;
 
     if(!getPalette() && getFormat() == libsiedler2::TextureFormat::Paletted)
-        setPaletteCopy(*LOADER.GetPaletteN("pal5"));
+        setPaletteCopy(*LOADER.getPaletteN("pal5"));
 
     VIDEODRIVER.BindTexture(texture);
 
@@ -91,7 +91,7 @@ void glArchivItem_BitmapBase::GenerateTexture()
     FillTexture();
 }
 
-int glArchivItem_BitmapBase::GetInternalFormat() const
+int glArchivItem_BitmapBase::getInternalFormat() const
 {
     return GL_RGBA;
 }

@@ -44,7 +44,7 @@ int Random<T_PRNG>::Rand(const RandomContext& context, const int maxExcl)
 }
 
 template<class T_PRNG>
-unsigned Random<T_PRNG>::GetChecksum() const
+unsigned Random<T_PRNG>::getChecksum() const
 {
     return CalcChecksum(rng_);
 }
@@ -65,7 +65,7 @@ unsigned Random<T_PRNG>::CalcChecksum(const PRNG& rng)
 }
 
 template<class T_PRNG>
-const typename Random<T_PRNG>::PRNG& Random<T_PRNG>::GetCurrentState() const
+const typename Random<T_PRNG>::PRNG& Random<T_PRNG>::getCurrentState() const
 {
     return rng_;
 }
@@ -126,7 +126,7 @@ void Random<T_PRNG>::RandomEntry::Deserialize(Serializer& ser)
 }
 
 template<class T_PRNG>
-int Random<T_PRNG>::RandomEntry::GetValue() const
+int Random<T_PRNG>::RandomEntry::getValue() const
 {
     PRNG tmpRng(rngState);
     return calcRandValue(tmpRng, maxExcl);

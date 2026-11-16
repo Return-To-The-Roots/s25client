@@ -36,7 +36,7 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, 
 void noDisappearingMapEnvObject::Draw(DrawPoint drawPt)
 {
     // Bild
-    LOADER.GetMapTexture(map_id)->DrawFull(drawPt, GetDrawColor());
+    LOADER.getMapTexture(map_id)->DrawFull(drawPt, getDrawColor());
     // Schatten
-    LOADER.GetMapTexture(map_id + 100)->DrawFull(drawPt, GetDrawShadowColor());
+    LOADER.getMapTexture(map_id + 100)->DrawFull(drawPt, getDrawShadowColor());
 }

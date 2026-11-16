@@ -20,7 +20,7 @@ public:
     void Connect(const std::string& hostOrIp, unsigned short port, bool isIPv6, bool hasPwd);
 
 private:
-    void SetStatus(const std::string& text, unsigned color);
+    void setStatus(const std::string& text, unsigned color);
 
     void msgEditChange(unsigned ctrl_id) override;
     void msgEditEnter(unsigned ctrl_id) override;

@@ -16,7 +16,7 @@ void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& que
 
         queue.pop();
 
-        const auto& neighbors = distances.GetNeighbours(currentPoint);
+        const auto& neighbors = distances.getNeighbours(currentPoint);
 
         for(const MapPoint& neighbor : neighbors)
         {
@@ -35,8 +35,8 @@ void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& que
 
 void FlattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos)
 {
-    const auto& neighbors = heightMap.GetNeighbours(pos);
-    const auto& farNeighbors = heightMap.GetPointsInRadius(pos, 2);
+    const auto& neighbors = heightMap.getNeighbours(pos);
+    const auto& farNeighbors = heightMap.getPointsInRadius(pos, 2);
 
     const auto compareHeight = [&heightMap](const MapPoint& p1, const MapPoint& p2) {
         return heightMap[p1] < heightMap[p2];

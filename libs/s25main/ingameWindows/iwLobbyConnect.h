@@ -26,6 +26,6 @@ protected:
     bool msgKeyDown(const KeyEvent&) override;
 
 private:
-    void SetText(const std::string& text, unsigned color, bool button);
+    void setText(const std::string& text, unsigned color, bool button);
     void ReadFromEditAndSaveLobbyData(std::string& user, std::string& pass);
 };

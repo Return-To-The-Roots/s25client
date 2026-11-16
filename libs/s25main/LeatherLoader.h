@@ -77,10 +77,10 @@ constexpr auto maxEnumValue(BobType)
 
 extern helpers::EnumArray<unsigned, BobType> bobIndex;
 
-ITexture* GetWareTex(GoodType good);
-ITexture* GetWareStackTex(GoodType good);
-ITexture* GetWareDonkeyTex(GoodType good);
-ITexture* GetJobTex(Job job);
+ITexture* getWareTex(GoodType good);
+ITexture* getWareStackTex(GoodType good);
+ITexture* getWareDonkeyTex(GoodType good);
+ITexture* getJobTex(Job job);
 bool isAddonActive(const GameWorldBase& gwb);
 BobType wareToCarrierBobIndex(GoodType good, bool fat);
 

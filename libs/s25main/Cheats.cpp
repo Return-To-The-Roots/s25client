@@ -16,7 +16,7 @@ Cheats::Cheats(GameWorldBase& world, GameCommandFactory& gcFactory) : world_(wor
 
 bool Cheats::areCheatsAllowed() const
 {
-    return world_.IsSinglePlayer();
+    return world_.isSinglePlayer();
 }
 
 void Cheats::toggleCheatMode()
@@ -38,7 +38,7 @@ void Cheats::toggleAllVisible()
 
         // In S2, the minimap is not updated immediately.
         // In RTTR, the minimap would become messed up if it wasn't updated here.
-        if(GameInterface* gi = world_.GetGameInterface())
+        if(GameInterface* gi = world_.getGameInterface())
             gi->GI_UpdateMapVisibility();
     }
 }
@@ -68,8 +68,8 @@ bool Cheats::canPlaceCheatBuilding(const MapPoint& mp) const
 
     // It seems that in the original game you can only build headquarters in unoccupied territory at least 2 nodes
     // away from any border markers and that it doesn't need more bq than a hut.
-    const MapNode& node = world_.GetNode(mp);
-    return !node.owner && !world_.IsAnyNeighborOwned(mp) && node.bq >= BuildingQuality::Hut;
+    const MapNode& node = world_.getNode(mp);
+    return !node.owner && !world_.isAnyNeighborOwned(mp) && node.bq >= BuildingQuality::Hut;
 }
 
 void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
@@ -79,13 +79,13 @@ void Cheats::placeCheatBuilding(const MapPoint& mp, const GamePlayer& player)
 
     world_.DestroyNO(mp, false); // if CanPlaceCheatBuilding is true then this must be safe to destroy
     auto* hq =
-      BuildingFactory::CreateBuilding(world_, BuildingType::Headquarters, mp, player.GetPlayerId(), player.nation);
-    checkedCast<nobHQ*>(hq)->SetIsTent(player.IsHQTent());
+      BuildingFactory::CreateBuilding(world_, BuildingType::Headquarters, mp, player.getPlayerId(), player.nation);
+    checkedCast<nobHQ*>(hq)->setIsTent(player.isHQTent());
 }
 
 void Cheats::toggleHumanAIPlayer()
 {
-    if(isCheatModeOn() && !GAMECLIENT.IsReplayModeOn())
+    if(isCheatModeOn() && !GAMECLIENT.isReplayModeOn())
     {
         GAMECLIENT.ToggleHumanAIPlayer(AI::Info{AI::Type::Default, AI::Level::Easy});
         isHumanAIPlayer_ = !isHumanAIPlayer_;
@@ -119,9 +119,9 @@ void Cheats::destroyBuildings(const PlayerIDSet& playerIds)
     if(!isCheatModeOn())
         return;
 
-    RTTR_FOREACH_PT(MapPoint, world_.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world_.getSize())
     {
-        if(world_.GetNO(pt)->GetType() == NodalObjectType::Building && playerIds.count(world_.GetNode(pt).owner - 1))
+        if(world_.getNO(pt)->getType() == NodalObjectType::Building && playerIds.count(world_.getNode(pt).owner - 1))
             world_.DestroyNO(pt);
     }
 }
@@ -132,9 +132,9 @@ void Cheats::destroyAllAIBuildings()
         return;
 
     PlayerIDSet ais;
-    for(auto i = 0u; i < world_.GetNumPlayers(); ++i)
+    for(auto i = 0u; i < world_.getNumPlayers(); ++i)
     {
-        if(!world_.GetPlayer(i).isHuman())
+        if(!world_.getPlayer(i).isHuman())
             ais.insert(i);
     }
     destroyBuildings(ais);

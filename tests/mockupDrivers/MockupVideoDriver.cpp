@@ -18,7 +18,7 @@ MockupVideoDriver::MockupVideoDriver(VideoDriverLoaderInterface* CallBack)
 
 MockupVideoDriver::~MockupVideoDriver() = default;
 
-const char* MockupVideoDriver::GetName() const
+const char* MockupVideoDriver::getName() const
 {
     return "Mockup Video Driver";
 }
@@ -39,7 +39,7 @@ bool MockupVideoDriver::CreateScreen(const std::string&, const VideoMode newSize
 
 bool MockupVideoDriver::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
 {
-    SetNewSize(newSize, Extent(newSize.width, newSize.height));
+    setNewSize(newSize, Extent(newSize.width, newSize.height));
     displayMode_ = displayMode;
     return true;
 }
@@ -49,7 +49,7 @@ bool MockupVideoDriver::MessageLoop()
     return true;
 }
 
-unsigned long MockupVideoDriver::GetTickCount() const
+unsigned long MockupVideoDriver::getTickCount() const
 {
     return tickCount_;
 }
@@ -59,7 +59,7 @@ static void* dummyLoader(const char*)
     return nullptr;
 }
 
-OpenGL_Loader_Proc MockupVideoDriver::GetLoaderFunction() const
+OpenGL_Loader_Proc MockupVideoDriver::getLoaderFunction() const
 {
     return dummyLoader;
 }
@@ -69,17 +69,17 @@ std::vector<VideoMode> MockupVideoDriver::ListVideoModes() const
     return video_modes_;
 }
 
-void MockupVideoDriver::SetMousePos(Position pos)
+void MockupVideoDriver::setMousePos(Position pos)
 {
     mouse_xy.pos = pos;
 }
 
-KeyEvent MockupVideoDriver::GetModKeyState() const
+KeyEvent MockupVideoDriver::getModKeyState() const
 {
     return modKeyState_;
 }
 
-void* MockupVideoDriver::GetMapPointer() const
+void* MockupVideoDriver::getMapPointer() const
 {
     return nullptr;
 }
@@ -89,7 +89,7 @@ void MockupVideoDriver::ShowErrorMessage(const std::string& title, const std::st
     std::cerr << title << ": " << message << std::endl;
 }
 
-bool MockupVideoDriver::IsTouchEvent() const
+bool MockupVideoDriver::isTouchEvent() const
 {
     return numTfinger_;
 }

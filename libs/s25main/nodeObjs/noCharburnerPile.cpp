@@ -37,7 +37,7 @@ noCharburnerPile::~noCharburnerPile() = default;
 
 void noCharburnerPile::Destroy()
 {
-    GetEvMgr().RemoveEvent(event);
+    getEvMgr().RemoveEvent(event);
 
     // Bauplätze drumrum neu berechnen
     world->RecalcBQAroundPointBig(pos);
@@ -67,17 +67,17 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
         case State::Wood:
         {
             // Draw sand on which the wood stack is constructed
-            LOADER.GetImageN("charburner_bobs", 25)->DrawFull(drawPt);
+            LOADER.getImageN("charburner_bobs", 25)->DrawFull(drawPt);
 
             glArchivItem_Bitmap* image;
             if(step == 0)
-                image = LOADER.GetImageN("charburner_bobs", 26);
+                image = LOADER.getImageN("charburner_bobs", 26);
             else
             {
-                image = LOADER.GetImageN("charburner_bobs", 28);
+                image = LOADER.getImageN("charburner_bobs", 28);
 
                 // Draw wood pile beneath the cover
-                LOADER.GetImageN("charburner_bobs", 26)->DrawFull(drawPt);
+                LOADER.getImageN("charburner_bobs", 26)->DrawFull(drawPt);
             }
 
             unsigned short progress = sub_step * 100 / CONSTRUCTION_WORKING_STEPS[step];
@@ -88,27 +88,27 @@ void noCharburnerPile::Draw(DrawPoint drawPt)
         case State::Smoldering:
         {
             LOADER
-              .GetImageN("charburner_bobs",
-                         27 + GAMECLIENT.GetGlobalAnimation(2, 10, 1, GetObjId() + this->pos.x * 10 + this->pos.y * 10))
+              .getImageN("charburner_bobs",
+                         27 + GAMECLIENT.getGlobalAnimation(2, 10, 1, getObjId() + this->pos.x * 10 + this->pos.y * 10))
               ->DrawFull(drawPt);
 
             // Dann Qualm zeichnen
-            unsigned globalAnimation = GAMECLIENT.GetGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100);
-            LOADER.GetMapTexture(692 + 1 * 8 + globalAnimation)
+            unsigned globalAnimation = GAMECLIENT.getGlobalAnimation(8, 5, 2, (this->pos.x + this->pos.y) * 100);
+            LOADER.getMapTexture(692 + 1 * 8 + globalAnimation)
               ->DrawFull(drawPt + DrawPoint(21, -11), 0x99EEEEEE); //-V525
-            LOADER.GetMapTexture(692 + 2 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 06), 0x99EEEEEE);
-            LOADER.GetMapTexture(692 + 1 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(25, 11), 0x99EEEEEE);
-            LOADER.GetMapTexture(692 + 3 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 35), 0x99EEEEEE);
+            LOADER.getMapTexture(692 + 2 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 06), 0x99EEEEEE);
+            LOADER.getMapTexture(692 + 1 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(25, 11), 0x99EEEEEE);
+            LOADER.getMapTexture(692 + 3 * 8 + globalAnimation)->DrawFull(drawPt - DrawPoint(2, 35), 0x99EEEEEE);
         }
             return;
         case State::RemoveCover:
         {
-            LOADER.GetImageN("charburner_bobs", 28 + step)->DrawFull(drawPt);
+            LOADER.getImageN("charburner_bobs", 28 + step)->DrawFull(drawPt);
         }
             return;
         case State::Harvest:
         {
-            LOADER.GetImageN("charburner_bobs", 34 + step)->DrawFull(drawPt);
+            LOADER.getImageN("charburner_bobs", 34 + step)->DrawFull(drawPt);
         }
             return;
         default: return;
@@ -123,14 +123,14 @@ void noCharburnerPile::HandleEvent(const unsigned /*id*/)
     {
         state = State::RemoveCover;
         // start a selfdestruct timer
-        event = GetEvMgr().AddEvent(this, SELFDESTRUCT_DELAY, 0);
+        event = getEvMgr().AddEvent(this, SELFDESTRUCT_DELAY, 0);
     } else
     {
         // selfdestruct!
         event = nullptr;
-        world->SetNO(pos, new noFire(pos, false), true);
+        world->setNO(pos, new noFire(pos, false), true);
         world->RecalcBQAroundPoint(pos);
-        GetEvMgr().AddToKillList(this);
+        getEvMgr().AddToKillList(this);
     }
 }
 
@@ -139,8 +139,8 @@ void noCharburnerPile::NextStep()
 {
     // reset selfdestruct timer
     if(event)
-        GetEvMgr().RemoveEvent(event);
-    event = GetEvMgr().AddEvent(this, SELFDESTRUCT_DELAY, 0);
+        getEvMgr().RemoveEvent(event);
+    event = getEvMgr().AddEvent(this, SELFDESTRUCT_DELAY, 0);
 
     // execute step
     switch(state)
@@ -159,8 +159,8 @@ void noCharburnerPile::NextStep()
                 {
                     step = 0;
                     state = State::Smoldering;
-                    GetEvMgr().RemoveEvent(event);
-                    event = GetEvMgr().AddEvent(this, SMOLDERING_LENGTH, 0);
+                    getEvMgr().RemoveEvent(event);
+                    event = getEvMgr().AddEvent(this, SMOLDERING_LENGTH, 0);
                 }
             }
         }
@@ -194,8 +194,8 @@ void noCharburnerPile::NextStep()
                 if(step == 6)
                 {
                     // Add an empty pile as environmental object
-                    world->SetNO(pos, new noEnvObject(pos, 40, 6), true);
-                    GetEvMgr().AddToKillList(this);
+                    world->setNO(pos, new noEnvObject(pos, 40, 6), true);
+                    getEvMgr().AddToKillList(this);
 
                     // BQ drumrum neu berechnen
                     world->RecalcBQAroundPoint(pos);
@@ -206,7 +206,7 @@ void noCharburnerPile::NextStep()
     }
 }
 
-noCharburnerPile::WareType noCharburnerPile::GetNeededWareType() const
+noCharburnerPile::WareType noCharburnerPile::getNeededWareType() const
 {
     if(sub_step % 2 == 0)
         return WareType::Wood;

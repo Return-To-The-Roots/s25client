@@ -21,7 +21,7 @@
 ctrlMapSelection::MapImages::MapImages(const SelectionMapInputData& data)
 {
     auto getImage = [](const ImageResource& res) {
-        auto* img = LOADER.GetImageN(ResourceId::fromPath(res.filePath), res.index);
+        auto* img = LOADER.getImageN(ResourceId::fromPath(res.filePath), res.index);
         if(!img)
             throw std::runtime_error(
               helpers::format(_("Loading of images %s for map selection failed."), res.filePath));
@@ -40,7 +40,7 @@ ctrlMapSelection::MapImages::MapImages(const SelectionMapInputData& data)
     missionMapMask = getImage(data.missionMapMask);
     marker = getImage(data.marker);
     conquered = getImage(data.conquered);
-    if(map->GetSize() != missionMapMask->GetSize())
+    if(map->getSize() != missionMapMask->getSize())
         throw std::runtime_error(_("Map and mission mask have different sizes."));
 
     enabledMaskMemory =
@@ -62,10 +62,10 @@ ctrlMapSelection::~ctrlMapSelection() = default;
 
 void ctrlMapSelection::updateEnabledMask()
 {
-    RTTR_Assert(mapImages.enabledMask->GetSize() == mapImages.missionMapMask->GetSize());
+    RTTR_Assert(mapImages.enabledMask->getSize() == mapImages.missionMapMask->getSize());
     const libsiedler2::ColorBGRA disabledColor(inputData.disabledColor);
 
-    RTTR_FOREACH_PT(Point<uint16_t>, mapImages.enabledMask->GetSize())
+    RTTR_FOREACH_PT(Point<uint16_t>, mapImages.enabledMask->getSize())
     {
         const auto pixelColor = mapImages.missionMapMask->getPixel(pt.x, pt.y).asValue();
         const auto matchingMissionIdx = helpers::indexOf_if(
@@ -119,13 +119,13 @@ void ctrlMapSelection::setPreview(bool previewOnly)
 
 bool ctrlMapSelection::msgLeftUp(const MouseCoords& mc)
 {
-    if(!preview && IsMouseOver(mc))
+    if(!preview && isMouseOver(mc))
     {
         const auto pickPos = invertScale(mc.pos - getMapPosition());
 
         const auto pixelColor = mapImages.missionMapMask
-                                  ->getPixel(helpers::clamp(pickPos.x, 0u, mapImages.map->GetSize().x - 1),
-                                             helpers::clamp(pickPos.y, 0u, mapImages.map->GetSize().y - 1))
+                                  ->getPixel(helpers::clamp(pickPos.x, 0u, mapImages.map->getSize().x - 1),
+                                             helpers::clamp(pickPos.y, 0u, mapImages.map->getSize().y - 1))
                                   .asValue();
 
         const auto matchingMissionIdx = helpers::indexOf_if(
@@ -134,7 +134,7 @@ bool ctrlMapSelection::msgLeftUp(const MouseCoords& mc)
         if(matchingMissionIdx >= 0)
         {
             setSelection(matchingMissionIdx);
-            GetParent()->msgButtonClick(GetID());
+            getParent()->msgButtonClick(getID());
         }
         return true;
     }
@@ -143,7 +143,7 @@ bool ctrlMapSelection::msgLeftUp(const MouseCoords& mc)
 
 float ctrlMapSelection::getScaleFactor()
 {
-    const auto ratio = PointF(GetSize()) / mapImages.background->GetSize();
+    const auto ratio = PointF(getSize()) / mapImages.background->getSize();
     return std::min(ratio.x, ratio.y);
 }
 
@@ -154,7 +154,7 @@ DrawPoint ctrlMapSelection::invertScale(const DrawPoint& scaleIt)
 
 DrawPoint ctrlMapSelection::getBackgroundPosition()
 {
-    return GetDrawPos() + (GetSize() - scale(mapImages.background->GetSize())) / 2;
+    return getDrawPos() + (getSize() - scale(mapImages.background->getSize())) / 2;
 }
 
 DrawPoint ctrlMapSelection::getMapPosition()
@@ -164,17 +164,17 @@ DrawPoint ctrlMapSelection::getMapPosition()
 
 void ctrlMapSelection::drawImageOnMap(glArchivItem_Bitmap* image, const Position& drawPos)
 {
-    const auto originCorrection = image->GetOrigin() - scale(image->GetOrigin());
-    image->DrawFull(Rect(getMapPosition() + scale(drawPos) + originCorrection, scale(image->GetSize())));
+    const auto originCorrection = image->getOrigin() - scale(image->getOrigin());
+    image->DrawFull(Rect(getMapPosition() + scale(drawPos) + originCorrection, scale(image->getSize())));
 }
 
 void ctrlMapSelection::Draw_()
 {
     Window::Draw_();
 
-    mapImages.background->DrawFull(Rect(getBackgroundPosition(), scale(mapImages.background->GetSize())));
+    mapImages.background->DrawFull(Rect(getBackgroundPosition(), scale(mapImages.background->getSize())));
 
-    const Rect mapRect = Rect(getMapPosition(), scale(mapImages.map->GetSize()));
+    const Rect mapRect = Rect(getMapPosition(), scale(mapImages.map->getSize()));
     mapImages.map->DrawFull(mapRect);
     mapImages.enabledMask->DrawFull(mapRect);
 

@@ -53,9 +53,9 @@ struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
 {
     RandWorldFixture()
     {
-        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        RTTR_FOREACH_PT(MapPoint, world.getSize())
         {
-            MapNode& worldNode = world.GetNodeWriteable(pt);
+            MapNode& worldNode = world.getNodeWriteable(pt);
             worldNode.altitude = rttr::test::randomValue(10, 20);
             worldNode.shadow = rttr::test::randomValue(0, 20);
             worldNode.resources = Resource(rttr::test::randomValue<uint8_t>());
@@ -64,14 +64,14 @@ struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
             worldNode.harborId = HarborId(rttr::test::randomValue(0, 20));
         }
         world.InitAfterLoad();
-        world.GetPlayer(0).name = "Human";
-        world.GetPlayer(1).ps = PlayerState::AI; //-V807
-        world.GetPlayer(1).aiInfo = AI::Info(AI::Type::Default, AI::Level::Medium);
-        world.GetPlayer(1).name = "PlAI";
-        world.GetPlayer(2).ps = PlayerState::Locked;
-        world.GetPlayer(3).ps = PlayerState::AI; //-V807
-        world.GetPlayer(3).aiInfo = AI::Info(AI::Type::Default, AI::Level::Easy);
-        world.GetPlayer(3).name = "PlAI2";
+        world.getPlayer(0).name = "Human";
+        world.getPlayer(1).ps = PlayerState::AI; //-V807
+        world.getPlayer(1).aiInfo = AI::Info(AI::Type::Default, AI::Level::Medium);
+        world.getPlayer(1).name = "PlAI";
+        world.getPlayer(2).ps = PlayerState::Locked;
+        world.getPlayer(3).ps = PlayerState::AI; //-V807
+        world.getPlayer(3).aiInfo = AI::Info(AI::Type::Default, AI::Level::Easy);
+        world.getPlayer(3).name = "PlAI2";
 
         ggs.speed = GameSpeed::VeryFast;
     }
@@ -111,7 +111,7 @@ void AddReplayCmds(Replay& replay, const PlayerGameCommands& cmds)
 
 void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
 {
-    BOOST_TEST_REQUIRE(loadReplay.IsReplaying());
+    BOOST_TEST_REQUIRE(loadReplay.isReplaying());
 
     auto gf = loadReplay.ReadGF();
     BOOST_TEST(gf == 1u);
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeMigratesToPerMineBehavio
 
     for(const BuildingType mineType :
         {BuildingType::GraniteMine, BuildingType::CoalMine, BuildingType::IronMine, BuildingType::GoldMine})
-        BOOST_TEST(GetMineResourceBehavior(ggsLoaded, mineType) == MineResourceBehavior::Inexhaustible);
+        BOOST_TEST(getMineResourceBehavior(ggsLoaded, mineType) == MineResourceBehavior::Inexhaustible);
     BOOST_TEST(ggsLoaded.getSelection(AddonId::INEXHAUSTIBLE_MINES) == 0u);
 }
 
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeAlsoMigratesLegacyGranit
 
     for(const BuildingType mineType :
         {BuildingType::GraniteMine, BuildingType::CoalMine, BuildingType::IronMine, BuildingType::GoldMine})
-        BOOST_TEST(GetMineResourceBehavior(ggsLoaded, mineType) == MineResourceBehavior::Inexhaustible);
+        BOOST_TEST(getMineResourceBehavior(ggsLoaded, mineType) == MineResourceBehavior::Inexhaustible);
 }
 
 BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeDoesNotOverridePerMineBehavior)
@@ -271,17 +271,17 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeDoesNotOverridePerMineBe
     GlobalGameSettings ggsLoaded;
     ggsLoaded.Deserialize(loader);
 
-    BOOST_TEST(GetMineResourceBehavior(ggsLoaded, BuildingType::CoalMine) == MineResourceBehavior::S4LikeExhaustion);
-    BOOST_TEST(GetMineResourceBehavior(ggsLoaded, BuildingType::GraniteMine) == MineResourceBehavior::Inexhaustible);
-    BOOST_TEST(GetMineResourceBehavior(ggsLoaded, BuildingType::IronMine) == MineResourceBehavior::Inexhaustible);
-    BOOST_TEST(GetMineResourceBehavior(ggsLoaded, BuildingType::GoldMine) == MineResourceBehavior::Inexhaustible);
+    BOOST_TEST(getMineResourceBehavior(ggsLoaded, BuildingType::CoalMine) == MineResourceBehavior::S4LikeExhaustion);
+    BOOST_TEST(getMineResourceBehavior(ggsLoaded, BuildingType::GraniteMine) == MineResourceBehavior::Inexhaustible);
+    BOOST_TEST(getMineResourceBehavior(ggsLoaded, BuildingType::IronMine) == MineResourceBehavior::Inexhaustible);
+    BOOST_TEST(getMineResourceBehavior(ggsLoaded, BuildingType::GoldMine) == MineResourceBehavior::Inexhaustible);
 }
 
 BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 {
     MockLocalGameState lgsGame;
     const std::string luaScript = helpers::format(
-      "-- Hello World\n function getRequiredLuaVersion()\n return %1%\n end", LuaInterfaceGameBase::GetVersion());
+      "-- Hello World\n function getRequiredLuaVersion()\n return %1%\n end", LuaInterfaceGameBase::getVersion());
     {
         MapLoader loader(world);
         TmpFile validLuaFile(".lua");
@@ -289,25 +289,25 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
         validLuaFile.close();
 
         BOOST_TEST_REQUIRE(loader.LoadLuaScript(*game, lgsGame, validLuaFile.filePath));
-        BOOST_TEST(world.HasLua());
+        BOOST_TEST(world.hasLua());
     }
 
-    const MapPoint hqPos = world.GetPlayer(0).GetHQPos();
-    auto& hq = ensureNonNull(world.GetSpecObj<nobBaseWarehouse>(hqPos));
-    auto& hqFlag = ensureNonNull(hq.GetFlag());
+    const MapPoint hqPos = world.getPlayer(0).getHQPos();
+    auto& hq = ensureNonNull(world.getSpecObj<nobBaseWarehouse>(hqPos));
+    auto& hqFlag = ensureNonNull(hq.getFlag());
     const MapPoint usualBldPos = world.MakeMapPoint(hqPos + Position(3, 0));
     auto* usualBld = static_cast<nobUsual*>(
       BuildingFactory::CreateBuilding(world, BuildingType::Bakery, usualBldPos, 0, Nation::Vikings));
     world.RecalcBQAroundPointBig(usualBldPos);
-    world.BuildRoad(0, false, hqFlag.GetPos(), std::vector<Direction>(3, Direction::East));
+    world.BuildRoad(0, false, hqFlag.getPos(), std::vector<Direction>(3, Direction::East));
     usualBld->is_working = true;
 
     // Add 3 fires with first between the others to have a mixed event order in the same GF
     for(const auto& offset : {Position(8, 0), Position(7, 0), Position(9, 0)})
     {
         const auto pt = world.MakeMapPoint(hqPos + offset);
-        BOOST_TEST_REQUIRE(!world.GetNode(pt).obj);
-        world.SetNO(pt, new noFire(pt, false));
+        BOOST_TEST_REQUIRE(!world.getNode(pt).obj);
+        world.setNO(pt, new noFire(pt, false));
         world.RecalcBQAroundPoint(pt);
     }
 
@@ -330,7 +330,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
         save.AddPlayer(player);
 
     save.ggs = ggs;
-    save.start_gf = em.GetCurrentGF();
+    save.start_gf = em.getCurrentGF();
     save.sgd.MakeSnapshot(*game);
 
     TmpFile tmpFile;
@@ -339,32 +339,32 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
     s25util::time64_t saveTime = s25util::Time::CurrentTime();
     BOOST_TEST_REQUIRE(save.Save(tmpFile.filePath, "MapTitle"));
-    BOOST_TEST(save.GetSaveTime() - saveTime <= 20); // 20s difference max
-    const unsigned origObjNum = GameObject::GetNumObjs();
-    const unsigned origObjIdNum = GameObject::GetObjIDCounter();
+    BOOST_TEST(save.getSaveTime() - saveTime <= 20); // 20s difference max
+    const unsigned origObjNum = GameObject::getNumObjs();
+    const unsigned origObjIdNum = GameObject::getObjIDCounter();
 
     for(const auto what : {SaveGameDataToLoad::Header, SaveGameDataToLoad::HeaderAndSettings, SaveGameDataToLoad::All})
     {
         Savegame loadSave;
         BOOST_TEST_REQUIRE(loadSave.Load(tmpFile.filePath, what));
-        BOOST_TEST(loadSave.GetSaveTime() == save.GetSaveTime());
-        BOOST_TEST(loadSave.GetMapName() == "MapTitle");
-        BOOST_TEST(loadSave.GetPlayerNames().size() == 3u);
-        BOOST_TEST(loadSave.GetPlayerNames()[0] == "Human");
-        BOOST_TEST(loadSave.GetPlayerNames()[1] == "PlAI");
-        BOOST_TEST(loadSave.GetPlayerNames()[2] == "PlAI2");
-        BOOST_TEST(loadSave.start_gf == em.GetCurrentGF());
+        BOOST_TEST(loadSave.getSaveTime() == save.getSaveTime());
+        BOOST_TEST(loadSave.getMapName() == "MapTitle");
+        BOOST_TEST(loadSave.getPlayerNames().size() == 3u);
+        BOOST_TEST(loadSave.getPlayerNames()[0] == "Human");
+        BOOST_TEST(loadSave.getPlayerNames()[1] == "PlAI");
+        BOOST_TEST(loadSave.getPlayerNames()[2] == "PlAI2");
+        BOOST_TEST(loadSave.start_gf == em.getCurrentGF());
         // Players are loaded with the settings
         if(what == SaveGameDataToLoad::Header)
         {
-            BOOST_TEST(loadSave.GetNumPlayers() == 0u);
+            BOOST_TEST(loadSave.getNumPlayers() == 0u);
         } else
         {
-            BOOST_TEST_REQUIRE(loadSave.GetNumPlayers() == 4u);
+            BOOST_TEST_REQUIRE(loadSave.getNumPlayers() == 4u);
             for(unsigned j = 0; j < 4; j++)
             {
-                const BasePlayerInfo& loadPlayer = loadSave.GetPlayer(j);
-                const BasePlayerInfo& worldPlayer = world.GetPlayer(j);
+                const BasePlayerInfo& loadPlayer = loadSave.getPlayer(j);
+                const BasePlayerInfo& worldPlayer = world.getPlayer(j);
                 BOOST_TEST(loadPlayer.ps == worldPlayer.ps);
                 if(!loadPlayer.isUsed())
                     continue;
@@ -383,33 +383,33 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
         {
             std::vector<PlayerInfo> players;
             for(unsigned j = 0; j < 4; j++)
-                players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
+                players.push_back(PlayerInfo(loadSave.getPlayer(j)));
             Game game(save.ggs, loadSave.start_gf, players);
             MockLocalGameState localGameState;
             save.sgd.ReadSnapshot(game, localGameState);
             game.world_.InitAfterLoad();
             const World& newWorld = game.world_;
-            auto& newEm = static_cast<TestEventManager&>(game.world_.GetEvMgr());
+            auto& newEm = static_cast<TestEventManager&>(game.world_.getEvMgr());
 
-            BOOST_TEST(newWorld.GetSize() == world.GetSize());
-            BOOST_TEST(newEm.GetCurrentGF() == em.GetCurrentGF());
-            BOOST_TEST(GameObject::GetNumObjs() == origObjNum);
-            BOOST_TEST(GameObject::GetObjIDCounter() == origObjIdNum);
-            std::vector<const GameEvent*> worldEvs = em.GetEvents();
-            std::vector<const GameEvent*> loadEvs = newEm.GetEvents();
+            BOOST_TEST(newWorld.getSize() == world.getSize());
+            BOOST_TEST(newEm.getCurrentGF() == em.getCurrentGF());
+            BOOST_TEST(GameObject::getNumObjs() == origObjNum);
+            BOOST_TEST(GameObject::getObjIDCounter() == origObjIdNum);
+            std::vector<const GameEvent*> worldEvs = em.getEvents();
+            std::vector<const GameEvent*> loadEvs = newEm.getEvents();
             BOOST_TEST(worldEvs.size() == loadEvs.size());
             for(unsigned j = 0; j < worldEvs.size(); ++j)
             {
-                BOOST_TEST(worldEvs[j]->GetInstanceId() == loadEvs[j]->GetInstanceId());
+                BOOST_TEST(worldEvs[j]->getInstanceId() == loadEvs[j]->getInstanceId());
                 BOOST_TEST(worldEvs[j]->startGF == loadEvs[j]->startGF);
                 BOOST_TEST(worldEvs[j]->length == loadEvs[j]->length);
                 BOOST_TEST(worldEvs[j]->id == loadEvs[j]->id);
             }
-            RTTR_FOREACH_PT(MapPoint, world.GetSize())
+            RTTR_FOREACH_PT(MapPoint, world.getSize())
                 BOOST_TEST_CONTEXT("Point " << pt)
                 {
-                    const MapNode& worldNode = world.GetNode(pt);
-                    const MapNode& loadNode = newWorld.GetNode(pt);
+                    const MapNode& worldNode = world.getNode(pt);
+                    const MapNode& loadNode = newWorld.getNode(pt);
                     BOOST_TEST(loadNode.roads == worldNode.roads, boost::test_tools::per_element());
                     BOOST_TEST(loadNode.altitude == worldNode.altitude);
                     BOOST_TEST(loadNode.shadow == worldNode.shadow);
@@ -423,20 +423,20 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
                     BOOST_TEST(loadNode.harborId == worldNode.harborId);
                     BOOST_TEST((loadNode.obj != nullptr) == (worldNode.obj != nullptr));
                 }
-            const auto* newUsual = newWorld.GetSpecObj<nobUsual>(usualBldPos);
+            const auto* newUsual = newWorld.getSpecObj<nobUsual>(usualBldPos);
             BOOST_TEST_REQUIRE(newUsual);
             BOOST_TEST(newUsual->is_working == usualBld->is_working);
-            BOOST_TEST(newUsual->HasWorker() == usualBld->HasWorker());
-            BOOST_TEST(newUsual->GetProductivity() == usualBld->GetProductivity());
+            BOOST_TEST(newUsual->hasWorker() == usualBld->hasWorker());
+            BOOST_TEST(newUsual->getProductivity() == usualBld->getProductivity());
 
-            auto* hqLoaded = world.GetSpecObj<nobBaseWarehouse>(hqPos);
+            auto* hqLoaded = world.getSpecObj<nobBaseWarehouse>(hqPos);
             BOOST_TEST_REQUIRE(hqLoaded);
-            auto* hqFlagLoaded = hqLoaded->GetFlag();
+            auto* hqFlagLoaded = hqLoaded->getFlag();
             BOOST_TEST_REQUIRE(hqFlagLoaded);
-            BOOST_TEST(hqFlagLoaded->GetNumWares() == 1u);
+            BOOST_TEST(hqFlagLoaded->getNumWares() == 1u);
 
-            BOOST_TEST_REQUIRE(world.HasLua());
-            BOOST_TEST(world.GetLua().getScript() == luaScript);
+            BOOST_TEST_REQUIRE(world.hasLua());
+            BOOST_TEST(world.getLua().getScript() == luaScript);
 
             SerializedGameData loadedSgd;
             loadedSgd.MakeSnapshot(game);
@@ -487,18 +487,18 @@ BOOST_FIXTURE_TEST_CASE(EmptyReplayRecordingIsRemoved, ReplayMapFixture)
     bfs::remove(tmpFile.filePath);
 
     BOOST_TEST_REQUIRE(replay.StartRecording(tmpFile.filePath, map, 42));
-    BOOST_TEST_REQUIRE(replay.IsRecording());
-    BOOST_TEST(replay.GetLastGF() == 0u);
+    BOOST_TEST_REQUIRE(replay.isRecording());
+    BOOST_TEST(replay.getLastGF() == 0u);
 
     BOOST_TEST_REQUIRE(replay.StopRecording());
-    BOOST_TEST_REQUIRE(!replay.IsRecording());
+    BOOST_TEST_REQUIRE(!replay.isRecording());
     BOOST_TEST(!bfs::exists(tmpFile.filePath));
 }
 BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
 {
     Replay replay;
-    BOOST_TEST_REQUIRE(!replay.IsRecording());
-    BOOST_TEST_REQUIRE(!replay.IsReplaying());
+    BOOST_TEST_REQUIRE(!replay.isRecording());
+    BOOST_TEST_REQUIRE(!replay.isReplaying());
     for(const BasePlayerInfo& player : players)
         replay.AddPlayer(player);
     replay.ggs.speed = GameSpeed::VeryFast;
@@ -508,48 +508,48 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
     tmpFile.close();
     // No overwrite
     BOOST_TEST_REQUIRE(!replay.StartRecording(tmpFile.filePath, map, 815));
-    BOOST_TEST_REQUIRE(!replay.IsRecording());
-    BOOST_TEST(!replay.IsReplaying());
+    BOOST_TEST_REQUIRE(!replay.isRecording());
+    BOOST_TEST(!replay.isReplaying());
 
     bfs::remove(tmpFile.filePath);
     s25util::time64_t saveTime = s25util::Time::CurrentTime();
     BOOST_TEST_REQUIRE(replay.StartRecording(tmpFile.filePath, map, 42));
-    BOOST_TEST(replay.GetSaveTime() - saveTime <= 20); // 20s difference max
-    BOOST_TEST_REQUIRE(replay.IsRecording());
-    BOOST_TEST(!replay.IsReplaying());
+    BOOST_TEST(replay.getSaveTime() - saveTime <= 20); // 20s difference max
+    BOOST_TEST_REQUIRE(replay.isRecording());
+    BOOST_TEST(!replay.isReplaying());
 
     GlobalGameSettings ggs = replay.ggs;
     Game game(ggs, 0u, players);
     PlayerGameCommands cmds = GetTestCommands().create(game).result;
     AddReplayCmds(replay, cmds);
-    BOOST_TEST(replay.GetLastGF() == 5u);
+    BOOST_TEST(replay.getLastGF() == 5u);
     BOOST_TEST_REQUIRE(replay.StopRecording());
-    BOOST_TEST_REQUIRE(!replay.IsRecording());
-    BOOST_TEST(!replay.IsReplaying());
+    BOOST_TEST_REQUIRE(!replay.isRecording());
+    BOOST_TEST(!replay.isReplaying());
 
     for(const bool loadSettings : {false, true})
     {
         Replay loadReplay;
         BOOST_TEST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath));
-        BOOST_TEST(loadReplay.GetSaveTime() == replay.GetSaveTime());
-        BOOST_TEST(loadReplay.GetMapName() == "MapTitle");
-        BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames().size() == 3u);
-        BOOST_TEST(loadReplay.GetPlayerNames()[0] == "Human");
-        BOOST_TEST(loadReplay.GetPlayerNames()[1] == "PlAI");
-        BOOST_TEST(loadReplay.GetPlayerNames()[2] == "PlAI2");
-        BOOST_TEST(loadReplay.GetLastGF() == 5u);
+        BOOST_TEST(loadReplay.getSaveTime() == replay.getSaveTime());
+        BOOST_TEST(loadReplay.getMapName() == "MapTitle");
+        BOOST_TEST_REQUIRE(loadReplay.getPlayerNames().size() == 3u);
+        BOOST_TEST(loadReplay.getPlayerNames()[0] == "Human");
+        BOOST_TEST(loadReplay.getPlayerNames()[1] == "PlAI");
+        BOOST_TEST(loadReplay.getPlayerNames()[2] == "PlAI2");
+        BOOST_TEST(loadReplay.getLastGF() == 5u);
         if(!loadSettings)
         {
             // Not loaded
-            BOOST_TEST(loadReplay.GetNumPlayers() == 0u);
+            BOOST_TEST(loadReplay.getNumPlayers() == 0u);
             continue;
         }
         MapInfo newMap;
         BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
-        BOOST_TEST_REQUIRE(loadReplay.GetNumPlayers() == 4u);
+        BOOST_TEST_REQUIRE(loadReplay.getNumPlayers() == 4u);
         for(unsigned j = 0; j < 4; j++)
         {
-            const BasePlayerInfo& loadPlayer = loadReplay.GetPlayer(j);
+            const BasePlayerInfo& loadPlayer = loadReplay.getPlayer(j);
             const BasePlayerInfo& worldPlayer = players[j];
             BOOST_TEST(loadPlayer.ps == worldPlayer.ps);
             if(!loadPlayer.isUsed())
@@ -593,28 +593,28 @@ BOOST_FIXTURE_TEST_CASE(BrokenReplayWithMap, ReplayMapFixture)
         replay.ggs.speed = GameSpeed::VeryFast;
 
         BOOST_TEST_REQUIRE(replay.StartRecording(tmpFile.filePath, map, randomInit));
-        saveTime = replay.GetSaveTime();
-        BOOST_TEST_REQUIRE(replay.IsRecording());
+        saveTime = replay.getSaveTime();
+        BOOST_TEST_REQUIRE(replay.isRecording());
         AddReplayCmds(replay, cmds);
-        BOOST_TEST(replay.GetLastGF() == 5u);
+        BOOST_TEST(replay.getLastGF() == 5u);
         // Assume an exception/crash here so Replay is simply destroyed without Close or StopRecording
     }
 
     Replay loadReplay;
     BOOST_TEST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath));
-    BOOST_TEST(loadReplay.GetSaveTime() == saveTime);
-    BOOST_TEST(loadReplay.GetMapName() == map.title);
-    BOOST_TEST(loadReplay.GetPlayerNames().size() == 3u);
-    BOOST_TEST(loadReplay.GetPlayerNames()[0] == "Human");
-    BOOST_TEST(loadReplay.GetPlayerNames()[1] == "PlAI");
-    BOOST_TEST(loadReplay.GetPlayerNames()[2] == "PlAI2");
-    BOOST_TEST(loadReplay.GetLastGF() == 5u);
+    BOOST_TEST(loadReplay.getSaveTime() == saveTime);
+    BOOST_TEST(loadReplay.getMapName() == map.title);
+    BOOST_TEST(loadReplay.getPlayerNames().size() == 3u);
+    BOOST_TEST(loadReplay.getPlayerNames()[0] == "Human");
+    BOOST_TEST(loadReplay.getPlayerNames()[1] == "PlAI");
+    BOOST_TEST(loadReplay.getPlayerNames()[2] == "PlAI2");
+    BOOST_TEST(loadReplay.getLastGF() == 5u);
     MapInfo newMap;
     BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
-    BOOST_TEST_REQUIRE(loadReplay.GetNumPlayers() == 4u);
+    BOOST_TEST_REQUIRE(loadReplay.getNumPlayers() == 4u);
     for(unsigned j = 0; j < 4; j++)
     {
-        const BasePlayerInfo& loadPlayer = loadReplay.GetPlayer(j);
+        const BasePlayerInfo& loadPlayer = loadReplay.getPlayer(j);
         const BasePlayerInfo& worldPlayer = players[j];
         BOOST_TEST_REQUIRE(loadPlayer.ps == worldPlayer.ps);
         if(loadPlayer.isUsed())
@@ -654,12 +654,12 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     players[3].name = "PlAI2";
 
     map.savegame->ggs = ggs;
-    map.savegame->start_gf = em.GetCurrentGF();
+    map.savegame->start_gf = em.getCurrentGF();
     map.savegame->sgd.MakeSnapshot(*game);
 
     Replay replay;
-    BOOST_TEST_REQUIRE(!replay.IsRecording());
-    BOOST_TEST_REQUIRE(!replay.IsReplaying());
+    BOOST_TEST_REQUIRE(!replay.isRecording());
+    BOOST_TEST_REQUIRE(!replay.isReplaying());
     for(const BasePlayerInfo& player : players)
         replay.AddPlayer(player);
     replay.ggs.speed = GameSpeed::VeryFast;
@@ -670,40 +670,40 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     bfs::remove(tmpFile.filePath);
     s25util::time64_t saveTime = s25util::Time::CurrentTime();
     BOOST_TEST_REQUIRE(replay.StartRecording(tmpFile.filePath, map, 815));
-    BOOST_TEST_REQUIRE(replay.GetSaveTime() - saveTime <= 20); // 20s difference max
-    BOOST_TEST_REQUIRE(replay.IsRecording());
-    BOOST_TEST(!replay.IsReplaying());
+    BOOST_TEST_REQUIRE(replay.getSaveTime() - saveTime <= 20); // 20s difference max
+    BOOST_TEST_REQUIRE(replay.isRecording());
+    BOOST_TEST(!replay.isReplaying());
 
     PlayerGameCommands cmds = GetTestCommands().create(*game).result;
     AddReplayCmds(replay, cmds);
-    BOOST_TEST(replay.GetLastGF() == 5u);
+    BOOST_TEST(replay.getLastGF() == 5u);
     BOOST_TEST_REQUIRE(replay.StopRecording());
-    BOOST_TEST(!replay.IsRecording());
-    BOOST_TEST_REQUIRE(!replay.IsReplaying());
+    BOOST_TEST(!replay.isRecording());
+    BOOST_TEST_REQUIRE(!replay.isReplaying());
 
     for(const bool loadSettings : {false, true})
     {
         Replay loadReplay;
         BOOST_TEST_REQUIRE(loadReplay.LoadHeader(tmpFile.filePath));
-        BOOST_TEST(loadReplay.GetSaveTime() == replay.GetSaveTime());
-        BOOST_TEST(loadReplay.GetMapName() == "MapTitle");
-        BOOST_TEST_REQUIRE(loadReplay.GetPlayerNames().size() == 3u);
-        BOOST_TEST(loadReplay.GetPlayerNames()[0] == "PlAI");
-        BOOST_TEST(loadReplay.GetPlayerNames()[1] == "Human");
-        BOOST_TEST(loadReplay.GetPlayerNames()[2] == "PlAI2");
-        BOOST_TEST(loadReplay.GetLastGF() == 5u);
+        BOOST_TEST(loadReplay.getSaveTime() == replay.getSaveTime());
+        BOOST_TEST(loadReplay.getMapName() == "MapTitle");
+        BOOST_TEST_REQUIRE(loadReplay.getPlayerNames().size() == 3u);
+        BOOST_TEST(loadReplay.getPlayerNames()[0] == "PlAI");
+        BOOST_TEST(loadReplay.getPlayerNames()[1] == "Human");
+        BOOST_TEST(loadReplay.getPlayerNames()[2] == "PlAI2");
+        BOOST_TEST(loadReplay.getLastGF() == 5u);
         if(!loadSettings)
         {
             // Not loaded
-            BOOST_TEST(loadReplay.GetNumPlayers() == 0u);
+            BOOST_TEST(loadReplay.getNumPlayers() == 0u);
             continue;
         }
         MapInfo newMap;
         BOOST_TEST_REQUIRE(loadReplay.LoadGameData(newMap));
-        BOOST_TEST_REQUIRE(loadReplay.GetNumPlayers() == 4u);
+        BOOST_TEST_REQUIRE(loadReplay.getNumPlayers() == 4u);
         for(unsigned j = 0; j < 4; j++)
         {
-            const BasePlayerInfo& loadPlayer = loadReplay.GetPlayer(j);
+            const BasePlayerInfo& loadPlayer = loadReplay.getPlayer(j);
             const BasePlayerInfo& worldPlayer = players[j];
             BOOST_TEST_REQUIRE(loadPlayer.ps == worldPlayer.ps);
             if(!loadPlayer.isUsed())
@@ -733,7 +733,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
 BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
 {
     SerializedGameData sgd;
-    const auto hunterPos1 = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + rttr::test::randomPoint<Position>(2, 4));
+    const auto hunterPos1 = world.MakeMapPoint(world.getPlayer(0).getHQPos() + rttr::test::randomPoint<Position>(2, 4));
     const auto hunterPos2 = world.MakeMapPoint(hunterPos1 + Position(2, 0));
     {
         auto* hunterBld1 = static_cast<nobUsual*>(BuildingFactory::CreateBuilding(
@@ -752,13 +752,13 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
     em.Clear();
     world.Unload();
     sgd.ReadSnapshot(*game, lgs);
-    BOOST_TEST_REQUIRE(world.GetFigures(hunterPos1).size() == 1u);
-    BOOST_TEST_REQUIRE(world.GetFigures(hunterPos2).size() == 2u);
-    const auto* deserializedHunter1 = dynamic_cast<const nofHunter*>(&world.GetFigures(hunterPos1).front());
-    const auto* deserializedHunter2 = dynamic_cast<const nofHunter*>(&world.GetFigures(hunterPos2).front());
+    BOOST_TEST_REQUIRE(world.getFigures(hunterPos1).size() == 1u);
+    BOOST_TEST_REQUIRE(world.getFigures(hunterPos2).size() == 2u);
+    const auto* deserializedHunter1 = dynamic_cast<const nofHunter*>(&world.getFigures(hunterPos1).front());
+    const auto* deserializedHunter2 = dynamic_cast<const nofHunter*>(&world.getFigures(hunterPos2).front());
     BOOST_TEST_REQUIRE(deserializedHunter1);
     BOOST_TEST_REQUIRE(deserializedHunter2);
-    BOOST_TEST(deserializedHunter1->GetState() != deserializedHunter2->GetState());
+    BOOST_TEST(deserializedHunter1->getState() != deserializedHunter2->getState());
 
     // Serialize again and compare data
     SerializedGameData sgd2;

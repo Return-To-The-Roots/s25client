@@ -37,24 +37,24 @@ struct LuaSettingsTestsFixture : public LuaBaseFixture, public IGameLobbyControl
     MockLocalGameState localGameState;
     LuaInterfaceSettings lua;
 
-    unsigned GetMaxNumPlayers() const override { return players.size(); }
-    JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx) override { return players.at(playerIdx); }
-    const GlobalGameSettings& GetGGS() const override { return ggs; }
+    unsigned getMaxNumPlayers() const override { return players.size(); }
+    JoinPlayerInfo& getJoinPlayer(unsigned playerIdx) override { return players.at(playerIdx); }
+    const GlobalGameSettings& getGGS() const override { return ggs; }
     void ChangeGlobalGameSettings(const GlobalGameSettings& ggs) override { this->ggs = ggs; }
-    void CloseSlot(unsigned playerIdx) override { GetJoinPlayer(playerIdx).ps = PlayerState::Locked; }
-    void SetPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) override
+    void CloseSlot(unsigned playerIdx) override { getJoinPlayer(playerIdx).ps = PlayerState::Locked; }
+    void setPlayerState(unsigned playerIdx, PlayerState state, const AI::Info& aiInfo) override
     {
-        GetJoinPlayer(playerIdx).ps = state;
-        GetJoinPlayer(playerIdx).aiInfo = aiInfo;
+        getJoinPlayer(playerIdx).ps = state;
+        getJoinPlayer(playerIdx).aiInfo = aiInfo;
     }
-    void SetName(unsigned playerIdx, const std::string& name) override { GetJoinPlayer(playerIdx).name = name; }
-    void SetPortrait(unsigned playerIdx, unsigned int portraitIndex) override
+    void setName(unsigned playerIdx, const std::string& name) override { getJoinPlayer(playerIdx).name = name; }
+    void setPortrait(unsigned playerIdx, unsigned int portraitIndex) override
     {
-        GetJoinPlayer(playerIdx).portraitIndex = portraitIndex;
+        getJoinPlayer(playerIdx).portraitIndex = portraitIndex;
     }
-    void SetColor(unsigned playerIdx, unsigned newColor) override { GetJoinPlayer(playerIdx).color = newColor; }
-    void SetTeam(unsigned playerIdx, Team newTeam) override { GetJoinPlayer(playerIdx).team = newTeam; }
-    void SetNation(unsigned playerIdx, Nation newNation) override { GetJoinPlayer(playerIdx).nation = newNation; }
+    void setColor(unsigned playerIdx, unsigned newColor) override { getJoinPlayer(playerIdx).color = newColor; }
+    void setTeam(unsigned playerIdx, Team newTeam) override { getJoinPlayer(playerIdx).team = newTeam; }
+    void setNation(unsigned playerIdx, Nation newNation) override { getJoinPlayer(playerIdx).nation = newNation; }
 
     LuaSettingsTestsFixture() : lua(*this, localGameState)
     {
@@ -115,9 +115,9 @@ BOOST_AUTO_TEST_CASE(Events)
     lua.EventPlayerJoined(0);
     lua.EventPlayerLeft(0);
     lua.EventPlayerReady(0);
-    BOOST_TEST_REQUIRE(lua.IsChangeAllowed("general", true));
-    BOOST_TEST_REQUIRE(!lua.IsChangeAllowed("general", false));
-    std::vector<AddonId> allowedAddons = lua.GetAllowedAddons();
+    BOOST_TEST_REQUIRE(lua.isChangeAllowed("general", true));
+    BOOST_TEST_REQUIRE(!lua.isChangeAllowed("general", false));
+    std::vector<AddonId> allowedAddons = lua.getAllowedAddons();
     BOOST_TEST_REQUIRE(allowedAddons.empty());
 
     clearLog();
@@ -145,31 +145,31 @@ BOOST_AUTO_TEST_CASE(Events)
     BOOST_TEST_REQUIRE(getLog() == "ready2\n");
 
     executeLua("function getAllowedChanges()\n  return {general=true, swapping=true}\nend");
-    BOOST_TEST_REQUIRE(lua.IsChangeAllowed("general", false));
-    BOOST_TEST_REQUIRE(lua.IsChangeAllowed("swapping", false));
-    BOOST_TEST_REQUIRE(!lua.IsChangeAllowed("addonsAll", false));
+    BOOST_TEST_REQUIRE(lua.isChangeAllowed("general", false));
+    BOOST_TEST_REQUIRE(lua.isChangeAllowed("swapping", false));
+    BOOST_TEST_REQUIRE(!lua.isChangeAllowed("addonsAll", false));
 
     executeLua("function getAllowedAddons()\n  return {ADDON_LIMIT_CATAPULTS, ADDON_CHARBURNER, ADDON_TRADE}\nend");
-    allowedAddons = lua.GetAllowedAddons();
+    allowedAddons = lua.getAllowedAddons();
     BOOST_TEST_REQUIRE(allowedAddons.size() == 3u);
     BOOST_TEST_REQUIRE(allowedAddons[0] == AddonId::LIMIT_CATAPULTS);
     BOOST_TEST_REQUIRE(allowedAddons[1] == AddonId::CHARBURNER);
     BOOST_TEST_REQUIRE(allowedAddons[2] == AddonId::TRADE);
 
-    BOOST_TEST(lua.IsMapPreviewEnabled()); // Not defined in lua -> Default to enabled
+    BOOST_TEST(lua.isMapPreviewEnabled()); // Not defined in lua -> Default to enabled
     executeLua("function isMapPreviewEnabled()\n  return false\nend");
-    BOOST_TEST(!lua.IsMapPreviewEnabled());
+    BOOST_TEST(!lua.isMapPreviewEnabled());
     executeLua("function isMapPreviewEnabled()\n  return true\nend");
-    BOOST_TEST(lua.IsMapPreviewEnabled());
+    BOOST_TEST(lua.isMapPreviewEnabled());
 
     // Return invalid type -> ignored, but log output
     clearLog();
     executeLua("function getAllowedAddons()\n  return {'ADDON_FAIL_ME'}\nend");
-    allowedAddons = lua.GetAllowedAddons();
+    allowedAddons = lua.getAllowedAddons();
     BOOST_TEST_REQUIRE(allowedAddons.empty());
     BOOST_TEST_REQUIRE(getLog() != "");
     executeLua("function getAllowedAddons()\n  return {9999}\nend");
-    allowedAddons = lua.GetAllowedAddons();
+    allowedAddons = lua.getAllowedAddons();
     BOOST_TEST_REQUIRE(allowedAddons.empty());
     BOOST_TEST_REQUIRE(getLog() != "");
 }
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE(SettingsFunctions)
 BOOST_AUTO_TEST_CASE(LegacyMineAddons)
 {
     LogAccessor logAcc;
-    const auto behaviorOf = [this](BuildingType bld) { return ggs.getSelection(GetMineResourceBehaviorAddonId(bld)); };
+    const auto behaviorOf = [this](BuildingType bld) { return ggs.getSelection(getMineResourceBehaviorAddonId(bld)); };
     constexpr auto defaultBehavior = static_cast<unsigned>(MineResourceBehavior::Default);
     constexpr auto inexhaustible = static_cast<unsigned>(MineResourceBehavior::Inexhaustible);
     constexpr auto s4Like = static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion);

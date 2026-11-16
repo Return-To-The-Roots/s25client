@@ -11,6 +11,6 @@ ctrlColorButton::ctrlColorButton(Window* parent, unsigned id, const DrawPoint& p
 
 void ctrlColorButton::DrawContent() const
 {
-    Extent rectSize = GetSize() - Extent(6, 6);
-    DrawRectangle(Rect(GetDrawPos() + DrawPoint(3, 3), rectSize), color_);
+    Extent rectSize = getSize() - Extent(6, 6);
+    DrawRectangle(Rect(getDrawPos() + DrawPoint(3, 3), rectSize), color_);
 }

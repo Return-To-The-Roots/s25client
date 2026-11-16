@@ -15,7 +15,7 @@
 #include <boost/filesystem.hpp>
 #include <stdexcept>
 
-unsigned CampaignDataLoader::GetVersion()
+unsigned CampaignDataLoader::getVersion()
 {
     return 3;
 }
@@ -35,11 +35,11 @@ bool CampaignDataLoader::CheckScriptVersion()
     if(func.type() == LUA_TFUNCTION)
     {
         const auto scriptVersion = func.call<unsigned>();
-        if(scriptVersion <= GetVersion())
+        if(scriptVersion <= getVersion())
             return true;
         else
         {
-            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.\n")) % scriptVersion % GetVersion();
+            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.\n")) % scriptVersion % getVersion();
             return false;
         }
     } else

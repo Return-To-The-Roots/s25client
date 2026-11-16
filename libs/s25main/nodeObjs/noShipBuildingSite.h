@@ -16,15 +16,15 @@ public:
     ~noShipBuildingSite() override;
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
-    GO_Type GetGOT() const final { return GO_Type::Shipbuildingsite; }
+    GO_Type getGOT() const final { return GO_Type::Shipbuildingsite; }
 
     /// Gibt den Eigentümer zurück
-    unsigned char GetPlayer() const { return player; }
+    unsigned char getPlayer() const { return player; }
 
     /// Das Schiff wird um eine Stufe weitergebaut
     void MakeBuildStep();
 
-    BlockingManner GetBM() const override { return BlockingManner::Building; }
+    BlockingManner getBM() const override { return BlockingManner::Building; }
 
 protected:
     void Draw(DrawPoint drawPt) override;

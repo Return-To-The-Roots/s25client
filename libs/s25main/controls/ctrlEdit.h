@@ -37,18 +37,18 @@ public:
     ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
              unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
     /// setzt den Text.
-    void SetText(const std::string& text);
-    void SetText(unsigned text);
+    void setText(const std::string& text);
+    void setText(unsigned text);
 
-    std::string GetText() const;
+    std::string getText() const;
     /// Trims leading whitespace (and trailing whitespace only if ext is empty), appends a non-empty ext,
     /// validates; returns Empty/Invalid/Valid with filename. Requires EditType::Filename.
-    GetFileNameResult GetFileName(const std::string& ext = "") const;
-    void SetFocus(bool focus = true);
-    bool HasFocus() const { return focus_; }
-    void SetDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
-    void SetNotify(bool notify = true) { this->notify_ = notify; }
-    void SetType(EditType type) { this->editType_ = type; }
+    GetFileNameResult getFileName(const std::string& ext = "") const;
+    void setFocus(bool focus = true);
+    bool hasFocus() const { return focus_; }
+    void setDisabled(bool disabled = true) { this->isDisabled_ = disabled; }
+    void setNotify(bool notify = true) { this->notify_ = notify; }
+    void setType(EditType type) { this->editType_ = type; }
 
     void Resize(const Extent& newSize) override;
 

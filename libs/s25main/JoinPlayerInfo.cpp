@@ -38,7 +38,7 @@ void JoinPlayerInfo::FixSwappedSaveSlot(JoinPlayerInfo& other)
     swap(team, other.team);
 }
 
-void JoinPlayerInfo::SetAIName(unsigned playerId)
+void JoinPlayerInfo::setAIName(unsigned playerId)
 {
     RTTR_Assert(ps == PlayerState::AI);
     name = MakeAIName(aiInfo, playerId);

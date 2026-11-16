@@ -38,26 +38,26 @@ struct CheatsFixture : WorldFixture<CreateEmptyWorld, numPlayers, worldWidth, wo
 
     const GameWorldViewer& getViewer() const { return viewer; }
 
-    GamePlayer& getPlayer(unsigned id) { return world.GetPlayer(id); }
+    GamePlayer& getPlayer(unsigned id) { return world.getPlayer(id); }
     GamePlayer& p1 = getPlayer(0);
     GamePlayer& p2 = getPlayer(1);
     GamePlayer& p3 = getPlayer(2);
 
-    const MapPoint p1HQPos = p1.GetHQPos();
-    const MapPoint p2HQPos = p2.GetHQPos();
+    const MapPoint p1HQPos = p1.getHQPos();
+    const MapPoint p2HQPos = p2.getHQPos();
 
     MapPoint unownedPt = {static_cast<MapCoord>(p1HQPos.x + HQ_RADIUS + 2), p1HQPos.y};
 
     auto countHQs(const GamePlayer& player)
     {
-        return player.GetBuildingRegister().GetBuildingNums().buildings[BuildingType::Headquarters];
+        return player.getBuildingRegister().getBuildingNums().buildings[BuildingType::Headquarters];
     }
     auto getHQs(const GamePlayer& player)
     {
         std::vector<nobHQ*> ret;
-        for(auto* bld : player.GetBuildingRegister().GetStorehouses())
+        for(auto* bld : player.getBuildingRegister().getStorehouses())
         {
-            if(bld->GetBuildingType() == BuildingType::Headquarters)
+            if(bld->getBuildingType() == BuildingType::Headquarters)
                 ret.push_back(static_cast<nobHQ*>(bld));
         }
         return ret;
@@ -66,7 +66,7 @@ struct CheatsFixture : WorldFixture<CreateEmptyWorld, numPlayers, worldWidth, wo
     auto countAllBuildings(const GamePlayer& player)
     {
         unsigned ret = 0;
-        for(auto b : player.GetBuildingRegister().GetBuildingNums().buildings)
+        for(auto b : player.getBuildingRegister().getBuildingNums().buildings)
             ret += b;
         return ret;
     }
@@ -115,7 +115,7 @@ BOOST_FIXTURE_TEST_CASE(CanToggleAllVisible_IfCheatModeIsOn, CheatsFixture)
     MockGameInterface mgi;
     MOCK_EXPECT(mgi.GI_GetCheats).returns(std::ref(this->cheats));
     MOCK_EXPECT(mgi.GI_UpdateMapVisibility).exactly(3); // how many toggles should actually occur
-    world.SetGameInterface(&mgi);
+    world.setGameInterface(&mgi);
 
     MapPoint farawayPos = p1HQPos;
     farawayPos.x += 20;
@@ -123,21 +123,21 @@ BOOST_FIXTURE_TEST_CASE(CanToggleAllVisible_IfCheatModeIsOn, CheatsFixture)
     const auto& viewer = getViewer();
 
     // initially farawayPos is not visible
-    BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == false);
+    BOOST_TEST_REQUIRE((viewer.getVisibility(farawayPos) == Visibility::Visible) == false);
 
     cheats.toggleAllVisible();
     // still not visible - cheat mode is not on
-    BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == false);
+    BOOST_TEST_REQUIRE((viewer.getVisibility(farawayPos) == Visibility::Visible) == false);
 
     cheats.toggleCheatMode();
     cheats.toggleAllVisible();
     // now visible - cheat mode is on
-    BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == true);
+    BOOST_TEST_REQUIRE((viewer.getVisibility(farawayPos) == Visibility::Visible) == true);
 
     cheats.toggleAllVisible();
-    BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == false);
+    BOOST_TEST_REQUIRE((viewer.getVisibility(farawayPos) == Visibility::Visible) == false);
     cheats.toggleAllVisible();
-    BOOST_TEST_REQUIRE((viewer.GetVisibility(farawayPos) == Visibility::Visible) == true);
+    BOOST_TEST_REQUIRE((viewer.getVisibility(farawayPos) == Visibility::Visible) == true);
 }
 
 BOOST_FIXTURE_TEST_CASE(CanToggleAllBuildingsEnabled_AndShowEnemyProductivityOverlay_IfCheatModeIsOn, CheatsFixture)
@@ -174,20 +174,20 @@ BOOST_FIXTURE_TEST_CASE(AllBuildingsAreEnabled_WhenCheatModeIsOn, CheatsFixture)
 {
     MockGameInterface mgi;
     MOCK_EXPECT(mgi.GI_GetCheats).returns(std::ref(this->cheats));
-    world.SetGameInterface(&mgi);
+    world.setGameInterface(&mgi);
     cheats.toggleCheatMode();
-    GamePlayer& p1 = world.GetPlayer(0);
+    GamePlayer& p1 = world.getPlayer(0);
     const auto bld = BuildingType::Brewery;
     p1.DisableBuilding(bld);
-    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == false);
+    BOOST_TEST_REQUIRE(p1.isBuildingEnabled(bld) == false);
     cheats.toggleAllBuildingsEnabled();
-    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == true);
+    BOOST_TEST_REQUIRE(p1.isBuildingEnabled(bld) == true);
     cheats.toggleAllBuildingsEnabled();
-    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == false);
+    BOOST_TEST_REQUIRE(p1.isBuildingEnabled(bld) == false);
     cheats.toggleAllBuildingsEnabled();
-    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == true);
+    BOOST_TEST_REQUIRE(p1.isBuildingEnabled(bld) == true);
     cheats.toggleCheatMode();
-    BOOST_TEST_REQUIRE(p1.IsBuildingEnabled(bld) == false);
+    BOOST_TEST_REQUIRE(p1.isBuildingEnabled(bld) == false);
 }
 
 BOOST_FIXTURE_TEST_CASE(CannotPlaceCheatBuildingWithinOwnedTerritory, CheatsFixture)
@@ -263,25 +263,25 @@ BOOST_FIXTURE_TEST_CASE(CheatBuildingHasTheSameNation, CheatsFixture)
     cheats.toggleCheatMode();
     cheats.placeCheatBuilding(unownedPt, p1);
     for(auto* bld : getHQs(p1))
-        BOOST_TEST_REQUIRE((bld->GetNation() == p1.nation) == true);
+        BOOST_TEST_REQUIRE((bld->getNation() == p1.nation) == true);
 }
 
 BOOST_FIXTURE_TEST_CASE(CheatBuildingIsATent_IfPrimaryHQIsATent, CheatsFixture)
 {
-    p1.SetHQIsTent(true);
+    p1.setHQIsTent(true);
     cheats.toggleCheatMode();
     cheats.placeCheatBuilding(unownedPt, p1);
     for(auto* bld : getHQs(p1))
-        BOOST_TEST_REQUIRE(static_cast<nobHQ*>(bld)->IsTent() == true);
+        BOOST_TEST_REQUIRE(static_cast<nobHQ*>(bld)->isTent() == true);
 }
 
 BOOST_FIXTURE_TEST_CASE(CheatBuildingIsNotATent_IfPrimaryHQIsNotATent, CheatsFixture)
 {
-    p1.SetHQIsTent(false);
+    p1.setHQIsTent(false);
     cheats.toggleCheatMode();
     cheats.placeCheatBuilding(unownedPt, p1);
     for(auto* bld : getHQs(p1))
-        BOOST_TEST_REQUIRE(static_cast<nobHQ*>(bld)->IsTent() == false);
+        BOOST_TEST_REQUIRE(static_cast<nobHQ*>(bld)->isTent() == false);
 }
 
 BOOST_FIXTURE_TEST_CASE(CanToggleResourcesToRevealSuccessively, CheatsFixture)

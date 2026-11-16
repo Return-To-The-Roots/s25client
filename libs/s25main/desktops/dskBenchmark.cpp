@@ -96,7 +96,7 @@ bool dskBenchmark::msgKeyDown(const KeyEvent& ke)
                 numInstances_ = (ke.c - '0') * 100;
                 if(numInstances_ == 0)
                     numInstances_ = 1000;
-                GetCtrl<ctrlText>(ID_txtAmount)->SetText("Instances: " + helpers::toString(numInstances_));
+                getCtrl<ctrlText>(ID_txtAmount)->setText("Instances: " + helpers::toString(numInstances_));
                 break;
             } else
                 return dskMenuBase::msgKeyDown(ke);
@@ -120,7 +120,7 @@ void dskBenchmark::msgPaintAfter()
     if(curTest_ != Benchmark::None)
     {
         if(frameCtr_.getCurNumFrames() + 1u >= numTestFrames)
-            VIDEODRIVER.GetRenderer()->synchronize();
+            VIDEODRIVER.getRenderer()->synchronize();
         frameCtr_.update();
         if(frameCtr_.getCurNumFrames() >= numTestFrames)
             finishTest();
@@ -128,11 +128,11 @@ void dskBenchmark::msgPaintAfter()
     dskMenuBase::msgPaintAfter();
 }
 
-void dskBenchmark::SetActive(bool activate)
+void dskBenchmark::setActive(bool activate)
 {
     if(!IsActive() && activate)
         VIDEODRIVER.ResizeScreen(VideoMode(1600, 900), DisplayMode::Windowed);
-    dskMenuBase::SetActive(activate);
+    dskMenuBase::setActive(activate);
 }
 
 void dskBenchmark::startTest(Benchmark test)
@@ -170,7 +170,7 @@ void dskBenchmark::startTest(Benchmark test)
         }
         case Benchmark::Primitives:
         {
-            Extent screenSize = VIDEODRIVER.GetRenderSize();
+            Extent screenSize = VIDEODRIVER.getRenderSize();
             std::uniform_int_distribution<unsigned> distSize(5, 50);
             std::uniform_int_distribution<unsigned> distClr(0, 0xFF);
             std::uniform_int_distribution<unsigned> distrMove(10, 50);
@@ -208,9 +208,9 @@ void dskBenchmark::startTest(Benchmark test)
             createGame();
             if(!game_)
                 return;
-            RTTR_FOREACH_PT(MapPoint, game_->world_.GetSize())
+            RTTR_FOREACH_PT(MapPoint, game_->world_.getSize())
             {
-                game_->world_.SetVisibility(pt, 0, Visibility::Visible);
+                game_->world_.setVisibility(pt, 0, Visibility::Visible);
             }
             break;
         case Benchmark::BasicGame:
@@ -233,7 +233,7 @@ void dskBenchmark::startTest(Benchmark test)
             MapLoader::PlaceHQs(game_->world_, hqs);
             for(unsigned i = 0; i < hqs.size(); i++)
             {
-                std::vector<MapPoint> pts = game_->world_.GetPointsInRadius(hqs[i], 15);
+                std::vector<MapPoint> pts = game_->world_.getPointsInRadius(hqs[i], 15);
                 std::bernoulli_distribution dist(numInstances_ / 1000.f);
                 std::bernoulli_distribution distEqual;
                 std::array<BuildingType, 5> blds = {{BuildingType::Barracks, BuildingType::Mill, BuildingType::IronMine,
@@ -243,8 +243,8 @@ void dskBenchmark::startTest(Benchmark test)
                 std::uniform_int_distribution<unsigned> getDir(0, helpers::MaxEnumValue_v<Direction>);
                 for(MapPoint pt : pts)
                 {
-                    MapPoint flagPt = game_->world_.GetNeighbour(pt, Direction::SouthEast);
-                    if(game_->world_.GetNode(pt).obj || game_->world_.GetNode(flagPt).obj || !dist(rng))
+                    MapPoint flagPt = game_->world_.getNeighbour(pt, Direction::SouthEast);
+                    if(game_->world_.getNode(pt).obj || game_->world_.getNode(flagPt).obj || !dist(rng))
                         continue;
                     BuildingType bldType = blds[getBld(rng)];
                     noBuilding* bld = BuildingFactory::CreateBuilding(
@@ -264,8 +264,8 @@ void dskBenchmark::startTest(Benchmark test)
         }
     }
     if(game_)
-        gameView_ = std::make_unique<GameView>(game_->world_, VIDEODRIVER.GetRenderSize());
-    VIDEODRIVER.GetRenderer()->synchronize();
+        gameView_ = std::make_unique<GameView>(game_->world_, VIDEODRIVER.getRenderSize());
+    VIDEODRIVER.getRenderer()->synchronize();
     VIDEODRIVER.setTargetFramerate(-1);
     curTest_ = test;
     frameCtr_ = FrameCounter(frameCtr_.getUpdateInterval());
@@ -284,17 +284,17 @@ void dskBenchmark::finishTest()
         testDurations_[curTest_] =
           duration_cast<milliseconds>(testDurations_[curTest_] + frameCtr_.getCurIntervalLength()) / 2;
 
-    std::vector<Window*> ctrls = GetCtrls<Window>();
+    std::vector<Window*> ctrls = getCtrls<Window>();
     for(Window* ctrl : ctrls)
     {
-        if(ctrl->GetID() >= ID_first)
-            DeleteCtrl(ctrl->GetID());
+        if(ctrl->getID() >= ID_first)
+            DeleteCtrl(ctrl->getID());
     }
     rects_.clear();
     lines_.clear();
     gameView_.reset();
     game_.reset();
-    SetFpsDisplay(true);
+    setFpsDisplay(true);
     VIDEODRIVER.setTargetFramerate(0);
     if(!runAll_)
         curTest_ = Benchmark::None;
@@ -326,18 +326,18 @@ void dskBenchmark::createGame()
     GameWorld& world = game_->world_;
     try
     {
-        loadGameData(world.GetDescriptionWriteable());
+        loadGameData(world.getDescriptionWriteable());
         world.Init(MapExtent(128, 128));
-        const WorldDescription& desc = world.GetDescription();
+        const WorldDescription& desc = world.getDescription();
         DescIdx<TerrainDesc> lastTerrain(0);
         int lastHeight = 10;
         std::mt19937 rng(42);
         using std::uniform_int_distribution;
         uniform_int_distribution<int> percentage(0, 100);
         uniform_int_distribution<int> randTerrain(0, desc.terrain.size() / 2);
-        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        RTTR_FOREACH_PT(MapPoint, world.getSize())
         {
-            MapNode& node = world.GetNodeWriteable(pt);
+            MapNode& node = world.getNodeWriteable(pt);
             DescIdx<TerrainDesc> t;
             // 90% chance of using the same terrain
             if(percentage(rng) <= 90)
@@ -357,7 +357,7 @@ void dskBenchmark::createGame()
             node.altitude = lastHeight;
         }
         MapLoader::InitShadows(world);
-        MapLoader::SetMapExplored(world);
+        MapLoader::setMapExplored(world);
 
         GameLoader loader(LOADER, game_);
         if(!loader.load())

@@ -38,10 +38,10 @@ void AudioDriverWrapper::StopMusic()
 }
 
 /// Wird ein Sound (noch) abgespielt?
-bool AudioDriverWrapper::IsEffectPlaying(EffectPlayId play_id)
+bool AudioDriverWrapper::isEffectPlaying(EffectPlayId play_id)
 {
     if(audiodriver_)
-        return audiodriver_->IsEffectPlaying(play_id);
+        return audiodriver_->isEffectPlaying(play_id);
     else
         return false;
 }
@@ -53,21 +53,21 @@ void AudioDriverWrapper::ChangeVolume(EffectPlayId play_id, uint8_t volume)
         audiodriver_->ChangeVolume(play_id, volume);
 }
 
-void AudioDriverWrapper::SetMasterEffectVolume(uint8_t volume)
+void AudioDriverWrapper::setMasterEffectVolume(uint8_t volume)
 {
     if(audiodriver_)
-        audiodriver_->SetMasterEffectVolume(volume);
+        audiodriver_->setMasterEffectVolume(volume);
 }
 
-void AudioDriverWrapper::SetMusicVolume(uint8_t volume)
+void AudioDriverWrapper::setMusicVolume(uint8_t volume)
 {
     if(audiodriver_)
-        audiodriver_->SetMusicVolume(volume);
+        audiodriver_->setMusicVolume(volume);
 }
 
-std::string AudioDriverWrapper::GetName() const
+std::string AudioDriverWrapper::getName() const
 {
-    const char* name = (audiodriver_) ? audiodriver_->GetName() : nullptr;
+    const char* name = (audiodriver_) ? audiodriver_->getName() : nullptr;
     return (name) ? name : "";
 }
 
@@ -79,7 +79,7 @@ bool AudioDriverWrapper::Init()
         return false;
     }
 
-    LOG.write(_("Loaded audio driver \"%1%\"\n")) % GetName();
+    LOG.write(_("Loaded audio driver \"%1%\"\n")) % getName();
     return true;
 }
 
@@ -97,12 +97,12 @@ bool AudioDriverWrapper::LoadDriver(std::string& preference)
     if(!driver_wrapper.Load(drivers::DriverType::Audio, preference))
         return false;
 
-    auto createAudioInstance = driver_wrapper.GetFunction<decltype(CreateAudioInstance)>("CreateAudioInstance");
-    auto freeAudioInstance = driver_wrapper.GetFunction<decltype(FreeAudioInstance)>("FreeAudioInstance");
+    auto createAudioInstance = driver_wrapper.getFunction<decltype(CreateAudioInstance)>("CreateAudioInstance");
+    auto freeAudioInstance = driver_wrapper.getFunction<decltype(FreeAudioInstance)>("FreeAudioInstance");
     RTTR_Assert(createAudioInstance && freeAudioInstance);
 
     // Instanz erzeugen
-    audiodriver_ = Handle(createAudioInstance(this, VIDEODRIVER.GetMapPointer()), freeAudioInstance);
+    audiodriver_ = Handle(createAudioInstance(this, VIDEODRIVER.getMapPointer()), freeAudioInstance);
     return Init();
 }
 

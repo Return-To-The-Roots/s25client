@@ -38,14 +38,14 @@ static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPo
     if(allow_outhousing)
     {
         ctrlButton* b =
-          page.AddImageButton(100 + idOffset, btPos, btSize, TextureColor::Grey, LOADER.GetMapTexture(2298), name);
-        b->SetBorder(false);
+          page.AddImageButton(100 + idOffset, btPos, btSize, TextureColor::Grey, LOADER.getMapTexture(2298), name);
+        b->setBorder(false);
     } else
-        page.AddImage(100 + idOffset, btPos + btSize / 2, LOADER.GetMapTexture(2298), name);
+        page.AddImage(100 + idOffset, btPos + btSize / 2, LOADER.getMapTexture(2298), name);
 
     // Background image for the amount
     const DrawPoint bgCtPos = btPos + DrawPoint(btSize.x / 2, 32);
-    page.AddImage(200 + idOffset, bgCtPos, LOADER.GetMapTexture(2299));
+    page.AddImage(200 + idOffset, bgCtPos, LOADER.getMapTexture(2299));
 
     // The actual image for the element
     const DrawPoint warePos = btPos + btSize / 2;
@@ -53,17 +53,17 @@ static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPo
 
     // Overlay for "don't collect"
     DrawPoint overlayPos = warePos - DrawPoint(0, 4);
-    ctrlImage* image = page.AddImage(400 + idOffset, overlayPos, LOADER.GetImageN("io", 222));
-    image->SetVisible(false);
+    ctrlImage* image = page.AddImage(400 + idOffset, overlayPos, LOADER.getImageN("io", 222));
+    image->setVisible(false);
 
     // Overlay for "send out"
     overlayPos = warePos + DrawPoint(0, 10);
-    image = page.AddImage(500 + idOffset, overlayPos, LOADER.GetImageN("io", 221));
-    image->SetVisible(false);
+    image = page.AddImage(500 + idOffset, overlayPos, LOADER.getImageN("io", 221));
+    image->setVisible(false);
 
     // Overlay for "collect"
-    image = page.AddImage(700 + idOffset, overlayPos, LOADER.GetImageN("io_new", 3));
-    image->SetVisible(false);
+    image = page.AddImage(700 + idOffset, overlayPos, LOADER.getImageN("io_new", 3));
+    image->setVisible(false);
 
     // Amount of the element
     const DrawPoint txtPos = btPos + DrawPoint(btSize.x, 40);
@@ -72,7 +72,7 @@ static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPo
 
 iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, const std::string& title,
                  bool allow_outhousing, const glFont* font, const Inventory& inventory, const GamePlayer& player)
-    : IngameWindow(id, pos, Extent(167, 416), title, LOADER.GetImageN("io", 5)), inventory(inventory), player(player),
+    : IngameWindow(id, pos, Extent(167, 416), title, LOADER.getImageN("io", 5)), inventory(inventory), player(player),
       numPages(0)
 {
     if(!font)
@@ -114,15 +114,15 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
                                        Job::Sergeant,      Job::Officer,
                                        Job::General};
 
-    helpers::erase_if(WARE_DISPLAY_ORDER, makeIsUnusedWare(player.GetGameWorld().GetGGS()));
-    helpers::erase_if(JOB_DISPLAY_ORDER, makeIsUnusedJob(player.GetGameWorld().GetGGS()));
+    helpers::erase_if(WARE_DISPLAY_ORDER, makeIsUnusedWare(player.getGameWorld().getGGS()));
+    helpers::erase_if(JOB_DISPLAY_ORDER, makeIsUnusedJob(player.getGameWorld().getGGS()));
 
     // Warenseite hinzufügen
     ctrlGroup& waresPage = AddPage();
-    warePageID = waresPage.GetID();
+    warePageID = waresPage.getID();
     // Figurenseite hinzufügen
     ctrlGroup& figuresPage = AddPage();
-    peoplePageID = figuresPage.GetID();
+    peoplePageID = figuresPage.getID();
 
     bool isRowWithFourElemens = true;
     const unsigned numElements = std::max(WARE_DISPLAY_ORDER.size(), JOB_DISPLAY_ORDER.size());
@@ -146,29 +146,29 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
             const GoodType rawWare = WARE_DISPLAY_ORDER[idx];
             const GoodType ware = convertShieldToNation(rawWare, player.nation);
             addElement(waresPage, font, btPos, btSize, rttr::enum_cast(rawWare), _(WARE_NAMES[rawWare]),
-                       LOADER.GetWareTex(ware), allow_outhousing);
+                       LOADER.getWareTex(ware), allow_outhousing);
         }
 
         if(idx < JOB_DISPLAY_ORDER.size())
         {
             const Job job = JOB_DISPLAY_ORDER[idx];
-            addElement(figuresPage, font, btPos, btSize, rttr::enum_cast(job), _(JOB_NAMES[job]), LOADER.GetJobTex(job),
+            addElement(figuresPage, font, btPos, btSize, rttr::enum_cast(job), _(JOB_NAMES[job]), LOADER.getJobTex(job),
                        allow_outhousing);
         }
     }
 
     // compute the final window size
-    Resize(Extent(GetSize().x, topMargin + (y + 1) * rowHeight + spacingBetweenLastRowAndButtonRow + additionalYSpace
+    Resize(Extent(getSize().x, topMargin + (y + 1) * rowHeight + spacingBetweenLastRowAndButtonRow + additionalYSpace
                                  + buttonRowHeight + bottomMargin));
 
     // "Next page" button
-    AddImageButton(0, DrawPoint(52, GetFullSize().y - 47), Extent(66, 32), TextureColor::Grey,
-                   LOADER.GetImageN("io", 84), _("Next page"));
+    AddImageButton(0, DrawPoint(52, getFullSize().y - 47), Extent(66, 32), TextureColor::Grey,
+                   LOADER.getImageN("io", 84), _("Next page"));
     // "Help" button
-    AddImageButton(12, DrawPoint(16, GetFullSize().y - 47), Extent(32, 32), TextureColor::Grey,
-                   LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(12, DrawPoint(16, getFullSize().y - 47), Extent(32, 32), TextureColor::Grey,
+                   LOADER.getImageN("io", 225), _("Help"));
 
-    waresPage.SetVisible(true);
+    waresPage.setVisible(true);
     curPage_ = warePageID;
 }
 
@@ -177,7 +177,7 @@ void iwWares::msgButtonClick(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case 0: // "Blättern"
-            SetPage(curPage_ + 1);
+            setPage(curPage_ + 1);
             break;
         case 12: // Hilfe
             WINDOWMANAGER.ReplaceWindow(
@@ -196,7 +196,7 @@ void iwWares::msgPaintBefore()
     if(curPage_ != peoplePageID && curPage_ != warePageID)
         return;
 
-    auto* group = GetCtrl<ctrlGroup>(curPage_);
+    auto* group = getCtrl<ctrlGroup>(curPage_);
     if(group)
     {
         const unsigned count =
@@ -204,19 +204,19 @@ void iwWares::msgPaintBefore()
 
         for(unsigned i = 0; i < count; ++i)
         {
-            auto* text = group->GetCtrl<ctrlText>(600 + i);
+            auto* text = group->getCtrl<ctrlText>(600 + i);
             if(text)
             {
                 const unsigned amount =
                   (curPage_ == warePageID) ? inventory[static_cast<GoodType>(i)] : inventory[static_cast<Job>(i)];
-                text->SetText(std::to_string(amount));
-                text->SetTextColor((amount == 0) ? COLOR_RED : COLOR_YELLOW);
+                text->setText(std::to_string(amount));
+                text->setTextColor((amount == 0) ? COLOR_RED : COLOR_YELLOW);
 
-                if(leatheraddon::isAddonActive(player.GetGameWorld()))
+                if(leatheraddon::isAddonActive(player.getGameWorld()))
                 {
                     if(peoplePageID == curPage_ && isSoldier(static_cast<Job>(i)))
                     {
-                        auto* tooltip = group->GetCtrl<ctrlBaseTooltip>(100 + i);
+                        auto* tooltip = group->getCtrl<ctrlBaseTooltip>(100 + i);
                         std::string toolTip = _(JOB_NAMES[static_cast<Job>(i)]);
 
                         toolTip += std::string(" (")
@@ -224,7 +224,7 @@ void iwWares::msgPaintBefore()
                                    + std::string("/") + std::to_string(amount) + std::string(" ")
                                    + std::string(_("with armor)"));
 
-                        tooltip->SetTooltip(toolTip);
+                        tooltip->setTooltip(toolTip);
                     }
                 }
             }
@@ -237,26 +237,26 @@ void iwWares::msgPaintBefore()
  *
  *  @param[in] page Die neue Seite
  */
-void iwWares::SetPage(unsigned page)
+void iwWares::setPage(unsigned page)
 {
     // alte Page verstecken
-    auto* group = GetCtrl<ctrlGroup>(curPage_);
+    auto* group = getCtrl<ctrlGroup>(curPage_);
     if(group)
-        group->SetVisible(false);
+        group->setVisible(false);
 
     // neue Page setzen
     curPage_ = (page - ID_pageOffset) % numPages + ID_pageOffset;
 
     // neue Page anzeigen
-    group = GetCtrl<ctrlGroup>(curPage_);
+    group = getCtrl<ctrlGroup>(curPage_);
     if(group)
-        group->SetVisible(true);
+        group->setVisible(true);
 }
 
 ctrlGroup& iwWares::AddPage()
 {
     ctrlGroup& grp = *AddGroup(ID_pageOffset + numPages);
     numPages++;
-    grp.SetVisible(false);
+    grp.setVisible(false);
     return grp;
 }

@@ -13,7 +13,7 @@ class Window;
 
 ctrlIngameMinimap::ctrlIngameMinimap(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size,
                                      const Extent& padding, IngameMinimap& minimap, GameWorldView& gwv)
-    : ctrlMinimap(parent, id, pos, size, padding, Extent(minimap.GetMapSize())), minimap(minimap), gwv(gwv)
+    : ctrlMinimap(parent, id, pos, size, padding, Extent(minimap.getMapSize())), minimap(minimap), gwv(gwv)
 {}
 
 /**
@@ -24,22 +24,22 @@ void ctrlIngameMinimap::Draw_()
     DrawMap(minimap);
 
     // Mittleren Punkt berechnen und dort hinscrollen
-    Position middlePt = (gwv.GetLastPt() + gwv.GetFirstPt()) / 2;
+    Position middlePt = (gwv.getLastPt() + gwv.getFirstPt()) / 2;
 
     // Koordinaten korrigieren
-    DrawPoint middle_corrected(MakeMapPoint(middlePt, minimap.GetMapSize()));
+    DrawPoint middle_corrected(MakeMapPoint(middlePt, minimap.getMapSize()));
 
     // Scroll-Auswahl-Bild holen
-    glArchivItem_Bitmap* image = LOADER.GetMapImage(23);
+    glArchivItem_Bitmap* image = LOADER.getMapImage(23);
 
     // Position (relativ zum angezeigten Anfang der Karte) berechnen
-    DrawPoint pos = middle_corrected * DrawPoint(GetCurMapSize()) / DrawPoint(minimap.GetMapSize()) + DrawPoint(2, 2);
+    DrawPoint pos = middle_corrected * DrawPoint(getCurMapSize()) / DrawPoint(minimap.getMapSize()) + DrawPoint(2, 2);
 
     // Scroll-Auswahl-Bild an den Rändern verkleinern, damit es nicht über die Karte "überlappt"
     DrawPoint srcOffset(0, 0);
     Extent drawSize(image->getWidth(), image->getHeight());
 
-    DrawPoint originOffset = pos - image->GetOrigin();
+    DrawPoint originOffset = pos - image->getOrigin();
 
     // überlappung am linken Rand?
     if(originOffset.x < 0)
@@ -56,7 +56,7 @@ void ctrlIngameMinimap::Draw_()
         pos.y = image->getNy();
     }
     // überlappung am rechten Rand?
-    DrawPoint overDrawSize = pos - image->GetOrigin() + DrawPoint(image->GetSize()) - DrawPoint(GetCurMapSize());
+    DrawPoint overDrawSize = pos - image->getOrigin() + DrawPoint(image->getSize()) - DrawPoint(getCurMapSize());
     if(overDrawSize.x >= 0)
         drawSize.x -= overDrawSize.x;
     // überlappung am unteren Rand?
@@ -64,7 +64,7 @@ void ctrlIngameMinimap::Draw_()
         drawSize.y -= overDrawSize.y;
 
     // Zeichnen
-    image->DrawPart(Rect(GetMapDrawArea().getOrigin() + pos, drawSize), srcOffset);
+    image->DrawPart(Rect(getMapDrawArea().getOrigin() + pos, drawSize), srcOffset);
 }
 
 bool ctrlIngameMinimap::msgLeftDown(const MouseCoords& mc)
@@ -77,11 +77,11 @@ bool ctrlIngameMinimap::msgMouseMove(const MouseCoords& mc)
     if(mc.ldown)
     {
         // Mauszeiger auf der Karte?
-        if(IsPointInRect(mc.pos, GetMapDrawArea()))
+        if(IsPointInRect(mc.pos, getMapDrawArea()))
         {
             // Koordinate feststellen
-            DrawPoint mapCoord = (mc.pos - DrawPoint(GetMapDrawArea().getOrigin())) * DrawPoint(minimap.GetMapSize())
-                                 / DrawPoint(GetCurMapSize());
+            DrawPoint mapCoord = (mc.pos - DrawPoint(getMapDrawArea().getOrigin())) * DrawPoint(minimap.getMapSize())
+                                 / DrawPoint(getCurMapSize());
 
             gwv.MoveToMapPt(MapPoint(mapCoord));
 

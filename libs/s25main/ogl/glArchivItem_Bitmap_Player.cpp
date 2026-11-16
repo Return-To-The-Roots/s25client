@@ -19,17 +19,17 @@ struct GL_RGBAColor
 Extent glArchivItem_Bitmap_Player::CalcTextureSize() const
 {
     // We have the texture 2 times: one with non-player colors and one with them
-    return VIDEODRIVER.calcPreferredTextureSize(Extent(GetSize().x * 2, GetSize().y));
+    return VIDEODRIVER.calcPreferredTextureSize(Extent(getSize().x * 2, getSize().y));
 }
 
 void glArchivItem_Bitmap_Player::DrawFull(const Rect& destArea, unsigned color, unsigned player_color)
 {
-    Draw(destArea, Rect(Position::all(0), GetSize()), color, player_color);
+    Draw(destArea, Rect(Position::all(0), getSize()), color, player_color);
 }
 
 void glArchivItem_Bitmap_Player::DrawFull(const DrawPoint& dst, unsigned color, unsigned player_color)
 {
-    DrawFull(Rect(dst, GetSize()), color, player_color);
+    DrawFull(Rect(dst, getSize()), color, player_color);
 }
 
 void glArchivItem_Bitmap_Player::DrawFull(const Position& dstPos, unsigned color)
@@ -50,7 +50,7 @@ void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color
 void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color /*= COLOR_WHITE*/,
                                       unsigned player_color /*= COLOR_WHITE*/)
 {
-    if(GetTexture() == 0)
+    if(getTexture() == 0)
         return;
 
     RTTR_Assert(dstArea.getSize().x > 0 && dstArea.getSize().y > 0);
@@ -71,15 +71,15 @@ void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color
 
     std::array<Point<GLfloat>, 8> texCoords, vertices;
 
-    dstArea.move(-GetOrigin());
+    dstArea.move(-getOrigin());
 
     vertices[0].x = vertices[1].x = GLfloat(dstArea.left);
     vertices[2].x = vertices[3].x = GLfloat(dstArea.right);
     vertices[0].y = vertices[3].y = GLfloat(dstArea.top);
     vertices[1].y = vertices[2].y = GLfloat(dstArea.bottom);
 
-    Point<GLfloat> srcOrig = Point<GLfloat>(srcArea.getOrigin()) / GetTexSize();
-    Point<GLfloat> srcEndPt = Point<GLfloat>(srcArea.getEndPt()) / GetTexSize();
+    Point<GLfloat> srcOrig = Point<GLfloat>(srcArea.getOrigin()) / getTexSize();
+    Point<GLfloat> srcEndPt = Point<GLfloat>(srcArea.getEndPt()) / getTexSize();
     texCoords[0].x = texCoords[1].x = srcOrig.x;
     texCoords[2].x = texCoords[3].x = srcEndPt.x;
     texCoords[0].y = texCoords[3].y = srcOrig.y;
@@ -110,7 +110,7 @@ void glArchivItem_Bitmap_Player::Draw(Rect dstArea, Rect srcArea, unsigned color
     glVertexPointer(2, GL_FLOAT, 0, vertices.data());
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords.data());
     glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors.data());
-    VIDEODRIVER.BindTexture(GetTexture());
+    VIDEODRIVER.BindTexture(getTexture());
     glDrawArrays(GL_QUADS, 0, 8);
     glDisableClientState(GL_COLOR_ARRAY);
 }
@@ -119,11 +119,11 @@ void glArchivItem_Bitmap_Player::FillTexture()
 {
     // Spezialpalette (blaue Spielerfarben sind Grau) verwenden,
     // damit man per OpenGL einfärben kann!
-    const libsiedler2::ArchivItem_Palette* palette = LOADER.GetPaletteN("colors");
+    const libsiedler2::ArchivItem_Palette* palette = LOADER.getPaletteN("colors");
 
-    int iformat = GetInternalFormat(), dformat = GL_BGRA; // GL_BGRA_EXT;
+    int iformat = getInternalFormat(), dformat = GL_BGRA; // GL_BGRA_EXT;
 
-    Extent texSize = GetTexSize();
+    Extent texSize = getTexSize();
     libsiedler2::PixelBufferBGRA buffer(texSize.x, texSize.y);
 
     print(buffer, palette, 128, 0, 0, 0, 0, 0, 0, false);

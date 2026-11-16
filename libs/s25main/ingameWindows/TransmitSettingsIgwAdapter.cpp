@@ -27,7 +27,7 @@ void TransmitSettingsIgwAdapter::Close()
         IngameWindow::Close();
     } else
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(GetTitle(),
+        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(getTitle(),
                                                       _("The changes could not be applied and will be discarded. A "
                                                         "potential reason for this is that the game is paused."),
                                                       this, MsgboxButton::OkCancel, MsgboxIcon::ExclamationRed,
@@ -43,7 +43,7 @@ void TransmitSettingsIgwAdapter::msgMsgBoxResult(unsigned msgbox_id, MsgboxResul
 
 void TransmitSettingsIgwAdapter::msgTimer(const unsigned /*ctrl_id*/)
 {
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
         UpdateSettings();
     else
         TransmitSettings();

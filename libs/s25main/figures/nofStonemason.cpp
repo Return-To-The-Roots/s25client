@@ -25,17 +25,17 @@ void nofStonemason::DrawWorking(DrawPoint drawPt)
     unsigned now_id;
 
     // Stein hauen
-    LOADER.GetPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
-      ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
+    LOADER.getPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
+      ->DrawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
 
     if(now_id % 8 == 5)
     {
-        world->GetSoundMgr().playNOSound(56, *this, now_id);
+        world->getSoundMgr().playNOSound(56, *this, now_id);
         was_sounding = true;
     }
 }
 
-unsigned short nofStonemason::GetCarryID() const
+unsigned short nofStonemason::getCarryID() const
 {
     return 63;
 }
@@ -47,29 +47,29 @@ void nofStonemason::WorkStarted() {}
 void nofStonemason::WorkFinished()
 {
     // Stein abhauen (wenn er nur noch ganz klein ist, dann wird er von der Landkarte getilgt)
-    if(world->GetSpecObj<noGranite>(pos)->IsSmall())
+    if(world->getSpecObj<noGranite>(pos)->isSmall())
     {
         // Granitklötzchen löschen
         world->DestroyNO(pos);
 
         // Minimap Bescheid geben (Granitglötzchen muss weg)
-        if(world->GetGameInterface())
-            world->GetGameInterface()->GI_UpdateMinimap(pos);
+        if(world->getGameInterface())
+            world->getGameInterface()->GI_UpdateMinimap(pos);
 
         // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
         world->RecalcBQAroundPoint(pos);
     } else
         // ansonsten wird er um 1 kleiner
-        world->GetSpecObj<noGranite>(pos)->Hew();
+        world->getSpecObj<noGranite>(pos)->Hew();
 
     // Stein in die Hand nehmen
     ware = GoodType::Stones;
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
+nofFarmhand::PointQuality nofStonemason::getPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
 {
     // An dieser Position muss es nur Stein geben
-    return ((world->GetNO(pt)->GetType() == NodalObjectType::Granite) ? PointQuality::Class1 :
+    return ((world->getNO(pt)->getType() == NodalObjectType::Granite) ? PointQuality::Class1 :
                                                                         PointQuality::NotPossible);
 }

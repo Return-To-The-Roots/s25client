@@ -28,8 +28,8 @@ public:
     {
     public:
         DriverItem(bfs::path file, std::string name) : file(std::move(file)), name(std::move(name)) {}
-        const bfs::path& GetFile() const { return file; }
-        const std::string& GetName() const { return name; }
+        const bfs::path& getFile() const { return file; }
+        const std::string& getName() const { return name; }
 
     private:
         bfs::path file;
@@ -42,9 +42,9 @@ public:
     bool Load(DriverType dt, std::string& preference);
     /// Gibt eine Treiber-Handle wieder frei
     void Unload();
-    bool IsLoaded() const;
+    bool isLoaded() const;
     template<typename T>
-    T* GetFunction(const std::string& name)
+    T* getFunction(const std::string& name)
     {
         return dll.get<T>(name);
     }

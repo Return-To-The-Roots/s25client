@@ -31,14 +31,14 @@ public:
     void Add(noBuilding* bld, BuildingType bldType);
     void Remove(noBuilding* bld, BuildingType bldType);
 
-    const std::list<noBuildingSite*>& GetBuildingSites() const { return building_sites; }
-    const std::list<nobUsual*>& GetBuildings(BuildingType type) const;
-    const std::list<nobMilitary*>& GetMilitaryBuildings() const { return military_buildings; }
-    const std::list<nobHarborBuilding*>& GetHarbors() const { return harbors; }
-    const std::list<nobBaseWarehouse*>& GetStorehouses() const { return warehouses; }
+    const std::list<noBuildingSite*>& getBuildingSites() const { return building_sites; }
+    const std::list<nobUsual*>& getBuildings(BuildingType type) const;
+    const std::list<nobMilitary*>& getMilitaryBuildings() const { return military_buildings; }
+    const std::list<nobHarborBuilding*>& getHarbors() const { return harbors; }
+    const std::list<nobBaseWarehouse*>& getStorehouses() const { return warehouses; }
 
     /// Liefert die Anzahl aller Gebäude einzeln
-    BuildingCount GetBuildingNums() const;
+    BuildingCount getBuildingNums() const;
     /// Calculate and fill the average productivities for all buildings.
     helpers::EnumArray<uint16_t, BuildingType> CalcProductivities() const;
     /// Calculate the average productivity for a building type

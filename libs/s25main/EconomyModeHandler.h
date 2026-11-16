@@ -81,27 +81,27 @@ public:
     void HandleEvent(unsigned id) override;
 
     /// Return vector of the teams (and their collected amounts)
-    const std::vector<EconTeam>& GetTeams() const { return economyModeTeams; }
+    const std::vector<EconTeam>& getTeams() const { return economyModeTeams; }
 
     /// Method to update the ware trackers
     void UpdateAmounts();
 
     /// Get the amounts collected by a player
-    unsigned GetAmount(unsigned goodNumber, unsigned playerId) const
+    unsigned getAmount(unsigned goodNumber, unsigned playerId) const
     {
         return amountsThePlayersCollected[goodNumber][playerId];
     }
 
     /// Get the amount of good the leading team (with regards to that good) has collected
-    unsigned GetMaxTeamAmount(unsigned goodNumber) const { return maxAmountsATeamCollected[goodNumber]; }
+    unsigned getMaxTeamAmount(unsigned goodNumber) const { return maxAmountsATeamCollected[goodNumber]; }
 
     /// Get Game frame in which the economy mode winners will be determined
-    unsigned GetEndFrame() const { return endFrame; }
+    unsigned getEndFrame() const { return endFrame; }
 
     /// Return the good types to collect
-    const std::vector<GoodType>& GetGoodTypesToCollect() const { return goodsToCollect; }
+    const std::vector<GoodType>& getGoodTypesToCollect() const { return goodsToCollect; }
 
-    GO_Type GetGOT() const final { return GO_Type::Economymodehandler; }
+    GO_Type getGOT() const final { return GO_Type::Economymodehandler; }
 
     /// Miscellaneous status checks
     bool isOver() const;

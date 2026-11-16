@@ -40,18 +40,18 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Grainfield; }
+    GO_Type getGOT() const final { return GO_Type::Grainfield; }
 
     void Draw(DrawPoint drawPt) override;
     void HandleEvent(unsigned id) override;
 
-    BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
+    BlockingManner getBM() const override { return BlockingManner::FlagsAround; }
 
     /// Kann man es abernten?
-    bool IsHarvestable() const { return size == 3 && state == State::Normal; }
+    bool isHarvestable() const { return size == 3 && state == State::Normal; }
 
     /// Gibt die ID des abgeernteten Getreidefelds in der map_last zurück
-    unsigned GetHarvestMapLstID() const { return 532 + type * 5 + 4; }
+    unsigned getHarvestMapLstID() const { return 532 + type * 5 + 4; }
 
     /// Bauer beginnt dieses Feld abzuernten
     void BeginHarvesting();

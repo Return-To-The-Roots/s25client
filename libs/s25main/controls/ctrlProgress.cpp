@@ -31,9 +31,9 @@ ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& p
     }
 
     Extent btSize = Extent::all(size.y);
-    AddImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.GetImageN(btMinusRes, button_minus),
+    AddImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.getImageN(btMinusRes, button_minus),
                    (!button_minus_tooltip.empty() ? button_minus_tooltip : _("Less")));
-    AddImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.GetImageN(btPlusRes, button_plus),
+    AddImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.getImageN(btPlusRes, button_plus),
                    (!button_plus_tooltip.empty() ? button_plus_tooltip : _("More")));
 
     // Hide left and right 3D border by making the buttons overlap the bar
@@ -43,7 +43,7 @@ ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& p
 /**
  *  setzt die Position an den angegebenen Wert.
  */
-void ctrlProgress::SetPosition(unsigned short position)
+void ctrlProgress::setPosition(unsigned short position)
 {
     this->position = std::min(position, maximum);
 }
@@ -55,10 +55,10 @@ void ctrlProgress::SetPosition(unsigned short position)
  */
 void ctrlProgress::Draw_()
 {
-    DrawPoint barPos = GetDrawPos() + DrawPoint(padding_);
+    DrawPoint barPos = getDrawPos() + DrawPoint(padding_);
     // Offset by button size
-    barPos.x += GetSize().y;
-    Extent barSize(CalcBarWidth(), GetSize().y - 2 * padding_.y);
+    barPos.x += getSize().y;
+    Extent barSize(CalcBarWidth(), getSize().y - 2 * padding_.y);
     Draw3D(Rect(barPos, barSize), tc, false);
 
     // Buttons
@@ -86,10 +86,10 @@ void ctrlProgress::Draw_()
     }
 
     // Leiste
-    DrawRectangle(Rect(barPos + innerPadding, progress, GetSize().y - 2 * (innerPadding.y + padding_.y)), color);
+    DrawRectangle(Rect(barPos + innerPadding, progress, getSize().y - 2 * (innerPadding.y + padding_.y)), color);
 
     // Prozentzahlen zeichnen
-    SmallFont->Draw(GetDrawPos() + DrawPoint(GetSize()) / 2, std::to_string(percentage) + "%",
+    SmallFont->Draw(getDrawPos() + DrawPoint(getSize()) / 2, std::to_string(percentage) + "%",
                     FontStyle::CENTER | FontStyle::VCENTER, COLOR_YELLOW);
 }
 
@@ -97,17 +97,17 @@ void ctrlProgress::Resize(const Extent& newSize)
 {
     Window::Resize(newSize);
 
-    auto* lessBt = GetCtrl<Window>(0);
-    auto* moreBt = GetCtrl<Window>(1);
+    auto* lessBt = getCtrl<Window>(0);
+    auto* moreBt = getCtrl<Window>(1);
     Extent btSize(newSize.y, newSize.y);
     lessBt->Resize(btSize);
     moreBt->Resize(btSize);
-    moreBt->SetPos(DrawPoint(newSize.x - btSize.x, 0));
+    moreBt->setPos(DrawPoint(newSize.x - btSize.x, 0));
 }
 
 unsigned ctrlProgress::CalcBarWidth() const
 {
-    return GetSize().x - 2 * (padding_.x + GetSize().y);
+    return getSize().x - 2 * (padding_.x + getSize().y);
 }
 
 void ctrlProgress::msgButtonClick(const unsigned ctrl_id)
@@ -118,16 +118,16 @@ void ctrlProgress::msgButtonClick(const unsigned ctrl_id)
         {
             if(position)
                 --position;
-            if(GetParent())
-                GetParent()->msgProgressChange(GetID(), position);
+            if(getParent())
+                getParent()->msgProgressChange(getID(), position);
         }
         break;
         case 1: // Plus
         {
             if(position < maximum)
                 ++position;
-            if(GetParent())
-                GetParent()->msgProgressChange(GetID(), position);
+            if(getParent())
+                getParent()->msgProgressChange(getID(), position);
         }
         break;
     }
@@ -136,15 +136,15 @@ void ctrlProgress::msgButtonClick(const unsigned ctrl_id)
 bool ctrlProgress::msgLeftDown(const MouseCoords& mc)
 {
     // Test if clicked on progress bar
-    DrawPoint progressOrigin = GetDrawPos() + DrawPoint(padding_) + DrawPoint(GetSize().y + 2, 4);
-    Extent progressSize = GetSize() - Extent((GetSize().y + 1) * 2, 8) - padding_ * 2u;
+    DrawPoint progressOrigin = getDrawPos() + DrawPoint(padding_) + DrawPoint(getSize().y + 2, 4);
+    Extent progressSize = getSize() - Extent((getSize().y + 1) * 2, 8) - padding_ * 2u;
     if(IsPointInRect(mc.pos, Rect(progressOrigin, progressSize)))
     {
         position =
           helpers::iround<uint16_t>(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x);
 
-        if(GetParent())
-            GetParent()->msgProgressChange(GetID(), position);
+        if(getParent())
+            getParent()->msgProgressChange(getID(), position);
         return true;
     } else
         return RelayMouseMessage(&Window::msgLeftDown, mc);
@@ -158,7 +158,7 @@ bool ctrlProgress::msgLeftUp(const MouseCoords& mc)
 bool ctrlProgress::msgWheelUp(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(IsPointInRect(mc.pos, GetDrawRect()))
+    if(IsPointInRect(mc.pos, getDrawRect()))
     {
         msgButtonClick(1);
         return true;
@@ -169,7 +169,7 @@ bool ctrlProgress::msgWheelUp(const MouseCoords& mc)
 bool ctrlProgress::msgWheelDown(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(IsPointInRect(mc.pos, GetDrawRect()))
+    if(IsPointInRect(mc.pos, getDrawRect()))
     {
         msgButtonClick(0);
         return true;
@@ -182,16 +182,16 @@ bool ctrlProgress::msgMouseMove(const MouseCoords& mc)
     // an Buttons weiterleiten
     RelayMouseMessage(&Window::msgMouseMove, mc);
 
-    Extent offset(GetSize().y + padding_.x, 0);
-    DrawPoint rectOrig = GetDrawPos() + DrawPoint(offset);
-    Extent rectSize = GetSize() - offset * 2u;
+    Extent offset(getSize().y + padding_.x, 0);
+    DrawPoint rectOrig = getDrawPos() + DrawPoint(offset);
+    Extent rectSize = getSize() - offset * 2u;
     if(IsPointInRect(mc.pos, Rect(rectOrig, rectSize)))
     {
-        WINDOWMANAGER.SetToolTip(this, tooltip_);
+        WINDOWMANAGER.setToolTip(this, tooltip_);
         return true;
     } else
     {
-        WINDOWMANAGER.SetToolTip(this, "");
+        WINDOWMANAGER.setToolTip(this, "");
         return false;
     }
 }

@@ -44,13 +44,13 @@ MapLoader::MapLoader(GameWorldBase& world) : world_(world) {}
 
 bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration exploration)
 {
-    GameDataLoader gdLoader(world_.GetDescriptionWriteable());
+    GameDataLoader gdLoader(world_.getDescriptionWriteable());
     if(!gdLoader.Load())
         return false;
 
     uint8_t gfxSet = map.getHeader().getGfxSet();
     DescIdx<LandscapeDesc> lt =
-      world_.GetDescription().landscapes.find([gfxSet](const LandscapeDesc& l) { return l.s2Id == gfxSet; });
+      world_.getDescription().landscapes.find([gfxSet](const LandscapeDesc& l) { return l.s2Id == gfxSet; });
     world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), lt); //-V807
 
     if(!InitNodes(map, exploration))
@@ -65,7 +65,7 @@ bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration explora
 
     // If we have explored FoW, create the FoW objects
     if(exploration == Exploration::FogOfWarExplored)
-        SetMapExplored(world_);
+        setMapExplored(world_);
 
     return true;
 }
@@ -81,7 +81,7 @@ bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
 
     const libsiedler2::ArchivItem_Map& map = *static_cast<libsiedler2::ArchivItem_Map*>(mapArchiv[0]);
 
-    if(!Load(map, world_.GetGGS().exploration))
+    if(!Load(map, world_.getGGS().exploration))
         return false;
     if(!PlaceHQs())
         return false;
@@ -96,22 +96,22 @@ bool MapLoader::LoadLuaScript(Game& game, ILocalGameState& localgameState, const
     auto lua = std::make_unique<LuaInterfaceGame>(game, localgameState);
     if(!lua->loadScript(luaFilePath) || !lua->CheckScriptVersion())
         return false;
-    game.SetLua(std::move(lua));
+    game.setLua(std::move(lua));
     return true;
 }
 
 bool MapLoader::PlaceHQs(bool addStartWares)
 {
     std::vector<MapPoint> hqPositions = hqPositions_;
-    if(world_.GetGGS().randomStartPosition)
+    if(world_.getGGS().randomStartPosition)
         RANDOM_SHUFFLE2(hqPositions, 0);
     return PlaceHQs(world_, hqPositions, addStartWares);
 }
 
-void MapLoader::SetupResources(GameWorldBase& world, const bool fixFish)
+void MapLoader::setupResources(GameWorldBase& world, const bool fixFish)
 {
     ResourceType target;
-    switch(world.GetGGS().getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
+    switch(world.getGGS().getSelection(AddonId::CHANGE_GOLD_DEPOSITS))
     {
         case 0:
         default: target = ResourceType::Gold; break;
@@ -132,26 +132,26 @@ void MapLoader::ConvertMineResourceTypes(GameWorldBase& world, ResourceType from
     if(from == to)
         return;
 
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        Resource resources = world.GetNode(pt).resources;
+        Resource resources = world.getNode(pt).resources;
         // Gibt es Ressourcen dieses Typs?
         // Wenn ja, dann umwandeln bzw löschen
         if(resources.getType() == from)
         {
             resources.setType(to);
-            world.SetResource(pt, resources);
+            world.setResource(pt, resources);
         }
     }
 }
 
 void MapLoader::PlaceAndFixWater(GameWorldBase& world)
 {
-    const bool waterEverywhere = world.GetGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 1;
+    const bool waterEverywhere = world.getGGS().getSelection(AddonId::EXHAUSTIBLE_WATER) == 1;
 
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        Resource curNodeResource = world.GetNode(pt).resources;
+        Resource curNodeResource = world.getNode(pt).resources;
 
         if(curNodeResource.getType() == ResourceType::Nothing)
         {
@@ -161,9 +161,9 @@ void MapLoader::PlaceAndFixWater(GameWorldBase& world)
             continue; // do not override maps resource.
 
         uint8_t minHumidity = 100;
-        for(const DescIdx<TerrainDesc> tIdx : world.GetTerrainsAround(pt))
+        for(const DescIdx<TerrainDesc> tIdx : world.getTerrainsAround(pt))
         {
-            const uint8_t curHumidity = world.GetDescription().get(tIdx).humidity;
+            const uint8_t curHumidity = world.getDescription().get(tIdx).humidity;
             if(curHumidity < minHumidity)
             {
                 minHumidity = curHumidity;
@@ -178,29 +178,29 @@ void MapLoader::PlaceAndFixWater(GameWorldBase& world)
         } else
             curNodeResource = Resource(ResourceType::Nothing, 0);
 
-        world.SetResource(pt, curNodeResource);
+        world.setResource(pt, curNodeResource);
     }
 }
 
 void MapLoader::RemoveUnusableFishResources(GameWorldBase& world)
 {
-    const auto isWaterPoint = [&world](const MapPoint nb) { return world.IsWaterPoint(nb); };
-    for(const MapCoord y : helpers::range(world.GetHeight()))
+    const auto isWaterPoint = [&world](const MapPoint nb) { return world.isWaterPoint(nb); };
+    for(const MapCoord y : helpers::range(world.getHeight()))
     {
         // Optimization: When there was fish on the previous node (in the same row)
         // we do not need to check for isolated water points, as there is at least that water point
         bool previousHasFish = false;
-        for(const MapCoord x : helpers::range(world.GetWidth()))
+        for(const MapCoord x : helpers::range(world.getWidth()))
         {
             const MapPoint pt(x, y);
             bool hasFish = false;
 
-            if(world.GetNode(pt).resources.has(ResourceType::Fish))
+            if(world.getNode(pt).resources.has(ResourceType::Fish))
             {
-                if(isWaterPoint(pt) && (previousHasFish || helpers::contains_if(world.GetNeighbours(pt), isWaterPoint)))
+                if(isWaterPoint(pt) && (previousHasFish || helpers::contains_if(world.getNeighbours(pt), isWaterPoint)))
                     hasFish = true;
                 else
-                    world.SetResource(pt, Resource(ResourceType::Nothing, 0));
+                    world.setResource(pt, Resource(ResourceType::Nothing, 0));
             }
             previousHasFish = hasFish;
         }
@@ -209,19 +209,19 @@ void MapLoader::RemoveUnusableFishResources(GameWorldBase& world)
 
 void MapLoader::InitShadows(World& world)
 {
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
         world.RecalcShadow(pt);
 }
 
-void MapLoader::SetMapExplored(World& world)
+void MapLoader::setMapExplored(World& world)
 {
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         // For every player
         for(const auto i : helpers::range(MAX_PLAYERS))
         {
             // If we have FoW here, save it
-            if(world.GetNode(pt).fow[i].visibility == Visibility::FogOfWar)
+            if(world.getNode(pt).fow[i].visibility == Visibility::FogOfWar)
                 world.SaveFOWNode(pt, i, 0);
         }
     }
@@ -229,7 +229,7 @@ void MapLoader::SetMapExplored(World& world)
 
 DescIdx<TerrainDesc> MapLoader::getTerrainFromS2(uint8_t s2Id) const
 {
-    return world_.GetDescription().terrain.find([s2Id, landscape = world_.GetLandscapeType()](const TerrainDesc& t) {
+    return world_.getDescription().terrain.find([s2Id, landscape = world_.GetLandscapeType()](const TerrainDesc& t) {
         return t.s2Id == s2Id && t.landscape == landscape;
     });
 }
@@ -238,9 +238,9 @@ bool MapLoader::InitNodes(const libsiedler2::ArchivItem_Map& map, Exploration ex
 {
     using libsiedler2::MapLayer;
     // Init node data (everything except the objects, figures and BQ)
-    RTTR_FOREACH_PT(MapPoint, world_.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world_.getSize())
     {
-        MapNode& node = world_.GetNodeInt(pt);
+        MapNode& node = world_.getNodeInt(pt);
 
         std::fill(node.roads.begin(), node.roads.end(), PointRoad::None);
         node.altitude = map.getMapDataAt(MapLayer::Altitude, pt.x, pt.y);
@@ -307,7 +307,7 @@ void MapLoader::PlaceObjects(const libsiedler2::ArchivItem_Map& map)
 {
     hqPositions_.clear();
 
-    RTTR_FOREACH_PT(MapPoint, world_.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world_.getSize())
     {
         using libsiedler2::MapLayer;
         unsigned char lc = map.getMapDataAt(MapLayer::ObjectIndex, pt.x, pt.y);
@@ -461,14 +461,14 @@ void MapLoader::PlaceObjects(const libsiedler2::ArchivItem_Map& map)
                 break;
         }
 
-        world_.GetNodeInt(pt).obj = obj;
+        world_.getNodeInt(pt).obj = obj;
     }
 }
 
 void MapLoader::PlaceAnimals(const libsiedler2::ArchivItem_Map& map)
 {
     // Tiere auslesen
-    RTTR_FOREACH_PT(MapPoint, world_.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world_.getSize())
     {
         Species species;
         using libsiedler2::MapLayer;
@@ -500,10 +500,10 @@ void MapLoader::PlaceAnimals(const libsiedler2::ArchivItem_Map& map)
 
 bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPositions, const bool addStartWares)
 {
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world.getNumPlayers(); ++i)
     {
         // Skip unused slots
-        if(!world.GetPlayer(i).isUsed())
+        if(!world.getPlayer(i).isUsed())
             continue;
 
         // Does the HQ have a position?
@@ -514,7 +514,7 @@ bool MapLoader::PlaceHQs(GameWorldBase& world, const std::vector<MapPoint>& hqPo
         }
 
         auto* hq = checkedCast<nobHQ*>(BuildingFactory::CreateBuilding(world, BuildingType::Headquarters,
-                                                                       hqPositions[i], i, world.GetPlayer(i).nation));
+                                                                       hqPositions[i], i, world.getPlayer(i).nation));
         if(addStartWares)
             hq->addStartWares();
     }
@@ -526,9 +526,9 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
     for(MapPoint pt : additionalHarbors)
         world.harborData.push_back(HarborPos(pt));
     // Clear current harbors and seas
-    RTTR_FOREACH_PT(MapPoint, world.GetSize()) //-V807
+    RTTR_FOREACH_PT(MapPoint, world.getSize()) //-V807
     {
-        MapNode& node = world.GetNodeInt(pt);
+        MapNode& node = world.getNodeInt(pt);
         node.seaId.reset();
         node.harborId.reset();
     }
@@ -536,10 +536,10 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
     /// Determine all seas
     world.seas.clear();
     SeaId curSeaId(1);
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         // Point is not yet assigned a sea but should be
-        if(!world.GetNode(pt).seaId && world.IsSeaPoint(pt))
+        if(!world.getNode(pt).seaId && world.isSeaPoint(pt))
         {
             const auto seaSize = MeasureSea(world, pt, curSeaId);
             world.seas.push_back(World::Sea(seaSize));
@@ -559,7 +559,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
             // Skip point at NW as often there is no path from it if the harbor is north of an island
             if(dir != Direction::NorthWest)
             {
-                seaId = world.GetSeaFromCoastalPoint(world.GetNeighbour(it->pos, dir));
+                seaId = world.getSeaFromCoastalPoint(world.getNeighbour(it->pos, dir));
                 if(seaId)
                 {
                     foundCoast = true;
@@ -578,7 +578,7 @@ bool MapLoader::InitSeasAndHarbors(World& world, const std::vector<MapPoint>& ad
             it = world.harborData.erase(it);
         } else
         {
-            world.GetNodeInt(it->pos).harborId = curHarborId;
+            world.getNodeInt(it->pos).harborId = curHarborId;
             curHarborId = curHarborId.next();
             ++it;
         }
@@ -612,10 +612,10 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
     // pre-calculate sea-points, as IsSeaPoint is rather expensive
     std::vector<int8_t> ptIsSeaPt(world.nodes.size()); //-V656
 
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        if(shipPathChecker.IsNodeOk(pt))
-            ptIsSeaPt[world.GetIdx(pt)] = -1;
+        if(shipPathChecker.isNodeOk(pt))
+            ptIsSeaPt[world.getIdx(pt)] = -1;
     }
 
     // FIFO queue used for a BFS
@@ -641,13 +641,13 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         {
             for(const auto dir : helpers::EnumRange<Direction>{})
             {
-                SeaId seaId = world.GetSeaId(otherHbId, dir);
+                SeaId seaId = world.getSeaId(otherHbId, dir);
                 // No sea? -> Next
                 if(!seaId)
                     continue;
-                const MapPoint coastPt = world.GetNeighbour(world.GetHarborPoint(otherHbId), dir);
+                const MapPoint coastPt = world.getNeighbour(world.getHarborPoint(otherHbId), dir);
                 // This should not be marked for visit
-                unsigned idx = world.GetIdx(coastPt);
+                unsigned idx = world.getIdx(coastPt);
                 RTTR_Assert(ptToVisitOrHb[idx] != -1);
                 if(otherHbId == startHbId)
                 {
@@ -664,8 +664,8 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
         for(const MapPoint& ownCoastPt : ownCoastalPoints)
         {
             // Special case: Get all harbors that share the coast point with us
-            const SeaId seaId = world.GetSeaFromCoastalPoint(ownCoastPt);
-            auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(world.GetIdx(ownCoastPt));
+            const SeaId seaId = world.getSeaFromCoastalPoint(ownCoastPt);
+            auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(world.getIdx(ownCoastPt));
             for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
             {
                 ShipDirection shipDir = world.GetShipDir(ownCoastPt, ownCoastPt);
@@ -682,21 +682,21 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
 
             for(const auto dir : helpers::EnumRange<Direction>{})
             {
-                MapPoint curPt = world.GetNeighbour(curNode.pos, dir);
-                unsigned idx = world.GetIdx(curPt);
+                MapPoint curPt = world.getNeighbour(curNode.pos, dir);
+                unsigned idx = world.getIdx(curPt);
 
                 const int8_t ptValue = ptToVisitOrHb[idx];
                 // Already visited
                 if(ptValue == 0)
                     continue;
                 // Not reachable
-                if(!shipPathChecker.IsEdgeOk(curNode.pos, dir))
+                if(!shipPathChecker.isEdgeOk(curNode.pos, dir))
                     continue;
 
                 if(ptValue > 0) // found harbor(s)
                 {
                     const ShipDirection shipDir = world.GetShipDir(world.harborData[startHbId].pos, curPt);
-                    const SeaId seaId = world.GetSeaFromCoastalPoint(curPt);
+                    const SeaId seaId = world.getSeaFromCoastalPoint(curPt);
                     RTTR_Assert(seaId);
                     auto const coastToHbs = coastToHarborPerSea[seaId].equal_range(idx);
                     for(auto it = coastToHbs.first; it != coastToHbs.second; ++it)
@@ -713,7 +713,7 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
                         HarborPos& otherHb = world.harborData[otherHbId];
                         for(const auto hbDir : helpers::EnumRange<Direction>{})
                         {
-                            if(otherHb.seaIds[hbDir] == seaId && world.GetNeighbour(otherHb.pos, hbDir) != curPt)
+                            if(otherHb.seaIds[hbDir] == seaId && world.getNeighbour(otherHb.pos, hbDir) != curPt)
                                 otherHb.seaIds[hbDir].reset();
                         }
                     }
@@ -730,11 +730,11 @@ void MapLoader::CalcHarborPosNeighbors(World& world)
 unsigned MapLoader::MeasureSea(World& world, const MapPoint start, SeaId seaId)
 {
     // Breitensuche von diesem Punkt aus durchf�hren
-    std::vector<bool> visited(world.GetWidth() * world.GetHeight(), false);
+    std::vector<bool> visited(world.getWidth() * world.getHeight(), false);
     std::queue<MapPoint> todo;
 
     todo.push(start);
-    visited[world.GetIdx(start)] = true;
+    visited[world.getIdx(start)] = true;
 
     // Count of nodes (including start node)
     unsigned count = 0;
@@ -744,17 +744,17 @@ unsigned MapLoader::MeasureSea(World& world, const MapPoint start, SeaId seaId)
         MapPoint p = todo.front();
         todo.pop();
 
-        RTTR_Assert(visited[world.GetIdx(p)]);
-        world.GetNodeInt(p).seaId = seaId;
+        RTTR_Assert(visited[world.getIdx(p)]);
+        world.getNodeInt(p).seaId = seaId;
 
-        for(const MapPoint neighbourPt : world.GetNeighbours(p))
+        for(const MapPoint neighbourPt : world.getNeighbours(p))
         {
-            if(visited[world.GetIdx(neighbourPt)])
+            if(visited[world.getIdx(neighbourPt)])
                 continue;
-            visited[world.GetIdx(neighbourPt)] = true;
+            visited[world.getIdx(neighbourPt)] = true;
 
             // Ist das dort auch ein Meerespunkt?
-            if(world.IsSeaPoint(neighbourPt))
+            if(world.isSeaPoint(neighbourPt))
                 todo.push(neighbourPt);
         }
 

@@ -12,16 +12,16 @@ AIJH::PositionSearch::PositionSearch(const AIPlayerJH& player, const MapPoint pt
       searchGlobalOptimum(searchGlobalOptimum), nodesPerStep(25), // TODO: Make it depend on something...
       resultPt(MapPoint::Invalid()), resultValue(0)
 {
-    tested.resize(prodOfComponents(player.GetWorld().GetSize()));
+    tested.resize(prodOfComponents(player.getWorld().getSize()));
 
     // insert start position as first node to test
     toTest.push(pt);
-    tested[player.GetWorld().GetIdx(pt)] = true;
+    tested[player.getWorld().getIdx(pt)] = true;
 }
 
 AIJH::PositionSearchState AIJH::PositionSearch::execute(const AIPlayerJH& player)
 {
-    const AIResourceMap& resMap = player.GetResMap(res);
+    const AIResourceMap& resMap = player.getResMap(res);
     // make nodesPerStep tests
     for(int i = 0; i < nodesPerStep; i++)
     {
@@ -32,7 +32,7 @@ AIJH::PositionSearchState AIJH::PositionSearch::execute(const AIPlayerJH& player
         // get the node
         MapPoint pt = toTest.front();
         toTest.pop();
-        const Node& node = player.GetAINode(pt);
+        const Node& node = player.getAINode(pt);
 
         // and test it... TODO exception at res::borderland?
         if(resMap[pt] > resultValue                        // value better
@@ -46,12 +46,12 @@ AIJH::PositionSearchState AIJH::PositionSearch::execute(const AIPlayerJH& player
         }
 
         // now insert neighbouring nodes...
-        for(const MapPoint neighbourPt : player.GetWorld().GetNeighbours(pt))
+        for(const MapPoint neighbourPt : player.getWorld().getNeighbours(pt))
         {
-            unsigned nIdx = player.GetWorld().GetIdx(neighbourPt);
+            unsigned nIdx = player.getWorld().getIdx(neighbourPt);
 
             // test if already tested or not in territory
-            if(!tested[nIdx] && player.GetAINode(neighbourPt).owned)
+            if(!tested[nIdx] && player.getAINode(neighbourPt).owned)
             {
                 toTest.push(pt);
                 tested[nIdx] = true;

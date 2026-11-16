@@ -27,11 +27,11 @@ public:
     /// Does the remaining initializations for starting the game
     void Start(bool startFromSave);
     void RunGF();
-    bool IsStarted() const { return started_; }
-    bool IsGameFinished() const { return finished_; }
-    AIPlayer* GetAIPlayer(unsigned id);
+    bool isStarted() const { return started_; }
+    bool isGameFinished() const { return finished_; }
+    AIPlayer* getAIPlayer(unsigned id);
     void AddAIPlayer(std::unique_ptr<AIPlayer> newAI);
-    void SetLua(std::unique_ptr<LuaInterfaceGame> newLua);
+    void setLua(std::unique_ptr<LuaInterfaceGame> newLua);
 
 private:
     /// Updates the statistics

@@ -12,7 +12,7 @@
 #    error "Must define windows or posix API"
 #endif
 
-std::error_code GetLastErrorCode()
+std::error_code getLastErrorCode()
 {
 #ifdef BOOST_WINDOWS_API
     return std::error_code(GetLastError(), std::system_category());

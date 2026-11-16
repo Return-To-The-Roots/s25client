@@ -34,7 +34,7 @@ void LuaWorld::Register(kaguya::State& state)
                               .addFunction("AddEnvObject", AddEnvObjectWrapper())
                               .addFunction("AddStaticObject", AddStaticObjectWrapper())
                               .addFunction("AddAnimal", &LuaWorld::AddAnimal)
-                              .addFunction("SetComputerBarrier", &LuaWorld::SetComputerBarrier));
+                              .addFunction("SetComputerBarrier", &LuaWorld::setComputerBarrier));
 }
 
 static bool isValidObject(unsigned file, unsigned id)
@@ -53,17 +53,17 @@ bool LuaWorld::AddEnvObject(int x, int y, unsigned id, unsigned file /* = 0xFFFF
     lua::assertTrue(isValidObject(file, id), "Invalid object (file/id)");
 
     MapPoint pt = gw.MakeMapPoint(Position(x, y));
-    noBase* obj = gw.GetNode(pt).obj;
+    noBase* obj = gw.getNode(pt).obj;
     if(obj)
     {
-        const GO_Type got = obj->GetGOT();
+        const GO_Type got = obj->getGOT();
         RTTR_Assert(got != GO_Type::Nothing);
         if(got != GO_Type::Staticobject && got != GO_Type::Envobject)
             return false;
     }
 
     gw.DestroyNO(pt, false);
-    gw.SetNO(pt, new noEnvObject(pt, id, file));
+    gw.setNO(pt, new noEnvObject(pt, id, file));
     gw.RecalcBQAroundPoint(pt);
     return true;
 }
@@ -74,17 +74,17 @@ bool LuaWorld::AddStaticObject(int x, int y, unsigned id, unsigned file /* = 0xF
     lua::assertTrue(isValidObject(file, id), "Invalid object (file/id)");
 
     MapPoint pt = gw.MakeMapPoint(Position(x, y));
-    noBase* obj = gw.GetNode(pt).obj;
+    noBase* obj = gw.getNode(pt).obj;
     if(obj)
     {
-        const GO_Type got = obj->GetGOT();
+        const GO_Type got = obj->getGOT();
         RTTR_Assert(got != GO_Type::Nothing);
         if(got != GO_Type::Staticobject && got != GO_Type::Envobject)
             return false;
     }
 
     gw.DestroyNO(pt, false);
-    gw.SetNO(pt, new noStaticObject(pt, id, file, size));
+    gw.setNO(pt, new noStaticObject(pt, id, file, size));
     if(size > 1)
         gw.RecalcBQAroundPointBig(pt);
     else if(size == 1)
@@ -98,7 +98,7 @@ void LuaWorld::AddAnimal(int x, int y, lua::SafeEnum<Species> species)
     gw.AddFigure(pos, std::make_unique<noAnimal>(species, pos)).StartLiving();
 }
 
-void LuaWorld::SetComputerBarrier(unsigned radius, unsigned short x, unsigned short y)
+void LuaWorld::setComputerBarrier(unsigned radius, unsigned short x, unsigned short y)
 {
-    gw.SetComputerBarrier({x, y}, radius);
+    gw.setComputerBarrier({x, y}, radius);
 }

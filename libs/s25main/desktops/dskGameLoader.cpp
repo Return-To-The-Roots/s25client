@@ -25,10 +25,10 @@
  *  Startet das Spiel und lädt alles Notwendige.
  */
 dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
-    : Desktop(LOADER.GetImageN(ResourceId(LOAD_SCREENS[rand() % LOAD_SCREENS.size()]), 0)), position(0),
+    : Desktop(LOADER.getImageN(ResourceId(LOAD_SCREENS[rand() % LOAD_SCREENS.size()]), 0)), position(0),
       loader_(LOADER, std::move(game))
 {
-    WINDOWMANAGER.SetCursor(Cursor::None);
+    WINDOWMANAGER.setCursor(Cursor::None);
 
     using namespace std::chrono_literals;
     AddTimer(1, 50ms);
@@ -39,12 +39,12 @@ dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
         AddText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, FontStyle{}, LargeFont);
 
     LOBBYCLIENT.AddListener(this);
-    GAMECLIENT.SetInterface(this);
+    GAMECLIENT.setInterface(this);
 }
 
 dskGameLoader::~dskGameLoader()
 {
-    WINDOWMANAGER.SetCursor();
+    WINDOWMANAGER.setCursor();
     LOBBYCLIENT.RemoveListener(this);
     GAMECLIENT.RemoveInterface(this);
 }
@@ -57,7 +57,7 @@ void dskGameLoader::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult
 
         if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
-        else if(loader_.getGame()->world_.IsSinglePlayer())
+        else if(loader_.getGame()->world_.isSinglePlayer())
             WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
         else
             WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
@@ -66,8 +66,8 @@ void dskGameLoader::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult
 
 void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
 {
-    auto* timer = GetCtrl<ctrlTimer>(1);
-    auto* text = GetCtrl<ctrlText>(10 + position);
+    auto* timer = getCtrl<ctrlTimer>(1);
+    auto* text = getCtrl<ctrlText>(10 + position);
     using namespace std::chrono_literals;
     const auto interval = 50ms;
 
@@ -76,17 +76,17 @@ void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
     switch(position)
     {
         case 0: // Kartename anzeigen
-            text->SetText(GAMECLIENT.GetMapTitle());
+            text->setText(GAMECLIENT.getMapTitle());
             break;
 
         case 1: // Karte geladen
-            text->SetText(_("Map was loaded and pinned at the wall..."));
+            text->setText(_("Map was loaded and pinned at the wall..."));
             break;
 
         case 2: // Nationen ermitteln
             loader_.initNations();
 
-            text->SetText(_("Tribal chiefs assembled around the table..."));
+            text->setText(_("Tribal chiefs assembled around the table..."));
             break;
 
         case 3: // Objekte laden
@@ -98,15 +98,15 @@ void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
                 return; // Don't restart timer!
             }
 
-            text->SetText(_("Game crate was picked and spread out..."));
+            text->setText(_("Game crate was picked and spread out..."));
             break;
         }
         case 4: // Welt erstellen
             try
             {
                 // Do this here as it will init OGL
-                gameInterface = std::make_unique<dskGameInterface>(loader_.getGame(), GAMECLIENT.GetNWFInfo(),
-                                                                   GAMECLIENT.GetPlayerId());
+                gameInterface = std::make_unique<dskGameInterface>(loader_.getGame(), GAMECLIENT.getNWFInfo(),
+                                                                   GAMECLIENT.getPlayerId());
             } catch(const std::runtime_error& e)
             {
                 ShowErrorMsg(std::string(_("Failed to init GUI: ")) + e.what());
@@ -117,12 +117,12 @@ void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
             // We are done, wait for others
             GAMECLIENT.GameLoaded();
 
-            text->SetText(_("World was put together and glued..."));
+            text->setText(_("World was put together and glued..."));
             break;
 
         case 5: // nochmal text anzeigen
-            text->SetText(_("And let's go!"));
-            text->SetTextColor(COLOR_RED);
+            text->setText(_("And let's go!"));
+            text->setTextColor(COLOR_RED);
             return;
     }
 
@@ -137,7 +137,7 @@ void dskGameLoader::ShowErrorMsg(const std::string& error)
         WINDOWMANAGER.Show(std::move(wnd));
     else
         WINDOWMANAGER.ShowAfterSwitch(std::move(wnd));
-    GetCtrl<ctrlTimer>(1)->Stop();
+    getCtrl<ctrlTimer>(1)->Stop();
 }
 
 /**

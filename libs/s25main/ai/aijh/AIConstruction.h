@@ -37,9 +37,9 @@ public:
     /// Adds a build job to the queue
     void AddBuildJob(std::unique_ptr<BuildJob> job, bool front);
 
-    std::unique_ptr<BuildJob> GetBuildJob();
-    unsigned GetBuildJobNum() const { return buildJobs.size(); }
-    unsigned GetConnectJobNum() const { return connectJobs.size(); }
+    std::unique_ptr<BuildJob> getBuildJob();
+    unsigned getBuildJobNum() const { return buildJobs.size(); }
+    unsigned getConnectJobNum() const { return connectJobs.size(); }
 
     void AddConnectFlagJob(const noFlag* flag);
 
@@ -57,10 +57,10 @@ public:
     /// the lower bq is picked for the final path
     bool MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route);
     /// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
-    bool IsConnectedToRoadSystem(const noFlag* flag) const;
+    bool isConnectedToRoadSystem(const noFlag* flag) const;
 
-    helpers::OptionalEnum<BuildingType> GetSmallestAllowedMilBuilding() const;
-    helpers::OptionalEnum<BuildingType> GetBiggestAllowedMilBuilding() const;
+    helpers::OptionalEnum<BuildingType> getSmallestAllowedMilBuilding() const;
+    helpers::OptionalEnum<BuildingType> getBiggestAllowedMilBuilding() const;
     /// Randomly chooses a military building, preferring bigger buildings if enemy nearby
     helpers::OptionalEnum<BuildingType> ChooseMilitaryBuilding(MapPoint pt);
     /// Checks whether a building type is wanted atm
@@ -74,11 +74,11 @@ public:
 
     noFlag* FindTargetStoreHouseFlag(MapPoint pt) const;
 
-    bool CanStillConstructHere(MapPoint pt) const;
+    bool canStillConstructHere(MapPoint pt) const;
 
     void ExecuteJobs(unsigned limit);
     /// Set flags along the road starting at the given node in the given direction
-    void SetFlagsAlongRoad(const noRoadNode& roadNode, Direction dir);
+    void setFlagsAlongRoad(const noRoadNode& roadNode, Direction dir);
     /// To be called after a new construction site was added
     void ConstructionOrdered(const BuildJob& job);
     /// To be called when the current pending construction orders were processed (usually on NWF)

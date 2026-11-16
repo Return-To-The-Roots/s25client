@@ -32,7 +32,7 @@ protected:
 
     void RefreshTable();
     /// Empty if no preset is selected
-    boost::filesystem::path GetSelectedFilePath() const;
+    boost::filesystem::path getSelectedFilePath() const;
 
     void msgButtonClick(unsigned ctrl_id) override;
     void msgTableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
@@ -40,9 +40,9 @@ protected:
     void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 
 private:
-    bool IsPresetSelected() const;
+    bool isPresetSelected() const;
     void UpdateButtons();
-    virtual bool CanDoAction() const;
+    virtual bool canDoAction() const;
     virtual void DoAction() = 0;
     void ConfirmDelete();
 };
@@ -55,7 +55,7 @@ public:
 private:
     const std::map<unsigned, unsigned> states_;
     void SaveToPath(const boost::filesystem::path& filePath);
-    bool CanDoAction() const override;
+    bool canDoAction() const override;
     void DoAction() override;
     void msgEditEnter(unsigned ctrl_id) override;
     void msgEditChange(unsigned ctrl_id) override;

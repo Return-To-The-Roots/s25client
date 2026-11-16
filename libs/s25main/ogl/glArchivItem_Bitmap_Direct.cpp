@@ -28,14 +28,14 @@ void glArchivItem_Bitmap_Direct::endUpdate()
         throw std::logic_error("Already updating! Forgot an endUpdate?");
     isUpdating_ = false;
     // Nothing to update or no texture created yet
-    if(prodOfComponents(areaToUpdate_.getSize()) == 0 || !GetTexNoCreate())
+    if(prodOfComponents(areaToUpdate_.getSize()) == 0 || !getTexNoCreate())
         return;
 
     libsiedler2::PixelBufferBGRA buffer(areaToUpdate_.getSize().x, areaToUpdate_.getSize().y);
     Position origin = areaToUpdate_.getOrigin();
     int ec = print(buffer, nullptr, 0, 0, origin.x, origin.y);
     RTTR_Assert(ec == 0);
-    VIDEODRIVER.BindTexture(GetTexNoCreate());
+    VIDEODRIVER.BindTexture(getTexNoCreate());
     glTexSubImage2D(GL_TEXTURE_2D, 0, origin.x, origin.y, buffer.getWidth(), buffer.getHeight(), GL_BGRA,
                     GL_UNSIGNED_BYTE, buffer.getPixelPtr());
 }
@@ -44,7 +44,7 @@ void glArchivItem_Bitmap_Direct::updatePixel(const DrawPoint& pos, const libsied
 {
     RTTR_Assert(isUpdating_);
     RTTR_Assert(pos.x >= 0 && pos.y >= 0);
-    RTTR_Assert(static_cast<unsigned>(pos.x) < GetSize().x && static_cast<unsigned>(pos.y) < GetSize().y);
+    RTTR_Assert(static_cast<unsigned>(pos.x) < getSize().x && static_cast<unsigned>(pos.y) < getSize().y);
     setPixel(pos.x, pos.y, clr);
     // If the area is empty, create one
     if(areaToUpdate_.getSize().x == 0)

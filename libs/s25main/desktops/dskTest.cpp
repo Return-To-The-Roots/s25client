@@ -54,17 +54,17 @@ dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
         AddText(curId, DrawPoint(10, yPos + 3), labels.at(i), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
         ctrlButton* bt;
         bt = AddTextButton(curId + 1, DrawPoint(120, yPos), Extent(95, 22), textures[i], "Nothing", NormalFont);
-        bt->SetIlluminated(false);
-        bt->SetBorder(false);
+        bt->setIlluminated(false);
+        bt->setBorder(false);
         bt = AddTextButton(curId + 2, DrawPoint(220, yPos), Extent(95, 22), textures[i], "Illuminated", NormalFont);
-        bt->SetIlluminated(true);
-        bt->SetBorder(false);
+        bt->setIlluminated(true);
+        bt->setBorder(false);
         bt = AddTextButton(curId + 3, DrawPoint(320, yPos), Extent(95, 22), textures[i], "Border", NormalFont);
-        bt->SetIlluminated(false);
-        bt->SetBorder(true);
+        bt->setIlluminated(false);
+        bt->setBorder(true);
         bt = AddTextButton(curId + 4, DrawPoint(420, yPos), Extent(95, 22), textures[i], "Both", NormalFont);
-        bt->SetIlluminated(true);
-        bt->SetBorder(true);
+        bt->setIlluminated(true);
+        bt->setBorder(true);
         curId += 5;
         yPos += 30;
     }
@@ -72,12 +72,12 @@ dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
 
     DrawPoint btPos(10, yPos);
     ctrlButton* bt = AddTextButton(ID_btAniBg, btPos, Extent(700, 40), TextureColor::Green2, "", NormalFont);
-    bt->SetBorder(false);
-    bt->SetEnabled(false);
+    bt->setBorder(false);
+    bt->setEnabled(false);
     bt = AddTextButton(ID_btAni, btPos + DrawPoint(0, 5), Extent(30, 30), TextureColor::Red1, "", NormalFont);
-    bt->SetBorder(false);
-    bt->SetEnabled(false);
-    bt->SetIlluminated(true);
+    bt->setBorder(false);
+    bt->setEnabled(false);
+    bt->setIlluminated(true);
 
     btPos.y += 45;
     AddEdit(ID_edtTest, btPos, Extent(150, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
@@ -86,7 +86,7 @@ dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
     cb->AddItem("Small Font");
     cb->AddItem("Medium Font");
     cb->AddItem("Large Font");
-    cb->SetSelection(0);
+    cb->setSelection(0);
     btPos.x += 110;
     btPos.y += 11;
     AddText(ID_txtTest, btPos, "Enter something", COLOR_YELLOW, FontStyle::VCENTER, SmallFont);
@@ -109,7 +109,7 @@ dskTest::dskTest() : curBGIdx(LOAD_SCREENS.size())
 void dskTest::msgEditChange(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_edtTest)
-        GetCtrl<ctrlText>(ID_txtTest)->SetText(GetCtrl<ctrlEdit>(ID_edtTest)->GetText());
+        getCtrl<ctrlText>(ID_txtTest)->setText(getCtrl<ctrlEdit>(ID_edtTest)->getText());
 }
 
 void dskTest::msgComboSelectItem(const unsigned ctrl_id, const unsigned selection)
@@ -117,11 +117,11 @@ void dskTest::msgComboSelectItem(const unsigned ctrl_id, const unsigned selectio
     if(ctrl_id == ID_cbTxtSize)
     {
         if(selection == 0)
-            GetCtrl<ctrlText>(ID_txtTest)->SetFont(SmallFont);
+            getCtrl<ctrlText>(ID_txtTest)->setFont(SmallFont);
         else if(selection == 1)
-            GetCtrl<ctrlText>(ID_txtTest)->SetFont(NormalFont);
+            getCtrl<ctrlText>(ID_txtTest)->setFont(NormalFont);
         else
-            GetCtrl<ctrlText>(ID_txtTest)->SetFont(LargeFont);
+            getCtrl<ctrlText>(ID_txtTest)->setFont(LargeFont);
     }
 }
 
@@ -134,34 +134,34 @@ void dskTest::msgButtonClick(const unsigned ctrl_id)
         case ID_btDisable:
             for(unsigned i = ID_grpBtStart; i < ID_grpBtEnd; i++)
             {
-                auto* bt = GetCtrl<ctrlButton>(i);
+                auto* bt = getCtrl<ctrlButton>(i);
                 if(bt)
-                    bt->SetEnabled(!bt->GetEnabled());
+                    bt->setEnabled(!bt->getEnabled());
             }
             break;
         case ID_btAnimate:
         case ID_btAnimateOscillate:
         case ID_btAnimateRepeat:
         {
-            auto* btAniBg = GetCtrl<ctrlButton>(ID_btAniBg);
-            auto* btAni = GetCtrl<ctrlButton>(ID_btAni);
+            auto* btAniBg = getCtrl<ctrlButton>(ID_btAniBg);
+            auto* btAni = getCtrl<ctrlButton>(ID_btAni);
             // Stop all
-            GetAnimationManager().removeElementAnimations(btAni->GetID());
-            GetAnimationManager().finishElementAnimations(ID_btAnimate, false);
-            GetAnimationManager().finishElementAnimations(ID_btAnimateOscillate, false);
-            GetAnimationManager().finishElementAnimations(ID_btAnimateRepeat, false);
-            DrawPoint startPos(btAniBg->GetPos());
+            getAnimationManager().removeElementAnimations(btAni->getID());
+            getAnimationManager().finishElementAnimations(ID_btAnimate, false);
+            getAnimationManager().finishElementAnimations(ID_btAnimateOscillate, false);
+            getAnimationManager().finishElementAnimations(ID_btAnimateRepeat, false);
+            DrawPoint startPos(btAniBg->getPos());
             startPos.y += 5;
-            btAni->SetPos(startPos);
+            btAni->setPos(startPos);
             DrawPoint endPos(startPos);
-            endPos.x += btAniBg->GetSize().x - btAni->GetSize().x;
+            endPos.x += btAniBg->getSize().x - btAni->getSize().x;
             Animation::RepeatType repeat = Animation::RepeatType::None;
             if(ctrl_id == ID_btAnimateOscillate)
                 repeat = Animation::RepeatType::Oscillate;
             else if(ctrl_id == ID_btAnimateRepeat)
                 repeat = Animation::RepeatType::Repeat;
-            GetAnimationManager().addAnimation(new MoveAnimation(btAni, endPos, 4000, repeat));
-            GetAnimationManager().addAnimation(new BlinkButtonAnim(GetCtrl<ctrlButton>(ctrl_id)));
+            getAnimationManager().addAnimation(new MoveAnimation(btAni, endPos, 4000, repeat));
+            getAnimationManager().addAnimation(new BlinkButtonAnim(getCtrl<ctrlButton>(ctrl_id)));
             break;
         }
         case ID_btHideCtrls: ToggleCtrlVisibility();
@@ -170,12 +170,12 @@ void dskTest::msgButtonClick(const unsigned ctrl_id)
 
 bool dskTest::msgRightUp(const MouseCoords& mc)
 {
-    std::vector<ctrlButton*> bts = GetCtrls<ctrlButton>();
+    std::vector<ctrlButton*> bts = getCtrls<ctrlButton>();
     for(ctrlButton* bt : bts)
     {
-        if(IsPointInRect(mc.pos, bt->GetDrawRect()))
+        if(IsPointInRect(mc.pos, bt->getDrawRect()))
         {
-            bt->SetChecked(!bt->GetCheck());
+            bt->setChecked(!bt->getCheck());
             return true;
         }
     }
@@ -186,9 +186,9 @@ void dskTest::ToggleCtrlVisibility()
 {
     for(int i = ID_txtTitle; i <= ID_btHideCtrls; i++)
     {
-        auto* ctrl = GetCtrl<Window>(i);
+        auto* ctrl = getCtrl<Window>(i);
         if(ctrl)
-            ctrl->SetVisible(!ctrl->IsVisible());
+            ctrl->setVisible(!ctrl->isVisible());
     }
 }
 
@@ -199,11 +199,11 @@ bool dskTest::msgKeyDown(const KeyEvent& ke)
     else if(ke.kt == KeyType::Left)
     {
         curBGIdx = (curBGIdx > 0) ? curBGIdx - 1 : LOAD_SCREENS.size() - 1;
-        background = LOADER.GetImageN(ResourceId(LOAD_SCREENS[curBGIdx]), 0);
+        background = LOADER.getImageN(ResourceId(LOAD_SCREENS[curBGIdx]), 0);
     } else if(ke.kt == KeyType::Right)
     {
         curBGIdx = (curBGIdx < LOAD_SCREENS.size() - 1) ? curBGIdx + 1 : 0;
-        background = LOADER.GetImageN(ResourceId(LOAD_SCREENS[curBGIdx]), 0);
+        background = LOADER.getImageN(ResourceId(LOAD_SCREENS[curBGIdx]), 0);
     } else if(ke.kt == KeyType::Escape)
         WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
     else

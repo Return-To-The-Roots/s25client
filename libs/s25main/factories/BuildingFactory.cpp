@@ -30,9 +30,9 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& world, const Building
         case BuildingType::Temple: bld = new nobTemple(pt, player, nation); break;
         default: bld = new nobUsual(type, pt, player, nation); break;
     }
-    world.SetNO(pt, bld);
+    world.setNO(pt, bld);
     // Don't do this in ctor as building might not be fully initialized yet
-    world.GetPlayer(player).AddBuilding(bld, type);
+    world.getPlayer(player).AddBuilding(bld, type);
 
     return bld;
 }

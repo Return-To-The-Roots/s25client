@@ -44,7 +44,7 @@ struct WMFixture : mock::cleanup
 {
     MockupVideoDriver* video;
     TestDesktop* dsk;
-    WMFixture() : video(uiHelper::GetVideoDriver())
+    WMFixture() : video(uiHelper::getVideoDriver())
     {
         dsk = static_cast<TestDesktop*>(WINDOWMANAGER.Switch(std::make_unique<TestDesktop>()));
         MOCK_EXPECT(dsk->msgMouseMove).once().returns(true);
@@ -260,13 +260,13 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     MOCK_EXPECT(wnd->DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
-    BOOST_TEST(!WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
     // Closing the window removes it and calls delete
     wnd->Close();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_DESTROYED(wnd);
     // Desktop active again
-    BOOST_TEST(WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(WINDOWMANAGER.getCurrentDesktop()->IsActive());
 
     // Opening a window with the same ID works. The last gets the focus
     wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
@@ -278,24 +278,24 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     REQUIRE_WINDOW_ALIVE(wnd);
     REQUIRE_WINDOW_ACTIVE(wnd2);
     // Desktop inactive again
-    BOOST_TEST(!WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
 
     // Closing a window and immediately reopening works
     wnd->Close();
     wnd2->Close();
-    wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(wnd->GetID()));
+    wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(wnd->getID()));
     BOOST_TEST_REQUIRE(wnd2);
     MOCK_EXPECT(wnd2->DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_DESTROYED(wnd);
     REQUIRE_WINDOW_ACTIVE(wnd2);
-    BOOST_TEST(!WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
 
     // Close by ID
-    WINDOWMANAGER.Close(wnd2->GetID());
+    WINDOWMANAGER.Close(wnd2->getID());
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_DESTROYED(wnd2);
-    BOOST_TEST(WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(WINDOWMANAGER.getCurrentDesktop()->IsActive());
     mock::verify();
 }
 
@@ -307,7 +307,7 @@ BOOST_FIXTURE_TEST_CASE(ToggleIngameWnd, uiHelper::Fixture)
     MOCK_EXPECT(wnd->DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
-    BOOST_TEST(!WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
 
     // When window is about to be closed we can open a new one
     wnd->Close();
@@ -317,17 +317,17 @@ BOOST_FIXTURE_TEST_CASE(ToggleIngameWnd, uiHelper::Fixture)
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wnd2);
     REQUIRE_WINDOW_DESTROYED(wnd);
-    BOOST_TEST(!WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
 
     // Opening a window with the same ID closes and frees both
     wnd = wnd2;
-    wnd2 = new TestIngameWnd(wnd->GetID());
+    wnd2 = new TestIngameWnd(wnd->getID());
     BOOST_TEST((WINDOWMANAGER.ToggleWindow(std::unique_ptr<TestIngameWnd>(wnd2)) == nullptr));
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_DESTROYED(wnd);
     REQUIRE_WINDOW_DESTROYED(wnd2);
     // Desktop active again
-    BOOST_TEST(WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(WINDOWMANAGER.getCurrentDesktop()->IsActive());
 
     // Windows with different IDs are fine
     wnd = WINDOWMANAGER.ToggleWindow(std::make_unique<TestIngameWnd>(CGI_HELP));
@@ -350,7 +350,7 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
     MOCK_EXPECT(wnd->DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
-    BOOST_TEST(!WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
 
     // When window is about to be closed we can open a new one
     wnd->Close();
@@ -360,7 +360,7 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wnd2);
     REQUIRE_WINDOW_DESTROYED(wnd);
-    BOOST_TEST(!WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
 
     // Opening a window with the same ID closes and frees the first
     wnd = wnd2;
@@ -370,7 +370,7 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_DESTROYED(wnd);
     REQUIRE_WINDOW_ACTIVE(wnd2);
-    BOOST_TEST(!WINDOWMANAGER.GetCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
 
     // Windows with different IDs are fine
     wnd = wnd2;
@@ -405,20 +405,20 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     MOCK_EXPECT(wnd.DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(&wnd);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == &wnd);
     auto& wnd2 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX, true));
     MOCK_EXPECT(wnd.DrawContent).once();
     MOCK_EXPECT(wnd2.DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(&wnd2);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd2);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == &wnd2);
     auto& wnd3 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MISSION_STATEMENT, true));
     MOCK_EXPECT(wnd.DrawContent).once();
     MOCK_EXPECT(wnd2.DrawContent).once();
     MOCK_EXPECT(wnd3.DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(&wnd3);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd3);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == &wnd3);
     auto& wnd4 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_MSGBOX));
     MOCK_EXPECT(wnd.DrawContent).once();
     MOCK_EXPECT(wnd2.DrawContent).once();
@@ -426,7 +426,7 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     MOCK_EXPECT(wnd4.DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(&wnd3);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd3);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == &wnd3);
     auto& wnd5 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_HELP, true));
     MOCK_EXPECT(wnd.DrawContent).once();
     MOCK_EXPECT(wnd2.DrawContent).once();
@@ -435,7 +435,7 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     MOCK_EXPECT(wnd5.DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(&wnd5);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd5);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == &wnd5);
     auto& wnd6 = WINDOWMANAGER.ReplaceWindow(std::make_unique<TestIngameWnd>(CGI_SETTINGS));
     MOCK_EXPECT(wnd.DrawContent).once();
     MOCK_EXPECT(wnd2.DrawContent).once();
@@ -445,7 +445,7 @@ BOOST_FIXTURE_TEST_CASE(ModalWindowPlacement, uiHelper::Fixture)
     MOCK_EXPECT(wnd6.DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(&wnd5);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == &wnd5);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == &wnd5);
     // Now we have the following order
     std::vector<TestIngameWnd*> expectedOrder = {&wnd5, &wnd3, &wnd2, &wnd, &wnd6, &wnd4};
     // Only way to check the order is to simulate a key event, expect the top most one to handle it and close it, then
@@ -472,22 +472,22 @@ BOOST_FIXTURE_TEST_CASE(ModalBlocksMouseActivation, uiHelper::Fixture)
 {
     auto* wndA = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
     auto* wndB = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_SETTINGS, true));
-    wndB->SetPos(DrawPoint(200, 200));
+    wndB->setPos(DrawPoint(200, 200));
     MOCK_EXPECT(wndA->DrawContent).once();
     MOCK_EXPECT(wndB->DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wndB);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
 
     // Click is over non-modal A, not modal B; B must still receive it instead of the window under the cursor.
-    const Position posInA = wndA->GetDrawPos() + Position(10, 10);
+    const Position posInA = wndA->getDrawPos() + Position(10, 10);
 
     MOCK_EXPECT(wndB->msgLeftDown).once().returns(true);
     MouseCoords mcDown(posInA);
     mcDown.ldown = true;
     WINDOWMANAGER.msgLeftDown(mcDown);
     WINDOWMANAGER.msgLeftUp(MouseCoords(posInA));
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
     BOOST_TEST(!wndA->IsActive());
     mock::verify();
@@ -496,14 +496,14 @@ BOOST_FIXTURE_TEST_CASE(ModalBlocksMouseActivation, uiHelper::Fixture)
     MouseCoords mcMiddle(posInA);
     mcMiddle.mdown = true;
     WINDOWMANAGER.msgMiddleDown(mcMiddle);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
     BOOST_TEST(!wndA->IsActive());
     mock::verify();
 
     // Wheel events must respect modal blocking too; the stack/active state must stay unchanged regardless.
     WINDOWMANAGER.msgWheelUp(MouseCoords(posInA));
     WINDOWMANAGER.msgWheelDown(MouseCoords(posInA));
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
     BOOST_TEST(!wndA->IsActive());
 }
@@ -518,16 +518,16 @@ BOOST_FIXTURE_TEST_CASE(BuriedModalClosedByGame, uiHelper::Fixture)
     MOCK_EXPECT(wndC->DrawContent).once();
     WINDOWMANAGER.Draw();
     REQUIRE_WINDOW_ACTIVE(wndC);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndC);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndC);
 
     // Topmost C must remain topmost after non-topmost B is closed
-    WINDOWMANAGER.Close(wndB->GetID());
+    WINDOWMANAGER.Close(wndB->getID());
     MOCK_EXPECT(wndA->DrawContent).once();
     MOCK_EXPECT(wndC->DrawContent).once();
     WINDOWMANAGER.Draw();
 
     REQUIRE_WINDOW_DESTROYED(wndB);
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndC);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndC);
     REQUIRE_WINDOW_ACTIVE(wndC);
     REQUIRE_WINDOW_ALIVE(wndA);
     mock::verify();
@@ -537,32 +537,32 @@ BOOST_FIXTURE_TEST_CASE(ClickActivatesBackgroundNonModal, uiHelper::Fixture)
 {
     auto* wndA = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
     auto* wndB = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_SETTINGS));
-    wndB->SetPos(DrawPoint(200, 200));
+    wndB->setPos(DrawPoint(200, 200));
     MOCK_EXPECT(wndA->DrawContent).once();
     MOCK_EXPECT(wndB->DrawContent).once();
     WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
     BOOST_TEST(!wndA->IsActive());
 
     // B is topmost, click is over A which must become topmost/active
     MOCK_EXPECT(wndA->msgLeftDown).once().returns(true);
-    MouseCoords mcDownA(wndA->GetDrawPos() + Position(10, 10));
+    MouseCoords mcDownA(wndA->getDrawPos() + Position(10, 10));
     mcDownA.ldown = true;
     WINDOWMANAGER.msgLeftDown(mcDownA);
     WINDOWMANAGER.msgLeftUp(MouseCoords(mcDownA.pos));
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndA);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndA);
     REQUIRE_WINDOW_ACTIVE(wndA);
     BOOST_TEST(!wndB->IsActive());
     mock::verify();
 
     // A is topmost, click is over B which must become topmost/active again
     MOCK_EXPECT(wndB->msgLeftDown).once().returns(true);
-    MouseCoords mcDownB(wndB->GetDrawPos() + Position(10, 10));
+    MouseCoords mcDownB(wndB->getDrawPos() + Position(10, 10));
     mcDownB.ldown = true;
     WINDOWMANAGER.msgLeftDown(mcDownB);
     WINDOWMANAGER.msgLeftUp(MouseCoords(mcDownB.pos));
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wndB);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
     BOOST_TEST(!wndA->IsActive());
     mock::verify();
@@ -571,11 +571,11 @@ BOOST_FIXTURE_TEST_CASE(ClickActivatesBackgroundNonModal, uiHelper::Fixture)
 BOOST_FIXTURE_TEST_CASE(EscClosesWindow, uiHelper::Fixture)
 {
     auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd);
     const KeyEvent evEsc(KeyType::Escape);
     WINDOWMANAGER.msgKeyDown(evEsc);
     WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == nullptr);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == nullptr);
     REQUIRE_WINDOW_DESTROYED(wnd);
 
     // Multiple escapes close multiple windows, even modal ones
@@ -586,7 +586,7 @@ BOOST_FIXTURE_TEST_CASE(EscClosesWindow, uiHelper::Fixture)
     WINDOWMANAGER.msgKeyDown(evEsc);
     MOCK_EXPECT(wnd1->DrawContent).once();
     WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd1);
     REQUIRE_WINDOW_DESTROYED(wnd2);
     REQUIRE_WINDOW_DESTROYED(wnd3);
     WINDOWMANAGER.msgKeyDown(evEsc);
@@ -595,33 +595,33 @@ BOOST_FIXTURE_TEST_CASE(EscClosesWindow, uiHelper::Fixture)
 
     // ESC does not close non-user-closable windows
     wnd1 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, false, CloseBehavior::Custom));
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd1);
     WINDOWMANAGER.msgKeyDown(evEsc);
     REQUIRE_WINDOW_ALIVE(wnd1);
     MOCK_EXPECT(wnd1->DrawContent).once();
     WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd1);
 
     wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, true, CloseBehavior::Custom));
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd2);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd2);
     WINDOWMANAGER.msgKeyDown(evEsc);
     REQUIRE_WINDOW_ALIVE(wnd1);
     REQUIRE_WINDOW_ALIVE(wnd2);
     MOCK_EXPECT(wnd1->DrawContent).once();
     MOCK_EXPECT(wnd2->DrawContent).once();
     WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd2);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd2);
 }
 
 BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
 {
     auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
-    MouseCoords evRDown(wnd->GetDrawPos() + Position(10, 10));
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd);
+    MouseCoords evRDown(wnd->getDrawPos() + Position(10, 10));
     evRDown.rdown = true;
     WINDOWMANAGER.msgRightDown(evRDown);
     WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == nullptr);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == nullptr);
     REQUIRE_WINDOW_DESTROYED(wnd);
 
     // Only close top most window
@@ -630,7 +630,7 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
     WINDOWMANAGER.msgRightDown(evRDown);
     MOCK_EXPECT(wnd1->DrawContent).once();
     WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd1);
     REQUIRE_WINDOW_DESTROYED(wnd2);
     // Also modal windows, even when not opened last
     wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, true));
@@ -641,7 +641,7 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
     MOCK_EXPECT(wnd1->DrawContent).once();
     MOCK_EXPECT(wnd3->DrawContent).once();
     WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd3);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd3);
     REQUIRE_WINDOW_DESTROYED(wnd2);
     WINDOWMANAGER.msgRightDown(evRDown);
     MOCK_EXPECT(wnd1->DrawContent).once();
@@ -653,19 +653,19 @@ BOOST_FIXTURE_TEST_CASE(RightclickClosesWindow, uiHelper::Fixture)
 
     // Don't close non-user-closable windows
     wnd1 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, false, CloseBehavior::Custom));
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd1);
     WINDOWMANAGER.msgRightDown(evRDown);
     MOCK_EXPECT(wnd1->DrawContent).once();
     WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd1);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd1);
 
     wnd2 = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP, true, CloseBehavior::NoRightClick));
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd2);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd2);
     WINDOWMANAGER.msgRightDown(evRDown);
     MOCK_EXPECT(wnd1->DrawContent).once();
     MOCK_EXPECT(wnd2->DrawContent).once();
     WINDOWMANAGER.Draw();
-    BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd2);
+    BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd2);
 }
 
 BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
@@ -678,17 +678,17 @@ BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
     {
         auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
 
-        wnd->SetPinned();
+        wnd->setPinned();
         BOOST_TEST_CONTEXT("Pinned")
         {
-            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd);
             WINDOWMANAGER.msgKeyDown(evEsc);
             MOCK_EXPECT(wnd->DrawContent).once();
             WINDOWMANAGER.Draw();
-            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd);
         }
 
-        wnd->SetPinned(false);
+        wnd->setPinned(false);
         BOOST_TEST_CONTEXT("Un-pinned")
         {
             WINDOWMANAGER.msgKeyDown(evEsc);
@@ -701,10 +701,10 @@ BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
     {
         auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
 
-        wnd->SetPinned();
+        wnd->setPinned();
         BOOST_TEST_CONTEXT("Pinned")
         {
-            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd);
             WINDOWMANAGER.msgKeyDown(evAltW);
             WINDOWMANAGER.Draw();
             REQUIRE_WINDOW_DESTROYED(wnd);
@@ -714,20 +714,20 @@ BOOST_FIXTURE_TEST_CASE(PinnedWindows, uiHelper::Fixture)
     BOOST_TEST_CONTEXT("Pinned windows ignore right click")
     {
         auto* wnd = &WINDOWMANAGER.Show(std::make_unique<TestIngameWnd>(CGI_HELP));
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
-        MouseCoords evRDown(wnd->GetDrawPos() + Position(10, 10));
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd);
+        MouseCoords evRDown(wnd->getDrawPos() + Position(10, 10));
         evRDown.rdown = true;
 
-        wnd->SetPinned();
+        wnd->setPinned();
         BOOST_TEST_CONTEXT("Pinned")
         {
             WINDOWMANAGER.msgRightDown(evRDown);
             MOCK_EXPECT(wnd->DrawContent).once();
             WINDOWMANAGER.Draw();
-            BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+            BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd);
         }
 
-        wnd->SetPinned(false);
+        wnd->setPinned(false);
         BOOST_TEST_CONTEXT("Un-pinned")
         {
             WINDOWMANAGER.msgRightDown(evRDown);
@@ -747,13 +747,13 @@ BOOST_FIXTURE_TEST_CASE(SnapWindow, uiHelper::Fixture)
     auto* wnd =
       &WINDOWMANAGER.Show(std::make_unique<IngameWindow>(0, DrawPoint(100, 0), Extent(100, 100), "", nullptr));
 
-    BOOST_TEST(WINDOWMANAGER.snapWindow(wnd, wnd->GetBoundaryRect()) == SnapOffset(0, 0));
+    BOOST_TEST(WINDOWMANAGER.snapWindow(wnd, wnd->getBoundaryRect()) == SnapOffset(0, 0));
 
-    wnd->SetPos(DrawPoint(111, 5));
-    BOOST_TEST(WINDOWMANAGER.snapWindow(wnd, wnd->GetBoundaryRect()) == SnapOffset(0, 0));
+    wnd->setPos(DrawPoint(111, 5));
+    BOOST_TEST(WINDOWMANAGER.snapWindow(wnd, wnd->getBoundaryRect()) == SnapOffset(0, 0));
 
-    wnd->SetPos(DrawPoint(110, 5));
-    BOOST_TEST(WINDOWMANAGER.snapWindow(wnd, wnd->GetBoundaryRect()) == SnapOffset(-10, -5));
+    wnd->setPos(DrawPoint(110, 5));
+    BOOST_TEST(WINDOWMANAGER.snapWindow(wnd, wnd->getBoundaryRect()) == SnapOffset(-10, -5));
 }
 
 MOCK_BASE_CLASS(MockSettingsWnd, TransmitSettingsIgwAdapter)
@@ -800,24 +800,24 @@ BOOST_FIXTURE_TEST_CASE(TestTransmitSettingsAdapter, uiHelper::Fixture)
     {
         // Save settings on ESC
         wnd = &WINDOWMANAGER.Show(std::make_unique<MockSettingsWnd>(CGI_TOOLS));
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd);
         MOCK_EXPECT(wnd->TransmitSettings).once();
         WINDOWMANAGER.msgKeyDown(KeyEvent(KeyType::Escape));
         WINDOWMANAGER.Draw();
         BOOST_TEST(MockSettingsWnd::activeWnds == 0);
-        BOOST_TEST(WINDOWMANAGER.GetTopMostWindow() == nullptr);
+        BOOST_TEST(WINDOWMANAGER.getTopMostWindow() == nullptr);
     }
     {
         // Save settings on ALT+W
         wnd = &WINDOWMANAGER.Show(std::make_unique<MockSettingsWnd>(CGI_TOOLS));
-        BOOST_TEST_REQUIRE(WINDOWMANAGER.GetTopMostWindow() == wnd);
+        BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wnd);
         MOCK_EXPECT(wnd->TransmitSettings).once();
         KeyEvent ke('w');
         ke.alt = true;
         WINDOWMANAGER.msgKeyDown(ke);
         WINDOWMANAGER.Draw();
         BOOST_TEST(MockSettingsWnd::activeWnds == 0);
-        BOOST_TEST(WINDOWMANAGER.GetTopMostWindow() == nullptr);
+        BOOST_TEST(WINDOWMANAGER.getTopMostWindow() == nullptr);
     }
     mock::verify();
 }

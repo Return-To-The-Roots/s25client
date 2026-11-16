@@ -30,13 +30,13 @@ class EconModeFixture : WorldFixture<CreateEmptyWorld, 3>
 public:
     EconModeFixture()
     {
-        world.GetPlayer(0).team = Team::Team2;
-        world.GetPlayer(1).team = Team::Team1;
-        world.GetPlayer(2).team = Team::Team2;
+        world.getPlayer(0).team = Team::Team2;
+        world.getPlayer(1).team = Team::Team1;
+        world.getPlayer(2).team = Team::Team2;
         for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
         {
-            world.GetPlayer(playerIdx).MakeStartPacts();
-            hqPos[playerIdx] = world.GetPlayer(playerIdx).GetHQPos();
+            world.getPlayer(playerIdx).MakeStartPacts();
+            hqPos[playerIdx] = world.getPlayer(playerIdx).getHQPos();
         }
         this->ggs.objective = GameObjective::EconomyMode;
     }
@@ -56,35 +56,35 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, EconModeFixture)
     constexpr auto amountsToAdd = helpers::make_array(63, 100, 85);
 
     EconomyModeHandler econHandler(4);
-    const auto& goodsToCollect = econHandler.GetGoodTypesToCollect();
+    const auto& goodsToCollect = econHandler.getGoodTypesToCollect();
 
     BOOST_TEST_REQUIRE(!goodsToCollect.empty());
-    BOOST_TEST(econHandler.GetEndFrame() == 4u);
+    BOOST_TEST(econHandler.getEndFrame() == 4u);
     BOOST_TEST(!econHandler.isOver());
     BOOST_TEST(!econHandler.isInfinite());
-    BOOST_TEST(world.GetEvMgr().ObjectHasEvents(econHandler));
-    world.GetEvMgr().ExecuteNextGF();
+    BOOST_TEST(world.getEvMgr().ObjectHasEvents(econHandler));
+    world.getEvMgr().ExecuteNextGF();
     econHandler.UpdateAmounts();
 
     // Individual amount counting
-    unsigned initialAmount = econHandler.GetAmount(0, 0);
-    BOOST_TEST_REQUIRE(initialAmount == econHandler.GetAmount(0, 1));
-    BOOST_TEST_REQUIRE(initialAmount == econHandler.GetAmount(0, 2));
+    unsigned initialAmount = econHandler.getAmount(0, 0);
+    BOOST_TEST_REQUIRE(initialAmount == econHandler.getAmount(0, 1));
+    BOOST_TEST_REQUIRE(initialAmount == econHandler.getAmount(0, 2));
 
     for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
     {
-        world.GetSpecObj<nobBaseWarehouse>(hqPos[playerIdx])
+        world.getSpecObj<nobBaseWarehouse>(hqPos[playerIdx])
           ->AddToInventory(GoodCounts::make(goodsToCollect[0], amountsToAdd[playerIdx]), true);
     }
-    world.GetEvMgr().ExecuteNextGF();
+    world.getEvMgr().ExecuteNextGF();
     econHandler.UpdateAmounts();
     for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
     {
-        BOOST_TEST_REQUIRE(econHandler.GetAmount(0, playerIdx) == initialAmount + amountsToAdd[playerIdx]);
+        BOOST_TEST_REQUIRE(econHandler.getAmount(0, playerIdx) == initialAmount + amountsToAdd[playerIdx]);
     }
 
     // Teams behaviour
-    const auto& econTeams = econHandler.GetTeams();
+    const auto& econTeams = econHandler.getTeams();
 
     // People get assigned to the correct teams?
     BOOST_TEST_REQUIRE(econTeams.size() == 2u);
@@ -100,7 +100,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, EconModeFixture)
     BOOST_TEST(econTeams[smallTeam].amountsTheTeamCollected[0] == initialAmount + amountsToAdd[1]);
     BOOST_TEST(econTeams[bigTeam].amountsTheTeamCollected[0] == 2 * initialAmount + amountsToAdd[0] + amountsToAdd[2]);
     BOOST_TEST(econTeams[smallTeam].goodTypeWins < econTeams[bigTeam].goodTypeWins);
-    BOOST_TEST(econHandler.GetMaxTeamAmount(0) == econTeams[bigTeam].amountsTheTeamCollected[0]);
+    BOOST_TEST(econHandler.getMaxTeamAmount(0) == econTeams[bigTeam].amountsTheTeamCollected[0]);
 }
 
 BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
@@ -108,40 +108,40 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
     ggs.setSelection(AddonId::ECONOMY_MODE_GAME_LENGTH,
                      rttr::test::randomValue<unsigned>(1, AddonEconomyModeGameLengthList.size() - 1));
     game->Start(false);
-    const auto& goodsToCollect = world.getEconHandler()->GetGoodTypesToCollect();
+    const auto& goodsToCollect = world.getEconHandler()->getGoodTypesToCollect();
     for(unsigned playerIdx = 0; playerIdx < 3; ++playerIdx)
     {
-        world.GetSpecObj<nobBaseWarehouse>(hqPos[playerIdx])
+        world.getSpecObj<nobBaseWarehouse>(hqPos[playerIdx])
           ->AddToInventory(GoodCounts::make(goodsToCollect[0], rttr::test::randomValue(1u, 50u)), true);
     }
-    world.GetEvMgr().ExecuteNextGF();
+    world.getEvMgr().ExecuteNextGF();
     world.getEconHandler()->UpdateAmounts();
 
     Savegame save;
     for(const auto& player : world.getPlayers())
         save.AddPlayer(player);
     save.ggs = ggs;
-    save.start_gf = game->em_->GetCurrentGF();
+    save.start_gf = game->em_->getCurrentGF();
     save.sgd.MakeSnapshot(*game);
     TmpFile tmpFile;
     BOOST_TEST_REQUIRE(save.Save(tmpFile.filePath, "MapTitle"));
     Savegame loadSave;
     BOOST_TEST_REQUIRE(loadSave.Load(tmpFile.filePath, SaveGameDataToLoad::All));
-    BOOST_TEST_REQUIRE(loadSave.GetNumPlayers() == 3u);
+    BOOST_TEST_REQUIRE(loadSave.getNumPlayers() == 3u);
     std::vector<PlayerInfo> players;
     for(unsigned j = 0; j < 3; j++)
-        players.push_back(PlayerInfo(loadSave.GetPlayer(j)));
+        players.push_back(PlayerInfo(loadSave.getPlayer(j)));
     Game newGame(save.ggs, loadSave.start_gf, players);
     GameWorld& newWorld = newGame.world_;
     MockLocalGameState localGameState;
     save.sgd.ReadSnapshot(newGame, localGameState);
 
     BOOST_TEST_REQUIRE(newWorld.getEconHandler());
-    BOOST_TEST(newWorld.getEconHandler()->GetEndFrame() == world.getEconHandler()->GetEndFrame());
-    const auto& goodsToCollectAfter = newWorld.getEconHandler()->GetGoodTypesToCollect();
+    BOOST_TEST(newWorld.getEconHandler()->getEndFrame() == world.getEconHandler()->getEndFrame());
+    const auto& goodsToCollectAfter = newWorld.getEconHandler()->getGoodTypesToCollect();
     BOOST_TEST(goodsToCollect == goodsToCollectAfter);
-    const auto& econTeams = world.getEconHandler()->GetTeams();
-    const auto& econTeamsAfter = newWorld.getEconHandler()->GetTeams();
+    const auto& econTeams = world.getEconHandler()->getTeams();
+    const auto& econTeamsAfter = newWorld.getEconHandler()->getTeams();
     BOOST_TEST_REQUIRE(econTeams.size() == econTeamsAfter.size());
     newWorld.getEconHandler()->UpdateAmounts();
     for(const auto& teamPair : boost::combine(econTeams, econTeamsAfter))
@@ -152,7 +152,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
         BOOST_TEST_REQUIRE(before.amountsTheTeamCollected == after.amountsTheTeamCollected);
         BOOST_TEST_REQUIRE(before.goodTypeWins == after.goodTypeWins);
     }
-    BOOST_TEST(newWorld.GetEvMgr().ObjectHasEvents(*newWorld.getEconHandler()));
+    BOOST_TEST(newWorld.getEvMgr().ObjectHasEvents(*newWorld.getEconHandler()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

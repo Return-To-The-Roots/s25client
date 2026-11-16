@@ -18,9 +18,9 @@ struct ResourceTestFixture : MapGenFixture
 
     ResourceTestFixture() : map(createMap(size))
     {
-        auto mountain = map.textureMap.Find(IsMinableMountain);
+        auto mountain = map.textureMap.Find(isMinableMountain);
         auto water = map.textureMap.Find(IsWater);
-        auto land = map.textureMap.Find(IsBuildableCoast);
+        auto land = map.textureMap.Find(isBuildableCoast);
 
         /*
          * ========== Test Map ===========
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_hqs_empty)
 
     auto& objectTypes = map.objectTypes;
     auto& objectInfos = map.objectInfos;
-    auto forbiddenArea = objectTypes.GetPointsInRadius(hq, 5);
+    auto forbiddenArea = objectTypes.getPointsInRadius(hq, 5);
     for(const MapPoint& pt : forbiddenArea)
     {
         BOOST_TEST_REQUIRE(objectTypes[pt] == OT_Empty);
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_harbors_empty)
 
     auto& objectTypes = map.objectTypes;
     auto& objectInfos = map.objectInfos;
-    auto forbiddenArea = objectTypes.GetPointsInRadius(harbor, 5);
+    auto forbiddenArea = objectTypes.getPointsInRadius(harbor, 5);
     for(const MapPoint& pt : forbiddenArea)
     {
         BOOST_TEST_REQUIRE(objectTypes[pt] == OT_Empty);
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(AddResources_updates_resources_according_to_textures)
     unsigned numMountainWithoutRes = 0;
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
-        if(map.textureMap.All(pt, IsMinableMountain))
+        if(map.textureMap.All(pt, isMinableMountain))
         {
             if(map.resources[pt] == R_None)
                 numMountainWithoutRes++; // LCOV_EXCL_LINE

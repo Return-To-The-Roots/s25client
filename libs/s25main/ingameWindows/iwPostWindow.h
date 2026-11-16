@@ -35,9 +35,9 @@ private:
     /// Passt Steuerelemente an, setzt Einstellung für diverse Controls passend für die aktuelle PostMessage
     void DisplayPostMessage();
     /// Setzt den Text mehrzeilig in das Postfenster
-    void SetMessageText(const std::string& message);
+    void setMessageText(const std::string& message);
     void FilterMessages();
     bool ValidateMessages();
-    const PostMsg* GetMsg(unsigned id) const;
+    const PostMsg* getMsg(unsigned id) const;
     void SwitchCategory(PostCategory cat);
 };

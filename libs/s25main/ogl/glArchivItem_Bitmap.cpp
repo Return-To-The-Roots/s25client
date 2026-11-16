@@ -19,7 +19,7 @@ glArchivItem_Bitmap::glArchivItem_Bitmap(const glArchivItem_Bitmap& item)
  */
 void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= COLOR_WHITE*/)
 {
-    if(GetTexture() == 0)
+    if(getTexture() == 0)
         return;
 
     RTTR_Assert(dstArea.getSize().x > 0 && dstArea.getSize().y > 0);
@@ -42,15 +42,15 @@ void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= CO
 
     std::array<Point<GLfloat>, 4> texCoords, vertices;
 
-    dstArea.move(-GetOrigin());
+    dstArea.move(-getOrigin());
 
     vertices[0].x = vertices[1].x = GLfloat(dstArea.left);
     vertices[2].x = vertices[3].x = GLfloat(dstArea.right);
     vertices[0].y = vertices[3].y = GLfloat(dstArea.top);
     vertices[1].y = vertices[2].y = GLfloat(dstArea.bottom);
 
-    Point<GLfloat> srcOrig = Point<GLfloat>(srcArea.getOrigin()) / GetTexSize();
-    Point<GLfloat> srcEndPt = Point<GLfloat>(srcArea.getEndPt()) / GetTexSize();
+    Point<GLfloat> srcOrig = Point<GLfloat>(srcArea.getOrigin()) / getTexSize();
+    Point<GLfloat> srcEndPt = Point<GLfloat>(srcArea.getEndPt()) / getTexSize();
     texCoords[0].x = texCoords[1].x = srcOrig.x;
     texCoords[2].x = texCoords[3].x = srcEndPt.x;
     texCoords[0].y = texCoords[3].y = srcOrig.y;
@@ -58,19 +58,19 @@ void glArchivItem_Bitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= CO
 
     glVertexPointer(2, GL_FLOAT, 0, vertices.data());
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords.data());
-    VIDEODRIVER.BindTexture(GetTexture());
+    VIDEODRIVER.BindTexture(getTexture());
     glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
     glDrawArrays(GL_QUADS, 0, 4);
 }
 
 void glArchivItem_Bitmap::DrawFull(const Rect& destArea, unsigned color)
 {
-    Draw(destArea, Rect(Position(0, 0), GetSize()), color);
+    Draw(destArea, Rect(Position(0, 0), getSize()), color);
 }
 
 void glArchivItem_Bitmap::DrawFull(const DrawPoint& dstPos, unsigned color)
 {
-    DrawFull(Rect(dstPos, GetSize()), color);
+    DrawFull(Rect(dstPos, getSize()), color);
 }
 
 void glArchivItem_Bitmap::DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color)
@@ -95,9 +95,9 @@ void glArchivItem_Bitmap::DrawPercent(const DrawPoint& dstPos, unsigned percent,
 
 void glArchivItem_Bitmap::FillTexture()
 {
-    int iformat = GetInternalFormat(), dformat = GL_BGRA;
+    int iformat = getInternalFormat(), dformat = GL_BGRA;
 
-    const Extent texSize = GetTexSize();
+    const Extent texSize = getTexSize();
     libsiedler2::PixelBufferBGRA buffer(texSize.x, texSize.y);
     print(buffer);
     glTexImage2D(GL_TEXTURE_2D, 0, iformat, texSize.x, texSize.y, 0, dformat, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
@@ -105,5 +105,5 @@ void glArchivItem_Bitmap::FillTexture()
 
 Extent glArchivItem_Bitmap::CalcTextureSize() const
 {
-    return VIDEODRIVER.calcPreferredTextureSize(GetSize());
+    return VIDEODRIVER.calcPreferredTextureSize(getSize());
 }

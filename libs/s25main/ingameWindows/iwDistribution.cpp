@@ -30,7 +30,7 @@ const unsigned TAB_ICON_SIZE = 36;
 
 iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : TransmitSettingsIgwAdapter(CGI_DISTRIBUTION, IngameWindow::posLastOrCenter, Extent(290, 312),
-                                 _("Distribution of goods"), LOADER.GetImageN("resource", 41)),
+                                 _("Distribution of goods"), LOADER.getImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
     CreateGroups();
@@ -39,9 +39,9 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
 
     // Tab Control
     ctrlTab* tab = AddTabCtrl(0, DrawPoint(10, 20), groups.size() * TAB_ICON_SIZE + TAB_ICON_SIZE / 2);
-    DrawPoint txtPos(GetSize().x / 2, 60);
-    DrawPoint progPos(PROGRESS_BORDER_DISTANCE - tab->GetPos().x, txtPos.y);
-    const Extent progSize(GetSize().x - 2 * PROGRESS_BORDER_DISTANCE, 20);
+    DrawPoint txtPos(getSize().x / 2, 60);
+    DrawPoint progPos(PROGRESS_BORDER_DISTANCE - tab->getPos().x, txtPos.y);
+    const Extent progSize(getSize().x - 2 * PROGRESS_BORDER_DISTANCE, 20);
 
     for(unsigned groupId = 0; groupId < groups.size(); groupId++)
     {
@@ -60,22 +60,22 @@ iwDistribution::iwDistribution(const GameWorldViewer& gwv, GameCommandFactory& g
     }
 
     // Gruppe auswählen
-    tab->SetSelection(0);
+    tab->setSelection(0);
 
     const Extent btSize(32, 32);
     // "Help" button
-    AddImageButton(2, DrawPoint(15, GetFullSize().y - 15 - btSize.y), btSize, TextureColor::Grey,
-                   LOADER.GetImageN("io", 225), _("Help"));
+    AddImageButton(2, DrawPoint(15, getFullSize().y - 15 - btSize.y), btSize, TextureColor::Grey,
+                   LOADER.getImageN("io", 225), _("Help"));
     // "Default" button
-    AddImageButton(10, GetFullSize() - DrawPoint::all(15) - btSize, btSize, TextureColor::Grey,
-                   LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(10, getFullSize() - DrawPoint::all(15) - btSize, btSize, TextureColor::Grey,
+                   LOADER.getImageN("io", 191), _("Default"));
 
     iwDistribution::UpdateSettings();
 }
 
 void iwDistribution::TransmitSettings()
 {
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
         return;
     if(settings_changed)
     {
@@ -87,12 +87,12 @@ void iwDistribution::TransmitSettings()
 
         for(unsigned i = 0; i < groups.size(); ++i)
         {
-            ctrlGroup* tab = GetCtrl<ctrlTab>(0)->GetGroup(i);
+            ctrlGroup* tab = getCtrl<ctrlTab>(0)->getGroup(i);
             const DistributionGroup& group = groups[i];
             // Werte der Gruppen auslesen
             for(unsigned j = 0; j < group.entries.size(); ++j)
             {
-                auto value = static_cast<uint8_t>(tab->GetCtrl<ctrlProgress>(j)->GetPosition());
+                auto value = static_cast<uint8_t>(tab->getCtrl<ctrlProgress>(j)->getPosition());
                 newDistribution[std::get<1>(group.entries[j])] = value;
             }
         }
@@ -114,17 +114,17 @@ void iwDistribution::msgGroupProgressChange(const unsigned /*group_id*/, const u
 
 void iwDistribution::UpdateSettings(const Distributions& distribution)
 {
-    if(GAMECLIENT.IsReplayModeOn())
-        gwv.GetPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
+    if(GAMECLIENT.isReplayModeOn())
+        gwv.getPlayer().FillVisualSettings(GAMECLIENT.visual_settings);
 
     for(unsigned g = 0; g < groups.size(); ++g)
     {
         // Look for correct group
         const DistributionGroup& group = groups[g];
-        ctrlGroup* tab = GetCtrl<ctrlTab>(0)->GetGroup(g);
+        ctrlGroup* tab = getCtrl<ctrlTab>(0)->getGroup(g);
         // And correct entry
         for(unsigned i = 0; i < group.entries.size(); ++i)
-            tab->GetCtrl<ctrlProgress>(i)->SetPosition(distribution[std::get<1>(group.entries[i])]);
+            tab->getCtrl<ctrlProgress>(i)->setPosition(distribution[std::get<1>(group.entries[i])]);
     }
 }
 
@@ -135,7 +135,7 @@ void iwDistribution::UpdateSettings()
 
 void iwDistribution::msgButtonClick(const unsigned ctrl_id)
 {
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
         return;
     switch(ctrl_id)
     {
@@ -177,15 +177,15 @@ void iwDistribution::CreateGroups()
             glArchivItem_Bitmap* img = nullptr;
             switch(lastGood)
             {
-                case GoodType::Fish: img = LOADER.GetImageN("io", 80); break;
-                case GoodType::Grain: img = LOADER.GetImageN("io", 90); break;
-                case GoodType::Iron: img = LOADER.GetImageN("io", 81); break;
-                case GoodType::Coal: img = LOADER.GetImageN("io", 91); break;
-                case GoodType::Wood: img = LOADER.GetImageN("io", 89); break;
-                case GoodType::Boards: img = LOADER.GetImageN("io", 82); break;
-                case GoodType::Water: img = LOADER.GetImageN("io", 92); break;
+                case GoodType::Fish: img = LOADER.getImageN("io", 80); break;
+                case GoodType::Grain: img = LOADER.getImageN("io", 90); break;
+                case GoodType::Iron: img = LOADER.getImageN("io", 81); break;
+                case GoodType::Coal: img = LOADER.getImageN("io", 91); break;
+                case GoodType::Wood: img = LOADER.getImageN("io", 89); break;
+                case GoodType::Boards: img = LOADER.getImageN("io", 82); break;
+                case GoodType::Water: img = LOADER.getImageN("io", 92); break;
                 case GoodType::Ham:
-                    img = LOADER.GetImageN("leather_bobs",
+                    img = LOADER.getImageN("leather_bobs",
                                            leatheraddon::bobIndex[leatheraddon::BobType::DistributionOfPigsIcon]);
                     break;
                 default: break;
@@ -204,7 +204,7 @@ void iwDistribution::CreateGroups()
 
     auto isUnused = [&](std::tuple<std::string, unsigned> const& bts) {
         const BuildingType buildingType = std::get<1>(distributionMap[std::get<1>(bts)]);
-        return makeIsUnusedBuilding(gwv.GetWorld().GetGGS())(buildingType);
+        return makeIsUnusedBuilding(gwv.getWorld().getGGS())(buildingType);
     };
     for(auto& group : groups)
         helpers::erase_if(group.entries, isUnused);

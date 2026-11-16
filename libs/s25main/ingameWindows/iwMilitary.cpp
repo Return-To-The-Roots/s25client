@@ -27,14 +27,14 @@ enum
 
 iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : TransmitSettingsIgwAdapter(CGI_MILITARY, IngameWindow::posLastOrCenter, Extent(168, 330), _("Military"),
-                                 LOADER.GetImageN("io", 5)),
+                                 LOADER.getImageN("io", 5)),
       gcFactory(gcFactory)
 {
     // Setting bars
     constexpr Extent progSize(132, 26);
     constexpr Extent progPadding(4, 4);
     constexpr unsigned progSpacing = 6;
-    DrawPoint curPos((GetSize().x - progSize.x) / 2, 25); // Same space left and right
+    DrawPoint curPos((getSize().x - progSize.x) / 2, 25); // Same space left and right
     AddProgress(ID_Offset, curPos, progSize, TextureColor::Grey, 119, 120, MILITARY_SETTINGS_SCALE[0], "", progPadding,
                 0, _("Fewer recruits"), _("More recruits")); /* pitch: progPadding */
     curPos.y += progSize.y + progSpacing;
@@ -44,8 +44,8 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
     auto* ctrl = AddProgress(ID_Offset + 2, curPos, progSize, TextureColor::Grey, 123, 124, MILITARY_SETTINGS_SCALE[2],
                              "", progPadding, 0, _("Fewer defenders"), _("More defenders"));
     // Hide defender setting if changing defender behavior is disabled
-    if(gwv.GetWorld().GetGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 1)
-        ctrl->SetVisible(false);
+    if(gwv.getWorld().getGGS().getSelection(AddonId::DEFENDER_BEHAVIOR) == 1)
+        ctrl->setVisible(false);
     else
         curPos.y += progSize.y + progSpacing;
     AddProgress(ID_Offset + 3, curPos, progSize, TextureColor::Grey, 209, 210, MILITARY_SETTINGS_SCALE[3], "",
@@ -60,8 +60,8 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
     ctrl = AddProgress(ID_Offset + 6, curPos, progSize, TextureColor::Grey, 1000, 1001, MILITARY_SETTINGS_SCALE[6], "",
                        progPadding, 0, _("Near harbor points"), _("Near harbor points"));
     // Hide changing harbor area if sea attacks are disabled
-    if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::SEA_ATTACK))
-        ctrl->SetVisible(false);
+    if(!gwv.getWorld().getGGS().isEnabled(AddonId::SEA_ATTACK))
+        ctrl->setVisible(false);
     else
         curPos.y += progSize.y + progSpacing;
     AddProgress(ID_Offset + 7, curPos, progSize, TextureColor::Grey, 125, 126, MILITARY_SETTINGS_SCALE[7], "",
@@ -69,17 +69,17 @@ iwMilitary::iwMilitary(const GameWorldViewer& gwv, GameCommandFactory& gcFactory
 
     // Buttons at bottom
     constexpr Extent buttonSize(30, 32);
-    curPos.y = GetRightBottomBoundary().y - buttonSize.y - 5;
-    AddImageButton(ID_btHelp, curPos, buttonSize, TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
+    curPos.y = getRightBottomBoundary().y - buttonSize.y - 5;
+    AddImageButton(ID_btHelp, curPos, buttonSize, TextureColor::Grey, LOADER.getImageN("io", 225), _("Help"));
     curPos.x += progSize.x - buttonSize.x;
-    AddImageButton(ID_btDefault, curPos, buttonSize, TextureColor::Grey, LOADER.GetImageN("io", 191), _("Default"));
+    AddImageButton(ID_btDefault, curPos, buttonSize, TextureColor::Grey, LOADER.getImageN("io", 191), _("Default"));
 
     iwMilitary::UpdateSettings();
 }
 
 void iwMilitary::TransmitSettings()
 {
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
         return;
 
     if(settings_changed)
@@ -87,7 +87,7 @@ void iwMilitary::TransmitSettings()
         // Save settings
         MilitarySettings milSettings = GAMECLIENT.visual_settings.military_settings;
         for(unsigned char i = 0; i < milSettings.size(); ++i)
-            milSettings[i] = (unsigned char)GetCtrl<ctrlProgress>(ID_Offset + i)->GetPosition();
+            milSettings[i] = (unsigned char)getCtrl<ctrlProgress>(ID_Offset + i)->getPosition();
 
         if(gcFactory.ChangeMilitary(milSettings))
         {
@@ -104,10 +104,10 @@ void iwMilitary::msgProgressChange(const unsigned /*ctrl_id*/, const unsigned sh
 
 void iwMilitary::UpdateSettings(const MilitarySettings& military_settings)
 {
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
         GAMECLIENT.ResetVisualSettings();
     for(unsigned i = 0; i < military_settings.size(); ++i)
-        GetCtrl<ctrlProgress>(ID_Offset + i)->SetPosition(military_settings[i]);
+        getCtrl<ctrlProgress>(ID_Offset + i)->setPosition(military_settings[i]);
 }
 
 void iwMilitary::UpdateSettings()

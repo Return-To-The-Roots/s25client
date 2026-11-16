@@ -24,7 +24,7 @@ void MilitarySquares::Clear()
     size_ = MapExtent::all(0);
 }
 
-std::list<nobBaseMilitary*>& MilitarySquares::GetSquare(const MapPoint pt)
+std::list<nobBaseMilitary*>& MilitarySquares::getSquare(const MapPoint pt)
 {
     MapPoint milPt = pt / MILITARY_SQUARE_SIZE;
     return squares[milPt.y * size_.x + milPt.x];
@@ -32,16 +32,16 @@ std::list<nobBaseMilitary*>& MilitarySquares::GetSquare(const MapPoint pt)
 
 void MilitarySquares::Add(nobBaseMilitary* const bld)
 {
-    GetSquare(bld->GetPos()).push_back(bld);
+    getSquare(bld->getPos()).push_back(bld);
 }
 
 void MilitarySquares::Remove(nobBaseMilitary* const bld)
 {
-    RTTR_Assert(helpers::contains(GetSquare(bld->GetPos()), bld));
-    GetSquare(bld->GetPos()).remove(bld);
+    RTTR_Assert(helpers::contains(getSquare(bld->getPos()), bld));
+    getSquare(bld->getPos()).remove(bld);
 }
 
-sortedMilitaryBlds MilitarySquares::GetBuildingsInRange(const MapPoint pt, unsigned short radius) const
+sortedMilitaryBlds MilitarySquares::getBuildingsInRange(const MapPoint pt, unsigned short radius) const
 {
     // maximum radius is half the size (rounded up) to avoid overlapping
     const Position offsets = elMin((size_ + Position::all(1)) / 2, Position::all(radius));

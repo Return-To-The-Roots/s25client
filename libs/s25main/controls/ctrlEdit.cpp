@@ -33,7 +33,7 @@ ctrlEdit::ctrlEdit(Window* parent, unsigned id, const DrawPoint& pos, const Exte
  *
  *  @param[in] text Der Text.
  */
-void ctrlEdit::SetText(const std::string& text)
+void ctrlEdit::setText(const std::string& text)
 {
     text_ = s25util::utf8to32(text);
     if(editType_ == EditType::Number)
@@ -49,21 +49,21 @@ void ctrlEdit::SetText(const std::string& text)
     Notify();
 }
 
-void ctrlEdit::SetText(const unsigned text)
+void ctrlEdit::setText(const unsigned text)
 {
-    SetText(s25util::toStringClassic(text));
+    setText(s25util::toStringClassic(text));
 }
 
-std::string ctrlEdit::GetText() const
+std::string ctrlEdit::getText() const
 {
     return s25util::utf32to8(text_);
 }
 
-GetFileNameResult ctrlEdit::GetFileName(const std::string& ext) const
+GetFileNameResult ctrlEdit::getFileName(const std::string& ext) const
 {
     RTTR_Assert(editType_ == EditType::Filename);
 
-    std::string name = GetText();
+    std::string name = getText();
     const auto isSpace = [](char c) { return c == ' '; };
     boost::algorithm::trim_left_if(name, isSpace);
     if(ext.empty())
@@ -77,18 +77,18 @@ GetFileNameResult ctrlEdit::GetFileName(const std::string& ext) const
     return {FileNameStatus::Valid, std::move(name)};
 }
 
-void ctrlEdit::SetFocus(bool focus)
+void ctrlEdit::setFocus(bool focus)
 {
     if(focus_ != focus)
     {
         focus_ = focus;
-        txtCtrl->SetTextColor(focus_ ? 0xFFFFA000 : COLOR_YELLOW);
-        if(focus && GetParent())
+        txtCtrl->setTextColor(focus_ ? 0xFFFFA000 : COLOR_YELLOW);
+        if(focus && getParent())
         {
-            for(auto* edit : GetParent()->GetCtrls<ctrlEdit>())
+            for(auto* edit : getParent()->getCtrls<ctrlEdit>())
             {
                 if(edit != this)
-                    edit->SetFocus(false);
+                    edit->setFocus(false);
             }
         }
     }
@@ -108,13 +108,13 @@ void ctrlEdit::UpdateInternalText()
         viewStart_ = 0;
         cursorPos_ = 0;
         cursorOffsetX_ = 0;
-        txtCtrl->SetText("");
+        txtCtrl->setText("");
     } else
     {
         std::u32string dtext = (isPassword_) ? std::u32string(text_.size(), '*') : text_;
         viewStart_ = std::min<unsigned>(viewStart_, dtext.length() - 1);
-        const auto* font = txtCtrl->GetFont();
-        const unsigned max_width = GetSize().x - ctrlTextDeepening::borderSize.x * 2;
+        const auto* font = txtCtrl->getFont();
+        const unsigned max_width = getSize().x - ctrlTextDeepening::borderSize.x * 2;
         unsigned max;
         std::string curText = s25util::utf32to8(dtext.substr(viewStart_));
         font->getWidth(curText, max_width, &max);
@@ -143,7 +143,7 @@ void ctrlEdit::UpdateInternalText()
             cursorOffsetX_ = font->getWidth(s25util::utf32to8(dtext.substr(viewStart_, cursorPos_ - viewStart_)));
         else
             cursorOffsetX_ = 0;
-        txtCtrl->SetText(curText);
+        txtCtrl->setText(curText);
     }
 }
 
@@ -172,12 +172,12 @@ void ctrlEdit::Draw_()
 {
     Window::Draw_();
     // Alle 500ms Cursor für 500ms anzeigen
-    if(focus_ && !isDisabled_ && VIDEODRIVER.GetTickCount() % 1000 < 500)
+    if(focus_ && !isDisabled_ && VIDEODRIVER.getTickCount() % 1000 < 500)
     {
-        const auto fontHeight = txtCtrl->GetFont()->getHeight();
-        DrawPoint cursorDrawPos = GetDrawPos();
+        const auto fontHeight = txtCtrl->getFont()->getHeight();
+        DrawPoint cursorDrawPos = getDrawPos();
         cursorDrawPos.x += cursorOffsetX_ + ctrlTextDeepening::borderSize.x;
-        cursorDrawPos.y += (GetSize().y - (fontHeight + 2)) / 2;
+        cursorDrawPos.y += (getSize().y - (fontHeight + 2)) / 2;
 
         DrawRectangle(Rect(cursorDrawPos, Extent(1, fontHeight + 2)), 0xFFFFA000);
     }
@@ -226,10 +226,10 @@ void ctrlEdit::RemoveChar()
  */
 void ctrlEdit::Notify()
 {
-    if(!notify_ || !GetParent())
+    if(!notify_ || !getParent())
         return;
 
-    GetParent()->msgEditChange(GetID());
+    getParent()->msgEditChange(getID());
 }
 
 void ctrlEdit::Resize(const Extent& newSize)
@@ -243,7 +243,7 @@ void ctrlEdit::Resize(const Extent& newSize)
  */
 bool ctrlEdit::msgLeftDown(const MouseCoords& mc)
 {
-    SetFocus(IsPointInRect(mc.pos, GetDrawRect()));
+    setFocus(IsPointInRect(mc.pos, getDrawRect()));
     return false; // "Unhandled" so other edits can handle this too and set their focus accordingly
 }
 
@@ -309,7 +309,7 @@ bool ctrlEdit::msgKeyDown(const KeyEvent& ke)
             break;
 
         case KeyType::Char: // Zeichen eingegeben
-            if(!isDisabled_ && txtCtrl->GetFont()->CharExist(ke.c))
+            if(!isDisabled_ && txtCtrl->getFont()->CharExist(ke.c))
                 AddChar(ke.c);
             break;
 
@@ -327,8 +327,8 @@ bool ctrlEdit::msgKeyDown(const KeyEvent& ke)
             break;
 
         case KeyType::Return: // Enter gedrückt
-            if(!isDisabled_ && GetParent())
-                GetParent()->msgEditEnter(GetID());
+            if(!isDisabled_ && getParent())
+                getParent()->msgEditEnter(getID());
             break;
 
         case KeyType::Home: // Pos1 gedrückt

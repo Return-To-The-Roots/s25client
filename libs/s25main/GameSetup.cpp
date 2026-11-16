@@ -33,7 +33,7 @@ namespace {
 void removeLeatherAddonDistributions(Game& game, unsigned localPlayerId)
 {
     VisualSettings settings;
-    game.world_.GetPlayer(localPlayerId).FillVisualSettings(settings);
+    game.world_.getPlayer(localPlayerId).FillVisualSettings(settings);
 
     Distributions newDistributions = settings.distribution;
     unsigned idx = 0;
@@ -49,7 +49,7 @@ void removeLeatherAddonDistributions(Game& game, unsigned localPlayerId)
 }
 } // namespace
 
-void SetupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGameState, const Replay* replay)
+void setupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGameState, const Replay* replay)
 {
     GameWorld& gameWorld = game.world_;
     if(mapInfo.savegame)
@@ -92,12 +92,12 @@ void SetupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGa
         if(!luaFilePath.empty() && !loader.LoadLuaScript(game, localGameState, luaFilePath))
             throw GameSetupError("Could not load the Lua script " + luaFilePath.string());
 
-        MapLoader::SetupResources(gameWorld, !replay || replay->usesFishFix());
+        MapLoader::setupResources(gameWorld, !replay || replay->usesFishFix());
     }
     if(replay)
-        gameWorld.SetReplayCompatVersion(replay->GetMinorVersion());
+        gameWorld.setReplayCompatVersion(replay->getMinorVersion());
     gameWorld.InitAfterLoad();
 
-    if(replay && !mapInfo.savegame && replay->GetMinorVersion() < 2)
-        removeLeatherAddonDistributions(game, localGameState.GetPlayerId());
+    if(replay && !mapInfo.savegame && replay->getMinorVersion() < 2)
+        removeLeatherAddonDistributions(game, localGameState.getPlayerId());
 }

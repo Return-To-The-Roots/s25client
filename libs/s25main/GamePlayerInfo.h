@@ -11,7 +11,7 @@ struct GamePlayerInfo : public PlayerInfo
 {
     GamePlayerInfo(unsigned playerId, const PlayerInfo& playerInfo);
 
-    unsigned GetPlayerId() const { return id; }
+    unsigned getPlayerId() const { return id; }
     bool IsDefeated() const { return isDefeated; }
 
 private:

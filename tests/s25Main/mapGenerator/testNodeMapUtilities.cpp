@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE(GetDifference_returns_maximum_difference_between_range)
 {
     ValueRange<int> range(4, 20);
 
-    BOOST_TEST(range.GetDifference() == 16);
+    BOOST_TEST(range.getDifference() == 16);
 }
 
 BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_zero_for_minimum_value)

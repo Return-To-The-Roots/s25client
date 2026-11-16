@@ -41,19 +41,19 @@ template<class T_Col>
 inline bool containsBldType(const T_Col& collection, BuildingType type)
 {
     return helpers::contains_if(collection,
-                                [type](const noBaseBuilding* bld) { return bld->GetBuildingType() == type; });
+                                [type](const noBaseBuilding* bld) { return bld->getBuildingType() == type; });
 }
 
 inline bool playerHasBld(const GamePlayer& player, BuildingType type)
 {
-    const BuildingRegister& blds = player.GetBuildingRegister();
-    if(containsBldType(blds.GetBuildingSites(), type))
+    const BuildingRegister& blds = player.getBuildingRegister();
+    if(containsBldType(blds.getBuildingSites(), type))
         return true;
-    if(BuildingProperties::IsMilitary(type))
-        return containsBldType(blds.GetMilitaryBuildings(), type);
-    if(BuildingProperties::IsWareHouse(type)) // Includes harbors
-        return containsBldType(blds.GetStorehouses(), type);
-    return !blds.GetBuildings(type).empty();
+    if(BuildingProperties::isMilitary(type))
+        return containsBldType(blds.getMilitaryBuildings(), type);
+    if(BuildingProperties::isWareHouse(type)) // Includes harbors
+        return containsBldType(blds.getStorehouses(), type);
+    return !blds.getBuildings(type).empty();
 }
 
 DescIdx<TerrainDesc> GetMineableTerrain(const WorldDescription& desc)
@@ -65,10 +65,10 @@ DescIdx<TerrainDesc> GetMineableTerrain(const WorldDescription& desc)
 
 void makeWorldMineable(GameWorld& world)
 {
-    const DescIdx<TerrainDesc> mineableTerrain = GetMineableTerrain(world.GetDescription());
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    const DescIdx<TerrainDesc> mineableTerrain = GetMineableTerrain(world.getDescription());
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        MapNode& node = world.GetNodeWriteable(pt);
+        MapNode& node = world.getNodeWriteable(pt);
         node.t1 = node.t2 = mineableTerrain;
         node.resources = Resource();
     }
@@ -79,9 +79,9 @@ void makeWorldMineable(GameWorld& world)
 // mine resource behavior under test and not on unrelated terrain/ownership state.
 void initAIJhNodes(AIJH::AIPlayerJH& aijh, const GameWorld& world, const unsigned player)
 {
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        AIJH::Node& node = aijh.GetAINode(pt);
+        AIJH::Node& node = aijh.getAINode(pt);
         node.bq = world.GetBQ(pt, player);
         node.owned = true;
         node.reachable = true;
@@ -106,15 +106,15 @@ BOOST_AUTO_TEST_SUITE(AI)
 
 BOOST_FIXTURE_TEST_CASE(PlayerHasBld_IsCorrect, EmptyWorldFixture1P)
 {
-    const GamePlayer& player = world.GetPlayer(0);
+    const GamePlayer& player = world.getPlayer(0);
     BOOST_TEST(playerHasBld(player, BuildingType::Headquarters));
-    MapPoint pos = player.GetHQPos();
+    MapPoint pos = player.getHQPos();
     for(const auto bld : {BuildingType::Woodcutter, BuildingType::Barracks, BuildingType::Storehouse})
     {
         pos = world.MakeMapPoint(pos + Position(2, 0));
         BOOST_TEST_INFO(bld);
         BOOST_TEST(!playerHasBld(player, bld));
-        BuildingFactory::CreateBuilding(world, bld, pos, player.GetPlayerId(), Nation::Romans);
+        BuildingFactory::CreateBuilding(world, bld, pos, player.getPlayerId(), Nation::Romans);
         BOOST_TEST_INFO(bld);
         BOOST_TEST(playerHasBld(player, bld));
     }
@@ -149,13 +149,13 @@ BOOST_FIXTURE_TEST_CASE(AIChat, EmptyWorldFixture2P)
 
 BOOST_FIXTURE_TEST_CASE(MineResourceRatingAccountsForS4LikeExhaustion, EmptyWorldFixture1P)
 {
-    const MapPoint resourcePos = world.MakeMapPoint(world.GetPlayer(0).GetHQPos() + Position(2, 0));
-    world.GetNodeWriteable(resourcePos).resources = Resource(ResourceType::Coal, 1);
+    const MapPoint resourcePos = world.MakeMapPoint(world.getPlayer(0).getHQPos() + Position(2, 0));
+    world.getNodeWriteable(resourcePos).resources = Resource(ResourceType::Coal, 1);
 
     MockAI ai(0, world, AI::Level::Easy);
     const auto ratingWith = [&](const MineResourceBehavior behavior) {
         ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(behavior));
-        return ai.getAIInterface().GetResourceRating(resourcePos, AIResource::Coal);
+        return ai.getAIInterface().getResourceRating(resourcePos, AIResource::Coal);
     };
 
     // A spot with a coal deposit gets the full radius rating for all behaviors that mine the deposit as-is...
@@ -180,13 +180,13 @@ BOOST_FIXTURE_TEST_CASE(MineWorkEverywhereAffectsMatchingResourceOnly, EmptyWorl
     initAIJhNodes(ai, world, 0);
 
     // The HQ is the only guaranteed reachable/owned starting spot, so searches are centered on it.
-    const MapPoint searchCenter = world.GetPlayer(0).GetHQPos();
+    const MapPoint searchCenter = world.getPlayer(0).getHQPos();
     // The only iron deposit sits well outside the search radius below, so default iron mining has no reachable spot.
     const MapPoint ironPos = world.MakeMapPoint(searchCenter + Position(8, 0));
-    world.GetNodeWriteable(ironPos).resources = Resource(ResourceType::Iron, 4);
+    world.getNodeWriteable(ironPos).resources = Resource(ResourceType::Iron, 4);
 
     // WorkEverywhere coal treats any mineable node as a coal spot, even one that actually holds an iron deposit.
-    BOOST_TEST(ai.getAIInterface().GetResourceRating(ironPos, AIResource::Coal)
+    BOOST_TEST(ai.getAIInterface().getResourceRating(ironPos, AIResource::Coal)
                == static_cast<int>(RES_RADIUS[AIResource::Coal]));
     // So coal finds a spot right around the HQ, while default iron finds none because its only deposit is out of range.
     BOOST_TEST(ai.FindBestPosition(searchCenter, AIResource::Coal, BuildingQuality::Mine, 5).isValid());
@@ -197,7 +197,7 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineResourceBehaviorAffectsAIMineSearch, EmptyWor
 {
     // Mineable terrain everywhere but no deposits, so only the granite behavior decides what the AI can place.
     makeWorldMineable(world);
-    const MapPoint searchCenter = world.GetPlayer(0).GetHQPos();
+    const MapPoint searchCenter = world.getPlayer(0).getHQPos();
     // The AI rates all nodes once during setup, so each behavior needs an AI of its own.
     const auto findsMineSpotFor = [&](const MineResourceBehavior behavior, const AIResource res) {
         ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(behavior));
@@ -219,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineResourceBehaviorAffectsAIMineSearch, EmptyWor
     BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::Inexhaustible, AIResource::Granite));
     BOOST_TEST(!findsMineSpotFor(MineResourceBehavior::Inexhaustible, AIResource::Coal));
     // But if we place a granite deposit, the AI can find it
-    world.GetNodeWriteable(searchCenter).resources = Resource(ResourceType::Granite, 1);
+    world.getNodeWriteable(searchCenter).resources = Resource(ResourceType::Granite, 1);
     for(const auto behavior : helpers::EnumRange<MineResourceBehavior>{})
         BOOST_TEST_CONTEXT("Behavior: " << rttr::enum_cast(behavior))
         {
@@ -232,11 +232,11 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 {
     addStartResources();
     // Place some trees to reduce BQ at some points
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        if(pt.x % 4 == 0 && pt.y % 2 == 0 && world.GetNode(pt).bq == BuildingQuality::Castle
+        if(pt.x % 4 == 0 && pt.y % 2 == 0 && world.getNode(pt).bq == BuildingQuality::Castle
            && world.CalcDistance(pt, hqPos) > 6)
-            world.SetNO(pt, new noTree(pt, 0, 3));
+            world.setNO(pt, new noTree(pt, 0, 3));
     }
     world.InitAfterLoad();
 
@@ -245,10 +245,10 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
 
     const auto assertBqEqualOnWholeMap = [this, &aijh](const unsigned lineNr) {
         BOOST_TEST_CONTEXT("Line #" << lineNr)
-        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        RTTR_FOREACH_PT(MapPoint, world.getSize())
         {
             BOOST_TEST_INFO(pt);
-            BOOST_TEST(this->world.GetBQ(pt, curPlayer) == aijh.GetAINode(pt).bq);
+            BOOST_TEST(this->world.GetBQ(pt, curPlayer) == aijh.getAINode(pt).bq);
         }
     };
     const auto assertBqEqualAround = [this, &aijh](const unsigned lineNr, MapPoint pt, unsigned radius) {
@@ -257,7 +257,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
           pt, radius,
           [&](const MapPoint curPt, unsigned) {
               BOOST_TEST_INFO(curPt);
-              BOOST_TEST(this->world.GetBQ(curPt, curPlayer) == aijh.GetAINode(curPt).bq);
+              BOOST_TEST(this->world.GetBQ(curPt, curPlayer) == aijh.getAINode(curPt).bq);
               return false;
           },
           true);
@@ -267,87 +267,87 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     for(unsigned gf = 0; gf < 100; ++gf)
     {
         em.ExecuteNextGF();
-        ai->RunGF(em.GetCurrentGF(), true);
+        ai->RunGF(em.getCurrentGF(), true);
     }
     assertBqEqualOnWholeMap(__LINE__);
 
     // Set and destroy flag everywhere possible
     std::vector<MapPoint> possibleFlagNodes;
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        if(world.GetBQ(pt, curPlayer) != BuildingQuality::Nothing && !world.IsFlagAround(pt))
+        if(world.GetBQ(pt, curPlayer) != BuildingQuality::Nothing && !world.isFlagAround(pt))
             possibleFlagNodes.push_back(pt);
     }
     for(const MapPoint flagPos : possibleFlagNodes)
     {
         this->SetFlag(flagPos);
-        BOOST_TEST_REQUIRE(world.GetSpecObj<noFlag>(flagPos));
+        BOOST_TEST_REQUIRE(world.getSpecObj<noFlag>(flagPos));
         em.ExecuteNextGF();
-        ai->RunGF(em.GetCurrentGF(), true);
+        ai->RunGF(em.getCurrentGF(), true);
         assertBqEqualAround(__LINE__, flagPos, 3);
 
         this->DestroyFlag(flagPos);
-        BOOST_TEST_REQUIRE(!world.GetSpecObj<noFlag>(flagPos));
+        BOOST_TEST_REQUIRE(!world.getSpecObj<noFlag>(flagPos));
         em.ExecuteNextGF();
-        ai->RunGF(em.GetCurrentGF(), true);
+        ai->RunGF(em.getCurrentGF(), true);
         assertBqEqualAround(__LINE__, flagPos, 3);
     }
 
     // Build road
-    const MapPoint flagPos = world.MakeMapPoint(world.GetNeighbour(hqPos, Direction::SouthEast) + Position(4, 0));
-    this->BuildRoad(world.GetNeighbour(hqPos, Direction::SouthEast), false, std::vector<Direction>(4, Direction::East));
-    BOOST_TEST_REQUIRE(world.GetSpecObj<noFlag>(flagPos)->GetRoute(Direction::West));
+    const MapPoint flagPos = world.MakeMapPoint(world.getNeighbour(hqPos, Direction::SouthEast) + Position(4, 0));
+    this->BuildRoad(world.getNeighbour(hqPos, Direction::SouthEast), false, std::vector<Direction>(4, Direction::East));
+    BOOST_TEST_REQUIRE(world.getSpecObj<noFlag>(flagPos)->getRoute(Direction::West));
     em.ExecuteNextGF();
-    ai->RunGF(em.GetCurrentGF(), true);
+    ai->RunGF(em.getCurrentGF(), true);
     assertBqEqualAround(__LINE__, flagPos, 6);
 
     // Destroy road and flag
     this->DestroyFlag(flagPos);
     em.ExecuteNextGF();
-    ai->RunGF(em.GetCurrentGF(), true);
+    ai->RunGF(em.getCurrentGF(), true);
     assertBqEqualAround(__LINE__, flagPos, 6);
 
     // Build building
     const MapPoint bldPos = world.MakeMapPoint(hqPos + Position(5, 0));
     this->SetBuildingSite(bldPos, BuildingType::Barracks);
-    BOOST_TEST_REQUIRE(world.GetSpecObj<noBuildingSite>(bldPos));
+    BOOST_TEST_REQUIRE(world.getSpecObj<noBuildingSite>(bldPos));
     em.ExecuteNextGF();
-    ai->RunGF(em.GetCurrentGF(), true);
+    ai->RunGF(em.getCurrentGF(), true);
     assertBqEqualAround(__LINE__, bldPos, 6);
 
-    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SouthEast), false,
+    this->BuildRoad(world.getNeighbour(bldPos, Direction::SouthEast), false,
                     std::vector<Direction>(5, Direction::West));
     em.ExecuteNextGF();
-    ai->RunGF(em.GetCurrentGF(), true);
-    RTTR_EXEC_TILL(2000, world.GetSpecObj<noBuilding>(bldPos));
+    ai->RunGF(em.getCurrentGF(), true);
+    RTTR_EXEC_TILL(2000, world.getSpecObj<noBuilding>(bldPos));
     em.ExecuteNextGF();
-    ai->RunGF(em.GetCurrentGF(), false);
+    ai->RunGF(em.getCurrentGF(), false);
     assertBqEqualOnWholeMap(__LINE__);
 
     // Gain land
-    const nobMilitary* bld = world.GetSpecObj<nobMilitary>(bldPos);
+    const nobMilitary* bld = world.getSpecObj<nobMilitary>(bldPos);
     for(unsigned i = 0; i < 500; i++)
     {
         em.ExecuteNextGF();
-        ai->RunGF(em.GetCurrentGF(), false);
-        if(bld->GetNumTroops() > 0u)
+        ai->RunGF(em.getCurrentGF(), false);
+        if(bld->getNumTroops() > 0u)
             break;
     }
-    BOOST_TEST_REQUIRE(bld->GetNumTroops() > 0u);
+    BOOST_TEST_REQUIRE(bld->getNumTroops() > 0u);
     assertBqEqualOnWholeMap(__LINE__);
 
     // Move the boundary by one node
     std::set<MapPoint, MapPointLess> outerBoundaryNodes;
     std::vector<MapPoint> borderNodes;
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        if(world.IsBorderNode(pt, curPlayer + 1))
+        if(world.isBorderNode(pt, curPlayer + 1))
         {
             borderNodes.push_back(pt);
             world.CheckPointsInRadius(
               pt, 1,
               [&outerBoundaryNodes, &world = this->world, curPlayer = this->curPlayer](const MapPoint curPt, unsigned) {
-                  if(world.GetNode(curPt).owner != curPlayer + 1)
+                  if(world.getNode(curPt).owner != curPlayer + 1)
                       outerBoundaryNodes.insert(curPt);
                   return false;
               },
@@ -356,46 +356,46 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     }
     // Once to outside
     for(const MapPoint pt : outerBoundaryNodes)
-        world.SetOwner(pt, curPlayer + 1);
-    world.RecalcBorderStones(Position(0, 0), Extent(world.GetSize()));
+        world.setOwner(pt, curPlayer + 1);
+    world.RecalcBorderStones(Position(0, 0), Extent(world.getSize()));
     for(const MapPoint pt : outerBoundaryNodes)
-        world.GetNotifications().publish(NodeNote(NodeNote::Owner, pt));
+        world.getNotifications().publish(NodeNote(NodeNote::Owner, pt));
     em.ExecuteNextGF();
-    ai->RunGF(em.GetCurrentGF(), false);
+    ai->RunGF(em.getCurrentGF(), false);
     assertBqEqualOnWholeMap(__LINE__);
 
     // And back
     for(const MapPoint pt : outerBoundaryNodes)
-        world.SetOwner(pt, 0);
-    world.RecalcBorderStones(Position(0, 0), Extent(world.GetSize()));
+        world.setOwner(pt, 0);
+    world.RecalcBorderStones(Position(0, 0), Extent(world.getSize()));
     for(const MapPoint pt : outerBoundaryNodes)
-        world.GetNotifications().publish(NodeNote(NodeNote::Owner, pt));
+        world.getNotifications().publish(NodeNote(NodeNote::Owner, pt));
     em.ExecuteNextGF();
-    ai->RunGF(em.GetCurrentGF(), false);
+    ai->RunGF(em.getCurrentGF(), false);
     assertBqEqualOnWholeMap(__LINE__);
 
     // And once to inside
     for(const MapPoint pt : borderNodes)
-        world.SetOwner(pt, 0);
-    world.RecalcBorderStones(Position(0, 0), Extent(world.GetSize()));
+        world.setOwner(pt, 0);
+    world.RecalcBorderStones(Position(0, 0), Extent(world.getSize()));
     for(const MapPoint pt : borderNodes)
-        world.GetNotifications().publish(NodeNote(NodeNote::Owner, pt));
+        world.getNotifications().publish(NodeNote(NodeNote::Owner, pt));
     em.ExecuteNextGF();
-    ai->RunGF(em.GetCurrentGF(), false);
+    ai->RunGF(em.getCurrentGF(), false);
     assertBqEqualOnWholeMap(__LINE__);
 }
 
 BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
 {
     // Place a few trees
-    for(const MapPoint& pt : world.GetPointsInRadius(hqPos + MapPoint(4, 0), 2))
+    for(const MapPoint& pt : world.getPointsInRadius(hqPos + MapPoint(4, 0), 2))
     {
-        if(!world.GetNode(pt).obj)
-            world.SetNO(pt, new noTree(pt, 0, 3));
+        if(!world.getNode(pt).obj)
+            world.setNO(pt, new noTree(pt, 0, 3));
     }
     world.InitAfterLoad();
 
-    const GamePlayer& player = world.GetPlayer(curPlayer);
+    const GamePlayer& player = world.getPlayer(curPlayer);
     auto ai = AIFactory::Create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
     // Build a woodcutter, sawmill and forester at some point
     for(unsigned gf = 0; gf < 2000;)
@@ -404,7 +404,7 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
         for(unsigned i = 0; i < 5; i++, gf++)
         {
             em.ExecuteNextGF();
-            ai->RunGF(em.GetCurrentGF(), i == 0);
+            ai->RunGF(em.getCurrentGF(), i == 0);
         }
         for(gc::GameCommandPtr& gc : aiGcs)
         {
@@ -423,14 +423,14 @@ namespace {
 void forceExpansion(const GamePlayer& player, GameWorld& world)
 {
     // No space for saw mill due to altitude diff of 3 in range 2 -> Huts only
-    for(unsigned y = 0; y < world.GetHeight(); y += 2)
+    for(unsigned y = 0; y < world.getHeight(); y += 2)
     {
-        for(unsigned x = 0; x < world.GetWidth(); x += 2)
+        for(unsigned x = 0; x < world.getWidth(); x += 2)
             world.ChangeAltitude(MapPoint(x, y), 13);
     }
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        BOOST_TEST_REQUIRE(world.GetBQ(pt, player.GetPlayerId()) <= BuildingQuality::Hut);
+        BOOST_TEST_REQUIRE(world.GetBQ(pt, player.getPlayerId()) <= BuildingQuality::Hut);
     }
 }
 
@@ -444,7 +444,7 @@ void runUntilMilitaryBuildingSiteFound(TestEventManager& em, unsigned curPlayer,
         for(unsigned i = 0; i < 5; i++, gf++)
         {
             em.ExecuteNextGF();
-            ai->RunGF(em.GetCurrentGF(), i == 0);
+            ai->RunGF(em.getCurrentGF(), i == 0);
         }
         for(gc::GameCommandPtr& gc : aiGcs)
         {
@@ -458,8 +458,8 @@ void runUntilMilitaryBuildingSiteFound(TestEventManager& em, unsigned curPlayer,
 
 BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
 {
-    const auto& player = world.GetPlayer(curPlayer);
-    const auto& bldSites = player.GetBuildingRegister().GetBuildingSites();
+    const auto& player = world.getPlayer(curPlayer);
+    const auto& bldSites = player.getBuildingRegister().getBuildingSites();
 
     forceExpansion(player, world);
     runUntilMilitaryBuildingSiteFound(em, curPlayer, world, bldSites);
@@ -470,13 +470,13 @@ BOOST_FIXTURE_TEST_CASE(ExpandWhenNoSpace, BiggerWorldWithGCExecution)
 
 BOOST_FIXTURE_TEST_CASE(DoNotBuildMilitaryBuildingsWithinComputerBarrier, BiggerWorldWithGCExecution)
 {
-    const auto& player = world.GetPlayer(curPlayer);
-    const auto& bldSites = player.GetBuildingRegister().GetBuildingSites();
+    const auto& player = world.getPlayer(curPlayer);
+    const auto& bldSites = player.getBuildingRegister().getBuildingSites();
 
-    const auto& barrierPt = player.GetHQPos();
+    const auto& barrierPt = player.getHQPos();
     constexpr auto radius = HQ_RADIUS;
 
-    world.SetComputerBarrier(barrierPt, radius);
+    world.setComputerBarrier(barrierPt, radius);
     forceExpansion(player, world);
     runUntilMilitaryBuildingSiteFound(em, curPlayer, world, bldSites);
 
@@ -486,15 +486,15 @@ BOOST_FIXTURE_TEST_CASE(DoNotBuildMilitaryBuildingsWithinComputerBarrier, Bigger
 
 BOOST_FIXTURE_TEST_CASE(DoBuildMilitaryBuildingsOutsideComputerBarrier, BiggerWorldWithGCExecution)
 {
-    const auto& player = world.GetPlayer(curPlayer);
-    const auto& bldSites = player.GetBuildingRegister().GetBuildingSites();
+    const auto& player = world.getPlayer(curPlayer);
+    const auto& bldSites = player.getBuildingRegister().getBuildingSites();
 
-    auto barrierPt = player.GetHQPos();
+    auto barrierPt = player.getHQPos();
     // move barrier 2 tiles west of HQ, now military buildings should be buildable to the east
     barrierPt.x -= 2;
     constexpr auto radius = HQ_RADIUS;
 
-    world.SetComputerBarrier(barrierPt, radius);
+    world.setComputerBarrier(barrierPt, radius);
     forceExpansion(player, world);
     runUntilMilitaryBuildingSiteFound(em, curPlayer, world, bldSites);
 
@@ -505,8 +505,8 @@ BOOST_FIXTURE_TEST_CASE(DoBuildMilitaryBuildingsOutsideComputerBarrier, BiggerWo
         BOOST_TEST_REQUIRE(!world.CheckPointsInRadius(
           barrierPt, radius,
           [bldSite](const MapPoint& pt, unsigned) {
-              const auto type = bldSite->GetBuildingType();
-              return (type == BuildingType::Barracks || type == BuildingType::Guardhouse) && pt == bldSite->GetPos();
+              const auto type = bldSite->getBuildingType();
+              return (type == BuildingType::Barracks || type == BuildingType::Guardhouse) && pt == bldSite->getPos();
           },
           true));
 }

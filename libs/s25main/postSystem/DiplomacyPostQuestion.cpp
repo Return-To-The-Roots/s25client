@@ -11,7 +11,7 @@
 DiplomacyPostQuestion::DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id,
                                              const GamePlayerInfo& otherPlayer, int duration)
     : PostMsg(sendFrame, "", PostCategory::Diplomacy), acceptOrCancel(true), pact(pact), pactId(id),
-      player(otherPlayer.GetPlayerId())
+      player(otherPlayer.getPlayerId())
 {
     std::string text =
       boost::str(boost::format(_("The player '%s' offers you a %s.")) % otherPlayer.name % _(PACT_NAMES[pact])) + "\n";
@@ -21,16 +21,16 @@ DiplomacyPostQuestion::DiplomacyPostQuestion(unsigned sendFrame, PactType pact, 
         text += boost::str(boost::format(_("Duration: %d GF (%s)")) % duration
                            % GAMECLIENT.FormatGFTime(static_cast<unsigned>(duration)));
 
-    SetText(text);
+    setText(text);
 }
 
 DiplomacyPostQuestion::DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id,
                                              const GamePlayerInfo& otherPlayer)
     : PostMsg(sendFrame, "", PostCategory::Diplomacy), acceptOrCancel(false), pact(pact), pactId(id),
-      player(otherPlayer.GetPlayerId())
+      player(otherPlayer.getPlayerId())
 {
     std::string text =
       boost::str(boost::format(_("The player '%s' want to cancel the '%s' between you both prematurely. Do you agree?"))
                  % otherPlayer.name % _(PACT_NAMES[pact]));
-    SetText(text);
+    setText(text);
 }

@@ -15,5 +15,5 @@ public:
     /// Creates the message.
     /// Note: Ship object might get invalidated after this call so do not store!
     ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship);
-    ITexture* GetImage_() const override;
+    ITexture* getImage() const override;
 };

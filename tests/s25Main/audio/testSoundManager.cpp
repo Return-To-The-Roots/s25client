@@ -39,7 +39,7 @@ public:
     // LCOV_EXCL_START
     void Draw(DrawPoint) override {}
     void Destroy() override {}
-    GO_Type GetGOT() const override { return GO_Type::Animal; }
+    GO_Type getGOT() const override { return GO_Type::Animal; }
     // LCOV_EXCL_STOP
 };
 
@@ -56,7 +56,7 @@ struct LoadMockupAudioWithSounds : LoadMockupAudio
             f << "Test";
         }
         BOOST_TEST_REQUIRE(LOADER.Load(soundPath));
-        libsiedler2::Archiv& sounds = LOADER.GetArchive("sound");
+        libsiedler2::Archiv& sounds = LOADER.getArchive("sound");
         sounds.alloc(115);
         for(int i = 50; i < 115; ++i)
             sounds.set(i, std::make_unique<DummyEffect>());
@@ -129,20 +129,20 @@ BOOST_FIXTURE_TEST_CASE(OceanSounds, LoadMockupAudioWithSounds)
 
         // Play on 10% water
         int volume = -1;
-        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).once().with(EffectPlayId::Invalid).returns(false);
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().with(EffectPlayId::Invalid).returns(false);
         MOCK_EXPECT(audioDriverMock->doPlayEffect).once().with(mock::any, mock::retrieve(volume), true).returns(0);
         manager.playOceanBrawling(10);
         mock::verify();
         BOOST_TEST(volume > 0);
 
         // If already playing don't change it or play again, just adjust volume
-        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).once().returns(true);
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(true);
         MOCK_EXPECT(audioDriverMock->ChangeVolume).once().with(mock::any, volume);
         manager.playOceanBrawling(10);
         mock::verify();
 
         // More water -> Sound gets louder
-        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).once().returns(true);
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(true);
         int oldVolume = volume;
         MOCK_EXPECT(audioDriverMock->ChangeVolume).once().with(mock::any, mock::retrieve(volume));
         manager.playOceanBrawling(20);
@@ -150,7 +150,7 @@ BOOST_FIXTURE_TEST_CASE(OceanSounds, LoadMockupAudioWithSounds)
         BOOST_TEST(volume > oldVolume);
 
         // Max volume
-        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).once().returns(true);
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(true);
         oldVolume = volume;
         MOCK_EXPECT(audioDriverMock->ChangeVolume).once().with(mock::any, mock::retrieve(volume));
         manager.playOceanBrawling(100);
@@ -164,13 +164,13 @@ BOOST_FIXTURE_TEST_CASE(OceanSounds, LoadMockupAudioWithSounds)
         mock::verify();
 
         // Play again after old effect was stopped
-        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).once().returns(false);
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(false);
         MOCK_EXPECT(audioDriverMock->doPlayEffect).once().returns(1);
         manager.playOceanBrawling(10);
         mock::verify();
 
         // Trigger a known bug in SDL_mixer where IsEffectPlaying might wrongly return false but effect is still playing
-        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).once().returns(false);
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(false);
         MOCK_EXPECT(audioDriverMock->doStopEffect).once(); // It should make sure the effect is actually stopped
         MOCK_EXPECT(audioDriverMock->doPlayEffect).once().returns(1);
         manager.playOceanBrawling(10);
@@ -224,12 +224,12 @@ BOOST_FIXTURE_TEST_CASE(AnimalSounds, LoadMockupAudioWithSounds)
         {
             // All previously added sounds are checked
             if(i)
-                MOCK_EXPECT(audioDriverMock->IsEffectPlaying).exactly(i).returns(true);
+                MOCK_EXPECT(audioDriverMock->isEffectPlaying).exactly(i).returns(true);
             manager.playAnimalSound(50);
             ++channel;
         }
         // Do not play the same sound again
-        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).exactly(SoundManager::maxPlayCtPerSound).returns(true);
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).exactly(SoundManager::maxPlayCtPerSound).returns(true);
         manager.playAnimalSound(50);
         mock::verify();
 
@@ -240,8 +240,8 @@ BOOST_FIXTURE_TEST_CASE(AnimalSounds, LoadMockupAudioWithSounds)
 
         // If one sound has ended, we can play another one
         MOCK_EXPECT(audioDriverMock->doPlayEffect).once().returns(channel++);
-        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).once().returns(false);
-        MOCK_EXPECT(audioDriverMock->IsEffectPlaying).exactly(SoundManager::maxPlayCtPerSound - 1u).returns(true);
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(false);
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).exactly(SoundManager::maxPlayCtPerSound - 1u).returns(true);
         manager.playAnimalSound(50);
         mock::verify();
 

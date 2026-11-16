@@ -42,8 +42,8 @@ const unsigned short TREATIE_BUTTON_SPACE = 20;
 
 iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_DIPLOMACY, IngameWindow::posLastOrCenter,
-                   Extent(500, FIRST_LINE_Y + gwv.GetWorld().GetNumPlayers() * (CELL_HEIGHT + SPACE_HEIGHT) + 20),
-                   _("Diplomacy"), LOADER.GetImageN("resource", 41)),
+                   Extent(500, FIRST_LINE_Y + gwv.getWorld().getNumPlayers() * (CELL_HEIGHT + SPACE_HEIGHT) + 20),
+                   _("Diplomacy"), LOADER.getImageN("resource", 41)),
       gwv(gwv), gcFactory(gcFactory)
 {
     // "Header" der Tabelle
@@ -53,9 +53,9 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
             FontStyle::CENTER, NormalFont);
 
     DrawPoint curTxtPos(LINE_DISTANCE_TO_MARGINS + 10, FIRST_LINE_Y + CELL_HEIGHT / 2 - CELL_HEIGHT - SPACE_HEIGHT);
-    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < gwv.getWorld().getNumPlayers(); ++i)
     {
-        const GamePlayer& player = gwv.GetWorld().GetPlayer(i);
+        const GamePlayer& player = gwv.getWorld().getPlayer(i);
         curTxtPos.y += CELL_HEIGHT + SPACE_HEIGHT;
         if(!player.isUsed())
             continue;
@@ -70,26 +70,26 @@ iwDiplomacy::iwDiplomacy(const GameWorldViewer& gwv, GameCommandFactory& gcFacto
         }
 
         // An sich selber braucht man keine Bündnisse zu schließen
-        if(gwv.GetPlayerId() == i)
+        if(gwv.getPlayerId() == i)
             continue;
         // Bündnisvertrag-Button
-        glArchivItem_Bitmap* image = LOADER.GetImageN("io", 61);
+        glArchivItem_Bitmap* image = LOADER.getImageN("io", 61);
         Extent btSize(40, 40);
         DrawPoint btPos(LINE_DISTANCE_TO_MARGINS + TREATIES_POS - TREATIE_BUTTON_SPACE / 2 - (image->getWidth() + 8),
                         curTxtPos.y - btSize.y / 2);
         ctrlButton* button = AddImageButton(300 + i, btPos, btSize, TextureColor::Grey, image, _("Treaty of alliance"));
 
         // Verbleibende Zeit unter dem Button
-        DrawPoint remainingTimePos = button->GetPos() + DrawPoint(btSize.x / 2, btSize.y + 4);
+        DrawPoint remainingTimePos = button->getPos() + DrawPoint(btSize.x / 2, btSize.y + 4);
         AddText(500 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
 
         // Nichtangriffspakt
-        image = LOADER.GetImageN("io", 100);
+        image = LOADER.getImageN("io", 100);
         btPos.x = LINE_DISTANCE_TO_MARGINS + TREATIES_POS + TREATIE_BUTTON_SPACE / 2;
         button = AddImageButton(400 + i, btPos, btSize, TextureColor::Grey, image, _("Non-aggression pact"));
 
         // Verbleibende Zeit unter dem Button
-        remainingTimePos = button->GetPos() + DrawPoint(btSize.x / 2, btSize.y + 4);
+        remainingTimePos = button->getPos() + DrawPoint(btSize.x / 2, btSize.y + 4);
         AddText(600 + i, remainingTimePos, "", COLOR_YELLOW, FontStyle::CENTER, SmallFont);
     }
     // Farben festlegen
@@ -103,45 +103,45 @@ void iwDiplomacy::msgPaintBefore()
 
     IngameWindow::msgPaintBefore();
     // Die farbigen Zeilen malen
-    DrawPoint curPos = GetDrawPos() + DrawPoint(LINE_DISTANCE_TO_MARGINS, FIRST_LINE_Y);
-    Rect curRect(curPos, Extent(GetSize().x - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT));
-    for(unsigned i = 0; i < gwv.GetWorld().GetNumPlayers(); ++i)
+    DrawPoint curPos = getDrawPos() + DrawPoint(LINE_DISTANCE_TO_MARGINS, FIRST_LINE_Y);
+    Rect curRect(curPos, Extent(getSize().x - 2 * LINE_DISTANCE_TO_MARGINS, CELL_HEIGHT));
+    for(unsigned i = 0; i < gwv.getWorld().getNumPlayers(); ++i)
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
-        DrawRectangle(curRect, SetAlpha(gwv.GetWorld().GetPlayer(i).color, 0x40));
+        DrawRectangle(curRect, SetAlpha(gwv.getWorld().getPlayer(i).color, 0x40));
         curRect.move(DrawPoint(0, CELL_HEIGHT + SPACE_HEIGHT));
 
         // Farben der Bündnis-Buttons setzen, je nachdem wie der Status ist
 
         // Existiert der Button auch?
-        auto* button = GetCtrl<ctrlImageButton>(300 + i);
+        auto* button = getCtrl<ctrlImageButton>(300 + i);
         // Bündnisvertrag
         if(button)
             // Farbe je nach Bündnisstatus setzen
-            button->SetModulationColor(PACT_COLORS[gwv.GetPlayer().GetPactState(PactType::TreatyOfAlliance, i)]);
+            button->setModulationColor(PACT_COLORS[gwv.getPlayer().getPactState(PactType::TreatyOfAlliance, i)]);
         // Nicht-Angriffspakt
-        button = GetCtrl<ctrlImageButton>(400 + i);
+        button = getCtrl<ctrlImageButton>(400 + i);
         if(button)
             // Farbe je nach Bündnisstatus setzen
-            button->SetModulationColor(PACT_COLORS[gwv.GetPlayer().GetPactState(PactType::NonAgressionPact, i)]);
+            button->setModulationColor(PACT_COLORS[gwv.getPlayer().getPactState(PactType::NonAgressionPact, i)]);
 
         // Ggf. Ping aktualisieren
-        if(auto* pingfield = GetCtrl<ctrlTextDeepening>(200 + i))
-            pingfield->SetText(helpers::toString(gwv.GetWorld().GetPlayer(i).ping));
+        if(auto* pingfield = getCtrl<ctrlTextDeepening>(200 + i))
+            pingfield->setText(helpers::toString(gwv.getWorld().getPlayer(i).ping));
 
         // Verbleibende Zeit der Bündnisse in den Text-Ctrls anzeigen
-        if(GetCtrl<ctrlText>(500 + i))
+        if(getCtrl<ctrlText>(500 + i))
         {
             for(unsigned z = 0; z < 2; ++z)
             {
-                unsigned duration = gwv.GetPlayer().GetRemainingPactTime(PactType(z), i);
+                unsigned duration = gwv.getPlayer().getRemainingPactTime(PactType(z), i);
                 // Überhaupt ein Bündnis abgeschlossen und Bündnis nicht für die Ewigkeit?
                 if(duration > 0 && duration != DURATION_INFINITE)
                     // Dann entsprechende Zeit setzen
-                    GetCtrl<ctrlText>(500 + z * 100 + i)->SetText(GAMECLIENT.FormatGFTime(duration));
+                    getCtrl<ctrlText>(500 + z * 100 + i)->setText(GAMECLIENT.FormatGFTime(duration));
                 else
                     // Ansonsten leer
-                    GetCtrl<ctrlText>(500 + z * 100 + i)->SetText("");
+                    getCtrl<ctrlText>(500 + z * 100 + i)->setText("");
             }
         }
     }
@@ -149,7 +149,7 @@ void iwDiplomacy::msgPaintBefore()
 
 void iwDiplomacy::msgButtonClick(const unsigned ctrl_id)
 {
-    if(gwv.GetWorld().GetGGS().lockedTeams)
+    if(gwv.getWorld().getGGS().lockedTeams)
     {
         WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
           _("Teams locked"), _("As the teams are locked, you cannot make treaties of any kind."), nullptr,
@@ -162,10 +162,10 @@ void iwDiplomacy::msgButtonClick(const unsigned ctrl_id)
     {
         auto playerId = static_cast<unsigned char>(ctrl_id - 300);
         // Noch kein Bündnis abgeschlossen?
-        if(gwv.GetPlayer().GetPactState(PactType::TreatyOfAlliance, playerId) == PactState::None)
+        if(gwv.getPlayer().getPactState(PactType::TreatyOfAlliance, playerId) == PactState::None)
             // Dann neues Bündnis vorschlagen
             WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSuggestPact>(PactType::TreatyOfAlliance,
-                                                                        gwv.GetWorld().GetPlayer(playerId), gcFactory));
+                                                                        gwv.getWorld().getPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
             gcFactory.CancelPact(PactType::TreatyOfAlliance, playerId);
@@ -175,10 +175,10 @@ void iwDiplomacy::msgButtonClick(const unsigned ctrl_id)
     {
         auto playerId = static_cast<unsigned char>(ctrl_id - 400);
         // Noch kein Bündnis abgeschlossen?
-        if(gwv.GetPlayer().GetPactState(PactType::NonAgressionPact, playerId) == PactState::None)
+        if(gwv.getPlayer().getPactState(PactType::NonAgressionPact, playerId) == PactState::None)
             // Dann neues Bündnis vorschlagen
             WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSuggestPact>(PactType::NonAgressionPact,
-                                                                        gwv.GetWorld().GetPlayer(playerId), gcFactory));
+                                                                        gwv.getWorld().getPlayer(playerId), gcFactory));
         else
             // ansonsten Vertrag versuchen abzubrechen
             gcFactory.CancelPact(PactType::NonAgressionPact, playerId);
@@ -204,15 +204,15 @@ const std::array<const char*, NUM_DURATIONS> DURATION_NAMES = {gettext_noop("Sho
 
 iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCommandFactory& gcFactory)
     : IngameWindow(CGI_SUGGESTPACT, IngameWindow::posLastOrCenter, Extent(320, 215), _(PACT_TITLES[pt]),
-                   LOADER.GetImageN("resource", 41)),
+                   LOADER.getImageN("resource", 41)),
       pt(pt), player(player), gcFactory(gcFactory)
 {
     glArchivItem_Bitmap* image = nullptr;
 
     switch(pt)
     {
-        case PactType::TreatyOfAlliance: image = LOADER.GetImageN("io", 61); break;
-        case PactType::NonAgressionPact: image = LOADER.GetImageN("io", 100); break;
+        case PactType::TreatyOfAlliance: image = LOADER.getImageN("io", 61); break;
+        case PactType::NonAgressionPact: image = LOADER.getImageN("io", 100); break;
     }
 
     // Bild als Orientierung, welchen Vertrag wir gerade bearbeiten
@@ -232,7 +232,7 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
         combo->AddItem(helpers::format("%s  (%s)", DURATION_NAMES[i], GAMECLIENT.FormatGFTime(DURATIONS[i])));
     }
     // Erstes Item in der Combobox vorerst auswählen
-    combo->SetSelection(0);
+    combo->setSelection(0);
 
     // Option "ewig" noch hinzufügen
     combo->AddItem(_("Eternal"));
@@ -243,8 +243,8 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
 void iwSuggestPact::msgButtonClick(const unsigned /*ctrl_id*/)
 {
     /// Dauer auswählen (wenn id == NUM_DURATIONS, dann "für alle Ewigkeit" ausgewählt)
-    const unsigned selected_id = GetCtrl<ctrlComboBox>(6)->GetSelection().value();
+    const unsigned selected_id = getCtrl<ctrlComboBox>(6)->getSelection().value();
     const unsigned duration = (selected_id == NUM_DURATIONS) ? DURATION_INFINITE : DURATIONS[selected_id];
-    if(gcFactory.SuggestPact(player.GetPlayerId(), this->pt, duration))
+    if(gcFactory.SuggestPact(player.getPlayerId(), this->pt, duration))
         Close();
 }

@@ -20,7 +20,7 @@ constexpr unsigned MAX_PRODUCTION_PERCENT = 100;
 constexpr unsigned S4LIKE_FULL_PRODUCTIVITY_RESOURCE_AMOUNT = 20;
 } // namespace
 
-AddonId GetMineResourceBehaviorAddonId(const BuildingType buildingType)
+AddonId getMineResourceBehaviorAddonId(const BuildingType buildingType)
 {
     switch(buildingType)
     {
@@ -31,7 +31,7 @@ AddonId GetMineResourceBehaviorAddonId(const BuildingType buildingType)
     }
 }
 
-ResourceType GetMineResourceType(const BuildingType buildingType)
+ResourceType getMineResourceType(const BuildingType buildingType)
 {
     switch(buildingType)
     {
@@ -42,7 +42,7 @@ ResourceType GetMineResourceType(const BuildingType buildingType)
     }
 }
 
-GoodType GetMineOutput(const BuildingType buildingType)
+GoodType getMineOutput(const BuildingType buildingType)
 {
     switch(buildingType)
     {
@@ -65,34 +65,34 @@ helpers::OptionalEnum<BuildingType> GetMineBuildingType(const ResourceType resou
     }
 }
 
-unsigned GetRemainingMineResources(const GameWorld& world, const MapPoint pos, const ResourceType resourceType)
+unsigned getRemainingMineResources(const GameWorld& world, const MapPoint pos, const ResourceType resourceType)
 {
     unsigned resourceAmount = 0;
     const auto resourcePts = world.GetMatchingPointsInRadius(
       pos, MINER_RADIUS,
-      [&world, resourceType](const MapPoint pt) { return world.GetNode(pt).resources.has(resourceType); }, true);
+      [&world, resourceType](const MapPoint pt) { return world.getNode(pt).resources.has(resourceType); }, true);
     for(const MapPoint pt : resourcePts)
-        resourceAmount += world.GetNode(pt).resources.getAmount();
+        resourceAmount += world.getNode(pt).resources.getAmount();
     return resourceAmount;
 }
 
-unsigned GetS4LikeMineProductionChance(const unsigned remainingMatchingResources)
+unsigned getS4LikeMineProductionChance(const unsigned remainingMatchingResources)
 {
     const unsigned chancePercent =
       remainingMatchingResources * MAX_PRODUCTION_PERCENT / S4LIKE_FULL_PRODUCTIVITY_RESOURCE_AMOUNT;
     return std::min(MAX_PRODUCTION_PERCENT, chancePercent);
 }
 
-MineResourceBehavior GetMineResourceBehavior(const GlobalGameSettings& settings, const BuildingType buildingType)
+MineResourceBehavior getMineResourceBehavior(const GlobalGameSettings& settings, const BuildingType buildingType)
 {
-    const unsigned selection = settings.getSelection(GetMineResourceBehaviorAddonId(buildingType));
+    const unsigned selection = settings.getSelection(getMineResourceBehaviorAddonId(buildingType));
     if(!helpers::isValidEnumValue<MineResourceBehavior>(selection))
         return MineResourceBehavior::Default;
     return static_cast<MineResourceBehavior>(selection);
 }
 
-bool IsMineResourceDepletable(const GlobalGameSettings& settings, const BuildingType buildingType)
+bool isMineResourceDepletable(const GlobalGameSettings& settings, const BuildingType buildingType)
 {
-    const MineResourceBehavior behavior = GetMineResourceBehavior(settings, buildingType);
+    const MineResourceBehavior behavior = getMineResourceBehavior(settings, buildingType);
     return behavior == MineResourceBehavior::Default || behavior == MineResourceBehavior::S4LikeExhaustion;
 }

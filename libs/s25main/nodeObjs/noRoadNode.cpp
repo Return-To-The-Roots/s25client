@@ -31,7 +31,7 @@ void noRoadNode::Serialize(SerializedGameData& sgd) const
     sgd.PushUnsignedChar(player);
 
     // the trick only seems to work for flags
-    if(this->GetGOT() == GO_Type::Flag)
+    if(this->getGOT() == GO_Type::Flag)
     {
         // this is a trick:
         // -> initialize routes for flag with nullptr
@@ -58,29 +58,29 @@ noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id)
 
 void noRoadNode::UpgradeRoad(const Direction dir) const
 {
-    if(GetRoute(dir))
-        GetRoute(dir)->UpgradeDonkeyRoad();
+    if(getRoute(dir))
+        getRoute(dir)->UpgradeDonkeyRoad();
 }
 
 void noRoadNode::DestroyRoad(const Direction dir)
 {
-    RoadSegment* route = GetRoute(dir);
+    RoadSegment* route = getRoute(dir);
     if(!route)
         return;
-    MapPoint t = route->GetF1()->GetPos();
+    MapPoint t = route->getF1()->getPos();
     for(unsigned z = 0; z < route->GetLength(); ++z)
     {
-        world->SetPointRoad(t, route->GetRoute(z), PointRoad::None);
+        world->setPointRoad(t, route->getRoute(z), PointRoad::None);
         world->RecalcBQForRoad(t);
-        t = world->GetNeighbour(t, route->GetRoute(z));
+        t = world->getNeighbour(t, route->getRoute(z));
     }
 
     noRoadNode* otherFlag;
 
-    if(route->GetF1() == this)
-        otherFlag = route->GetF2();
+    if(route->getF1() == this)
+        otherFlag = route->getF2();
     else
-        otherFlag = route->GetF1();
+        otherFlag = route->getF1();
 
     for(const auto z : helpers::EnumRange<Direction>{})
     {
@@ -91,13 +91,13 @@ void noRoadNode::DestroyRoad(const Direction dir)
         }
     }
 
-    SetRoute(dir, nullptr);
+    setRoute(dir, nullptr);
 
     route->Destroy();
     delete route;
 
     // Spieler Bescheid sagen
-    world->GetPlayer(player).RoadDestroyed();
+    world->getPlayer(player).RoadDestroyed();
 }
 
 /// Vernichtet Alle Straße um diesen Knoten

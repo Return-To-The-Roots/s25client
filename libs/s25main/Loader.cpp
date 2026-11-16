@@ -87,143 +87,143 @@ void Loader::initResourceFolders(const std::vector<Nation>& usedNations, const s
     addDefaultResourceFolders(config_, *archiveLocator_, usedNations, enabledAddons);
 }
 
-glArchivItem_Bitmap* Loader::GetImageN(const ResourceId& file, unsigned nr)
+glArchivItem_Bitmap* Loader::getImageN(const ResourceId& file, unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap*>(files_[file].archive[nr]);
 }
 
-ITexture* Loader::GetTextureN(const ResourceId& file, unsigned nr)
+ITexture* Loader::getTextureN(const ResourceId& file, unsigned nr)
 {
     return convertChecked<ITexture*>(files_[file].archive[nr]);
 }
 
-glArchivItem_Bitmap* Loader::GetImage(const ResourceId& file, const std::string& name)
+glArchivItem_Bitmap* Loader::getImage(const ResourceId& file, const std::string& name)
 {
     return convertChecked<glArchivItem_Bitmap*>(files_[file].archive.find(name));
 }
 
-glArchivItem_Bitmap_Player* Loader::GetPlayerImage(const ResourceId& file, unsigned nr)
+glArchivItem_Bitmap_Player* Loader::getPlayerImage(const ResourceId& file, unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap_Player*>(files_[file].archive[nr]);
 }
 
-glFont* Loader::GetFont(FontSize size)
+glFont* Loader::getFont(FontSize size)
 {
     return fonts.empty() ? nullptr : &fonts[static_cast<unsigned>(size)];
 }
 
-libsiedler2::ArchivItem_Palette* Loader::GetPaletteN(const ResourceId& file, unsigned nr)
+libsiedler2::ArchivItem_Palette* Loader::getPaletteN(const ResourceId& file, unsigned nr)
 {
     return dynamic_cast<libsiedler2::ArchivItem_Palette*>(files_[file].archive[nr]);
 }
 
-SoundEffectItem* Loader::GetSoundN(const ResourceId& file, unsigned nr)
+SoundEffectItem* Loader::getSoundN(const ResourceId& file, unsigned nr)
 {
     return dynamic_cast<SoundEffectItem*>(files_[file].archive[nr]);
 }
 
-std::string Loader::GetTextN(const ResourceId& file, unsigned nr)
+std::string Loader::getTextN(const ResourceId& file, unsigned nr)
 {
     auto* archive = dynamic_cast<libsiedler2::ArchivItem_Text*>(files_[file].archive[nr]);
     return archive ? archive->getText() : "text missing";
 }
 
-libsiedler2::Archiv& Loader::GetArchive(const ResourceId& file)
+libsiedler2::Archiv& Loader::getArchive(const ResourceId& file)
 {
     RTTR_Assert(helpers::contains(files_, file));
     return files_[file].archive;
 }
 
-glArchivItem_Bob* Loader::GetBob(const ResourceId& file)
+glArchivItem_Bob* Loader::getBob(const ResourceId& file)
 {
     return dynamic_cast<glArchivItem_Bob*>(files_[file].archive.get(0));
 }
 
-glArchivItem_BitmapBase* Loader::GetNationImageN(Nation nation, unsigned nr)
+glArchivItem_BitmapBase* Loader::getNationImageN(Nation nation, unsigned nr)
 {
     return dynamic_cast<glArchivItem_BitmapBase*>(nation_gfx[nation]->get(nr));
 }
 
-glArchivItem_Bitmap* Loader::GetNationImage(Nation nation, unsigned nr)
+glArchivItem_Bitmap* Loader::getNationImage(Nation nation, unsigned nr)
 {
-    return checkedCast<glArchivItem_Bitmap*>(GetNationImageN(nation, nr));
+    return checkedCast<glArchivItem_Bitmap*>(getNationImageN(nation, nr));
 }
 
-glArchivItem_Bitmap* Loader::GetNationIcon(Nation nation, BuildingType bld)
+glArchivItem_Bitmap* Loader::getNationIcon(Nation nation, BuildingType bld)
 {
     if(bld == BuildingType::Charburner)
-        return LOADER.GetImageN("charburner", rttr::enum_cast(nation) * 8 + 8);
+        return LOADER.getImageN("charburner", rttr::enum_cast(nation) * 8 + 8);
     else
         return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
 }
 
-ITexture* Loader::GetBuildingTex(Nation nation, BuildingType bld)
+ITexture* Loader::getBuildingTex(Nation nation, BuildingType bld)
 {
     if(bld == BuildingType::Charburner)
     {
         unsigned id = rttr::enum_cast(nation) * 8;
-        return GetImageN("charburner", id + (isWinterGFX_ ? 6 : 1));
+        return getImageN("charburner", id + (isWinterGFX_ ? 6 : 1));
     } else
-        return checkedCast<ITexture*>(GetNationImage(nation, 250 + rttr::enum_cast(bld) * 5));
+        return checkedCast<ITexture*>(getNationImage(nation, 250 + rttr::enum_cast(bld) * 5));
     return nullptr;
 }
 
-glArchivItem_Bitmap_Player* Loader::GetNationPlayerImage(Nation nation, unsigned nr)
+glArchivItem_Bitmap_Player* Loader::getNationPlayerImage(Nation nation, unsigned nr)
 {
-    return checkedCast<glArchivItem_Bitmap_Player*>(GetNationImageN(nation, nr));
+    return checkedCast<glArchivItem_Bitmap_Player*>(getNationImageN(nation, nr));
 }
 
-glArchivItem_Bitmap* Loader::GetMapImage(unsigned nr)
+glArchivItem_Bitmap* Loader::getMapImage(unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap*>(map_gfx->get(nr));
 }
 
-ITexture* Loader::GetMapTexture(unsigned nr)
+ITexture* Loader::getMapTexture(unsigned nr)
 {
     return convertChecked<ITexture*>(map_gfx->get(nr));
 }
 
-ITexture* Loader::GetWareTex(GoodType ware)
+ITexture* Loader::getWareTex(GoodType ware)
 {
     if(wineaddon::isWineAddonGoodType(ware))
-        return wineaddon::GetWareTex(ware);
+        return wineaddon::getWareTex(ware);
     else if(leatheraddon::isLeatherAddonGoodType(ware))
-        return leatheraddon::GetWareTex(ware);
+        return leatheraddon::getWareTex(ware);
     else
-        return GetMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+        return getMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware));
 }
 
-ITexture* Loader::GetWareStackTex(GoodType ware)
+ITexture* Loader::getWareStackTex(GoodType ware)
 {
     if(wineaddon::isWineAddonGoodType(ware))
-        return wineaddon::GetWareStackTex(ware);
+        return wineaddon::getWareStackTex(ware);
     else if(leatheraddon::isLeatherAddonGoodType(ware))
-        return leatheraddon::GetWareStackTex(ware);
+        return leatheraddon::getWareStackTex(ware);
     else
-        return GetMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+        return getMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
 }
 
-ITexture* Loader::GetWareDonkeyTex(GoodType ware)
+ITexture* Loader::getWareDonkeyTex(GoodType ware)
 {
     if(wineaddon::isWineAddonGoodType(ware))
-        return wineaddon::GetWareDonkeyTex(ware);
+        return wineaddon::getWareDonkeyTex(ware);
     if(leatheraddon::isLeatherAddonGoodType(ware))
-        return leatheraddon::GetWareDonkeyTex(ware);
+        return leatheraddon::getWareDonkeyTex(ware);
     else
-        return GetMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+        return getMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
 }
 
-ITexture* Loader::GetJobTex(Job job)
+ITexture* Loader::getJobTex(Job job)
 {
     if(wineaddon::isWineAddonJobType(job))
-        return wineaddon::GetJobTex(job);
+        return wineaddon::getJobTex(job);
     else if(leatheraddon::isLeatherAddonJobType(job))
-        return leatheraddon::GetJobTex(job);
+        return leatheraddon::getJobTex(job);
     else
-        return (job == Job::CharBurner) ? GetTextureN("io_new", 5) : GetMapTexture(2300 + rttr::enum_cast(job));
+        return (job == Job::CharBurner) ? getTextureN("io_new", 5) : getMapTexture(2300 + rttr::enum_cast(job));
 }
 
-glArchivItem_Bitmap_Player* Loader::GetMapPlayerImage(unsigned nr)
+glArchivItem_Bitmap_Player* Loader::getMapPlayerImage(unsigned nr)
 {
     return convertChecked<glArchivItem_Bitmap_Player*>(map_gfx->get(nr));
 }
@@ -276,7 +276,7 @@ bool Loader::LoadSounds()
     logger_.write(_("Starting sound conversion: "));
     try
     {
-        convertSounds(GetArchive("sound"), config_.ExpandPath(s25::files::soundScript));
+        convertSounds(getArchive("sound"), config_.ExpandPath(s25::files::soundScript));
     } catch(const std::runtime_error& e)
     {
         logger_.write(_("failed: %1%\n")) % e.what();
@@ -317,10 +317,10 @@ bool Loader::LoadSounds()
 
 bool Loader::LoadFonts()
 {
-    if(!Load(ResourceId("fonts"), GetPaletteN("pal5")))
+    if(!Load(ResourceId("fonts"), getPaletteN("pal5")))
         return false;
     fonts.clear();
-    const auto& loadedFonts = GetArchive("fonts");
+    const auto& loadedFonts = getArchive("fonts");
     for(const auto i : helpers::enumRange<FontSize>())
     {
         const auto* curFont = dynamic_cast<const libsiedler2::ArchivItem_Font*>(loadedFonts[rttr::enum_cast(i)]);
@@ -381,7 +381,7 @@ void Loader::LoadDummyGUIFiles()
         io_new.push(std::move(bmp));
     }
     // Fonts
-    auto* palette = GetPaletteN("colors");
+    auto* palette = getPaletteN("colors");
     libsiedler2::PixelBufferBGRA buffer(15, 16);
     for(const auto i : helpers::enumRange<FontSize>())
     {
@@ -508,7 +508,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
                                       res::boot_z,   res::mis0bobs, res::mis1bobs, res::mis2bobs,
                                       res::mis3bobs, res::mis4bobs, res::mis5bobs};
 
-    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
+    const libsiedler2::ArchivItem_Palette* pal5 = getPaletteN("pal5");
 
     if(!LoadFiles(files) || !Load(ResourceId("map_new"), pal5))
         return false;
@@ -537,7 +537,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
     if(!Load(mapGFXFile, pal5))
         return false;
-    map_gfx = &GetArchive(ResourceId::make(mapGFXFile));
+    map_gfx = &getArchive(ResourceId::make(mapGFXFile));
 
     isWinterGFX_ = isWinterGFX;
 
@@ -546,7 +546,7 @@ bool Loader::LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
 bool Loader::LoadFiles(const std::vector<std::string>& files)
 {
-    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
+    const libsiedler2::ArchivItem_Palette* pal5 = getPaletteN("pal5");
     // load the files
     for(const std::string& curFile : files)
     {
@@ -563,7 +563,7 @@ bool Loader::LoadFiles(const std::vector<std::string>& files)
 
 bool Loader::LoadResources(const std::vector<ResourceId>& resources)
 {
-    const libsiedler2::ArchivItem_Palette* pal5 = GetPaletteN("pal5");
+    const libsiedler2::ArchivItem_Palette* pal5 = getPaletteN("pal5");
     for(const ResourceId& curResource : resources)
     {
         if(!Load(curResource, pal5))
@@ -591,17 +591,17 @@ void Loader::fillCaches()
 
                 bmp.reset();
 
-                bmp.add(GetMapImage(ANIMALCONSTS[species].walking_id
+                bmp.add(getMapImage(ANIMALCONSTS[species].walking_id
                                     + ANIMALCONSTS[species].animation_steps * rttr::enum_cast(dir + 3u) + ani_step));
 
                 if(ANIMALCONSTS[species].shadow_id)
                 {
                     if(species == Species::Duck)
                         // Ente Sonderfall, da gibts nur einen Schatten für jede Richtung!
-                        bmp.addShadow(GetMapImage(ANIMALCONSTS[species].shadow_id));
+                        bmp.addShadow(getMapImage(ANIMALCONSTS[species].shadow_id));
                     else
                         // ansonsten immer pro Richtung einen Schatten
-                        bmp.addShadow(GetMapImage(ANIMALCONSTS[species].shadow_id + rttr::enum_cast(dir + 3u)));
+                        bmp.addShadow(getMapImage(ANIMALCONSTS[species].shadow_id + rttr::enum_cast(dir + 3u)));
                 }
 
                 stp->add(bmp);
@@ -614,18 +614,18 @@ void Loader::fillCaches()
 
         if(ANIMALCONSTS[species].dead_id)
         {
-            bmp.add(GetMapImage(ANIMALCONSTS[species].dead_id));
+            bmp.add(getMapImage(ANIMALCONSTS[species].dead_id));
 
             if(ANIMALCONSTS[species].shadow_dead_id)
             {
-                bmp.addShadow(GetMapImage(ANIMALCONSTS[species].shadow_dead_id));
+                bmp.addShadow(getMapImage(ANIMALCONSTS[species].shadow_dead_id));
             }
 
             stp->add(bmp);
         }
     }
 
-    glArchivItem_Bob* bob_jobs = GetBob("jobs");
+    glArchivItem_Bob* bob_jobs = getBob("jobs");
     if(!bob_jobs)
         throw std::runtime_error("jobs not found");
 
@@ -646,28 +646,28 @@ void Loader::fillCaches()
             {
                 unsigned id = rttr::enum_cast(nation) * 8;
 
-                sprites.building.add(GetImageN("charburner", id + (isWinterGFX_ ? 6 : 1)));
-                sprites.building.addShadow(GetImageN("charburner", id + 2));
+                sprites.building.add(getImageN("charburner", id + (isWinterGFX_ ? 6 : 1)));
+                sprites.building.addShadow(getImageN("charburner", id + 2));
 
-                sprites.skeleton.add(GetImageN("charburner", id + 3));
-                sprites.skeleton.addShadow(GetImageN("charburner", id + 4));
+                sprites.skeleton.add(getImageN("charburner", id + 3));
+                sprites.skeleton.addShadow(getImageN("charburner", id + 4));
 
-                sprites.door.add(GetImageN("charburner", id + (isWinterGFX_ ? 7 : 5)));
+                sprites.door.add(getImageN("charburner", id + (isWinterGFX_ ? 7 : 5)));
             } else
             {
-                sprites.building.add(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type)));
-                sprites.building.addShadow(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 1));
+                sprites.building.add(getNationImage(nation, 250 + 5 * rttr::enum_cast(type)));
+                sprites.building.addShadow(getNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 1));
                 if(type == BuildingType::Headquarters)
                 {
                     // HQ has no skeleton, but we have a tent that can act as an HQ
-                    sprites.skeleton.add(GetImageN("mis0bobs", 6));
-                    sprites.skeleton.addShadow(GetImageN("mis0bobs", 7));
+                    sprites.skeleton.add(getImageN("mis0bobs", 6));
+                    sprites.skeleton.addShadow(getImageN("mis0bobs", 7));
                 } else
                 {
-                    sprites.skeleton.add(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 2));
-                    sprites.skeleton.addShadow(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 3));
+                    sprites.skeleton.add(getNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 2));
+                    sprites.skeleton.addShadow(getNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 3));
                 }
-                sprites.door.add(GetNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 4));
+                sprites.door.add(getNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 4));
             }
 
             stp->add(sprites.building);
@@ -687,8 +687,8 @@ void Loader::fillCaches()
 
                 bmp.reset();
 
-                bmp.add(GetNationPlayerImage(nation, nr));
-                bmp.addShadow(GetNationImage(nation, nr + 10));
+                bmp.add(getNationPlayerImage(nation, nr));
+                bmp.addShadow(getNationImage(nation, nr + 10));
 
                 stp->add(bmp);
             }
@@ -712,7 +712,7 @@ void Loader::fillCaches()
                     auto overlay =
                       bob_jobs->getOverlay(spriteData.getBobId(Nation(nation)), spriteData.isFat(), imgDir, ani_step);
                     bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(overlay.first), overlay.second);
-                    bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+                    bmp.addShadow(getMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -731,7 +731,7 @@ void Loader::fillCaches()
                 bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(bob_jobs->getBody(true, imgDir, ani_step)));
                 auto overlay = bob_jobs->getOverlay(0, true, imgDir, ani_step);
                 bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(overlay.first), overlay.second);
-                bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+                bmp.addShadow(getMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                 stp->add(bmp);
             }
@@ -741,13 +741,13 @@ void Loader::fillCaches()
             glSmartBitmap& bmp = boundary_stone_cache[nation];
             bmp.reset();
 
-            bmp.add(GetNationPlayerImage(nation, 0));
-            bmp.addShadow(GetNationImage(nation, 1));
+            bmp.add(getNationPlayerImage(nation, 0));
+            bmp.addShadow(getNationImage(nation, 1));
 
             stp->add(bmp);
         }
 
-        libsiedler2::Archiv& romBobs = GetArchive("rom_bobs");
+        libsiedler2::Archiv& romBobs = getArchive("rom_bobs");
         const auto getAlternative = [&romBobs](unsigned id, unsigned altId) {
             auto* bmp = convertChecked<glArchivItem_Bitmap_Player*>(romBobs[id]);
             return bmp ? bmp : convertChecked<glArchivItem_Bitmap_Player*>(romBobs[altId]);
@@ -820,8 +820,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(GetMapImage(200 + type * 15 + ani_step));
-            bmp.addShadow(GetMapImage(350 + type * 15 + ani_step));
+            bmp.add(getMapImage(200 + type * 15 + ani_step));
+            bmp.addShadow(getMapImage(350 + type * 15 + ani_step));
 
             stp->add(bmp);
         }
@@ -836,8 +836,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(GetMapImage(516 + rttr::enum_cast(type) * 6 + size));
-            bmp.addShadow(GetMapImage(616 + rttr::enum_cast(type) * 6 + size));
+            bmp.add(getMapImage(516 + rttr::enum_cast(type) * 6 + size));
+            bmp.addShadow(getMapImage(616 + rttr::enum_cast(type) * 6 + size));
 
             stp->add(bmp);
         }
@@ -852,8 +852,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(GetMapImage(532 + type * 5 + size));
-            bmp.addShadow(GetMapImage(632 + type * 5 + size));
+            bmp.add(getMapImage(532 + type * 5 + size));
+            bmp.addShadow(getMapImage(632 + type * 5 + size));
 
             stp->add(bmp);
         }
@@ -868,8 +868,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(GetMapImage(2000 + rttr::enum_cast(dir + 3u) * 8 + ani_step));
-            bmp.addShadow(GetMapImage(2048 + rttr::enum_cast(dir) % 3));
+            bmp.add(getMapImage(2000 + rttr::enum_cast(dir + 3u) * 8 + ani_step));
+            bmp.addShadow(getMapImage(2048 + rttr::enum_cast(dir) % 3));
 
             stp->add(bmp);
         }
@@ -884,8 +884,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(GetPlayerImage("boat", rttr::enum_cast(dir + 3u) * 8 + ani_step));
-            bmp.addShadow(GetMapImage(2048 + rttr::enum_cast(dir) % 3));
+            bmp.add(getPlayerImage("boat", rttr::enum_cast(dir + 3u) * 8 + ani_step));
+            bmp.addShadow(getMapImage(2048 + rttr::enum_cast(dir) % 3));
 
             stp->add(bmp);
         }
@@ -894,12 +894,12 @@ void Loader::fillCaches()
     wineaddon::fillCache(*stp);
 
     // carrier_cache[ware][direction][animation_step][fat]
-    glArchivItem_Bob* bob_carrier = GetBob("carrier");
+    glArchivItem_Bob* bob_carrier = getBob("carrier");
     if(!bob_carrier)
         throw std::runtime_error("carrier not found");
 
-    libsiedler2::Archiv& wine_bob_carrier = GetArchive("wine_bobs");
-    libsiedler2::Archiv& leather_bob_carrier = GetArchive("leather_bobs");
+    libsiedler2::Archiv& wine_bob_carrier = getArchive("wine_bobs");
+    libsiedler2::Archiv& leather_bob_carrier = getArchive("leather_bobs");
 
     for(bool fat : {true, false})
     {
@@ -944,7 +944,7 @@ void Loader::fillCaches()
                         auto overlay = bob_carrier->getOverlay(id, fat, imgDir, ani_step);
                         bmp.add(dynamic_cast<glArchivItem_Bitmap_Player*>(overlay.first), overlay.second);
                     }
-                    bmp.addShadow(GetMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
+                    bmp.addShadow(getMapImage(900 + static_cast<unsigned>(imgDir) * 8 + ani_step));
 
                     stp->add(bmp);
                 }
@@ -957,9 +957,9 @@ void Loader::fillCaches()
         const unsigned char start_index = 248;
         const unsigned char color_count = 4;
 
-        libsiedler2::ArchivItem_Palette* palette = GetPaletteN("pal5");
-        auto* image = GetMapImage(561);
-        auto* shadow = GetMapImage(661);
+        libsiedler2::ArchivItem_Palette* palette = getPaletteN("pal5");
+        auto* image = getMapImage(561);
+        auto* shadow = getMapImage(661);
 
         if((image) && (shadow) && (palette))
         {

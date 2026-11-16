@@ -14,10 +14,10 @@ std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
     std::set<MapPoint, MapPointLess> visited;
     std::vector<MapPoint> connectedArea;
 
-    auto partiallyBuildable = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsBuildableLand); };
+    auto partiallyBuildable = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, isBuildableLand); };
 
     auto partiallyConnected = [&map, &partiallyBuildable](const MapPoint& pt) {
-        return helpers::contains_if(map.getTextures().GetNeighbours(pt), partiallyBuildable);
+        return helpers::contains_if(map.getTextures().getNeighbours(pt), partiallyBuildable);
     };
 
     RTTR_FOREACH_PT(MapPoint, map.size)

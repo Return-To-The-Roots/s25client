@@ -23,7 +23,7 @@ static std::ostream& operator<<(std::ostream& os, const VideoMode mode)
 
 BOOST_AUTO_TEST_CASE(FindClosestVideoMode)
 {
-    auto* driver = uiHelper::GetVideoDriver();
+    auto* driver = uiHelper::getVideoDriver();
     driver->video_modes_ = {VideoMode(800, 600), VideoMode(1000, 600), VideoMode(1500, 800)};
     // Exact match
     for(const auto& mode : driver->video_modes_)
@@ -105,7 +105,7 @@ BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
 
 BOOST_AUTO_TEST_CASE(TranslateDimensionsBetweenScreenAndViewSpace)
 {
-    auto* driver = uiHelper::GetVideoDriver();
+    auto* driver = uiHelper::getVideoDriver();
     driver->CreateScreen("", VideoMode(800 * 2, 600 * 2), DisplayMode::Windowed);
 
     {
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(TranslateDimensionsBetweenScreenAndViewSpace)
 BOOST_AUTO_TEST_CASE(GuiScaleRangeCalculation)
 {
     GuiScaleRange range;
-    auto* driver = uiHelper::GetVideoDriver();
+    auto* driver = uiHelper::getVideoDriver();
     driver->CreateScreen("", VideoMode(800 * 3, 600 * 3), DisplayMode::Windowed);
 
     // Regular DPI configuration
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(GuiScaleRangeCalculation)
 
     // HighDPI configuration (50% larger render size than window size)
     driver->ResizeScreen(VideoMode(800 * 2, 600 * 2), DisplayMode::Windowed);
-    driver->SetNewSize(driver->GetWindowSize(), Extent(800 * 3, 600 * 3));
+    driver->setNewSize(driver->getWindowSize(), Extent(800 * 3, 600 * 3));
     range = driver->getGuiScaleRange();
     BOOST_TEST(range.minPercent == 100u);
     BOOST_TEST(range.maxPercent == (200 * 1.5));
@@ -221,38 +221,38 @@ BOOST_AUTO_TEST_CASE(GuiScaleRangeCalculation)
 
 BOOST_AUTO_TEST_CASE(DpiScale)
 {
-    auto* driver = uiHelper::GetVideoDriver();
+    auto* driver = uiHelper::getVideoDriver();
 
-    driver->SetNewSize(VideoMode(800, 600), Extent(800, 600));
+    driver->setNewSize(VideoMode(800, 600), Extent(800, 600));
     BOOST_TEST(driver->getDpiScale() == 1.f);
 
-    driver->SetNewSize(VideoMode(800, 600), Extent(800 * 3 / 2, 600 * 3 / 2));
+    driver->setNewSize(VideoMode(800, 600), Extent(800 * 3 / 2, 600 * 3 / 2));
     BOOST_TEST(driver->getDpiScale() == 1.5f);
 
-    driver->SetNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
+    driver->setNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
     BOOST_TEST(driver->getDpiScale() == 2.f);
 }
 
 BOOST_AUTO_TEST_CASE(AutoGuiScale)
 {
-    auto* driver = uiHelper::GetVideoDriver();
+    auto* driver = uiHelper::getVideoDriver();
 
     BOOST_TEST_CONTEXT("Fixed GUI scale")
     {
-        driver->SetNewSize(VideoMode(800, 600), Extent(800, 600));
+        driver->setNewSize(VideoMode(800, 600), Extent(800, 600));
         driver->setGuiScalePercent(100);
         BOOST_TEST(driver->getDpiScale() == 1.f);
         BOOST_TEST(driver->getGuiScale().percent() == 100u);
 
         // Changing window and render size has no effect on GUI scale, even though DPI scale has changed
-        driver->SetNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
+        driver->setNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
         BOOST_TEST(driver->getDpiScale() == 2.f);
         BOOST_TEST(driver->getGuiScale().percent() == 100u);
     }
 
     BOOST_TEST_CONTEXT("Automatic GUI scale")
     {
-        driver->SetNewSize(VideoMode(800, 600), Extent(800, 600));
+        driver->setNewSize(VideoMode(800, 600), Extent(800, 600));
         driver->setGuiScalePercent(0);
 
         // Automatic GUI scale is correctly calculated from current sizes
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(AutoGuiScale)
         BOOST_TEST(driver->getGuiScale().percent() == 100u);
 
         // After changing window and render size, GUI scale is updated based on DPI scale
-        driver->SetNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
+        driver->setNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
         BOOST_TEST(driver->getDpiScale() == 2.f);
         BOOST_TEST(driver->getGuiScale().percent() == 200u);
     }

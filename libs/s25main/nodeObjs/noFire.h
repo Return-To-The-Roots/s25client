@@ -31,9 +31,9 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Fire; }
+    GO_Type getGOT() const final { return GO_Type::Fire; }
 
-    BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
+    BlockingManner getBM() const override { return BlockingManner::FlagsAround; }
 
     /// Zeichnen
     void Draw(DrawPoint drawPt) override;

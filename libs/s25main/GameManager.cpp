@@ -54,7 +54,7 @@ bool GameManager::Start()
     if(!videoDriver_.CreateScreen(screenSize, settings_.video.displayMode))
         return false;
     videoDriver_.setTargetFramerate(settings_.video.framerate);
-    videoDriver_.SetMouseWarping(settings_.global.smartCursor);
+    videoDriver_.setMouseWarping(settings_.global.smartCursor);
     videoDriver_.setGuiScalePercent(settings_.video.guiScale);
 
     /// Audiodriver laden
@@ -65,8 +65,8 @@ bool GameManager::Start()
     }
 
     /// Lautstärken gleich mit setzen
-    audioDriver_.SetMasterEffectVolume(settings_.sound.effectsVolume); //-V807
-    audioDriver_.SetMusicVolume(settings_.sound.musicVolume);
+    audioDriver_.setMasterEffectVolume(settings_.sound.effectsVolume); //-V807
+    audioDriver_.setMusicVolume(settings_.sound.musicVolume);
 
     // Treibereinstellungen abspeichern
     settings_.Save();
@@ -109,8 +109,8 @@ bool GameManager::Run()
     if(targetSkipGF)
     {
         // if we skip drawing write a comment every 5k gf
-        unsigned current_time = videoDriver_.GetTickCount();
-        const unsigned curGF = GAMECLIENT.GetGFNumber();
+        unsigned current_time = videoDriver_.getTickCount();
+        const unsigned curGF = GAMECLIENT.getGFNumber();
         if(targetSkipGF > curGF)
         {
             if(curGF % 5000 == 0)

@@ -170,10 +170,10 @@ DebugInfo::DebugInfo()
     // Bits
     SendUnsigned(sizeof(void*) * 8u);
 
-    SendString(rttr::version::GetVersion());
-    SendString(rttr::version::GetRevision());
+    SendString(rttr::version::getVersion());
+    SendString(rttr::version::getRevision());
 
-    SendUnsigned(GAMECLIENT.GetGFNumber());
+    SendUnsigned(GAMECLIENT.getGFNumber());
 }
 
 DebugInfo::~DebugInfo()
@@ -182,7 +182,7 @@ DebugInfo::~DebugInfo()
     sock.Close();
 }
 
-DebugInfo::stacktrace_t DebugInfo::GetStackTrace(void* ctx) noexcept(false)
+DebugInfo::stacktrace_t DebugInfo::getStackTrace(void* ctx) noexcept(false)
 {
 #ifndef RTTR_CONTEXT_PTR_TYPE
     using RTTR_CONTEXT_PTR_TYPE = void*;
@@ -275,13 +275,13 @@ bool DebugInfo::SendReplay()
     LOG.write("Sending replay...\n");
 
     // Replay mode is on, no recording of replays active
-    if(!GAMECLIENT.IsReplayModeOn())
+    if(!GAMECLIENT.isReplayModeOn())
     {
-        Replay* rpl = GAMECLIENT.GetReplay();
+        Replay* rpl = GAMECLIENT.getReplay();
 
-        if(!rpl || !rpl->IsRecording())
+        if(!rpl || !rpl->isRecording())
             return true;
-        const auto replayPath = rpl->GetPath();
+        const auto replayPath = rpl->getPath();
         rpl->Close();
 
         BinaryFile f;

@@ -22,7 +22,7 @@ helpers::OptionalEnum<Direction> GameWorldBase::FindHumanPath(const MapPoint sta
                                                               unsigned* length, std::vector<Direction>* route) const
 {
     Direction first_dir{};
-    if(GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir,
+    if(getFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir,
                                     PathConditionHuman(*this)))
         return first_dir;
     else
@@ -34,7 +34,7 @@ RoadPathDirection GameWorld::FindHumanPathOnRoads(const noRoadNode& start, const
                                                   MapPoint* firstPt, const RoadSegment* const forbidden)
 {
     RoadPathDirection first_dir;
-    if(GetRoadPathFinder().FindPath(start, goal, false, std::numeric_limits<unsigned>::max(), forbidden, length,
+    if(getRoadPathFinder().FindPath(start, goal, false, std::numeric_limits<unsigned>::max(), forbidden, length,
                                     &first_dir, firstPt))
         return first_dir;
     else
@@ -46,7 +46,7 @@ RoadPathDirection GameWorld::FindPathForWareOnRoads(const noRoadNode& start, con
                                                     MapPoint* firstPt, unsigned max)
 {
     RoadPathDirection first_dir;
-    if(GetRoadPathFinder().FindPath(start, goal, true, max, nullptr, length, &first_dir, firstPt))
+    if(getRoadPathFinder().FindPath(start, goal, true, max, nullptr, length, &first_dir, firstPt))
         return first_dir;
     else
         return RoadPathDirection::None;
@@ -55,7 +55,7 @@ RoadPathDirection GameWorld::FindPathForWareOnRoads(const noRoadNode& start, con
 bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, HarborId harborId, SeaId seaId,
                                          std::vector<Direction>* route, unsigned* length) const
 {
-    const MapPoint coastalPoint = GetCoastalPoint(harborId, seaId);
+    const MapPoint coastalPoint = getCoastalPoint(harborId, seaId);
     RTTR_Assert(coastalPoint.isValid());
 
     // already arrived?
@@ -67,11 +67,11 @@ bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, HarborId harborId
             route->clear();
         return true;
     }
-    auto& shipPathData = GetShipPathData();
+    auto& shipPathData = getShipPathData();
     // If we start from a harbor we can get the route directly w/o the costly pathfinding
-    for(const auto startHbId : helpers::idRange<HarborId>(GetNumHarborPoints()))
+    for(const auto startHbId : helpers::idRange<HarborId>(getNumHarborPoints()))
     {
-        if(GetCoastalPoint(startHbId, seaId) == start)
+        if(getCoastalPoint(startHbId, seaId) == start)
         {
             auto hbRoute = shipPathData.getHarborConnection(startHbId, harborId, seaId);
             if(length)
@@ -114,7 +114,7 @@ bool GameWorldBase::FindShipPathToHarbor(const MapPoint start, HarborId harborId
 bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, unsigned maxDistance,
                                  std::vector<Direction>* route, unsigned* length) const
 {
-    return GetFreePathFinder().FindPath(start, dest, true, maxDistance, route, length, nullptr,
+    return getFreePathFinder().FindPath(start, dest, true, maxDistance, route, length, nullptr,
                                         PathConditionShip(*this));
 }
 
@@ -122,7 +122,7 @@ bool GameWorldBase::FindShipPath(const MapPoint start, const MapPoint dest, unsi
 bool GameWorld::CheckShipRoute(const MapPoint start, const std::vector<Direction>& route, const unsigned pos,
                                MapPoint* dest) const
 {
-    return GetFreePathFinder().CheckRoute(start, route, pos, PathConditionShip(*this), dest);
+    return getFreePathFinder().CheckRoute(start, route, pos, PathConditionShip(*this), dest);
 }
 
 /// Find a route for trade caravanes
@@ -130,17 +130,17 @@ helpers::OptionalEnum<Direction> GameWorld::FindTradePath(const MapPoint start, 
                                                           unsigned char player, unsigned max_route, bool random_route,
                                                           std::vector<Direction>* route, unsigned* length) const
 {
-    unsigned char owner = GetNode(dest).owner;
-    if(owner != 0 && !GetPlayer(player).IsAlly(owner - 1))
+    unsigned char owner = getNode(dest).owner;
+    if(owner != 0 && !getPlayer(player).isAlly(owner - 1))
         return std::nullopt;
 
-    RTTR_Assert(GetNO(dest)->GetType() == NodalObjectType::Flag); // Goal should be the flag of a wh
+    RTTR_Assert(getNO(dest)->getType() == NodalObjectType::Flag); // Goal should be the flag of a wh
 
-    if(!PathConditionHuman(*this).IsNodeOk(dest))
+    if(!PathConditionHuman(*this).isNodeOk(dest))
         return std::nullopt;
 
     Direction first_dir{};
-    if(GetFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir,
+    if(getFreePathFinder().FindPath(start, dest, random_route, max_route, route, length, &first_dir,
                                     PathConditionTrade(*this, player)))
         return first_dir;
     else
@@ -150,5 +150,5 @@ helpers::OptionalEnum<Direction> GameWorld::FindTradePath(const MapPoint start, 
 bool GameWorld::CheckTradeRoute(const MapPoint start, const std::vector<Direction>& route, unsigned pos,
                                 unsigned char player, MapPoint* dest) const
 {
-    return GetFreePathFinder().CheckRoute(start, route, pos, PathConditionTrade(*this, player), dest);
+    return getFreePathFinder().CheckRoute(start, route, pos, PathConditionTrade(*this, player), dest);
 }

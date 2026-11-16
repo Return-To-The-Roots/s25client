@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(DefaultConstructedPlaylistIsEmpty)
     BOOST_TEST(pl.getSongs().empty());
     BOOST_TEST(pl.getCurrentSong().empty());
     BOOST_TEST(pl.getNextSong().empty());
-    pl.SetStartSong(0); // No error
+    pl.setStartSong(0); // No error
     BOOST_TEST(pl.getNextSong().empty());
 }
 
@@ -150,14 +150,14 @@ BOOST_AUTO_TEST_CASE(SetNextSong)
     const std::vector<std::string> songs{"s01", "s02", "s03", "s04", "s05"};
     Playlist pl(songs, 0, false);
     BOOST_TEST(pl.getNextSong() == "s01");
-    pl.SetStartSong(3);
+    pl.setStartSong(3);
     BOOST_TEST(pl.getNextSong() == "s04");
     BOOST_TEST(pl.getNextSong() == "s03");
     BOOST_TEST(pl.getNextSong() == "s02");
 
     // Works also when playlist was not started yet (see #1833)
     pl = Playlist(songs, 0, false);
-    pl.SetStartSong(3);
+    pl.setStartSong(3);
     BOOST_TEST(pl.getNextSong() == "s04");
 }
 

@@ -38,14 +38,14 @@ public:
     AIPlayerJH(unsigned char playerId, const GameWorldBase& gwb, AI::Level level);
     ~AIPlayerJH() override;
 
-    AIInterface& GetInterface() { return aii; }
-    const AIInterface& GetInterface() const { return aii; }
-    const GameWorldBase& GetWorld() const { return gwb; }
+    AIInterface& getInterface() { return aii; }
+    const AIInterface& getInterface() const { return aii; }
+    const GameWorldBase& getWorld() const { return gwb; }
     // Required by the AIJobs:
-    AIConstruction& GetConstruction() { return *construction; }
-    const BuildingPlanner& GetBldPlanner() const { return *bldPlanner; }
-    const AIJob* GetCurrentJob() const { return currentJob.get(); }
-    unsigned GetNumJobs() const;
+    AIConstruction& getConstruction() { return *construction; }
+    const BuildingPlanner& getBldPlanner() const { return *bldPlanner; }
+    const AIJob* getCurrentJob() const { return currentJob.get(); }
+    unsigned getNumJobs() const;
 
     void RunGF(unsigned gf, bool gfisnwf) override;
     void OnChatMessage(unsigned sendPlayerId, ChatDestination, const std::string& msg) override;
@@ -59,19 +59,19 @@ public:
     /// military & tool production settings
     void AdjustSettings();
     /// return number of seaIds with at least 2 harbor spots
-    unsigned GetNumAIRelevantSeaIds() const;
+    unsigned getNumAIRelevantSeaIds() const;
 
-    bool IsInvalidShipyardPosition(MapPoint pt);
+    bool isInvalidShipyardPosition(MapPoint pt);
 
-    int GetResMapValue(MapPoint pt, AIResource res) const;
-    const AIResourceMap& GetResMap(AIResource res) const;
+    int getResMapValue(MapPoint pt, AIResource res) const;
+    const AIResourceMap& getResMap(AIResource res) const;
 
-    Node& GetAINode(const MapPoint pt) { return aiMap[pt]; }
-    const Node& GetAINode(const MapPoint pt) const { return aiMap[pt]; }
+    Node& getAINode(const MapPoint pt) { return aiMap[pt]; }
+    const Node& getAINode(const MapPoint pt) const { return aiMap[pt]; }
 
-    unsigned GetNumPlannedConnectedInlandMilitaryBlds()
+    unsigned getNumPlannedConnectedInlandMilitaryBlds()
     {
-        return std::max<unsigned>(6u, aii.GetMilitaryBuildings().size() / 5u);
+        return std::max<unsigned>(6u, aii.getMilitaryBuildings().size() / 5u);
     }
     /// returns the percentage*100 of possible normal building places
     unsigned BQsurroundcheck(MapPoint pt, unsigned range, bool includeexisting, unsigned limit = 0);
@@ -104,12 +104,12 @@ public:
     /// there are no frontier warehouses just pick anything but 1 if there is just 1 then dont block
     void DistributeMaxRankSoldiersByBlocking(unsigned limit, nobBaseWarehouse* upwh);
     /// returns true if at least 1 military building has a flag > 0
-    bool HasFrontierBuildings();
+    bool hasFrontierBuildings();
     /// returns the warehouse closest to the upgradebuilding or if it cant find a way the first warehouse and if there
     /// is no warehouse left null
-    nobBaseWarehouse* GetUpgradeBuildingWarehouse();
+    nobBaseWarehouse* getUpgradeBuildingWarehouse();
     /// activate gathering of swords,shields,beer,privates(if there is an upgrade building), helpers(if necessary)
-    void SetGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewarehouse);
+    void setGatheringForUpgradeWarehouse(nobBaseWarehouse* upgradewarehouse);
     /// Initializes the nodes on start of the game
     void InitNodes();
     /// Updates the nodes around a position
@@ -125,7 +125,7 @@ public:
     // set default start values for the ai for distribution
     void InitDistribution();
     // returns true if we can get to the startflag in <maxlen without turning back
-    bool IsFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag,
+    bool isFlagPartofCircle(const noFlag& startFlag, unsigned maxlen, const noFlag& curFlag,
                             helpers::OptionalEnum<Direction> excludeDir, std::vector<const noFlag*> oldFlags);
     /// Finds the best position for a specific resource in an area using the resource maps,
     /// satisfying the minimum value, returns false if no such position is found
@@ -136,7 +136,7 @@ public:
     /// Find a position for a specific building around a given point
     MapPoint FindPositionForBuildingAround(BuildingType type, const MapPoint& around);
     /// Density in percent (0-100)
-    unsigned GetDensity(MapPoint pt, AIResource res, int radius);
+    unsigned getDensity(MapPoint pt, AIResource res, int radius);
     /// Does some actions after a new military building is occupied
     void HandleNewMilitaryBuildingOccupied(MapPoint pt);
     /// Does some actions after a military building is lost
@@ -190,7 +190,7 @@ public:
     /// upgrade building (order new private, kick out general)
     void MilUpgradeOptim();
 
-    void SetFarmedNodes(MapPoint pt, bool set);
+    void setFarmedNodes(MapPoint pt, bool set);
     // removes a no longer used road(and its flags) returns true when there is a building at the flag that might need a
     // new connection
     bool RemoveUnusedRoad(const noFlag& startFlag, helpers::OptionalEnum<Direction> excludeDir, bool firstflag = true,

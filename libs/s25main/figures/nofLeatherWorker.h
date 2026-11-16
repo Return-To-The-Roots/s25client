@@ -14,7 +14,7 @@ class nofLeatherWorker : public nofWorkman
     /// Draw worker at work
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    [[noreturn]] unsigned short GetCarryID() const override;
+    [[noreturn]] unsigned short getCarryID() const override;
     helpers::OptionalEnum<GoodType> ProduceWare() override;
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
@@ -24,5 +24,5 @@ public:
     nofLeatherWorker(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofLeatherWorker(SerializedGameData& sgd, unsigned obj_id);
 
-    GO_Type GetGOT() const final { return GO_Type::NofLeatherWorker; }
+    GO_Type getGOT() const final { return GO_Type::NofLeatherWorker; }
 };

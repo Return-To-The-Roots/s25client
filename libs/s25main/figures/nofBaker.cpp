@@ -43,8 +43,8 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
 
     unsigned max_id = 120;
     unsigned now_id = GAMECLIENT.Interpolate(max_id, current_ev);
-    const Nation wpNation = workplace->GetNation();
-    unsigned plColor = world->GetPlayer(player).color;
+    const Nation wpNation = workplace->getNation();
+    unsigned plColor = world->getPlayer(player).color;
 
     // position zum rauslaufen berechnen
     DrawPoint walkOutPos = drawPt + walkOffsets[wpNation][now_id % 8];
@@ -70,29 +70,29 @@ void nofBaker::DrawWorking(DrawPoint drawPt)
     }
     if((now_id >= 8) && (now_id < 16)) // brot in den ofen schieben
     {
-        LOADER.GetPlayerImage("rom_bobs", 182 + (now_id - 8))
+        LOADER.getPlayerImage("rom_bobs", 182 + (now_id - 8))
           ->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
 
         // "Brot-rein/raus"-Sound
         if((now_id % 8) == 4)
         {
-            world->GetSoundMgr().playNOSound(68, *this, now_id);
+            world->getSoundMgr().playNOSound(68, *this, now_id);
             was_sounding = true;
         }
     }
     if((now_id >= 16) && (now_id < max_id - 16)) // warten
     {
-        LOADER.GetPlayerImage("rom_bobs", 189)->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
+        LOADER.getPlayerImage("rom_bobs", 189)->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
     }
     if((now_id >= max_id - 16) && (now_id < max_id - 8)) // brot aus dem ofen holen
     {
-        LOADER.GetPlayerImage("rom_bobs", 182 + 7 - (now_id % 8))
+        LOADER.getPlayerImage("rom_bobs", 182 + 7 - (now_id % 8))
           ->DrawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
 
         // "Brot-rein/raus"-Sound
         if((now_id % 8) == 4)
         {
-            world->GetSoundMgr().playNOSound(68, *this, now_id);
+            world->getSoundMgr().playNOSound(68, *this, now_id);
             was_sounding = true;
         }
     }

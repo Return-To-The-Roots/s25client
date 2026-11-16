@@ -31,7 +31,7 @@ class nofAggressiveDefender : public nofActiveSoldier
     /// Sagt den verschiedenen Zielen Bescheid, dass wir doch nicht mehr kommen können
     void InformTargetsAboutCancelling() override;
 
-    void CancelAtAttacker();
+    void cancelAtAttacker();
 
 protected:
     SoldierState FreeFightAborted() override;
@@ -49,14 +49,14 @@ public:
     void Destroy() override;
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofAggressivedefender; }
+    GO_Type getGOT() const final { return GO_Type::NofAggressivedefender; }
 
     /// Wenn ein Heimat-Militärgebäude bei Missionseinsätzen zerstört wurde
     void HomeDestroyed() override;
     /// Wenn er noch in der Warteschleife vom Ausgangsgebäude hängt und dieses zerstört wurde
     void HomeDestroyedAtBegin() override;
 
-    void CancelAtAttackedBld();
+    void cancelAtAttackedBld();
 
     /// Wenn ein Kampf gewonnen wurde
     void WonFighting() override;
@@ -72,5 +72,5 @@ public:
     void AttackerLost();
 
     // Debugging
-    const nofAttacker* GetAttacker() const { return attacker; }
+    const nofAttacker* getAttacker() const { return attacker; }
 };

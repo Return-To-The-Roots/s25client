@@ -13,8 +13,8 @@
 #include "libsiedler2/ColorBGRA.h"
 
 IngameMinimap::IngameMinimap(const GameWorldViewer& gwv)
-    : Minimap(gwv.GetWorld().GetSize()), gwv(gwv), nodes_updated(GetMapSize().x * GetMapSize().y, false),
-      dos(GetMapSize().x * GetMapSize().y, DrawnObject::Invalid), territory(true), houses(true), roads(true)
+    : Minimap(gwv.getWorld().getSize()), gwv(gwv), nodes_updated(getMapSize().x * getMapSize().y, false),
+      dos(getMapSize().x * getMapSize().y, DrawnObject::Invalid), territory(true), houses(true), roads(true)
 {
     CreateMapTexture();
 }
@@ -23,11 +23,11 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 {
     unsigned color = 0;
 
-    Visibility visibility = gwv.GetVisibility(pt);
+    Visibility visibility = gwv.getVisibility(pt);
 
     if(visibility == Visibility::Invisible)
     {
-        dos[GetMMIdx(pt)] = DrawnObject::Invisible;
+        dos[getMMIdx(pt)] = DrawnObject::Invisible;
         // Man sieht nichts --> schwarz
         return 0xFF000000;
     } else
@@ -41,16 +41,16 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
         FoW_Type fot = FoW_Type::Nothing;
         if(!fow)
         {
-            const MapNode& node = gwv.GetNode(pt);
+            const MapNode& node = gwv.getNode(pt);
             owner = node.owner;
             if(node.obj)
-                noType = node.obj->GetType();
+                noType = node.obj->getType();
         } else
         {
-            const FoWNode& node = gwv.GetYoungestFOWNode(pt);
+            const FoWNode& node = gwv.getYoungestFOWNode(pt);
             owner = node.owner;
             if(node.object)
-                fot = node.object->GetType();
+                fot = node.object->getType();
         }
 
         // Baum an dieser Stelle?
@@ -90,7 +90,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
                     || (fow && (fot == FoW_Type::Building || fot == FoW_Type::Buildingsite))))
                     drawn_object = DrawnObject::Buidling;
                 /// Roads?
-                else if(IsRoad(pt, visibility))
+                else if(isRoad(pt, visibility))
                     drawn_object = DrawnObject::Road;
                 // ansonsten normales Territorium?
                 else
@@ -120,7 +120,7 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
         if(fow)
             color = MakeColor(0xFF, GetRed(color) / 2, GetGreen(color) / 2, GetBlue(color) / 2);
 
-        dos[GetMMIdx(pt)] = drawn_object;
+        dos[getMMIdx(pt)] = drawn_object;
     }
 
     return color;
@@ -132,10 +132,10 @@ unsigned IngameMinimap::CalcPixelColor(const MapPoint pt, const unsigned t)
 unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 {
     unsigned color =
-      gwv.GetWorld().GetDescription().get((t == 0) ? gwv.GetNode(pt).t1 : gwv.GetNode(pt).t2).minimapColor; //-V807
+      gwv.getWorld().getDescription().get((t == 0) ? gwv.getNode(pt).t1 : gwv.getNode(pt).t2).minimapColor; //-V807
 
     // Schattierung
-    int shadow = gwv.GetNode(pt).shadow;
+    int shadow = gwv.getNode(pt).shadow;
     int r = GetRed(color) + shadow - 0x40;
     int g = GetGreen(color) + shadow - 0x40;
     int b = GetBlue(color) + shadow - 0x40;
@@ -159,11 +159,11 @@ unsigned IngameMinimap::CalcTerrainColor(const MapPoint pt, const unsigned t)
 /**
  *  Check if there is a road at that point
  */
-bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
+bool IngameMinimap::isRoad(const MapPoint pt, const Visibility visibility)
 {
     for(const auto dir : helpers::EnumRange<RoadDir>{})
     {
-        if(gwv.GetVisibleRoad(pt, dir, visibility) != PointRoad::None)
+        if(gwv.getVisibleRoad(pt, dir, visibility) != PointRoad::None)
             return true;
     }
 
@@ -177,7 +177,7 @@ bool IngameMinimap::IsRoad(const MapPoint pt, const Visibility visibility)
 unsigned IngameMinimap::CombineWithPlayerColor(const unsigned color, const unsigned char player) const
 {
     // Spielerfarbe mit einberechnen
-    unsigned player_color = gwv.GetWorld().GetPlayer(player - 1).color;
+    unsigned player_color = gwv.getWorld().getPlayer(player - 1).color;
 
     return MakeColor(0xFF, (GetRed(color) + GetRed(player_color)) / 2, (GetGreen(color) + GetGreen(player_color)) / 2,
                      (GetBlue(color) + GetBlue(player_color)) / 2);
@@ -185,9 +185,9 @@ unsigned IngameMinimap::CombineWithPlayerColor(const unsigned color, const unsig
 
 void IngameMinimap::UpdateNode(const MapPoint pt)
 {
-    if(!nodes_updated[GetMMIdx(pt)])
+    if(!nodes_updated[getMMIdx(pt)])
     {
-        nodes_updated[GetMMIdx(pt)] = true;
+        nodes_updated[getMMIdx(pt)] = true;
         nodesToUpdate.push_back(pt);
     }
 }
@@ -217,10 +217,10 @@ void IngameMinimap::BeforeDrawing()
                 for(unsigned t = 0; t < 2; ++t)
                 {
                     unsigned color = CalcPixelColor(it, t);
-                    DrawPoint texPos((it.x * 2 + t + (it.y & 1)) % (GetMapSize().x * 2), it.y);
+                    DrawPoint texPos((it.x * 2 + t + (it.y & 1)) % (getMapSize().x * 2), it.y);
                     map.updatePixel(texPos, libsiedler2::ColorBGRA(color));
                 }
-                nodes_updated[GetMMIdx(it)] = false;
+                nodes_updated[getMMIdx(it)] = false;
             }
             map.endUpdate();
         }
@@ -245,18 +245,18 @@ void IngameMinimap::UpdateAll(const DrawnObject drawn_object)
 {
     map.beginUpdate();
     // Gesamte Karte neu berechnen
-    RTTR_FOREACH_PT(MapPoint, GetMapSize())
+    RTTR_FOREACH_PT(MapPoint, getMapSize())
     {
         for(unsigned t = 0; t < 2; ++t)
         {
-            if(dos[GetMMIdx(pt)] == drawn_object
+            if(dos[getMMIdx(pt)] == drawn_object
                || (drawn_object == DrawnObject::Player && // for DrawnObject::Player check for not drawn buildings or
                                                           // roads as there is only the player territory visible
-                   ((dos[GetMMIdx(pt)] == DrawnObject::Buidling && !houses)
-                    || (dos[GetMMIdx(pt)] == DrawnObject::Road && !roads))))
+                   ((dos[getMMIdx(pt)] == DrawnObject::Buidling && !houses)
+                    || (dos[getMMIdx(pt)] == DrawnObject::Road && !roads))))
             {
                 unsigned color = CalcPixelColor(pt, t);
-                DrawPoint texPos((pt.x * 2 + t + (pt.y & 1)) % (GetMapSize().x * 2), pt.y);
+                DrawPoint texPos((pt.x * 2 + t + (pt.y & 1)) % (getMapSize().x * 2), pt.y);
                 map.updatePixel(texPos, libsiedler2::ColorBGRA(color));
             }
         }

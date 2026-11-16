@@ -9,16 +9,16 @@
 
 iwSurrender::iwSurrender()
     : IngameWindow(CGI_ENDGAME, IngameWindow::posLastOrCenter, Extent(240, 100), _("Surrender game?"),
-                   LOADER.GetImageN("resource", 41))
+                   LOADER.getImageN("resource", 41))
 {
     // Ok
-    AddImageButton(0, DrawPoint(85, 24), Extent(68, 57), TextureColor::Green2, LOADER.GetImageN("io", 32),
+    AddImageButton(0, DrawPoint(85, 24), Extent(68, 57), TextureColor::Green2, LOADER.getImageN("io", 32),
                    _("Surrender"));
     // Ok + Abbrennen
-    AddImageButton(2, DrawPoint(16, 24), Extent(68, 57), TextureColor::Green2, LOADER.GetImageN("io", 23),
+    AddImageButton(2, DrawPoint(16, 24), Extent(68, 57), TextureColor::Green2, LOADER.getImageN("io", 23),
                    _("Destroy all buildings and surrender"));
     // Abbrechen
-    AddImageButton(1, DrawPoint(158, 24), Extent(68, 57), TextureColor::Red1, LOADER.GetImageN("io", 40),
+    AddImageButton(1, DrawPoint(158, 24), Extent(68, 57), TextureColor::Red1, LOADER.getImageN("io", 40),
                    _("Don't surrender"));
 }
 

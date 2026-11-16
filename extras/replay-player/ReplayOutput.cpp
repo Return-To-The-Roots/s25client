@@ -34,18 +34,18 @@ void printInitialInfo(const HeadlessReplay& replay)
 {
     const Replay& file = replay.getReplay();
     const GameWorld& world = replay.getWorld();
-    const MapPoint mapSize = world.GetSize();
+    const MapPoint mapSize = world.getSize();
 
     bnw::cout << "\n";
-    bnw::cout << "Replay:   " << file.GetMapName() << "\n";
-    bnw::cout << "Version:  " << static_cast<unsigned>(file.GetMajorVersion()) << "."
-              << static_cast<unsigned>(file.GetMinorVersion()) << "\n";
+    bnw::cout << "Replay:   " << file.getMapName() << "\n";
+    bnw::cout << "Version:  " << static_cast<unsigned>(file.getMajorVersion()) << "."
+              << static_cast<unsigned>(file.getMinorVersion()) << "\n";
     bnw::cout << "Type:     " << (replay.isFromSavegame() ? "savegame replay" : "new-game replay") << "\n";
     bnw::cout << "Map size: " << mapSize.x << " x " << mapSize.y << "\n";
     bnw::cout << "Seed:     " << file.getSeed() << "\n";
-    bnw::cout << "GF range: " << replay.getStartGF() << " - " << file.GetLastGF() << "  ("
-              << (file.GetLastGF() + 1 - replay.getStartGF()) << " GFs)\n";
-    if(world.HasLua())
+    bnw::cout << "GF range: " << replay.getStartGF() << " - " << file.getLastGF() << "  ("
+              << (file.getLastGF() + 1 - replay.getStartGF()) << " GFs)\n";
+    if(world.hasLua())
         bnw::cout << "Lua:      script loaded from replay\n";
     if(!replay.isFromSavegame() && !file.usesFishFix())
         bnw::cout << "Note:     fish fix skipped, this replay predates version 8.3\n";
@@ -54,9 +54,9 @@ void printInitialInfo(const HeadlessReplay& replay)
     bnw::cout << "Players:\n";
     bnw::cout << "  #  Name                     Nation       Team\n";
     bnw::cout << "  ─────────────────────────────────────────────\n";
-    for(unsigned i = 0; i < world.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world.getNumPlayers(); ++i)
     {
-        const GamePlayer& p = world.GetPlayer(i);
+        const GamePlayer& p = world.getPlayer(i);
         char buf[80];
         snprintf(buf, sizeof(buf), "  %-2u %-24s %-12s %s\n", i, p.name.c_str(), NationNames[p.nation],
                  teamStr(p.team).c_str());

@@ -13,17 +13,17 @@
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb)
     : iwHQ(gwv, gcFactory, hb)
 {
-    SetTitle(_("Harbor building"));
+    setTitle(_("Harbor building"));
 
     // Zusätzliche Hafenseite
     ctrlGroup& harbor_page = AddPage();
-    grpIdExpedition = harbor_page.GetID();
+    grpIdExpedition = harbor_page.getID();
 
     // "Expedition"-Überschrift
     harbor_page.AddText(0, DrawPoint(83, 70), _("Expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(1, DrawPoint(65, 100), Extent(30, 30), TextureColor::Grey, LOADER.GetImageN("io", 176),
+    harbor_page.AddImageButton(1, DrawPoint(65, 100), Extent(30, 30), TextureColor::Grey, LOADER.getImageN("io", 176),
                                _("Start expedition"));
     AdjustExpeditionButton(false);
 
@@ -31,7 +31,7 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
     harbor_page.AddText(2, DrawPoint(83, 140), _("Exploration expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(3, DrawPoint(65, 170), Extent(30, 30), TextureColor::Grey, LOADER.GetImageN("io", 176),
+    harbor_page.AddImageButton(3, DrawPoint(65, 170), Extent(30, 30), TextureColor::Grey, LOADER.getImageN("io", 176),
                                _("Start exporation expedition"));
     AdjustExplorationExpeditionButton(false);
 }
@@ -43,23 +43,23 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
  */
 void iwHarborBuilding::AdjustExpeditionButton(bool flip)
 {
-    auto* button = GetCtrl<ctrlGroup>(grpIdExpedition)->GetCtrl<ctrlImageButton>(1);
+    auto* button = getCtrl<ctrlGroup>(grpIdExpedition)->getCtrl<ctrlImageButton>(1);
 
     // Visuelle Rückmeldung, grün einfärben, wenn Expedition gestartet wurde
     // Jeweils umgekehrte Farbe nehmen, da die änderung ja spielerisch noch nicht
     // in Kraft getreten ist!
-    bool exp = static_cast<const nobHarborBuilding*>(wh)->IsExpeditionActive();
+    bool exp = static_cast<const nobHarborBuilding*>(wh)->isExpeditionActive();
 
     // "flip xor exp", damit korrekt geswitcht wird, falls expedition abgebrochen werden soll
     // und dies direkt dargestellt werden soll (flip)
     if((flip || exp) && !(flip && exp))
     {
-        button->SetModulationColor(COLOR_WHITE);
-        button->SetTooltip(_("Cancel expedition"));
+        button->setModulationColor(COLOR_WHITE);
+        button->setTooltip(_("Cancel expedition"));
     } else
     {
-        button->SetModulationColor(COLOR_RED);
-        button->SetTooltip(_("Start expedition"));
+        button->setModulationColor(COLOR_RED);
+        button->setTooltip(_("Start expedition"));
     }
 }
 
@@ -70,23 +70,23 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
  */
 void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
 {
-    auto* button = GetCtrl<ctrlGroup>(grpIdExpedition)->GetCtrl<ctrlImageButton>(3);
+    auto* button = getCtrl<ctrlGroup>(grpIdExpedition)->getCtrl<ctrlImageButton>(3);
 
     // Visuelle Rückmeldung, grün einfärben, wenn Expedition gestartet wurde
     // Jeweils umgekehrte Farbe nehmen, da die änderung ja spielerisch noch nicht
     // in Kraft getreten ist!
-    bool exp = static_cast<const nobHarborBuilding*>(wh)->IsExplorationExpeditionActive();
+    bool exp = static_cast<const nobHarborBuilding*>(wh)->isExplorationExpeditionActive();
 
     // "flip xor exp", damit korrekt geswitcht wird, falls expedition abgebrochen werden soll
     // und dies direkt dargestellt werden soll (flip)
     if((flip || exp) && !(flip && exp))
     {
-        button->SetModulationColor(COLOR_WHITE);
-        button->SetTooltip(_("Cancel expedition"));
+        button->setModulationColor(COLOR_WHITE);
+        button->setTooltip(_("Cancel expedition"));
     } else
     {
-        button->SetModulationColor(COLOR_RED);
-        button->SetTooltip(_("Start expedition"));
+        button->setModulationColor(COLOR_RED);
+        button->setTooltip(_("Start expedition"));
     }
 }
 
@@ -98,14 +98,14 @@ void iwHarborBuilding::msgGroupButtonClick(const unsigned group_id, const unsign
         {
             case 1: // Expedition starten
                 // Entsprechenden GC senden
-                if(GAMECLIENT.StartStopExpedition(wh->GetPos(),
-                                                  !static_cast<const nobHarborBuilding*>(wh)->IsExpeditionActive()))
+                if(GAMECLIENT.StartStopExpedition(wh->getPos(),
+                                                  !static_cast<const nobHarborBuilding*>(wh)->isExpeditionActive()))
                     AdjustExpeditionButton(true);
                 break;
             case 3: // Expedition starten
                 // Entsprechenden GC senden
                 if(GAMECLIENT.StartStopExplorationExpedition(
-                     wh->GetPos(), !static_cast<const nobHarborBuilding*>(wh)->IsExplorationExpeditionActive()))
+                     wh->getPos(), !static_cast<const nobHarborBuilding*>(wh)->isExplorationExpeditionActive()))
                     AdjustExplorationExpeditionButton(true);
                 break;
         }

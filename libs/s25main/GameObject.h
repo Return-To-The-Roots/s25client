@@ -37,16 +37,16 @@ public:
     virtual void HandleEvent(unsigned /*id*/) {}
 
     /// Return the unique ID of an object. Always non-zero!
-    unsigned GetObjId() const { return objId; }
+    unsigned getObjId() const { return objId; }
 
     virtual void Serialize(SerializedGameData& sgd) const = 0;
-    virtual GO_Type GetGOT() const = 0;
+    virtual GO_Type getGOT() const = 0;
 
     virtual std::string ToString() const;
 
 protected:
     // Following are some "sandbox methods". They avoid dependencies of subclasses to commonly used functions
-    static EventManager& GetEvMgr();
+    static EventManager& getEvMgr();
     /// Send the msg to given player
     static void SendPostMessage(unsigned player, std::unique_ptr<PostMsg> msg);
 
@@ -60,9 +60,9 @@ public:
     /// Remove the world from all game objects
     static void DetachWorld(GameWorld* gameWorld);
     /// Return the number of objects alive
-    static unsigned GetNumObjs() { return objCounter_; }
+    static unsigned getNumObjs() { return objCounter_; }
     /// Return ID counter, i.e. the last object ID used
-    static unsigned GetObjIDCounter() { return objIdCounter_; }
+    static unsigned getObjIDCounter() { return objIdCounter_; }
     /// Reset the object counter and the object ID counter to 0
     static void ResetCounters()
     {

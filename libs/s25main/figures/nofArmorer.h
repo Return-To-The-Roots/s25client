@@ -19,7 +19,7 @@ private:
 protected:
     void DrawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override;
+    unsigned short getCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
     helpers::OptionalEnum<GoodType> ProduceWare() override;
     void HandleDerivedEvent(unsigned id) override;
@@ -32,5 +32,5 @@ public:
 
     void Serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofArmorer; }
+    GO_Type getGOT() const final { return GO_Type::NofArmorer; }
 };

@@ -17,12 +17,12 @@ public:
     void Serialize(SerializedGameData& sgd) const override;
 
     /// liefert die X-Koordinate.
-    MapCoord GetX() const { return pos.x; }
+    MapCoord getX() const { return pos.x; }
     /// liefert die Y-Koordinate.
-    MapCoord GetY() const { return pos.y; }
+    MapCoord getY() const { return pos.y; }
 
     /// Returns position
-    MapPoint GetPos() const { return pos; }
+    MapPoint getPos() const { return pos; }
 
 protected:
     MapPoint pos;

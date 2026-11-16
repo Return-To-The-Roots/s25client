@@ -32,7 +32,7 @@ libsiedler2::Archiv Map::CreateArchiv() const
     header->setWidth(size.x);
     header->setHeight(size.y);
     header->setNumPlayers(players);
-    header->setGfxSet(textureMap.GetLandscapeId());
+    header->setGfxSet(textureMap.getLandscapeId());
 
     if(players != hqPositions.size())
         throw std::logic_error("Not all players have an HQ set");
@@ -66,8 +66,8 @@ libsiedler2::Archiv Map::CreateArchiv() const
     const auto& textureTriangles = getTextures();
     for(unsigned i = 0; i < numNodes; i++)
     {
-        rsu[i] = textureMap.GetTextureId(textureTriangles[i].rsu);
-        lsd[i] = textureMap.GetTextureId(textureTriangles[i].lsd);
+        rsu[i] = textureMap.getTextureId(textureTriangles[i].rsu);
+        lsd[i] = textureMap.getTextureId(textureTriangles[i].lsd);
         animal[i] = static_cast<uint8_t>(this->animals[i]);
     }
 
@@ -75,8 +75,8 @@ libsiedler2::Archiv Map::CreateArchiv() const
     {
         if(hqPositions[i].isValid())
         {
-            objectType[this->objectTypes.GetIdx(hqPositions[i])] = libsiedler2::OT_HeadquarterMask;
-            objectInfo[this->objectInfos.GetIdx(hqPositions[i])] = i;
+            objectType[this->objectTypes.getIdx(hqPositions[i])] = libsiedler2::OT_HeadquarterMask;
+            objectInfo[this->objectInfos.getIdx(hqPositions[i])] = i;
         }
     }
 

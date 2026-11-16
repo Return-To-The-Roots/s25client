@@ -22,7 +22,7 @@ CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_m
                              const DrawPoint dest, const unsigned fly_duration)
     : dest_building(dest_building), dest_map(dest_map), startPos(start), destPos(dest), explode(false)
 {
-    event = GetEvMgr().AddEvent(this, fly_duration);
+    event = getEvMgr().AddEvent(this, fly_duration);
 }
 
 CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id)
@@ -46,7 +46,7 @@ void CatapultStone::Destroy() {}
 
 void CatapultStone::Draw(DrawPoint drawOffset)
 {
-    const DrawPoint worldSize = DrawPoint(world->GetWidth() * TR_W, world->GetHeight() * TR_H);
+    const DrawPoint worldSize = DrawPoint(world->getWidth() * TR_W, world->getHeight() * TR_H);
 
     if(explode)
     {
@@ -54,7 +54,7 @@ void CatapultStone::Draw(DrawPoint drawOffset)
         DrawPoint drawPos = destPos - drawOffset + worldSize;
         drawPos.x %= worldSize.x;
         drawPos.y %= worldSize.y;
-        LOADER.GetMapTexture(3102 + GAMECLIENT.Interpolate(4, event))->DrawFull(drawPos);
+        LOADER.getMapTexture(3102 + GAMECLIENT.Interpolate(4, event))->DrawFull(drawPos);
     } else
     {
         // Linear interpolieren zwischen Ausgangs- und Zielpunkt
@@ -64,7 +64,7 @@ void CatapultStone::Draw(DrawPoint drawOffset)
         drawPos.x %= worldSize.x;
         drawPos.y %= worldSize.y;
         // Schatten auf linearer Linie zeichnen
-        LOADER.GetMapTexture(3101)->DrawFull(drawPos, COLOR_SHADOW);
+        LOADER.getMapTexture(3101)->DrawFull(drawPos, COLOR_SHADOW);
 
         Position distance = destPos - startPos;
         double whole = std::sqrt(double(distance.x * distance.x + distance.y * distance.y));
@@ -80,7 +80,7 @@ void CatapultStone::Draw(DrawPoint drawOffset)
 
         // Stein auf Parabel zeichnen
         drawPos.y = (drawPos.y + diff) % worldSize.y;
-        LOADER.GetMapTexture(3100)->DrawFull(drawPos);
+        LOADER.getMapTexture(3100)->DrawFull(drawPos);
     }
 }
 
@@ -90,31 +90,31 @@ void CatapultStone::HandleEvent(const unsigned /*id*/)
     {
         // Explodiert --> mich zerstören
         world->RemoveCatapultStone(this);
-        GetEvMgr().AddToKillList(this);
+        getEvMgr().AddToKillList(this);
     } else
     {
         // Stein ist aufgeschlagen --> Explodierevent anmelden
-        event = GetEvMgr().AddEvent(this, 10);
+        event = getEvMgr().AddEvent(this, 10);
         explode = true;
 
         // Trifft der Stein?
         if(dest_building == dest_map)
         {
             // Steht an der Stelle noch ein Militärgebäude zum Bombardieren?
-            auto* milBld = world->GetSpecObj<nobMilitary>(dest_building);
+            auto* milBld = world->getSpecObj<nobMilitary>(dest_building);
             if(milBld)
             {
                 milBld->HitOfCatapultStone();
                 // If there are no troops left, destroy it
-                if(milBld->GetNumTroops() == 0)
-                    world->DestroyNO(milBld->GetPos());
+                if(milBld->getNumTroops() == 0)
+                    world->DestroyNO(milBld->getPos());
             }
         } else
         {
             // Trifft nicht
             // ggf. Leiche hinlegen, falls da nix ist
-            if(!world->GetSpecObj<noBase>(dest_map))
-                world->SetNO(dest_map, new noEnvObject(dest_map, 502 + RANDOM_RAND(2)));
+            if(!world->getSpecObj<noBase>(dest_map))
+                world->setNO(dest_map, new noEnvObject(dest_map, 502 + RANDOM_RAND(2)));
         }
     }
 }

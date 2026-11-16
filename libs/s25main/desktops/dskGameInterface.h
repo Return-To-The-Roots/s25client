@@ -45,12 +45,12 @@ public:
     ~dskGameInterface() override;
 
     void Resize(const Extent& newSize) override;
-    void SetActive(bool activate = true) override;
+    void setActive(bool activate = true) override;
 
     void LC_Status_ConnectionLost() override;
     void LC_Status_Error(const std::string& error) override;
 
-    RoadBuildMode GetRoadMode() const { return road.mode; }
+    RoadBuildMode getRoadMode() const { return road.mode; }
 
     void CI_PlayerLeft(unsigned playerId) override;
     void CI_GGSChanged(const GlobalGameSettings& ggs) override;
@@ -93,7 +93,7 @@ public:
     bool BuildRoadPart(MapPoint& cSel);
     // Return the id (index + 1) of the point in the currently build road (1 = startPt)
     // If pt is not on the road, return 0
-    unsigned GetIdInCurBuildRoad(MapPoint pt);
+    unsigned getIdInCurBuildRoad(MapPoint pt);
     /// Baut Weg zurück von Ende bis zu start_id
     void DemolishRoad(unsigned start_id);
     // Zeigt das Straäcnfenster an und entscheidet selbststäcdig, ob man eine Flagge an road_point_x/y bauen kann,
@@ -103,7 +103,7 @@ public:
     void ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
                           bool enable_military_buildings);
 
-    const GameWorldView& GetView() const { return gwv; }
+    const GameWorldView& getView() const { return gwv; }
 
     void OnChatCommand(const std::string& cmd) override;
 
@@ -144,7 +144,7 @@ protected:
     void DisableFoW(bool hideFOW); // Set Fog of War mode if possible
     void ShowPersistentWindowsAfterSwitch();
 
-    PostBox& GetPostBox();
+    PostBox& getPostBox();
     std::shared_ptr<const Game> game_;
     std::shared_ptr<const NWFInfo> nwfInfo_;
     GameWorldViewer worldViewer;

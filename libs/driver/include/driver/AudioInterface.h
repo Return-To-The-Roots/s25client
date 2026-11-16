@@ -20,9 +20,9 @@ public:
     virtual ~IAudioDriver() = 0;
 
     /// Return the name of the driver
-    virtual const char* GetName() const = 0;
+    virtual const char* getName() const = 0;
     /// True iff the driver is initialized
-    virtual bool IsInitialized() = 0;
+    virtual bool isInitialized() = 0;
     virtual bool Initialize() = 0;
     /// Closes all open handles of the driver (stops and unloads music and effects)
     virtual void CleanUp() = 0;
@@ -47,14 +47,14 @@ public:
     /// Stop the effect with the given id (if it is still playing)
     virtual void StopEffect(EffectPlayId play_id) = 0;
     /// Is the effect still being played
-    virtual bool IsEffectPlaying(EffectPlayId play_id) = 0;
+    virtual bool isEffectPlaying(EffectPlayId play_id) = 0;
     /// Changes volume [0..256) of a played sound (if it is still playing) relative to the master effect volume
     virtual void ChangeVolume(EffectPlayId play_id, uint8_t volume) = 0;
     /// Set the master effect volume [0..256) at which all effects will be played. Changing the volume of an effect will
     /// be relative to this
-    virtual void SetMasterEffectVolume(uint8_t volume) = 0;
+    virtual void setMasterEffectVolume(uint8_t volume) = 0;
     /// Sets the music volume [0..256)
-    virtual void SetMusicVolume(uint8_t volume) = 0;
+    virtual void setMusicVolume(uint8_t volume) = 0;
 };
 } // namespace driver
 

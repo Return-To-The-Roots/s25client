@@ -7,7 +7,7 @@
 
 PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat,
                                          const noBaseBuilding& bld, SoundEffect soundEffect)
-    : PostMsg(sendFrame, text, cat, bld.GetPos(), soundEffect), bldType(bld.GetBuildingType()), nation(bld.GetNation())
+    : PostMsg(sendFrame, text, cat, bld.getPos(), soundEffect), bldType(bld.getBuildingType()), nation(bld.getNation())
 {}
 
 PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat,
@@ -15,7 +15,7 @@ PostMsgWithBuilding::PostMsgWithBuilding(unsigned sendFrame, const std::string& 
     : PostMsg(sendFrame, text, cat, pos), bldType(bld), nation(nation)
 {}
 
-ITexture* PostMsgWithBuilding::GetImage_() const
+ITexture* PostMsgWithBuilding::getImage() const
 {
-    return &noBaseBuilding::GetBuildingImage(bldType, nation);
+    return &noBaseBuilding::getBuildingImage(bldType, nation);
 }

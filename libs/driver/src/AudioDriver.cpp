@@ -51,7 +51,7 @@ EffectPlayId AudioDriver::PlayEffect(const RawSoundHandle& sound, uint8_t volume
 
 void AudioDriver::StopEffect(EffectPlayId play_id)
 {
-    const int channel = GetEffectChannel(play_id);
+    const int channel = getEffectChannel(play_id);
     if(channel >= 0)
     {
         doStopEffect(channel);
@@ -83,13 +83,13 @@ void AudioDriver::registerForUnload(RawSoundHandle* handlePtr)
     handlesRegisteredForUnload_.push_back(handlePtr);
 }
 
-void AudioDriver::SetNumChannels(unsigned numChannels)
+void AudioDriver::setNumChannels(unsigned numChannels)
 {
     channels_.resize(numChannels);
     std::fill(channels_.begin(), channels_.end(), EffectPlayId::Invalid);
 }
 
-int AudioDriver::GetEffectChannel(EffectPlayId playId) const
+int AudioDriver::getEffectChannel(EffectPlayId playId) const
 {
     const auto it = helpers::find(channels_, playId);
     return (it == channels_.end()) ? -1 : static_cast<int>(std::distance(channels_.begin(), it));
@@ -97,7 +97,7 @@ int AudioDriver::GetEffectChannel(EffectPlayId playId) const
 
 void AudioDriver::RemoveEffect(EffectPlayId playId)
 {
-    int channel = GetEffectChannel(playId);
+    int channel = getEffectChannel(playId);
     if(channel >= 0)
         channels_[channel] = EffectPlayId::Invalid;
 }

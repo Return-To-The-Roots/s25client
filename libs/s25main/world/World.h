@@ -87,13 +87,13 @@ public:
     /// Return the type of the landscape
     DescIdx<LandscapeDesc> GetLandscapeType() const { return lt; }
 
-    const WorldDescription& GetDescription() const { return description_; }
-    WorldDescription& GetDescriptionWriteable() { return description_; }
+    const WorldDescription& getDescription() const { return description_; }
+    WorldDescription& getDescriptionWriteable() { return description_; }
 
     /// Return the node at that point
-    const MapNode& GetNode(MapPoint pt) const;
+    const MapNode& getNode(MapPoint pt) const;
     /// Return the neighboring node
-    const MapNode& GetNeighbourNode(MapPoint pt, Direction dir) const;
+    const MapNode& getNeighbourNode(MapPoint pt, Direction dir) const;
 
     // Add a figure to a node (taking ownership) and returns a reference to it
     template<typename T>
@@ -109,24 +109,24 @@ public:
     template<typename T>
     std::unique_ptr<T> RemoveFigure(MapPoint pt, T*& fig) = delete;
     /// Return the NO from that point or a "nothing"-object if there is none
-    noBase* GetNO(MapPoint pt);
+    noBase* getNO(MapPoint pt);
     /// Return the NO from that point or a "nothing"-object if there is none
-    const noBase* GetNO(MapPoint pt) const;
+    const noBase* getNO(MapPoint pt) const;
     /// Places a NO at a given position. If replace is true, the old object is replaced, else it is assumed as
     /// non-existent
-    void SetNO(MapPoint pt, noBase* obj, bool replace = false);
+    void setNO(MapPoint pt, noBase* obj, bool replace = false);
     /// Destroys the object at the given node and removes it from the map. If checkExists is false than it is ok, if
     /// there is no obj
     void DestroyNO(MapPoint pt, bool checkExists = true);
     /// Return the game object type of the object at that point or GOT_NONE of there is none
-    GO_Type GetGOT(MapPoint pt) const;
+    GO_Type getGOT(MapPoint pt) const;
     void ReduceResource(MapPoint pt);
-    void SetResource(const MapPoint pt, Resource newResource) { GetNodeInt(pt).resources = newResource; }
-    void SetOwner(const MapPoint pt, unsigned char newOwner) { GetNodeInt(pt).owner = newOwner; }
-    void SetReserved(MapPoint pt, bool reserved);
+    void setResource(const MapPoint pt, Resource newResource) { getNodeInt(pt).resources = newResource; }
+    void setOwner(const MapPoint pt, unsigned char newOwner) { getNodeInt(pt).owner = newOwner; }
+    void setReserved(MapPoint pt, bool reserved);
     /// Sets the visibility and fires a Visibility Changed event if different
     /// fowTime is only used if visibility gets changed to FoW
-    void SetVisibility(MapPoint pt, unsigned char player, Visibility vis, unsigned fowTime = 0);
+    void setVisibility(MapPoint pt, unsigned char player, Visibility vis, unsigned fowTime = 0);
 
     void ChangeAltitude(MapPoint pt, unsigned char altitude);
 
@@ -135,7 +135,7 @@ public:
 
     /// Checks if the point completely belongs to a player (if false but point itself belongs to player then it is a
     /// border) if owner is != 0 it checks if the points specific ownership
-    bool IsPlayerTerritory(MapPoint pt, unsigned char owner = 0) const;
+    bool isPlayerTerritory(MapPoint pt, unsigned char owner = 0) const;
 
     /// Return the BQ for the given player at the point (including ownership constraints)
     BuildingQuality GetBQ(MapPoint pt, unsigned char player) const;
@@ -143,62 +143,62 @@ public:
     BuildingQuality AdjustBQ(MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const;
 
     /// Return the figures currently on the node
-    auto GetFigures(const MapPoint pt) const { return helpers::nonNullPtrSpan(GetNode(pt).figures); }
-    bool HasFigureAt(MapPoint pt, const noBase& figure) const;
+    auto getFigures(const MapPoint pt) const { return helpers::nonNullPtrSpan(getNode(pt).figures); }
+    bool hasFigureAt(MapPoint pt, const noBase& figure) const;
 
     /// Return a specific object or nullptr
     template<typename T>
-    T* GetSpecObj(const MapPoint pt)
+    T* getSpecObj(const MapPoint pt)
     {
-        return dynamic_cast<T*>(GetNode(pt).obj);
+        return dynamic_cast<T*>(getNode(pt).obj);
     }
     /// Return a specific object or nullptr
     template<typename T>
-    const T* GetSpecObj(MapPoint pt) const
+    const T* getSpecObj(MapPoint pt) const
     {
-        return dynamic_cast<const T*>(GetNode(pt).obj);
+        return dynamic_cast<const T*>(getNode(pt).obj);
     }
 
     /// Get left and right terrain from the point in the given direction
-    WalkTerrain GetTerrain(MapPoint pt, Direction dir) const;
+    WalkTerrain getTerrain(MapPoint pt, Direction dir) const;
     /// Return all terrains around the given point. The per-direction entry is the terrain to the right
-    helpers::EnumArray<DescIdx<TerrainDesc>, Direction> GetTerrainsAround(MapPoint pt) const;
+    helpers::EnumArray<DescIdx<TerrainDesc>, Direction> getTerrainsAround(MapPoint pt) const;
 
     /// Create the FOW-objects, -streets, etc for a point and player
     void SaveFOWNode(MapPoint pt, unsigned player, unsigned curTime);
-    unsigned GetNumSeas() const { return seas.size(); }
+    unsigned getNumSeas() const { return seas.size(); }
     /// Return whether a node is inside a (shippable) sea (surrounded by shippable water)
-    bool IsSeaPoint(MapPoint pt) const;
+    bool isSeaPoint(MapPoint pt) const;
     /// Return true, if the point is surrounded by water
-    bool IsWaterPoint(MapPoint pt) const;
+    bool isWaterPoint(MapPoint pt) const;
     /// Return true if all surrounding terrains match the given predicate
     template<class T_Predicate>
-    bool IsOfTerrain(MapPoint pt, T_Predicate predicate) const;
+    bool isOfTerrain(MapPoint pt, T_Predicate predicate) const;
     /// Return true if any surrounding terrain (description) matches the predicate
     template<class T_Predicate>
-    bool HasTerrain(MapPoint pt, T_Predicate predicate) const;
+    bool hasTerrain(MapPoint pt, T_Predicate predicate) const;
 
-    unsigned GetSeaSize(SeaId seaId) const;
+    unsigned getSeaSize(SeaId seaId) const;
     /// Return the id of the sea at which the coast in the given direction of the harbor lies. 0 = None
-    SeaId GetSeaId(HarborId harborId, Direction dir) const;
+    SeaId getSeaId(HarborId harborId, Direction dir) const;
     /// Is the harbor at the given sea
-    bool IsHarborAtSea(HarborId harborId, SeaId seaId) const;
+    bool isHarborAtSea(HarborId harborId, SeaId seaId) const;
     /// Return the coast pt for a given harbor (where ships can land) if any
-    MapPoint GetCoastalPoint(HarborId harborId, SeaId seaId) const;
+    MapPoint getCoastalPoint(HarborId harborId, SeaId seaId) const;
     /// Return the number of harbor points
-    unsigned GetNumHarborPoints() const { return harborData.size(); }
+    unsigned getNumHarborPoints() const { return harborData.size(); }
     /// Return the coordinates for a given harbor point
-    MapPoint GetHarborPoint(HarborId harborId) const;
+    MapPoint getHarborPoint(HarborId harborId) const;
     /// Return the ID of the harbor point on that node or 0 if there is none
-    HarborId GetHarborPointID(const MapPoint pt) const { return GetNode(pt).harborId; }
-    const std::vector<HarborPos::Neighbor>& GetHarborNeighbors(HarborId harborId, const ShipDirection& dir) const;
+    HarborId getHarborPointID(const MapPoint pt) const { return getNode(pt).harborId; }
+    const std::vector<HarborPos::Neighbor>& getHarborNeighbors(HarborId harborId, const ShipDirection& dir) const;
     /// Return the minimum distance between 2 harbors
     /// Note: Harbors could be at 2 seas, so there might be multiple, different distances
-    unsigned GetMinHarborDistance(HarborId haborId1, HarborId harborId2) const;
+    unsigned getMinHarborDistance(HarborId haborId1, HarborId harborId2) const;
     /// Return distance between harbors at given sea
-    unsigned GetHarborDistance(HarborId haborId1, HarborId harborId2, SeaId sea) const;
+    unsigned getHarborDistance(HarborId haborId1, HarborId harborId2, SeaId sea) const;
     /// Return the sea id if this is a point at a coast to a sea where ships can go. Else returns 0
-    SeaId GetSeaFromCoastalPoint(MapPoint pt) const;
+    SeaId getSeaFromCoastalPoint(MapPoint pt) const;
 
     RoadDir toRoadDir(MapPoint& pt, const Direction dir) const
     {
@@ -219,17 +219,17 @@ public:
                             && enum_cast(Direction::NorthWest) == enum_cast(RoadDir::SouthEast)
                             && enum_cast(Direction::NorthEast) == enum_cast(RoadDir::SouthWest),
                           "Mismatch");
-            pt = GetNeighbour(pt, dir);
+            pt = getNeighbour(pt, dir);
         }
         return RoadDir(iDir);
     }
 
     /// Return the road type of this point in the given direction
-    PointRoad GetRoad(MapPoint pt, RoadDir dir) const;
+    PointRoad getRoad(MapPoint pt, RoadDir dir) const;
     /// Return the road type from this point in the given direction
-    PointRoad GetPointRoad(MapPoint pt, Direction dir) const;
+    PointRoad getPointRoad(MapPoint pt, Direction dir) const;
     /// Return the FOW road type for a player
-    PointRoad GetPointFOWRoad(MapPoint pt, Direction dir, unsigned char viewing_player) const;
+    PointRoad getPointFOWRoad(MapPoint pt, Direction dir, unsigned char viewing_player) const;
 
     /// Adds a catapult stone currently flying
     void AddCatapultStone(CatapultStone* cs);
@@ -237,18 +237,18 @@ public:
 
 protected:
     /// Internal method for access to nodes with write access
-    MapNode& GetNodeInt(MapPoint pt);
-    MapNode& GetNeighbourNodeInt(MapPoint pt, Direction dir);
+    MapNode& getNodeInt(MapPoint pt);
+    MapNode& getNeighbourNodeInt(MapPoint pt, Direction dir);
 
     /// Notify derived classes of changed altitude
     virtual void AltitudeChanged(MapPoint pt) = 0;
     /// Notify derived classes of changed visibility
     virtual void VisibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) = 0;
     /// Sets the road for the given (road) direction
-    void SetRoad(MapPoint pt, RoadDir roadDir, PointRoad type);
-    BoundaryStones& GetBoundaryStones(const MapPoint pt) { return GetNodeInt(pt).boundary_stones; }
+    void setRoad(MapPoint pt, RoadDir roadDir, PointRoad type);
+    BoundaryStones& getBoundaryStones(const MapPoint pt) { return getNodeInt(pt).boundary_stones; }
     /// Set the BQ at the point and return true if it was changed
-    bool SetBQ(MapPoint pt, BuildingQuality bq);
+    bool setBQ(MapPoint pt, BuildingQuality bq);
 
     /// Recalculates the shade of a point
     void RecalcShadow(MapPoint pt);
@@ -258,44 +258,44 @@ protected:
 // Implementation
 //////////////////////////////////////////////////////////////////////////
 
-inline const MapNode& World::GetNode(const MapPoint pt) const
+inline const MapNode& World::getNode(const MapPoint pt) const
 {
-    return nodes[GetIdx(pt)];
+    return nodes[getIdx(pt)];
 }
 
-inline MapNode& World::GetNodeInt(const MapPoint pt)
+inline MapNode& World::getNodeInt(const MapPoint pt)
 {
-    return nodes[GetIdx(pt)];
+    return nodes[getIdx(pt)];
 }
 
-inline const MapNode& World::GetNeighbourNode(const MapPoint pt, Direction dir) const
+inline const MapNode& World::getNeighbourNode(const MapPoint pt, Direction dir) const
 {
-    return GetNode(GetNeighbour(pt, dir));
+    return getNode(getNeighbour(pt, dir));
 }
 
-inline MapNode& World::GetNeighbourNodeInt(const MapPoint pt, Direction dir)
+inline MapNode& World::getNeighbourNodeInt(const MapPoint pt, Direction dir)
 {
-    return GetNodeInt(GetNeighbour(pt, dir));
+    return getNodeInt(getNeighbour(pt, dir));
 }
 
 template<class T_Predicate>
-inline bool World::IsOfTerrain(const MapPoint pt, T_Predicate predicate) const
+inline bool World::isOfTerrain(const MapPoint pt, T_Predicate predicate) const
 {
     // NOTE: This is '!HasTerrain(pt, !predicate)'
-    for(const DescIdx<TerrainDesc> tIdx : GetTerrainsAround(pt))
+    for(const DescIdx<TerrainDesc> tIdx : getTerrainsAround(pt))
     {
-        if(!predicate(GetDescription().get(tIdx)))
+        if(!predicate(getDescription().get(tIdx)))
             return false;
     }
     return true;
 }
 
 template<class T_Predicate>
-inline bool World::HasTerrain(const MapPoint pt, T_Predicate predicate) const
+inline bool World::hasTerrain(const MapPoint pt, T_Predicate predicate) const
 {
-    for(const DescIdx<TerrainDesc> tIdx : GetTerrainsAround(pt))
+    for(const DescIdx<TerrainDesc> tIdx : getTerrainsAround(pt))
     {
-        if(predicate(GetDescription().get(tIdx)))
+        if(predicate(getDescription().get(tIdx)))
             return true;
     }
     return false;

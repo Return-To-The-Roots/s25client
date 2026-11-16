@@ -87,7 +87,7 @@ public:
     /// Get the format version the data is saved in. Deserializing methods can use this to support
     /// loading data saved in an earlier format.
     /// See `currentGameDataVersion` in SerializedGameData.cpp for version history
-    unsigned GetGameDataVersion() const { return gameDataVersion; }
+    unsigned getGameDataVersion() const { return gameDataVersion; }
 
     //////////////////////////////////////////////////////////////////////////
     // Write methods
@@ -179,12 +179,12 @@ public:
     /// Adds a deserialized event to the storage. Return instanceId. Must be called exactly once per read event
     unsigned AddEvent(unsigned instanceId, GameEvent* ev);
     /// Only valid during writing
-    bool IsEventSerialized(unsigned evInstanceid) const;
+    bool isEventSerialized(unsigned evInstanceid) const;
     bool debugMode;
 
 private:
-    static unsigned short GetSafetyCode(const GameObject& go);
-    static unsigned short GetSafetyCode(const GameEvent& ev);
+    static unsigned short getSafetyCode(const GameObject& go);
+    static unsigned short getSafetyCode(const GameEvent& ev);
     static Error makeOutOfRange(unsigned value, unsigned maxValue);
 
     /// Version of the game data that is read. Gets set to the current version for writing
@@ -219,9 +219,9 @@ private:
     GameObject* PopObject_(helpers::OptionalEnum<GO_Type> got);
 
     /// Returns the object with the given id when it was read, nullptr otherwise (only valid during reading)
-    GameObject* GetReadGameObject(unsigned obj_id) const;
+    GameObject* getReadGameObject(unsigned obj_id) const;
     /// Returns whether the object with the given id was already serialized (only valid during writing)
-    bool IsObjectSerialized(unsigned obj_id) const;
+    bool isObjectSerialized(unsigned obj_id) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -244,7 +244,7 @@ void SerializedGameData::PopObjectContainer(T& gos, helpers::OptionalEnum<GO_Typ
     using Elements = typename T::value_type;
     using Object = std::remove_reference_t<decltype(**gos.begin())>;
 
-    unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
+    unsigned size = (getGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     gos.clear();
     if constexpr(detail::has_reserve_v<decltype(gos)>)
         gos.reserve(size);
@@ -258,7 +258,7 @@ template<typename T>
 void SerializedGameData::PopContainer(T& result)
 {
     // Remove this method after raising GameDataVersion
-    if(GetGameDataVersion() >= 2)
+    if(getGameDataVersion() >= 2)
         helpers::popContainer(*this, result);
     else
     {

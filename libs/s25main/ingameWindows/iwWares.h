@@ -23,14 +23,14 @@ public:
 
 protected:
     /// bestimmte Inventurseite zeigen.
-    virtual void SetPage(unsigned page);
+    virtual void setPage(unsigned page);
     /// Add a new page and return it. ID will be in range 100+
     ctrlGroup& AddPage();
 
     void msgButtonClick(unsigned ctrl_id) override;
     void msgPaintBefore() override;
 
-    unsigned GetCurPage() const { return curPage_; }
+    unsigned getCurPage() const { return curPage_; }
 
 private:
     unsigned curPage_; /// aktuelle Seite des Inventurfensters.

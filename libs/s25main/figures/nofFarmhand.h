@@ -55,14 +55,14 @@ public:
     nofFarmhand(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFarmhand(SerializedGameData& sgd, unsigned obj_id);
 
-    static unsigned GetWorkRadius(const GlobalGameSettings& ggs, Job job);
-    unsigned GetWorkRadius(Job job);
+    static unsigned getWorkRadius(const GlobalGameSettings& ggs, Job job);
+    unsigned getWorkRadius(Job job);
 
     void Serialize(SerializedGameData& sgd) const override;
 
     void HandleDerivedEvent(unsigned id) override;
     /// Return the quality of this working point (including if the worker can work here at all)
     /// isBeforeWork determines whether the evaluation happens before leaving for work or afterwards
-    virtual PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const = 0;
-    PointQuality GetPointQuality(MapPoint pt) const { return GetPointQuality(pt, false); }
+    virtual PointQuality getPointQuality(MapPoint pt, bool isBeforeWork) const = 0;
+    PointQuality getPointQuality(MapPoint pt) const { return getPointQuality(pt, false); }
 };

@@ -43,62 +43,62 @@ void nofTradeLeader::Serialize(SerializedGameData& sgd) const
 
 void nofTradeLeader::GoalReached()
 {
-    noBase* nob = world->GetNO(goalPos);
+    noBase* nob = world->getNO(goalPos);
     auto* targetWarehouse = checkedCast<nobBaseWarehouse*>(nob);
     if(successor)
     {
         unsigned amountWares = 0;
-        Job jobType = successor->GetJobType();
-        const auto goodType = successor->GetCarriedWare();
+        Job jobType = successor->getJobType();
+        const auto goodType = successor->getCarriedWare();
         nofTradeDonkey* successorDonkey = successor;
         while(successorDonkey != nullptr)
         {
             amountWares++;
-            successorDonkey = successorDonkey->GetSuccessor();
+            successorDonkey = successorDonkey->getSuccessor();
         }
-        GamePlayer& owner = world->GetPlayer(player);
+        GamePlayer& owner = world->getPlayer(player);
         std::string waresName = _(!goodType ? JOB_NAMES[jobType] : WARE_NAMES[*goodType]);
         std::string text = str(boost::format(_("Trade caravan with %s %s arrives from player '%s'.")) % amountWares
                                % waresName % owner.name);
-        SendPostMessage(targetWarehouse->GetPlayer(),
-                        std::make_unique<PostMsgWithBuilding>(GetEvMgr().GetCurrentGF(), text, PostCategory::Economy,
+        SendPostMessage(targetWarehouse->getPlayer(),
+                        std::make_unique<PostMsgWithBuilding>(getEvMgr().getCurrentGF(), text, PostCategory::Economy,
                                                               *targetWarehouse));
         successor->AddNextDir(TradeDirection::ReachedGoal);
         successor = nullptr;
     }
 
-    world->GetPlayer(targetWarehouse->GetPlayer()).IncreaseInventoryJob(this->GetJobType(), 1);
+    world->getPlayer(targetWarehouse->getPlayer()).IncreaseInventoryJob(this->getJobType(), 1);
     targetWarehouse->AddFigure(world->RemoveFigure(pos, *this));
 }
 
 void nofTradeLeader::Walked()
 {
-    noBase* nob = world->GetNO(goalPos);
+    noBase* nob = world->getNO(goalPos);
 
     // Does target still exist?
-    if(nob->GetType() != NodalObjectType::Building
-       || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
+    if(nob->getType() != NodalObjectType::Building
+       || !BuildingProperties::isWareHouse(static_cast<noBuilding*>(nob)->getBuildingType()))
     {
         if(TryToGoHome())
             Walked();
         else
         {
-            CancelTradeCaravane();
+            cancelTradeCaravane();
             WanderFailedTrade();
         }
     } else if(pos == goalPos)
         GoalReached();
     else
     {
-        RTTR_Assert(pos == tr.GetCurPos());
-        auto next_dir = tr.GetNextDir();
+        RTTR_Assert(pos == tr.getCurPos());
+        auto next_dir = tr.getNextDir();
         if(!next_dir)
         {
             if(TryToGoHome())
                 Walked();
             else
             {
-                CancelTradeCaravane();
+                cancelTradeCaravane();
                 WanderFailedTrade();
             }
         } else
@@ -130,23 +130,23 @@ bool nofTradeLeader::TryToGoHome()
 
     goalPos = homePos;
 
-    noBase* homeWh = world->GetNO(goalPos);
+    noBase* homeWh = world->getNO(goalPos);
     // Does target still exist?
-    if(homeWh->GetType() != NodalObjectType::Building
-       || !BuildingProperties::IsWareHouse(static_cast<noBuilding*>(homeWh)->GetBuildingType()))
+    if(homeWh->getType() != NodalObjectType::Building
+       || !BuildingProperties::isWareHouse(static_cast<noBuilding*>(homeWh)->getBuildingType()))
         return false;
 
     // Find a way back home
-    MapPoint homeFlagPos = world->GetNeighbour(homePos, Direction::SouthEast);
-    tr.AssignNewGoal(this->GetPos(), homeFlagPos);
-    return tr.IsValid();
+    MapPoint homeFlagPos = world->getNeighbour(homePos, Direction::SouthEast);
+    tr.AssignNewGoal(this->getPos(), homeFlagPos);
+    return tr.isValid();
 }
 
-void nofTradeLeader::CancelTradeCaravane()
+void nofTradeLeader::cancelTradeCaravane()
 {
     if(successor)
     {
-        successor->CancelTradeCaravane();
+        successor->cancelTradeCaravane();
         successor = nullptr;
     }
 }

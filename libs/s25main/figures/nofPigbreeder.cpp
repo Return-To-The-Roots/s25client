@@ -27,8 +27,8 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
 
     unsigned max_id = 240;
     int now_id = GAMECLIENT.Interpolate(max_id, current_ev);
-    const Nation wpNation = workplace->GetNation();
-    unsigned plColor = world->GetPlayer(player).color;
+    const Nation wpNation = workplace->getNation();
+    unsigned plColor = world->getPlayer(player).color;
     int walksteps = 16;
 
     if(now_id < 16)
@@ -43,13 +43,13 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
           .draw(walkPos, COLOR_WHITE, plColor);
     } else if(now_id < 40)
     {
-        LOADER.GetPlayerImage("rom_bobs", 148 + (now_id - 16) / 2)
+        LOADER.getPlayerImage("rom_bobs", 148 + (now_id - 16) / 2)
           ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
 
         // Evtl Sound abspielen
         if((now_id - 16) == 10)
         {
-            world->GetSoundMgr().playNOSound(65, *this, 0);
+            world->getSoundMgr().playNOSound(65, *this, 0);
             was_sounding = true;
         }
     } else if(now_id < 56)
@@ -72,11 +72,11 @@ helpers::OptionalEnum<GoodType> nofPigbreeder::ProduceWare()
 void nofPigbreeder::MakePigSounds()
 {
     /// Ist es wieder Zeit für einen Schweine-Sound?
-    unsigned timeDiffSound = 600 + unsigned(rand() % 200) - workplace->GetProductivity() * 5u;
-    if(GetEvMgr().GetCurrentGF() - last_id > timeDiffSound)
+    unsigned timeDiffSound = 600 + unsigned(rand() % 200) - workplace->getProductivity() * 5u;
+    if(getEvMgr().getCurrentGF() - last_id > timeDiffSound)
     {
         // "Oink"
-        world->GetSoundMgr().playNOSound(86, *this, 1);
-        last_id = GetEvMgr().GetCurrentGF();
+        world->getSoundMgr().playNOSound(86, *this, 1);
+        last_id = getEvMgr().getCurrentGF();
     }
 }

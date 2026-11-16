@@ -52,7 +52,7 @@ public:
         std::string data;
         unsigned coordsColor = 0xFFFFFF00;
         unsigned dataColor = 0xFFFF0000;
-        const MapNode& node = gw.GetNode(pt);
+        const MapNode& node = gw.getNode(pt);
         switch(showDataIdx)
         {
             case 1:
@@ -64,14 +64,14 @@ public:
             case 4:
                 if(node.seaId)
                     data = helpers::toString(node.seaId);
-                else if(gw.GetSeaFromCoastalPoint(pt))
+                else if(gw.getSeaFromCoastalPoint(pt))
                     data = "C";
                 break;
             case 5: data = helpers::toString(node.owner); break;
             case 6:
             {
                 bool isAllowed =
-                  TerritoryRegion::IsPointValid(gw.GetSize(), gw.GetPlayer(playerIdx).GetRestrictedArea(), pt);
+                  TerritoryRegion::isPointValid(gw.getSize(), gw.getPlayer(playerIdx).getRestrictedArea(), pt);
                 coordsColor = dataColor = isAllowed ? 0xFF00FF00 : 0xFFFF0000;
                 if(!showCoords)
                     data = isAllowed ? "y" : "n";
@@ -100,13 +100,13 @@ class iwMapDebug::EventChecker
 public:
     EventChecker(const GameWorldBase& gw) : gw(gw)
     {
-        bqMap.Resize(gw.GetSize());
-        for(unsigned i = 0; i < gw.GetNumPlayers(); i++)
+        bqMap.Resize(gw.getSize());
+        for(unsigned i = 0; i < gw.getNumPlayers(); i++)
         {
-            if(gw.GetPlayer(i).isUsed())
+            if(gw.getPlayer(i).isUsed())
                 usedPlayerIdxs.push_back(i);
         }
-        RTTR_FOREACH_PT(MapPoint, bqMap.GetSize())
+        RTTR_FOREACH_PT(MapPoint, bqMap.getSize())
         {
             for(const unsigned playerIdx : usedPlayerIdxs)
                 bqMap[pt][playerIdx] = gw.GetBQ(pt, playerIdx);
@@ -118,7 +118,7 @@ public:
         for(const MapPoint pt : pointsToUpdate)
             updateBq(pt);
         pointsToUpdate.clear();
-        RTTR_FOREACH_PT(MapPoint, bqMap.GetSize())
+        RTTR_FOREACH_PT(MapPoint, bqMap.getSize())
         {
             for(const unsigned playerIdx : usedPlayerIdxs)
             {
@@ -150,8 +150,8 @@ static const std::array<std::chrono::milliseconds, 6> BQ_CHECK_INTERVALS = {10s,
 
 iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
     : IngameWindow(CGI_MAP_DEBUG, IngameWindow::posLastOrCenter, Extent(230, 160), _("Map Debug"),
-                   LOADER.GetImageN("resource", 41)),
-      gwv(gwv), printer(std::make_unique<DebugPrinter>(gwv.GetWorld()))
+                   LOADER.getImageN("resource", 41)),
+      gwv(gwv), printer(std::make_unique<DebugPrinter>(gwv.getWorld()))
 {
     gwv.AddDrawNodeCallback(printer.get());
 
@@ -179,7 +179,7 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
     {
         cbCheckEvents->AddItem((boost::format(_("BQ check every %1%ms")) % ms.count()).str());
     }
-    cbCheckEvents->SetSelection(0);
+    cbCheckEvents->setSelection(0);
     using namespace std::chrono_literals;
     AddTimer(ID_tmrCheckEvents, 500ms)->Stop();
 
@@ -194,27 +194,27 @@ iwMapDebug::iwMapDebug(GameWorldView& gwv, bool allowCheating)
         data->AddItem(_("Sea Id"));
         data->AddItem(_("Owner"));
         data->AddItem(_("Restricted area"));
-        data->SetSelection(1);
+        data->setSelection(1);
         ctrlComboBox* players = AddComboBox(ID_cbShowForPlayer, curPos, ctrlSize, TextureColor::Grey, NormalFont, 100);
         curPos.y += spaceY;
-        for(unsigned pIdx = 0; pIdx < gwv.GetWorld().GetNumPlayers(); pIdx++)
+        for(unsigned pIdx = 0; pIdx < gwv.getWorld().getNumPlayers(); pIdx++)
         {
-            const GamePlayer& p = gwv.GetWorld().GetPlayer(pIdx);
+            const GamePlayer& p = gwv.getWorld().getPlayer(pIdx);
             if(!p.isUsed())
                 players->AddItem((boost::format(_("Player %1%")) % pIdx).str());
             else
                 players->AddItem(p.name);
         }
-        players->SetSelection(0);
-        printer->showDataIdx = *data->GetSelection();
-        printer->playerIdx = *players->GetSelection();
+        players->setSelection(0);
+        printer->showDataIdx = *data->getSelection();
+        printer->playerIdx = *players->getSelection();
     } else
     {
         printer->showDataIdx = 0;
         printer->playerIdx = 0;
-        Extent iwSize = GetIwSize();
+        Extent iwSize = getIwSize();
         iwSize.y -= 40 + 10;
-        SetIwSize(iwSize);
+        setIwSize(iwSize);
     }
 
     printer->showCoords = cbShowCoords->isChecked();
@@ -236,11 +236,11 @@ void iwMapDebug::msgComboSelectItem(const unsigned ctrl_id, const unsigned selec
         if(select == 0)
         {
             eventChecker.reset();
-            GetCtrl<ctrlTimer>(ID_tmrCheckEvents)->Stop();
+            getCtrl<ctrlTimer>(ID_tmrCheckEvents)->Stop();
         } else
         {
-            eventChecker = std::make_unique<EventChecker>(gwv.GetWorld());
-            GetCtrl<ctrlTimer>(ID_tmrCheckEvents)->Start(BQ_CHECK_INTERVALS[select - 1]);
+            eventChecker = std::make_unique<EventChecker>(gwv.getWorld());
+            getCtrl<ctrlTimer>(ID_tmrCheckEvents)->Start(BQ_CHECK_INTERVALS[select - 1]);
         }
     }
 }
@@ -261,10 +261,10 @@ void iwMapDebug::msgEditEnter(unsigned ctrl_id)
 {
     RTTR_Assert(ctrl_id == ID_edtJumpX || ctrl_id == ID_edtJumpY);
     Position pos;
-    if(s25util::tryFromStringClassic(GetCtrl<ctrlEdit>(ID_edtJumpX)->GetText(), pos.x)
-       && s25util::tryFromStringClassic(GetCtrl<ctrlEdit>(ID_edtJumpY)->GetText(), pos.y))
+    if(s25util::tryFromStringClassic(getCtrl<ctrlEdit>(ID_edtJumpX)->getText(), pos.x)
+       && s25util::tryFromStringClassic(getCtrl<ctrlEdit>(ID_edtJumpY)->getText(), pos.y))
     {
-        gwv.MoveToMapPt(gwv.GetWorld().MakeMapPoint(pos));
+        gwv.MoveToMapPt(gwv.getWorld().MakeMapPoint(pos));
     }
 }
 
@@ -275,11 +275,11 @@ bool iwMapDebug::msgKeyDown(const KeyEvent& ke)
         case KeyType::Return: msgEditEnter(ID_edtJumpY); break;
         case KeyType::Tab:
         {
-            auto* edtNewFocus = GetCtrl<ctrlEdit>(ID_edtJumpX);
-            if(edtNewFocus->HasFocus())
-                edtNewFocus = GetCtrl<ctrlEdit>(ID_edtJumpY);
-            edtNewFocus->SetFocus();
-            edtNewFocus->SetText("");
+            auto* edtNewFocus = getCtrl<ctrlEdit>(ID_edtJumpX);
+            if(edtNewFocus->hasFocus())
+                edtNewFocus = getCtrl<ctrlEdit>(ID_edtJumpY);
+            edtNewFocus->setFocus();
+            edtNewFocus->setText("");
         };
         break;
         default: return IngameWindow::msgKeyDown(ke);
@@ -287,9 +287,9 @@ bool iwMapDebug::msgKeyDown(const KeyEvent& ke)
     return true;
 }
 
-void iwMapDebug::SetActive(bool activate)
+void iwMapDebug::setActive(bool activate)
 {
-    IngameWindow::SetActive(activate);
+    IngameWindow::setActive(activate);
     if(activate)
-        GetCtrl<ctrlEdit>(ID_edtJumpX)->SetFocus();
+        getCtrl<ctrlEdit>(ID_edtJumpX)->setFocus();
 }

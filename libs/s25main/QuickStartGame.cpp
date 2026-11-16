@@ -23,7 +23,7 @@
 class SwitchOnStart : public ClientInterface
 {
 public:
-    SwitchOnStart() { GAMECLIENT.SetInterface(this); }
+    SwitchOnStart() { GAMECLIENT.setInterface(this); }
     ~SwitchOnStart() override { GAMECLIENT.RemoveInterface(this); }
 
     void CI_GameLoading(std::shared_ptr<Game> game) override
@@ -63,7 +63,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     if(!loader.load())
         return false;
     if(loader.getPlaylist())
-        MUSICPLAYER.SetPlaylist(std::move(*loader.getPlaylist()));
+        MUSICPLAYER.setPlaylist(std::move(*loader.getPlaylist()));
     if(SETTINGS.sound.musicEnabled)
         MUSICPLAYER.Play();
 
@@ -91,7 +91,7 @@ bool QuickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
        || ((extension == ".swd" || extension == ".wld")
            && GAMECLIENT.HostGame(csi, {mapOrReplayPath, MapType::OldMap})))
     {
-        GAMECLIENT.SetAIBattlePlayers(std::move(aiInfos));
+        GAMECLIENT.setAIBattlePlayers(std::move(aiInfos));
         WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwConnecting>(csi.type, nullptr));
         return true;
     } else

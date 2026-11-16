@@ -69,8 +69,8 @@ void DestroyRoad::Serialize(Serializer& ser) const
 
 void DestroyRoad::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* flag = world.GetSpecObj<noFlag>(pt_);
-    if(flag && flag->GetPlayer() == playerId)
+    auto* flag = world.getSpecObj<noFlag>(pt_);
+    if(flag && flag->getPlayer() == playerId)
         flag->DestroyRoad(start_dir);
 }
 
@@ -86,8 +86,8 @@ void UpgradeRoad::Serialize(Serializer& ser) const
 
 void UpgradeRoad::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* flag = world.GetSpecObj<noFlag>(pt_);
-    if(flag && flag->GetPlayer() == playerId)
+    auto* flag = world.getSpecObj<noFlag>(pt_);
+    if(flag && flag->getPlayer() == playerId)
         flag->UpgradeRoad(start_dir);
 }
 
@@ -137,7 +137,7 @@ ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::
 
 void ChangeDistribution::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).ChangeDistribution(data);
+    world.getPlayer(playerId).ChangeDistribution(data);
 }
 
 ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
@@ -171,7 +171,7 @@ ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
 
 void ChangeBuildOrder::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).ChangeBuildOrder(useCustomBuildOrder, data);
+    world.getPlayer(playerId).ChangeBuildOrder(useCustomBuildOrder, data);
 }
 
 void SetBuildingSite::Execute(GameWorld& world, uint8_t playerId)
@@ -207,12 +207,12 @@ ChangeTransport::ChangeTransport(Deserializer& ser) : GameCommand(GCType::Change
 
 void ChangeTransport::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).ConvertTransportData(data);
+    world.getPlayer(playerId).ConvertTransportData(data);
 }
 
 void ChangeMilitary::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).ChangeMilitarySettings(data);
+    world.getPlayer(playerId).ChangeMilitarySettings(data);
 }
 
 ChangeTools::ChangeTools(const ToolSettings& data, const int8_t* order_delta)
@@ -224,12 +224,12 @@ ChangeTools::ChangeTools(const ToolSettings& data, const int8_t* order_delta)
 
 void ChangeTools::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).ChangeToolsSettings(data, orders);
+    world.getPlayer(playerId).ChangeToolsSettings(data, orders);
 }
 
 void CallSpecialist::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).CallFlagWorker(pt_, job);
+    world.getPlayer(playerId).CallFlagWorker(pt_, job);
 }
 
 void Attack::Execute(GameWorld& world, uint8_t playerId)
@@ -244,36 +244,36 @@ void SeaAttack::Execute(GameWorld& world, uint8_t playerId)
 
 void SetCoinsAllowed::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobMilitary>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetCoinsAllowed(enabled);
 }
 
 void SetArmorAllowed::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobMilitary>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetArmorAllowed(enabled);
 }
 
 void SetTroopLimit::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobMilitary>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetTroopLimit(rank, count);
 }
 
 void SetProductionEnabled::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobUsual>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobUsual>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetProductionEnabled(enabled);
 }
 
 void SetInventorySetting::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobBaseWarehouse>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetInventorySetting(what, state);
 }
 
@@ -324,21 +324,21 @@ SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
 
 void SetAllInventorySettings::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobBaseWarehouse>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetAllInventorySettings(isJob, states);
 }
 
 void ChangeReserve::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
-        bld->SetRealReserve(rank, count);
+    auto* const bld = world.getSpecObj<nobBaseWarehouse>(pt_);
+    if(bld && bld->getPlayer() == playerId)
+        bld->setRealReserve(rank, count);
 }
 
 void Surrender::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).Surrender();
+    world.getPlayer(playerId).Surrender();
 }
 
 void CheatArmageddon::Execute(GameWorld& world, unsigned char /*playerId*/)
@@ -353,42 +353,42 @@ void DestroyAll::Execute(GameWorld& world, uint8_t playerId)
 
 void SuggestPact::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).SuggestPact(targetPlayer, pt, duration);
+    world.getPlayer(playerId).SuggestPact(targetPlayer, pt, duration);
 }
 
 void AcceptPact::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(fromPlayer).AcceptPact(id, pt, playerId);
+    world.getPlayer(fromPlayer).AcceptPact(id, pt, playerId);
 }
 
 void CancelPact::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).CancelPact(pt, otherPlayer);
+    world.getPlayer(playerId).CancelPact(pt, otherPlayer);
 }
 
 void NotifyAlliesOfLocation::Execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).NotifyAlliesOfLocation(pt_);
+    world.getPlayer(playerId).NotifyAlliesOfLocation(pt_);
 }
 
 void SetShipYardMode::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobShipYard>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
-        bld->SetMode(buildShips ? nobShipYard::Mode::Ships : nobShipYard::Mode::Boats);
+    auto* const bld = world.getSpecObj<nobShipYard>(pt_);
+    if(bld && bld->getPlayer() == playerId)
+        bld->setMode(buildShips ? nobShipYard::Mode::Ships : nobShipYard::Mode::Boats);
 }
 
 void SetTempleProductionMode::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobTemple>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
-        bld->SetProductionMode(productionMode);
+    auto* const bld = world.getSpecObj<nobTemple>(pt_);
+    if(bld && bld->getPlayer() == playerId)
+        bld->setProductionMode(productionMode);
 }
 
 void StartStopExpedition::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobHarborBuilding>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobHarborBuilding>(pt_);
+    if(bld && bld->getPlayer() == playerId)
     {
         if(start)
             bld->StartExpedition();
@@ -399,8 +399,8 @@ void StartStopExpedition::Execute(GameWorld& world, uint8_t playerId)
 
 void StartStopExplorationExpedition::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobHarborBuilding>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobHarborBuilding>(pt_);
+    if(bld && bld->getPlayer() == playerId)
     {
         if(start)
             bld->StartExplorationExpedition();
@@ -411,7 +411,7 @@ void StartStopExplorationExpedition::Execute(GameWorld& world, uint8_t playerId)
 
 void ExpeditionCommand::Execute(GameWorld& world, uint8_t playerId)
 {
-    noShip* ship = world.GetPlayer(playerId).GetShipByID(this->ship_id);
+    noShip* ship = world.getPlayer(playerId).getShipByID(this->ship_id);
     if(!ship)
         return;
 
@@ -431,9 +431,9 @@ void ExpeditionCommand::Execute(GameWorld& world, uint8_t playerId)
 /// Fuehrt das GameCommand aus
 void TradeOverLand::Execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
+    auto* const bld = world.getSpecObj<nobBaseWarehouse>(pt_);
     if(bld)
-        world.GetPlayer(playerId).Trade(bld, what, count);
+        world.getPlayer(playerId).Trade(bld, what, count);
 }
 
 } // namespace gc

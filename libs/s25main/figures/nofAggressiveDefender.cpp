@@ -14,7 +14,7 @@
 nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned char player, nobBaseMilitary& home,
                                              const unsigned char rank, nofAttacker& attacker)
     : nofActiveSoldier(pos, player, home, rank, SoldierState::AggressivedefendingWalkingToAggressor),
-      attacker(&attacker), attacked_goal(attacker.GetAttackedGoal())
+      attacker(&attacker), attacked_goal(attacker.getAttackedGoal())
 {
     // Notify building to protect
     attacked_goal->LinkAggressiveDefender(*this);
@@ -22,7 +22,7 @@ nofAggressiveDefender::nofAggressiveDefender(const MapPoint pos, const unsigned 
 
 nofAggressiveDefender::nofAggressiveDefender(const nofPassiveSoldier& other, nofAttacker& attacker)
     : nofActiveSoldier(other, SoldierState::AggressivedefendingWalkingToAggressor), attacker(&attacker),
-      attacked_goal(attacker.GetAttackedGoal())
+      attacked_goal(attacker.getAttackedGoal())
 {
     // Notify building to protect
     attacked_goal->LinkAggressiveDefender(*this);
@@ -89,7 +89,7 @@ void nofAggressiveDefender::HomeDestroyedAtBegin()
     StartWalking(RANDOM_ENUM(Direction));
 }
 
-void nofAggressiveDefender::CancelAtAttackedBld()
+void nofAggressiveDefender::cancelAtAttackedBld()
 {
     if(attacked_goal)
     {
@@ -101,7 +101,7 @@ void nofAggressiveDefender::CancelAtAttackedBld()
 void nofAggressiveDefender::WonFighting()
 {
     // addon BattlefieldPromotion active? -> increase rank!
-    if(world->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+    if(world->getGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
         IncreaseRank();
 
     // Ist evtl. unser Heimatgebäude zerstört?
@@ -161,7 +161,7 @@ void nofAggressiveDefender::MissionAggressiveDefendingLookForNewAggressor()
 
 void nofAggressiveDefender::AttackedGoalDestroyed()
 {
-    CancelAtAttacker();
+    cancelAtAttacker();
     attacked_goal = nullptr;
 
     /*// Stehen wir? Dann losgehen
@@ -202,10 +202,10 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     }
 
     // Does he still want to fight?
-    if(!attacker->IsReadyForFight())
+    if(!attacker->isReadyForFight())
     {
         // Look for a new one
-        CancelAtAttacker();
+        cancelAtAttacker();
         MissionAggressiveDefendingLookForNewAggressor();
         return;
     }
@@ -220,10 +220,10 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
         return;
     }
 
-    RTTR_Assert(pos != attacker->GetPos()); // If so, why was it not found?
+    RTTR_Assert(pos != attacker->getPos()); // If so, why was it not found?
 
     // Calc next walking direction
-    const auto dir = world->FindHumanPath(pos, attacker->GetPos(), 100, true);
+    const auto dir = world->FindHumanPath(pos, attacker->getPos(), 100, true);
 
     if(dir)
     {
@@ -233,7 +233,7 @@ void nofAggressiveDefender::MissAggressiveDefendingWalk()
     {
         // No route found
         // Look for new attacker
-        CancelAtAttacker();
+        cancelAtAttacker();
         MissionAggressiveDefendingLookForNewAggressor();
     }
 }
@@ -254,15 +254,15 @@ void nofAggressiveDefender::AttackerLost()
 void nofAggressiveDefender::InformTargetsAboutCancelling()
 {
     nofActiveSoldier::InformTargetsAboutCancelling();
-    CancelAtAttacker();
-    CancelAtAttackedBld();
+    cancelAtAttacker();
+    cancelAtAttackedBld();
 }
 
-void nofAggressiveDefender::CancelAtAttacker()
+void nofAggressiveDefender::cancelAtAttacker()
 {
     if(attacker)
     {
-        RTTR_Assert(attacker->GetHuntingDefender() == this);
+        RTTR_Assert(attacker->getHuntingDefender() == this);
         attacker->AggressiveDefenderLost();
         attacker = nullptr;
     }
