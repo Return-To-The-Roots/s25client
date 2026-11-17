@@ -38,14 +38,14 @@ dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
     for(unsigned i = 0; i < 8; ++i)
         addText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, FontStyle{}, LargeFont);
 
-    LOBBYCLIENT.AddListener(this);
+    LOBBYCLIENT.addListener(this);
     GAMECLIENT.setInterface(this);
 }
 
 dskGameLoader::~dskGameLoader()
 {
     WINDOWMANAGER.setCursor();
-    LOBBYCLIENT.RemoveListener(this);
+    LOBBYCLIENT.removeListener(this);
     GAMECLIENT.removeInterface(this);
 }
 
@@ -55,7 +55,7 @@ void dskGameLoader::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult
     {
         GAMECLIENT.stop();
 
-        if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
+        if(LOBBYCLIENT.isLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
         else if(loader_.getGame()->world_.isSinglePlayer())
             WINDOWMANAGER.switchTo(std::make_unique<dskSinglePlayer>());

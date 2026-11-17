@@ -52,11 +52,11 @@ struct LobbyFixture
     TestLobbySever lobbyServer;
     int lobbyPort;
     LobbyFixture() : lobbyPort(lobbyServer.tryListen()) { BOOST_TEST_REQUIRE(lobbyPort > 0); }
-    ~LobbyFixture() { LOBBYCLIENT.Stop(); } // To avoid error msg due to missing server
+    ~LobbyFixture() { LOBBYCLIENT.stop(); } // To avoid error msg due to missing server
     void run()
     {
         lobbyServer.run();
-        LOBBYCLIENT.Run();
+        LOBBYCLIENT.run();
     }
 };
 
@@ -64,8 +64,8 @@ namespace {
 MOCK_BASE_CLASS(MockLobbyInterface, LobbyInterface)
 {
 public:
-    MockLobbyInterface() { LOBBYCLIENT.AddListener(this); }
-    ~MockLobbyInterface() override { LOBBYCLIENT.RemoveListener(this); }
+    MockLobbyInterface() { LOBBYCLIENT.addListener(this); }
+    ~MockLobbyInterface() override { LOBBYCLIENT.removeListener(this); }
     MOCK_METHOD(LC_Chat, 2)
     MOCK_METHOD(LC_LoggedIn, 1)
     MOCK_METHOD(LC_Connected, 0)
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(LobbyConnectAndChat)
     MOCK_EXPECT(lobby.LC_Connected).once().in(s);
     MOCK_EXPECT(lobby.LC_LoggedIn).once().with(lobbyServer.testMail).in(s);
 
-    BOOST_TEST_REQUIRE(LOBBYCLIENT.Login("localhost", lobbyPort, lobbyServer.testUser, lobbyServer.testPw, false));
+    BOOST_TEST_REQUIRE(LOBBYCLIENT.login("localhost", lobbyPort, lobbyServer.testUser, lobbyServer.testPw, false));
     RTTR_REQUIRE_LOG_CONTAINS("Connect", true);
     lobbyServer.run(true);
     // Wait for login with a timeout instead of a fixed iteration count
@@ -90,10 +90,10 @@ BOOST_AUTO_TEST_CASE(LobbyConnectAndChat)
     while(std::chrono::steady_clock::now() < loginDeadline)
     {
         run();
-        if(LOBBYCLIENT.IsLoggedIn())
+        if(LOBBYCLIENT.isLoggedIn())
             break;
     }
-    BOOST_TEST_REQUIRE(LOBBYCLIENT.IsLoggedIn());
+    BOOST_TEST_REQUIRE(LOBBYCLIENT.isLoggedIn());
     RTTR_REQUIRE_LOG_CONTAINS("NMS", true);
 
     // Send a chat message via lobby chat

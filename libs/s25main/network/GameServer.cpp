@@ -218,8 +218,8 @@ bool GameServer::start(const CreateServerInfo& csi, const MapDescription& map, c
         lanAnnouncer.start();
     else if(config.servertype == ServerType::Lobby)
     {
-        LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (!config.password.empty()), config.port);
-        LOBBYCLIENT.AddListener(this);
+        LOBBYCLIENT.addServer(config.gamename, mapinfo.title, (!config.password.empty()), config.port);
+        LOBBYCLIENT.addListener(this);
     }
     announceStatusChange();
 
@@ -256,8 +256,8 @@ void GameServer::announceStatusChange()
         lanAnnouncer.setPayload(ser.getData(), ser.getLength());
     } else if(config.servertype == ServerType::Lobby)
     {
-        if(LOBBYCLIENT.IsIngame())
-            LOBBYCLIENT.UpdateServerNumPlayers(getNumFilledSlots(), playerInfos.size());
+        if(LOBBYCLIENT.isIngame())
+            LOBBYCLIENT.updateServerNumPlayers(getNumFilledSlots(), playerInfos.size());
     }
 }
 
@@ -270,7 +270,7 @@ void GameServer::LC_Status_Error(const std::string& /*error*/)
 void GameServer::LC_Created()
 {
     // All good -> Don't listen anymore
-    LOBBYCLIENT.RemoveListener(this);
+    LOBBYCLIENT.removeListener(this);
     announceStatusChange();
 }
 
@@ -414,9 +414,9 @@ void GameServer::stop()
 
     lanAnnouncer.stop();
 
-    if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
-        LOBBYCLIENT.DeleteServer();
-    LOBBYCLIENT.RemoveListener(this);
+    if(LOBBYCLIENT.isLoggedIn()) // steht die Lobbyverbindung noch?
+        LOBBYCLIENT.deleteServer();
+    LOBBYCLIENT.removeListener(this);
 
     // status
     state = ServerState::Stopped;

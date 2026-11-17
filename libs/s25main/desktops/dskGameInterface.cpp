@@ -199,7 +199,7 @@ dskGameInterface::~dskGameInterface()
     for(auto& border : borders)
         deletePtr(border);
     GAMECLIENT.removeInterface(this);
-    LOBBYCLIENT.RemoveListener(this);
+    LOBBYCLIENT.removeListener(this);
 }
 
 void dskGameInterface::setActive(bool activate)
@@ -220,7 +220,7 @@ void dskGameInterface::setActive(bool activate)
     if(activate)
     {
         GAMECLIENT.setInterface(this);
-        LOBBYCLIENT.AddListener(this);
+        LOBBYCLIENT.addListener(this);
         if(!game_->isStarted())
         {
             GAMECLIENT.onGameStart();

@@ -93,17 +93,17 @@ iwLobbyConnect::iwLobbyConnect()
     addTextButton(ID_btRegister, DrawPoint(ctrlStartPos, curYPos), edtSize, TextureColor::Green2, _("Register"),
                   NormalFont);
 
-    LOBBYCLIENT.SetProgramVersion(rttr::version::getReadableVersion());
-    LOBBYCLIENT.AddListener(this);
+    LOBBYCLIENT.setProgramVersion(rttr::version::getReadableVersion());
+    LOBBYCLIENT.addListener(this);
 }
 
 iwLobbyConnect::~iwLobbyConnect()
 {
     try
     {
-        LOBBYCLIENT.RemoveListener(this);
-        if(!LOBBYCLIENT.IsLoggedIn())
-            LOBBYCLIENT.Stop();
+        LOBBYCLIENT.removeListener(this);
+        if(!LOBBYCLIENT.isLoggedIn())
+            LOBBYCLIENT.stop();
     } catch(...)
     {
         // Ignored
@@ -161,7 +161,7 @@ void iwLobbyConnect::msgButtonClick(const unsigned ctrl_id)
             std::string user, pass;
             readFromEditAndSaveLobbyData(user, pass);
 
-            if(!LOBBYCLIENT.Login(LOADER.getTextN("client", 0),
+            if(!LOBBYCLIENT.login(LOADER.getTextN("client", 0),
                                   s25util::fromStringClassic<unsigned>(LOADER.getTextN("client", 1)), user, pass,
                                   SETTINGS.server.ipv6))
             {

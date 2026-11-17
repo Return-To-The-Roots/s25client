@@ -207,7 +207,7 @@ void iwLoad::saveLoad()
         WINDOWMANAGER.show(std::make_unique<iwConnecting>(csi.type, std::move(lobbyClient)));
     } else
     {
-        if(LOBBYCLIENT.IsLoggedIn())
+        if(LOBBYCLIENT.isLoggedIn())
             WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
         else
             close();

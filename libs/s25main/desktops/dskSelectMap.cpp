@@ -130,14 +130,14 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
     // "Eigene" auswählen
     optiongroup->setSelection(5, true);
 
-    LOBBYCLIENT.AddListener(this);
+    LOBBYCLIENT.addListener(this);
 }
 
 dskSelectMap::~dskSelectMap()
 {
     // if(mapGenThread)
     //    mapGenThread->join();
-    LOBBYCLIENT.RemoveListener(this);
+    LOBBYCLIENT.removeListener(this);
 }
 
 void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
@@ -250,7 +250,7 @@ void dskSelectMap::goBack() const
         WINDOWMANAGER.switchTo(std::make_unique<dskSinglePlayer>());
     else if(csi.type == ServerType::LAN)
         WINDOWMANAGER.switchTo(std::make_unique<dskLAN>());
-    else if(csi.type == ServerType::Lobby && LOBBYCLIENT.IsLoggedIn())
+    else if(csi.type == ServerType::Lobby && LOBBYCLIENT.isLoggedIn())
         WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
     else
         WINDOWMANAGER.switchTo(std::make_unique<dskDirectIP>());
@@ -373,7 +373,7 @@ void dskSelectMap::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     {
         GAMECLIENT.stop();
 
-        if(csi.type == ServerType::Lobby && LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
+        if(csi.type == ServerType::Lobby && LOBBYCLIENT.isLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
         else if(csi.type == ServerType::Lobby)
             WINDOWMANAGER.switchTo(std::make_unique<dskDirectIP>());

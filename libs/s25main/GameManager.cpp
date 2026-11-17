@@ -82,7 +82,7 @@ void GameManager::stop()
 {
     GAMECLIENT.stop();
     GAMESERVER.stop();
-    LOBBYCLIENT.Stop();
+    LOBBYCLIENT.stop();
     // Global Einstellungen speichern
     settings_.save();
 
@@ -99,7 +99,7 @@ bool GameManager::run()
     if(!videoDriver_.run())
         GLOBALVARS.notdone = false;
 
-    LOBBYCLIENT.Run();
+    LOBBYCLIENT.run();
 
     // Get this before the run so we know if we are currently skipping
     const unsigned targetSkipGF = GAMECLIENT.skiptogf;
@@ -181,7 +181,7 @@ bool GameManager::showMenu()
     GAMECLIENT.stop();
     GAMESERVER.stop();
 
-    if(LOBBYCLIENT.IsLoggedIn())
+    if(LOBBYCLIENT.isLoggedIn())
         // Lobby zeigen
         windowManager_.switchTo(std::make_unique<dskLobby>());
     else
