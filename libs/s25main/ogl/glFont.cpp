@@ -251,7 +251,7 @@ void glFont::draw(DrawPoint pos, const std::string& text, FontStyle format, unsi
     glVertexPointer(2, GL_FLOAT, 0, texList.vertices.data());
     glTexCoordPointer(2, GL_FLOAT, 0, texList.texCoords.data());
     VIDEODRIVER.bindTexture(texture);
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+    glColor4ub(getRed(color), getGreen(color), getBlue(color), getAlpha(color));
     glDrawArrays(GL_QUADS, 0, texList.vertices.size());
 }
 

@@ -74,11 +74,11 @@ unsigned PreviewMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
         const int shading = shadows[getMMIdx(pt)] - 0x40;
         if(shading != 0)
         {
-            const auto r = static_cast<int>(GetRed(color)) + shading;
-            const auto g = static_cast<int>(GetGreen(color)) + shading;
-            const auto b = static_cast<int>(GetBlue(color)) + shading;
+            const auto r = static_cast<int>(getRed(color)) + shading;
+            const auto g = static_cast<int>(getGreen(color)) + shading;
+            const auto b = static_cast<int>(getBlue(color)) + shading;
             using helpers::clamp;
-            color = MakeColor(0xFF, clamp(r, 0u, 255u), clamp(g, 0u, 255u), clamp(b, 0u, 255u));
+            color = makeColor(0xFF, clamp(r, 0u, 255u), clamp(g, 0u, 255u), clamp(b, 0u, 255u));
         }
     }
 

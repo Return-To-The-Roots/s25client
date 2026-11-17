@@ -70,10 +70,10 @@ void noGrapefield::draw(DrawPoint drawPt)
             unsigned alpha = GAMECLIENT.interpolate(0xFF, event);
 
             // hiding old field
-            grapefield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            grapefield_cache[type][size].draw(drawPt, setAlpha(COLOR_WHITE, 0xFF - alpha));
 
             // showing new field
-            grapefield_cache[type][size + 1].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+            grapefield_cache[type][size + 1].draw(drawPt, setAlpha(COLOR_WHITE, alpha));
         }
         break;
         case State::Withering:
@@ -81,7 +81,7 @@ void noGrapefield::draw(DrawPoint drawPt)
             unsigned alpha = GAMECLIENT.interpolate(0xFF, event);
 
             // hiding old field
-            grapefield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            grapefield_cache[type][size].draw(drawPt, setAlpha(COLOR_WHITE, 0xFF - alpha));
         }
         break;
     }

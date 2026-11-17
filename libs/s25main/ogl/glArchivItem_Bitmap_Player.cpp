@@ -94,16 +94,16 @@ void glArchivItem_Bitmap_Player::draw(Rect dstArea, Rect srcArea, unsigned color
     texCoords[7].x += 0.5f;
 
     std::array<GL_RGBAColor, 8> colors;
-    colors[0].r = GetRed(color);
-    colors[0].g = GetGreen(color);
-    colors[0].b = GetBlue(color);
-    colors[0].a = GetAlpha(color);
+    colors[0].r = getRed(color);
+    colors[0].g = getGreen(color);
+    colors[0].b = getBlue(color);
+    colors[0].a = getAlpha(color);
     colors[3] = colors[2] = colors[1] = colors[0];
 
-    colors[4].r = GetRed(player_color);
-    colors[4].g = GetGreen(player_color);
-    colors[4].b = GetBlue(player_color);
-    colors[4].a = GetAlpha(player_color);
+    colors[4].r = getRed(player_color);
+    colors[4].g = getGreen(player_color);
+    colors[4].b = getBlue(player_color);
+    colors[4].a = getAlpha(player_color);
     colors[7] = colors[6] = colors[5] = colors[4];
 
     glEnableClientState(GL_COLOR_ARRAY);

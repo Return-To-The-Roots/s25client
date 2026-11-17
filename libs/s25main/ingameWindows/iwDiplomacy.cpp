@@ -108,7 +108,7 @@ void iwDiplomacy::msgPaintBefore()
     for(unsigned i = 0; i < gwv.getWorld().getNumPlayers(); ++i)
     {
         // Rechtecke in Spielerfarbe malen mit entsprechender Transparenz
-        drawRectangle(curRect, SetAlpha(gwv.getWorld().getPlayer(i).color, 0x40));
+        drawRectangle(curRect, setAlpha(gwv.getWorld().getPlayer(i).color, 0x40));
         curRect.move(DrawPoint(0, CELL_HEIGHT + SPACE_HEIGHT));
 
         // Farben der Bündnis-Buttons setzen, je nachdem wie der Status ist

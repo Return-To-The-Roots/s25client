@@ -43,11 +43,11 @@ void Messenger::draw()
         std::string cd_str = (it->cd == ChatDestination::System) ? "" : _(CD_STRINGS[it->cd]);
 
         DrawPoint curTextPos(textPos);
-        LargeFont->draw(curTextPos, it->author, FontStyle::LEFT, SetAlpha(it->color_author, transparency));
+        LargeFont->draw(curTextPos, it->author, FontStyle::LEFT, setAlpha(it->color_author, transparency));
         curTextPos.x += LargeFont->getWidth(it->author);
-        LargeFont->draw(curTextPos, cd_str, FontStyle::LEFT, SetAlpha(CD_COLORS[it->cd], transparency));
+        LargeFont->draw(curTextPos, cd_str, FontStyle::LEFT, setAlpha(CD_COLORS[it->cd], transparency));
         curTextPos.x += LargeFont->getWidth(cd_str);
-        LargeFont->draw(curTextPos, it->msg, FontStyle::LEFT, SetAlpha(it->color_msg, transparency));
+        LargeFont->draw(curTextPos, it->msg, FontStyle::LEFT, setAlpha(it->color_msg, transparency));
         ++it;
     }
 }

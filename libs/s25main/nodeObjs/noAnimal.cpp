@@ -119,11 +119,11 @@ void noAnimal::draw(DrawPoint drawPt)
             // Gibts ein Leichenbild?
             if(!LOADER.getDeadAnimalSprite(species).empty())
             {
-                LOADER.getDeadAnimalSprite(species).draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+                LOADER.getDeadAnimalSprite(species).draw(drawPt, setAlpha(COLOR_WHITE, alpha));
             } else
             {
                 // Stehend zeichnen
-                LOADER.getAnimalSprite(species, getCurMoveDir(), 0).draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+                LOADER.getAnimalSprite(species, getCurMoveDir(), 0).draw(drawPt, setAlpha(COLOR_WHITE, alpha));
             }
         }
         break;

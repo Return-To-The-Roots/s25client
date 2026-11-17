@@ -336,23 +336,23 @@ void dskCredits::drawCredit()
                                     helpers::interpolate(0u, 0xFFu, elapsedPageTime, FADING_TIME);
 
     // draw text
-    LargeFont->draw(DrawPoint(40, 100), itCurEntry->title, FontStyle{}, SetAlpha(COLOR_RED, transparency));
+    LargeFont->draw(DrawPoint(40, 100), itCurEntry->title, FontStyle{}, setAlpha(COLOR_RED, transparency));
 
     std::array<unsigned, 2> columnToY = {{150, 150}};
 
     for(const auto& line : itCurEntry->lines)
     {
         LargeFont->draw(DrawPoint(60 + line.column * 350, columnToY[line.column]), line.line, FontStyle{},
-                        SetAlpha(COLOR_YELLOW, transparency));
+                        setAlpha(COLOR_YELLOW, transparency));
         columnToY[line.column] += LargeFont->getHeight() + 5;
     }
 
     LargeFont->draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, FontStyle{},
-                    SetAlpha(COLOR_RED, transparency));
+                    setAlpha(COLOR_RED, transparency));
 
     if(itCurEntry->pic)
         itCurEntry->pic->drawFull(DrawPoint(VIDEODRIVER.getRenderSize().x - 300, 70),
-                                  SetAlpha(COLOR_WHITE, transparency));
+                                  setAlpha(COLOR_WHITE, transparency));
 }
 
 template<typename T>

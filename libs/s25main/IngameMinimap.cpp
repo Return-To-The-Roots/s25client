@@ -118,7 +118,7 @@ unsigned IngameMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
 
         // Bei FOW die Farben abdunkeln
         if(fow)
-            color = MakeColor(0xFF, GetRed(color) / 2, GetGreen(color) / 2, GetBlue(color) / 2);
+            color = makeColor(0xFF, getRed(color) / 2, getGreen(color) / 2, getBlue(color) / 2);
 
         dos[getMMIdx(pt)] = drawn_object;
     }
@@ -136,9 +136,9 @@ unsigned IngameMinimap::calcTerrainColor(const MapPoint pt, const unsigned t)
 
     // Schattierung
     int shadow = gwv.getNode(pt).shadow;
-    int r = GetRed(color) + shadow - 0x40;
-    int g = GetGreen(color) + shadow - 0x40;
-    int b = GetBlue(color) + shadow - 0x40;
+    int r = getRed(color) + shadow - 0x40;
+    int g = getGreen(color) + shadow - 0x40;
+    int b = getBlue(color) + shadow - 0x40;
 
     if(r < 0)
         r = 0;
@@ -153,7 +153,7 @@ unsigned IngameMinimap::calcTerrainColor(const MapPoint pt, const unsigned t)
     else if(b > 255)
         b = 255;
 
-    return MakeColor(0xFF, unsigned(r), unsigned(g), unsigned(b));
+    return makeColor(0xFF, unsigned(r), unsigned(g), unsigned(b));
 }
 
 /**
@@ -179,8 +179,8 @@ unsigned IngameMinimap::combineWithPlayerColor(const unsigned color, const unsig
     // Spielerfarbe mit einberechnen
     unsigned player_color = gwv.getWorld().getPlayer(player - 1).color;
 
-    return MakeColor(0xFF, (GetRed(color) + GetRed(player_color)) / 2, (GetGreen(color) + GetGreen(player_color)) / 2,
-                     (GetBlue(color) + GetBlue(player_color)) / 2);
+    return makeColor(0xFF, (getRed(color) + getRed(player_color)) / 2, (getGreen(color) + getGreen(player_color)) / 2,
+                     (getBlue(color) + getBlue(player_color)) / 2);
 }
 
 void IngameMinimap::updateNode(const MapPoint pt)

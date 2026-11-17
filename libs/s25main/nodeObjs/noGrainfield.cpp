@@ -66,10 +66,10 @@ void noGrainfield::draw(DrawPoint drawPt)
             unsigned alpha = GAMECLIENT.interpolate(0xFF, event);
 
             // altes Feld ausblenden
-            LOADER.grainfield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            LOADER.grainfield_cache[type][size].draw(drawPt, setAlpha(COLOR_WHITE, 0xFF - alpha));
 
             // neues Feld einblenden
-            LOADER.grainfield_cache[type][size + 1].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+            LOADER.grainfield_cache[type][size + 1].draw(drawPt, setAlpha(COLOR_WHITE, alpha));
         }
         break;
         case State::Withering:
@@ -77,7 +77,7 @@ void noGrainfield::draw(DrawPoint drawPt)
             unsigned alpha = GAMECLIENT.interpolate(0xFF, event);
 
             // Feld ausblenden
-            LOADER.grainfield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            LOADER.grainfield_cache[type][size].draw(drawPt, setAlpha(COLOR_WHITE, 0xFF - alpha));
         }
         break;
     }

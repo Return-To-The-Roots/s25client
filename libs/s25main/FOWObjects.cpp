@@ -14,7 +14,7 @@
 unsigned calcPlayerFOWDrawColor(const unsigned color)
 {
     // Farbkomponenten extrahieren
-    unsigned red = GetRed(color), green = GetGreen(color), blue = GetBlue(color);
+    unsigned red = getRed(color), green = getGreen(color), blue = getBlue(color);
 
     // "Skalieren"
     red = red * FOW_DRAW_COLOR_BRIGHTNESS / 0xFF;
@@ -22,7 +22,7 @@ unsigned calcPlayerFOWDrawColor(const unsigned color)
     blue = blue * FOW_DRAW_COLOR_BRIGHTNESS / 0xFF;
 
     // Fertige Farbe zurückgeben
-    return MakeColor(0xFF, red, green, blue);
+    return makeColor(0xFF, red, green, blue);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////

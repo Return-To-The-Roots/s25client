@@ -185,7 +185,7 @@ void dskBenchmark::startTest(Benchmark test)
                 rect.rect.setSize(Extent(distSize(rng), distSize(rng)));
                 unsigned clr = distClr(rng);
                 unsigned alpha = std::min((distClr(rng) + 10u) * 10u, 0xFFu);
-                rect.clr = MakeColor(alpha, clr, clr, clr);
+                rect.clr = makeColor(alpha, clr, clr, clr);
                 rects_.push_back(rect);
                 pt.y += distrMove(rng);
                 if(pt.y >= static_cast<int>(screenSize.y) - 20)
@@ -199,7 +199,7 @@ void dskBenchmark::startTest(Benchmark test)
                 line.p1 = Position(distrPosX(rng), distrPosY(rng));
                 line.p2 = Position(distrPosX(rng), distrPosY(rng));
                 line.width = distrWidth(rng);
-                line.clr = MakeColor(alpha, clr, clr, clr);
+                line.clr = makeColor(alpha, clr, clr, clr);
                 lines_.push_back(line);
             }
             break;
