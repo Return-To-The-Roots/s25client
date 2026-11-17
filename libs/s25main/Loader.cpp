@@ -408,7 +408,7 @@ void Loader::loadDummyMapFiles()
     if(!map.empty())
         return;
     const auto pushRange = [&map](unsigned from, unsigned to) {
-        map.alloc_inc(to - map.size() + 1);
+        map.allocInc(to - map.size() + 1);
         libsiedler2::PixelBufferBGRA buffer(1, 1);
         for(const auto i : helpers::range(from, to + 1))
         {

@@ -16,7 +16,7 @@
 void convertAndSaveSounds(const RttrConfig& config, const boost::filesystem::path& targetFolder)
 {
     libsiedler2::Archiv sounds;
-    if(libsiedler2::Load(config.expandPath(s25::files::soundOrig), sounds) != 0)
+    if(libsiedler2::load(config.expandPath(s25::files::soundOrig), sounds) != 0)
         throw std::runtime_error("Could not load sounds");
     convertSounds(sounds, config.expandPath(s25::files::soundScript));
     boost::filesystem::create_directories(targetFolder);

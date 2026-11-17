@@ -195,7 +195,7 @@ void Settings::load()
     const auto settingsPath = RTTRCONFIG.expandPath(s25::resources::config);
     try
     {
-        if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() < SECTION_NAMES.size())
+        if(libsiedler2::load(settingsPath, settings) != 0 || settings.size() < SECTION_NAMES.size())
             throw std::runtime_error("File missing or invalid");
 
         const libsiedler2::ArchivItem_Ini* iniGlobal =
@@ -378,7 +378,7 @@ void Settings::loadIngame()
     const auto settingsPathIngame = RTTRCONFIG.expandPath(s25::resources::ingameOptions);
     try
     {
-        if(libsiedler2::Load(settingsPathIngame, settingsIngame) != 0)
+        if(libsiedler2::load(settingsPathIngame, settingsIngame) != 0)
             throw std::runtime_error("File missing");
 
         const libsiedler2::ArchivItem_Ini* iniIngame =

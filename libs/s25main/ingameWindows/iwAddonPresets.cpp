@@ -52,7 +52,7 @@ static bfs::path getPresetsDir()
 static std::optional<std::map<unsigned, unsigned>> loadPresetsFromFile(const bfs::path& filePath)
 {
     libsiedler2::Archiv archive;
-    if(libsiedler2::Load(filePath, archive) != 0)
+    if(libsiedler2::load(filePath, archive) != 0)
     {
         LOG.write("Failed to load addon preset from %1%\n") % filePath;
         return std::nullopt;

@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mapfile_with_max_players)
 
     createRandomMap(mapPath, settings);
     libsiedler2::Archiv archive;
-    BOOST_TEST_REQUIRE(libsiedler2::Load(mapPath, archive) == 0);
+    BOOST_TEST_REQUIRE(libsiedler2::load(mapPath, archive) == 0);
     const auto* map = dynamic_cast<const libsiedler2::ArchivItem_Map*>(archive[0]);
     BOOST_TEST_REQUIRE(map);
     const auto& mapHeader = map->getHeader();
