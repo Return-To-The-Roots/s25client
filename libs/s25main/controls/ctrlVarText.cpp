@@ -26,12 +26,12 @@ ctrlVarText::ctrlVarText(Window* parent, unsigned id, const DrawPoint& pos, cons
 
 ctrlVarText::~ctrlVarText() = default;
 
-Rect ctrlVarText::GetBoundaryRect() const
+Rect ctrlVarText::getBoundaryRect() const
 {
-    return font->getBounds(GetDrawPos(), GetFormatedText(), format_);
+    return font->getBounds(getDrawPos(), getFormatedText(), format_);
 }
 
-void ctrlVarText::Draw_()
+void ctrlVarText::drawImpl()
 {
-    font->Draw(GetDrawPos(), GetFormatedText(), format_, color_);
+    font->draw(getDrawPos(), getFormatedText(), format_, color_);
 }

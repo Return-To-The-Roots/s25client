@@ -20,7 +20,7 @@ struct Triangle
 
     Triangle(bool rsu, const MapPoint& position) : rsu(rsu), position(position) {}
     Triangle(bool rsu, const Position& position, const MapExtent& size)
-        : rsu(rsu), position(MakeMapPoint(position, size))
+        : rsu(rsu), position(makeMapPoint(position, size))
     {}
 };
 

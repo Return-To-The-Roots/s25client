@@ -9,7 +9,7 @@
 struct GetEstimateFromPtr
 {
     template<typename T>
-    static unsigned GetValue(T* el)
+    static unsigned getValue(T* el)
     {
         return el->estimate;
     }
@@ -37,14 +37,14 @@ public:
             return best;
         }
         int bestIdx = 0;
-        unsigned bestEstimate = T_GetOrderValue::GetValue(elements.front());
+        unsigned bestEstimate = T_GetOrderValue::getValue(elements.front());
         for(int i = 1; i < size; i++)
         {
             // Note that this check does not consider nodes with the same value
             // However this is a) correct (same estimate = same quality so no preference from the algorithm)
             // and b) still fully deterministic as the entries are NOT sorted and the insertion-extraction-pattern
             // is completely pre-determined by the graph-structur
-            const unsigned estimate = T_GetOrderValue::GetValue(elements[i]);
+            const unsigned estimate = T_GetOrderValue::getValue(elements[i]);
             if(estimate < bestEstimate)
             {
                 bestEstimate = estimate;

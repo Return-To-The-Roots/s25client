@@ -88,100 +88,100 @@ iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const std::stri
                                        const unsigned additionalHeight)
     : IngameWindow(CGI_ADDON_PRESETS, IngameWindow::posLastOrCenter,
                    Extent(440, contentStartY + additionalHeight + ctrlHeight + bottomMargin), title,
-                   LOADER.GetImageN("resource", 41), true)
+                   LOADER.getImageN("resource", 41), true)
 {
     using SRT = ctrlTable::SortType;
-    AddTable(ID_tblPresets, DrawPoint(contentX, tableY), Extent(contentWidth, tableHeight), TextureColor::Green2,
+    addTable(ID_tblPresets, DrawPoint(contentX, tableY), Extent(contentWidth, tableHeight), TextureColor::Green2,
              NormalFont, ctrlTable::Columns{{_("Preset Name"), contentWidth, SRT::String}, {}});
 
-    AddText(ID_txtFolder, DrawPoint(contentX, tableY + tableHeight + ctrlSpacingY), GetPresetsDir().string(),
+    addText(ID_txtFolder, DrawPoint(contentX, tableY + tableHeight + ctrlSpacingY), GetPresetsDir().string(),
             COLOR_YELLOW, FontStyle::TOP, SmallFont)
       ->setMaxWidth(contentWidth);
 
     const unsigned buttonY = contentStartY + additionalHeight;
-    AddTextButton(ID_btAction, DrawPoint(rightColumnX, buttonY), Extent(halfWidth, ctrlHeight), TextureColor::Green2,
+    addTextButton(ID_btAction, DrawPoint(rightColumnX, buttonY), Extent(halfWidth, ctrlHeight), TextureColor::Green2,
                   actionLabel, NormalFont)
-      ->SetEnabled(false);
-    AddTextButton(ID_btDelete, DrawPoint(contentX, buttonY), Extent(halfWidth, ctrlHeight), TextureColor::Red1,
+      ->setEnabled(false);
+    addTextButton(ID_btDelete, DrawPoint(contentX, buttonY), Extent(halfWidth, ctrlHeight), TextureColor::Red1,
                   _("Delete"), NormalFont)
-      ->SetEnabled(false);
+      ->setEnabled(false);
 
-    RefreshTable();
+    refreshTable();
 }
 
-void iwAddonPresetsBase::RefreshTable()
+void iwAddonPresetsBase::refreshTable()
 {
-    auto& table = assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets));
-    table.DeleteAllItems();
+    auto& table = assertNonNull(getCtrl<ctrlTable>(ID_tblPresets));
+    table.deleteAllItems();
 
     for(const auto& file : ListDir(GetPresetsDir(), "ini"))
-        table.AddRow({file.stem().string(), file.string()});
+        table.addRow({file.stem().string(), file.string()});
 
-    table.SortRows(0, TableSortDir::Ascending);
+    table.sortRows(0, TableSortDir::Ascending);
 }
 
-bfs::path iwAddonPresetsBase::GetSelectedFilePath() const
+bfs::path iwAddonPresetsBase::getSelectedFilePath() const
 {
-    const auto& table = assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets));
-    const auto& selection = table.GetSelection();
+    const auto& table = assertNonNull(getCtrl<ctrlTable>(ID_tblPresets));
+    const auto& selection = table.getSelection();
     if(!selection)
         return {};
-    return table.GetItemText(*selection, 1);
+    return table.getItemText(*selection, 1);
 }
 
-bool iwAddonPresetsBase::IsPresetSelected() const
+bool iwAddonPresetsBase::isPresetSelected() const
 {
-    return assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets)).GetSelection().has_value();
+    return assertNonNull(getCtrl<ctrlTable>(ID_tblPresets)).getSelection().has_value();
 }
 
-void iwAddonPresetsBase::UpdateButtons()
+void iwAddonPresetsBase::updateButtons()
 {
-    GetCtrl<ctrlButton>(ID_btDelete)->SetEnabled(IsPresetSelected());
-    GetCtrl<ctrlButton>(ID_btAction)->SetEnabled(CanDoAction());
+    getCtrl<ctrlButton>(ID_btDelete)->setEnabled(isPresetSelected());
+    getCtrl<ctrlButton>(ID_btAction)->setEnabled(canDoAction());
 }
 
-bool iwAddonPresetsBase::CanDoAction() const
+bool iwAddonPresetsBase::canDoAction() const
 {
-    return IsPresetSelected();
+    return isPresetSelected();
 }
 
-void iwAddonPresetsBase::Msg_ButtonClick(const unsigned ctrl_id)
+void iwAddonPresetsBase::msgButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_btDelete)
-        ConfirmDelete();
+        confirmDelete();
     else
     {
         RTTR_Assert(ctrl_id == ID_btAction);
-        DoAction();
+        doAction();
     }
 }
 
-void iwAddonPresetsBase::Msg_TableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/)
+void iwAddonPresetsBase::msgTableSelectItem(const unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/)
 {
-    UpdateButtons();
+    updateButtons();
 }
 
-void iwAddonPresetsBase::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
+void iwAddonPresetsBase::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
-    DoAction();
+    doAction();
 }
 
-void iwAddonPresetsBase::ConfirmDelete()
+void iwAddonPresetsBase::confirmDelete()
 {
-    const bfs::path filePath = GetSelectedFilePath();
+    const bfs::path filePath = getSelectedFilePath();
     if(filePath.empty())
         return;
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+    WINDOWMANAGER.show(std::make_unique<iwMsgbox>(
       _("Delete Preset"), helpers::format(_("Are you sure you want to delete preset '%1%'?"), filePath.stem().string()),
       this, MsgboxButton::YesNo, MsgboxIcon::QuestionRed, ID_mbDelete));
 }
 
-void iwAddonPresetsBase::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void iwAddonPresetsBase::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     if(msgbox_id != ID_mbDelete || mbr != MsgboxResult::Yes)
         return;
 
-    const bfs::path filePath = GetSelectedFilePath();
+    const bfs::path filePath = getSelectedFilePath();
     if(filePath.empty())
         return;
 
@@ -190,12 +190,12 @@ void iwAddonPresetsBase::Msg_MsgBoxResult(const unsigned msgbox_id, const Msgbox
     if(ec)
     {
         LOG.write("Failed to delete addon preset %1%: %2%\n") % filePath % ec.message();
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Delete Failed"), _("Failed to delete the selected preset."),
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Delete Failed"), _("Failed to delete the selected preset."),
                                                       this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
     }
     // Refresh in both cases so the list reflects the actual filesystem state
     // (e.g. the file became a directory or was removed out from under us).
-    RefreshTable();
+    refreshTable();
 }
 
 iwSaveAddonPreset::iwSaveAddonPreset(std::map<unsigned, unsigned> states)
@@ -203,54 +203,54 @@ iwSaveAddonPreset::iwSaveAddonPreset(std::map<unsigned, unsigned> states)
 {
     // maxLength 251 = 255 filename limit - 4 chars for ".ini"; just discourages absurdly long
     // input, isValidFileName() may still reject it since it counts bytes, not codepoints.
-    AddEdit(ID_edtName, DrawPoint(contentX, contentStartY), Extent(contentWidth, ctrlHeight), TextureColor::Green2,
+    addEdit(ID_edtName, DrawPoint(contentX, contentStartY), Extent(contentWidth, ctrlHeight), TextureColor::Green2,
             NormalFont, 251, false, false, true)
-      ->SetType(EditType::Filename);
+      ->setType(EditType::Filename);
 }
 
-void iwSaveAddonPreset::Msg_EditEnter(const unsigned /*ctrl_id*/)
+void iwSaveAddonPreset::msgEditEnter(const unsigned /*ctrl_id*/)
 {
-    DoAction();
+    doAction();
 }
 
-void iwSaveAddonPreset::Msg_EditChange(const unsigned /*ctrl_id*/)
+void iwSaveAddonPreset::msgEditChange(const unsigned /*ctrl_id*/)
 {
     // Editing makes the selected preset ambiguous, so drop the selection instead of guessing which one is meant
-    assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets)).SetSelection(std::nullopt);
+    assertNonNull(getCtrl<ctrlTable>(ID_tblPresets)).setSelection(std::nullopt);
 }
 
-void iwSaveAddonPreset::Msg_TableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
+void iwSaveAddonPreset::msgTableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
     if(selection)
     {
-        const auto& table = assertNonNull(GetCtrl<ctrlTable>(ID_tblPresets));
-        auto& edit = assertNonNull(GetCtrl<ctrlEdit>(ID_edtName));
+        const auto& table = assertNonNull(getCtrl<ctrlTable>(ID_tblPresets));
+        auto& edit = assertNonNull(getCtrl<ctrlEdit>(ID_edtName));
         // Suppress the change event so Msg_EditChange won't deselect the row just selected
-        edit.SetNotify(false);
-        edit.SetText(table.GetItemText(*selection, 0));
-        edit.SetNotify(true);
+        edit.setNotify(false);
+        edit.setText(table.getItemText(*selection, 0));
+        edit.setNotify(true);
     }
     // The name must be filled first, as it decides whether saving is possible
-    iwAddonPresetsBase::Msg_TableSelectItem(ctrl_id, selection);
+    iwAddonPresetsBase::msgTableSelectItem(ctrl_id, selection);
 }
 
-bool iwSaveAddonPreset::CanDoAction() const
+bool iwSaveAddonPreset::canDoAction() const
 {
     // An invalid name still allows saving, which then tells the user what is wrong with it
-    return GetCtrl<ctrlEdit>(ID_edtName)->GetFileName(".ini").status != FileNameStatus::Empty;
+    return getCtrl<ctrlEdit>(ID_edtName)->getFileName(".ini").status != FileNameStatus::Empty;
 }
 
-void iwSaveAddonPreset::DoAction()
+void iwSaveAddonPreset::doAction()
 {
-    const auto fileNameResult = GetCtrl<ctrlEdit>(ID_edtName)->GetFileName(".ini");
+    const auto fileNameResult = getCtrl<ctrlEdit>(ID_edtName)->getFileName(".ini");
     switch(fileNameResult.status)
     {
         case FileNameStatus::Empty:
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Name"), _("Please enter a preset name."), this,
+            WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Invalid Name"), _("Please enter a preset name."), this,
                                                           MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
             return;
         case FileNameStatus::Invalid:
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Invalid Name"), _("Please enter a valid preset name."),
+            WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Invalid Name"), _("Please enter a valid preset name."),
                                                           this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
             return;
         case FileNameStatus::Valid: break;
@@ -259,7 +259,7 @@ void iwSaveAddonPreset::DoAction()
 
     if(bfs::exists(filePath))
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(
           _("Overwrite Preset"),
           helpers::format(_("A preset named '%1%' already exists. Do you want to overwrite it?"),
                           filePath.stem().string()),
@@ -267,10 +267,10 @@ void iwSaveAddonPreset::DoAction()
         return;
     }
 
-    SaveToPath(filePath);
+    saveToPath(filePath);
 }
 
-void iwSaveAddonPreset::SaveToPath(const bfs::path& filePath)
+void iwSaveAddonPreset::saveToPath(const bfs::path& filePath)
 {
     auto iniItem = std::make_unique<libsiedler2::ArchivItem_Ini>("addons");
     for(const auto& [id, status] : states_)
@@ -282,46 +282,46 @@ void iwSaveAddonPreset::SaveToPath(const bfs::path& filePath)
     const int ec = libsiedler2::Write(filePath, archive);
     if(ec == libsiedler2::ErrorCode::NONE)
     {
-        Close();
+        close();
         return;
     }
 
     LOG.write("Failed to save addon preset to %1%: %2%\n") % filePath % libsiedler2::getErrorString(ec);
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Save Failed"),
+    WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Save Failed"),
                                                   _("Failed to save the preset. Check application logs for details."),
                                                   this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
-    RefreshTable();
+    refreshTable();
 }
 
-void iwSaveAddonPreset::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void iwSaveAddonPreset::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     if(msgbox_id != ID_mbOverwrite)
     {
-        iwAddonPresetsBase::Msg_MsgBoxResult(msgbox_id, mbr);
+        iwAddonPresetsBase::msgMsgBoxResult(msgbox_id, mbr);
         return;
     }
     if(mbr != MsgboxResult::Yes)
         return;
 
-    const auto fileNameResult = GetCtrl<ctrlEdit>(ID_edtName)->GetFileName(".ini");
+    const auto fileNameResult = getCtrl<ctrlEdit>(ID_edtName)->getFileName(".ini");
     if(fileNameResult.status == FileNameStatus::Valid)
-        SaveToPath(GetPresetsDir() / fileNameResult.name);
+        saveToPath(GetPresetsDir() / fileNameResult.name);
 }
 
 iwLoadAddonPreset::iwLoadAddonPreset(std::function<void(const std::map<unsigned, unsigned>&)> onLoad)
     : iwAddonPresetsBase(_("Load Addon Preset"), _("Load"), 0), onLoad_(std::move(onLoad))
 {}
 
-void iwLoadAddonPreset::DoAction()
+void iwLoadAddonPreset::doAction()
 {
-    const bfs::path filePath = GetSelectedFilePath();
+    const bfs::path filePath = getSelectedFilePath();
     if(filePath.empty())
         return;
 
     const auto states = LoadPresetsFromFile(filePath);
     if(!states)
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(
           _("Load Failed"),
           _("The selected preset could not be loaded. The file may be corrupted or have an invalid format."), this,
           MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
@@ -329,5 +329,5 @@ void iwLoadAddonPreset::DoAction()
     }
 
     onLoad_(*states);
-    Close();
+    close();
 }

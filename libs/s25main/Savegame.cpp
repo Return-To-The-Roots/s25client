@@ -8,18 +8,18 @@
 #include <boost/filesystem/operations.hpp>
 #include <boost/nowide/fstream.hpp>
 
-std::string Savegame::GetSignature() const
+std::string Savegame::getSignature() const
 {
     return "RTTRSV";
 }
 
-uint8_t Savegame::GetLatestMinorVersion() const
+uint8_t Savegame::getLatestMinorVersion() const
 {
     // 4.1: Portraits support
     return 1;
 }
 
-uint8_t Savegame::GetLatestMajorVersion() const
+uint8_t Savegame::getLatestMajorVersion() const
 {
     // Note: If you increase the version, reset currentGameDataVersion in SerializedGameData.cpp (see note there)
     // Note2: Also remove the workaround for the team in BasePlayerInfo & CompressedFlag here
@@ -33,19 +33,19 @@ Savegame::Savegame() : start_gf(0) {}
 
 Savegame::~Savegame() = default;
 
-bool Savegame::Save(const boost::filesystem::path& filepath, const std::string& mapName)
+bool Savegame::save(const boost::filesystem::path& filepath, const std::string& mapName)
 {
     BinaryFile file;
 
-    return file.Open(filepath, OpenFileMode::Write) && Save(file, mapName);
+    return file.Open(filepath, OpenFileMode::Write) && save(file, mapName);
 }
 
-bool Savegame::Save(BinaryFile& file, const std::string& mapName)
+bool Savegame::save(BinaryFile& file, const std::string& mapName)
 {
-    WriteAllHeaderData(file, mapName);
-    WritePlayerData(file);
-    WriteGGS(file);
-    WriteGameData(file);
+    writeAllHeaderData(file, mapName);
+    writePlayerData(file);
+    writeGGS(file);
+    writeGameData(file);
 
     return true;
 }
@@ -61,21 +61,21 @@ bool Savegame::Load(BinaryFile& file, const SaveGameDataToLoad what)
 {
     try
     {
-        ClearPlayers();
+        clearPlayers();
         sgd.Clear();
-        if(!ReadAllHeaderData(file))
+        if(!readAllHeaderData(file))
             return false;
 
         if(what == SaveGameDataToLoad::Header)
             return true;
 
-        ReadPlayerData(file);
-        ReadGGS(file);
+        readPlayerData(file);
+        readGGS(file);
 
         if(what == SaveGameDataToLoad::HeaderAndSettings)
             return true;
 
-        ReadGameData(file);
+        readGameData(file);
     } catch(const std::runtime_error& e)
     {
         lastErrorMsg = e.what();
@@ -85,21 +85,21 @@ bool Savegame::Load(BinaryFile& file, const SaveGameDataToLoad what)
     return true;
 }
 
-void Savegame::WriteExtHeader(BinaryFile& file, const std::string& mapName)
+void Savegame::writeExtHeader(BinaryFile& file, const std::string& mapName)
 {
-    SavedFile::WriteExtHeader(file, mapName);
+    SavedFile::writeExtHeader(file, mapName);
     file.WriteUnsignedInt(start_gf);
 }
 
-bool Savegame::ReadExtHeader(BinaryFile& file)
+bool Savegame::readExtHeader(BinaryFile& file)
 {
-    if(!SavedFile::ReadExtHeader(file))
+    if(!SavedFile::readExtHeader(file))
         return false;
     start_gf = file.ReadUnsignedInt();
     return true;
 }
 
-void Savegame::WriteGameData(BinaryFile& file)
+void Savegame::writeGameData(BinaryFile& file)
 {
     file.WriteUnsignedInt(1); // Compressed flag for compatibility
     std::vector<char> data(sgd.GetData(), sgd.GetData() + sgd.GetLength());
@@ -110,7 +110,7 @@ void Savegame::WriteGameData(BinaryFile& file)
     file.WriteRawData(data.data(), data.size());
 }
 
-bool Savegame::ReadGameData(BinaryFile& file)
+bool Savegame::readGameData(BinaryFile& file)
 {
     std::vector<char> data;
     const auto compressedFlagOrSize = file.ReadUnsignedInt();

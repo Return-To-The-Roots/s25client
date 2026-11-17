@@ -13,7 +13,7 @@
 #include "buildings/nobUsual.h"
 #include "world/GameWorldBase.h"
 
-noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& world, const BuildingType type, const MapPoint pt,
+noBuilding* BuildingFactory::createBuilding(GameWorldBase& world, const BuildingType type, const MapPoint pt,
                                             const unsigned char player, const Nation nation)
 {
     noBuilding* bld;
@@ -30,9 +30,9 @@ noBuilding* BuildingFactory::CreateBuilding(GameWorldBase& world, const Building
         case BuildingType::Temple: bld = new nobTemple(pt, player, nation); break;
         default: bld = new nobUsual(type, pt, player, nation); break;
     }
-    world.SetNO(pt, bld);
+    world.setNO(pt, bld);
     // Don't do this in ctor as building might not be fully initialized yet
-    world.GetPlayer(player).AddBuilding(bld, type);
+    world.getPlayer(player).addBuilding(bld, type);
 
     return bld;
 }

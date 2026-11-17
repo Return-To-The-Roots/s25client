@@ -20,38 +20,38 @@ public:
     ~EventManager();
 
     /// Deletes all events and objects to be killed. Then resets counters
-    void Clear();
+    void clear();
 
-    unsigned GetNumActiveEvents() const { return numActiveEvents; }
-    unsigned GetEventInstanceCtr() const { return eventInstanceCtr; }
+    unsigned getNumActiveEvents() const { return numActiveEvents; }
+    unsigned getEventInstanceCtr() const { return eventInstanceCtr; }
 
     /// Increase the GF# and execute all events of that GF
-    void ExecuteNextGF();
+    void executeNextGF();
     /// Add an event for the given object
     /// @param length Number of GFs after which it is executed (>0)
     /// @param id     ID of the event (passed to OnEvent)
-    const GameEvent* AddEvent(GameObject* obj, unsigned gf_length, unsigned id = 0);
+    const GameEvent* addEvent(GameObject* obj, unsigned gf_length, unsigned id = 0);
     /// Add an event that was started before, but paused (e.g. removed as someone stopped walking due to an obstacle)
     /// @param elapsed Number of GFs that have already elapsed of the length. Passing 0 is equal to adding a regular
     /// event
-    const GameEvent* AddEvent(GameObject* obj, unsigned gf_length, unsigned id, unsigned gf_elapsed);
+    const GameEvent* addEvent(GameObject* obj, unsigned gf_length, unsigned id, unsigned gf_elapsed);
     /// Remove an event and sets the pointer to nullptr
-    void RemoveEvent(const GameEvent*& ep);
+    void removeEvent(const GameEvent*& ep);
     /// Add an object to be destroyed after current GF
-    void AddToKillList(GameObject* obj);
-    void AddToKillList(std::unique_ptr<GameObject> obj);
+    void addToKillList(GameObject* obj);
+    void addToKillList(std::unique_ptr<GameObject> obj);
 
-    void Serialize(SerializedGameData& sgd) const;
-    void Deserialize(SerializedGameData& sgd);
+    void serialize(SerializedGameData& sgd) const;
+    void deserialize(SerializedGameData& sgd);
 
-    unsigned GetNextEventInstanceId();
+    unsigned getNextEventInstanceId();
 
-    unsigned GetCurrentGF() const { return currentGF; }
+    unsigned getCurrentGF() const { return currentGF; }
 
     /// Return true if the object has any active events. SLOW!
-    bool ObjectHasEvents(const GameObject& obj);
+    bool objectHasEvents(const GameObject& obj);
     /// Return true if the object will be destroyed after the current GF
-    bool IsObjectInKillList(const GameObject& obj);
+    bool isObjectInKillList(const GameObject& obj);
 
 protected:
     // Use list to allow removing of events while iterating (Event A can cause Event B in the same GF to be removed)
@@ -67,14 +67,14 @@ protected:
     GameObjList killList; /// Objects that will be killed after current GF
     const GameEvent* curActiveEvent;
 
-    const GameEvent* AddEventToQueue(const GameEvent* event);
-    void RemoveEventFromQueue(const GameEvent& event);
+    const GameEvent* addEventToQueue(const GameEvent* event);
+    void removeEventFromQueue(const GameEvent& event);
     /// Execute all events of the current GF
-    void ExecuteCurrentEvents();
+    void executeCurrentEvents();
     /// Execute the events from the given iterator
-    void ExecuteEvents(const EventMap::iterator& itEvents);
+    void executeEvents(const EventMap::iterator& itEvents);
     /// Destroy all objects in the kill list
-    void DestroyCurrentObjects();
+    void destroyCurrentObjects();
     /// Get all events in the order they will be processed
-    std::vector<const GameEvent*> GetEvents() const;
+    std::vector<const GameEvent*> getEvents() const;
 };

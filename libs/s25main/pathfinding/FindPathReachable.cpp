@@ -16,21 +16,21 @@ struct PathConditionReachableWithStaticBlockers : PathConditionReachable
 {
     PathConditionReachableWithStaticBlockers(const World& world) : PathConditionReachable(world) {}
 
-    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
+    BOOST_FORCEINLINE bool isNodeOk(const MapPoint& pt) const
     {
-        const auto* obj = world.GetNode(pt).obj;
-        if(obj && obj->GetGOT() == GO_Type::Staticobject && obj->GetBM() != BlockingManner::None)
+        const auto* obj = world.getNode(pt).obj;
+        if(obj && obj->getGOT() == GO_Type::Staticobject && obj->getBM() != BlockingManner::None)
             return false;
 
-        return PathConditionReachable::IsNodeOk(pt);
+        return PathConditionReachable::isNodeOk(pt);
     }
 };
 
 } // namespace
 
-bool DoesReachablePathExist(const GameWorldBase& world, const MapPoint startPt, const MapPoint endPt, unsigned maxLen)
+bool doesReachablePathExist(const GameWorldBase& world, const MapPoint startPt, const MapPoint endPt, unsigned maxLen)
 {
     RTTR_Assert(startPt != endPt);
-    return world.GetFreePathFinder().FindPath(startPt, endPt, false, maxLen, nullptr, nullptr, nullptr,
+    return world.getFreePathFinder().findPath(startPt, endPt, false, maxLen, nullptr, nullptr, nullptr,
                                               PathConditionReachableWithStaticBlockers(world));
 }

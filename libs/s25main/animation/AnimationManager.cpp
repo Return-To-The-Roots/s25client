@@ -11,7 +11,7 @@
 AnimationManager::AnimationManager(Window* parent) : parent_(parent)
 {
     // Use a start id based on the parent id to detect calls to wrong animation managers
-    nextId_ = parent->GetID() << 16;
+    nextId_ = parent->getID() << 16;
 }
 
 AnimationManager::~AnimationManager()
@@ -42,7 +42,7 @@ unsigned AnimationManager::addAnimation(Animation* animation)
     if(getAnimationId(animation) != 0u)
         return 0u;
     // The element must be inside the parernt
-    RTTR_Assert(parent_->GetCtrl<Window>(animation->getElementId()));
+    RTTR_Assert(parent_->getCtrl<Window>(animation->getElementId()));
     // Make the id non-zero
     if(!nextId_)
         nextId_ = 1;

@@ -51,24 +51,24 @@ struct MineProductionFixture : WorldWithGCExecution1P
         inv[GoodType::Fish] = 40;
         inv[GoodType::PickAxe] = 1;
         inv[Job::Miner] = 1;
-        world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(inv, true);
+        world.getSpecObj<nobBaseWarehouse>(hqPos)->addToInventory(inv, true);
     }
 
     // Places a mine of the given type next to the HQ, optionally seeds its resource spot, connects it by road and
     // waits until the miner has moved in. Returns the mine position.
-    MapPoint CreateMine(const BuildingType mineType, const Resource initialResource = Resource())
+    MapPoint createMine(const BuildingType mineType, const Resource initialResource = Resource())
     {
         const MapPoint minePos = hqPos + MapPoint(2, 0);
         const auto* mine =
-          static_cast<nobUsual*>(BuildingFactory::CreateBuilding(world, mineType, minePos, curPlayer, Nation::Romans));
+          static_cast<nobUsual*>(BuildingFactory::createBuilding(world, mineType, minePos, curPlayer, Nation::Romans));
         if(initialResource.getType() != ResourceType::Nothing)
-            world.GetNodeWriteable(minePos).resources = initialResource;
-        BuildRoad(world.GetNeighbour(minePos, Direction::SouthEast), false, std::vector<Direction>(2, Direction::West));
-        RTTR_EXEC_TILL(500, mine->HasWorker());
+            world.getNodeWriteable(minePos).resources = initialResource;
+        BuildRoad(world.getNeighbour(minePos, Direction::SouthEast), false, std::vector<Direction>(2, Direction::West));
+        RTTR_EXEC_TILL(500, mine->hasWorker());
         return minePos;
     }
 
-    static void SeedProductionRng(const unsigned seed) { RANDOM.Init(seed); }
+    static void seedProductionRng(const unsigned seed) { RANDOM.Init(seed); }
 };
 
 // One S4-like "no output" fallback scenario: a nearly exhausted mine that keeps working but usually mines nothing,
@@ -95,14 +95,14 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     rttr::test::LogAccessor logAcc;
     ggs.setSelection(AddonId::TOOL_ORDERING, 1);
     ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
-    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(GoodCounts::make(GoodType::Iron, 10), true);
+    world.getSpecObj<nobBaseWarehouse>(hqPos)->addToInventory(GoodCounts::make(GoodType::Iron, 10), true);
     MapPoint bldPos = hqPos + MapPoint(2, 0);
-    BuildingFactory::CreateBuilding(world, BuildingType::Metalworks, bldPos, curPlayer, Nation::Africans);
-    this->BuildRoad(world.GetNeighbour(bldPos, Direction::SouthEast), false,
+    BuildingFactory::createBuilding(world, BuildingType::Metalworks, bldPos, curPlayer, Nation::Africans);
+    this->BuildRoad(world.getNeighbour(bldPos, Direction::SouthEast), false,
                     std::vector<Direction>(2, Direction::West));
     MapPoint bldPos2 = hqPos - MapPoint(2, 0);
-    BuildingFactory::CreateBuilding(world, BuildingType::Metalworks, bldPos2, curPlayer, Nation::Africans);
-    this->BuildRoad(world.GetNeighbour(bldPos2, Direction::SouthEast), false,
+    BuildingFactory::createBuilding(world, BuildingType::Metalworks, bldPos2, curPlayer, Nation::Africans);
+    this->BuildRoad(world.getNeighbour(bldPos2, Direction::SouthEast), false,
                     std::vector<Direction>(2, Direction::East));
 
     helpers::EnumArray<int8_t, Tool> toolOrder;
@@ -116,19 +116,19 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerStopped, WorldWithGCExecution1P)
     toolOrder[Tool::Tongs] = 1;
     toolOrder[Tool::Cleaver] = 1;
     toolOrder[Tool::Rollingpin] = 1;
-    PostBox& postbox = world.GetPostMgr().AddPostBox(0);
-    postbox.Clear();
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    PostBox& postbox = world.getPostMgr().addPostBox(0);
+    postbox.clear();
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     Inventory expectedInventory = curInventory;
-    expectedInventory.Add(GoodType::Tongs, toolOrder[Tool::Tongs]);
-    expectedInventory.Add(GoodType::Cleaver, toolOrder[Tool::Cleaver]);
-    expectedInventory.Add(GoodType::Rollingpin, toolOrder[Tool::Rollingpin]);
+    expectedInventory.add(GoodType::Tongs, toolOrder[Tool::Tongs]);
+    expectedInventory.add(GoodType::Cleaver, toolOrder[Tool::Cleaver]);
+    expectedInventory.add(GoodType::Rollingpin, toolOrder[Tool::Rollingpin]);
     // Place order
     this->ChangeTools(toolSettings, toolOrder.data());
     RTTR_REQUIRE_LOG_CONTAINS("Committing an order", true);
     // Wait for completion message
-    RTTR_EXEC_TILL(3000, postbox.GetNumMsgs() == 1u);
-    BOOST_TEST_REQUIRE(postbox.GetMsg(0)->GetCategory() == PostCategory::Economy);
+    RTTR_EXEC_TILL(3000, postbox.getNumMsgs() == 1u);
+    BOOST_TEST_REQUIRE(postbox.getMsg(0)->getCategory() == PostCategory::Economy);
     // Stop it and wait till goods are produced
     this->SetProductionEnabled(bldPos, false);
     this->SetProductionEnabled(bldPos2, false);
@@ -144,7 +144,7 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
     inv[GoodType::Stones] = 20;
     inv[GoodType::Iron] = 10;
     inv[Job::Metalworker] = 1;
-    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(inv, true);
+    world.getSpecObj<nobBaseWarehouse>(hqPos)->addToInventory(inv, true);
     ggs.setSelection(AddonId::METALWORKSBEHAVIORONZERO, 1);
     ggs.setSelection(AddonId::TOOL_ORDERING, 1);
     ToolSettings settings;
@@ -152,14 +152,14 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
     this->ChangeTools(settings);
     MapPoint housePos(hqPos.x + 3, hqPos.y);
     const nobUsual* mw = static_cast<nobUsual*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Metalworks, housePos, curPlayer, Nation::Romans));
-    MapPoint flagPos = world.GetNeighbour(hqPos, Direction::SouthEast);
+      BuildingFactory::createBuilding(world, BuildingType::Metalworks, housePos, curPlayer, Nation::Romans));
+    MapPoint flagPos = world.getNeighbour(hqPos, Direction::SouthEast);
     this->BuildRoad(flagPos, false, std::vector<Direction>(3, Direction::East));
-    RTTR_EXEC_TILL(200, mw->HasWorker());
+    RTTR_EXEC_TILL(200, mw->hasWorker());
     BOOST_TEST_REQUIRE(!mw->is_working);
     // Wait till he has all the wares
-    RTTR_EXEC_TILL(3000, mw->GetNumWares(0) == 6);
-    RTTR_EXEC_TILL(3000, mw->GetNumWares(1) == 6);
+    RTTR_EXEC_TILL(3000, mw->getNumWares(0) == 6);
+    RTTR_EXEC_TILL(3000, mw->getNumWares(1) == 6);
     // No order -> not working
     BOOST_TEST_REQUIRE(!mw->is_working);
     helpers::EnumArray<int8_t, Tool> orders;
@@ -173,8 +173,8 @@ BOOST_FIXTURE_TEST_CASE(MetalWorkerOrders, WorldWithGCExecution1P)
 // both keep needing an actual resource spot. Depletion/production here is deterministic, so no RNG seed is needed.
 BOOST_FIXTURE_TEST_CASE(GraniteMineWithoutResourcesNeedsAddon, MineProductionFixture)
 {
-    CreateMine(BuildingType::GraniteMine);
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    createMine(BuildingType::GraniteMine);
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
 
     RTTR_SKIP_GFS(maxProductionGFs);
@@ -186,8 +186,8 @@ BOOST_FIXTURE_TEST_CASE(InexhaustibleGraniteMineStillNeedsResourceSpot, MineProd
 {
     ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR,
                      static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
-    CreateMine(BuildingType::GraniteMine);
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    createMine(BuildingType::GraniteMine);
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
 
     RTTR_SKIP_GFS(maxProductionGFs);
@@ -199,15 +199,15 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereProducesWithoutCreatingResource
 {
     ggs.setSelection(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR,
                      static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
-    const MapPoint minePos = CreateMine(BuildingType::GraniteMine);
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const MapPoint minePos = createMine(BuildingType::GraniteMine);
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
 
     RTTR_EXEC_TILL(maxProductionGFs, curInventory[GoodType::Stones] > initialStones);
     // WorkEverywhere must not conjure a deposit into the ground
-    BOOST_TEST(static_cast<unsigned>(world.GetNode(minePos).resources.getType())
+    BOOST_TEST(static_cast<unsigned>(world.getNode(minePos).resources.getType())
                == static_cast<unsigned>(ResourceType::Nothing));
-    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 0u);
+    BOOST_TEST(world.getNode(minePos).resources.getAmount() == 0u);
 }
 
 BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereIgnoresExistingResource, MineProductionFixture)
@@ -216,28 +216,28 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineWorkEverywhereIgnoresExistingResource, MinePr
                      static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
     // A granite mine on a foreign (coal) deposit still just makes stones and leaves the deposit untouched.
     const Resource foreignDeposit(ResourceType::Coal, 4);
-    const MapPoint minePos = CreateMine(BuildingType::GraniteMine, foreignDeposit);
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const MapPoint minePos = createMine(BuildingType::GraniteMine, foreignDeposit);
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     const unsigned initialStones = curInventory[GoodType::Stones];
 
     RTTR_EXEC_TILL(maxProductionGFs, curInventory[GoodType::Stones] > initialStones);
-    BOOST_TEST(world.GetNode(minePos).resources.has(foreignDeposit.getType()));
-    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == foreignDeposit.getAmount());
+    BOOST_TEST(world.getNode(minePos).resources.has(foreignDeposit.getType()));
+    BOOST_TEST(world.getNode(minePos).resources.getAmount() == foreignDeposit.getAmount());
 }
 
 BOOST_FIXTURE_TEST_CASE(CoalMineInexhaustibleBehaviorDoesNotDepleteResource, MineProductionFixture)
 {
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
     const Resource initCoal(ResourceType::Coal, 4);
-    const MapPoint minePos = CreateMine(BuildingType::CoalMine, initCoal);
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const MapPoint minePos = createMine(BuildingType::CoalMine, initCoal);
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     const unsigned initialCoal = curInventory[GoodType::Coal];
 
     RTTR_EXEC_TILL(maxProductionGFs, curInventory[GoodType::Coal] > initialCoal);
 
     // Inexhaustible mines produce without ever reducing the deposit
-    BOOST_TEST(world.GetNode(minePos).resources.has(initCoal.getType()));
-    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == initCoal.getAmount());
+    BOOST_TEST(world.getNode(minePos).resources.has(initCoal.getType()));
+    BOOST_TEST(world.getNode(minePos).resources.getAmount() == initCoal.getAmount());
 }
 
 // Comparison A: an almost exhausted S4-like mine mostly mines nothing, so the coal count stays put (see the
@@ -246,15 +246,15 @@ BOOST_FIXTURE_TEST_CASE(CoalMineS4LikeExhaustionCanProduceNothing, MineProductio
 {
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
                      static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
-    const MapPoint minePos = CreateMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 1));
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const MapPoint minePos = createMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 1));
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     const unsigned initialCoal = curInventory[GoodType::Coal];
 
-    SeedProductionRng(s4LikeComparisonSeed);
+    seedProductionRng(s4LikeComparisonSeed);
     RTTR_SKIP_GFS(s4LikeComparisonGFs);
 
     BOOST_TEST(curInventory[GoodType::Coal] == initialCoal);
-    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 1u);
+    BOOST_TEST(world.getNode(minePos).resources.getAmount() == 1u);
 }
 
 // Same scenario for every configured no-output fallback: an S4-like mine sitting on a single-unit deposit keeps
@@ -274,16 +274,16 @@ BOOST_DATA_TEST_CASE_F(
 {
     ggs.setSelection(sample.mineBehaviorAddon, static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
     ggs.setSelection(AddonId::MINE_NO_OUTPUT_FALLBACK, static_cast<unsigned>(sample.fallback));
-    const MapPoint minePos = CreateMine(sample.mineType, Resource(sample.mineResource, 1));
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const MapPoint minePos = createMine(sample.mineType, Resource(sample.mineResource, 1));
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     const unsigned initialPrimary = curInventory[sample.primaryGood];
     const unsigned initialFallback = curInventory[sample.fallbackGood];
 
-    SeedProductionRng(sample.seed);
+    seedProductionRng(sample.seed);
     RTTR_EXEC_TILL(maxProductionGFs, curInventory[sample.fallbackGood] > initialFallback);
 
     BOOST_TEST(curInventory[sample.primaryGood] == initialPrimary);
-    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 1u);
+    BOOST_TEST(world.getNode(minePos).resources.getAmount() == 1u);
 }
 
 // Comparison B (see CoalMineS4LikeExhaustionCanProduceNothing): same seed and window, but a full deposit reliably
@@ -292,12 +292,12 @@ BOOST_FIXTURE_TEST_CASE(CoalMineS4LikeExhaustionReducesResourceOnSuccessfulCycle
 {
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
                      static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
-    const MapPoint minePos = CreateMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 15));
+    const MapPoint minePos = createMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 15));
 
-    SeedProductionRng(s4LikeComparisonSeed);
-    RTTR_EXEC_TILL(s4LikeComparisonGFs, world.GetNode(minePos).resources.getAmount() == 14u);
+    seedProductionRng(s4LikeComparisonSeed);
+    RTTR_EXEC_TILL(s4LikeComparisonGFs, world.getNode(minePos).resources.getAmount() == 14u);
 
-    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 14u);
+    BOOST_TEST(world.getNode(minePos).resources.getAmount() == 14u);
 }
 
 // A mine that actually produces its primary ware ignores the no-output fallback entirely (no stones), both for the
@@ -307,25 +307,25 @@ BOOST_FIXTURE_TEST_CASE(CoalMineS4LikeSuccessfulCycleIgnoresNoOutputFallback, Mi
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
                      static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
     ggs.setSelection(AddonId::MINE_NO_OUTPUT_FALLBACK, static_cast<unsigned>(MineNoOutputFallback::ProduceGranite100));
-    const MapPoint minePos = CreateMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 15));
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const MapPoint minePos = createMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 15));
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     const unsigned initialCoal = curInventory[GoodType::Coal];
     const unsigned initialStones = curInventory[GoodType::Stones];
 
     // Seed chosen so the very first cycle succeeds: otherwise a failed cycle would emit a fallback stone first.
-    SeedProductionRng(21);
+    seedProductionRng(21);
     RTTR_EXEC_TILL(maxProductionGFs, curInventory[GoodType::Coal] > initialCoal);
 
     BOOST_TEST(curInventory[GoodType::Stones] == initialStones);
     // S4-like consumes exactly one unit per successful cycle
-    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 14u);
+    BOOST_TEST(world.getNode(minePos).resources.getAmount() == 14u);
 }
 
 BOOST_FIXTURE_TEST_CASE(CoalMineDefaultProductionIgnoresNoOutputFallback, MineProductionFixture)
 {
     ggs.setSelection(AddonId::MINE_NO_OUTPUT_FALLBACK, static_cast<unsigned>(MineNoOutputFallback::ProduceGranite100));
-    const MapPoint minePos = CreateMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 3));
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const MapPoint minePos = createMine(BuildingType::CoalMine, Resource(ResourceType::Coal, 3));
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     const unsigned initialCoal = curInventory[GoodType::Coal];
     const unsigned initialStones = curInventory[GoodType::Stones];
 
@@ -334,41 +334,41 @@ BOOST_FIXTURE_TEST_CASE(CoalMineDefaultProductionIgnoresNoOutputFallback, MinePr
 
     BOOST_TEST(curInventory[GoodType::Stones] == initialStones);
     // The default behavior depletes the deposit on every production
-    BOOST_TEST(world.GetNode(minePos).resources.getAmount() < 3u);
+    BOOST_TEST(world.getNode(minePos).resources.getAmount() < 3u);
 }
 
 BOOST_FIXTURE_TEST_CASE(CoalMineWorkEverywhereBehaviorProducesWithoutCreatingResource, MineProductionFixture)
 {
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR, static_cast<unsigned>(MineResourceBehavior::WorkEverywhere));
-    const MapPoint minePos = CreateMine(BuildingType::CoalMine);
-    const Inventory& curInventory = world.GetPlayer(curPlayer).GetInventory();
+    const MapPoint minePos = createMine(BuildingType::CoalMine);
+    const Inventory& curInventory = world.getPlayer(curPlayer).getInventory();
     const unsigned initialCoal = curInventory[GoodType::Coal];
 
     RTTR_EXEC_TILL(maxProductionGFs, curInventory[GoodType::Coal] > initialCoal);
-    BOOST_TEST(static_cast<unsigned>(world.GetNode(minePos).resources.getType())
+    BOOST_TEST(static_cast<unsigned>(world.getNode(minePos).resources.getType())
                == static_cast<unsigned>(ResourceType::Nothing));
-    BOOST_TEST(world.GetNode(minePos).resources.getAmount() == 0u);
+    BOOST_TEST(world.getNode(minePos).resources.getAmount() == 0u);
 }
 
 // Regression test: the out-of-resources notification was moved from nofWorkman::FindPointWithResource into its
 // callers, so every caller (not only mines) must still report it.
 BOOST_FIXTURE_TEST_CASE(WellWithoutWaterReportsOutOfResources, WorldWithGCExecution1P)
 {
-    PostBox& postbox = world.GetPostMgr().AddPostBox(curPlayer);
+    PostBox& postbox = world.getPostMgr().addPostBox(curPlayer);
     GoodsAndPeopleCounts inv;
     inv[GoodType::Fish] = 40;
     inv[Job::Helper] = 2;
-    world.GetSpecObj<nobBaseWarehouse>(hqPos)->AddToInventory(inv, true);
+    world.getSpecObj<nobBaseWarehouse>(hqPos)->addToInventory(inv, true);
 
     const MapPoint wellPos = hqPos + MapPoint(2, 0);
     const auto* well = static_cast<nobUsual*>(
-      BuildingFactory::CreateBuilding(world, BuildingType::Well, wellPos, curPlayer, Nation::Romans));
-    BuildRoad(world.GetNeighbour(wellPos, Direction::SouthEast), false, std::vector<Direction>(2, Direction::West));
-    RTTR_EXEC_TILL(500, well->HasWorker());
+      BuildingFactory::createBuilding(world, BuildingType::Well, wellPos, curPlayer, Nation::Romans));
+    BuildRoad(world.getNeighbour(wellPos, Direction::SouthEast), false, std::vector<Direction>(2, Direction::West));
+    RTTR_EXEC_TILL(500, well->hasWorker());
 
     // The empty test world has no water resources at all, so the well must report that it dried out
-    RTTR_EXEC_TILL(2000, postbox.GetNumMsgs() > 0u);
-    BOOST_TEST(well->GetProductivity() == 0u);
+    RTTR_EXEC_TILL(2000, postbox.getNumMsgs() > 0u);
+    BOOST_TEST(well->getProductivity() == 0u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

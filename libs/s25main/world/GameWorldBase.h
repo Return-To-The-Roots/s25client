@@ -79,11 +79,11 @@ public:
     // Grundlegende Initialisierungen
     void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>(0)) override;
     // Remaining initialization after loading (BQ...)
-    void InitAfterLoad();
+    void initAfterLoad();
 
-    GameInterface* GetGameInterface() { return gi; }
-    const GameInterface* GetGameInterface() const { return gi; }
-    void SetGameInterface(GameInterface* const gi) { this->gi = gi; }
+    GameInterface* getGameInterface() { return gi; }
+    const GameInterface* getGameInterface() const { return gi; }
+    void setGameInterface(GameInterface* const gi) { this->gi = gi; }
 
     /// Get the economy mode handler if set.
     /// TODO: Add const correct version, but iwEconomicProgress still needs to be able to call UpdateAmounts
@@ -91,93 +91,93 @@ public:
 
     /// Can a node be used for a road (no flag/bld, no other road, no danger...)
     /// Should only be used for the points between the 2 flags of a road
-    bool IsRoadAvailable(bool boat_road, MapPoint pt) const;
+    bool isRoadAvailable(bool boat_road, MapPoint pt) const;
     /// Check if this road already exists completely
-    bool RoadAlreadyBuilt(bool boat_road, MapPoint start, const std::vector<Direction>& route);
-    bool IsOnRoad(const MapPoint& pt) const;
+    bool roadAlreadyBuilt(bool boat_road, MapPoint start, const std::vector<Direction>& route);
+    bool isOnRoad(const MapPoint& pt) const;
     /// Check if a flag is at a neighbour node
-    bool IsFlagAround(const MapPoint& pt) const;
+    bool isFlagAround(const MapPoint& pt) const;
 
     /// Checks if any of the neighboring nodes of a given map point are owned by any player.
-    bool IsAnyNeighborOwned(const MapPoint& pt) const;
+    bool isAnyNeighborOwned(const MapPoint& pt) const;
 
     /// Berechnet BQ bei einer gebauten Stra�e
-    void RecalcBQForRoad(MapPoint pt);
+    void recalcBQForRoad(MapPoint pt);
     /// Pr�ft, ob sich in unmittelbarer N�he (im Radius von 4) Milit�rgeb�ude befinden
-    bool IsMilitaryBuildingNearNode(MapPoint nPt, unsigned char player) const;
+    bool isMilitaryBuildingNearNode(MapPoint nPt, unsigned char player) const;
     /// Return true if there is a military building or building site on the node
     /// If attackBldsOnly is true, then only troop buildings are returned
     /// Otherwise it includes e.g. HQ and harbour which cannot attack itself but hold land
-    bool IsMilitaryBuildingOnNode(MapPoint pt, bool attackBldsOnly) const;
+    bool isMilitaryBuildingOnNode(MapPoint pt, bool attackBldsOnly) const;
     /// Erstellt eine Liste mit allen Milit�rgeb�uden in der Umgebung, radius bestimmt wie viele K�stchen nach einer
     /// Richtung im Umkreis
-    sortedMilitaryBlds LookForMilitaryBuildings(MapPoint pt, unsigned short radius) const;
+    sortedMilitaryBlds lookForMilitaryBuildings(MapPoint pt, unsigned short radius) const;
 
     /// Finds a path for figures. Returns first direction to walk in if found
-    helpers::OptionalEnum<Direction> FindHumanPath(MapPoint start, MapPoint dest, unsigned max_route = 0xFFFFFFFF,
+    helpers::OptionalEnum<Direction> findHumanPath(MapPoint start, MapPoint dest, unsigned max_route = 0xFFFFFFFF,
                                                    bool random_route = false, unsigned* length = nullptr,
                                                    std::vector<Direction>* route = nullptr) const;
     /// Find path for ships to a specific harbor and see. Return true on success
     /// If starting point equals the coastal point of target harbor, set length 0, clear route and return true.
-    bool FindShipPathToHarbor(MapPoint start, HarborId harborId, SeaId seaId, std::vector<Direction>* route,
+    bool findShipPathToHarbor(MapPoint start, HarborId harborId, SeaId seaId, std::vector<Direction>* route,
                               unsigned* length) const;
     /// Find path for ships with a limited distance. Return true on success
-    bool FindShipPath(MapPoint start, MapPoint dest, unsigned maxDistance, std::vector<Direction>* route,
+    bool findShipPath(MapPoint start, MapPoint dest, unsigned maxDistance, std::vector<Direction>* route,
                       unsigned* length) const;
-    RoadPathFinder& GetRoadPathFinder() const { return *roadPathFinder; }
-    FreePathFinder& GetFreePathFinder() const { return *freePathFinder; }
-    ShipPathData& GetShipPathData() const;
+    RoadPathFinder& getRoadPathFinder() const { return *roadPathFinder; }
+    FreePathFinder& getFreePathFinder() const { return *freePathFinder; }
+    ShipPathData& getShipPathData() const;
 
     /// Return flag that is on road at given point. dir will be set to the direction of the road from the returned flag
     /// prevDir (if set) will be skipped when searching for the road points
-    noFlag* GetRoadFlag(MapPoint pt, Direction& dir, helpers::OptionalEnum<Direction> prevDir = std::nullopt);
-    const noFlag* GetRoadFlag(MapPoint pt, Direction& dir,
+    noFlag* getRoadFlag(MapPoint pt, Direction& dir, helpers::OptionalEnum<Direction> prevDir = std::nullopt);
+    const noFlag* getRoadFlag(MapPoint pt, Direction& dir,
                               helpers::OptionalEnum<Direction> prevDir = std::nullopt) const;
 
     /// Gets the (height adjusted) global coordinates of the node (e.g. for drawing)
-    Position GetNodePos(MapPoint pt) const;
+    Position getNodePos(MapPoint pt) const;
 
     /// Berechnet Bauqualitäten an Punkt x;y und den ersten Kreis darum neu
-    void RecalcBQAroundPoint(MapPoint pt);
+    void recalcBQAroundPoint(MapPoint pt);
     /// Berechnet Bauqualitäten wie bei letzterer Funktion, bloß noch den 2. Kreis um x;y herum
-    void RecalcBQAroundPointBig(MapPoint pt);
+    void recalcBQAroundPointBig(MapPoint pt);
 
     /// Ermittelt Sichtbarkeit eines Punktes auch unter Einbeziehung der Verbündeten des jeweiligen Spielers
-    Visibility CalcVisiblityWithAllies(MapPoint pt, unsigned char player) const;
+    Visibility calcVisiblityWithAllies(MapPoint pt, unsigned char player) const;
 
     /// Ist es an dieser Stelle für einen Spieler möglich einen Hafen zu bauen
-    bool IsHarborPointFree(HarborId harborId, unsigned char player) const;
+    bool isHarborPointFree(HarborId harborId, unsigned char player) const;
     /// Ermittelt, ob ein Punkt Küstenpunkt ist, d.h. Zugang zu einem schiffbaren Meer, an dem auch mindestens 1
     /// Hafenplatz liegt, hat und gibt ggf. die Meeres-ID zurück, ansonsten 0
-    bool IsCoastalPointToSeaWithHarbor(MapPoint pt) const;
+    bool isCoastalPointToSeaWithHarbor(MapPoint pt) const;
     /// Sucht freie Hafenpunkte, also wo noch ein Hafen gebaut werden kann
-    HarborId GetNextFreeHarborPoint(MapPoint pt, HarborId originHarborId, const ShipDirection& dir,
+    HarborId getNextFreeHarborPoint(MapPoint pt, HarborId originHarborId, const ShipDirection& dir,
                                     unsigned char player) const;
     /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
-    unsigned CalcDistanceToNearestHarbor(MapPoint pos) const;
+    unsigned calcDistanceToNearestHarbor(MapPoint pos) const;
     /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
-    bool IsAHarborInSeaAttackDistance(MapPoint pos) const;
+    bool isAHarborInSeaAttackDistance(MapPoint pos) const;
 
     /// Return the player with the given index
-    GamePlayer& GetPlayer(unsigned id);
-    const GamePlayer& GetPlayer(unsigned id) const;
-    unsigned GetNumPlayers() const;
+    GamePlayer& getPlayer(unsigned id);
+    const GamePlayer& getPlayer(unsigned id) const;
+    unsigned getNumPlayers() const;
     s25util::span<GamePlayer> getPlayers();
     s25util::span<const GamePlayer> getPlayers() const;
-    bool IsSinglePlayer() const;
+    bool isSinglePlayer() const;
     /// Return the game settings
-    const GlobalGameSettings& GetGGS() const { return gameSettings; }
+    const GlobalGameSettings& getGGS() const { return gameSettings; }
     /// Get the replay (minor) version with which (backward) compatibility is enabled.
-    uint8_t GetReplayCompatVersion() const { return replayCompatVersion_; }
+    uint8_t getReplayCompatVersion() const { return replayCompatVersion_; }
     /// Set the replay minor version to change the behavior of the game for backward compatibility.
-    void SetReplayCompatVersion(uint8_t version) { replayCompatVersion_ = version; }
+    void setReplayCompatVersion(uint8_t version) { replayCompatVersion_ = version; }
 
-    EventManager& GetEvMgr() { return em; }
-    const EventManager& GetEvMgr() const { return em; }
-    SoundManager& GetSoundMgr() { return *soundManager; }
-    PostManager& GetPostMgr() { return postManager; }
-    const PostManager& GetPostMgr() const { return postManager; }
-    NotificationManager& GetNotifications() const
+    EventManager& getEvMgr() { return em; }
+    const EventManager& getEvMgr() const { return em; }
+    SoundManager& getSoundMgr() { return *soundManager; }
+    PostManager& getPostMgr() { return postManager; }
+    const PostManager& getPostMgr() const { return postManager; }
+    NotificationManager& getNotifications() const
     {
         // We want to be abled to add notifications even on a const world
         // Hence return as non-const
@@ -206,41 +206,41 @@ public:
     };
 
     /// Liefert Hafenpunkte im Umkreis von einem bestimmten Milit�rgeb�ude
-    std::vector<HarborId> GetHarborPointsAroundMilitaryBuilding(MapPoint pt) const;
+    std::vector<HarborId> getHarborPointsAroundMilitaryBuilding(MapPoint pt) const;
     /// Return all harbor Ids that can be used as a landing site for attacking the given point
     /// Sets all entries in @param use_seas to true, if the given sea can be used for attacking (seaId=1 -> Index 0 as
     /// seaId=0 is invalid sea)
-    std::vector<HarborId> GetUsableTargetHarborsForAttack(MapPoint targetPt, std::vector<bool>& use_seas,
+    std::vector<HarborId> getUsableTargetHarborsForAttack(MapPoint targetPt, std::vector<bool>& use_seas,
                                                           unsigned char player_attacker) const;
     /// Return all sea Ids from @param usableSeas that can be used for attacking the given point
-    std::vector<SeaId> GetFilteredSeaIDsForAttack(MapPoint targetPt, const std::vector<SeaId>& usableSeas,
+    std::vector<SeaId> getFilteredSeaIDsForAttack(MapPoint targetPt, const std::vector<SeaId>& usableSeas,
                                                   unsigned char player_attacker) const;
     /// Return all soldiers (in no specific order) that can be used to attack the given point via a sea.
     /// Checks all preconditions for a sea attack (addon, attackable...)
-    std::vector<PotentialSeaAttacker> GetSoldiersForSeaAttack(unsigned char player_attacker, MapPoint pt) const;
+    std::vector<PotentialSeaAttacker> getSoldiersForSeaAttack(unsigned char player_attacker, MapPoint pt) const;
     /// Return number or strength (summed ranks) of soldiers that can attack via the given sea
-    unsigned GetNumSoldiersForSeaAttackAtSea(unsigned char player_attacker, SeaId sea, bool returnCount = true) const;
+    unsigned getNumSoldiersForSeaAttackAtSea(unsigned char player_attacker, SeaId sea, bool returnCount = true) const;
 
     /// Recalculates the BQ for the given point
-    void RecalcBQ(MapPoint pt);
+    void recalcBQ(MapPoint pt);
 
-    void SetComputerBarrier(const MapPoint& pt, unsigned radius);
-    bool IsInsideComputerBarrier(const MapPoint& pt) const;
+    void setComputerBarrier(const MapPoint& pt, unsigned radius);
+    bool isInsideComputerBarrier(const MapPoint& pt) const;
 
-    bool HasLua() const { return lua != nullptr; }
-    LuaInterfaceGame& GetLua() const { return *lua; }
-    void SetLua(LuaInterfaceGame* newLua) { lua = newLua; }
+    bool hasLua() const { return lua != nullptr; }
+    LuaInterfaceGame& getLua() const { return *lua; }
+    void setLua(LuaInterfaceGame* newLua) { lua = newLua; }
 
 protected:
     /// Called when the visibility of point changed for a player
-    void VisibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;
+    void visibilityChanged(MapPoint pt, unsigned player, Visibility oldVis, Visibility newVis) override;
     /// Called, when the altitude of a point was changed
-    void AltitudeChanged(MapPoint pt) override;
+    void altitudeChanged(MapPoint pt) override;
 
 private:
     /// Returns the harbor ID of the next matching harbor in the given direction (0 = None)
     /// T_IsHarborOk must be a predicate taking a harbor Id and returning a bool if the harbor is valid to return
     template<typename T_IsHarborOk>
-    HarborId GetHarborInDir(MapPoint pt, HarborId originHarborId, const ShipDirection& dir,
+    HarborId getHarborInDir(MapPoint pt, HarborId originHarborId, const ShipDirection& dir,
                             T_IsHarborOk isHarborOk) const;
 };

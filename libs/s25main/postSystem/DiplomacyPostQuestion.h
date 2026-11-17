@@ -19,10 +19,10 @@ public:
     /// Cancel contract
     DiplomacyPostQuestion(unsigned sendFrame, PactType pact, unsigned id, const GamePlayerInfo& otherPlayer);
 
-    bool IsAccept() const { return acceptOrCancel; }
-    PactType GetPactType() const { return pact; }
-    unsigned GetPactId() const { return pactId; }
-    unsigned GetPlayerId() const { return player; }
+    bool isAccept() const { return acceptOrCancel; }
+    PactType getPactType() const { return pact; }
+    unsigned getPactId() const { return pactId; }
+    unsigned getPlayerId() const { return player; }
 
 private:
     /// Type of the question. True for accepting a new contract, false for canceling existing one

@@ -20,6 +20,6 @@ struct LanGameInfo
     std::string version;
     std::string revision;
 
-    bool Serialize(Serializer& serializer);
-    bool Deserialize(Serializer& serializer);
+    bool serialize(Serializer& serializer);
+    bool deserialize(Serializer& serializer);
 };

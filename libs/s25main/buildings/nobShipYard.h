@@ -31,12 +31,12 @@ private:
 
 public:
     /// Serialisierungsfunktionen
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NobShipyard; }
+    GO_Type getGOT() const final { return GO_Type::NobShipyard; }
 
     /// Gibt aktuellen Modus zurück
-    Mode GetMode() const { return mode; }
+    Mode getMode() const { return mode; }
     /// Schaltet Modus entsprechend um
-    void SetMode(Mode newMode);
+    void setMode(Mode newMode);
 };

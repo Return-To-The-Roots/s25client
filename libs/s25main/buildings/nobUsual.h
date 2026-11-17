@@ -59,65 +59,65 @@ public:
 
     ~nobUsual() override;
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const override { return GO_Type::NobUsual; }
-    unsigned GetMilitaryRadius() const override { return 0; }
+    GO_Type getGOT() const override { return GO_Type::NobUsual; }
+    unsigned getMilitaryRadius() const override { return 0; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
-    bool HasWorker() const;
+    bool hasWorker() const;
 
     /// Event-Handler
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
     /// Legt eine Ware am Objekt ab (an allen Straßenknoten (Gebäude, Baustellen und Flaggen) kann man Waren ablegen
-    void AddWare(std::unique_ptr<Ware> ware) override;
+    void addWare(std::unique_ptr<Ware> ware) override;
     /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
-    bool FreePlaceAtFlag() override;
+    bool freePlaceAtFlag() override;
     /// Eine bestellte Ware konnte doch nicht kommen
-    void WareLost(Ware& ware) override;
+    void wareLost(Ware& ware) override;
     /// Wird aufgerufen, wenn ein Arbeiter für das Gebäude gefunden werden konnte
-    void GotWorker(Job job, noFigure& worker) override;
+    void gotWorker(Job job, noFigure& worker) override;
     /// Wird vom Arbeiter aufgerufen, wenn er im Gebäude angekommen ist
-    void WorkerArrived();
+    void workerArrived();
     /// Wird vom Arbeiter aufgerufen, wenn er nicht (mehr) zur Arbeit kommen kann
-    void WorkerLost();
+    void workerLost();
 
     /// Gibt den Warenbestand (eingehende Waren - Rohstoffe) zurück
-    unsigned char GetNumWares(unsigned id) const { return numWares[id]; }
+    unsigned char getNumWares(unsigned id) const { return numWares[id]; }
     /// Prüft, ob Waren für einen Arbeitsschritt vorhanden sind
-    bool WaresAvailable();
+    bool waresAvailable();
     /// Verbraucht Waren
-    void ConsumeWares();
+    void consumeWares();
 
     /// Berechnet Punktewertung für Ware type
-    unsigned CalcDistributionPoints(GoodType type);
+    unsigned calcDistributionPoints(GoodType type);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
-    void TakeWare(Ware* ware) override;
+    void takeWare(Ware* ware) override;
 
     /// Bestellte Waren
-    bool AreThereAnyOrderedWares() const;
+    bool areThereAnyOrderedWares() const;
 
-    unsigned short GetProductivity() const;
-    const nofBuildingWorker* GetWorker() const { return worker; }
+    unsigned short getProductivity() const;
+    const nofBuildingWorker* getWorker() const { return worker; }
 
     /// Stoppt/Erlaubt Produktion (visuell)
-    void ToggleProductionVirtual() { disableProductionVirtual = !disableProductionVirtual; }
+    void toggleProductionVirtual() { disableProductionVirtual = !disableProductionVirtual; }
     /// Stoppt/Erlaubt Produktion (real)
     void SetProductionEnabled(bool enabled);
     /// Fragt ab, ob Produktion ausgeschaltet ist (visuell)
-    bool IsProductionDisabledVirtual() const { return disableProductionVirtual; }
+    bool isProductionDisabledVirtual() const { return disableProductionVirtual; }
     /// Fragt ab, ob Produktion ausgeschaltet ist (real)
-    bool IsProductionDisabled() const { return disableProduction; }
+    bool isProductionDisabled() const { return disableProduction; }
     /// Called when there are no more resources
-    void OnOutOfResources();
+    void onOutOfResources();
     /// Fängt an NICHT zu arbeiten (wird gemessen fürs Ausrechnen der Produktivität)
-    void StartNotWorking();
+    void startNotWorking();
     /// Hört auf, nicht zu arbeiten, sprich fängt an zu arbeiten (fürs Ausrechnen der Produktivität)
-    void StopNotWorking();
+    void stopNotWorking();
 
 private:
     /// Calculates the productivity and resets the counter
-    unsigned short CalcCurrentProductivity();
+    unsigned short calcCurrentProductivity();
 };

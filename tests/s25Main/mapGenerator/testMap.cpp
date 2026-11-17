@@ -14,12 +14,12 @@ BOOST_FIXTURE_TEST_SUITE(MapTests, MapGenFixture)
 BOOST_AUTO_TEST_CASE(Constructor_resizes_all_maps)
 {
     const Map map = createMap(MapExtent(14, 6));
-    BOOST_TEST(map.z.GetSize() == map.size);
-    BOOST_TEST(map.getTextures().GetSize() == map.size);
-    BOOST_TEST(map.objectTypes.GetSize() == map.size);
-    BOOST_TEST(map.objectInfos.GetSize() == map.size);
-    BOOST_TEST(map.resources.GetSize() == map.size);
-    BOOST_TEST(map.animals.GetSize() == map.size);
+    BOOST_TEST(map.z.getSize() == map.size);
+    BOOST_TEST(map.getTextures().getSize() == map.size);
+    BOOST_TEST(map.objectTypes.getSize() == map.size);
+    BOOST_TEST(map.objectInfos.getSize() == map.size);
+    BOOST_TEST(map.resources.getSize() == map.size);
+    BOOST_TEST(map.animals.getSize() == map.size);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

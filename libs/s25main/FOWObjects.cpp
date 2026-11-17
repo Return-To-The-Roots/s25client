@@ -11,7 +11,7 @@
 #include "s25util/colors.h"
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
-unsigned CalcPlayerFOWDrawColor(const unsigned color)
+unsigned calcPlayerFOWDrawColor(const unsigned color)
 {
     // Farbkomponenten extrahieren
     unsigned red = GetRed(color), green = GetGreen(color), blue = GetBlue(color);
@@ -30,17 +30,17 @@ unsigned CalcPlayerFOWDrawColor(const unsigned color)
 
 fowBuilding::fowBuilding(const BuildingType type, const Nation nation) : type(type), nation(nation) {}
 
-fowBuilding::fowBuilding(SerializedGameData& sgd) : type(sgd.Pop<BuildingType>()), nation(sgd.Pop<Nation>()) {}
+fowBuilding::fowBuilding(SerializedGameData& sgd) : type(sgd.pop<BuildingType>()), nation(sgd.pop<Nation>()) {}
 
-void fowBuilding::Serialize(SerializedGameData& sgd) const
+void fowBuilding::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushEnum<uint8_t>(type);
-    sgd.PushEnum<uint8_t>(nation);
+    sgd.pushEnum<uint8_t>(type);
+    sgd.pushEnum<uint8_t>(nation);
 }
 
-void fowBuilding::Draw(DrawPoint drawPt) const
+void fowBuilding::draw(DrawPoint drawPt) const
 {
-    noBaseBuilding::GetBuildingImage(type, nation).DrawFull(drawPt, FOW_DRAW_COLOR);
+    noBaseBuilding::getBuildingImage(type, nation).drawFull(drawPt, FOW_DRAW_COLOR);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -52,30 +52,30 @@ fowBuildingSite::fowBuildingSite(const bool planing, const BuildingType type, co
 {}
 
 fowBuildingSite::fowBuildingSite(SerializedGameData& sgd)
-    : planing(sgd.PopBool()), type(sgd.Pop<BuildingType>()), nation(sgd.Pop<Nation>()),
+    : planing(sgd.PopBool()), type(sgd.pop<BuildingType>()), nation(sgd.pop<Nation>()),
       build_progress(sgd.PopUnsignedChar())
 {}
 
-void fowBuildingSite::Serialize(SerializedGameData& sgd) const
+void fowBuildingSite::serialize(SerializedGameData& sgd) const
 {
     sgd.PushBool(planing);
-    sgd.PushEnum<uint8_t>(type);
-    sgd.PushEnum<uint8_t>(nation);
+    sgd.pushEnum<uint8_t>(type);
+    sgd.pushEnum<uint8_t>(nation);
     sgd.PushUnsignedChar(build_progress);
 }
 
-void fowBuildingSite::Draw(DrawPoint drawPt) const
+void fowBuildingSite::draw(DrawPoint drawPt) const
 {
     if(planing)
     {
         // Baustellenschild mit Schatten zeichnen
-        LOADER.GetNationImage(nation, 450)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        LOADER.GetNationImage(nation, 451)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getNationImage(nation, 450)->drawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.getNationImage(nation, 451)->drawFull(drawPt, COLOR_SHADOW);
     } else
     {
         // Baustellenstein und -schatten zeichnen
-        LOADER.GetNationImage(nation, 455)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        LOADER.GetNationImage(nation, 456)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getNationImage(nation, 455)->drawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.getNationImage(nation, 456)->drawFull(drawPt, COLOR_SHADOW);
 
         // bis dahin gebautes Haus zeichnen
 
@@ -107,21 +107,21 @@ void fowBuildingSite::Draw(DrawPoint drawPt) const
 // fowFlag
 
 fowFlag::fowFlag(const unsigned playerColor, const Nation nation, const FlagType flag_type)
-    : color(CalcPlayerFOWDrawColor(playerColor)), nation(nation), flag_type(flag_type)
+    : color(calcPlayerFOWDrawColor(playerColor)), nation(nation), flag_type(flag_type)
 {}
 
 fowFlag::fowFlag(SerializedGameData& sgd)
-    : color(sgd.PopUnsignedInt()), nation(sgd.Pop<Nation>()), flag_type(sgd.Pop<FlagType>())
+    : color(sgd.PopUnsignedInt()), nation(sgd.pop<Nation>()), flag_type(sgd.pop<FlagType>())
 {}
 
-void fowFlag::Serialize(SerializedGameData& sgd) const
+void fowFlag::serialize(SerializedGameData& sgd) const
 {
     sgd.PushUnsignedInt(color);
-    sgd.PushEnum<uint8_t>(nation);
-    sgd.PushEnum<uint8_t>(flag_type);
+    sgd.pushEnum<uint8_t>(nation);
+    sgd.pushEnum<uint8_t>(flag_type);
 }
 
-void fowFlag::Draw(DrawPoint drawPt) const
+void fowFlag::draw(DrawPoint drawPt) const
 {
     LOADER.flag_cache[nation][flag_type][0].draw(drawPt, FOW_DRAW_COLOR, color);
 }
@@ -133,23 +133,23 @@ fowTree::fowTree(const unsigned char type, const unsigned char size) : type(type
 
 fowTree::fowTree(SerializedGameData& sgd) : type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()) {}
 
-void fowTree::Serialize(SerializedGameData& sgd) const
+void fowTree::serialize(SerializedGameData& sgd) const
 {
     sgd.PushUnsignedChar(type);
     sgd.PushUnsignedChar(size);
 }
 
-void fowTree::Draw(DrawPoint drawPt) const
+void fowTree::draw(DrawPoint drawPt) const
 {
     if(size == 3)
     {
         // Ausgewachsen
-        LOADER.GetMapTexture(200 + type * 15)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        LOADER.GetMapTexture(350 + type * 15)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getMapTexture(200 + type * 15)->drawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.getMapTexture(350 + type * 15)->drawFull(drawPt, COLOR_SHADOW);
     } else
     {
-        LOADER.GetMapTexture(208 + type * 15 + size)->DrawFull(drawPt, FOW_DRAW_COLOR);
-        LOADER.GetMapTexture(358 + type * 15 + size)->DrawFull(drawPt, COLOR_SHADOW);
+        LOADER.getMapTexture(208 + type * 15 + size)->drawFull(drawPt, FOW_DRAW_COLOR);
+        LOADER.getMapTexture(358 + type * 15 + size)->drawFull(drawPt, COLOR_SHADOW);
     }
 }
 
@@ -158,15 +158,15 @@ void fowTree::Draw(DrawPoint drawPt) const
 
 fowGranite::fowGranite(const GraniteType type, const unsigned char state) : type(type), state(state) {}
 
-fowGranite::fowGranite(SerializedGameData& sgd) : type(sgd.Pop<GraniteType>()), state(sgd.PopUnsignedChar()) {}
+fowGranite::fowGranite(SerializedGameData& sgd) : type(sgd.pop<GraniteType>()), state(sgd.PopUnsignedChar()) {}
 
-void fowGranite::Serialize(SerializedGameData& sgd) const
+void fowGranite::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushEnum<uint8_t>(type);
+    sgd.pushEnum<uint8_t>(type);
     sgd.PushUnsignedChar(state);
 }
 
-void fowGranite::Draw(DrawPoint drawPt) const
+void fowGranite::draw(DrawPoint drawPt) const
 {
-    LOADER.granite_cache[type][state].DrawFull(drawPt, FOW_DRAW_COLOR);
+    LOADER.granite_cache[type][state].drawFull(drawPt, FOW_DRAW_COLOR);
 }

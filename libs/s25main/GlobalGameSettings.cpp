@@ -213,7 +213,7 @@ void GlobalGameSettings::registerAddon(std::unique_ptr<Addon> addon)
 /**
  *  loads the saved addon configuration from the SETTINGS.
  */
-void GlobalGameSettings::LoadSettings()
+void GlobalGameSettings::loadSettings()
 {
     resetAddons();
 
@@ -237,7 +237,7 @@ void GlobalGameSettings::LoadSettings()
 /**
  *  saves the current addon configuration to the SETTINGS.
  */
-void GlobalGameSettings::SaveSettings() const
+void GlobalGameSettings::saveSettings() const
 {
     SETTINGS.addons.configuration.clear();
     for(const AddonWithState& addon : addons)
@@ -247,7 +247,7 @@ void GlobalGameSettings::SaveSettings() const
 /**
  *  saves the current addon configuration to a serializer object.
  */
-void GlobalGameSettings::Serialize(Serializer& ser) const
+void GlobalGameSettings::serialize(Serializer& ser) const
 {
     // LOG.writeToFile(">>> Addon Status:\n");
 
@@ -272,7 +272,7 @@ void GlobalGameSettings::Serialize(Serializer& ser) const
 /**
  *  reads the current addon configuration from a serializer object.
  */
-void GlobalGameSettings::Deserialize(Serializer& ser)
+void GlobalGameSettings::deserialize(Serializer& ser)
 {
     speed = helpers::popEnum<GameSpeed>(ser);
     objective = helpers::popEnum<GameObjective>(ser);
@@ -310,8 +310,8 @@ void GlobalGameSettings::applyLegacyInexhaustibleMines()
 {
     for(const BuildingType mineType : MINE_BUILDING_TYPES)
     {
-        if(GetMineResourceBehavior(*this, mineType) == MineResourceBehavior::Default)
-            setSelection(GetMineResourceBehaviorAddonId(mineType),
+        if(getMineResourceBehavior(*this, mineType) == MineResourceBehavior::Default)
+            setSelection(getMineResourceBehaviorAddonId(mineType),
                          static_cast<unsigned>(MineResourceBehavior::Inexhaustible));
     }
 }
@@ -325,13 +325,13 @@ void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
         addon->status = selection;
 }
 
-unsigned GlobalGameSettings::GetMaxMilitaryRank() const
+unsigned GlobalGameSettings::getMaxMilitaryRank() const
 {
     unsigned selection = getSelection(AddonId::MAX_RANK);
     RTTR_Assert(selection <= MAX_MILITARY_RANK);
     return MAX_MILITARY_RANK - selection;
 }
-unsigned GlobalGameSettings::GetNumScoutsExpedition() const
+unsigned GlobalGameSettings::getNumScoutsExpedition() const
 {
     unsigned selection = getSelection(AddonId::NUM_SCOUTS_EXPLORATION);
     return selection + 1;

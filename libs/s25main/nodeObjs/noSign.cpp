@@ -15,7 +15,7 @@
 
 noSign::noSign(const MapPoint pos, Resource resource)
     : noDisappearingEnvObject(
-      pos, 8500 * (signDurabilityFactor[world->GetGGS().getSelection(AddonId::DURABLE_GEOLOGIST_SIGNS)]), 500),
+      pos, 8500 * (signDurabilityFactor[world->getGGS().getSelection(AddonId::DURABLE_GEOLOGIST_SIGNS)]), 500),
       resource(resource)
 {
     // As this is only for drawing we set the type to nothing if the resource is depleted
@@ -23,9 +23,9 @@ noSign::noSign(const MapPoint pos, Resource resource)
         this->resource.setType(ResourceType::Nothing);
 }
 
-void noSign::Serialize(SerializedGameData& sgd) const
+void noSign::serialize(SerializedGameData& sgd) const
 {
-    noDisappearingEnvObject::Serialize(sgd);
+    noDisappearingEnvObject::serialize(sgd);
 
     sgd.PushUnsignedChar(resource.getValue());
 }
@@ -34,7 +34,7 @@ noSign::noSign(SerializedGameData& sgd, const unsigned obj_id)
     : noDisappearingEnvObject(sgd, obj_id), resource(sgd.PopUnsignedChar())
 {}
 
-void noSign::Draw(DrawPoint drawPt)
+void noSign::draw(DrawPoint drawPt)
 {
     // Schild selbst
     unsigned imgId;
@@ -49,8 +49,8 @@ void noSign::Draw(DrawPoint drawPt)
         default: return;
     }
     imgId += std::min(resource.getAmount() / 3u, 2u);
-    LOADER.GetMapTexture(imgId)->DrawFull(drawPt, GetDrawColor());
+    LOADER.getMapTexture(imgId)->drawFull(drawPt, getDrawColor());
 
     // Schatten des Schildes
-    LOADER.GetMapTexture(700)->DrawFull(drawPt, GetDrawShadowColor());
+    LOADER.getMapTexture(700)->drawFull(drawPt, getDrawShadowColor());
 }

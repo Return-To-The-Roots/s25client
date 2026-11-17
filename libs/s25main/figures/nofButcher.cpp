@@ -17,25 +17,25 @@ nofButcher::nofButcher(const MapPoint pos, const unsigned char player, nobUsual*
 
 nofButcher::nofButcher(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofButcher::DrawWorking(DrawPoint drawPt)
+void nofButcher::drawWorking(DrawPoint drawPt)
 {
     static constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{38, 2}, {-3, 5}, {21, -1}, {26, -5}, {-7, 2}}};
 
     unsigned now_id;
 
-    LOADER.GetPlayerImage("rom_bobs", 160 + (now_id = GAMECLIENT.Interpolate(136, current_ev)) % 6)
-      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
+    LOADER.getPlayerImage("rom_bobs", 160 + (now_id = GAMECLIENT.interpolate(136, current_ev)) % 6)
+      ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     if(now_id % 6 == 5)
     {
-        world->GetSoundMgr().playNOSound(66, *this, now_id / 6);
+        world->getSoundMgr().playNOSound(66, *this, now_id / 6);
         was_sounding = true;
     }
 
     last_id = now_id;
 }
 
-helpers::OptionalEnum<GoodType> nofButcher::ProduceWare()
+helpers::OptionalEnum<GoodType> nofButcher::produceWare()
 {
     return GoodType::Meat;
 }

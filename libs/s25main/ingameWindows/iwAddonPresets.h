@@ -30,21 +30,21 @@ protected:
     /// additionalHeight is the room the subclass needs for its own controls above the buttons
     iwAddonPresetsBase(const std::string& title, const std::string& actionLabel, unsigned additionalHeight);
 
-    void RefreshTable();
+    void refreshTable();
     /// Empty if no preset is selected
-    boost::filesystem::path GetSelectedFilePath() const;
+    boost::filesystem::path getSelectedFilePath() const;
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
-    void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgTableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void msgTableChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 
 private:
-    bool IsPresetSelected() const;
-    void UpdateButtons();
-    virtual bool CanDoAction() const;
-    virtual void DoAction() = 0;
-    void ConfirmDelete();
+    bool isPresetSelected() const;
+    void updateButtons();
+    virtual bool canDoAction() const;
+    virtual void doAction() = 0;
+    void confirmDelete();
 };
 
 class iwSaveAddonPreset : public iwAddonPresetsBase
@@ -54,13 +54,13 @@ public:
 
 private:
     const std::map<unsigned, unsigned> states_;
-    void SaveToPath(const boost::filesystem::path& filePath);
-    bool CanDoAction() const override;
-    void DoAction() override;
-    void Msg_EditEnter(unsigned ctrl_id) override;
-    void Msg_EditChange(unsigned ctrl_id) override;
-    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void saveToPath(const boost::filesystem::path& filePath);
+    bool canDoAction() const override;
+    void doAction() override;
+    void msgEditEnter(unsigned ctrl_id) override;
+    void msgEditChange(unsigned ctrl_id) override;
+    void msgTableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 };
 
 class iwLoadAddonPreset : public iwAddonPresetsBase
@@ -70,5 +70,5 @@ public:
 
 private:
     std::function<void(const std::map<unsigned, unsigned>&)> onLoad_;
-    void DoAction() override;
+    void doAction() override;
 };

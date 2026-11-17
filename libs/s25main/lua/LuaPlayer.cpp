@@ -22,80 +22,80 @@
 #include "s25util/Log.h"
 #include <kaguya/kaguya.hpp>
 
-const BasePlayerInfo& LuaPlayer::GetPlayer() const
+const BasePlayerInfo& LuaPlayer::getPlayer() const
 {
     return player;
 }
 
-void LuaPlayer::Register(kaguya::State& state)
+void LuaPlayer::registerClasses(kaguya::State& state)
 {
-    LuaPlayerBase::Register(state);
+    LuaPlayerBase::registerClasses(state);
     state["Player"].setClass(kaguya::UserdataMetatable<LuaPlayer, LuaPlayerBase>()
-                               .addFunction("EnableBuilding", &LuaPlayer::EnableBuilding)
-                               .addFunction("DisableBuilding", &LuaPlayer::DisableBuilding)
-                               .addFunction("EnableAllBuildings", &LuaPlayer::EnableAllBuildings)
-                               .addFunction("DisableAllBuildings", &LuaPlayer::DisableAllBuildings)
-                               .addFunction("SetRestrictedArea", &LuaPlayer::SetRestrictedArea)
-                               .addFunction("IsInRestrictedArea", &LuaPlayer::IsInRestrictedArea)
-                               .addFunction("ClearResources", &LuaPlayer::ClearResources)
-                               .addFunction("AddWares", &LuaPlayer::AddWares)
-                               .addFunction("AddPeople", &LuaPlayer::AddPeople)
-                               .addFunction("GetNumBuildings", &LuaPlayer::GetNumBuildings)
-                               .addFunction("GetNumBuildingSites", &LuaPlayer::GetNumBuildingSites)
-                               .addFunction("GetNumWares", &LuaPlayer::GetNumWares)
-                               .addFunction("GetNumPeople", &LuaPlayer::GetNumPeople)
-                               .addFunction("GetStatisticsValue", &LuaPlayer::GetStatisticsValue)
-                               .addFunction("AIConstructionOrder", &LuaPlayer::AIConstructionOrder)
-                               .addFunction("ModifyHQ", &LuaPlayer::ModifyHQ)
-                               .addFunction("GetHQPos", &LuaPlayer::GetHQPos)
+                               .addFunction("EnableBuilding", &LuaPlayer::enableBuilding)
+                               .addFunction("DisableBuilding", &LuaPlayer::disableBuilding)
+                               .addFunction("EnableAllBuildings", &LuaPlayer::enableAllBuildings)
+                               .addFunction("DisableAllBuildings", &LuaPlayer::disableAllBuildings)
+                               .addFunction("SetRestrictedArea", &LuaPlayer::setRestrictedArea)
+                               .addFunction("IsInRestrictedArea", &LuaPlayer::isInRestrictedArea)
+                               .addFunction("ClearResources", &LuaPlayer::clearResources)
+                               .addFunction("AddWares", &LuaPlayer::addWares)
+                               .addFunction("AddPeople", &LuaPlayer::addPeople)
+                               .addFunction("GetNumBuildings", &LuaPlayer::getNumBuildings)
+                               .addFunction("GetNumBuildingSites", &LuaPlayer::getNumBuildingSites)
+                               .addFunction("GetNumWares", &LuaPlayer::getNumWares)
+                               .addFunction("GetNumPeople", &LuaPlayer::getNumPeople)
+                               .addFunction("GetStatisticsValue", &LuaPlayer::getStatisticsValue)
+                               .addFunction("AIConstructionOrder", &LuaPlayer::aIConstructionOrder)
+                               .addFunction("ModifyHQ", &LuaPlayer::modifyHQ)
+                               .addFunction("GetHQPos", &LuaPlayer::getHQPos)
                                .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
                                .addFunction("Surrender", &LuaPlayer::Surrender)
-                               .addFunction("IsAlly", &LuaPlayer::IsAlly)
-                               .addFunction("IsAttackable", &LuaPlayer::IsAttackable)
+                               .addFunction("IsAlly", &LuaPlayer::isAlly)
+                               .addFunction("IsAttackable", &LuaPlayer::isAttackable)
                                .addFunction("SuggestPact", &LuaPlayer::SuggestPact)
                                .addFunction("CancelPact", &LuaPlayer::CancelPact)
                                // Old names
-                               .addFunction("GetBuildingCount", &LuaPlayer::GetNumBuildings)
-                               .addFunction("GetBuildingSitesCount", &LuaPlayer::GetNumBuildingSites)
-                               .addFunction("GetWareCount", &LuaPlayer::GetNumWares)
-                               .addFunction("GetPeopleCount", &LuaPlayer::GetNumPeople));
+                               .addFunction("GetBuildingCount", &LuaPlayer::getNumBuildings)
+                               .addFunction("GetBuildingSitesCount", &LuaPlayer::getNumBuildingSites)
+                               .addFunction("GetWareCount", &LuaPlayer::getNumWares)
+                               .addFunction("GetPeopleCount", &LuaPlayer::getNumPeople));
 }
 
-void LuaPlayer::EnableBuilding(lua::SafeEnum<BuildingType> bld, bool notify)
+void LuaPlayer::enableBuilding(lua::SafeEnum<BuildingType> bld, bool notify)
 {
-    player.EnableBuilding(bld);
+    player.enableBuilding(bld);
     if(notify)
     {
-        player.SendPostMessage(
-          std::make_unique<PostMsgWithBuilding>(player.GetGameWorld().GetEvMgr().GetCurrentGF(),
+        player.sendPostMessage(
+          std::make_unique<PostMsgWithBuilding>(player.getGameWorld().getEvMgr().getCurrentGF(),
                                                 std::string(_("New building type:")) + "\n" + _(BUILDING_NAMES[bld]),
                                                 PostCategory::General, bld, player.nation));
     }
 }
 
-void LuaPlayer::DisableBuilding(lua::SafeEnum<BuildingType> bld)
+void LuaPlayer::disableBuilding(lua::SafeEnum<BuildingType> bld)
 {
-    player.DisableBuilding(bld);
+    player.disableBuilding(bld);
 }
 
-void LuaPlayer::EnableAllBuildings()
-{
-    for(const auto bld : helpers::enumRange<BuildingType>())
-        player.EnableBuilding(bld);
-}
-
-void LuaPlayer::DisableAllBuildings()
+void LuaPlayer::enableAllBuildings()
 {
     for(const auto bld : helpers::enumRange<BuildingType>())
-        player.DisableBuilding(bld);
+        player.enableBuilding(bld);
 }
 
-void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
+void LuaPlayer::disableAllBuildings()
+{
+    for(const auto bld : helpers::enumRange<BuildingType>())
+        player.disableBuilding(bld);
+}
+
+void LuaPlayer::setRestrictedArea(kaguya::VariadicArgType inPoints)
 {
     if(inPoints.size() == 0)
     {
         // Skip everything else if we only want to lift the restrictions
-        player.GetRestrictedArea().clear();
+        player.getRestrictedArea().clear();
         return;
     }
 
@@ -162,27 +162,27 @@ void LuaPlayer::SetRestrictedArea(kaguya::VariadicArgType inPoints)
             pts.push_back(MapPoint(0, 0));
     } else if(pts.front() == pts.back())
         pts.pop_back();
-    player.GetRestrictedArea() = pts;
+    player.getRestrictedArea() = pts;
 }
 
-bool LuaPlayer::IsInRestrictedArea(unsigned x, unsigned y) const
+bool LuaPlayer::isInRestrictedArea(unsigned x, unsigned y) const
 {
-    const GameWorld& world = player.GetGameWorld();
-    lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
-    lua::assertTrue(y < world.GetHeight(), "y coordinate to large");
-    return TerritoryRegion::IsPointValid(world.GetSize(), player.GetRestrictedArea(), MapPoint(x, y));
+    const GameWorld& world = player.getGameWorld();
+    lua::assertTrue(x < world.getWidth(), "x coordinate to large");
+    lua::assertTrue(y < world.getHeight(), "y coordinate to large");
+    return TerritoryRegion::isPointValid(world.getSize(), player.getRestrictedArea(), MapPoint(x, y));
 }
 
-void LuaPlayer::ClearResources()
+void LuaPlayer::clearResources()
 {
-    const std::list<nobBaseWarehouse*> warehouses = player.GetBuildingRegister().GetStorehouses();
+    const std::list<nobBaseWarehouse*> warehouses = player.getBuildingRegister().getStorehouses();
     for(auto* warehouse : warehouses)
-        warehouse->Clear();
+        warehouse->clear();
 }
 
-bool LuaPlayer::AddWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& wares)
+bool LuaPlayer::addWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& wares)
 {
-    nobBaseWarehouse* warehouse = player.GetFirstWH();
+    nobBaseWarehouse* warehouse = player.getFirstWH();
 
     if(!warehouse)
         return false;
@@ -191,13 +191,13 @@ bool LuaPlayer::AddWares(const std::map<lua::SafeEnum<GoodType>, unsigned>& ware
     for(const auto& ware : wares)
         counts[ware.first] += ware.second;
 
-    warehouse->AddToInventory(counts, true);
+    warehouse->addToInventory(counts, true);
     return true;
 }
 
-bool LuaPlayer::AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
+bool LuaPlayer::addPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
 {
-    nobBaseWarehouse* warehouse = player.GetFirstWH();
+    nobBaseWarehouse* warehouse = player.getFirstWH();
 
     if(!warehouse)
         return false;
@@ -215,50 +215,50 @@ bool LuaPlayer::AddPeople(const std::map<lua::SafeEnum<Job>, unsigned>& people)
             counts[it.first] += it.second;
     }
 
-    warehouse->AddToInventory(counts, true);
+    warehouse->addToInventory(counts, true);
     return true;
 }
 
-unsigned LuaPlayer::GetNumBuildings(lua::SafeEnum<BuildingType> bld) const
+unsigned LuaPlayer::getNumBuildings(lua::SafeEnum<BuildingType> bld) const
 {
-    return player.GetBuildingRegister().GetBuildingNums().buildings[bld];
+    return player.getBuildingRegister().getBuildingNums().buildings[bld];
 }
 
-unsigned LuaPlayer::GetNumBuildingSites(lua::SafeEnum<BuildingType> bld) const
+unsigned LuaPlayer::getNumBuildingSites(lua::SafeEnum<BuildingType> bld) const
 {
-    return player.GetBuildingRegister().GetBuildingNums().buildingSites[bld];
+    return player.getBuildingRegister().getBuildingNums().buildingSites[bld];
 }
 
-unsigned LuaPlayer::GetNumWares(lua::SafeEnum<GoodType> ware) const
+unsigned LuaPlayer::getNumWares(lua::SafeEnum<GoodType> ware) const
 {
-    return player.GetInventory().goods[ware];
+    return player.getInventory().goods[ware];
 }
 
-unsigned LuaPlayer::GetNumPeople(lua::SafeEnum<Job> job) const
+unsigned LuaPlayer::getNumPeople(lua::SafeEnum<Job> job) const
 {
-    return player.GetInventory().people[job];
+    return player.getInventory().people[job];
 }
 
-unsigned LuaPlayer::GetStatisticsValue(lua::SafeEnum<StatisticType> stat) const
+unsigned LuaPlayer::getStatisticsValue(lua::SafeEnum<StatisticType> stat) const
 {
-    return player.GetStatisticCurrentValue(stat);
+    return player.getStatisticCurrentValue(stat);
 }
 
-bool LuaPlayer::AIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld)
+bool LuaPlayer::aIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld)
 {
     // Only for actual AIs
     if(!player.isUsed() || player.isHuman())
         return false;
-    GameWorld& world = player.GetGameWorld();
-    lua::assertTrue(x < world.GetWidth(), "x coordinate to large");
-    lua::assertTrue(y < world.GetHeight(), "y coordinate to large");
-    world.GetNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.GetPlayerId(), MapPoint(x, y), bld));
+    GameWorld& world = player.getGameWorld();
+    lua::assertTrue(x < world.getWidth(), "x coordinate to large");
+    lua::assertTrue(y < world.getHeight(), "y coordinate to large");
+    world.getNotifications().publish(BuildingNote(BuildingNote::LuaOrder, player.getPlayerId(), MapPoint(x, y), bld));
     return true;
 }
 
-void LuaPlayer::ModifyHQ(bool isTent)
+void LuaPlayer::modifyHQ(bool isTent)
 {
-    player.SetHQIsTent(isTent);
+    player.setHQIsTent(isTent);
 }
 
 bool LuaPlayer::IsDefeated() const
@@ -270,34 +270,34 @@ void LuaPlayer::Surrender(bool destroyBlds)
 {
     player.Surrender();
     if(destroyBlds)
-        player.GetGameWorld().Armageddon(player.GetPlayerId());
+        player.getGameWorld().armageddon(player.getPlayerId());
 }
 
-std::pair<unsigned, unsigned> LuaPlayer::GetHQPos() const
+std::pair<unsigned, unsigned> LuaPlayer::getHQPos() const
 {
-    return std::pair<unsigned, unsigned>(player.GetHQPos().x, player.GetHQPos().y);
+    return std::pair<unsigned, unsigned>(player.getHQPos().x, player.getHQPos().y);
 }
 
-bool LuaPlayer::IsAlly(unsigned char otherPlayerId)
+bool LuaPlayer::isAlly(unsigned char otherPlayerId)
 {
-    return player.IsAlly(otherPlayerId);
+    return player.isAlly(otherPlayerId);
 }
 
-bool LuaPlayer::IsAttackable(unsigned char otherPlayerId)
+bool LuaPlayer::isAttackable(unsigned char otherPlayerId)
 {
-    return player.IsAttackable(otherPlayerId);
+    return player.isAttackable(otherPlayerId);
 }
 
 void LuaPlayer::SuggestPact(unsigned char otherPlayerId, const lua::SafeEnum<PactType> pt, const unsigned duration)
 {
-    AIPlayer* ai = game.GetAIPlayer(player.GetPlayerId());
+    AIPlayer* ai = game.getAIPlayer(player.getPlayerId());
     if(ai != nullptr)
         ai->getAIInterface().SuggestPact(otherPlayerId, pt, duration);
 }
 
 void LuaPlayer::CancelPact(const lua::SafeEnum<PactType> pt, unsigned char otherPlayerId)
 {
-    AIPlayer* ai = game.GetAIPlayer(player.GetPlayerId());
+    AIPlayer* ai = game.getAIPlayer(player.getPlayerId());
     if(ai != nullptr)
         ai->getAIInterface().CancelPact(pt, otherPlayerId);
 }

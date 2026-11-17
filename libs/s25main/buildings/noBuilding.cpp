@@ -16,21 +16,21 @@ noBuilding::noBuilding(const BuildingType type, const MapPoint pos, const unsign
     : noBaseBuilding(NodalObjectType::Building, type, pos, player), opendoor(0)
 {}
 
-void noBuilding::Destroy()
+void noBuilding::destroy()
 {
     // First we have to remove the building from the map and the player
     // Replace by fire (huts and mines become small fire, rest big)
-    world->SetNO(pos, new noFire(pos, GetSize() != BuildingQuality::Hut && GetSize() != BuildingQuality::Mine), true);
-    world->GetPlayer(player).RemoveBuilding(this, bldType_);
+    world->setNO(pos, new noFire(pos, getSize() != BuildingQuality::Hut && getSize() != BuildingQuality::Mine), true);
+    world->getPlayer(player).removeBuilding(this, bldType_);
     // Destroy derived buildings
     DestroyBuilding();
     // Then go further down the chain
-    noBaseBuilding::Destroy();
+    noBaseBuilding::destroy();
 }
 
-void noBuilding::Serialize(SerializedGameData& sgd) const
+void noBuilding::serialize(SerializedGameData& sgd) const
 {
-    noBaseBuilding::Serialize(sgd);
+    noBaseBuilding::serialize(sgd);
 
     sgd.PushSignedChar(opendoor);
 }
@@ -45,31 +45,31 @@ noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id)
     }
 }
 
-void noBuilding::DrawBaseBuilding(DrawPoint drawPt) const
+void noBuilding::drawBaseBuilding(DrawPoint drawPt) const
 {
-    GetBuildingImage().DrawFull(drawPt);
-    DrawDoor(drawPt);
+    getBuildingImage().drawFull(drawPt);
+    drawDoor(drawPt);
 }
 
-void noBuilding::DrawDoor(DrawPoint drawPt) const
+void noBuilding::drawDoor(DrawPoint drawPt) const
 {
-    if(!IsDoorOpen())
+    if(!isDoorOpen())
         return;
-    GetDoorImage().DrawFull(drawPt);
+    getDoorImage().drawFull(drawPt);
 }
 
-void noBuilding::OpenDoor()
+void noBuilding::openDoor()
 {
     ++opendoor;
 }
 
-void noBuilding::CloseDoor()
+void noBuilding::closeDoor()
 {
-    RTTR_Assert(IsDoorOpen());
+    RTTR_Assert(isDoorOpen());
     --opendoor;
 }
 
-std::unique_ptr<FOWObject> noBuilding::CreateFOWObject() const
+std::unique_ptr<FOWObject> noBuilding::createFOWObject() const
 {
     return std::make_unique<fowBuilding>(bldType_, nation);
 }

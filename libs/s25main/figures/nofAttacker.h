@@ -49,40 +49,40 @@ class nofAttacker : public nofActiveSoldier
     MapPoint shipPos;
     unsigned ship_obj_id;
 
-    void Walked() override;
+    void walked() override;
     /// Go home from an attack
-    void ReturnHomeMissionAttacking();
+    void returnHomeMissionAttacking();
     /// Continue walking during an attack
-    void MissAttackingWalk();
+    void missAttackingWalk();
     /// Reached target military building
-    void ReachedDestination();
+    void reachedDestination();
     /// Handle next step of walking into an already captured building
-    void CapturingWalking();
+    void capturingWalking();
     /// Find a defender (coming out of a building, i.e. not the main defender at the flag) with a certain chance
-    void TryToOrderAggressiveDefender();
+    void tryToOrderAggressiveDefender();
     /// Actually do order an aggressive defender
-    void OrderAggressiveDefender();
+    void orderAggressiveDefender();
 
     /// Doesn't find a defender at the flag -> Send defenders or capture it
-    void ContinueAtFlag();
+    void continueAtFlag();
 
     /// Start waiting for a defender (at the flag) and register the block event
-    void SwitchStateAttackingWaitingForDefender();
+    void switchStateAttackingWaitingForDefender();
 
     /// Sea attackers: Notify ship that this soldier is not coming any more
-    void CancelAtShip();
-    void CancelAtHuntingDefender();
+    void cancelAtShip();
+    void cancelAtHuntingDefender();
     /// Handle walking back to ship
-    void HandleState_SeaAttack_ReturnToShip();
+    void handleStateSeaAttackReturnToShip();
 
 protected:
-    SoldierState FreeFightAborted() override;
+    SoldierState freeFightAborted() override;
 
 public:
     /// Notify all targets (or those that target us) that we won't be coming anymore
-    void InformTargetsAboutCancelling() override;
+    void informTargetsAboutCancelling() override;
 
-    void RemoveFromAttackedGoal();
+    void removeFromAttackedGoal();
 
     /// Create an attacker from a passive soldier, if harbor is set, the soldier will first walk there for a sea attack
     nofAttacker(const nofPassiveSoldier& other, nobBaseMilitary& attacked_goal,
@@ -90,67 +90,67 @@ public:
     nofAttacker(SerializedGameData& sgd, unsigned obj_id);
     ~nofAttacker() override;
 
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofAttacker; }
-    const nofAggressiveDefender* GetHuntingDefender() const { return huntingDefender; }
+    GO_Type getGOT() const final { return GO_Type::NofAttacker; }
+    const nofAggressiveDefender* getHuntingDefender() const { return huntingDefender; }
 
-    void HandleDerivedEvent(unsigned id) override;
+    void handleDerivedEvent(unsigned id) override;
     /// Return whether the roads to the position of this soldier cannot be used
-    bool IsBlockingRoads() const;
+    bool isBlockingRoads() const;
 
     /// Notify the soldier about the destruction of the home building
-    void HomeDestroyed() override;
+    void homeDestroyed() override;
     /// Notify the soldier that the home building was destroyed while he was waiting to leave
-    void HomeDestroyedAtBegin() override;
+    void homeDestroyedAtBegin() override;
 
     /// Called when a fight was won
-    void WonFighting() override;
+    void wonFighting() override;
     /// Called when a fight was lost (i.e. the soldier will die)
-    void LostFighting() override;
+    void lostFighting() override;
 
     /// Notify that the target building gone
-    void AttackedGoalDestroyed();
+    void attackedGoalDestroyed();
     /// The aggressive defender won't chase this soldier anymore
-    void AggressiveDefenderLost();
+    void aggressiveDefenderLost();
     /// Go to the defender waiting at the flag
-    bool AttackDefenderAtFlag();
+    bool attackDefenderAtFlag();
     /// Go to the flag without an available defender (e.g. just freed after a fight)
-    void AttackFlag();
+    void attackFlag();
     /// Go into a building that was just captured.
-    void CaptureBuilding();
+    void captureBuilding();
     /// Notification that the captured building is full
-    void CapturedBuildingFull();
+    void capturedBuildingFull();
     /// Return the distance to the flag at which the soldier is waiting
-    unsigned GetRadius() const { return radius; }
+    unsigned getRadius() const { return radius; }
     /// A waiting soldier should move closer to the flag to fill gaps
-    void StartSucceeding(MapPoint pt, unsigned short new_radius);
+    void startSucceeding(MapPoint pt, unsigned short new_radius);
     /// Return if this soldier is available to occupy the captured building
-    bool CanStartFarAwayCapturing(const nobMilitary& dest) const;
+    bool canStartFarAwayCapturing(const nobMilitary& dest) const;
 
     /// The aggressive defender is going to fight with this soldier
-    void LetsFight(nofAggressiveDefender& other);
+    void letsFight(nofAggressiveDefender& other);
 
     /// Return if this attacker waits around the building for a fight
-    bool IsAttackerReady() const { return (state == SoldierState::AttackingWaitingAroundBuilding); }
+    bool isAttackerReady() const { return (state == SoldierState::AttackingWaitingAroundBuilding); }
 
     /// Return target building being attacked
-    nobBaseMilitary* GetAttackedGoal() const { return attacked_goal; }
+    nobBaseMilitary* getAttackedGoal() const { return attacked_goal; }
 
     /// Start attack from anchor point of the ship
-    void StartAttackOnOtherIsland(MapPoint shipPos, unsigned ship_id);
+    void startAttackOnOtherIsland(MapPoint shipPos, unsigned ship_id);
     /// Call attacker back to the ship
-    void StartReturnViaShip(noShip& ship);
+    void startReturnViaShip(noShip& ship);
     /// Notification in a harbor before boarding a ship to the fight that e.g. the ship has no longer a valid route or
     /// target
-    void SeaAttackFailedBeforeLaunch();
+    void seaAttackFailedBeforeLaunch();
     /// Tell soldier the sea attack failed and they can't go home either
-    void CancelSeaAttack();
+    void cancelSeaAttack();
     /// notify sea attackers that they wont return home
-    void HomeHarborLost();
+    void homeHarborLost();
     /// Notification that the attacker is now on a ship
-    void SeaAttackStarted() { state = SoldierState::SeaattackingOnShip; }
+    void seaAttackStarted() { state = SoldierState::SeaattackingOnShip; }
     /// Return whether the soldier is on a ship waiting to attack, i.e. not already back from a fight
-    bool IsSeaAttackCompleted() const { return (state != SoldierState::SeaattackingOnShip); }
+    bool isSeaAttackCompleted() const { return (state != SoldierState::SeaattackingOnShip); }
 };

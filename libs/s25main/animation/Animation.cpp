@@ -6,7 +6,7 @@
 #include "Window.h"
 
 Animation::Animation(Window* element, unsigned numFrames, unsigned frameRate, RepeatType repeat)
-    : elementId_(element->GetID()), numFrames_(numFrames), frameRate_(frameRate), repeat_(repeat), lastTime_(0),
+    : elementId_(element->getID()), numFrames_(numFrames), frameRate_(frameRate), repeat_(repeat), lastTime_(0),
       curFrame_(0), countUp_(true), skipType_(SkipType::Frames), hasStarted_(false)
 {
     // We need at least 2 frames: current state and next state
@@ -58,7 +58,7 @@ void Animation::execFrame(Window* parent, unsigned remainingTime)
 {
     RTTR_Assert(curFrame_ < numFrames_);
     RTTR_Assert(remainingTime < frameRate_);
-    auto* element = parent->GetCtrl<Window>(elementId_);
+    auto* element = parent->getCtrl<Window>(elementId_);
     // Element missing -> Done
     if(!element)
     {

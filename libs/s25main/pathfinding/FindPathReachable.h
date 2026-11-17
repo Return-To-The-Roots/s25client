@@ -7,4 +7,4 @@
 #include "gameTypes/MapCoordinates.h"
 
 class GameWorldBase;
-bool DoesReachablePathExist(const GameWorldBase& world, MapPoint startPt, MapPoint endPt, unsigned maxLen);
+bool doesReachablePathExist(const GameWorldBase& world, MapPoint startPt, MapPoint endPt, unsigned maxLen);

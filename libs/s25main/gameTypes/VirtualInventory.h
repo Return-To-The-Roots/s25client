@@ -21,41 +21,41 @@ struct VirtualInventory
         real.clear();
     }
     /// Adds goods to both inventories
-    void Add(const GoodType good, unsigned amount = 1)
+    void add(const GoodType good, unsigned amount = 1)
     {
-        visual.Add(good, amount);
-        real.Add(good, amount);
+        visual.add(good, amount);
+        real.add(good, amount);
     }
     /// Adds figures to both inventories
-    void Add(const Job job, unsigned amount = 1)
+    void add(const Job job, unsigned amount = 1)
     {
-        visual.Add(job, amount);
-        real.Add(job, amount);
+        visual.add(job, amount);
+        real.add(job, amount);
     }
     /// Adds armored figures to both inventories
-    void Add(const ArmoredSoldier soldier, unsigned amount = 1)
+    void add(const ArmoredSoldier soldier, unsigned amount = 1)
     {
-        visual.Add(soldier, amount);
-        real.Add(soldier, amount);
+        visual.add(soldier, amount);
+        real.add(soldier, amount);
     }
     /// Removes goods from both inventories
-    void Remove(const GoodType good, unsigned amount = 1)
+    void remove(const GoodType good, unsigned amount = 1)
     {
-        visual.Remove(good, amount);
-        real.Remove(good, amount);
+        visual.remove(good, amount);
+        real.remove(good, amount);
     }
     /// Removes jobs from both inventories
-    void Remove(const Job job, unsigned amount = 1)
+    void remove(const Job job, unsigned amount = 1)
     {
-        visual.Remove(job, amount);
-        real.Remove(job, amount);
+        visual.remove(job, amount);
+        real.remove(job, amount);
     }
 
     /// Removes armored figures from both inventories
-    void Remove(const ArmoredSoldier soldier, unsigned amount = 1)
+    void remove(const ArmoredSoldier soldier, unsigned amount = 1)
     {
-        visual.Remove(soldier, amount);
-        real.Remove(soldier, amount);
+        visual.remove(soldier, amount);
+        real.remove(soldier, amount);
     }
 
     /// Returns the real number of people of the given type

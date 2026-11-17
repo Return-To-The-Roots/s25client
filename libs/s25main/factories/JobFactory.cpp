@@ -52,15 +52,15 @@
 #include "nodeObjs/noFlag.h"
 #include <stdexcept>
 
-std::unique_ptr<noFigure> JobFactory::CreateJob(const Job job_id, const MapPoint pt, const unsigned char player,
+std::unique_ptr<noFigure> JobFactory::createJob(const Job job_id, const MapPoint pt, const unsigned char player,
                                                 noRoadNode& goal)
 {
-    if(nobBaseWarehouse::isStorehouseGOT(goal.GetGOT()))
+    if(nobBaseWarehouse::isStorehouseGOT(goal.getGOT()))
         return std::make_unique<nofPassiveWorker>(job_id, pt, player, &goal);
     switch(job_id)
     {
         case Job::Builder:
-            if(goal.GetGOT() != GO_Type::Buildingsite)
+            if(goal.getGOT() != GO_Type::Buildingsite)
                 return std::make_unique<nofPassiveWorker>(Job::Builder, pt, player, &goal);
             else
                 return std::make_unique<nofBuilder>(pt, player, &checkedCast<noBuildingSite>(goal));
@@ -76,25 +76,25 @@ std::unique_ptr<noFigure> JobFactory::CreateJob(const Job job_id, const MapPoint
         case Job::Metalworker: return std::make_unique<nofMetalworker>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::Baker: return std::make_unique<nofBaker>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::Helper:
-            if(goal.GetGOT() == GO_Type::NobUsual)
+            if(goal.getGOT() == GO_Type::NobUsual)
             {
                 auto* goalBld = &checkedCast<nobUsual>(goal);
-                if(goalBld->GetBuildingType() == BuildingType::Well)
+                if(goalBld->getBuildingType() == BuildingType::Well)
                     return std::make_unique<nofWellguy>(pt, player, goalBld);
-                else if(goalBld->GetBuildingType() == BuildingType::Catapult)
+                else if(goalBld->getBuildingType() == BuildingType::Catapult)
                     return std::make_unique<nofCatapultMan>(pt, player, goalBld);
             }
-            throw std::runtime_error("Invalid goal type: " + helpers::toString(goal.GetGOT()) + " for job "
+            throw std::runtime_error("Invalid goal type: " + helpers::toString(goal.getGOT()) + " for job "
                                      + helpers::toString(job_id));
         case Job::Geologist: return std::make_unique<nofGeologist>(pt, player, &checkedCast<noFlag>(goal));
         case Job::Scout:
             // Different scout for lookout towers and free scouts
-            if(goal.GetGOT() == GO_Type::NobUsual)
+            if(goal.getGOT() == GO_Type::NobUsual)
             {
                 return std::make_unique<nofScout_LookoutTower>(pt, player, &checkedCast<nobUsual>(goal));
-            } else if(goal.GetGOT() == GO_Type::Flag)
+            } else if(goal.getGOT() == GO_Type::Flag)
                 return std::make_unique<nofScout_Free>(pt, player, &goal);
-            throw std::runtime_error("Invalid goal type: " + helpers::toString(goal.GetGOT()) + " for job "
+            throw std::runtime_error("Invalid goal type: " + helpers::toString(goal.getGOT()) + " for job "
                                      + helpers::toString(job_id));
         case Job::Miner: return std::make_unique<nofMiner>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::Farmer: return std::make_unique<nofFarmer>(pt, player, &checkedCast<nobUsual>(goal));

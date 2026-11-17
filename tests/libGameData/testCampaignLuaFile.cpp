@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         {
             bnw::ofstream file(campaignFile, std::ios::app);
             file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end\n",
-                                    CampaignDataLoader::GetVersion());
+                                    CampaignDataLoader::getVersion());
         }
 
         CampaignDescription desc;
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
             bnw::ofstream file(tmp / "campaign.lua", std::ios::app);
             BOOST_TEST_PASSPOINT();
             file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end\n",
-                                    CampaignDataLoader::GetVersion() + 1);
+                                    CampaignDataLoader::getVersion() + 1);
             BOOST_TEST_PASSPOINT();
         }
 
@@ -102,8 +102,8 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         rttr::test::LogAccessor logAcc;
         BOOST_TEST_REQUIRE(!loader.Load());
         RTTR_REQUIRE_LOG_CONTAINS(helpers::format("Wrong lua script version: %1%. Current version: %2%.\n",
-                                                  CampaignDataLoader::GetVersion() + 1,
-                                                  CampaignDataLoader::GetVersion()),
+                                                  CampaignDataLoader::getVersion() + 1,
+                                                  CampaignDataLoader::getVersion()),
                                   false);
     }
 }

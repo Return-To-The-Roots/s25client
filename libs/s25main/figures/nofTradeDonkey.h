@@ -24,13 +24,13 @@ class nofTradeDonkey : public noFigure
     std::deque<TradeDirection> next_dirs;
 
 private:
-    void GoalReached() override;
-    void Walked() override;
-    void HandleDerivedEvent(unsigned id) override;
-    void AbrogateWorkplace() override;
+    void goalReached() override;
+    void walked() override;
+    void handleDerivedEvent(unsigned id) override;
+    void abrogateWorkplace() override;
 
     /// Returns next direction
-    TradeDirection GetNextDir()
+    TradeDirection getNextDir()
     {
         TradeDirection dir = next_dirs.front();
         next_dirs.pop_front();
@@ -41,33 +41,33 @@ public:
     nofTradeDonkey(MapPoint pos, unsigned char player, const boost_variant2<GoodType, Job>& what);
     nofTradeDonkey(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override
+    void destroy() override
     {
         RTTR_Assert(!successor);
-        noFigure::Destroy();
+        noFigure::destroy();
     }
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofTradedonkey; }
+    GO_Type getGOT() const final { return GO_Type::NofTradedonkey; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-    void LostWork();
+    void lostWork();
 
     /// Adds the next direction, this is usually done by the predecessor
-    void AddNextDir(TradeDirection dir) { next_dirs.push_back(dir); }
+    void addNextDir(TradeDirection dir) { next_dirs.push_back(dir); }
 
     /// Gets the type of ware this donkey is carrying
-    const auto& GetCarriedWare() const { return gt; }
+    const auto& getCarriedWare() const { return gt; }
 
     /// Sets the successor in the caravane
-    void SetSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
+    void setSuccessor(nofTradeDonkey* const successor) { this->successor = successor; }
 
     // get the successor in the caravane
-    nofTradeDonkey* GetSuccessor() { return successor; }
+    nofTradeDonkey* getSuccessor() { return successor; }
 
     /// Inform successor that the caravane is canceled
-    void CancelTradeCaravane();
+    void cancelTradeCaravane();
 };

@@ -15,11 +15,11 @@ class nobStorehouse : public nobBaseWarehouse
     nobStorehouse(SerializedGameData& sgd, unsigned obj_id);
 
 public:
-    GO_Type GetGOT() const final { return GO_Type::NobStorehouse; }
-    unsigned GetMilitaryRadius() const override { return 0; }
-    bool IsAttackable(unsigned /*playerIdx*/) const override { return false; }
+    GO_Type getGOT() const final { return GO_Type::NobStorehouse; }
+    unsigned getMilitaryRadius() const override { return 0; }
+    bool isAttackable(unsigned /*playerIdx*/) const override { return false; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 };

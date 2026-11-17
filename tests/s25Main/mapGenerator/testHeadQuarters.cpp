@@ -39,15 +39,15 @@ BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_returns_expected_nodes)
     Map map = createMap(size);
     TextureMap& textures = map.textureMap;
 
-    const auto water = textures.Find(IsShipableWater);
-    const auto land = textures.Find(IsBuildableLand);
-    map.getTextures().Resize(size, TexturePair(water));
+    const auto water = textures.Find(isShipableWater);
+    const auto land = textures.Find(isBuildableLand);
+    map.getTextures().resize(size, TexturePair(water));
     MapPoint centerOfLargeArea(2, 3);
     const auto largeArea = map.getTextures().GetPointsInRadiusWithCenter(centerOfLargeArea, 3);
 
     for(auto node : largeArea)
     {
-        textures.Set(node, land);
+        textures.set(node, land);
     }
 
     MapPoint centerOfSmallArea(13, 15);
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(FindLargestConnectedArea_returns_expected_nodes)
 
     for(auto node : smallArea)
     {
-        textures.Set(node, land);
+        textures.set(node, land);
     }
 
     const auto result = FindLargestConnectedArea(map);
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_returns_empty_for_map_without_suitable_posi
     Map map = createMap(size);
     const TextureMap& textures = map.textureMap;
 
-    map.getTextures().Resize(size, TexturePair(textures.Find(IsShipableWater)));
+    map.getTextures().resize(size, TexturePair(textures.Find(isShipableWater)));
     const auto mntDist = randomMountainDistance();
     const auto positions = FindHqPositions(map, getAllPoints(size), mntDist);
 
@@ -87,12 +87,12 @@ BOOST_AUTO_TEST_CASE(FindHqPositions_returns_suitable_position_for_single_player
     Map map = createMap(size);
     const TextureMap& textures = map.textureMap;
 
-    const auto water = textures.Find(IsWater);
-    const auto buildable = textures.Find(IsBuildableLand);
+    const auto water = textures.Find(isWater);
+    const auto buildable = textures.Find(isBuildableLand);
 
     MapPoint obstacle(1, 3);
 
-    map.getTextures().Resize(size, TexturePair(buildable));
+    map.getTextures().resize(size, TexturePair(buildable));
     map.getTextures()[obstacle] = TexturePair(water);
 
     const auto mntDist = randomMountainDistance();
@@ -107,13 +107,13 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_for_player)
     Map map = createMap(size);
     const TextureMap& textures = map.textureMap;
 
-    const auto mountain = textures.Find(IsMinableMountain);
-    const auto buildable = textures.Find(IsBuildableLand);
+    const auto mountain = textures.Find(isMinableMountain);
+    const auto buildable = textures.Find(isBuildableLand);
 
     MapPoint obstacle(1, 2);
     MapPoint hq(3, 4);
 
-    map.getTextures().Resize(size, TexturePair(buildable));
+    map.getTextures().resize(size, TexturePair(buildable));
     map.getTextures()[obstacle] = TexturePair(mountain);
 
     std::vector<MapPoint> area{hq};
@@ -129,9 +129,9 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_suitable_position_without_mountain)
     const TextureMap& textures = map.textureMap;
 
     const auto mntDist = randomMountainDistance();
-    const auto buildable = textures.Find(IsBuildableLand);
+    const auto buildable = textures.Find(isBuildableLand);
     MapPoint hq(4, 4);
-    map.getTextures().Resize(size, TexturePair(buildable));
+    map.getTextures().resize(size, TexturePair(buildable));
     std::vector<MapPoint> area{hq};
     BOOST_REQUIRE_NO_THROW(PlaceHeadquarter(map, area, mntDist));
     BOOST_TEST_REQUIRE(map.hqPositions.size() == 1u);
@@ -148,8 +148,8 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_places_hq_on_map_at_suitable_position)
     const MapPoint obstacle(1, 3);
     const MapPoint hq(4, 5);
 
-    map.getTextures().Resize(size, TexturePair(textures.Find(IsBuildableLand)));
-    map.getTextures()[obstacle] = TexturePair(textures.Find(IsWater));
+    map.getTextures().resize(size, TexturePair(textures.Find(isBuildableLand)));
+    map.getTextures()[obstacle] = TexturePair(textures.Find(isWater));
 
     std::vector<MapPoint> area{hq};
 
@@ -165,8 +165,8 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_with_empty_area_throws_exception)
     const TextureMap& textures = map.textureMap;
 
     const auto mntDist = randomMountainDistance();
-    const auto water = textures.Find(IsShipableWater);
-    map.getTextures().Resize(size, TexturePair(water));
+    const auto water = textures.Find(isShipableWater);
+    map.getTextures().resize(size, TexturePair(water));
     std::vector<MapPoint> area;
     BOOST_CHECK_THROW(PlaceHeadquarter(map, area, mntDist), std::runtime_error);
 }
@@ -178,8 +178,8 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarter_without_suitable_position_throws_exception
     const TextureMap& textures = map.textureMap;
 
     const auto mntDist = randomMountainDistance();
-    const auto water = textures.Find(IsShipableWater);
-    map.getTextures().Resize(size, TexturePair(water));
+    const auto water = textures.Find(isShipableWater);
+    map.getTextures().resize(size, TexturePair(water));
     std::vector<MapPoint> area{MapPoint(0, 0)};
     BOOST_CHECK_THROW(PlaceHeadquarter(map, area, mntDist), std::runtime_error);
 }
@@ -193,9 +193,9 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_with_suitable_positions_for_all_players)
     const TextureMap& textures = map.textureMap;
 
     const auto mntDist = randomMountainDistance();
-    map.getTextures().Resize(size, TexturePair(textures.Find(IsBuildableLand)));
-    map.getTextures()[MapPoint(0, 0)] = TexturePair(textures.Find(IsWater));
-    BOOST_REQUIRE_NO_THROW(PlaceHeadquarters(map, rnd, players, mntDist));
+    map.getTextures().resize(size, TexturePair(textures.Find(isBuildableLand)));
+    map.getTextures()[MapPoint(0, 0)] = TexturePair(textures.Find(isWater));
+    BOOST_REQUIRE_NO_THROW(placeHeadquarters(map, rnd, players, mntDist));
 }
 
 BOOST_AUTO_TEST_CASE(PlaceHeadquarters_places_hqs_for_any_player_number_on_suitable_map)
@@ -207,9 +207,9 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_places_hqs_for_any_player_number_on_suita
     const TextureMap& textures = map.textureMap;
 
     const auto mntDist = randomMountainDistance();
-    map.getTextures().Resize(size, textures.Find(IsBuildableLand));
-    map.getTextures()[MapPoint(0, 0)] = TexturePair(textures.Find(IsWater));
-    PlaceHeadquarters(map, rnd, players, mntDist);
+    map.getTextures().resize(size, textures.Find(isBuildableLand));
+    map.getTextures()[MapPoint(0, 0)] = TexturePair(textures.Find(isWater));
+    placeHeadquarters(map, rnd, players, mntDist);
     BOOST_TEST_REQUIRE(map.hqPositions.size() == players);
     for(unsigned index = 0; index < players; index++)
     {
@@ -226,8 +226,8 @@ BOOST_AUTO_TEST_CASE(PlaceHeadquarters_without_suitable_position_throws_exceptio
     const TextureMap& textures = map.textureMap;
 
     const auto mntDist = randomMountainDistance();
-    map.getTextures().Resize(size, textures.Find(IsWater));
-    BOOST_CHECK_THROW(PlaceHeadquarters(map, rnd, players, mntDist), std::runtime_error);
+    map.getTextures().resize(size, textures.Find(isWater));
+    BOOST_CHECK_THROW(placeHeadquarters(map, rnd, players, mntDist), std::runtime_error);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

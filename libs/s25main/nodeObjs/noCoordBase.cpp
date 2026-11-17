@@ -7,12 +7,12 @@
 #include "world/GameWorld.h"
 #include "gameData/MapConsts.h"
 
-void noCoordBase::Serialize(SerializedGameData& sgd) const
+void noCoordBase::serialize(SerializedGameData& sgd) const
 {
-    noBase::Serialize(sgd);
+    noBase::serialize(sgd);
 
     helpers::pushPoint(sgd, pos);
 }
 
-noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id), pos(sgd.PopMapPoint())
+noCoordBase::noCoordBase(SerializedGameData& sgd, const unsigned obj_id) : noBase(sgd, obj_id), pos(sgd.popMapPoint())
 {}

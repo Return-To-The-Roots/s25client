@@ -12,28 +12,28 @@ class ctrlScrollBar final : public Window
 public:
     ctrlScrollBar(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
                   TextureColor tc, unsigned short pagesize);
-    void Resize(const Extent& newSize) override;
-    void SetScrollPos(unsigned short scroll_pos);
-    void SetRange(unsigned short scroll_range);
-    void SetPageSize(unsigned short pagesize);
+    void resize(const Extent& newSize) override;
+    void setScrollPos(unsigned short scroll_pos);
+    void setRange(unsigned short scroll_range);
+    void setPageSize(unsigned short pagesize);
 
-    unsigned short GetPageSize() const { return pagesize; }
-    unsigned short GetScrollPos() const { return scroll_pos; }
+    unsigned short getPageSize() const { return pagesize; }
+    unsigned short getScrollPos() const { return scroll_pos; }
     /// Scrolls by the given distance (less than 0 = up, else down)
-    void Scroll(int distance);
+    void scroll(int distance);
 
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
-    void UpdatePosFromSlider();
-    void UpdateSliderFromPos();
-    void RecalculateSizes();
+    void updatePosFromSlider();
+    void updateSliderFromPos();
+    void recalculateSizes();
 
     unsigned short button_height;
     TextureColor tc;

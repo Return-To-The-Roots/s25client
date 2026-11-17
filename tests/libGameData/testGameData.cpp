@@ -93,23 +93,23 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
         {
             const auto t = TerrainType(i);
             const TerrainDesc& desc = worldDesc.terrain.get(worldDesc.terrain.getIndex(tNames[i]));
-            BOOST_TEST(desc.s2Id == TerrainData::GetTextureIdentifier(t));
+            BOOST_TEST(desc.s2Id == TerrainData::getTextureIdentifier(t));
             const EdgeType newEdge =
               !desc.edgeType ? ET_NONE : EdgeType((helpers::indexOf(eNames, worldDesc.get(desc.edgeType).name) + 1));
-            BOOST_TEST(newEdge == TerrainData::GetEdgeType(lt, t));
-            BOOST_TEST(desc.GetBQ() == TerrainData::GetBuildingQuality(t));
+            BOOST_TEST(newEdge == TerrainData::getEdgeType(lt, t));
+            BOOST_TEST(desc.GetBQ() == TerrainData::getBuildingQuality(t));
             BOOST_TEST(!desc.Is(ETerrain::Walkable)
-                       == (TerrainData::GetBuildingQuality(t) == TerrainBQ::Nothing
-                           || TerrainData::GetBuildingQuality(t) == TerrainBQ::Danger));
-            BOOST_TEST(desc.Is(ETerrain::Mineable) == (TerrainData::GetBuildingQuality(t) == TerrainBQ::Mine));
-            BOOST_TEST(desc.Is(ETerrain::Buildable) == (TerrainData::GetBuildingQuality(t) == TerrainBQ::Castle));
-            BOOST_TEST(desc.Is(ETerrain::Shippable) == TerrainData::IsUsableByShip(t));
-            BOOST_TEST((desc.kind == TerrainKind::Snow) == TerrainData::IsSnow(lt, t));
+                       == (TerrainData::getBuildingQuality(t) == TerrainBQ::Nothing
+                           || TerrainData::getBuildingQuality(t) == TerrainBQ::Danger));
+            BOOST_TEST(desc.Is(ETerrain::Mineable) == (TerrainData::getBuildingQuality(t) == TerrainBQ::Mine));
+            BOOST_TEST(desc.Is(ETerrain::Buildable) == (TerrainData::getBuildingQuality(t) == TerrainBQ::Castle));
+            BOOST_TEST(desc.Is(ETerrain::Shippable) == TerrainData::isUsableByShip(t));
+            BOOST_TEST((desc.kind == TerrainKind::Snow) == TerrainData::isSnow(lt, t));
 
-            BOOST_TEST((desc.IsUsableByAnimals() || desc.kind == TerrainKind::Snow)
-                       == (TerrainData::IsUsableByAnimals(t) || TerrainData::IsSnow(lt, t)));
-            BOOST_TEST(desc.IsVital() == TerrainData::IsVital(t));
-            BOOST_TEST(desc.minimapColor == TerrainData::GetColor(lt, t));
+            BOOST_TEST((desc.isUsableByAnimals() || desc.kind == TerrainKind::Snow)
+                       == (TerrainData::isUsableByAnimals(t) || TerrainData::isSnow(lt, t)));
+            BOOST_TEST(desc.isVital() == TerrainData::isVital(t));
+            BOOST_TEST(desc.minimapColor == TerrainData::getColor(lt, t));
         }
     }
     // TerrainData::PrintEdgePrios();
@@ -265,31 +265,31 @@ BOOST_AUTO_TEST_CASE(TextureCoords)
     BOOST_TEST_REQUIRE(loader.Load());
     // Border points are inset by half a pixel for OpenGL (sample middle of pixel!)
     // Overlapped uses the full rectangle
-    const TerrainDesc::Triangle rsuO = desc.terrain.tryGet("terrain1")->GetRSUTriangle();
+    const TerrainDesc::Triangle rsuO = desc.terrain.tryGet("terrain1")->getRSUTriangle();
     BOOST_TEST(rsuO.tip == PointF(10 + 32 / 2.f, 20 + 0.5f));
     BOOST_TEST(rsuO.left == PointF(10 + 0.5f, 20 + 31 - 0.5f));
     BOOST_TEST(rsuO.right == PointF(10 + 32 - 0.5f, 20 + 31 - 0.5f));
-    const TerrainDesc::Triangle usdO = desc.terrain.tryGet("terrain1")->GetUSDTriangle();
+    const TerrainDesc::Triangle usdO = desc.terrain.tryGet("terrain1")->getUSDTriangle();
     BOOST_TEST(usdO.tip == PointF(10 + 32 / 2.f, 20 + 31 - 0.5f));
     BOOST_TEST(usdO.left == PointF(10 + 0.5f, 20 + 0.5f));
     BOOST_TEST(usdO.right == PointF(10 + 32 - 0.5f, 20 + 0.5f));
 
     // Stacked has RSU over USD
-    const TerrainDesc::Triangle rsuS = desc.terrain.tryGet("terrain2")->GetRSUTriangle();
+    const TerrainDesc::Triangle rsuS = desc.terrain.tryGet("terrain2")->getRSUTriangle();
     BOOST_TEST(rsuS.tip == rsuO.tip);
     BOOST_TEST(rsuS.left == PointF(10 + 0.5f, 20 + 31 / 2.f));
     BOOST_TEST(rsuS.right == PointF(10 + 32 - 0.5f, 20 + 31 / 2.f));
-    const TerrainDesc::Triangle usdS = desc.terrain.tryGet("terrain2")->GetUSDTriangle();
+    const TerrainDesc::Triangle usdS = desc.terrain.tryGet("terrain2")->getUSDTriangle();
     BOOST_TEST(usdS.tip == usdO.tip);
     BOOST_TEST(usdS.left == PointF(10 + 0.5f, 20 + 31 / 2.f));
     BOOST_TEST(usdS.right == PointF(10 + 32 - 0.5f, 20 + 31 / 2.f));
 
     // Rotated is stacked sideways (note that order stays the same)
-    const TerrainDesc::Triangle rsuR = desc.terrain.tryGet("terrain3")->GetRSUTriangle();
+    const TerrainDesc::Triangle rsuR = desc.terrain.tryGet("terrain3")->getRSUTriangle();
     BOOST_TEST(rsuR.tip == rsuS.left);
     BOOST_TEST(rsuR.left == rsuS.right);
     BOOST_TEST(rsuR.right == rsuS.tip);
-    const TerrainDesc::Triangle usdR = desc.terrain.tryGet("terrain3")->GetUSDTriangle();
+    const TerrainDesc::Triangle usdR = desc.terrain.tryGet("terrain3")->getUSDTriangle();
     BOOST_TEST(usdR.tip == usdS.right);
     BOOST_TEST(usdR.left == usdS.tip);
     BOOST_TEST(usdR.right == usdS.left);

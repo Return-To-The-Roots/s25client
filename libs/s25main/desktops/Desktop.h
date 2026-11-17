@@ -16,22 +16,22 @@ class Desktop : public Window
 public:
     Desktop(glArchivItem_Bitmap* background);
     ~Desktop();
-    void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
+    void msgScreenResize(const ScreenResizeEvent& sr) override;
     /// Callback when a window was closed
-    virtual void Msg_WindowClosed(IngameWindow&){};
+    virtual void msgWindowClosed(IngameWindow&){};
     /// Show or hide the fps
-    void SetFpsDisplay(bool show);
+    void setFpsDisplay(bool show);
 
     /// ID of the fps display text
     static const unsigned fpsDisplayId;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
     glArchivItem_Bitmap* background;
 
 private:
-    void UpdateFps(unsigned newFps);
+    void updateFps(unsigned newFps);
 
     unsigned lastFPS_;
 };

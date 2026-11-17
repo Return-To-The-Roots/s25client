@@ -7,5 +7,5 @@
 
 SoundHandle glArchivItem_Sound_Midi::Load()
 {
-    return AUDIODRIVER.LoadMusic(*this, ".midi");
+    return AUDIODRIVER.loadMusic(*this, ".midi");
 }

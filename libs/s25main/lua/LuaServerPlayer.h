@@ -18,17 +18,17 @@ class LuaServerPlayer : public LuaPlayerBase
     JoinPlayerInfo& player;
 
 protected:
-    const BasePlayerInfo& GetPlayer() const override;
+    const BasePlayerInfo& getPlayer() const override;
 
 public:
     LuaServerPlayer(IGameLobbyController& lobbyServerController, unsigned playerId);
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
-    void SetNation(lua::SafeEnum<Nation> nat);
-    void SetTeam(lua::SafeEnum<Team> team);
-    void SetColor(unsigned colorOrIdx);
-    void Close();
-    void SetAI(unsigned level);
-    void SetName(const std::string& name);
-    void SetPortrait(unsigned int portraitIndex);
+    void setNation(lua::SafeEnum<Nation> nat);
+    void setTeam(lua::SafeEnum<Team> team);
+    void setColor(unsigned colorOrIdx);
+    void close();
+    void setAI(unsigned level);
+    void setName(const std::string& name);
+    void setPortrait(unsigned int portraitIndex);
 };

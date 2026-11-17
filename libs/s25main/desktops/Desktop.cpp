@@ -19,57 +19,57 @@ const unsigned Desktop::fpsDisplayId = std::numeric_limits<unsigned>::max();
 constexpr DrawPoint fpsDisplayPos(800, 0);
 
 Desktop::Desktop(glArchivItem_Bitmap* background)
-    : Window(nullptr, 0, DrawPoint::all(0), VIDEODRIVER.GetRenderSize()), background(background), lastFPS_(0)
+    : Window(nullptr, 0, DrawPoint::all(0), VIDEODRIVER.getRenderSize()), background(background), lastFPS_(0)
 {
-    SetScale(true);
-    SetFpsDisplay(true);
+    setScale(true);
+    setFpsDisplay(true);
     // By default limit the maximum frame rate to 60 FPS - used for main menu
     if(SETTINGS.video.framerate < 0)
         VIDEODRIVER.setTargetFramerate(60);
     else
         VIDEODRIVER.setTargetFramerate(SETTINGS.video.framerate);
-    UpdateFps(VIDEODRIVER.GetFPS());
+    updateFps(VIDEODRIVER.getFPS());
 }
 
 Desktop::~Desktop() = default;
 
-void Desktop::Draw_()
+void Desktop::drawImpl()
 {
-    unsigned curFPS = VIDEODRIVER.GetFPS();
+    unsigned curFPS = VIDEODRIVER.getFPS();
     if(curFPS != lastFPS_)
-        UpdateFps(curFPS);
+        updateFps(curFPS);
 
     if(background)
-        background->DrawFull(GetDrawRect());
+        background->drawFull(getDrawRect());
 
-    Window::Draw_();
+    Window::drawImpl();
 }
 
-void Desktop::Msg_ScreenResize(const ScreenResizeEvent& sr)
+void Desktop::msgScreenResize(const ScreenResizeEvent& sr)
 {
-    Window::Msg_ScreenResize(sr);
+    Window::msgScreenResize(sr);
     // Resize to new screen size
-    Resize(sr.newSize);
-    auto* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
+    resize(sr.newSize);
+    auto* fpsDisplay = getCtrl<ctrlText>(fpsDisplayId);
     if(fpsDisplay)
-        fpsDisplay->SetPos(Scale(fpsDisplayPos));
+        fpsDisplay->setPos(scale(fpsDisplayPos));
 }
 
-void Desktop::SetFpsDisplay(bool show)
+void Desktop::setFpsDisplay(bool show)
 {
     if(!show)
-        DeleteCtrl(fpsDisplayId);
-    else if(!GetCtrl<ctrlText>(fpsDisplayId) && SmallFont)
+        deleteCtrl(fpsDisplayId);
+    else if(!getCtrl<ctrlText>(fpsDisplayId) && SmallFont)
     {
-        AddText(fpsDisplayId, fpsDisplayPos, helpers::toString(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT,
+        addText(fpsDisplayId, fpsDisplayPos, helpers::toString(lastFPS_) + " fps", COLOR_YELLOW, FontStyle::RIGHT,
                 SmallFont);
     }
 }
 
-void Desktop::UpdateFps(unsigned newFps)
+void Desktop::updateFps(unsigned newFps)
 {
-    auto* fpsDisplay = GetCtrl<ctrlText>(fpsDisplayId);
+    auto* fpsDisplay = getCtrl<ctrlText>(fpsDisplayId);
     if(fpsDisplay)
-        fpsDisplay->SetText(helpers::toString(newFps) + " fps");
+        fpsDisplay->setText(helpers::toString(newFps) + " fps");
     lastFPS_ = newFps;
 }

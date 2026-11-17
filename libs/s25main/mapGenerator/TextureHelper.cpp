@@ -6,64 +6,64 @@
 
 namespace rttr::mapGenerator {
 
-uint8_t ByHumidity(const TerrainDesc& terrain)
+uint8_t byHumidity(const TerrainDesc& terrain)
 {
     return terrain.humidity;
 }
 
-bool IsWater(const TerrainDesc& terrain)
+bool isWater(const TerrainDesc& terrain)
 {
     return terrain.kind == TerrainKind::Water;
 }
 
-bool IsSwamp(const TerrainDesc& terrain)
+bool isSwamp(const TerrainDesc& terrain)
 {
     return !terrain.Is(ETerrain::Walkable) && terrain.humidity > 0;
 }
 
-bool IsLand(const TerrainDesc& terrain)
+bool isLand(const TerrainDesc& terrain)
 {
     return terrain.kind == TerrainKind::Land;
 }
 
-bool IsShipableWater(const TerrainDesc& terrain)
+bool isShipableWater(const TerrainDesc& terrain)
 {
     return terrain.kind == TerrainKind::Water && terrain.Is(ETerrain::Shippable);
 }
 
-bool IsBuildableLand(const TerrainDesc& terrain)
+bool isBuildableLand(const TerrainDesc& terrain)
 {
     return terrain.kind == TerrainKind::Land && terrain.Is(ETerrain::Buildable);
 }
 
-bool IsCoastTerrain(const TerrainDesc& terrain)
+bool isCoastTerrain(const TerrainDesc& terrain)
 {
     return terrain.kind == TerrainKind::Land && terrain.Is(ETerrain::Walkable) && terrain.GetBQ() == TerrainBQ::Flag;
 }
 
-bool IsBuildableCoast(const TerrainDesc& terrain)
+bool isBuildableCoast(const TerrainDesc& terrain)
 {
-    return terrain.GetBQ() == TerrainBQ::Castle && terrain.IsVital() && terrain.humidity < 100;
+    return terrain.GetBQ() == TerrainBQ::Castle && terrain.isVital() && terrain.humidity < 100;
 }
 
-bool IsBuildableMountain(const TerrainDesc& terrain)
+bool isBuildableMountain(const TerrainDesc& terrain)
 {
     return terrain.kind == TerrainKind::Mountain && terrain.Is(ETerrain::Buildable);
 }
 
-bool IsMinableMountain(const TerrainDesc& terrain)
+bool isMinableMountain(const TerrainDesc& terrain)
 {
     return terrain.kind == TerrainKind::Mountain && terrain.Is(ETerrain::Mineable);
 }
 
-bool IsSnowOrLava(const TerrainDesc& terrain)
+bool isSnowOrLava(const TerrainDesc& terrain)
 {
     return terrain.kind == TerrainKind::Snow || terrain.kind == TerrainKind::Lava;
 }
 
-bool IsMountainOrSnowOrLava(const TerrainDesc& terrain)
+bool isMountainOrSnowOrLava(const TerrainDesc& terrain)
 {
-    return terrain.kind == TerrainKind::Mountain || IsSnowOrLava(terrain);
+    return terrain.kind == TerrainKind::Mountain || isSnowOrLava(terrain);
 }
 
 } // namespace rttr::mapGenerator

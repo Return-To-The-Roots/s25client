@@ -10,7 +10,7 @@ namespace ogl {
 enum class Target : GLenum
 {
     Array = GL_ARRAY_BUFFER,
-    Index = GL_ELEMENT_ARRAY_BUFFER
+    index = GL_ELEMENT_ARRAY_BUFFER
 };
 
 enum class Usage : GLenum

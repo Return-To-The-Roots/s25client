@@ -15,9 +15,9 @@ class RttrLobbyClient : public ILobbyClient
 
 public:
     explicit RttrLobbyClient(LobbyClient& client);
-    bool IsLoggedIn() const override;
-    void AddListener(LobbyInterface* listener) override;
-    void RemoveListener(LobbyInterface* listener) override;
-    void SendServerJoinRequest() override;
-    void SendChat(const std::string& text) override;
+    bool isLoggedIn() const override;
+    void addListener(LobbyInterface* listener) override;
+    void removeListener(LobbyInterface* listener) override;
+    void sendServerJoinRequest() override;
+    void sendChat(const std::string& text) override;
 };

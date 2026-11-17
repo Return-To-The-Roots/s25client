@@ -69,11 +69,11 @@ constexpr auto maxEnumValue(BobTypes)
 extern helpers::EnumArray<unsigned, BobTypes> bobIndex;
 extern helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
 
-ITexture* GetWareTex(GoodType good);
-ITexture* GetWareStackTex(GoodType good);
-ITexture* GetWareDonkeyTex(GoodType good);
-ITexture* GetJobTex(Job job);
-ITexture* GetTempleProductionModeTex(ProductionMode mode);
+ITexture* getWareTex(GoodType good);
+ITexture* getWareStackTex(GoodType good);
+ITexture* getWareDonkeyTex(GoodType good);
+ITexture* getJobTex(Job job);
+ITexture* getTempleProductionModeTex(ProductionMode mode);
 bool isAddonActive(const GameWorldBase& gwb);
 
 void fillCache(glTexturePacker& stp);

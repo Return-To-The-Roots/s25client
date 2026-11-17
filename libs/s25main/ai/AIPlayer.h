@@ -17,18 +17,18 @@ class AIPlayer
 {
 public:
     AIPlayer(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
-        : playerId(playerId), player(gwb.GetPlayer(playerId)), gwb(gwb), ggs(gwb.GetGGS()), level(level),
+        : playerId(playerId), player(gwb.getPlayer(playerId)), gwb(gwb), ggs(gwb.getGGS()), level(level),
           aii(gwb, gcs, playerId)
     {}
 
     virtual ~AIPlayer() = default;
 
     /// Called for every GF
-    virtual void RunGF(unsigned gf, bool gfisnwf) = 0;
-    virtual void OnChatMessage(unsigned sendPlayerId, ChatDestination, const std::string& msg) = 0;
+    virtual void runGF(unsigned gf, bool gfisnwf) = 0;
+    virtual void onChatMessage(unsigned sendPlayerId, ChatDestination, const std::string& msg) = 0;
 
-    const std::string& GetPlayerName() const { return player.name; }
-    unsigned char GetPlayerId() const { return playerId; }
+    const std::string& getPlayerName() const { return player.name; }
+    unsigned char getPlayerId() const { return playerId; }
 
     /// Get the game commands and mark them as processed
     std::vector<gc::GameCommandPtr> FetchGameCommands()

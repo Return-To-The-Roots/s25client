@@ -12,87 +12,87 @@ ctrlMultiSelectGroup::ctrlMultiSelectGroup(Window* parent, unsigned id, GroupSel
 /**
  *  Selektiert einen neuen Button aus der Gruppe.
  */
-void ctrlMultiSelectGroup::AddSelection(unsigned selection, bool notify)
+void ctrlMultiSelectGroup::addSelection(unsigned selection, bool notify)
 {
     // Neuen Button auswählen
-    auto* button = GetCtrl<ctrlButton>(selection);
+    auto* button = getCtrl<ctrlButton>(selection);
     RTTR_Assert(button);
     switch(select_type)
     {
-        case GroupSelectType::Illuminate: button->SetIlluminated(true); break;
-        case GroupSelectType::Check: button->SetChecked(true); break;
-        case GroupSelectType::Show: button->SetVisible(false); break;
+        case GroupSelectType::Illuminate: button->setIlluminated(true); break;
+        case GroupSelectType::Check: button->setChecked(true); break;
+        case GroupSelectType::show: button->setVisible(false); break;
     }
 
     this->selectedItems_.insert(selection);
 
-    if(notify && GetParent())
-        GetParent()->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && getParent())
+        getParent()->msgOptionGroupChange(getID(), selection);
 }
 
 /**
  *  Entfernt die Selektion eines Buttons aus der Gruppe.
  */
-void ctrlMultiSelectGroup::RemoveSelection(unsigned selection, bool notify)
+void ctrlMultiSelectGroup::removeSelection(unsigned selection, bool notify)
 {
     // Neuen Button auswählen
-    auto* button = GetCtrl<ctrlButton>(selection);
+    auto* button = getCtrl<ctrlButton>(selection);
     RTTR_Assert(button);
     switch(select_type)
     {
-        case GroupSelectType::Illuminate: button->SetIlluminated(false); break;
-        case GroupSelectType::Check: button->SetChecked(false); break;
-        case GroupSelectType::Show: button->SetVisible(true); break;
+        case GroupSelectType::Illuminate: button->setIlluminated(false); break;
+        case GroupSelectType::Check: button->setChecked(false); break;
+        case GroupSelectType::show: button->setVisible(true); break;
     }
 
     this->selectedItems_.erase(selection);
 
-    if(notify && GetParent())
-        GetParent()->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && getParent())
+        getParent()->msgOptionGroupChange(getID(), selection);
 }
 
 /**
  *  Wechselt zwischen selektiert/nicht selektiert
  */
-void ctrlMultiSelectGroup::ToggleSelection(unsigned selection, bool notify)
+void ctrlMultiSelectGroup::toggleSelection(unsigned selection, bool notify)
 {
-    if(IsSelected(selection))
-        RemoveSelection(selection, notify);
+    if(isSelected(selection))
+        removeSelection(selection, notify);
     else
-        AddSelection(selection, notify);
+        addSelection(selection, notify);
 }
 
-bool ctrlMultiSelectGroup::IsSelected(unsigned selection) const
+bool ctrlMultiSelectGroup::isSelected(unsigned selection) const
 {
     return (this->selectedItems_.count(selection) == 1);
 }
 
-void ctrlMultiSelectGroup::Msg_ButtonClick(const unsigned ctrl_id)
+void ctrlMultiSelectGroup::msgButtonClick(const unsigned ctrl_id)
 {
-    ToggleSelection(ctrl_id, true);
+    toggleSelection(ctrl_id, true);
 }
 
-bool ctrlMultiSelectGroup::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlMultiSelectGroup::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+    return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
-bool ctrlMultiSelectGroup::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlMultiSelectGroup::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
-bool ctrlMultiSelectGroup::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlMultiSelectGroup::msgWheelUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_WheelUp, mc);
+    return relayMouseMessage(&Window::msgWheelUp, mc);
 }
 
-bool ctrlMultiSelectGroup::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlMultiSelectGroup::msgWheelDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_WheelDown, mc);
+    return relayMouseMessage(&Window::msgWheelDown, mc);
 }
 
-bool ctrlMultiSelectGroup::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlMultiSelectGroup::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }

@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(Index_returns_values_gte_zero_and_lt_size)
 
     for(auto size = 1u; size < 10u; size++)
     {
-        auto result = rnd.Index(size);
+        auto result = rnd.index(size);
 
         BOOST_TEST_REQUIRE(result < size);
     }
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(RandomInt_returns_value_within_thresholds)
     int minimum = -10;
     int maximum = 7;
 
-    auto result = rnd.RandomValue(minimum, maximum);
+    auto result = rnd.randomValue(minimum, maximum);
 
     BOOST_TEST(result >= minimum);
     BOOST_TEST(result <= maximum);
@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(RandomDouble_returns_value_within_thresholds)
     double minimum = -12.123;
     double maximum = 7.456;
 
-    auto result = rnd.RandomDouble(minimum, maximum);
+    auto result = rnd.randomDouble(minimum, maximum);
 
     BOOST_TEST(result >= minimum);
     BOOST_TEST(result <= maximum);

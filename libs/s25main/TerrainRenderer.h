@@ -35,27 +35,27 @@ public:
     /// Generates data structures (uninitialized)
     void Init(const MapExtent& size);
     /// Generate OpenGL structs and init data (also calls Init)
-    void GenerateOpenGL(const GameWorldViewer& gwv);
+    void generateOpenGL(const GameWorldViewer& gwv);
 
     /// Draws the map between the given points. Optionally returns percentage of water drawn
-    void Draw(const Position& firstPt, const Position& lastPt, const GameWorldViewer& gwv, unsigned* water) const;
+    void draw(const Position& firstPt, const Position& lastPt, const GameWorldViewer& gwv, unsigned* water) const;
 
     /// Converts given point into a MapPoint (0 <= x < width and 0 <= y < height)
     /// Optionally returns offset of returned point to original point in pixels (for drawing)
-    MapPoint ConvertCoords(Position pt, Position* offset = nullptr) const;
+    MapPoint convertCoords(Position pt, Position* offset = nullptr) const;
     /// Get position of node in pixels (VertexPos)
-    PointF GetVertexPos(const MapPoint pt) const { return GetVertex(pt).pos; }
+    PointF getVertexPos(const MapPoint pt) const { return getVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to
     /// GetNodePos(pt)
-    PointF GetNeighbourVertexPos(MapPoint pt, Direction dir) const;
+    PointF getNeighbourVertexPos(MapPoint pt, Direction dir) const;
 
     /// Callback function for altitude changes
-    void AltitudeChanged(MapPoint pt, const GameWorldViewer& gwv);
+    void altitudeChanged(MapPoint pt, const GameWorldViewer& gwv);
     /// Callback function for visibility changes
-    void VisibilityChanged(MapPoint pt, const GameWorldViewer& gwv);
+    void visibilityChanged(MapPoint pt, const GameWorldViewer& gwv);
 
     /// Recalculates all colors on the map
-    void UpdateAllColors(const GameWorldViewer& gwv);
+    void updateAllColors(const GameWorldViewer& gwv);
 
 private:
     struct MapTile
@@ -145,55 +145,55 @@ private:
     std::vector<BmpPtr> roadTextures;
 
     /// Returns the index of a vertex. Used to access vertices and borders
-    unsigned GetVertexIdx(const MapPoint pt) const
+    unsigned getVertexIdx(const MapPoint pt) const
     {
         return static_cast<unsigned>(pt.y) * static_cast<unsigned>(size_.x) + static_cast<unsigned>(pt.x);
     }
     /// Returns the index of the first triangle (each point has 2). Used to access gl_* structs
-    unsigned GetTriangleIdx(const MapPoint pt) const { return GetVertexIdx(pt) * 2; }
+    unsigned getTriangleIdx(const MapPoint pt) const { return getVertexIdx(pt) * 2; }
     /// Return the coordinates of the neighbour node
-    MapPoint GetNeighbour(const MapPoint& pt, Direction dir) const;
+    MapPoint getNeighbour(const MapPoint& pt, Direction dir) const;
 
     /// liefert den Vertex an der Stelle X, Y.
-    Vertex& GetVertex(const MapPoint pt) { return vertices[GetVertexIdx(pt)]; }
-    const Vertex& GetVertex(const MapPoint pt) const { return vertices[GetVertexIdx(pt)]; }
+    Vertex& getVertex(const MapPoint pt) { return vertices[getVertexIdx(pt)]; }
+    const Vertex& getVertex(const MapPoint pt) const { return vertices[getVertexIdx(pt)]; }
 
-    void LoadTextures(const WorldDescription& desc);
+    void loadTextures(const WorldDescription& desc);
 
     /// Creates and initializes (map-)vertices for the viewer
-    void GenerateVertices(const GameWorldViewer& gwv);
+    void generateVertices(const GameWorldViewer& gwv);
     /// Updates (map-)vertex attributes
-    void UpdateVertexPos(MapPoint pt, const GameWorldViewer& gwv);
-    void UpdateVertexColor(MapPoint pt, const GameWorldViewer& gwv);
-    void LoadVertexTerrain(MapPoint pt, const GameWorldViewer& gwv);
+    void updateVertexPos(MapPoint pt, const GameWorldViewer& gwv);
+    void updateVertexColor(MapPoint pt, const GameWorldViewer& gwv);
+    void loadVertexTerrain(MapPoint pt, const GameWorldViewer& gwv);
     /// Update (map-)border vertex attributes
-    void UpdateBorderVertex(MapPoint pt);
+    void updateBorderVertex(MapPoint pt);
 
     /// Fills OGL vertex data from map vertex data (updateVBO = true updates also VBO if used)
-    void UpdateTrianglePos(MapPoint pt, bool updateVBO);
-    void UpdateTriangleColor(MapPoint pt, bool updateVBO);
-    void UpdateTriangleTerrain(MapPoint pt, bool updateVBO);
+    void updateTrianglePos(MapPoint pt, bool updateVBO);
+    void updateTriangleColor(MapPoint pt, bool updateVBO);
+    void updateTriangleTerrain(MapPoint pt, bool updateVBO);
     /// Fills OGL border vertex data from map vertex data
-    void UpdateBorderTrianglePos(MapPoint pt, bool updateVBO);
-    void UpdateBorderTriangleColor(MapPoint pt, bool updateVBO);
-    void UpdateBorderTriangleTerrain(MapPoint pt, bool updateVBO);
+    void updateBorderTrianglePos(MapPoint pt, bool updateVBO);
+    void updateBorderTriangleColor(MapPoint pt, bool updateVBO);
+    void updateBorderTriangleTerrain(MapPoint pt, bool updateVBO);
 
     /// liefert den Vertex-Farbwert an der Stelle X,Y
-    float GetColor(const MapPoint pt) const { return GetVertex(pt).color; }
+    float getColor(const MapPoint pt) const { return getVertex(pt).color; }
     /// liefert den Rand-Vertex an der Stelle X,Y
-    PointF GetBorderPos(const MapPoint pt, unsigned char triangle) const { return GetVertex(pt).borderPos[triangle]; }
+    PointF getBorderPos(const MapPoint pt, unsigned char triangle) const { return getVertex(pt).borderPos[triangle]; }
     /// Get neighbour border position of a node (VertexPos) potentially shifted so that the returned value is next to
     /// GetBorderPos(pt)
-    PointF GetNeighbourBorderPos(MapPoint pt, unsigned char triangle, Direction dir) const;
+    PointF getNeighbourBorderPos(MapPoint pt, unsigned char triangle, Direction dir) const;
     /// liefert den Rand-Vertex-Farbwert an der Stelle X,Y
-    float GetBorderColor(const MapPoint pt, unsigned char triangle) const
+    float getBorderColor(const MapPoint pt, unsigned char triangle) const
     {
-        return GetVertex(pt).borderColor[triangle];
+        return getVertex(pt).borderColor[triangle];
     }
 
     /// Adds possible roads from the given point to the prepared data struct
-    void PrepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt,
+    void prepareWaysPoint(PreparedRoads& sorted_roads, const GameWorldViewer& gwViewer, MapPoint pt,
                           const Position& offset) const;
     /// Draw the prepared roads
-    void DrawWays(const PreparedRoads& sorted_roads) const;
+    void drawWays(const PreparedRoads& sorted_roads) const;
 };

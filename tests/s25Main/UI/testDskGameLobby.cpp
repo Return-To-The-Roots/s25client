@@ -24,11 +24,11 @@ BOOST_AUTO_TEST_SUITE(UI)
 
 MOCK_BASE_CLASS(MockLobbyClient, ILobbyClient)
 {
-    MOCK_METHOD(IsLoggedIn, 0);
-    MOCK_METHOD(AddListener, 1);
-    MOCK_METHOD(RemoveListener, 1);
-    MOCK_METHOD(SendServerJoinRequest, 0);
-    MOCK_METHOD(SendChat, 1);
+    MOCK_METHOD(isLoggedIn, 0);
+    MOCK_METHOD(addListener, 1);
+    MOCK_METHOD(removeListener, 1);
+    MOCK_METHOD(sendServerJoinRequest, 0);
+    MOCK_METHOD(sendChat, 1);
 };
 
 BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
@@ -43,26 +43,26 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
 
     auto client = std::make_unique<MockLobbyClient>();
     mock::sequence s, s2;
-    MOCK_EXPECT(client->IsLoggedIn).at_least(1).in(s2).returns(true);
-    MOCK_EXPECT(client->AddListener).exactly(1).in(s);
-    MOCK_EXPECT(client->RemoveListener).exactly(1).in(s);
-    MOCK_EXPECT(client->SendServerJoinRequest).exactly(1).in(s2);
-    MOCK_EXPECT(client->SendChat).exactly(1);
+    MOCK_EXPECT(client->isLoggedIn).at_least(1).in(s2).returns(true);
+    MOCK_EXPECT(client->addListener).exactly(1).in(s);
+    MOCK_EXPECT(client->removeListener).exactly(1).in(s);
+    MOCK_EXPECT(client->sendServerJoinRequest).exactly(1).in(s2);
+    MOCK_EXPECT(client->sendChat).exactly(1);
 
     // TODO: How to trigger through dskGameLobby?
-    client->SendChat("");
+    client->sendChat("");
 
-    auto* desktop = WINDOWMANAGER.Switch(std::make_unique<dskGameLobby>(
+    auto* desktop = WINDOWMANAGER.switchTo(std::make_unique<dskGameLobby>(
       ServerType::Lobby, std::shared_ptr<GameLobby>(&gameLobby, [](auto) {}), 0, std::move(client)));
     auto* ci = dynamic_cast<ClientInterface*>(desktop);
     auto* li = dynamic_cast<LobbyInterface*>(desktop);
     BOOST_TEST_REQUIRE((ci && li));
-    std::vector<ctrlOptionGroup*> chatTab = desktop->GetCtrls<ctrlOptionGroup>();
+    std::vector<ctrlOptionGroup*> chatTab = desktop->getCtrls<ctrlOptionGroup>();
     BOOST_TEST_REQUIRE(chatTab.size() == 1u);
-    std::vector<ctrlButton*> chatBts = chatTab.front()->GetCtrls<ctrlButton>();
+    std::vector<ctrlButton*> chatBts = chatTab.front()->getCtrls<ctrlButton>();
     BOOST_TEST_REQUIRE(chatBts.size() == 2u);
 
-    WINDOWMANAGER.Draw();
+    WINDOWMANAGER.draw();
 
     // Send a chat message via lobby chat and game chat with either visible
     for(unsigned i = 0; i < 3; i++)
@@ -71,10 +71,10 @@ BOOST_FIXTURE_TEST_CASE(LobbyChat, uiHelper::Fixture)
         RTTR_REQUIRE_LOG_CONTAINS("<TestName>", false);
         li->LC_Chat("OtherPlayer", "Test");
         RTTR_REQUIRE_LOG_CONTAINS("<OtherPlayer>", false);
-        desktop->Msg_OptionGroupChange(chatTab.front()->GetID(), chatBts[i % 2]->GetID());
+        desktop->msgOptionGroupChange(chatTab.front()->getID(), chatBts[i % 2]->getID());
     }
     // Free desktop etc to trigger mock verification
-    WINDOWMANAGER.CleanUp();
+    WINDOWMANAGER.cleanUp();
 }
 
 BOOST_AUTO_TEST_CASE(CheckServerVersionValidity)
@@ -84,20 +84,20 @@ BOOST_AUTO_TEST_CASE(CheckServerVersionValidity)
     info.setVersion("");
     BOOST_TEST(!isServerVersionValid(info));
     // Exact match
-    info.setVersion(rttr::version::GetReadableVersion());
+    info.setVersion(rttr::version::getReadableVersion());
     BOOST_TEST(isServerVersionValid(info));
     // Build with same revision but on 30.07.2012
-    info.setVersion("v20120730 - " + rttr::version::GetShortRevision());
+    info.setVersion("v20120730 - " + rttr::version::getShortRevision());
     BOOST_TEST(isServerVersionValid(info));
     // Build with same revision on a tag
-    info.setVersion("v0.8.9 - " + rttr::version::GetShortRevision());
+    info.setVersion("v0.8.9 - " + rttr::version::getShortRevision());
     BOOST_TEST(isServerVersionValid(info));
     // Wrong revision (purposely non-hex char to avoid accidental match)
     info.setVersion("v0.8.9 - a1b2z3d");
     BOOST_TEST(!isServerVersionValid(info));
     rttr::test::LogAccessor logAcc;
     // Invalid format (can't get revision)
-    info.setVersion("v20120730 " + rttr::version::GetShortRevision());
+    info.setVersion("v20120730 " + rttr::version::getShortRevision());
     BOOST_TEST(!isServerVersionValid(info));
     RTTR_REQUIRE_LOG_CONTAINS("Can't get server revision", true);
 }

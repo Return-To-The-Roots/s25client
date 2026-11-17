@@ -23,6 +23,6 @@ using Island = std::set<MapPoint, MapPointLess>;
  *
  * @returns a vector of nodes the new island covers.
  */
-Island CreateIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLandDist, double mountainCoverage);
+Island createIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLandDist, double mountainCoverage);
 
 } // namespace rttr::mapGenerator

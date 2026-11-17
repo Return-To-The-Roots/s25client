@@ -80,7 +80,7 @@ std::string formatNumber(unsigned num)
 
 void StatsTablePrinter::print(const HeadlessStats& stats, const GameWorldBase& world)
 {
-    const unsigned numPlayers = world.GetNumPlayers();
+    const unsigned numPlayers = world.getNumPlayers();
     if(!firstPrint_)
         printConsole("\x1b[%uA", 8 + numPlayers); // Move back up over the previously printed table
     firstPrint_ = false;
@@ -100,13 +100,13 @@ void StatsTablePrinter::print(const HeadlessStats& stats, const GameWorldBase& w
     printConsole("├────────────────────────────┼────────────────────┼───────────────┼────────────┼────────────┤\n");
     for(unsigned i = 0; i < numPlayers; ++i)
     {
-        const GamePlayer& p = world.GetPlayer(i);
+        const GamePlayer& p = world.getPlayer(i);
         printConsole("│ %s%-26s%s │ %18s │ %13s │ %10s │ %10s │\n", p.IsDefeated() ? "\x1b[9m" : "", p.name.c_str(),
                      p.IsDefeated() ? "\x1b[29m" : "",
-                     formatNumber(p.GetStatisticCurrentValue(StatisticType::Country)).c_str(),
-                     formatNumber(p.GetStatisticCurrentValue(StatisticType::Buildings)).c_str(),
-                     formatNumber(p.GetStatisticCurrentValue(StatisticType::Military)).c_str(),
-                     formatNumber(p.GetStatisticCurrentValue(StatisticType::Gold)).c_str());
+                     formatNumber(p.getStatisticCurrentValue(StatisticType::Country)).c_str(),
+                     formatNumber(p.getStatisticCurrentValue(StatisticType::Buildings)).c_str(),
+                     formatNumber(p.getStatisticCurrentValue(StatisticType::Military)).c_str(),
+                     formatNumber(p.getStatisticCurrentValue(StatisticType::Gold)).c_str());
     }
     printConsole("└────────────────────────────┴────────────────────┴───────────────┴────────────┴────────────┘\n");
 }

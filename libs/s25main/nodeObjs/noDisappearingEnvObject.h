@@ -15,16 +15,16 @@ public:
     noDisappearingEnvObject(MapPoint pos, unsigned living_time, unsigned add_var_living_time);
     noDisappearingEnvObject(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 
 protected:
     /// Gibt Farbe zurück, mit der das Objekt gezeichnet werden soll
-    unsigned GetDrawColor() const;
+    unsigned getDrawColor() const;
     /// Gibt Farbe zurück, mit der der Schatten des Objekts gezeichnet werden soll
-    unsigned GetDrawShadowColor() const;
+    unsigned getDrawShadowColor() const;
 
 private:
     /// Bin ich grad in der Sterbephase (in der das Schild immer transparenter wird, bevor es verschwindet)

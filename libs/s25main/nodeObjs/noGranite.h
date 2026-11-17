@@ -18,24 +18,24 @@ public:
     noGranite(GraniteType type, unsigned char state);
     noGranite(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override {}
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override {}
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Granite; }
+    GO_Type getGOT() const final { return GO_Type::Granite; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
-    BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
+    BlockingManner getBM() const override { return BlockingManner::FlagsAround; }
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-    std::unique_ptr<FOWObject> CreateFOWObject() const override;
+    std::unique_ptr<FOWObject> createFOWObject() const override;
 
     /// "Bearbeitet" den Granitglotz --> haut ein Stein ab
-    void Hew();
+    void hew();
 
     /// Gibt true zurück, falls der Granitblock nur noch 1 Stein groß ist und damit dann vernichtet werden kann
-    bool IsSmall() const { return (state == 0); }
+    bool isSmall() const { return (state == 0); }
 
     /// Return the size of this pile.
-    unsigned char GetSize() const { return state; }
+    unsigned char getSize() const { return state; }
 };

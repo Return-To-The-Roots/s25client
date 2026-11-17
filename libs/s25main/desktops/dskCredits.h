@@ -21,23 +21,23 @@ public:
     dskCredits();
     ~dskCredits() override;
 
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_RightUp(const MouseCoords& mc) override;
-    bool Msg_KeyDown(const KeyEvent& ke) override;
-    void Msg_Timer(unsigned timerId) override;
-    void Draw_() override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult) override;
-    void SetActive(bool active) override;
-    static bool Close();
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgRightUp(const MouseCoords& mc) override;
+    bool msgKeyDown(const KeyEvent& ke) override;
+    void msgTimer(unsigned timerId) override;
+    void drawImpl() override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult) override;
+    void setActive(bool active) override;
+    static bool close();
 
 private:
-    void GotoNextPage();
-    void GotoPrevPage();
+    void gotoNextPage();
+    void gotoPrevPage();
 
-    void DrawCredit();
-    void DrawBobs();
-    static glArchivItem_Bitmap* GetCreditsImgOrDefault(const std::string& name);
+    void drawCredit();
+    void drawBobs();
+    static glArchivItem_Bitmap* getCreditsImgOrDefault(const std::string& name);
 
     struct CreditsEntry
     {

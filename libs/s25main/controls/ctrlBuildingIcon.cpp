@@ -19,21 +19,21 @@ ctrlBuildingIcon::ctrlBuildingIcon(Window* const parent, const unsigned id, cons
 /**
  *  zeichnet das Fenster.
  */
-void ctrlBuildingIcon::Draw_()
+void ctrlBuildingIcon::drawImpl()
 {
     if(state == ButtonState::Hover || state == ButtonState::Pressed)
-        LOADER.GetImageN("io", 0)->DrawPart(GetDrawRect());
-    glArchivItem_Bitmap* image = LOADER.GetNationIcon(nation, type);
+        LOADER.getImageN("io", 0)->drawPart(getDrawRect());
+    glArchivItem_Bitmap* image = LOADER.getNationIcon(nation, type);
     if(image)
-        image->DrawFull(GetDrawPos() + GetSize() / 2, (state == ButtonState::Pressed ? COLOR_YELLOW : COLOR_WHITE));
+        image->drawFull(getDrawPos() + getSize() / 2, (state == ButtonState::Pressed ? COLOR_YELLOW : COLOR_WHITE));
 }
 
-void ctrlBuildingIcon::DrawContent() const {}
+void ctrlBuildingIcon::drawContent() const {}
 
-bool ctrlBuildingIcon::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlBuildingIcon::msgMouseMove(const MouseCoords& mc)
 {
     const bool wasHovered = (state == ButtonState::Hover);
-    const bool result = ctrlButton::Msg_MouseMove(mc);
+    const bool result = ctrlButton::msgMouseMove(mc);
     const bool nowHovered = (state == ButtonState::Hover);
     if(wasHovered != nowHovered && onHoverChanged_)
         onHoverChanged_(nowHovered);

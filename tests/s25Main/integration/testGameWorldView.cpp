@@ -25,20 +25,20 @@ BOOST_FIXTURE_TEST_CASE(HasCorrectDrawCoords, EmptyWorldFixture1P)
     GameWorldViewer gwv(0, world);
     const auto viewSize = rttr::test::randomPoint<Extent>(100, 1000);
     GameWorldView view(gwv, Position(0, 0), viewSize);
-    BOOST_TEST(view.GetPos() == Position(0, 0));
-    BOOST_TEST(view.GetSize() == viewSize);
-    BOOST_TEST(view.GetFirstPt() == Position(-1, -1));
-    BOOST_TEST(view.GetLastPt().x > static_cast<int>(viewSize.x / TR_W));
-    BOOST_TEST(view.GetLastPt().y > static_cast<int>(viewSize.y / TR_H));
+    BOOST_TEST(view.getPos() == Position(0, 0));
+    BOOST_TEST(view.getSize() == viewSize);
+    BOOST_TEST(view.getFirstPt() == Position(-1, -1));
+    BOOST_TEST(view.getLastPt().x > static_cast<int>(viewSize.x / TR_W));
+    BOOST_TEST(view.getLastPt().y > static_cast<int>(viewSize.y / TR_H));
 
-    const auto origFirstPt = view.GetFirstPt();
-    const auto origLastPt = view.GetLastPt();
+    const auto origFirstPt = view.getFirstPt();
+    const auto origLastPt = view.getLastPt();
     auto newOffset = rttr::test::randomPoint<DrawPoint>(100, 200);
-    BOOST_TEST_REQUIRE(view.GetOffset() == DrawPoint(0, 0));
-    view.MoveTo(newOffset);
-    BOOST_TEST_REQUIRE(view.GetOffset() == newOffset);
-    const auto offsetFirstPt = view.GetFirstPt();
-    const auto offsetLastPt = view.GetLastPt();
+    BOOST_TEST_REQUIRE(view.getOffset() == DrawPoint(0, 0));
+    view.moveTo(newOffset);
+    BOOST_TEST_REQUIRE(view.getOffset() == newOffset);
+    const auto offsetFirstPt = view.getFirstPt();
+    const auto offsetLastPt = view.getLastPt();
     BOOST_TEST(offsetFirstPt.x > origFirstPt.x);
     BOOST_TEST(offsetFirstPt.y > origFirstPt.y);
     BOOST_TEST(offsetLastPt.x > origLastPt.x);
@@ -46,37 +46,37 @@ BOOST_FIXTURE_TEST_CASE(HasCorrectDrawCoords, EmptyWorldFixture1P)
     // Relative move
     {
         const auto offset = rttr::test::randomPoint<Position>(-100, 70); // Smallish max offset to not exceed map size
-        view.MoveBy(offset);
-        BOOST_TEST_REQUIRE(view.GetOffset() == newOffset + offset);
+        view.moveBy(offset);
+        BOOST_TEST_REQUIRE(view.getOffset() == newOffset + offset);
     }
 
     // Don't move if moved by multiples of total size
     {
-        const DrawPoint drawSize(world.GetSize() * DrawPoint(TR_W, TR_H));
+        const DrawPoint drawSize(world.getSize() * DrawPoint(TR_W, TR_H));
         // Absolute
-        view.MoveTo(newOffset + drawSize);
-        BOOST_TEST_REQUIRE(view.GetOffset() == newOffset);
+        view.moveTo(newOffset + drawSize);
+        BOOST_TEST_REQUIRE(view.getOffset() == newOffset);
         // Relative +-
-        view.MoveBy(drawSize);
-        BOOST_TEST_REQUIRE(view.GetOffset() == newOffset);
-        view.MoveBy(drawSize);
-        BOOST_TEST_REQUIRE(view.GetOffset() == newOffset);
+        view.moveBy(drawSize);
+        BOOST_TEST_REQUIRE(view.getOffset() == newOffset);
+        view.moveBy(drawSize);
+        BOOST_TEST_REQUIRE(view.getOffset() == newOffset);
         // Absolute by multiples of the size
         const auto offset = rttr::test::randomPoint<Position>(1, 10);
-        view.MoveTo(newOffset + (drawSize * rttr::test::randomPoint<Position>(2, 5)) + offset);
-        BOOST_TEST_REQUIRE(view.GetOffset() == newOffset + offset);
+        view.moveTo(newOffset + (drawSize * rttr::test::randomPoint<Position>(2, 5)) + offset);
+        BOOST_TEST_REQUIRE(view.getOffset() == newOffset + offset);
     }
 
     // Move back to start restores first/last points
-    view.MoveTo({0, 0});
-    BOOST_TEST_REQUIRE(view.GetOffset() == DrawPoint(0, 0));
-    BOOST_TEST(view.GetFirstPt() == origFirstPt);
-    BOOST_TEST(view.GetLastPt() == origLastPt);
+    view.moveTo({0, 0});
+    BOOST_TEST_REQUIRE(view.getOffset() == DrawPoint(0, 0));
+    BOOST_TEST(view.getFirstPt() == origFirstPt);
+    BOOST_TEST(view.getLastPt() == origLastPt);
     // Relative move also updates first/last point
-    view.MoveBy(newOffset);
-    BOOST_TEST_REQUIRE(view.GetOffset() == newOffset);
-    BOOST_TEST(view.GetFirstPt() == offsetFirstPt);
-    BOOST_TEST(view.GetLastPt() == offsetLastPt);
+    view.moveBy(newOffset);
+    BOOST_TEST_REQUIRE(view.getOffset() == newOffset);
+    BOOST_TEST(view.getFirstPt() == offsetFirstPt);
+    BOOST_TEST(view.getLastPt() == offsetLastPt);
 }
 
 BOOST_FIXTURE_TEST_CASE(GetsCorrectMaxHeight, EmptyWorldFixture1P)
@@ -86,24 +86,24 @@ BOOST_FIXTURE_TEST_CASE(GetsCorrectMaxHeight, EmptyWorldFixture1P)
     GameWorldViewer gwv(0, world);
     const auto viewSize = rttr::test::randomPoint<Extent>(100, 1000);
     GameWorldView view(gwv, Position(0, 0), viewSize);
-    BOOST_TEST(gwv.getMaxNodeAltitude() == world.GetNode(MapPoint(0, 0)).altitude); // All same height
+    BOOST_TEST(gwv.getMaxNodeAltitude() == world.getNode(MapPoint(0, 0)).altitude); // All same height
 
     {
         EmptyWorldFixture1P world2;
-        const auto newMaxHeight = world2.world.GetNodeWriteable(MapPoint(0, 0)).altitude *= 2;
+        const auto newMaxHeight = world2.world.getNodeWriteable(MapPoint(0, 0)).altitude *= 2;
         GameWorldViewer gwv2(0, world2.world);
         BOOST_TEST(gwv2.getMaxNodeAltitude() == newMaxHeight);
         GameWorldView view2(gwv2, Position(0, 0), viewSize);
-        BOOST_TEST(view2.GetFirstPt() == view.GetFirstPt());
-        BOOST_TEST(view2.GetLastPt().x == view.GetLastPt().x);
-        BOOST_TEST(view2.GetLastPt().y > view.GetLastPt().y); // Should have increased due to higher altitude
+        BOOST_TEST(view2.getFirstPt() == view.getFirstPt());
+        BOOST_TEST(view2.getLastPt().x == view.getLastPt().x);
+        BOOST_TEST(view2.getLastPt().y > view.getLastPt().y); // Should have increased due to higher altitude
 
         // React on height changes, at least after moves
-        world.ChangeAltitude(MapPoint(0, 0), newMaxHeight);
-        view.MoveBy(DrawPoint(0, 0)); // no-op move
+        world.changeAltitude(MapPoint(0, 0), newMaxHeight);
+        view.moveBy(DrawPoint(0, 0)); // no-op move
         BOOST_TEST(gwv.getMaxNodeAltitude() == newMaxHeight);
-        BOOST_TEST(view.GetFirstPt() == view2.GetFirstPt());
-        BOOST_TEST(view.GetLastPt() == view2.GetLastPt());
+        BOOST_TEST(view.getFirstPt() == view2.getFirstPt());
+        BOOST_TEST(view.getLastPt() == view2.getLastPt());
     }
 }
 

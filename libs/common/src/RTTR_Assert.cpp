@@ -14,14 +14,14 @@
 
 static bool breakOnAssertFailureEnabled = true;
 
-bool RTTR_SetBreakOnAssertFailure(bool enabled)
+bool rttrSetBreakOnAssertFailure(bool enabled)
 {
     const bool old = breakOnAssertFailureEnabled;
     breakOnAssertFailureEnabled = enabled;
     return old;
 }
 
-bool RTTR_IsBreakOnAssertFailureEnabled()
+bool rttrIsBreakOnAssertFailureEnabled()
 {
     if(!breakOnAssertFailureEnabled)
         return false;
@@ -36,7 +36,7 @@ bool RTTR_IsBreakOnAssertFailureEnabled()
     return true;
 }
 
-void RTTR_AssertFailure(const char* condition, const char* file, const int line, const char* function)
+void rttrAssertFailure(const char* condition, const char* file, const int line, const char* function)
 {
     static const std::string thisFilePath = __FILE__;
     static bool inAssertFailure = false;

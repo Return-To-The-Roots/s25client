@@ -35,9 +35,9 @@ public:
           terrains_(worldDesc_.terrain.findAll([landscape](const TerrainDesc& t) { return t.landscape == landscape; }))
     {}
 
-    uint8_t GetTextureId(DescIdx<TerrainDesc> texture) const { return worldDesc_.get(texture).s2Id; }
+    uint8_t getTextureId(DescIdx<TerrainDesc> texture) const { return worldDesc_.get(texture).s2Id; }
 
-    uint8_t GetLandscapeId() const { return worldDesc_.get(landscape_).s2Id; }
+    uint8_t getLandscapeId() const { return worldDesc_.get(landscape_).s2Id; }
 
     template<class T_Predicate>
     DescIdx<TerrainDesc> Find(T_Predicate predicate) const
@@ -65,7 +65,7 @@ public:
     }
 
     template<class T_SortBy>
-    void Sort(std::vector<DescIdx<TerrainDesc>>& textures, T_SortBy sortBy) const
+    void sort(std::vector<DescIdx<TerrainDesc>>& textures, T_SortBy sortBy) const
     {
         auto lessThan = [this, &sortBy](const auto& t1, const auto& t2) {
             return sortBy(worldDesc_.get(t1)) < sortBy(worldDesc_.get(t2));
@@ -75,7 +75,7 @@ public:
     }
 
     template<class T_Predicate>
-    bool Check(DescIdx<TerrainDesc> texture, T_Predicate predicate) const
+    bool check(DescIdx<TerrainDesc> texture, T_Predicate predicate) const
     {
         return predicate(worldDesc_.get(texture));
     }
@@ -89,33 +89,33 @@ public:
     TextureMap(const WorldDescription& worldDesc, DescIdx<LandscapeDesc> landscape, const MapExtent& size)
         : TextureOperator(worldDesc, landscape)
     {
-        textures_.Resize(size);
+        textures_.resize(size);
     }
 
     template<class T_Predicate>
-    bool Check(const Triangle& triangle, T_Predicate predicate) const
+    bool check(const Triangle& triangle, T_Predicate predicate) const
     {
         if(triangle.rsu)
         {
-            return TextureOperator::Check(textures_[triangle.position].rsu, predicate);
+            return TextureOperator::check(textures_[triangle.position].rsu, predicate);
         } else
         {
-            return TextureOperator::Check(textures_[triangle.position].lsd, predicate);
+            return TextureOperator::check(textures_[triangle.position].lsd, predicate);
         }
     }
 
     template<class T_Predicate>
-    bool Any(const MapPoint& point, T_Predicate predicate) const
+    bool any(const MapPoint& point, T_Predicate predicate) const
     {
-        auto condition = [this, &predicate](auto triangle) { return this->Check(triangle, predicate); };
-        return helpers::contains_if(GetTriangles(point, textures_.GetSize()), condition);
+        auto condition = [this, &predicate](auto triangle) { return this->check(triangle, predicate); };
+        return helpers::contains_if(GetTriangles(point, textures_.getSize()), condition);
     }
 
     template<class T_Predicate>
-    bool All(const MapPoint& point, T_Predicate predicate) const
+    bool all(const MapPoint& point, T_Predicate predicate) const
     {
-        auto condition = [this, &predicate](auto triangle) { return !this->Check(triangle, predicate); };
-        return !helpers::contains_if(GetTriangles(point, textures_.GetSize()), condition);
+        auto condition = [this, &predicate](auto triangle) { return !this->check(triangle, predicate); };
+        return !helpers::contains_if(GetTriangles(point, textures_.getSize()), condition);
     }
 
     /**
@@ -124,7 +124,7 @@ public:
      * @param triangle triangle to update
      * @param texture texture to place on the triangle
      */
-    void Set(const Triangle& triangle, DescIdx<TerrainDesc> texture);
+    void set(const Triangle& triangle, DescIdx<TerrainDesc> texture);
 
     /**
      * Updates all textures around the specified node.
@@ -132,7 +132,7 @@ public:
      * @param pt position of the node
      * @param texture texture to place
      */
-    void Set(const MapPoint& pt, DescIdx<TerrainDesc> texture);
+    void set(const MapPoint& pt, DescIdx<TerrainDesc> texture);
 
     /**
      * Gets the texture of the specified triangle.
@@ -141,7 +141,7 @@ public:
      *
      * @returns the texture of the triangle.
      */
-    DescIdx<TerrainDesc> Get(const Triangle& triangle) const;
+    DescIdx<TerrainDesc> get(const Triangle& triangle) const;
 };
 
 class Texturizer
@@ -159,14 +159,14 @@ private:
      *
      * @returns a vector of textures with each index representing a z-value.
      */
-    std::vector<DescIdx<TerrainDesc>> CreateTextureMapping(unsigned mountainLevel);
+    std::vector<DescIdx<TerrainDesc>> createTextureMapping(unsigned mountainLevel);
 
     /**
      * Adds textures based on z-values, sea- and mountain levels.
      *
      * @param mountainLevel minimum height mountains start from
      */
-    void ApplyTexturingByHeightMap(unsigned mountainLevel);
+    void applyTexturingByHeightMap(unsigned mountainLevel);
 
     /**
      * Sets textures near the specified coast to ensure a smooth looking transition from water to buildable land.
@@ -174,21 +174,21 @@ private:
      * @param coast nodes to consider for re-texturing
      * @param width width (in node edges) for each coast transition texture
      */
-    void ApplyCoastTexturing(const std::vector<MapPoint>& coast, unsigned width);
+    void applyCoastTexturing(const std::vector<MapPoint>& coast, unsigned width);
 
     /**
      * Creates smooth transitions between grass and mountain textures.
      *
      * @param mountainFoot all points on the map which are surounded by mountain and grass
      */
-    void ApplyMountainTransitions(const std::vector<MapPoint>& mountainFoot);
+    void applyMountainTransitions(const std::vector<MapPoint>& mountainFoot);
 
     /**
      * Creates swamp transitions between water and mountain textures.
      *
      * @param transitions all points surounded by mountain and water textures
      */
-    void ApplyMountainWaterTransitions(const std::vector<MapPoint>& transitions);
+    void applyMountainWaterTransitions(const std::vector<MapPoint>& transitions);
 
 public:
     Texturizer(NodeMapBase<uint8_t>& z, NodeMapBase<TexturePair>& textures, TextureMap& textureMap)
@@ -203,7 +203,7 @@ public:
      * @param mountainLevel minimum z-value defining the starting height for mountains
      * @param coastline size of the coastline
      */
-    void AddTextures(unsigned mountainLevel, unsigned coastline);
+    void addTextures(unsigned mountainLevel, unsigned coastline);
 };
 
 /**
@@ -215,7 +215,7 @@ public:
  * @param texture new texture to replace current textures with
  * @param excluded textures which are excluded from replacement
  */
-void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point, DescIdx<TerrainDesc> texture,
+void replaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& point, DescIdx<TerrainDesc> texture,
                             const std::set<DescIdx<TerrainDesc>>& excluded);
 
 /**
@@ -230,7 +230,7 @@ void ReplaceTextureForPoint(NodeMapBase<TexturePair>& textures, const MapPoint& 
  * @param texture texture to apply to nodes' triangles
  * @param excluded set of texture which shouldn't get replaced
  */
-void ReplaceTextures(NodeMapBase<TexturePair>& textures, unsigned radius, std::set<MapPoint, MapPointLess>& nodes,
+void replaceTextures(NodeMapBase<TexturePair>& textures, unsigned radius, std::set<MapPoint, MapPointLess>& nodes,
                      DescIdx<TerrainDesc> texture, const std::set<DescIdx<TerrainDesc>>& excluded);
 
 } // namespace rttr::mapGenerator

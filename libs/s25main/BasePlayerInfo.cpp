@@ -34,7 +34,7 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, int serializedVersion, bool ligh
     }
 }
 
-void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
+void BasePlayerInfo::serialize(Serializer& ser, bool lightData) const
 {
     helpers::pushEnum<uint8_t>(ser, ps);
     if(lightData && !isUsed())
@@ -48,12 +48,12 @@ void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
     helpers::pushEnum<uint8_t>(ser, team);
 }
 
-int BasePlayerInfo::GetColorIdx() const
+int BasePlayerInfo::getColorIdx() const
 {
-    return GetColorIdx(color);
+    return getColorIdx(color);
 }
 
-int BasePlayerInfo::GetColorIdx(unsigned color) //-V688
+int BasePlayerInfo::getColorIdx(unsigned color) //-V688
 {
     for(int i = 0; i < static_cast<int>(PLAYER_COLORS.size()); ++i)
     {

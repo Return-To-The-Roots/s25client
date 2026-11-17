@@ -6,10 +6,10 @@
 
 FramesInfo::FramesInfo()
 {
-    Clear();
+    clear();
 }
 
-void FramesInfo::Clear()
+void FramesInfo::clear()
 {
     using namespace std::chrono_literals;
     // Default GF len
@@ -23,12 +23,12 @@ void FramesInfo::Clear()
 
 FramesInfoClient::FramesInfoClient()
 {
-    Clear();
+    clear();
 }
 
-void FramesInfoClient::Clear()
+void FramesInfoClient::clear()
 {
-    FramesInfo::Clear();
+    FramesInfo::clear();
     forcePauseStart = UsedClock::time_point();
     forcePauseLen = forcePauseLen.zero();
 }

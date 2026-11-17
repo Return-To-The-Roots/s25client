@@ -25,54 +25,54 @@ private:
     Direction shooting_dir;
 
     /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-    void WalkedDerived() override;
+    void walkedDerived() override;
     /// Malt den Arbeiter beim Arbeiten
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override { return 89; }
+    unsigned short getCarryID() const override { return 89; }
 
     /// Trifft Vorbereitungen fürs nach Hause - Laufen
-    void StartWalkingHome();
+    void startWalkingHome();
     /// Läuft wieder zu seiner Hütte zurück
-    void HandleStateWalkingHome();
+    void handleStateWalkingHome();
 
     /// Prüft, ob der Schießpunkt geeignet ist
-    bool IsShootingPointGood(MapPoint pt);
+    bool isShootingPointGood(MapPoint pt);
 
     /// Wenn jeweils gelaufen wurde oder ein Event abgelaufen ist, je nach aktuellem Status folgende Funktionen
     /// ausführen
-    void HandleStateChasing();
-    void HandleStateFindingShootingPoint();
-    void HandleStateWaitingForAnimalReady();
-    void HandleStateShooting();
-    void HandleStateWalkingToCadaver();
-    void HandleStateEviscerating();
+    void handleStateChasing();
+    void handleStateFindingShootingPoint();
+    void handleStateWaitingForAnimalReady();
+    void handleStateShooting();
+    void handleStateWalkingToCadaver();
+    void handleStateEviscerating();
 
 public:
     nofHunter(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofHunter(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override
+    void destroy() override
     {
         RTTR_Assert(!animal);
-        nofBuildingWorker::Destroy();
+        nofBuildingWorker::destroy();
     }
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofHunter; }
+    GO_Type getGOT() const final { return GO_Type::NofHunter; }
 
-    void HandleDerivedEvent(unsigned id) override;
+    void handleDerivedEvent(unsigned id) override;
 
-    void TryStartHunting();
+    void tryStartHunting();
 
     /// Find animals in a radius around a position that satisfy a predicate and are reachable
-    static std::vector<noAnimal*> GetAnimalsInRange(const GameWorldBase& world, MapPoint pos, unsigned radius,
+    static std::vector<noAnimal*> getAnimalsInRange(const GameWorldBase& world, MapPoint pos, unsigned radius,
                                                     unsigned maxDistance, bool (*isValidAnimal)(const noAnimal*));
-    static std::vector<noAnimal*> GetHuntableAnimalsInRange(const GameWorldBase& world, MapPoint pos);
+    static std::vector<noAnimal*> getHuntableAnimalsInRange(const GameWorldBase& world, MapPoint pos);
 
     /// das Tier ist nicht mehr verfügbar (von selbst gestorben o.Ä.)
-    void AnimalLost();
+    void animalLost();
     /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-    void WorkAborted() override;
+    void workAborted() override;
 };

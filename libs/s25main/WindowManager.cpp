@@ -39,79 +39,79 @@ constexpr std::make_unsigned_t<T> square(T x)
 } // namespace
 
 WindowManager::WindowManager()
-    : cursor_(Cursor::Hand), disable_mouse(false), lastMousePos(Position::Invalid()), curRenderSize(0, 0),
+    : cursor_(Cursor::Hand), disable_mouse(false), lastMousePos(Position::invalid()), curRenderSize(0, 0),
       lastLeftClickTime(0), lastLeftClickPos(0, 0)
 {}
 
 WindowManager::~WindowManager() = default;
 
-void WindowManager::CleanUp()
+void WindowManager::cleanUp()
 {
     windows.clear();
     curDesktop.reset();
     nextdesktop.reset();
 }
 
-void WindowManager::SetCursor(Cursor cursor)
+void WindowManager::setCursor(Cursor cursor)
 {
     cursor_ = cursor;
 }
 
-void WindowManager::DrawCursor()
+void WindowManager::drawCursor()
 {
     auto resId = static_cast<unsigned>(cursor_);
     switch(cursor_)
     {
         case Cursor::Hand:
-        case Cursor::Remove: resId += VIDEODRIVER.IsLeftDown() ? 1 : 0; break;
+        case Cursor::remove: resId += VIDEODRIVER.isLeftDown() ? 1 : 0; break;
         default: break;
     }
     if(resId)
-        LOADER.GetImageN("resource", resId)->DrawFull(VIDEODRIVER.GetMousePos());
+        LOADER.getImageN("resource", resId)->drawFull(VIDEODRIVER.getMousePos());
 }
 
 /**
  *  Zeichenfunktion WindowManager-Klasse.
  *  Zeichnet Desktop und alle Fenster.
  */
-void WindowManager::Draw()
+void WindowManager::draw()
 {
     // ist ein neuer Desktop eingetragen? Wenn ja, wechseln
     if(nextdesktop)
-        DoDesktopSwitch();
+        doDesktopSwitch();
 
     if(!curDesktop)
         return;
 
-    curDesktop->Msg_PaintBefore();
-    curDesktop->Draw();
-    curDesktop->Msg_PaintAfter();
+    curDesktop->msgPaintBefore();
+    curDesktop->draw();
+    curDesktop->msgPaintAfter();
 
     // First close all marked windows
-    CloseMarkedIngameWnds();
+    closeMarkedIngameWnds();
     for(auto& wnd : windows)
     {
         // If the window is not minimized, call paintAfter
-        if(!wnd->IsMinimized())
-            wnd->Msg_PaintBefore();
-        wnd->Draw();
+        if(!wnd->isMinimized())
+            wnd->msgPaintBefore();
+        wnd->draw();
         // If the window is not minimized, call paintAfter
-        if(!wnd->IsMinimized())
-            wnd->Msg_PaintAfter();
+        if(!wnd->isMinimized())
+            wnd->msgPaintAfter();
     }
 
-    DrawToolTip();
-    DrawCursor();
+    drawToolTip();
+    drawCursor();
 }
 
-bool WindowManager::IsDesktopActive() const
+bool WindowManager::isDesktopActive() const
 {
     if(curDesktop)
         return curDesktop->IsActive();
     return false;
 }
 
-void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
+void WindowManager::relayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke)
 {
     // When there is no desktop, don't check it or any window
     if(!curDesktop)
@@ -120,7 +120,7 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
     {
         // Desktop active -> relay msg to desktop
         CALL_MEMBER_FN(*curDesktop, msg)(ke);
-        curDesktop->RelayKeyboardMessage(msg, ke);
+        curDesktop->relayKeyboardMessage(msg, ke);
         return;
     }
 
@@ -134,30 +134,30 @@ void WindowManager::RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
         // Find one which isn't yet marked for closing so multiple ESC in between draw calls can close multiple windows
         // ESC doesn't close pinned windows
         const auto itActiveWnd = std::find_if(windows.rbegin(), windows.rend(), [escape](const auto& wnd) {
-            return !wnd->ShouldBeClosed() && !(escape && wnd->IsPinned());
+            return !wnd->shouldBeClosed() && !(escape && wnd->isPinned());
         });
         if(itActiveWnd != windows.rend() && (*itActiveWnd)->getCloseBehavior() != CloseBehavior::Custom)
-            (*itActiveWnd)->Close();
+            (*itActiveWnd)->close();
     } else if(!CALL_MEMBER_FN(*windows.back(), msg)(ke)) // send to active window
     {
         // If not handled yet, relay to active window
-        if(!windows.back()->RelayKeyboardMessage(msg, ke))
+        if(!windows.back()->relayKeyboardMessage(msg, ke))
         {
             // If message was not handled send to desktop
             CALL_MEMBER_FN(*curDesktop, msg)(ke);
-            curDesktop->RelayKeyboardMessage(msg, ke);
+            curDesktop->relayKeyboardMessage(msg, ke);
         }
     }
 }
 
-void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc, Window* window)
+void WindowManager::relayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc, Window* window)
 {
     if(!window)
         window = getActiveWindow();
     if(window)
     {
         // If no sub-window/control handled the message, let the window itself handle it
-        if(!window->RelayMouseMessage(msg, mc))
+        if(!window->relayMouseMessage(msg, mc))
             CALL_MEMBER_FN(*window, msg)(mc);
     }
 }
@@ -165,7 +165,7 @@ void WindowManager::RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc
 /**
  *  Öffnet ein IngameWindow und fügt es zur Fensterliste hinzu.
  */
-IngameWindow& WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool mouse)
+IngameWindow& WindowManager::doShow(std::unique_ptr<IngameWindow> window, bool mouse)
 {
     RTTR_Assert(window);
     RTTR_Assert(!helpers::contains(windows, window));
@@ -173,24 +173,24 @@ IngameWindow& WindowManager::DoShow(std::unique_ptr<IngameWindow> window, bool m
     if(!curDesktop)
         throw std::runtime_error("No desktop active for window to be shown on");
 
-    SetToolTip(nullptr, "");
+    setToolTip(nullptr, "");
 
     // New modal window goes on top, non-modal window goes behind all modals
-    const auto itInsert = window->IsModal() ?
+    const auto itInsert = window->isModal() ?
                             windows.end() :
-                            helpers::find_if(windows, [](const auto& curWnd) { return curWnd->IsModal(); });
+                            helpers::find_if(windows, [](const auto& curWnd) { return curWnd->isModal(); });
     auto& result = **windows.emplace(itInsert, std::move(window));
 
     // Make the new window active (special cases handled in the function)
-    SetActiveWindow(result);
+    setActiveWindow(result);
 
     // Maus deaktivieren, bis sie losgelassen wurde (Fix des Switch-Anschließend-Drück-Bugs)
-    if(!VIDEODRIVER.IsTouch())
+    if(!VIDEODRIVER.isTouch())
         disable_mouse = mouse;
     return result;
 }
 
-IngameWindow* WindowManager::ShowAfterSwitch(std::unique_ptr<IngameWindow> window)
+IngameWindow* WindowManager::showAfterSwitch(std::unique_ptr<IngameWindow> window)
 {
     RTTR_Assert(window);
     nextWnds.emplace_back(std::move(window));
@@ -203,7 +203,7 @@ IngameWindow* WindowManager::ShowAfterSwitch(std::unique_ptr<IngameWindow> windo
  *  @param[in] desktop       Pointer zum neuen Desktop, auf dem gewechselt werden soll
  *  @param[in] data          Daten für den neuen Desktop
  */
-Desktop* WindowManager::Switch(std::unique_ptr<Desktop> desktop)
+Desktop* WindowManager::switchTo(std::unique_ptr<Desktop> desktop)
 {
     nextdesktop = std::move(desktop);
     // Disable the mouse till the next desktop is shown to avoid e.g. double-switching
@@ -211,13 +211,13 @@ Desktop* WindowManager::Switch(std::unique_ptr<Desktop> desktop)
     return nextdesktop.get();
 }
 
-IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
+IngameWindow* WindowManager::findWindowAtPos(const Position& pos) const
 {
     // Fenster durchgehen ( von hinten nach vorn, da die vordersten ja zuerst geprüft werden müssen !! )
     for(const auto& window : helpers::reverse(windows))
     {
         // FensterRect für Kollisionsabfrage
-        Rect window_rect = window->GetDrawRect();
+        Rect window_rect = window->getDrawRect();
 
         // trifft die Maus auf ein Fenster?
         if(IsPointInRect(pos, window_rect))
@@ -225,16 +225,16 @@ IngameWindow* WindowManager::FindWindowAtPos(const Position& pos) const
             return window.get();
         }
         // Check also if we are in the locked area of a window (e.g. dropdown extends outside of window)
-        if(window->IsInLockedRegion(pos))
+        if(window->isInLockedRegion(pos))
             return window.get();
     }
     return nullptr;
 }
 
-IngameWindow* WindowManager::FindNonModalWindow(unsigned id) const
+IngameWindow* WindowManager::findNonModalWindow(unsigned id) const
 {
     auto itWnd = helpers::find_if(
-      windows, [id](const auto& wnd) { return !wnd->ShouldBeClosed() && !wnd->IsModal() && wnd->GetID() == id; });
+      windows, [id](const auto& wnd) { return !wnd->shouldBeClosed() && !wnd->isModal() && wnd->getID() == id; });
     return itWnd == windows.end() ? nullptr : itWnd->get();
 }
 
@@ -243,49 +243,49 @@ Window* WindowManager::findAndActivateWindow(const Position mousePos)
     Window* activeWindow = nullptr;
     if(!windows.empty())
     {
-        if(windows.back()->IsModal())
+        if(windows.back()->isModal())
             activeWindow = windows.back().get();
         else
-            activeWindow = FindWindowAtPos(mousePos);
+            activeWindow = findWindowAtPos(mousePos);
     }
     if(!activeWindow)
         activeWindow = curDesktop.get();
     if(activeWindow && !activeWindow->IsActive())
-        SetActiveWindow(*activeWindow);
+        setActiveWindow(*activeWindow);
     return activeWindow;
 }
 
 Window* WindowManager::getActiveWindow() const
 {
-    if(IsDesktopActive())
+    if(isDesktopActive())
         return curDesktop.get();
     if(!windows.empty())
         return windows.back().get();
     return nullptr;
 }
 
-void WindowManager::Msg_LeftDown(MouseCoords mc)
+void WindowManager::msgLeftDown(MouseCoords mc)
 {
     // play click sound
-    SoundEffectItem* sound = LOADER.GetSoundN("sound", 112);
+    SoundEffectItem* sound = LOADER.getSoundN("sound", 112);
     if(sound)
-        sound->Play(255, false);
+        sound->play(255, false);
 
     Window* activeWindow = findAndActivateWindow(mc.pos);
     // Ignore mouse message, e.g. right after switching desktop, to avoid unwanted clicks
     if(!disable_mouse && activeWindow)
-        RelayMouseMessage(&Window::Msg_LeftDown, mc, activeWindow);
+        relayMouseMessage(&Window::msgLeftDown, mc, activeWindow);
 }
 
-void WindowManager::Msg_LeftUp(MouseCoords mc)
+void WindowManager::msgLeftUp(MouseCoords mc)
 {
     // Any desktop active?
     if(!curDesktop)
         return;
 
-    unsigned time_now = VIDEODRIVER.GetTickCount();
+    unsigned time_now = VIDEODRIVER.getTickCount();
 
-    if(VIDEODRIVER.IsTouch())
+    if(VIDEODRIVER.isTouch())
     {
         if(time_now - lastLeftClickTime < TOUCH_DOUBLE_CLICK_INTERVAL)
         {
@@ -307,12 +307,12 @@ void WindowManager::Msg_LeftUp(MouseCoords mc)
 
     // Don't relay message if mouse is disabled (e.g. right after desktop switch)
     if(!disable_mouse)
-        RelayMouseMessage(&Window::Msg_LeftUp, mc);
+        relayMouseMessage(&Window::msgLeftUp, mc);
     else if(!nextdesktop)
         disable_mouse = false;
 }
 
-void WindowManager::Msg_RightDown(const MouseCoords& mc)
+void WindowManager::msgRightDown(const MouseCoords& mc)
 {
     if(!curDesktop)
         return;
@@ -320,13 +320,13 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
     // Right-click closes (most) windows, so handle that first
     if(!windows.empty())
     {
-        IngameWindow* foundWindow = FindWindowAtPos(mc.pos);
-        if(windows.back()->IsModal())
+        IngameWindow* foundWindow = findWindowAtPos(mc.pos);
+        if(windows.back()->isModal())
         {
             // We have a modal window -> Activate it
-            SetActiveWindow(*windows.back());
+            setActiveWindow(*windows.back());
             // Ignore actions in all other windows
-            if(foundWindow != GetTopMostWindow())
+            if(foundWindow != getTopMostWindow())
                 return;
         }
         if(foundWindow)
@@ -334,50 +334,50 @@ void WindowManager::Msg_RightDown(const MouseCoords& mc)
             // Close it if requested (unless pinned)
             if(foundWindow->getCloseBehavior() == CloseBehavior::Regular)
             {
-                if(!foundWindow->IsPinned())
-                    foundWindow->Close();
+                if(!foundWindow->isPinned())
+                    foundWindow->close();
                 return;
             }
         }
     }
-    RelayMouseMessage(&Window::Msg_RightDown, mc, findAndActivateWindow(mc.pos));
+    relayMouseMessage(&Window::msgRightDown, mc, findAndActivateWindow(mc.pos));
 }
 
-void WindowManager::Msg_RightUp(const MouseCoords& mc)
+void WindowManager::msgRightUp(const MouseCoords& mc)
 {
-    RelayMouseMessage(&Window::Msg_RightUp, mc);
+    relayMouseMessage(&Window::msgRightUp, mc);
 }
 
-void WindowManager::Msg_MiddleDown(const MouseCoords& mc)
+void WindowManager::msgMiddleDown(const MouseCoords& mc)
 {
     Window* activeWindow = findAndActivateWindow(mc.pos);
 
     if(activeWindow)
-        RelayMouseMessage(&Window::Msg_MiddleDown, mc, activeWindow);
+        relayMouseMessage(&Window::msgMiddleDown, mc, activeWindow);
 }
 
-void WindowManager::Msg_MiddleUp(const MouseCoords& mc)
+void WindowManager::msgMiddleUp(const MouseCoords& mc)
 {
-    RelayMouseMessage(&Window::Msg_MiddleUp, mc);
+    relayMouseMessage(&Window::msgMiddleUp, mc);
 }
 
-void WindowManager::Msg_WheelUp(const MouseCoords& mc)
+void WindowManager::msgWheelUp(const MouseCoords& mc)
 {
-    RelayMouseMessage(&Window::Msg_WheelUp, mc, findAndActivateWindow(mc.pos));
+    relayMouseMessage(&Window::msgWheelUp, mc, findAndActivateWindow(mc.pos));
 }
 
-void WindowManager::Msg_WheelDown(const MouseCoords& mc)
+void WindowManager::msgWheelDown(const MouseCoords& mc)
 {
-    RelayMouseMessage(&Window::Msg_WheelDown, mc, findAndActivateWindow(mc.pos));
+    relayMouseMessage(&Window::msgWheelDown, mc, findAndActivateWindow(mc.pos));
 }
 
-void WindowManager::Msg_MouseMove(const MouseCoords& mc)
+void WindowManager::msgMouseMove(const MouseCoords& mc)
 {
     lastMousePos = mc.pos;
-    RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    relayMouseMessage(&Window::msgMouseMove, mc);
 }
 
-void WindowManager::Msg_KeyDown(const KeyEvent& ke)
+void WindowManager::msgKeyDown(const KeyEvent& ke)
 {
     if(ke.alt && (ke.kt == KeyType::Return))
     {
@@ -386,28 +386,28 @@ void WindowManager::Msg_KeyDown(const KeyEvent& ke)
           (SETTINGS.video.displayMode == DisplayMode::Fullscreen) ? DisplayMode::Windowed : DisplayMode::Fullscreen;
         const auto newScreenSize =
           (newMode == DisplayMode::Fullscreen) ? SETTINGS.video.fullscreenSize : SETTINGS.video.windowedSize;
-        VIDEODRIVER.ResizeScreen(newScreenSize, newMode);
+        VIDEODRIVER.resizeScreen(newScreenSize, newMode);
 
-        SETTINGS.video.displayMode = VIDEODRIVER.GetDisplayMode();
+        SETTINGS.video.displayMode = VIDEODRIVER.getDisplayMode();
     } else if(ke.kt == KeyType::Print)
-        TakeScreenshot();
+        takeScreenshot();
     else
-        RelayKeyboardMessage(&Window::Msg_KeyDown, ke);
+        relayKeyboardMessage(&Window::msgKeyDown, ke);
 }
 
 /**
  *  Handle resize of the window or change of resolution
  */
-void WindowManager::WindowResized()
+void WindowManager::windowResized()
 {
-    VIDEODRIVER.RenewViewport();
-    Msg_ScreenResize(VIDEODRIVER.GetRenderSize());
+    VIDEODRIVER.renewViewport();
+    msgScreenResize(VIDEODRIVER.getRenderSize());
 }
 
 /**
  *  React to change of the render size
  */
-void WindowManager::Msg_ScreenResize(const Extent& newSize)
+void WindowManager::msgScreenResize(const Extent& newSize)
 {
     // Don't handle it if nothing changed
     if(newSize == curRenderSize)
@@ -419,25 +419,25 @@ void WindowManager::Msg_ScreenResize(const Extent& newSize)
 
     // Don't change fullscreen size (only in menu)
     if(SETTINGS.video.displayMode == DisplayMode::Windowed)
-        SETTINGS.video.windowedSize = VIDEODRIVER.GetWindowSize();
+        SETTINGS.video.windowedSize = VIDEODRIVER.getWindowSize();
 
     // Desktop (still) valid?
     if(!curDesktop)
         return;
 
-    curDesktop->Msg_ScreenResize(sr);
+    curDesktop->msgScreenResize(sr);
 
     // Move IngameWindows so they are completely visible
     for(const auto& window : windows)
     {
-        DrawPoint delta = window->GetPos() + DrawPoint(window->GetSize()) - DrawPoint(sr.newSize);
+        DrawPoint delta = window->getPos() + DrawPoint(window->getSize()) - DrawPoint(sr.newSize);
         if(delta.x > 0 || delta.y > 0)
-            window->SetPos(window->GetPos() - elMax(delta, DrawPoint(0, 0)));
-        window->Msg_ScreenResize(sr);
+            window->setPos(window->getPos() - elMax(delta, DrawPoint(0, 0)));
+        window->msgScreenResize(sr);
     }
 }
 
-IngameWindow* WindowManager::GetTopMostWindow() const
+IngameWindow* WindowManager::getTopMostWindow() const
 {
     if(windows.empty())
         return nullptr;
@@ -445,16 +445,16 @@ IngameWindow* WindowManager::GetTopMostWindow() const
         return windows.back().get();
 }
 
-void WindowManager::DoClose(IngameWindow* window)
+void WindowManager::doClose(IngameWindow* window)
 {
     const auto it = helpers::findPtr(windows, window);
 
     RTTR_Assert(it != windows.end());
 
-    SetToolTip(nullptr, "");
+    setToolTip(nullptr, "");
 
     // Store if this was the active window
-    const bool isActiveWnd = window == GetTopMostWindow();
+    const bool isActiveWnd = window == getTopMostWindow();
 
     // Remove from list and notify parent, hold onto it till parent is notified
     const auto tmpHolder = std::move(*it);
@@ -462,11 +462,11 @@ void WindowManager::DoClose(IngameWindow* window)
     if(isActiveWnd)
     {
         if(windows.empty())
-            SetActiveWindow(*curDesktop);
+            setActiveWindow(*curDesktop);
         else
-            SetActiveWindow(*windows.back());
+            setActiveWindow(*windows.back());
     }
-    curDesktop->Msg_WindowClosed(*tmpHolder);
+    curDesktop->msgWindowClosed(*tmpHolder);
 }
 
 /**
@@ -474,31 +474,31 @@ void WindowManager::DoClose(IngameWindow* window)
  *
  *  @param[in] id ID of the window to be closed
  */
-void WindowManager::Close(unsigned id)
+void WindowManager::close(unsigned id)
 {
     for(auto& wnd : windows)
     {
-        if(wnd->GetID() == id && !wnd->ShouldBeClosed())
-            wnd->Close();
+        if(wnd->getID() == id && !wnd->shouldBeClosed())
+            wnd->close();
     }
 }
 
-void WindowManager::CloseNow(IngameWindow* window)
+void WindowManager::closeNow(IngameWindow* window)
 {
-    if(!window->ShouldBeClosed())
-        window->Close();
-    DoClose(window);
+    if(!window->shouldBeClosed())
+        window->close();
+    doClose(window);
 }
 
 /**
  *  Actually process the desktop change
  */
-void WindowManager::DoDesktopSwitch()
+void WindowManager::doDesktopSwitch()
 {
     RTTR_Assert(nextdesktop);
-    VIDEODRIVER.ClearScreen();
+    VIDEODRIVER.clearScreen();
 
-    SetToolTip(nullptr, "");
+    setToolTip(nullptr, "");
 
     // If we have a current desktop close all windows
     if(curDesktop)
@@ -506,26 +506,26 @@ void WindowManager::DoDesktopSwitch()
 
     // Do the switch
     curDesktop = std::move(nextdesktop);
-    curDesktop->SetActive(true);
+    curDesktop->setActive(true);
 
     for(auto& nextWnd : nextWnds)
-        Show(std::move(nextWnd));
+        show(std::move(nextWnd));
     nextWnds.clear();
 
-    if(!VIDEODRIVER.IsLeftDown())
+    if(!VIDEODRIVER.isLeftDown())
         disable_mouse = false;
 
     // Dummy mouse move to init hovering etc
-    Msg_MouseMove(MouseCoords(VIDEODRIVER.GetMousePos()));
+    msgMouseMove(MouseCoords(VIDEODRIVER.getMousePos()));
 }
 
-void WindowManager::CloseMarkedIngameWnds()
+void WindowManager::closeMarkedIngameWnds()
 {
-    auto isWndMarkedForClose = [](const auto& wnd) { return wnd->ShouldBeClosed(); };
+    auto isWndMarkedForClose = [](const auto& wnd) { return wnd->shouldBeClosed(); };
     auto it = helpers::find_if(windows, isWndMarkedForClose);
     while(it != windows.end())
     {
-        DoClose(it->get());
+        doClose(it->get());
         it = helpers::find_if(windows, isWndMarkedForClose);
     }
 }
@@ -537,22 +537,22 @@ void SetActiveWindowImpl(const Window& wnd, Desktop& desktop, T_Windows& windows
     if(itWnd != windows.end())
     {
         // If we have a modal window, don't make this active unless it is the top most one
-        if(&wnd != windows.back().get() && helpers::contains_if(windows, [](const auto& it) { return it->IsModal(); }))
+        if(&wnd != windows.back().get() && helpers::contains_if(windows, [](const auto& it) { return it->isModal(); }))
         {
             return;
         }
-        desktop.SetActive(false);
+        desktop.setActive(false);
         // Move window to the end (itWnd+1 -> itWnd -> end())
         std::rotate(itWnd, std::next(itWnd), windows.end());
     } else if(&wnd == &desktop)
-        desktop.SetActive(true);
+        desktop.setActive(true);
     else
         return;
     for(const auto& curWnd : windows)
-        curWnd->SetActive(&wnd == curWnd.get());
+        curWnd->setActive(&wnd == curWnd.get());
 }
 
-void WindowManager::SetActiveWindow(Window& wnd)
+void WindowManager::setActiveWindow(Window& wnd)
 {
     if(curDesktop)
         SetActiveWindowImpl(wnd, *curDesktop, windows);
@@ -560,9 +560,9 @@ void WindowManager::SetActiveWindow(Window& wnd)
         SetActiveWindowImpl(wnd, *nextdesktop, nextWnds);
 }
 
-void WindowManager::TakeScreenshot() const
+void WindowManager::takeScreenshot() const
 {
-    const auto windowSize = VIDEODRIVER.GetWindowSize();
+    const auto windowSize = VIDEODRIVER.getWindowSize();
     libsiedler2::PixelBufferBGRA buffer(windowSize.width, windowSize.height);
     glReadPixels(0, 0, windowSize.width, windowSize.height, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     flipVertical(buffer);
@@ -599,7 +599,7 @@ public:
 
     void setText(const std::string& text)
     {
-        lines = font->GetWrapInfo(text, maxWidth, maxWidth).CreateSingleStrings(text);
+        lines = font->getWrapInfo(text, maxWidth, maxWidth).createSingleStrings(text);
         if(lines.empty())
             return;
         width = 0;
@@ -611,18 +611,18 @@ public:
 
     void draw(DrawPoint pos) const
     {
-        Window::DrawRectangle(Rect(pos, width, height), 0x9F000000);
+        Window::drawRectangle(Rect(pos, width, height), 0x9F000000);
         pos += DrawPoint::all(BORDER_SIZE);
         const auto fontHeight = font->getHeight();
         for(const auto& line : lines)
         {
-            font->Draw(pos, line, FontStyle::TOP, COLOR_YELLOW);
+            font->draw(pos, line, FontStyle::TOP, COLOR_YELLOW);
             pos.y += fontHeight;
         }
     }
 };
 
-void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent)
+void WindowManager::setToolTip(const ctrlBaseTooltip* ttw, const std::string& tooltip, bool updateCurrent)
 {
     // Max width of tooltip
     constexpr unsigned short MAX_TOOLTIP_WIDTH = 260;
@@ -639,7 +639,7 @@ void WindowManager::SetToolTip(const ctrlBaseTooltip* ttw, const std::string& to
         curTooltip = std::make_unique<Tooltip>(ttw, tooltip, MAX_TOOLTIP_WIDTH);
 }
 
-void WindowManager::DrawToolTip()
+void WindowManager::drawToolTip()
 {
     // Tooltip zeichnen
     if(curTooltip && lastMousePos.isValid())
@@ -687,7 +687,7 @@ SnapOffset WindowManager::snapWindow(Window* wnd, const Rect& wndRect) const
         if(curWnd.get() == wnd)
             continue;
 
-        const Rect curWndRect = curWnd->GetBoundaryRect();
+        const Rect curWndRect = curWnd->getBoundaryRect();
 
         // Calculate smallest offset for each parallel pair of window edges, iff the windows overlap along the
         // orthogonal axis (± snap distance)

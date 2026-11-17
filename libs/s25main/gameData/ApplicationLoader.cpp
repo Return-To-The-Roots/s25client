@@ -17,7 +17,7 @@ ApplicationLoader::~ApplicationLoader() = default;
 bool ApplicationLoader::load()
 {
     loader_.initResourceFolders();
-    if(!loader_.LoadFilesAtStart())
+    if(!loader_.loadFilesAtStart())
         return false;
     if(!playlistPath_.empty())
     {

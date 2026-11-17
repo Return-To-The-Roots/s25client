@@ -16,15 +16,15 @@ public:
 
 protected:
     /// Re-fill the table with existing files
-    void RefreshTable();
+    void refreshTable();
 
 private:
     /// Save or load the currently selected file
-    virtual void SaveLoad() = 0;
+    virtual void saveLoad() = 0;
 
-    void Msg_EditEnter(unsigned ctrl_id) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void msgEditEnter(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgTableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
 };
 
 class iwSave : public iwSaveLoad
@@ -34,9 +34,9 @@ public:
 
 private:
     // Save game
-    void SaveLoad() override;
+    void saveLoad() override;
 
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
 };
 
 class iwLoad : public iwSaveLoad
@@ -48,8 +48,8 @@ public:
 
 private:
     /// Handle double click on the table
-    void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void msgTableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
     // Load game
-    void SaveLoad() override;
+    void saveLoad() override;
 };

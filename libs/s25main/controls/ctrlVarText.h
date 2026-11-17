@@ -20,10 +20,10 @@ public:
                 FontStyle format, const glFont* font, unsigned count, va_list fmtArgs);
     ~ctrlVarText() override;
 
-    Rect GetBoundaryRect() const override;
+    Rect getBoundaryRect() const override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
     FontStyle format_;
 };

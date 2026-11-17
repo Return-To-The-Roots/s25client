@@ -17,89 +17,89 @@
 
 iwDirectIPCreate::iwDirectIPCreate(ServerType server_type)
     : IngameWindow(CGI_DIRECTIPCREATE, IngameWindow::posLastOrCenter, Extent(300, 285), _("Create Game"),
-                   LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom),
+                   LOADER.getImageN("resource", 41), true, CloseBehavior::Custom),
       server_type(server_type)
 {
     ctrlEdit *name, *port;
 
     // "Name des Spiels"
-    AddText(0, DrawPoint(20, 30), _("Game's Name:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    name = AddEdit(1, DrawPoint(20, 45), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
+    addText(0, DrawPoint(20, 30), _("Game's Name:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    name = addEdit(1, DrawPoint(20, 45), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
 
     // "Server-Port"
-    AddText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    port = AddEdit(3, DrawPoint(20, 95), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
+    addText(2, DrawPoint(20, 80), _("Server-Port:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    port = addEdit(3, DrawPoint(20, 95), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
 
     // "Passwort"
-    AddText(4, DrawPoint(20, 130), _("Password:"), COLOR_YELLOW, FontStyle{}, NormalFont);
-    AddEdit(5, DrawPoint(20, 145), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
+    addText(4, DrawPoint(20, 130), _("Password:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addEdit(5, DrawPoint(20, 145), Extent(260, 22), TextureColor::Green2, NormalFont, 0, false, false, true);
 
     // ipv6 oder ipv4 benutzen
-    AddText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addText(11, DrawPoint(20, 185), _("Use IPv6:"), COLOR_YELLOW, FontStyle{}, NormalFont);
 
-    ctrlOptionGroup* ipv6 = AddOptionGroup(12, GroupSelectType::Check);
-    ipv6->AddTextButton(0, DrawPoint(120, 180), Extent(75, 22), TextureColor::Green2, _("IPv4"), NormalFont);
-    ipv6->AddTextButton(1, DrawPoint(205, 180), Extent(75, 22), TextureColor::Green2, _("IPv6"), NormalFont);
-    ipv6->SetSelection((SETTINGS.server.ipv6 ? 1 : 0));
+    ctrlOptionGroup* ipv6 = addOptionGroup(12, GroupSelectType::Check);
+    ipv6->addTextButton(0, DrawPoint(120, 180), Extent(75, 22), TextureColor::Green2, _("IPv4"), NormalFont);
+    ipv6->addTextButton(1, DrawPoint(205, 180), Extent(75, 22), TextureColor::Green2, _("IPv6"), NormalFont);
+    ipv6->setSelection((SETTINGS.server.ipv6 ? 1 : 0));
 
     // Status
-    AddText(6, DrawPoint(150, 215), "", COLOR_RED, FontStyle::CENTER, NormalFont);
+    addText(6, DrawPoint(150, 215), "", COLOR_RED, FontStyle::CENTER, NormalFont);
 
     // "Starten"
-    AddTextButton(7, DrawPoint(20, 240), Extent(125, 22), TextureColor::Green2, _("Start"), NormalFont);
+    addTextButton(7, DrawPoint(20, 240), Extent(125, 22), TextureColor::Green2, _("Start"), NormalFont);
 
     // "Zurück"
-    AddTextButton(8, DrawPoint(155, 240), Extent(125, 22), TextureColor::Red1, _("Back"), NormalFont);
+    addTextButton(8, DrawPoint(155, 240), Extent(125, 22), TextureColor::Red1, _("Back"), NormalFont);
 
-    name->SetText(SETTINGS.lobby.name + _("'s Game"));
-    name->SetFocus();
-    port->SetText(SETTINGS.server.localPort);
+    name->setText(SETTINGS.lobby.name + _("'s Game"));
+    name->setFocus();
+    port->setText(SETTINGS.server.localPort);
 }
 
 /**
  *  Statustext resetten
  */
-void iwDirectIPCreate::Msg_EditChange(const unsigned /*ctrl_id*/)
+void iwDirectIPCreate::msgEditChange(const unsigned /*ctrl_id*/)
 {
     // Statustext resetten
-    SetText("", COLOR_RED, true);
+    setText("", COLOR_RED, true);
 }
 
 /**
  *  Bei Enter nächstes Steuerelement auswählen
  */
-void iwDirectIPCreate::Msg_EditEnter(const unsigned ctrl_id)
+void iwDirectIPCreate::msgEditEnter(const unsigned ctrl_id)
 {
-    auto* name = GetCtrl<ctrlEdit>(1);
-    auto* port = GetCtrl<ctrlEdit>(3);
-    auto* pass = GetCtrl<ctrlEdit>(5);
+    auto* name = getCtrl<ctrlEdit>(1);
+    auto* port = getCtrl<ctrlEdit>(3);
+    auto* pass = getCtrl<ctrlEdit>(5);
 
     switch(ctrl_id)
     {
         case 1:
         {
-            name->SetFocus(false);
-            port->SetFocus(true);
-            pass->SetFocus(false);
+            name->setFocus(false);
+            port->setFocus(true);
+            pass->setFocus(false);
         }
         break;
         case 3:
         {
-            name->SetFocus(false);
-            port->SetFocus(false);
-            pass->SetFocus(false);
+            name->setFocus(false);
+            port->setFocus(false);
+            pass->setFocus(false);
         }
         break;
         case 5:
         {
             // Starten klicken
-            Msg_ButtonClick(7);
+            msgButtonClick(7);
         }
         break;
     }
 }
 
-void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned ctrl_id, const unsigned selection)
+void iwDirectIPCreate::msgOptionGroupChange(const unsigned ctrl_id, const unsigned selection)
 {
     switch(ctrl_id)
     {
@@ -114,44 +114,44 @@ void iwDirectIPCreate::Msg_OptionGroupChange(const unsigned ctrl_id, const unsig
 /**
  *  Button Clicki-Di-Bunti-Li
  */
-void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
+void iwDirectIPCreate::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 7: // "Starten"
         {
-            auto* edtName = GetCtrl<ctrlEdit>(1);
-            auto* edtPort = GetCtrl<ctrlEdit>(3);
-            auto* edtPw = GetCtrl<ctrlEdit>(5);
+            auto* edtName = getCtrl<ctrlEdit>(1);
+            auto* edtPort = getCtrl<ctrlEdit>(3);
+            auto* edtPw = getCtrl<ctrlEdit>(5);
 
-            if(edtName->GetText().empty())
+            if(edtName->getText().empty())
             {
-                SetText(_("Please enter a name for the game"), COLOR_RED, false);
-                edtName->SetFocus(true);
-                edtPort->SetFocus(false);
-                edtPw->SetFocus(false);
+                setText(_("Please enter a name for the game"), COLOR_RED, false);
+                edtName->setFocus(true);
+                edtPort->setFocus(false);
+                edtPw->setFocus(false);
                 break;
             }
-            std::optional<uint16_t> port = validate::checkPort(edtPort->GetText());
+            std::optional<uint16_t> port = validate::checkPort(edtPort->getText());
             if(!port)
             {
-                SetText(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED, false);
-                edtName->SetFocus(false);
-                edtPort->SetFocus(true);
-                edtPw->SetFocus(false);
+                setText(_("Invalid port. The valid port-range is 1 to 65535!"), COLOR_RED, false);
+                edtName->setFocus(false);
+                edtPort->setFocus(true);
+                edtPw->setFocus(false);
                 break;
             }
 
-            CreateServerInfo csi(server_type, *port, edtName->GetText(), edtPw->GetText(), SETTINGS.server.ipv6,
+            CreateServerInfo csi(server_type, *port, edtName->getText(), edtPw->getText(), SETTINGS.server.ipv6,
                                  SETTINGS.global.useUPNP);
 
             // Map auswählen
-            WINDOWMANAGER.Switch(std::make_unique<dskSelectMap>(csi));
+            WINDOWMANAGER.switchTo(std::make_unique<dskSelectMap>(csi));
         }
         break;
         case 8:
         {
-            Close();
+            close();
         }
         break;
     }
@@ -161,14 +161,14 @@ void iwDirectIPCreate::Msg_ButtonClick(const unsigned ctrl_id)
  *  Setzt den Text und Schriftfarbe vom Textfeld und den Status des
  *  Buttons.
  */
-void iwDirectIPCreate::SetText(const std::string& text, unsigned color, bool button)
+void iwDirectIPCreate::setText(const std::string& text, unsigned color, bool button)
 {
     // Text setzen
-    GetCtrl<ctrlText>(6)->SetTextColor(color);
-    GetCtrl<ctrlText>(6)->SetText(text);
+    getCtrl<ctrlText>(6)->setTextColor(color);
+    getCtrl<ctrlText>(6)->setText(text);
 
     // Button (de)aktivieren
-    GetCtrl<ctrlButton>(7)->SetEnabled(button);
+    getCtrl<ctrlButton>(7)->setEnabled(button);
 }
 
 /**
@@ -176,17 +176,17 @@ void iwDirectIPCreate::SetText(const std::string& text, unsigned color, bool but
  */
 void iwDirectIPCreate::LC_Status_Error(const std::string& error)
 {
-    auto* name = GetCtrl<ctrlEdit>(1);
-    auto* port = GetCtrl<ctrlEdit>(3);
-    auto* pass = GetCtrl<ctrlEdit>(5);
+    auto* name = getCtrl<ctrlEdit>(1);
+    auto* port = getCtrl<ctrlEdit>(3);
+    auto* pass = getCtrl<ctrlEdit>(5);
 
-    name->SetFocus(true);
-    port->SetFocus(false);
-    pass->SetFocus(false);
+    name->setFocus(true);
+    port->setFocus(false);
+    pass->setFocus(false);
 
-    name->SetDisabled(false);
-    port->SetDisabled(false);
-    pass->SetDisabled(false);
+    name->setDisabled(false);
+    port->setDisabled(false);
+    pass->setDisabled(false);
 
-    SetText(error, COLOR_RED, true);
+    setText(error, COLOR_RED, true);
 }

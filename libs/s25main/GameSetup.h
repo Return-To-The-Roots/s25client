@@ -23,4 +23,4 @@ struct GameSetupError : std::runtime_error
 /// the way the version they were recorded with did it.
 /// Throws GameSetupError if the map or Lua script could not be read, SerializedGameData::Error if the savegame is
 /// corrupt.
-void SetupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGameState, const Replay* replay);
+void setupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGameState, const Replay* replay);

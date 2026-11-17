@@ -23,35 +23,35 @@ World::World() : noNodeObj(nullptr) {}
 
 World::~World()
 {
-    Unload();
+    unload();
 }
 
 void World::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {
-    RTTR_Assert(GetSize() == MapExtent::all(0)); // Already init
+    RTTR_Assert(getSize() == MapExtent::all(0)); // Already init
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
-    Resize(mapSize);
+    resize(mapSize);
     if(!lt)
         throw std::runtime_error("Invalid landscape");
     this->lt = lt;
-    GameObject::ResetCounters();
+    GameObject::resetCounters();
 
     noNodeObj = std::make_unique<noNothing>();
 }
 
-void World::Unload()
+void World::unload()
 {
     // Collect and destroy roads
     std::set<RoadSegment*> roadsegments;
     for(const auto& node : nodes)
     {
-        if(!node.obj || node.obj->GetGOT() != GO_Type::Flag)
+        if(!node.obj || node.obj->getGOT() != GO_Type::Flag)
             continue;
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            if(static_cast<noFlag*>(node.obj)->GetRoute(dir))
+            if(static_cast<noFlag*>(node.obj)->getRoute(dir))
             {
-                roadsegments.insert(static_cast<noFlag*>(node.obj)->GetRoute(dir));
+                roadsegments.insert(static_cast<noFlag*>(node.obj)->getRoute(dir));
             }
         }
     }
@@ -71,30 +71,30 @@ void World::Unload()
     harborData.clear();
     description_ = WorldDescription();
     noNodeObj.reset();
-    Resize(MapExtent::all(0));
+    resize(MapExtent::all(0));
 }
 
-void World::Resize(const MapExtent& newSize)
+void World::resize(const MapExtent& newSize)
 {
-    MapBase::Resize(newSize);
+    MapBase::resize(newSize);
     nodes.clear();
-    militarySquares.Clear();
-    if(GetSize().x > 0)
+    militarySquares.clear();
+    if(getSize().x > 0)
     {
-        nodes.resize(prodOfComponents(GetSize()));
-        militarySquares.Init(GetSize());
+        nodes.resize(prodOfComponents(getSize()));
+        militarySquares.Init(getSize());
     }
 }
 
-noBase& World::AddFigureImpl(const MapPoint pt, std::unique_ptr<noBase> fig)
+noBase& World::addFigureImpl(const MapPoint pt, std::unique_ptr<noBase> fig)
 {
     RTTR_Assert(fig);
 
-    auto& figures = GetNodeInt(pt).figures;
+    auto& figures = getNodeInt(pt).figures;
 #if RTTR_ENABLE_ASSERTS
     RTTR_Assert(!helpers::containsPtr(figures, fig.get()));
-    for(const MapPoint nb : GetNeighbours(pt))
-        RTTR_Assert(!helpers::containsPtr(GetNode(nb).figures, fig.get())); // Added figure that is in surrounding?
+    for(const MapPoint nb : getNeighbours(pt))
+        RTTR_Assert(!helpers::containsPtr(getNode(nb).figures, fig.get())); // Added figure that is in surrounding?
 #endif
 
     noBase& result = *fig;
@@ -102,76 +102,76 @@ noBase& World::AddFigureImpl(const MapPoint pt, std::unique_ptr<noBase> fig)
     return result;
 }
 
-noBase* World::RemoveFigureImpl(const MapPoint pt, noBase& fig)
+noBase* World::removeFigureImpl(const MapPoint pt, noBase& fig)
 {
-    return helpers::extractPtr(GetNodeInt(pt).figures, &fig).release();
+    return helpers::extractPtr(getNodeInt(pt).figures, &fig).release();
 }
 
-noBase* World::GetNO(const MapPoint pt)
+noBase* World::getNO(const MapPoint pt)
 {
-    if(GetNode(pt).obj)
-        return GetNode(pt).obj;
+    if(getNode(pt).obj)
+        return getNode(pt).obj;
     else
         return noNodeObj.get();
 }
 
-const noBase* World::GetNO(const MapPoint pt) const
+const noBase* World::getNO(const MapPoint pt) const
 {
-    if(GetNode(pt).obj)
-        return GetNode(pt).obj;
+    if(getNode(pt).obj)
+        return getNode(pt).obj;
     else
         return noNodeObj.get();
 }
 
-void World::SetNO(const MapPoint pt, noBase* obj, const bool replace /* = false*/)
+void World::setNO(const MapPoint pt, noBase* obj, const bool replace /* = false*/)
 {
-    RTTR_Assert(replace || obj == nullptr || GetNode(pt).obj == nullptr);
+    RTTR_Assert(replace || obj == nullptr || getNode(pt).obj == nullptr);
 #if RTTR_ENABLE_ASSERTS
     RTTR_Assert(!dynamic_cast<noMovable*>(obj)); // It should be a static, non-movable object
 #endif
-    GetNodeInt(pt).obj = obj;
+    getNodeInt(pt).obj = obj;
 }
 
-void World::DestroyNO(const MapPoint pt, const bool checkExists /* = true*/)
+void World::destroyNO(const MapPoint pt, const bool checkExists /* = true*/)
 {
-    noBase* obj = GetNodeInt(pt).obj;
+    noBase* obj = getNodeInt(pt).obj;
     if(obj)
     {
         // Destroy may remove the NO already from the map or replace it (e.g. building -> fire)
         // So remove from map, then destroy and free
-        GetNodeInt(pt).obj = nullptr;
-        obj->Destroy();
+        getNodeInt(pt).obj = nullptr;
+        obj->destroy();
         deletePtr(obj);
     } else
         RTTR_Assert(!checkExists);
 }
 
 /// Returns the GOT if an object or GOT_NOTHING if none
-GO_Type World::GetGOT(const MapPoint pt) const
+GO_Type World::getGOT(const MapPoint pt) const
 {
-    noBase* obj = GetNode(pt).obj;
+    noBase* obj = getNode(pt).obj;
     if(obj)
-        return obj->GetGOT();
+        return obj->getGOT();
     else
         return GO_Type::Nothing;
 }
 
-void World::ReduceResource(const MapPoint pt)
+void World::reduceResource(const MapPoint pt)
 {
-    const uint8_t curAmount = GetNodeInt(pt).resources.getAmount();
+    const uint8_t curAmount = getNodeInt(pt).resources.getAmount();
     RTTR_Assert(curAmount > 0);
-    GetNodeInt(pt).resources.setAmount(curAmount - 1u);
+    getNodeInt(pt).resources.setAmount(curAmount - 1u);
 }
 
-void World::SetReserved(const MapPoint pt, const bool reserved)
+void World::setReserved(const MapPoint pt, const bool reserved)
 {
-    RTTR_Assert(GetNodeInt(pt).reserved != reserved);
-    GetNodeInt(pt).reserved = reserved;
+    RTTR_Assert(getNodeInt(pt).reserved != reserved);
+    getNodeInt(pt).reserved = reserved;
 }
 
-void World::SetVisibility(const MapPoint pt, unsigned char player, Visibility vis, unsigned fowTime)
+void World::setVisibility(const MapPoint pt, unsigned char player, Visibility vis, unsigned fowTime)
 {
-    FoWNode& node = GetNodeInt(pt).fow[player];
+    FoWNode& node = getNodeInt(pt).fow[player];
     Visibility oldVis = node.visibility;
     if(oldVis == vis)
         return;
@@ -180,34 +180,34 @@ void World::SetVisibility(const MapPoint pt, unsigned char player, Visibility vi
     if(vis == Visibility::Visible)
         node.object.reset();
     else if(vis == Visibility::FogOfWar)
-        SaveFOWNode(pt, player, fowTime);
-    VisibilityChanged(pt, player, oldVis, vis);
+        saveFOWNode(pt, player, fowTime);
+    visibilityChanged(pt, player, oldVis, vis);
 }
 
-void World::ChangeAltitude(const MapPoint pt, const unsigned char altitude)
+void World::changeAltitude(const MapPoint pt, const unsigned char altitude)
 {
-    GetNodeInt(pt).altitude = altitude;
+    getNodeInt(pt).altitude = altitude;
 
     // Schattierung neu berechnen von diesem Punkt und den Punkten drumherum
-    RecalcShadow(pt);
-    for(const MapPoint nb : GetNeighbours(pt))
-        RecalcShadow(nb);
+    recalcShadow(pt);
+    for(const MapPoint nb : getNeighbours(pt))
+        recalcShadow(nb);
 
     // Abgeleiteter Klasse Bescheid sagen
-    AltitudeChanged(pt);
+    altitudeChanged(pt);
 }
 
-bool World::IsPlayerTerritory(const MapPoint pt, const unsigned char owner) const
+bool World::isPlayerTerritory(const MapPoint pt, const unsigned char owner) const
 {
-    const unsigned char ptOwner = GetNode(pt).owner;
+    const unsigned char ptOwner = getNode(pt).owner;
 
     if(owner != 0 && ptOwner != owner)
         return false;
 
     // Neighbour nodes must belong to this player
-    for(const MapPoint nb : GetNeighbours(pt))
+    for(const MapPoint nb : getNeighbours(pt))
     {
-        if(GetNode(nb).owner != ptOwner)
+        if(getNode(nb).owner != ptOwner)
             return false;
     }
 
@@ -216,20 +216,20 @@ bool World::IsPlayerTerritory(const MapPoint pt, const unsigned char owner) cons
 
 BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player) const
 {
-    return AdjustBQ(pt, player, GetNode(pt).bq);
+    return adjustBQ(pt, player, getNode(pt).bq);
 }
 
-BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const
+BuildingQuality World::adjustBQ(const MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const
 {
-    if(nodeBQ == BuildingQuality::Nothing || !IsPlayerTerritory(pt, player + 1))
+    if(nodeBQ == BuildingQuality::Nothing || !isPlayerTerritory(pt, player + 1))
         return BuildingQuality::Nothing;
     // If we could build a building, but the buildings flag point is at the border, we can only build a flag
-    if(nodeBQ != BuildingQuality::Flag && !IsPlayerTerritory(GetNeighbour(pt, Direction::SouthEast)))
+    if(nodeBQ != BuildingQuality::Flag && !isPlayerTerritory(getNeighbour(pt, Direction::SouthEast)))
     {
         // Check for close flags, that prohibit to build a flag but not a building at this spot
         for(const Direction dir : {Direction::West, Direction::NorthWest, Direction::NorthEast})
         {
-            if(GetNO(GetNeighbour(pt, dir))->GetBM() == BlockingManner::Flag)
+            if(getNO(getNeighbour(pt, dir))->getBM() == BlockingManner::Flag)
                 return BuildingQuality::Nothing;
         }
         return BuildingQuality::Flag;
@@ -237,15 +237,15 @@ BuildingQuality World::AdjustBQ(const MapPoint pt, unsigned char player, Buildin
         return nodeBQ;
 }
 
-bool World::HasFigureAt(const MapPoint pt, const noBase& figure) const
+bool World::hasFigureAt(const MapPoint pt, const noBase& figure) const
 {
-    return helpers::containsPtr(GetNode(pt).figures, &figure);
+    return helpers::containsPtr(getNode(pt).figures, &figure);
 }
 
-WalkTerrain World::GetTerrain(MapPoint pt, Direction dir) const
+WalkTerrain World::getTerrain(MapPoint pt, Direction dir) const
 {
     // Manually inlined code from GetNeighbors. Measured to greatly improve performance
-    const MapExtent size = GetSize();
+    const MapExtent size = getSize();
     const MapCoord yminus1 = (pt.y == 0 ? size.y : pt.y) - 1;
     const MapCoord xplus1 = pt.x == size.x - 1 ? 0 : pt.x + 1;
     const MapCoord xminus1 = (pt.x == 0 ? size.x : pt.x) - 1;
@@ -258,38 +258,38 @@ WalkTerrain World::GetTerrain(MapPoint pt, Direction dir) const
     {
         case Direction::West:
         {
-            return {GetNode(wPt).t2, GetNode(nwPt).t1};
+            return {getNode(wPt).t2, getNode(nwPt).t1};
         }
         case Direction::NorthWest:
         {
-            const MapNode& node = GetNode(nwPt);
+            const MapNode& node = getNode(nwPt);
             return {node.t1, node.t2};
         }
         case Direction::NorthEast:
         {
-            return {GetNode(nwPt).t2, GetNode(nePt).t1};
+            return {getNode(nwPt).t2, getNode(nePt).t1};
         }
         case Direction::East:
         {
-            return {GetNode(nePt).t1, GetNode(pt).t2};
+            return {getNode(nePt).t1, getNode(pt).t2};
         }
         case Direction::SouthEast:
         {
-            const MapNode& node = GetNode(pt);
+            const MapNode& node = getNode(pt);
             return {node.t2, node.t1};
         }
         case Direction::SouthWest:
         {
-            return {GetNode(pt).t1, GetNode(wPt).t2};
+            return {getNode(pt).t1, getNode(wPt).t2};
         }
     }
     throw std::logic_error("Invalid direction");
 }
 
-helpers::EnumArray<DescIdx<TerrainDesc>, Direction> World::GetTerrainsAround(MapPoint pt) const
+helpers::EnumArray<DescIdx<TerrainDesc>, Direction> World::getTerrainsAround(MapPoint pt) const
 {
     // Manually inlined code from GetNeighbors. Measured to greatly improve performance
-    const MapExtent size = GetSize();
+    const MapExtent size = getSize();
     const MapCoord yminus1 = (pt.y == 0 ? size.y : pt.y) - 1;
     const MapCoord xplus1 = pt.x == size.x - 1 ? 0 : pt.x + 1;
     const MapCoord xminus1 = (pt.x == 0 ? size.x : pt.x) - 1;
@@ -299,61 +299,61 @@ helpers::EnumArray<DescIdx<TerrainDesc>, Direction> World::GetTerrainsAround(Map
     const MapPoint nwPt(!isEvenRow ? pt.x : xminus1, yminus1);
     const MapPoint nePt(isEvenRow ? pt.x : xplus1, yminus1);
 
-    const MapNode& nwNode = GetNode(nwPt);
-    const MapNode& neNode = GetNode(nePt);
-    const MapNode& curNode = GetNode(pt);
-    const MapNode& wNode = GetNode(wPt);
+    const MapNode& nwNode = getNode(nwPt);
+    const MapNode& neNode = getNode(nePt);
+    const MapNode& curNode = getNode(pt);
+    const MapNode& wNode = getNode(wPt);
     helpers::EnumArray<DescIdx<TerrainDesc>, Direction> result{nwNode.t1,  nwNode.t2,  neNode.t1,
                                                                curNode.t2, curNode.t1, wNode.t2};
     return result;
 }
 
-void World::SaveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime)
+void World::saveFOWNode(const MapPoint pt, const unsigned player, unsigned curTime)
 {
-    FoWNode& fow = GetNodeInt(pt).fow[player];
+    FoWNode& fow = getNodeInt(pt).fow[player];
     fow.last_update_time = curTime;
 
     // FOW-Objekt erzeugen
-    fow.object = GetNO(pt)->CreateFOWObject();
+    fow.object = getNO(pt)->createFOWObject();
 
     // Wege speichern, aber nur richtige, keine, die gerade gebaut werden
     for(const auto dir : helpers::EnumRange<RoadDir>{})
-        fow.roads[dir] = GetNode(pt).roads[dir];
+        fow.roads[dir] = getNode(pt).roads[dir];
 
     // Store ownership so FoW boundary stones can be drawn
-    fow.owner = GetNode(pt).owner;
+    fow.owner = getNode(pt).owner;
     // Grenzsteine merken
-    fow.boundary_stones = GetNode(pt).boundary_stones;
+    fow.boundary_stones = getNode(pt).boundary_stones;
 }
 
-bool World::IsSeaPoint(const MapPoint pt) const
+bool World::isSeaPoint(const MapPoint pt) const
 {
-    return World::IsOfTerrain(pt, [](const auto& desc) { return desc.Is(ETerrain::Shippable); });
+    return World::isOfTerrain(pt, [](const auto& desc) { return desc.Is(ETerrain::Shippable); });
 }
 
-bool World::IsWaterPoint(const MapPoint pt) const
+bool World::isWaterPoint(const MapPoint pt) const
 {
-    return World::IsOfTerrain(pt, [](const auto& desc) { return desc.kind == TerrainKind::Water; });
+    return World::isOfTerrain(pt, [](const auto& desc) { return desc.kind == TerrainKind::Water; });
 }
 
-unsigned World::GetSeaSize(const SeaId seaId) const
+unsigned World::getSeaSize(const SeaId seaId) const
 {
     RTTR_Assert(seaId && seaId.value() <= seas.size());
     return seas[seaId].nodes_count;
 }
 
-SeaId World::GetSeaId(const HarborId harborId, const Direction dir) const
+SeaId World::getSeaId(const HarborId harborId, const Direction dir) const
 {
     RTTR_Assert(harborId);
     return harborData[harborId].seaIds[dir];
 }
 
-bool World::IsHarborAtSea(const HarborId harborId, const SeaId seaId) const
+bool World::isHarborAtSea(const HarborId harborId, const SeaId seaId) const
 {
-    return GetCoastalPoint(harborId, seaId).isValid();
+    return getCoastalPoint(harborId, seaId).isValid();
 }
 
-MapPoint World::GetCoastalPoint(const HarborId harborId, const SeaId seaId) const
+MapPoint World::getCoastalPoint(const HarborId harborId, const SeaId seaId) const
 {
     RTTR_Assert(harborId);
     RTTR_Assert(seaId);
@@ -362,57 +362,57 @@ MapPoint World::GetCoastalPoint(const HarborId harborId, const SeaId seaId) cons
     for(auto dir : helpers::enumRange(Direction::NorthEast))
     {
         if(harborData[harborId].seaIds[dir] == seaId)
-            return GetNeighbour(harborData[harborId].pos, dir);
+            return getNeighbour(harborData[harborId].pos, dir);
     }
 
     // Keinen Punkt gefunden
-    return MapPoint::Invalid();
+    return MapPoint::invalid();
 }
 
-PointRoad World::GetRoad(const MapPoint pt, RoadDir dir) const
+PointRoad World::getRoad(const MapPoint pt, RoadDir dir) const
 {
-    return GetNode(pt).roads[dir];
+    return getNode(pt).roads[dir];
 }
 
-PointRoad World::GetPointRoad(MapPoint pt, Direction dir) const
-{
-    const RoadDir rDir = toRoadDir(pt, dir);
-    return GetRoad(pt, rDir);
-}
-
-PointRoad World::GetPointFOWRoad(MapPoint pt, Direction dir, const unsigned char viewing_player) const
+PointRoad World::getPointRoad(MapPoint pt, Direction dir) const
 {
     const RoadDir rDir = toRoadDir(pt, dir);
-    return GetNode(pt).fow[viewing_player].roads[rDir];
+    return getRoad(pt, rDir);
 }
 
-void World::AddCatapultStone(CatapultStone* cs)
+PointRoad World::getPointFOWRoad(MapPoint pt, Direction dir, const unsigned char viewing_player) const
+{
+    const RoadDir rDir = toRoadDir(pt, dir);
+    return getNode(pt).fow[viewing_player].roads[rDir];
+}
+
+void World::addCatapultStone(CatapultStone* cs)
 {
     RTTR_Assert(!helpers::contains(catapult_stones, cs));
     catapult_stones.push_back(cs);
 }
 
-void World::RemoveCatapultStone(CatapultStone* cs)
+void World::removeCatapultStone(CatapultStone* cs)
 {
     RTTR_Assert(helpers::contains(catapult_stones, cs));
     catapult_stones.remove(cs);
 }
 
-MapPoint World::GetHarborPoint(const HarborId harborId) const
+MapPoint World::getHarborPoint(const HarborId harborId) const
 {
     RTTR_Assert(harborId);
 
     return harborData[harborId].pos;
 }
 
-const std::vector<HarborPos::Neighbor>& World::GetHarborNeighbors(const HarborId harborId,
+const std::vector<HarborPos::Neighbor>& World::getHarborNeighbors(const HarborId harborId,
                                                                   const ShipDirection& dir) const
 {
     RTTR_Assert(harborId);
     return harborData[harborId].neighbors[dir];
 }
 
-unsigned World::GetMinHarborDistance(HarborId haborId1, HarborId harborId2) const
+unsigned World::getMinHarborDistance(HarborId haborId1, HarborId harborId2) const
 {
     if(haborId1 == harborId2) // special case: distance to self
         return 0;
@@ -428,7 +428,7 @@ unsigned World::GetMinHarborDistance(HarborId haborId1, HarborId harborId2) cons
     return minDistance;
 }
 
-unsigned World::GetHarborDistance(HarborId haborId1, HarborId harborId2, SeaId sea) const
+unsigned World::getHarborDistance(HarborId haborId1, HarborId harborId2, SeaId sea) const
 {
     if(haborId1 == harborId2) // special case: distance to self
         return 0;
@@ -444,24 +444,24 @@ unsigned World::GetHarborDistance(HarborId haborId1, HarborId harborId2, SeaId s
     return std::numeric_limits<unsigned>::max();
 }
 
-SeaId World::GetSeaFromCoastalPoint(const MapPoint pt) const
+SeaId World::getSeaFromCoastalPoint(const MapPoint pt) const
 {
     // Point itself must not be a sea
-    if(GetNode(pt).seaId)
+    if(getNode(pt).seaId)
         return SeaId::invalidValue();
 
     // Should not be inside water itself
-    if(IsWaterPoint(pt))
+    if(isWaterPoint(pt))
         return SeaId::invalidValue();
 
     // Surrounding must be valid sea
-    for(const MapPoint nb : GetNeighbours(pt))
+    for(const MapPoint nb : getNeighbours(pt))
     {
-        SeaId seaId = GetNode(nb).seaId;
+        SeaId seaId = getNode(nb).seaId;
         if(seaId)
         {
             // Check size (TODO: Others checks like harbor spots?)
-            if(GetSeaSize(seaId) > 20)
+            if(getSeaSize(seaId) > 20)
                 return seaId;
         }
     }
@@ -469,35 +469,35 @@ SeaId World::GetSeaFromCoastalPoint(const MapPoint pt) const
     return SeaId::invalidValue();
 }
 
-void World::SetRoad(const MapPoint pt, RoadDir roadDir, PointRoad type)
+void World::setRoad(const MapPoint pt, RoadDir roadDir, PointRoad type)
 {
-    GetNodeInt(pt).roads[roadDir] = type;
+    getNodeInt(pt).roads[roadDir] = type;
 }
 
-bool World::SetBQ(const MapPoint pt, BuildingQuality bq)
+bool World::setBQ(const MapPoint pt, BuildingQuality bq)
 {
     BuildingQuality oldBQ = bq;
-    std::swap(GetNodeInt(pt).bq, oldBQ);
+    std::swap(getNodeInt(pt).bq, oldBQ);
     return oldBQ != bq;
 }
 
-void World::RecalcShadow(const MapPoint pt)
+void World::recalcShadow(const MapPoint pt)
 {
-    int altitude = GetNode(pt).altitude;
-    int A = GetNeighbourNode(pt, Direction::NorthEast).altitude - altitude;
-    int B = GetNode(GetNeighbour2(pt, 0)).altitude - altitude;
-    int C = GetNode(GetNeighbour(pt, Direction::West)).altitude - altitude;
-    int D = GetNode(GetNeighbour2(pt, 11)).altitude - altitude;
+    int altitude = getNode(pt).altitude;
+    int A = getNeighbourNode(pt, Direction::NorthEast).altitude - altitude;
+    int B = getNode(getNeighbour2(pt, 0)).altitude - altitude;
+    int C = getNode(getNeighbour(pt, Direction::West)).altitude - altitude;
+    int D = getNode(getNeighbour2(pt, 11)).altitude - altitude;
 
     int shadingS2 = 64 + 9 * A - 3 * B - 6 * C - 9 * D;
     if(shadingS2 > 128)
         shadingS2 = 128;
     else if(shadingS2 < 0)
         shadingS2 = 0;
-    GetNodeInt(pt).shadow = shadingS2;
+    getNodeInt(pt).shadow = shadingS2;
 }
 
-void World::MakeWholeMapVisibleForAllPlayers()
+void World::makeWholeMapVisibleForAllPlayers()
 {
     for(auto& mapNode : nodes)
     {

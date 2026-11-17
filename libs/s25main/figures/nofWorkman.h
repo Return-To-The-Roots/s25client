@@ -19,29 +19,29 @@ class nofWorkman : public nofBuildingWorker
 {
 private:
     // Funktionen, die nur von der Basisklasse  aufgerufen werden, wenn...
-    void WalkedDerived() override {} // man gelaufen ist
+    void walkedDerived() override {} // man gelaufen ist
     /// Gibt den Warentyp zurück, welche der Arbeiter erzeugen will
-    virtual helpers::OptionalEnum<GoodType> ProduceWare() = 0;
+    virtual helpers::OptionalEnum<GoodType> produceWare() = 0;
     /// Abgeleitete Klasse informieren, wenn man fertig ist mit Arbeiten
-    virtual void WorkFinished() {}
+    virtual void workFinished() {}
 
 protected:
     /// Entsprechende Methoden für die Abwicklung der einzelnen Zustände
     /// Nach erstem Warten, sprich der Arbeiter muss versuchen, neu anfangen zu arbeiten
-    void HandleStateWaiting1();
-    void HandleStateWaiting2();
-    void HandleStateWork();
+    void handleStateWaiting1();
+    void handleStateWaiting2();
+    void handleStateWork();
     /// Called when the work actually starts. The base implementation changes the state and reduces ware count.
     /// Subclasses can return false, if work has to be aborted for any reason in which case we enter the wait-for-wares
     /// state
-    virtual bool StartWorking();
+    virtual bool startWorking();
 
     /// Looks for a point with a given resource on the node
-    MapPoint FindPointWithResource(ResourceType type) const;
+    MapPoint findPointWithResource(ResourceType type) const;
 
 public:
     nofWorkman(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     nofWorkman(SerializedGameData& sgd, unsigned obj_id);
 
-    void HandleDerivedEvent(unsigned id) override;
+    void handleDerivedEvent(unsigned id) override;
 };

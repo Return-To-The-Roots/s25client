@@ -17,20 +17,20 @@ private:
     bool sword_shield;
 
 protected:
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override;
+    unsigned short getCarryID() const override;
     /// Der Arbeiter erzeugt eine Ware
-    helpers::OptionalEnum<GoodType> ProduceWare() override;
-    void HandleDerivedEvent(unsigned id) override;
+    helpers::OptionalEnum<GoodType> produceWare() override;
+    void handleDerivedEvent(unsigned id) override;
 
-    bool AreWaresAvailable() const override;
+    bool areWaresAvailable() const override;
 
 public:
     nofArmorer(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofArmorer(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofArmorer; }
+    GO_Type getGOT() const final { return GO_Type::NofArmorer; }
 };

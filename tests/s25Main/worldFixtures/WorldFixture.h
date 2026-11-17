@@ -24,11 +24,11 @@
 template<class T>
 unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond)
 {
-    const unsigned endGf = em.GetCurrentGF() + maxGFs;
+    const unsigned endGf = em.getCurrentGF() + maxGFs;
     unsigned gfsExecuted = 0;
     while(!cond())
     {
-        const unsigned numGF = em.ExecuteNextEvent(endGf);
+        const unsigned numGF = em.executeNextEvent(endGf);
         if(numGF == 0)
             break;
         gfsExecuted += numGF;
@@ -94,7 +94,7 @@ struct WorldFixtureBase
     GameWorld& world;
     WorldFixtureBase(unsigned numPlayers)
         : game(std::make_shared<Game>(GlobalGameSettings(), std::make_unique<TestEventManager>(),
-                                      std::vector<PlayerInfo>(numPlayers, GetPlayer()))),
+                                      std::vector<PlayerInfo>(numPlayers, getPlayer()))),
           em(static_cast<TestEventManager&>(*game->em_)), ggs(const_cast<GlobalGameSettings&>(game->ggs_)),
           world(game->world_)
     {
@@ -109,7 +109,7 @@ struct WorldFixtureBase
     /// Add start resources to HQ of the given player
     void addStartResources(unsigned playerIdx);
 
-    static PlayerInfo GetPlayer()
+    static PlayerInfo getPlayer()
     {
         PlayerInfo result;
         result.ps = PlayerState::Occupied;
@@ -125,7 +125,7 @@ struct WorldFixture : WorldFixtureBase
     WorldFixture() : WorldFixtureBase(T_numPlayers), worldCreator(MapExtent(T_width, T_height))
     {
         BOOST_TEST_REQUIRE(worldCreator(world));
-        BOOST_TEST_REQUIRE(world.GetNumPlayers() == T_numPlayers);
+        BOOST_TEST_REQUIRE(world.getNumPlayers() == T_numPlayers);
     }
 };
 
@@ -134,11 +134,11 @@ class TestWorld : public World
 public:
     TestWorld() = default;
     TestWorld(const MapExtent size, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>{1}) { Init(size, lt); }
-    using World::GetNodeInt;
+    using World::getNodeInt;
 
 protected:
     // LCOV_EXCL_START
-    void AltitudeChanged(MapPoint) override {}
-    void VisibilityChanged(MapPoint, unsigned, Visibility, Visibility) override {}
+    void altitudeChanged(MapPoint) override {}
+    void visibilityChanged(MapPoint, unsigned, Visibility, Visibility) override {}
     // LCOV_EXCL_STOP
 };

@@ -23,33 +23,33 @@ nofDonkeybreeder::nofDonkeybreeder(SerializedGameData& sgd, unsigned obj_id) : n
 /**
  *  Zeichnet ihn beim Arbeiten.
  */
-void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
+void nofDonkeybreeder::drawWorking(DrawPoint drawPt)
 {
-    const Nation nation = workplace->GetNation();
+    const Nation nation = workplace->getNation();
     constexpr helpers::EnumArray<DrawPoint, Nation> walk_start = {{{2, 2}, {-6, -6}, {-7, -7}, {-7, -7}, {-6, -6}}};
     const helpers::EnumArray<int8_t, Nation> walk_length = {22, 19, 19, 23, 19};
-    const unsigned color = world->GetPlayer(player).color;
+    const unsigned color = world->getPlayer(player).color;
 
-    unsigned now_id = GAMECLIENT.Interpolate(9600, current_ev);
+    unsigned now_id = GAMECLIENT.interpolate(9600, current_ev);
     DrawPoint walkBasePos = drawPt + walk_start[nation];
 
     if(now_id < 400)
     {
-        LOADER.building_cache[nation][BuildingType::DonkeyBreeder].door.DrawFull(drawPt);
+        LOADER.building_cache[nation][BuildingType::DonkeyBreeder].door.drawFull(drawPt);
         LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::SouthEast, (now_id / 70) % 8)
           .draw(walkBasePos + DrawPoint(now_id / 100, now_id / 100), COLOR_WHITE, color);
     } else if(now_id < 1200)
         LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::East, ((now_id - 400) / 70) % 8)
           .draw(walkBasePos + DrawPoint((now_id - 400) / 800, 4), COLOR_WHITE, color);
     else if(now_id < 2000)
-        LOADER.GetPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)
-          ->DrawFull(walkBasePos + DrawPoint(walk_length[nation] + 4, 4), COLOR_WHITE, color);
+        LOADER.getPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)
+          ->drawFull(walkBasePos + DrawPoint(walk_length[nation] + 4, 4), COLOR_WHITE, color);
     else if(now_id < 2800)
         LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::West, ((now_id - 2000) / 70) % 8)
           .draw(walkBasePos + DrawPoint(4 + walk_length[nation] * (2800 - now_id) / 800, 4), COLOR_WHITE, color);
     else if(now_id < 3200)
     {
-        LOADER.building_cache[nation][BuildingType::DonkeyBreeder].door.DrawFull(drawPt);
+        LOADER.building_cache[nation][BuildingType::DonkeyBreeder].door.drawFull(drawPt);
         LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::NorthWest, ((now_id - 2800) / 70) % 8)
           .draw(walkBasePos + DrawPoint((3200 - now_id) / 100, (3200 - now_id) / 100), COLOR_WHITE, color);
     }
@@ -58,30 +58,30 @@ void nofDonkeybreeder::DrawWorking(DrawPoint drawPt)
 /**
  *  Der Arbeiter erzeugt eine Ware.
  */
-helpers::OptionalEnum<GoodType> nofDonkeybreeder::ProduceWare()
+helpers::OptionalEnum<GoodType> nofDonkeybreeder::produceWare()
 {
     /// @todo Wie kann ich hier eine Person erzeugen?
     return std::nullopt;
 }
 
-void nofDonkeybreeder::WorkFinished()
+void nofDonkeybreeder::workFinished()
 {
     // Straße und Zielflagge für Esel suchen
     noRoadNode* flag_goal;
-    RoadSegment* road = world->GetPlayer(player).FindRoadForDonkey(*workplace, &flag_goal);
+    RoadSegment* road = world->getPlayer(player).findRoadForDonkey(*workplace, &flag_goal);
 
     // Esel erzeugen und zum Ziel beordern
     auto donkey = std::make_unique<nofCarrier>(CarrierType::Donkey, pos, player, road, flag_goal);
-    world->GetPlayer(player).IncreaseInventoryJob(Job::PackDonkey, 1);
-    donkey->InitializeRoadWalking(world->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast), 0, true);
+    world->getPlayer(player).increaseInventoryJob(Job::PackDonkey, 1);
+    donkey->initializeRoadWalking(world->getSpecObj<noRoadNode>(pos)->getRoute(Direction::SouthEast), 0, true);
 
     // Wenn keine Straße gefunden wurde, muss er nach Hause gehen
     if(!road)
-        donkey->GoHome();
+        donkey->goHome();
     else
         // ansonsten Arbeitsplatz Bescheid sagen
-        road->GotDonkey(donkey.get());
+        road->gotDonkey(donkey.get());
 
     // Esel absetzen
-    world->AddFigure(pos, std::move(donkey)).ActAtFirst();
+    world->addFigure(pos, std::move(donkey)).actAtFirst();
 }

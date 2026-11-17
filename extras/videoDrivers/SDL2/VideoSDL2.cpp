@@ -40,7 +40,7 @@ bool CHECK_SDL(int sdlResult)
 {
     if(sdlResult >= 0)
         return true;
-    VideoSDL2::PrintError();
+    VideoSDL2::printError();
     return false;
 }
 
@@ -88,15 +88,15 @@ VideoSDL2::VideoSDL2(VideoDriverLoaderInterface* CallBack) : VideoDriver(CallBac
 
 VideoSDL2::~VideoSDL2()
 {
-    CleanUp();
+    cleanUp();
 }
 
-const char* VideoSDL2::GetName() const
+const char* VideoSDL2::getName() const
 {
     return GetDriverName();
 }
 
-bool VideoSDL2::Initialize()
+bool VideoSDL2::initialize()
 {
     initialized = false;
     rttr::ScopedLeakDisabler _;
@@ -108,7 +108,7 @@ bool VideoSDL2::Initialize()
     return initialized;
 }
 
-void VideoSDL2::CleanUp()
+void VideoSDL2::cleanUp()
 {
     if(!initialized)
         return;
@@ -121,12 +121,12 @@ void VideoSDL2::CleanUp()
     initialized = false;
 }
 
-void VideoSDL2::UpdateCurrentSizes()
+void VideoSDL2::updateCurrentSizes()
 {
     int w, h, w2, h2;
     SDL_GetWindowSize(window, &w, &h);
     SDL_GL_GetDrawableSize(window, &w2, &h2);
-    SetNewSize(VideoMode(w, h), Extent(w2, h2));
+    setNewSize(VideoMode(w, h), Extent(w2, h2));
 }
 
 static VideoMode getDesktopSize(SDL_Window* window, VideoMode fallback)
@@ -138,7 +138,7 @@ static VideoMode getDesktopSize(SDL_Window* window, VideoMode fallback)
     return fallback;
 }
 
-bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode size, DisplayMode displayMode)
+bool VideoSDL2::createScreen(const std::string& title, const VideoMode size, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
@@ -172,7 +172,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode size, Dis
     if(displayMode == DisplayMode::Fullscreen)
     {
         windowTypeFlag = SDL_WINDOW_FULLSCREEN;
-        requestedSize = FindClosestVideoMode(size);
+        requestedSize = findClosestVideoMode(size);
     } else if(displayMode == DisplayMode::BorderlessWindow)
     {
         windowTypeFlag = SDL_WINDOW_BORDERLESS;
@@ -185,22 +185,22 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode size, Dis
 
     if(!window)
     {
-        PrintError();
+        printError();
         // Fallback to borderless fullscreen if unable to set resolution
         if(displayMode == DisplayMode::Fullscreen)
-            return CreateScreen(title, size, DisplayMode::BorderlessWindow);
+            return createScreen(title, size, DisplayMode::BorderlessWindow);
         // No borderless -> Resizable window as last fallback to at least show something
         if(displayMode == DisplayMode::BorderlessWindow)
-            return CreateScreen(title, size, DisplayMode::Windowed);
-        PrintError();
+            return createScreen(title, size, DisplayMode::Windowed);
+        printError();
         return false;
     }
 
-    UpdateCurrentDisplayMode();
-    UpdateCurrentSizes();
+    updateCurrentDisplayMode();
+    updateCurrentSizes();
 
     if(displayMode != DisplayMode::Fullscreen)
-        MoveWindowToCenter();
+        moveWindowToCenter();
 
     SDL_Surface* iconSurf =
       SDL_CreateRGBSurfaceFrom(image.data(), 48, 48, 32, 48 * 4, 0xFF000000, 0x00FF0000, 0x0000FF00, 0x000000FF);
@@ -209,7 +209,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode size, Dis
         SDL_SetWindowIcon(window, iconSurf);
         SDL_FreeSurface(iconSurf);
     } else
-        PrintError();
+        printError();
 
     context = SDL_GL_CreateContext(window);
 
@@ -224,7 +224,7 @@ bool VideoSDL2::CreateScreen(const std::string& title, const VideoMode size, Dis
     return true;
 }
 
-bool VideoSDL2::ResizeScreen(VideoMode newSize, DisplayMode displayMode)
+bool VideoSDL2::resizeScreen(VideoMode newSize, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
@@ -246,16 +246,16 @@ bool VideoSDL2::ResizeScreen(VideoMode newSize, DisplayMode displayMode)
                                static_cast<SDL_bool>(displayMode == DisplayMode::Windowed && displayMode.resizeable));
         SDL_SetWindowBordered(window, static_cast<SDL_bool>(displayMode == DisplayMode::Windowed));
 
-        UpdateCurrentDisplayMode();
+        updateCurrentDisplayMode();
         centerWindow = true;
     }
     if(displayMode_ == DisplayMode::BorderlessWindow)
         newSize = getDesktopSize(nullptr, newSize);
-    if(newSize != GetWindowSize())
+    if(newSize != getWindowSize())
     {
         if(displayMode_ == DisplayMode::Fullscreen)
         {
-            auto const targetMode = FindClosestVideoMode(newSize);
+            auto const targetMode = findClosestVideoMode(newSize);
             SDL_DisplayMode target;
             target.w = targetMode.width;
             target.h = targetMode.height;
@@ -271,25 +271,25 @@ bool VideoSDL2::ResizeScreen(VideoMode newSize, DisplayMode displayMode)
             SDL_SetWindowSize(window, newSize.width, newSize.height);
             centerWindow = true;
         }
-        UpdateCurrentSizes();
+        updateCurrentSizes();
     }
     if(centerWindow)
-        MoveWindowToCenter();
+        moveWindowToCenter();
 
     return true;
 }
 
-void VideoSDL2::PrintError()
+void VideoSDL2::printError()
 {
-    PrintError(SDL_GetError());
+    printError(SDL_GetError());
 }
 
-void VideoSDL2::PrintError(const std::string& msg)
+void VideoSDL2::printError(const std::string& msg)
 {
     boost::nowide::cerr << msg << std::endl;
 }
 
-void VideoSDL2::ShowErrorMessage(const std::string& title, const std::string& message)
+void VideoSDL2::showErrorMessage(const std::string& title, const std::string& message)
 {
     // window==nullptr is okay too ("no parent")
 #ifdef __linux__
@@ -302,31 +302,31 @@ void VideoSDL2::ShowErrorMessage(const std::string& title, const std::string& me
 #endif
 }
 
-void VideoSDL2::HandlePaste()
+void VideoSDL2::handlePaste()
 {
     if(!SDL_HasClipboardText())
         return;
 
     SDL_memory<char> text(SDL_GetClipboardText());
     if(!text || *text == '\0') // empty string indicates error
-        PrintError(text ? SDL_GetError() : "Paste failed.");
+        printError(text ? SDL_GetError() : "Paste failed.");
 
     for(const char32_t c : s25util::utf8to32(text.get()))
-        CallBack->Msg_KeyDown(KeyEvent(c));
+        CallBack->msgKeyDown(KeyEvent(c));
 }
 
-void VideoSDL2::DestroyScreen()
+void VideoSDL2::destroyScreen()
 {
-    CleanUp();
+    cleanUp();
 }
 
-bool VideoSDL2::SwapBuffers()
+bool VideoSDL2::swapBuffers()
 {
     SDL_GL_SwapWindow(window);
     return true;
 }
 
-bool VideoSDL2::MessageLoop()
+bool VideoSDL2::messageLoop()
 {
     SDL_Event ev;
     while(SDL_PollEvent(&ev))
@@ -340,12 +340,12 @@ bool VideoSDL2::MessageLoop()
             {
                 if(ev.window.event == SDL_WINDOWEVENT_RESIZED)
                 {
-                    UpdateCurrentDisplayMode();
+                    updateCurrentDisplayMode();
                     VideoMode newSize(ev.window.data1, ev.window.data2);
-                    if(newSize != GetWindowSize())
+                    if(newSize != getWindowSize())
                     {
-                        UpdateCurrentSizes();
-                        CallBack->WindowResized();
+                        updateCurrentSizes();
+                        CallBack->windowResized();
                     }
                 }
             }
@@ -383,7 +383,7 @@ bool VideoSDL2::MessageLoop()
                     case SDLK_v:
                         if(SDL_GetModState() & KMOD_CTRL)
                         {
-                            HandlePaste();
+                            handlePaste();
                             continue;
                         }
                         break;
@@ -392,7 +392,7 @@ bool VideoSDL2::MessageLoop()
                 setSpecialKeys(ke, SDL_Keymod(ev.key.keysym.mod));
 
                 if(ke.kt != KeyType::Invalid)
-                    CallBack->Msg_KeyDown(ke);
+                    CallBack->msgKeyDown(ke);
                 else if(ke.alt || ke.ctrl)
                 {
                     // Handle shortcuts (CTRL+x, ALT+y)
@@ -402,7 +402,7 @@ bool VideoSDL2::MessageLoop()
                     {
                         ke.kt = KeyType::Char;
                         ke.c = static_cast<char32_t>(keycode);
-                        CallBack->Msg_KeyDown(ke);
+                        CallBack->msgKeyDown(ke);
                     }
                 }
             }
@@ -415,7 +415,7 @@ bool VideoSDL2::MessageLoop()
                 for(char32_t c : text)
                 {
                     ke.c = c;
-                    CallBack->Msg_KeyDown(ke);
+                    CallBack->msgKeyDown(ke);
                 }
                 break;
             }
@@ -426,17 +426,17 @@ bool VideoSDL2::MessageLoop()
                 {
                     case SDL_BUTTON_LEFT:
                         mouse_xy.ldown = true;
-                        CallBack->Msg_LeftDown(mouse_xy);
+                        CallBack->msgLeftDown(mouse_xy);
                         break;
 
                     case SDL_BUTTON_RIGHT:
                         mouse_xy.rdown = true;
-                        CallBack->Msg_RightDown(mouse_xy);
+                        CallBack->msgRightDown(mouse_xy);
                         break;
 
                     case SDL_BUTTON_MIDDLE:
                         mouse_xy.mdown = true;
-                        CallBack->Msg_MiddleDown(mouse_xy);
+                        CallBack->msgMiddleDown(mouse_xy);
                         break;
                 }
                 break;
@@ -447,17 +447,17 @@ bool VideoSDL2::MessageLoop()
                 {
                     case SDL_BUTTON_LEFT:
                         mouse_xy.ldown = false;
-                        CallBack->Msg_LeftUp(mouse_xy);
+                        CallBack->msgLeftUp(mouse_xy);
                         break;
 
                     case SDL_BUTTON_RIGHT:
                         mouse_xy.rdown = false;
-                        CallBack->Msg_RightUp(mouse_xy);
+                        CallBack->msgRightUp(mouse_xy);
                         break;
 
                     case SDL_BUTTON_MIDDLE:
                         mouse_xy.mdown = false;
-                        CallBack->Msg_MiddleUp(mouse_xy);
+                        CallBack->msgMiddleUp(mouse_xy);
                         break;
                 }
                 break;
@@ -467,9 +467,9 @@ bool VideoSDL2::MessageLoop()
                 if(ev.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
                     y = -y;
                 if(y > 0)
-                    CallBack->Msg_WheelUp(mouse_xy);
+                    CallBack->msgWheelUp(mouse_xy);
                 else if(y < 0)
-                    CallBack->Msg_WheelDown(mouse_xy);
+                    CallBack->msgWheelDown(mouse_xy);
             }
             break;
             case SDL_MOUSEMOTION:
@@ -479,40 +479,40 @@ bool VideoSDL2::MessageLoop()
                 if(newPos != mouse_xy.pos)
                 {
                     mouse_xy.pos = newPos;
-                    CallBack->Msg_MouseMove(mouse_xy);
+                    CallBack->msgMouseMove(mouse_xy);
                 }
             }
             break;
             case SDL_FINGERDOWN:
             {
-                VideoMode wnSize = GetWindowSize();
+                VideoMode wnSize = getWindowSize();
                 mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
                                                                    static_cast<int>(ev.tfinger.y * wnSize.height)));
                 mouse_xy.ldown = true;
                 mouse_xy.num_tfingers++;
-                CallBack->Msg_LeftDown(mouse_xy);
+                CallBack->msgLeftDown(mouse_xy);
                 break;
             }
             case SDL_FINGERUP:
             {
-                VideoMode wnSize = GetWindowSize();
+                VideoMode wnSize = getWindowSize();
                 mouse_xy.pos = getGuiScale().screenToView(Position(static_cast<int>(ev.tfinger.x * wnSize.width),
                                                                    static_cast<int>(ev.tfinger.y * wnSize.height)));
                 mouse_xy.ldown = false;
-                CallBack->Msg_LeftUp(mouse_xy);
+                CallBack->msgLeftUp(mouse_xy);
                 mouse_xy.num_tfingers--; // Dirty way to count leftUp as touch event without extra isTouch bool
                 break;
             }
             case SDL_FINGERMOTION:
             {
-                VideoMode wnSize = GetWindowSize();
+                VideoMode wnSize = getWindowSize();
                 const auto newPos = getGuiScale().screenToView(Position(
                   static_cast<int>(ev.tfinger.x * wnSize.width), static_cast<int>(ev.tfinger.y * wnSize.height)));
 
                 if(newPos != mouse_xy.pos)
                 {
                     mouse_xy.pos = newPos;
-                    CallBack->Msg_MouseMove(mouse_xy);
+                    CallBack->msgMouseMove(mouse_xy);
                 }
                 break;
             }
@@ -521,9 +521,9 @@ bool VideoSDL2::MessageLoop()
                 if(std::fabs(ev.mgesture.dDist) > 0.001)
                 {
                     if(ev.mgesture.dDist > 0)
-                        CallBack->Msg_WheelUp(mouse_xy);
+                        CallBack->msgWheelUp(mouse_xy);
                     else
-                        CallBack->Msg_WheelDown(mouse_xy);
+                        CallBack->msgWheelDown(mouse_xy);
                 }
                 break;
             }
@@ -533,12 +533,12 @@ bool VideoSDL2::MessageLoop()
     return true;
 }
 
-unsigned long VideoSDL2::GetTickCount() const
+unsigned long VideoSDL2::getTickCount() const
 {
     return SDL_GetTicks();
 }
 
-std::vector<VideoMode> VideoSDL2::ListVideoModes() const
+std::vector<VideoMode> VideoSDL2::listVideoModes() const
 {
     int display = SDL_GetWindowDisplayIndex(window);
     if(display < 0)
@@ -548,7 +548,7 @@ std::vector<VideoMode> VideoSDL2::ListVideoModes() const
     {
         SDL_DisplayMode mode;
         if(SDL_GetDisplayMode(display, i, &mode) != 0)
-            PrintError();
+            printError();
         else
         {
             VideoMode vm(mode.w, mode.h);
@@ -559,7 +559,7 @@ std::vector<VideoMode> VideoSDL2::ListVideoModes() const
     return video_modes;
 }
 
-OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
+OpenGL_Loader_Proc VideoSDL2::getLoaderFunction() const
 {
 #if RTTR_OGL_GL4ES
     return gl4es_GetProcAddress;
@@ -568,21 +568,21 @@ OpenGL_Loader_Proc VideoSDL2::GetLoaderFunction() const
 #endif
 }
 
-void VideoSDL2::SetMousePos(Position pos)
+void VideoSDL2::setMousePos(Position pos)
 {
     const auto screenPos = getGuiScale().viewToScreen(pos);
     mouse_xy.pos = pos;
     SDL_WarpMouseInWindow(window, screenPos.x, screenPos.y);
 }
 
-KeyEvent VideoSDL2::GetModKeyState() const
+KeyEvent VideoSDL2::getModKeyState() const
 {
     KeyEvent ke;
     setSpecialKeys(ke);
     return ke;
 }
 
-void* VideoSDL2::GetMapPointer() const
+void* VideoSDL2::getMapPointer() const
 {
 #ifdef WIN32
     SDL_SysWMinfo wmInfo;
@@ -595,7 +595,7 @@ void* VideoSDL2::GetMapPointer() const
 #endif
 }
 
-void VideoSDL2::MoveWindowToCenter()
+void VideoSDL2::moveWindowToCenter()
 {
     SDL_PumpEvents(); // Let window system run update events/initialization
     const int display = window ? std::max(0, SDL_GetWindowDisplayIndex(window)) : 0;
@@ -605,13 +605,13 @@ void VideoSDL2::MoveWindowToCenter()
     int top, left, bottom, right;
     if(!CHECK_SDL(SDL_GetWindowBordersSize(window, &top, &left, &bottom, &right)))
         top = left = bottom = right = 0;
-    auto wndOuterSize = GetWindowSize();
+    auto wndOuterSize = getWindowSize();
     wndOuterSize.width += left + right;
     wndOuterSize.height += top + bottom;
     if(usableBounds.w < wndOuterSize.width || usableBounds.h < wndOuterSize.height)
     {
         SDL_SetWindowSize(window, usableBounds.w - left - right, usableBounds.h - top - bottom);
-        UpdateCurrentSizes();
+        updateCurrentSizes();
         wndOuterSize.width = usableBounds.w;
         wndOuterSize.height = usableBounds.h;
     }
@@ -620,7 +620,7 @@ void VideoSDL2::MoveWindowToCenter()
     SDL_SetWindowPosition(window, x, y);
 }
 
-void VideoSDL2::UpdateCurrentDisplayMode()
+void VideoSDL2::updateCurrentDisplayMode()
 {
     RTTR_Assert(window);
     const auto flags = SDL_GetWindowFlags(window);

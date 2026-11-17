@@ -14,7 +14,7 @@ ctrlBaseVarText::ctrlBaseVarText(const std::string& fmtString, const unsigned co
         vars.push_back(va_arg(fmtArgs, void*));
 }
 
-std::string ctrlBaseVarText::GetFormatedText() const
+std::string ctrlBaseVarText::getFormatedText() const
 {
     std::stringstream str;
 

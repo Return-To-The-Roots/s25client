@@ -25,11 +25,11 @@ static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
 
     const auto validateHqPos = [&](const MapPoint hqPos) {
         // All textures around the point must allow a castle
-        const auto neighbors = map.z.GetNeighbours(hqPos);
+        const auto neighbors = map.z.getNeighbours(hqPos);
         for(const MapPoint pt : neighbors)
         {
             BOOST_TEST_REQUIRE(
-              map.textureMap.All(pt, [](const TerrainDesc& terrain) { return terrain.GetBQ() == TerrainBQ::Castle; }),
+              map.textureMap.all(pt, [](const TerrainDesc& terrain) { return terrain.GetBQ() == TerrainBQ::Castle; }),
               "At point " << pt);
         }
         // All direct neighbors must have the same height as the hqPos
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_land_map)
     settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Land;
 
-    Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    Map map = generateRandomMap(rnd, worldDesc, settings);
     ValidateMap(map, settings.size, settings.numPlayers);
 }
 
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_water_map)
     settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Water;
 
-    Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    Map map = generateRandomMap(rnd, worldDesc, settings);
     ValidateMap(map, settings.size, settings.numPlayers);
 }
 
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mixed_map)
     settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Mixed;
 
-    Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    Map map = generateRandomMap(rnd, worldDesc, settings);
     ValidateMap(map, settings.size, settings.numPlayers);
 }
 
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_for_many_islands_returns_valid_map)
     settings.numPlayers = 2u;
     settings.style = MapStyle::Mixed;
 
-    Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    Map map = generateRandomMap(rnd, worldDesc, settings);
     ValidateMap(map, settings.size, settings.numPlayers);
 }
 
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
     settings.numPlayers = MAX_PLAYERS;
     settings.style = MapStyle::Land;
 
-    Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    Map map = generateRandomMap(rnd, worldDesc, settings);
     ValidateMap(map, settings.size, settings.numPlayers);
 }
 
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mapfile_with_max_players)
     settings.numPlayers = MAX_PLAYERS;
     settings.style = MapStyle::Land;
 
-    CreateRandomMap(mapPath, settings);
+    createRandomMap(mapPath, settings);
     libsiedler2::Archiv archive;
     BOOST_TEST_REQUIRE(libsiedler2::Load(mapPath, archive) == 0);
     const auto* map = dynamic_cast<const libsiedler2::ArchivItem_Map*>(archive[0]);

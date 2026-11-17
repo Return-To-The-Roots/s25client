@@ -21,7 +21,7 @@ public:
 
 protected:
     /// Returns the text with placeholders replaced by the actual vars
-    std::string GetFormatedText() const;
+    std::string getFormatedText() const;
 
 private:
     std::vector<void*> vars;

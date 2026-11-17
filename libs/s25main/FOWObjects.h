@@ -15,7 +15,7 @@ const unsigned FOW_DRAW_COLOR_BRIGHTNESS = 0x80;
 const unsigned FOW_DRAW_COLOR = 0xFF808080;
 
 /// Berechnet die dunklere Spielerfarbe zum Zeichnen
-unsigned CalcPlayerFOWDrawColor(unsigned color);
+unsigned calcPlayerFOWDrawColor(unsigned color);
 
 /// Gebäude im Nebel
 class fowBuilding : public FOWObject
@@ -29,10 +29,10 @@ private:
 public:
     fowBuilding(BuildingType type, Nation nation);
     fowBuilding(SerializedGameData& sgd);
-    void Serialize(SerializedGameData& sgd) const override;
-    void Draw(DrawPoint drawPt) const override;
-    FoW_Type GetType() const override { return FoW_Type::Building; }
-    BuildingType GetBuildingType() const { return type; }
+    void serialize(SerializedGameData& sgd) const override;
+    void draw(DrawPoint drawPt) const override;
+    FoW_Type getType() const override { return FoW_Type::Building; }
+    BuildingType getBuildingType() const { return type; }
 };
 
 /// Baustelle
@@ -51,9 +51,9 @@ private:
 public:
     fowBuildingSite(bool planing, BuildingType type, Nation nation, unsigned char build_progress);
     fowBuildingSite(SerializedGameData& sgd);
-    void Serialize(SerializedGameData& sgd) const override;
-    void Draw(DrawPoint drawPt) const override;
-    FoW_Type GetType() const override { return FoW_Type::Buildingsite; }
+    void serialize(SerializedGameData& sgd) const override;
+    void draw(DrawPoint drawPt) const override;
+    FoW_Type getType() const override { return FoW_Type::Buildingsite; }
 };
 
 /// Flagge
@@ -68,9 +68,9 @@ private:
 public:
     fowFlag(unsigned playerColor, Nation nation, FlagType flag_type);
     fowFlag(SerializedGameData& sgd);
-    void Serialize(SerializedGameData& sgd) const override;
-    void Draw(DrawPoint drawPt) const override;
-    FoW_Type GetType() const override { return FoW_Type::Flag; }
+    void serialize(SerializedGameData& sgd) const override;
+    void draw(DrawPoint drawPt) const override;
+    FoW_Type getType() const override { return FoW_Type::Flag; }
 };
 
 /// Baum
@@ -85,9 +85,9 @@ private:
 public:
     fowTree(unsigned char type, unsigned char size);
     fowTree(SerializedGameData& sgd);
-    void Serialize(SerializedGameData& sgd) const override;
-    void Draw(DrawPoint drawPt) const override;
-    FoW_Type GetType() const override { return FoW_Type::Tree; }
+    void serialize(SerializedGameData& sgd) const override;
+    void draw(DrawPoint drawPt) const override;
+    FoW_Type getType() const override { return FoW_Type::Tree; }
 };
 
 /// Granitblock
@@ -100,7 +100,7 @@ private:
 public:
     fowGranite(GraniteType type, unsigned char state);
     fowGranite(SerializedGameData& sgd);
-    void Serialize(SerializedGameData& sgd) const override;
-    void Draw(DrawPoint drawPt) const override;
-    FoW_Type GetType() const override { return FoW_Type::Granite; }
+    void serialize(SerializedGameData& sgd) const override;
+    void draw(DrawPoint drawPt) const override;
+    FoW_Type getType() const override { return FoW_Type::Granite; }
 };

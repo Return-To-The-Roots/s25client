@@ -64,215 +64,215 @@ public:
     GameClient();
     ~GameClient();
 
-    void SetInterface(ClientInterface* ci) { this->ci = ci; }
+    void setInterface(ClientInterface* ci) { this->ci = ci; }
     /// Removes the given interface (if it is not yet overwritten by another one)
-    void RemoveInterface(ClientInterface* ci)
+    void removeInterface(ClientInterface* ci)
     {
         if(this->ci == ci)
             this->ci = nullptr;
     }
-    bool IsHost() const override { return clientconfig.isHost; }
+    bool isHost() const override { return clientconfig.isHost; }
     /// Manually set the host status. Normally done in connect call
-    void SetIsHost(bool isHost) { clientconfig.isHost = isHost; }
-    std::string GetGameName() const { return clientconfig.gameName; }
+    void setIsHost(bool isHost) { clientconfig.isHost = isHost; }
+    std::string getGameName() const { return clientconfig.gameName; }
 
-    unsigned GetPlayerId() const override { return mainPlayer.playerId; }
+    unsigned getPlayerId() const override { return mainPlayer.playerId; }
 
-    bool Connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port,
+    bool connect(const std::string& server, const std::string& password, ServerType servertyp, unsigned short port,
                  bool host, bool use_ipv6);
 
     /// Start the server and connect to it
-    bool HostGame(const CreateServerInfo& csi, const MapDescription& map);
-    void Run();
-    void Stop();
+    bool hostGame(const CreateServerInfo& csi, const MapDescription& map);
+    void run();
+    void stop();
 
     /// Gibt Map-Titel zurück
-    const std::string& GetMapTitle() const { return mapinfo.title; }
+    const std::string& getMapTitle() const { return mapinfo.title; }
     /// Gibt Pfad zu der Map zurück
-    const boost::filesystem::path& GetMapPath() const { return mapinfo.filepath; }
+    const boost::filesystem::path& getMapPath() const { return mapinfo.filepath; }
     /// Gibt Map-Typ zurück
-    MapType GetMapType() const { return mapinfo.type; }
-    const boost::filesystem::path& GetLuaFilePath() const { return mapinfo.luaFilepath; }
+    MapType getMapType() const { return mapinfo.type; }
+    const boost::filesystem::path& getLuaFilePath() const { return mapinfo.luaFilepath; }
 
     // Initialisiert und startet das Spiel
-    void StartGame(unsigned random_init);
+    void startGame(unsigned random_init);
     /// Called when the game is loaded
-    void GameLoaded();
+    void gameLoaded();
 
     /// Beendet das Spiel, zerstört die Spielstrukturen
-    void ExitGame();
+    void exitGame();
 
-    ClientState GetState() const { return state; }
-    Replay* GetReplay();
-    std::shared_ptr<const NWFInfo> GetNWFInfo() const;
-    std::shared_ptr<GameLobby> GetGameLobby();
-    const AIPlayer* GetAIPlayer(unsigned id) const;
+    ClientState getState() const { return state; }
+    Replay* getReplay();
+    std::shared_ptr<const NWFInfo> getNWFInfo() const;
+    std::shared_ptr<GameLobby> getGameLobby();
+    const AIPlayer* getAIPlayer(unsigned id) const;
 
-    unsigned GetGFNumber() const;
-    std::chrono::milliseconds GetGFLength() const { return framesinfo.gf_length; }
-    unsigned GetNWFLength() const { return framesinfo.nwf_length; }
-    std::chrono::milliseconds GetFrameTime() const { return framesinfo.frameTime; }
-    unsigned GetGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator,
+    unsigned getGFNumber() const;
+    std::chrono::milliseconds getGFLength() const { return framesinfo.gf_length; }
+    unsigned getNWFLength() const { return framesinfo.nwf_length; }
+    std::chrono::milliseconds getFrameTime() const { return framesinfo.frameTime; }
+    unsigned getGlobalAnimation(unsigned short max, unsigned char factor_numerator, unsigned char factor_denumerator,
                                 unsigned offset);
-    unsigned Interpolate(unsigned maxVal, const GameEvent* ev) const;
-    int Interpolate(int x1, int x2, const GameEvent* ev) const;
+    unsigned interpolate(unsigned maxVal, const GameEvent* ev) const;
+    int interpolate(int x1, int x2, const GameEvent* ev) const;
 
-    void Command_Chat(const std::string& text, ChatDestination cd);
-    void Command_SetNation(Nation newNation);
-    void Command_SetPortrait(unsigned portraitIndex);
-    void Command_SetTeam(Team newTeam);
-    void Command_SetColor(unsigned newColor);
-    void Command_SetReady(bool isReady);
+    void commandChat(const std::string& text, ChatDestination cd);
+    void commandSetNation(Nation newNation);
+    void commandSetPortrait(unsigned portraitIndex);
+    void commandSetTeam(Team newTeam);
+    void commandSetColor(unsigned newColor);
+    void commandSetReady(bool isReady);
 
     /// Called internally when the game is ready to start (loaded and all players ready)
     /// And a 2nd time when the GUI is ready which actually starty the game
-    void OnGameStart();
+    void onGameStart();
 
-    void IncreaseSpeed(bool wraparound = false);
-    void DecreaseSpeed();
-    void SetNewSpeed(std::chrono::milliseconds gfLength);
+    void increaseSpeed(bool wraparound = false);
+    void decreaseSpeed();
+    void setNewSpeed(std::chrono::milliseconds gfLength);
     // Used by tests (stinks, but what to do?)
-    std::chrono::milliseconds GetGFLengthReq() { return framesinfo.gfLengthReq; }
+    std::chrono::milliseconds getGFLengthReq() { return framesinfo.gfLengthReq; }
 
     /// Lädt ein Replay und startet dementsprechend das Spiel
-    bool StartReplay(const boost::filesystem::path& path);
+    bool startReplay(const boost::filesystem::path& path);
 
     /// When a non-empty vector is given then an AI battle with the given AIs is started
-    void SetAIBattlePlayers(std::vector<AI::Info> aiInfos);
-    const std::vector<AI::Info>& GetAIBattlePlayers() const { return aiBattlePlayers_; }
-    bool IsAIBattleModeOn() const { return !aiBattlePlayers_.empty(); }
+    void setAIBattlePlayers(std::vector<AI::Info> aiInfos);
+    const std::vector<AI::Info>& getAIBattlePlayers() const { return aiBattlePlayers_; }
+    bool isAIBattleModeOn() const { return !aiBattlePlayers_.empty(); }
 
-    void SetPause(bool pause);
-    void TogglePause() { SetPause(!framesinfo.isPaused); }
+    void setPause(bool pause);
+    void togglePause() { setPause(!framesinfo.isPaused); }
     /// Hide or show the fog-of-war. Only in replay mode
-    void SetReplayFOW(bool hideFOW);
+    void setReplayFOW(bool hideFOW);
     /// Return whether we are in replay mode and fog-of-war is disabled
-    bool IsReplayFOWDisabled() const;
+    bool isReplayFOWDisabled() const;
     /// Gibt Replay-Ende (GF) zurück
-    unsigned GetLastReplayGF() const;
+    unsigned getLastReplayGF() const;
     /// Wandelt eine GF-Angabe in eine Zeitangabe um (HH:MM:SS oder MM:SS wenn Stunden = 0)
-    std::string FormatGFTime(unsigned gf) const override;
+    std::string formatGFTime(unsigned gf) const override;
 
     /// Gibt Replay-Dateiname zurück
-    const boost::filesystem::path& GetReplayFilename() const;
+    const boost::filesystem::path& getReplayFilename() const;
     /// Wird ein Replay abgespielt?
-    bool IsReplayModeOn() const { return replayMode; }
+    bool isReplayModeOn() const { return replayMode; }
 
     /// Is tournament mode activated (0 if not)? Returns the durations of the tournament mode in gf otherwise
-    unsigned GetTournamentModeDuration() const;
+    unsigned getTournamentModeDuration() const;
 
-    void SkipGF(unsigned gf, GameWorldView& gwv);
+    void skipGF(unsigned gf, GameWorldView& gwv);
 
     /// Changes the player ingame (for replay or debugging)
-    void ChangePlayerIngame(unsigned char playerId1, unsigned char playerId2);
+    void changePlayerIngame(unsigned char playerId1, unsigned char playerId2);
     /// Sends a request to swap places with the requested player. Only for debugging!
-    void RequestSwapToPlayer(unsigned char newId);
+    void requestSwapToPlayer(unsigned char newId);
 
     /// Spiel pausiert?
-    bool IsPaused() const { return framesinfo.isPaused; }
+    bool isPaused() const { return framesinfo.isPaused; }
     /// Schreibt Header der Save-Datei
-    bool SaveToFile(const boost::filesystem::path& filepath);
+    bool saveToFile(const boost::filesystem::path& filepath);
     /// Visuelle Einstellungen aus den richtigen ableiten
-    void ResetVisualSettings();
-    void SystemChat(const std::string& text) override;
-    void SystemChat(const std::string& text, unsigned char fromPlayerIdx);
+    void resetVisualSettings();
+    void systemChat(const std::string& text) override;
+    void systemChat(const std::string& text, unsigned char fromPlayerIdx);
 
     /// Toggle current player to be an AI player of the given type
-    void ToggleHumanAIPlayer(const AI::Info& aiInfo);
+    void toggleHumanAIPlayer(const AI::Info& aiInfo);
 
-    NetworkPlayer& GetMainPlayer() { return mainPlayer; }
+    NetworkPlayer& getMainPlayer() { return mainPlayer; }
 
 private:
     /// Create an AI player for the current world
-    std::unique_ptr<AIPlayer> CreateAIPlayer(unsigned playerId, const AI::Info& aiInfo);
+    std::unique_ptr<AIPlayer> createAIPlayer(unsigned playerId, const AI::Info& aiInfo);
 
     /// Add the gamecommand. Return true in success, false otherwise (paused, or defeated)
-    bool AddGC(gc::GameCommandPtr gc) override;
+    bool addGC(gc::GameCommandPtr gc) override;
 
-    unsigned GetNumPlayers() const;
+    unsigned getNumPlayers() const;
     /// Liefert einen Player zurück
-    GamePlayer& GetPlayer(unsigned id);
+    GamePlayer& getPlayer(unsigned id);
 
     /// Versucht einen neuen GameFrame auszuführen, falls die Zeit dafür gekommen ist
-    void ExecuteGameFrame();
-    void ExecuteGameFrame_Replay();
-    void ExecuteNWF();
+    void executeGameFrame();
+    void executeGameFrameReplay();
+    void executeNWF();
     /// Filtert aus einem Network-Command-Paket alle Commands aus und führt sie aus, falls ein Spielerwechsel-Command
     /// dabei ist, füllt er die übergebenen IDs entsprechend aus
-    void ExecuteAllGCs(uint8_t playerId, const PlayerGameCommands& gcs);
+    void executeAllGCs(uint8_t playerId, const PlayerGameCommands& gcs);
     /// Sendet ein NC-Paket ohne Befehle
-    void SendNothingNC(uint8_t player = 0xFF);
+    void sendNothingNC(uint8_t player = 0xFF);
 
     /// Führt notwendige Dinge für nächsten GF aus
-    void NextGF(bool wasNWF);
+    void nextGF(bool wasNWF);
     /// Checks if its time for autosaving (if enabled) and does it
-    void HandleAutosave();
+    void handleAutosave();
 
     /// Interpolate implementation for generic types
     /// Returns x in [x1, x2] according to the current time in the range of the events duration.
     template<typename T>
-    T do_interpolate(T x1, T x2, const GameEvent& ev) const;
+    T doInterpolate(T x1, T x2, const GameEvent& ev) const;
 
     //  Netzwerknachrichten
     RTTR_IGNORE_OVERLOADED_VIRTUAL
-    bool OnGameMessage(const GameMessage_Ping& msg) override;
+    bool onGameMessage(const GameMessage_Ping& msg) override;
 
-    bool OnGameMessage(const GameMessage_Server_TypeOK& msg) override;
-    bool OnGameMessage(const GameMessage_Server_Password& msg) override;
-    bool OnGameMessage(const GameMessage_Server_Name& msg) override;
-    bool OnGameMessage(const GameMessage_Server_Start& msg) override;
-    bool OnGameMessage(const GameMessage_Chat& msg) override;
-    bool OnGameMessage(const GameMessage_Server_Async& msg) override;
-    bool OnGameMessage(const GameMessage_Countdown& msg) override;
-    bool OnGameMessage(const GameMessage_CancelCountdown& msg) override;
+    bool onGameMessage(const GameMessage_Server_TypeOK& msg) override;
+    bool onGameMessage(const GameMessage_Server_Password& msg) override;
+    bool onGameMessage(const GameMessage_Server_Name& msg) override;
+    bool onGameMessage(const GameMessage_Server_Start& msg) override;
+    bool onGameMessage(const GameMessage_Chat& msg) override;
+    bool onGameMessage(const GameMessage_Server_Async& msg) override;
+    bool onGameMessage(const GameMessage_Countdown& msg) override;
+    bool onGameMessage(const GameMessage_CancelCountdown& msg) override;
 
-    bool OnGameMessage(const GameMessage_Player_Id& msg) override;
-    bool OnGameMessage(const GameMessage_Player_List& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Name& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Portrait& msg) override;
-    bool OnGameMessage(const GameMessage_Player_State& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Nation& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Team& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Color& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Kicked& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Ping& msg) override;
-    bool OnGameMessage(const GameMessage_Player_New& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Ready& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Swap& msg) override;
+    bool onGameMessage(const GameMessage_Player_Id& msg) override;
+    bool onGameMessage(const GameMessage_Player_List& msg) override;
+    bool onGameMessage(const GameMessage_Player_Name& msg) override;
+    bool onGameMessage(const GameMessage_Player_Portrait& msg) override;
+    bool onGameMessage(const GameMessage_Player_State& msg) override;
+    bool onGameMessage(const GameMessage_Player_Nation& msg) override;
+    bool onGameMessage(const GameMessage_Player_Team& msg) override;
+    bool onGameMessage(const GameMessage_Player_Color& msg) override;
+    bool onGameMessage(const GameMessage_Player_Kicked& msg) override;
+    bool onGameMessage(const GameMessage_Player_Ping& msg) override;
+    bool onGameMessage(const GameMessage_Player_New& msg) override;
+    bool onGameMessage(const GameMessage_Player_Ready& msg) override;
+    bool onGameMessage(const GameMessage_Player_Swap& msg) override;
 
-    bool OnGameMessage(const GameMessage_Map_Info& msg) override;
-    bool OnGameMessage(const GameMessage_Map_Data& msg) override;
-    bool OnGameMessage(const GameMessage_Map_ChecksumOK& msg) override;
+    bool onGameMessage(const GameMessage_Map_Info& msg) override;
+    bool onGameMessage(const GameMessage_Map_Data& msg) override;
+    bool onGameMessage(const GameMessage_Map_ChecksumOK& msg) override;
 
-    bool OnGameMessage(const GameMessage_Pause& msg) override;
-    bool OnGameMessage(const GameMessage_SkipToGF& msg) override;
-    bool OnGameMessage(const GameMessage_Server_NWFDone& msg) override;
-    bool OnGameMessage(const GameMessage_GameCommand& msg) override;
+    bool onGameMessage(const GameMessage_Pause& msg) override;
+    bool onGameMessage(const GameMessage_SkipToGF& msg) override;
+    bool onGameMessage(const GameMessage_Server_NWFDone& msg) override;
+    bool onGameMessage(const GameMessage_GameCommand& msg) override;
 
-    bool OnGameMessage(const GameMessage_GGSChange& msg) override;
-    bool OnGameMessage(const GameMessage_RemoveLua& msg) override;
+    bool onGameMessage(const GameMessage_GGSChange& msg) override;
+    bool onGameMessage(const GameMessage_RemoveLua& msg) override;
 
-    bool OnGameMessage(const GameMessage_GetAsyncLog& msg) override;
+    bool onGameMessage(const GameMessage_GetAsyncLog& msg) override;
     RTTR_POP_DIAGNOSTIC
 
     /// Report the error and stop
-    void OnError(ClientError error);
+    void onError(ClientError error);
     /// Advance to new connect state
-    void AdvanceState(ConnectState newState);
+    void advanceState(ConnectState newState);
     /// Verifies that the current connect state matches the expected one
     /// On error the error is reported and the connection terminated as likely the server is faulty
-    bool VerifyState(ConnectState expectedState);
+    bool verifyState(ConnectState expectedState);
 
-    bool CreateLobby();
+    bool createLobby();
 
     /// Wird aufgerufen, wenn der Server gegangen ist (Verbindung verloren, ungültige Nachricht etc.)
-    void ServerLost();
+    void serverLost();
 
     // Replaymethoden
 
     /// Schreibt den Header der Replaydatei
-    void StartReplayRecording(unsigned random_init);
-    void WritePlayerInfo(SavedFile& file);
+    void startReplayRecording(unsigned random_init);
+    void writePlayerInfo(SavedFile& file);
 
 public:
     /// Virtuelle Werte der Einstellungsfenster, die aber noch nicht wirksam sind, nur um die Verzögerungen zu
@@ -298,8 +298,8 @@ private:
     class ClientConfig
     {
     public:
-        ClientConfig() { Clear(); }
-        void Clear();
+        ClientConfig() { clear(); }
+        void clear();
 
         std::string server;
         std::string gameName;

@@ -27,24 +27,24 @@ struct Inventory : private GoodsAndPeopleCounts
 
     /// Sets everything to 0
     void clear();
-    void Add(const GoodType good, unsigned amount = 1) { goods[good] += amount; }
-    void Add(const Job job, unsigned amount = 1) { people[job] += amount; }
-    void Add(const ArmoredSoldier soldier, unsigned amount = 1)
+    void add(const GoodType good, unsigned amount = 1) { goods[good] += amount; }
+    void add(const Job job, unsigned amount = 1) { people[job] += amount; }
+    void add(const ArmoredSoldier soldier, unsigned amount = 1)
     {
         armoredSoldiers[soldier] += amount;
         RTTR_Assert(armoredSoldiers[soldier] <= people[amoredEnumToSoldierEnum(soldier)]);
     }
-    void Remove(const GoodType good, unsigned amount = 1)
+    void remove(const GoodType good, unsigned amount = 1)
     {
         RTTR_Assert(goods[good] >= amount);
         goods[good] -= amount;
     }
-    void Remove(const Job job, unsigned amount = 1)
+    void remove(const Job job, unsigned amount = 1)
     {
         RTTR_Assert(people[job] >= amount);
         people[job] -= amount;
     }
-    void Remove(const ArmoredSoldier soldier, unsigned amount = 1)
+    void remove(const ArmoredSoldier soldier, unsigned amount = 1)
     {
         RTTR_Assert(armoredSoldiers[soldier] >= amount);
         armoredSoldiers[soldier] -= amount;

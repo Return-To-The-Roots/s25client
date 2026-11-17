@@ -17,10 +17,10 @@ MOCK_BASE_CLASS(TestTexture, ITexture)
 {
 public:
     TestTexture(Extent size, Position origin) : size_(size), origin_(origin) {}
-    Position GetOrigin() const override { return origin_; }
-    Extent GetSize() const override { return size_; }
-    MOCK_NON_CONST_METHOD(DrawFull, 2) // LCOV_EXCL_LINE
-    MOCK_NON_CONST_METHOD(Draw, 3)
+    Position getOrigin() const override { return origin_; }
+    Extent getSize() const override { return size_; }
+    MOCK_NON_CONST_METHOD(drawFull, 2) // LCOV_EXCL_LINE
+    MOCK_NON_CONST_METHOD(draw, 3)
 
 private:
     Extent size_;
@@ -38,16 +38,16 @@ BOOST_AUTO_TEST_CASE(DrawSmallerImageThanButton)
         TestTexture img(Extent(20, 10), Position(0, 0));
         ctrlImageButton btn(&wnd, randomValue<unsigned>(), DrawPoint(10, 5), Extent(40, 30), TextureColor::Green1, &img,
                             "");
-        MOCK_EXPECT(img.Draw).once().with(Rect(20, 15, 20, 10), Rect(0, 0, 20, 10), 0xFFFFFFFFu);
-        btn.Draw();
+        MOCK_EXPECT(img.draw).once().with(Rect(20, 15, 20, 10), Rect(0, 0, 20, 10), 0xFFFFFFFFu);
+        btn.draw();
     }
 
     {
         TestTexture img(Extent(20, 10), Position(13, 2));
         ctrlImageButton btn(&wnd, randomValue<unsigned>(), DrawPoint(10, 5), Extent(40, 30), TextureColor::Green1, &img,
                             "");
-        MOCK_EXPECT(img.Draw).once().with(Rect(33, 17, 20, 10), Rect(0, 0, 20, 10), 0xFFFFFFFFu);
-        btn.Draw();
+        MOCK_EXPECT(img.draw).once().with(Rect(33, 17, 20, 10), Rect(0, 0, 20, 10), 0xFFFFFFFFu);
+        btn.draw();
     }
 }
 
@@ -61,8 +61,8 @@ BOOST_AUTO_TEST_CASE(DrawLargerImageThanButton)
                             &img, "");
         // Note that the image's center part is drawn, shrinked by 2px from each side to prevent dirtying 3d button's
         // ridge
-        MOCK_EXPECT(img.Draw).once().with(Rect(12, 22, 36, 26), Rect(32, 27, 36, 26), 0xFFFFFFFFu);
-        btn.Draw();
+        MOCK_EXPECT(img.draw).once().with(Rect(12, 22, 36, 26), Rect(32, 27, 36, 26), 0xFFFFFFFFu);
+        btn.draw();
     }
 
     {
@@ -71,8 +71,8 @@ BOOST_AUTO_TEST_CASE(DrawLargerImageThanButton)
                             &img, "");
         // Note that the image's center part is drawn, shrinked by 2px from each side to prevent dirtying 3d button's
         // ridge
-        MOCK_EXPECT(img.Draw).once().with(Rect(80, 54, 36, 26), Rect(32, 27, 36, 26), 0xFFFFFFFFu);
-        btn.Draw();
+        MOCK_EXPECT(img.draw).once().with(Rect(80, 54, 36, 26), Rect(32, 27, 36, 26), 0xFFFFFFFFu);
+        btn.draw();
     }
 }
 

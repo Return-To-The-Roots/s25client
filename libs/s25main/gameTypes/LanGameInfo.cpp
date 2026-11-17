@@ -5,7 +5,7 @@
 #include "LanGameInfo.h"
 #include "s25util/Serializer.h"
 
-bool LanGameInfo::Serialize(Serializer& serializer)
+bool LanGameInfo::serialize(Serializer& serializer)
 {
     if(name.size() > 64)
         name.resize(64);
@@ -25,7 +25,7 @@ bool LanGameInfo::Serialize(Serializer& serializer)
     return true;
 }
 
-bool LanGameInfo::Deserialize(Serializer& serializer)
+bool LanGameInfo::deserialize(Serializer& serializer)
 {
     name = serializer.PopString();
     hasPwd = serializer.PopBool();

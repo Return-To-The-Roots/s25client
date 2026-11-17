@@ -12,13 +12,13 @@
 struct CompressedData
 {
     CompressedData(const unsigned uncompressedLength = 0) : uncompressedLength(uncompressedLength) {}
-    void Clear()
+    void clear()
     {
         uncompressedLength = 0;
         data.clear();
     }
-    bool DecompressToFile(const boost::filesystem::path& filePath, unsigned* checksum = nullptr) const;
-    bool CompressFromFile(const boost::filesystem::path& filePath, unsigned* checksum = nullptr);
+    bool decompressToFile(const boost::filesystem::path& filePath, unsigned* checksum = nullptr) const;
+    bool compressFromFile(const boost::filesystem::path& filePath, unsigned* checksum = nullptr);
 
     /// Uncompressed length
     unsigned uncompressedLength;

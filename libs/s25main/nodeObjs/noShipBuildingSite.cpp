@@ -20,17 +20,17 @@ noShipBuildingSite::noShipBuildingSite(const MapPoint pos, const unsigned char p
 
 noShipBuildingSite::~noShipBuildingSite() = default;
 
-void noShipBuildingSite::Destroy()
+void noShipBuildingSite::destroy()
 {
-    if(world->GetNode(pos).obj == this)
-        world->SetNO(pos, nullptr);
+    if(world->getNode(pos).obj == this)
+        world->setNO(pos, nullptr);
 
-    noCoordBase::Destroy();
+    noCoordBase::destroy();
 }
 
-void noShipBuildingSite::Serialize(SerializedGameData& sgd) const
+void noShipBuildingSite::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushUnsignedChar(player);
     sgd.PushUnsignedChar(progress);
@@ -43,37 +43,37 @@ noShipBuildingSite::noShipBuildingSite(SerializedGameData& sgd, const unsigned o
 /// Progress-Anteile für die 3 Baustufen
 constexpr std::array<unsigned, 3> PROGRESS_PARTS = {4, 2, 3};
 
-void noShipBuildingSite::Draw(DrawPoint drawPt)
+void noShipBuildingSite::draw(DrawPoint drawPt)
 {
     if(progress < PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
     {
-        glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 24);
+        glArchivItem_Bitmap* image = LOADER.getImageN("boot_z", 24);
         unsigned percentDone = (progress > PROGRESS_PARTS[0]) ? 100u : progress * 100 / PROGRESS_PARTS[0];
-        image->DrawPercent(drawPt, percentDone);
-        image = LOADER.GetImageN("boot_z", 25);
-        image->DrawPercent(drawPt, percentDone, COLOR_SHADOW);
+        image->drawPercent(drawPt, percentDone);
+        image = LOADER.getImageN("boot_z", 25);
+        image->drawPercent(drawPt, percentDone, COLOR_SHADOW);
     }
     if(progress > PROGRESS_PARTS[0])
     {
         unsigned curProg = progress - PROGRESS_PARTS[0];
         unsigned percentDone = (curProg > PROGRESS_PARTS[1]) ? 100u : curProg * 100 / PROGRESS_PARTS[1];
-        glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 26);
-        image->DrawPercent(drawPt, percentDone);
-        image = LOADER.GetImageN("boot_z", 27);
-        image->DrawPercent(drawPt, percentDone, COLOR_SHADOW);
+        glArchivItem_Bitmap* image = LOADER.getImageN("boot_z", 26);
+        image->drawPercent(drawPt, percentDone);
+        image = LOADER.getImageN("boot_z", 27);
+        image->drawPercent(drawPt, percentDone, COLOR_SHADOW);
     }
     if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1])
     {
         unsigned percentDone = (progress - PROGRESS_PARTS[0] - PROGRESS_PARTS[1]) * 100 / PROGRESS_PARTS[2];
-        glArchivItem_Bitmap* image = LOADER.GetImageN("boot_z", 28);
-        image->DrawPercent(drawPt, percentDone);
-        image = LOADER.GetImageN("boot_z", 29);
-        image->DrawPercent(drawPt, percentDone, COLOR_SHADOW);
+        glArchivItem_Bitmap* image = LOADER.getImageN("boot_z", 28);
+        image->drawPercent(drawPt, percentDone);
+        image = LOADER.getImageN("boot_z", 29);
+        image->drawPercent(drawPt, percentDone, COLOR_SHADOW);
     }
 }
 
 /// Das Schiff wird um eine Stufe weitergebaut
-void noShipBuildingSite::MakeBuildStep()
+void noShipBuildingSite::makeBuildStep()
 {
     ++progress;
 
@@ -81,19 +81,19 @@ void noShipBuildingSite::MakeBuildStep()
     if(progress > PROGRESS_PARTS[0] + PROGRESS_PARTS[1] + PROGRESS_PARTS[2])
     {
         // Replace me by ship
-        world->SetNO(pos, nullptr);
-        GetEvMgr().AddToKillList(this);
-        auto& ship = world->AddFigure(pos, std::make_unique<noShip>(pos, player));
+        world->setNO(pos, nullptr);
+        getEvMgr().addToKillList(this);
+        auto& ship = world->addFigure(pos, std::make_unique<noShip>(pos, player));
 
         // Schiff registrieren lassen
-        world->GetPlayer(player).RegisterShip(ship);
+        world->getPlayer(player).registerShip(ship);
 
         // BQ neu berechnen, da Schiff nicht mehr blockiert
-        world->RecalcBQAroundPointBig(pos);
+        world->recalcBQAroundPointBig(pos);
 
         // Spieler über Fertigstellung benachrichtigen
-        SendPostMessage(player, std::make_unique<ShipPostMsg>(GetEvMgr().GetCurrentGF(), _("A new ship is ready"),
+        sendPostMessage(player, std::make_unique<ShipPostMsg>(getEvMgr().getCurrentGF(), _("A new ship is ready"),
                                                               PostCategory::Economy, ship));
-        world->GetNotifications().publish(ShipNote(ShipNote::Constructed, player, pos));
+        world->getNotifications().publish(ShipNote(ShipNote::Constructed, player, pos));
     }
 }

@@ -22,106 +22,106 @@ nofTradeDonkey::nofTradeDonkey(const MapPoint pos, const unsigned char player,
 }
 
 nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), successor(sgd.PopObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
-      gt(sgd.PopOptionalEnum<GoodType>())
+    : noFigure(sgd, obj_id), successor(sgd.popObject<nofTradeDonkey>(GO_Type::NofTradedonkey)),
+      gt(sgd.popOptionalEnum<GoodType>())
 {
-    if(sgd.GetGameDataVersion() < 6)
+    if(sgd.getGameDataVersion() < 6)
     {
         std::vector<uint8_t> next_dirs_raw;
-        sgd.PopContainer(next_dirs_raw);
+        sgd.popContainer(next_dirs_raw);
         for(const auto dir : next_dirs_raw)
             next_dirs.push_back(dir == 0xDD ? TradeDirection::ReachedGoal : TradeDirection(dir));
     } else
         helpers::popContainer(sgd, next_dirs);
 }
 
-void nofTradeDonkey::Serialize(SerializedGameData& sgd) const
+void nofTradeDonkey::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
-    sgd.PushObject(successor, true);
-    sgd.PushOptionalEnum<uint8_t>(gt);
+    sgd.pushObject(successor, true);
+    sgd.pushOptionalEnum<uint8_t>(gt);
     helpers::pushContainer(sgd, next_dirs);
 }
 
-void nofTradeDonkey::GoalReached()
+void nofTradeDonkey::goalReached()
 {
-    RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(world->GetNO(pos)));
+    RTTR_Assert(dynamic_cast<nobBaseWarehouse*>(world->getNO(pos)));
     successor = nullptr;
-    auto* wh = static_cast<nobBaseWarehouse*>(world->GetNO(pos));
-    GamePlayer& whOwner = world->GetPlayer(wh->GetPlayer());
+    auto* wh = static_cast<nobBaseWarehouse*>(world->getNO(pos));
+    GamePlayer& whOwner = world->getPlayer(wh->getPlayer());
 
     if(gt)
-        wh->AddToInventory(GoodCounts::make(*gt, 1), true);
+        wh->addToInventory(GoodCounts::make(*gt, 1), true);
 
-    whOwner.IncreaseInventoryJob(this->GetJobType(), 1);
+    whOwner.increaseInventoryJob(this->getJobType(), 1);
     if(hasArmor_)
-        whOwner.IncreaseInventoryJob(jobEnumToAmoredSoldierEnum(this->GetJobType()), 1);
-    wh->AddFigure(world->RemoveFigure(pos, *this));
+        whOwner.increaseInventoryJob(jobEnumToAmoredSoldierEnum(this->getJobType()), 1);
+    wh->addFigure(world->RemoveFigure(pos, *this));
 }
 
-void nofTradeDonkey::Walked()
+void nofTradeDonkey::walked()
 {
     if(next_dirs.empty())
     {
-        CancelTradeCaravane();
-        WanderFailedTrade();
+        cancelTradeCaravane();
+        wanderFailedTrade();
         return;
     }
 
-    TradeDirection nextDir = GetNextDir();
+    TradeDirection nextDir = getNextDir();
     if(successor)
-        successor->AddNextDir(nextDir);
+        successor->addNextDir(nextDir);
     // Are we now at the goal?
     if(nextDir == TradeDirection::ReachedGoal)
     {
         // Does target still exist?
-        noBase* nob = world->GetNO(pos);
-        if(nob->GetType() == NodalObjectType::Building
-           && BuildingProperties::IsWareHouse(static_cast<noBuilding*>(nob)->GetBuildingType()))
-            GoalReached();
+        noBase* nob = world->getNO(pos);
+        if(nob->getType() == NodalObjectType::Building
+           && BuildingProperties::isWareHouse(static_cast<noBuilding*>(nob)->getBuildingType()))
+            goalReached();
         else
         {
-            CancelTradeCaravane();
-            WanderFailedTrade();
+            cancelTradeCaravane();
+            wanderFailedTrade();
         }
     } else
-        StartWalking(toDirection(nextDir));
+        startWalking(toDirection(nextDir));
 }
 
-void nofTradeDonkey::HandleDerivedEvent(const unsigned /*id*/) {}
-void nofTradeDonkey::AbrogateWorkplace() {}
+void nofTradeDonkey::handleDerivedEvent(const unsigned /*id*/) {}
+void nofTradeDonkey::abrogateWorkplace() {}
 
-void nofTradeDonkey::Draw(DrawPoint drawPt)
+void nofTradeDonkey::draw(DrawPoint drawPt)
 {
     if(job_ == Job::PackDonkey)
     {
-        const unsigned ani_step = CalcWalkAnimationFrame();
+        const unsigned ani_step = calcWalkAnimationFrame();
 
-        drawPt += CalcFigurRelative();
+        drawPt += calcFigurRelative();
 
         // Läuft normal mit oder ohne Ware
 
         // Esel
-        LOADER.getDonkeySprite(GetCurMoveDir(), ani_step).draw(drawPt);
+        LOADER.getDonkeySprite(getCurMoveDir(), ani_step).draw(drawPt);
 
         if(gt)
         {
             // Ware im Korb zeichnen
-            LOADER.GetWareDonkeyTex(*gt)->DrawFull(drawPt + WARE_POS_DONKEY[GetCurMoveDir()][ani_step]);
+            LOADER.getWareDonkeyTex(*gt)->drawFull(drawPt + WARE_POS_DONKEY[getCurMoveDir()][ani_step]);
         }
     } else
-        DrawWalking(drawPt);
+        drawWalking(drawPt);
 }
 
-void nofTradeDonkey::LostWork() {}
+void nofTradeDonkey::lostWork() {}
 
-void nofTradeDonkey::CancelTradeCaravane()
+void nofTradeDonkey::cancelTradeCaravane()
 {
     next_dirs.clear();
     if(successor)
     {
-        successor->CancelTradeCaravane();
+        successor->cancelTradeCaravane();
         successor = nullptr;
     }
 }

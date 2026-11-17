@@ -9,7 +9,7 @@
 #include <array>
 #include <stdexcept>
 
-Position GetNeighbour(const Position& p, const Direction dir)
+Position getNeighbour(const Position& p, const Direction dir)
 {
     /*  Note that every 2nd row is shifted by half a triangle to the left, therefore:
     Modifications for the dirs:
@@ -34,7 +34,7 @@ Position GetNeighbour(const Position& p, const Direction dir)
     BOOST_UNREACHABLE_RETURN({}) // LCOV_EXCL_LINE
 }
 
-Position GetNeighbour2(Position pt, unsigned dir)
+Position getNeighbour2(Position pt, unsigned dir)
 {
     if(dir >= 12)
         throw std::logic_error("Invalid direction!");
@@ -60,7 +60,7 @@ Position GetNeighbour2(Position pt, unsigned dir)
     return pt;
 }
 
-MapPoint MakeMapPoint(Position pt, const MapExtent& size)
+MapPoint makeMapPoint(Position pt, const MapExtent& size)
 {
     // Shift into range
     pt.x %= size.x;
@@ -75,12 +75,12 @@ MapPoint MakeMapPoint(Position pt, const MapExtent& size)
     return MapPoint(pt);
 }
 
-Position GetNodePos(MapPoint pt)
+Position getNodePos(MapPoint pt)
 {
-    return GetNodePos(Position(pt));
+    return getNodePos(Position(pt));
 }
 
-Position GetNodePos(Position pt)
+Position getNodePos(Position pt)
 {
     Position result = pt * Position(TR_W, TR_H);
     if(pt.y & 1)
@@ -88,9 +88,9 @@ Position GetNodePos(Position pt)
     return result;
 }
 
-Position GetNodePos(MapPoint pt, uint8_t height)
+Position getNodePos(MapPoint pt, uint8_t height)
 {
-    Position result = GetNodePos(pt);
+    Position result = getNodePos(pt);
     result.y -= HEIGHT_FACTOR * height;
     return result;
 }

@@ -22,69 +22,69 @@ noFire::noFire(const MapPoint pos, bool isBig)
     : noCoordBase(NodalObjectType::Fire, pos), isBig(isBig), was_sounding(false), last_sound(0), next_interval(0)
 {
     // Burn for some time
-    dead_event = GetEvMgr().AddEvent(this, FIREDURATION[world->GetGGS().getSelection(AddonId::BURN_DURATION)]);
+    dead_event = getEvMgr().addEvent(this, FIREDURATION[world->getGGS().getSelection(AddonId::BURN_DURATION)]);
 }
 noFire::~noFire() = default;
 
-void noFire::Destroy()
+void noFire::destroy()
 {
     // Remove from map if still present
-    if(world->GetNode(pos).obj == this)
-        world->SetNO(pos, nullptr);
+    if(world->getNode(pos).obj == this)
+        world->setNO(pos, nullptr);
 
-    world->RecalcBQAroundPoint(pos);
-    world->GetSoundMgr().stopSounds(*this);
+    world->recalcBQAroundPoint(pos);
+    world->getSoundMgr().stopSounds(*this);
 
-    GetEvMgr().RemoveEvent(dead_event);
-    noCoordBase::Destroy();
+    getEvMgr().removeEvent(dead_event);
+    noCoordBase::destroy();
 }
 
-void noFire::Serialize(SerializedGameData& sgd) const
+void noFire::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
     sgd.PushBool(isBig);
-    sgd.PushEvent(dead_event);
+    sgd.pushEvent(dead_event);
 }
 
 noFire::noFire(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), isBig(sgd.PopBool()), dead_event(sgd.PopEvent()), was_sounding(false), last_sound(0),
+    : noCoordBase(sgd, obj_id), isBig(sgd.PopBool()), dead_event(sgd.popEvent()), was_sounding(false), last_sound(0),
       next_interval(0)
 {}
 
-void noFire::Draw(DrawPoint drawPt)
+void noFire::draw(DrawPoint drawPt)
 {
     unsigned id =
-      GAMECLIENT.Interpolate(FIREANIMATIONDURATION[world->GetGGS().getSelection(AddonId::BURN_DURATION)], dead_event);
+      GAMECLIENT.interpolate(FIREANIMATIONDURATION[world->getGGS().getSelection(AddonId::BURN_DURATION)], dead_event);
 
     // Burn for the first 2/3 of the time, leave debris for the last 1/3
-    if(id < FIREANIMATIONDURATION[world->GetGGS().getSelection(AddonId::BURN_DURATION)] * 2 / 3)
+    if(id < FIREANIMATIONDURATION[world->getGGS().getSelection(AddonId::BURN_DURATION)] * 2 / 3)
     {
         // Fire animation
-        LOADER.GetMapTexture(2500 + (isBig ? 8 : 0) + id % 8)->DrawFull(drawPt);
-        LOADER.GetMapTexture(2530 + (isBig ? 8 : 0) + id % 8)->DrawFull(drawPt, 0xC0101010);
+        LOADER.getMapTexture(2500 + (isBig ? 8 : 0) + id % 8)->drawFull(drawPt);
+        LOADER.getMapTexture(2530 + (isBig ? 8 : 0) + id % 8)->drawFull(drawPt, 0xC0101010);
 
         // Fire sound play in random intervals
-        if(VIDEODRIVER.GetTickCount() - last_sound > next_interval)
+        if(VIDEODRIVER.getTickCount() - last_sound > next_interval)
         {
-            world->GetSoundMgr().playNOSound(96, *this, id);
+            world->getSoundMgr().playNOSound(96, *this, id);
             was_sounding = true;
 
-            last_sound = VIDEODRIVER.GetTickCount();
+            last_sound = VIDEODRIVER.getTickCount();
             next_interval = 500 + rand() % 1400;
         }
     } else
     {
         // Debris
-        LOADER.GetMapTexture(2524 + (isBig ? 1 : 0))->DrawFull(drawPt);
+        LOADER.getMapTexture(2524 + (isBig ? 1 : 0))->drawFull(drawPt);
     }
 }
 
-void noFire::HandleEvent(const unsigned /*id*/)
+void noFire::handleEvent(const unsigned /*id*/)
 {
     // End event: Remove from map and destroy
-    RTTR_Assert(world->GetNode(pos).obj == this);
-    world->SetNO(pos, nullptr);
+    RTTR_Assert(world->getNode(pos).obj == this);
+    world->setNO(pos, nullptr);
     dead_event = nullptr;
-    GetEvMgr().AddToKillList(this);
+    getEvMgr().addToKillList(this);
 }

@@ -125,7 +125,7 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
                                    unsigned playerIdx, bool initOGL)
     : Desktop(nullptr), game_(std::move(game)), nwfInfo_(std::move(nwfInfo)),
       worldViewer(playerIdx, const_cast<Game&>(*game_).world_),
-      gwv(worldViewer, Position(0, 0), VIDEODRIVER.GetRenderSize()), cbb(*LOADER.GetPaletteN("pal5")),
+      gwv(worldViewer, Position(0, 0), VIDEODRIVER.getRenderSize()), cbb(*LOADER.getPaletteN("pal5")),
       actionwindow(nullptr), roadwindow(nullptr), minimap(worldViewer), isScrolling(false),
       cheats_(const_cast<Game&>(*game_).world_, GAMECLIENT), cheatCommandTracker_(cheats_)
 {
@@ -133,63 +133,63 @@ dskGameInterface::dskGameInterface(std::shared_ptr<Game> game, std::shared_ptr<c
     road.point = MapPoint(0, 0);
     road.start = MapPoint(0, 0);
 
-    SetScale(false);
+    setScale(false);
 
-    const glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
+    const glArchivItem_Bitmap& imgButtonBar = *LOADER.getImageN("resource", 29);
 
     auto barPos =
-      DrawPoint((GetSize().x - imgButtonBar.getWidth()) / 2, GetSize().y - imgButtonBar.getHeight()) + btOffset;
+      DrawPoint((getSize().x - imgButtonBar.getWidth()) / 2, getSize().y - imgButtonBar.getHeight()) + btOffset;
 
-    AddImageButton(ID_btMap, barPos, btSize, TextureColor::Green1, LOADER.GetImageN("io", 50), _("Map"))
-      ->SetBorder(false);
+    addImageButton(ID_btMap, barPos, btSize, TextureColor::Green1, LOADER.getImageN("io", 50), _("Map"))
+      ->setBorder(false);
     barPos.x += btSize.x;
-    AddImageButton(ID_btOptions, barPos, btSize, TextureColor::Green1, LOADER.GetImageN("io", 192), _("Main selection"))
-      ->SetBorder(false);
+    addImageButton(ID_btOptions, barPos, btSize, TextureColor::Green1, LOADER.getImageN("io", 192), _("Main selection"))
+      ->setBorder(false);
     barPos.x += btSize.x;
-    AddImageButton(ID_btConstructionAid, barPos, btSize, TextureColor::Green1, LOADER.GetImageN("io", 83),
+    addImageButton(ID_btConstructionAid, barPos, btSize, TextureColor::Green1, LOADER.getImageN("io", 83),
                    _("Construction aid mode"))
-      ->SetBorder(false);
+      ->setBorder(false);
     barPos.x += btSize.x;
-    AddImageButton(ID_btPost, barPos, btSize, TextureColor::Green1, LOADER.GetImageN("io", 62), _("Post office"))
-      ->SetBorder(false);
+    addImageButton(ID_btPost, barPos, btSize, TextureColor::Green1, LOADER.getImageN("io", 62), _("Post office"))
+      ->setBorder(false);
     barPos += DrawPoint(18, 24);
 
-    AddText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, SmallFont);
+    addText(ID_txtNumMsg, barPos, "", COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, SmallFont);
 
-    const_cast<Game&>(*game_).world_.SetGameInterface(this);
+    const_cast<Game&>(*game_).world_.setGameInterface(this);
 
     std::fill(borders.begin(), borders.end(), (glArchivItem_Bitmap*)(nullptr));
-    cbb.loadEdges(LOADER.GetArchive("resource"));
-    cbb.buildBorder(VIDEODRIVER.GetRenderSize(), borders);
+    cbb.loadEdges(LOADER.getArchive("resource"));
+    cbb.buildBorder(VIDEODRIVER.getRenderSize(), borders);
 
-    InitPlayer();
+    initPlayer();
     if(initOGL)
-        worldViewer.InitTerrainRenderer();
+        worldViewer.initTerrainRenderer();
 
     VIDEODRIVER.setTargetFramerate(SETTINGS.video.framerate); // Use requested setting for ingame
 }
 
-void dskGameInterface::InitPlayer()
+void dskGameInterface::initPlayer()
 {
     // Jump to players HQ if it exists
-    if(worldViewer.GetPlayer().GetHQPos().isValid())
-        gwv.MoveToMapPt(worldViewer.GetPlayer().GetHQPos());
+    if(worldViewer.getPlayer().getHQPos().isValid())
+        gwv.moveToMapPt(worldViewer.getPlayer().getHQPos());
 
-    evBld = worldViewer.GetWorld().GetNotifications().subscribe<BuildingNote>([this](const auto& note) {
-        if(note.player == worldViewer.GetPlayerId())
-            this->OnBuildingNote(note);
+    evBld = worldViewer.getWorld().getNotifications().subscribe<BuildingNote>([this](const auto& note) {
+        if(note.player == worldViewer.getPlayerId())
+            this->onBuildingNote(note);
     });
-    PostBox& postBox = GetPostBox();
-    postBox.ObserveNewMsg([this](const auto& msg, auto msgCt) { this->NewPostMessage(msg, msgCt); });
-    postBox.ObserveDeletedMsg([this](auto msgCt) { this->PostMessageDeleted(msgCt); });
-    UpdatePostIcon(postBox.GetNumMsgs(), true);
+    PostBox& postBox = getPostBox();
+    postBox.observeNewMsg([this](const auto& msg, auto msgCt) { this->newPostMessage(msg, msgCt); });
+    postBox.observeDeletedMsg([this](auto msgCt) { this->postMessageDeleted(msgCt); });
+    updatePostIcon(postBox.getNumMsgs(), true);
 }
 
-PostBox& dskGameInterface::GetPostBox()
+PostBox& dskGameInterface::getPostBox()
 {
-    PostBox* postBox = worldViewer.GetWorld().GetPostMgr().GetPostBox(worldViewer.GetPlayerId());
+    PostBox* postBox = worldViewer.getWorld().getPostMgr().getPostBox(worldViewer.getPlayerId());
     if(!postBox)
-        postBox = &worldViewer.GetWorldNonConst().GetPostMgr().AddPostBox(worldViewer.GetPlayerId());
+        postBox = &worldViewer.getWorldNonConst().getPostMgr().addPostBox(worldViewer.getPlayerId());
     RTTR_Assert(postBox != nullptr);
     return *postBox;
 }
@@ -198,108 +198,108 @@ dskGameInterface::~dskGameInterface()
 {
     for(auto& border : borders)
         deletePtr(border);
-    GAMECLIENT.RemoveInterface(this);
+    GAMECLIENT.removeInterface(this);
     LOBBYCLIENT.RemoveListener(this);
 }
 
-void dskGameInterface::SetActive(bool activate)
+void dskGameInterface::setActive(bool activate)
 {
     if(activate == IsActive())
         return;
     if(!activate && isScrolling)
     {
         // Stay active if scrolling and no modal window is open
-        const IngameWindow* wnd = WINDOWMANAGER.GetTopMostWindow();
-        if(wnd && wnd->IsModal())
-            StopScrolling();
+        const IngameWindow* wnd = WINDOWMANAGER.getTopMostWindow();
+        if(wnd && wnd->isModal())
+            stopScrolling();
         else
             return;
     }
-    Desktop::SetActive(activate);
+    Desktop::setActive(activate);
     // Do this here to allow previous screen to keep control
     if(activate)
     {
-        GAMECLIENT.SetInterface(this);
+        GAMECLIENT.setInterface(this);
         LOBBYCLIENT.AddListener(this);
-        if(!game_->IsStarted())
+        if(!game_->isStarted())
         {
-            GAMECLIENT.OnGameStart();
+            GAMECLIENT.onGameStart();
 
-            ShowPersistentWindowsAfterSwitch();
+            showPersistentWindowsAfterSwitch();
         }
     }
 }
 
-void dskGameInterface::StopScrolling()
+void dskGameInterface::stopScrolling()
 {
     isScrolling = false;
-    WINDOWMANAGER.SetCursor(road.mode == RoadBuildMode::Disabled ? Cursor::Hand : Cursor::Remove);
+    WINDOWMANAGER.setCursor(road.mode == RoadBuildMode::Disabled ? Cursor::Hand : Cursor::remove);
 }
 
-void dskGameInterface::StartScrolling(const Position& mousePos)
+void dskGameInterface::startScrolling(const Position& mousePos)
 {
     startScrollPt = mousePos;
     isScrolling = true;
-    WINDOWMANAGER.SetCursor(Cursor::Scroll);
+    WINDOWMANAGER.setCursor(Cursor::Scroll);
 }
 
-void dskGameInterface::ToggleFoW()
+void dskGameInterface::toggleFoW()
 {
-    DisableFoW(!GAMECLIENT.IsReplayFOWDisabled());
+    disableFoW(!GAMECLIENT.isReplayFOWDisabled());
 }
 
-void dskGameInterface::DisableFoW(const bool hideFOW)
+void dskGameInterface::disableFoW(const bool hideFOW)
 {
-    GAMECLIENT.SetReplayFOW(hideFOW);
+    GAMECLIENT.setReplayFOW(hideFOW);
     // Notify viewer and minimap to recalculate the visibility
-    worldViewer.RecalcAllColors();
-    minimap.UpdateAll();
+    worldViewer.recalcAllColors();
+    minimap.updateAll();
 }
 
-void dskGameInterface::ShowPersistentWindowsAfterSwitch()
+void dskGameInterface::showPersistentWindowsAfterSwitch()
 {
     auto& windows = SETTINGS.windows.persistentSettings;
 
     if(windows[CGI_CHAT].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwChat>(this));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwChat>(this));
     if(windows[CGI_POSTOFFICE].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwPostWindow>(gwv, getPostBox()));
     if(windows[CGI_DISTRIBUTION].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwDistribution>(gwv.GetViewer(), GAMECLIENT));
-    if(windows[CGI_BUILDORDER].isOpen && gwv.GetWorld().GetGGS().isEnabled(AddonId::CUSTOM_BUILD_SEQUENCE))
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwBuildOrder>(gwv.GetViewer()));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwDistribution>(gwv.getViewer(), GAMECLIENT));
+    if(windows[CGI_BUILDORDER].isOpen && gwv.getWorld().getGGS().isEnabled(AddonId::CUSTOM_BUILD_SEQUENCE))
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwBuildOrder>(gwv.getViewer()));
     if(windows[CGI_TRANSPORT].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwTransport>(gwv.GetViewer(), GAMECLIENT));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwTransport>(gwv.getViewer(), GAMECLIENT));
     if(windows[CGI_MILITARY].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMilitary>(gwv.GetViewer(), GAMECLIENT));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwMilitary>(gwv.getViewer(), GAMECLIENT));
     if(windows[CGI_TOOLS].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwTools>(gwv.GetViewer(), GAMECLIENT));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwTools>(gwv.getViewer(), GAMECLIENT));
     if(windows[CGI_INVENTORY].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwInventory>(gwv.GetViewer().GetPlayer()));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwInventory>(gwv.getViewer().getPlayer()));
     if(windows[CGI_MINIMAP].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMinimap>(minimap, gwv));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwMinimap>(minimap, gwv));
     if(windows[CGI_BUILDINGS].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwBuildings>(gwv, GAMECLIENT));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwBuildings>(gwv, GAMECLIENT));
     if(windows[CGI_BUILDINGSPRODUCTIVITY].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwBuildingProductivities>(gwv.GetViewer().GetPlayer()));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwBuildingProductivities>(gwv.getViewer().getPlayer()));
     if(windows[CGI_MUSICPLAYER].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMusicPlayer>());
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwMusicPlayer>());
     if(windows[CGI_STATISTICS].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwStatistics>(gwv.GetViewer()));
-    if(windows[CGI_ECONOMICPROGRESS].isOpen && gwv.GetWorld().getEconHandler())
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwEconomicProgress>(gwv.GetViewer()));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwStatistics>(gwv.getViewer()));
+    if(windows[CGI_ECONOMICPROGRESS].isOpen && gwv.getWorld().getEconHandler())
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwEconomicProgress>(gwv.getViewer()));
     if(windows[CGI_DIPLOMACY].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwDiplomacy>(gwv.GetViewer(), GAMECLIENT));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwDiplomacy>(gwv.getViewer(), GAMECLIENT));
     if(windows[CGI_SHIP].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(
-          std::make_unique<iwShip>(gwv, GAMECLIENT, gwv.GetViewer().GetPlayer().GetShipByID(0)));
+        WINDOWMANAGER.showAfterSwitch(
+          std::make_unique<iwShip>(gwv, GAMECLIENT, gwv.getViewer().getPlayer().getShipByID(0)));
     if(windows[CGI_MERCHANDISE_STATISTICS].isOpen)
-        WINDOWMANAGER.ShowAfterSwitch(std::make_unique<iwMerchandiseStatistics>(gwv.GetViewer().GetPlayer()));
+        WINDOWMANAGER.showAfterSwitch(std::make_unique<iwMerchandiseStatistics>(gwv.getViewer().getPlayer()));
 }
 
-void dskGameInterface::Resize(const Extent& newSize)
+void dskGameInterface::resize(const Extent& newSize)
 {
-    Window::Resize(newSize);
+    Window::resize(newSize);
 
     // recreate borders
     for(auto& border : borders)
@@ -308,248 +308,248 @@ void dskGameInterface::Resize(const Extent& newSize)
 
     // move buttons
     // Get real renderer size as newSize may get capped but we want to keep the manually drawn borders intact
-    const Extent realNewSize = VIDEODRIVER.GetRenderSize();
-    const glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
+    const Extent realNewSize = VIDEODRIVER.getRenderSize();
+    const glArchivItem_Bitmap& imgButtonBar = *LOADER.getImageN("resource", 29);
     DrawPoint barPos =
       DrawPoint((realNewSize.x - imgButtonBar.getWidth()) / 2, realNewSize.y - imgButtonBar.getHeight()) + btOffset;
 
-    auto* button = GetCtrl<ctrlButton>(ID_btMap);
-    button->SetPos(barPos);
+    auto* button = getCtrl<ctrlButton>(ID_btMap);
+    button->setPos(barPos);
 
-    barPos.x += button->GetSize().x;
-    button = GetCtrl<ctrlButton>(ID_btOptions);
-    button->SetPos(barPos);
+    barPos.x += button->getSize().x;
+    button = getCtrl<ctrlButton>(ID_btOptions);
+    button->setPos(barPos);
 
-    barPos.x += button->GetSize().x;
-    button = GetCtrl<ctrlButton>(ID_btConstructionAid);
-    button->SetPos(barPos);
+    barPos.x += button->getSize().x;
+    button = getCtrl<ctrlButton>(ID_btConstructionAid);
+    button->setPos(barPos);
 
-    barPos.x += button->GetSize().x;
-    button = GetCtrl<ctrlButton>(ID_btPost);
-    button->SetPos(barPos);
+    barPos.x += button->getSize().x;
+    button = getCtrl<ctrlButton>(ID_btPost);
+    button->setPos(barPos);
 
     barPos += DrawPoint(18, 24);
-    auto* text = GetCtrl<ctrlText>(ID_txtNumMsg);
-    text->SetPos(barPos);
+    auto* text = getCtrl<ctrlText>(ID_txtNumMsg);
+    text->setPos(barPos);
 
-    gwv.Resize(newSize);
+    gwv.resize(newSize);
 }
 
-void dskGameInterface::Msg_ButtonClick(const unsigned ctrl_id)
+void dskGameInterface::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
-        case ID_btMap: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMinimap>(minimap, gwv)); break;
-        case ID_btOptions: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT)); break;
+        case ID_btMap: WINDOWMANAGER.toggleWindow(std::make_unique<iwMinimap>(minimap, gwv)); break;
+        case ID_btOptions: WINDOWMANAGER.toggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT)); break;
         case ID_btConstructionAid:
-            if(WINDOWMANAGER.IsDesktopActive())
-                gwv.ToggleShowBQ();
+            if(WINDOWMANAGER.isDesktopActive())
+                gwv.toggleShowBQ();
             break;
         case ID_btPost:
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
-            UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwPostWindow>(gwv, getPostBox()));
+            updatePostIcon(getPostBox().getNumMsgs(), false);
             break;
     }
 }
 
-void dskGameInterface::Msg_PaintBefore()
+void dskGameInterface::msgPaintBefore()
 {
-    Desktop::Msg_PaintBefore();
+    Desktop::msgPaintBefore();
 
     // Spiel ausführen
-    Run();
+    run();
 
     /// Padding of the figures
     const DrawPoint figPadding(12, 12);
-    const DrawPoint screenSize(VIDEODRIVER.GetRenderSize());
+    const DrawPoint screenSize(VIDEODRIVER.getRenderSize());
     // Rahmen zeichnen
-    borders[0]->DrawFull(DrawPoint(0, 0));                                      // oben (mit Ecken)
-    borders[1]->DrawFull(DrawPoint(0, screenSize.y - figPadding.y));            // unten (mit Ecken)
-    borders[2]->DrawFull(DrawPoint(0, figPadding.y));                           // links
-    borders[3]->DrawFull(DrawPoint(screenSize.x - figPadding.x, figPadding.y)); // rechts
+    borders[0]->drawFull(DrawPoint(0, 0));                                      // oben (mit Ecken)
+    borders[1]->drawFull(DrawPoint(0, screenSize.y - figPadding.y));            // unten (mit Ecken)
+    borders[2]->drawFull(DrawPoint(0, figPadding.y));                           // links
+    borders[3]->drawFull(DrawPoint(screenSize.x - figPadding.x, figPadding.y)); // rechts
 
     // The figure/statues and the button bar
-    glArchivItem_Bitmap& imgFigLeftTop = *LOADER.GetImageN("resource", 17);
-    glArchivItem_Bitmap& imgFigRightTop = *LOADER.GetImageN("resource", 18);
-    glArchivItem_Bitmap& imgFigLeftBot = *LOADER.GetImageN("resource", 19);
-    glArchivItem_Bitmap& imgFigRightBot = *LOADER.GetImageN("resource", 20);
-    imgFigLeftTop.DrawFull(figPadding);
-    imgFigRightTop.DrawFull(DrawPoint(screenSize.x - figPadding.x - imgFigRightTop.getWidth(), figPadding.y));
-    imgFigLeftBot.DrawFull(DrawPoint(figPadding.x, screenSize.y - figPadding.y - imgFigLeftBot.getHeight()));
-    imgFigRightBot.DrawFull(screenSize - figPadding - imgFigRightBot.GetSize());
+    glArchivItem_Bitmap& imgFigLeftTop = *LOADER.getImageN("resource", 17);
+    glArchivItem_Bitmap& imgFigRightTop = *LOADER.getImageN("resource", 18);
+    glArchivItem_Bitmap& imgFigLeftBot = *LOADER.getImageN("resource", 19);
+    glArchivItem_Bitmap& imgFigRightBot = *LOADER.getImageN("resource", 20);
+    imgFigLeftTop.drawFull(figPadding);
+    imgFigRightTop.drawFull(DrawPoint(screenSize.x - figPadding.x - imgFigRightTop.getWidth(), figPadding.y));
+    imgFigLeftBot.drawFull(DrawPoint(figPadding.x, screenSize.y - figPadding.y - imgFigLeftBot.getHeight()));
+    imgFigRightBot.drawFull(screenSize - figPadding - imgFigRightBot.getSize());
 
-    glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
-    imgButtonBar.DrawFull(
+    glArchivItem_Bitmap& imgButtonBar = *LOADER.getImageN("resource", 29);
+    imgButtonBar.drawFull(
       DrawPoint((screenSize.x - imgButtonBar.getWidth()) / 2, screenSize.y - imgButtonBar.getHeight()));
 }
 
-void dskGameInterface::Msg_PaintAfter()
+void dskGameInterface::msgPaintAfter()
 {
-    Desktop::Msg_PaintAfter();
+    Desktop::msgPaintAfter();
 
-    const GameWorldBase& world = worldViewer.GetWorld();
+    const GameWorldBase& world = worldViewer.getWorld();
 
     if(SETTINGS.global.showGFInfo)
     {
         std::array<char, 256> nwf_string;
-        const auto gfLenMs = static_cast<unsigned>(GAMECLIENT.GetGFLength() / 1ms);
-        const auto nwfLenMs = static_cast<unsigned>((GAMECLIENT.GetNWFLength() * GAMECLIENT.GetGFLength()) / 1ms);
-        if(GAMECLIENT.IsReplayModeOn())
+        const auto gfLenMs = static_cast<unsigned>(GAMECLIENT.getGFLength() / 1ms);
+        const auto nwfLenMs = static_cast<unsigned>((GAMECLIENT.getNWFLength() * GAMECLIENT.getGFLength()) / 1ms);
+        if(GAMECLIENT.isReplayModeOn())
         {
             snprintf(nwf_string.data(), nwf_string.size(),
                      _("(Replay-Mode) Current GF: %u (End at: %u) / GF length: %u ms / NWF length: %u gf (%u ms)"),
-                     world.GetEvMgr().GetCurrentGF(), GAMECLIENT.GetLastReplayGF(), gfLenMs, GAMECLIENT.GetNWFLength(),
+                     world.getEvMgr().getCurrentGF(), GAMECLIENT.getLastReplayGF(), gfLenMs, GAMECLIENT.getNWFLength(),
                      nwfLenMs);
         } else
         {
             snprintf(nwf_string.data(), nwf_string.size(),
                      _("Current GF: %u / GF length: %u ms / NWF length: %u gf (%u ms) /  Ping: %u ms"),
-                     world.GetEvMgr().GetCurrentGF(), gfLenMs, GAMECLIENT.GetNWFLength(), nwfLenMs,
-                     worldViewer.GetPlayer().ping);
+                     world.getEvMgr().getCurrentGF(), gfLenMs, GAMECLIENT.getNWFLength(), nwfLenMs,
+                     worldViewer.getPlayer().ping);
         }
-        NormalFont->Draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
+        NormalFont->draw(DrawPoint(30, 1), nwf_string.data(), FontStyle{}, COLOR_YELLOW);
     }
 
     // tournament mode?
-    const unsigned tournamentDuration = GAMECLIENT.GetTournamentModeDuration();
+    const unsigned tournamentDuration = GAMECLIENT.getTournamentModeDuration();
     if(tournamentDuration)
     {
-        unsigned curGF = world.GetEvMgr().GetCurrentGF();
+        unsigned curGF = world.getEvMgr().getCurrentGF();
         std::string tournamentNotice;
         if(curGF >= tournamentDuration)
             tournamentNotice = _("Tournament finished");
         else
         {
             tournamentNotice =
-              helpers::format("Tournament mode: %1% remaining", GAMECLIENT.FormatGFTime(tournamentDuration - curGF));
+              helpers::format("Tournament mode: %1% remaining", GAMECLIENT.formatGFTime(tournamentDuration - curGF));
         }
-        NormalFont->Draw(DrawPoint(VIDEODRIVER.GetRenderSize().x - 30, 1), tournamentNotice, FontStyle::AlignH::RIGHT,
+        NormalFont->draw(DrawPoint(VIDEODRIVER.getRenderSize().x - 30, 1), tournamentNotice, FontStyle::AlignH::RIGHT,
                          COLOR_YELLOW);
     }
 
     // Replaydateianzeige in der linken unteren Ecke
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
     {
-        NormalFont->Draw(DrawPoint(0, VIDEODRIVER.GetRenderSize().y), GAMECLIENT.GetReplayFilename().string(),
+        NormalFont->draw(DrawPoint(0, VIDEODRIVER.getRenderSize().y), GAMECLIENT.getReplayFilename().string(),
                          FontStyle::BOTTOM, COLOR_YELLOW);
     } else
     {
         // Laggende Spieler anzeigen in Form von Schnecken
-        DrawPoint snailPos(VIDEODRIVER.GetRenderSize().x - 70, 35);
+        DrawPoint snailPos(VIDEODRIVER.getRenderSize().x - 70, 35);
         for(const NWFPlayerInfo& player : nwfInfo_->getPlayerInfos())
         {
             if(player.isLagging)
             {
-                LOADER.GetPlayerImage("rttr", 0)->DrawFull(Rect(snailPos, 30, 30), COLOR_WHITE,
-                                                           game_->world_.GetPlayer(player.id).color);
+                LOADER.getPlayerImage("rttr", 0)->drawFull(Rect(snailPos, 30, 30), COLOR_WHITE,
+                                                           game_->world_.getPlayer(player.id).color);
                 snailPos.x -= 40;
             }
         }
     }
 
     // Show icons in the upper right corner of the game interface
-    DrawPoint iconPos(VIDEODRIVER.GetRenderSize().x - 56, 32);
+    DrawPoint iconPos(VIDEODRIVER.getRenderSize().x - 56, 32);
 
     // Draw cheating indicator icon (WINTER)
     if(cheats_.isCheatModeOn())
     {
-        glArchivItem_Bitmap* cheatingImg = LOADER.GetImageN("io", 75);
-        cheatingImg->DrawFull(iconPos);
+        glArchivItem_Bitmap* cheatingImg = LOADER.getImageN("io", 75);
+        cheatingImg->drawFull(iconPos);
         iconPos -= DrawPoint(cheatingImg->getWidth() + 6, 0);
     }
 
     // Draw speed indicator icon
-    const int speedStep = static_cast<int>(REFERENCE_SPEED / 10ms) - static_cast<int>(GAMECLIENT.GetGFLength() / 10ms);
+    const int speedStep = static_cast<int>(REFERENCE_SPEED / 10ms) - static_cast<int>(GAMECLIENT.getGFLength() / 10ms);
 
     if(speedStep != 0)
     {
-        glArchivItem_Bitmap* runnerImg = LOADER.GetImageN("io", 164);
+        glArchivItem_Bitmap* runnerImg = LOADER.getImageN("io", 164);
 
-        runnerImg->DrawFull(iconPos);
+        runnerImg->drawFull(iconPos);
 
         if(speedStep != 1)
         {
             std::string multiplier = helpers::toString(std::abs(speedStep));
-            NormalFont->Draw(iconPos - runnerImg->GetOrigin() + DrawPoint(19, 6), multiplier, FontStyle::LEFT,
+            NormalFont->draw(iconPos - runnerImg->getOrigin() + DrawPoint(19, 6), multiplier, FontStyle::LEFT,
                              speedStep > 0 ? COLOR_YELLOW : COLOR_RED);
         }
         iconPos -= DrawPoint(runnerImg->getWidth() + 4, 0);
     }
 
     // Draw zoom level indicator icon
-    if(gwv.GetCurrentTargetZoomFactor() != 1.f) //-V550
+    if(gwv.getCurrentTargetZoomFactor() != 1.f) //-V550
     {
-        glArchivItem_Bitmap* magnifierImg = LOADER.GetImageN("io", 36);
+        glArchivItem_Bitmap* magnifierImg = LOADER.getImageN("io", 36);
 
-        magnifierImg->DrawFull(iconPos);
+        magnifierImg->drawFull(iconPos);
 
-        std::string zoom_percent = helpers::toString((int)(gwv.GetCurrentTargetZoomFactor() * 100)) + "%";
-        NormalFont->Draw(iconPos - magnifierImg->GetOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER,
+        std::string zoom_percent = helpers::toString((int)(gwv.getCurrentTargetZoomFactor() * 100)) + "%";
+        NormalFont->draw(iconPos - magnifierImg->getOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER,
                          COLOR_YELLOW);
         iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
     }
 }
 
-bool dskGameInterface::ContextClick(const MouseCoords& mc)
+bool dskGameInterface::contextClick(const MouseCoords& mc)
 {
     // Handle road building mode if active
     if(road.mode != RoadBuildMode::Disabled)
     {
         // in "richtige" Map-Koordinaten Konvertieren, den aktuellen selektierten Punkt
-        const MapPoint selPt = gwv.GetSelectedPt();
+        const MapPoint selPt = gwv.getSelectedPt();
 
         if(selPt == road.point)
         {
             // Selektierter Punkt ist der gleiche wie der Straßenpunkt --> Fenster mit Wegbau abbrechen
-            ShowRoadWindow(mc.pos);
+            showRoadWindow(mc.pos);
         } else
         {
             // altes Roadwindow schließen
-            WINDOWMANAGER.Close((unsigned)CGI_ROADWINDOW);
+            WINDOWMANAGER.close((unsigned)CGI_ROADWINDOW);
 
             // Ist das ein gültiger neuer Wegpunkt?
-            if(worldViewer.IsRoadAvailable(road.mode == RoadBuildMode::Boat, selPt)
-               && worldViewer.IsPlayerTerritory(selPt))
+            if(worldViewer.isRoadAvailable(road.mode == RoadBuildMode::Boat, selPt)
+               && worldViewer.isPlayerTerritory(selPt))
             {
                 MapPoint targetPt = selPt;
-                if(!BuildRoadPart(targetPt))
-                    ShowRoadWindow(mc.pos);
+                if(!buildRoadPart(targetPt))
+                    showRoadWindow(mc.pos);
             } else if(worldViewer.GetBQ(selPt) != BuildingQuality::Nothing)
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
-                unsigned idOnRoad = GetIdInCurBuildRoad(selPt);
+                unsigned idOnRoad = getIdInCurBuildRoad(selPt);
                 if(idOnRoad)
-                    DemolishRoad(idOnRoad);
+                    demolishRoad(idOnRoad);
                 else
                 {
                     MapPoint targetPt = selPt;
-                    if(BuildRoadPart(targetPt))
+                    if(buildRoadPart(targetPt))
                     {
                         // Ist der Zielpunkt der gleiche geblieben?
                         if(selPt == targetPt)
                             GI_BuildRoad();
                     } else if(selPt == targetPt)
-                        ShowRoadWindow(mc.pos);
+                        showRoadWindow(mc.pos);
                 }
             }
             // Wurde auf eine Flagge geklickt und ist diese Flagge nicht der Weganfangspunkt?
-            else if(worldViewer.GetWorld().GetNO(selPt)->GetType() == NodalObjectType::Flag && selPt != road.start)
+            else if(worldViewer.getWorld().getNO(selPt)->getType() == NodalObjectType::Flag && selPt != road.start)
             {
                 MapPoint targetPt = selPt;
-                if(BuildRoadPart(targetPt))
+                if(buildRoadPart(targetPt))
                 {
                     if(selPt == targetPt)
                         GI_BuildRoad();
                 } else if(selPt == targetPt)
-                    ShowRoadWindow(mc.pos);
+                    showRoadWindow(mc.pos);
             } else
             {
-                unsigned tbr = GetIdInCurBuildRoad(selPt);
+                unsigned tbr = getIdInCurBuildRoad(selPt);
                 // Wurde bereits auf das gebaute Stück geklickt?
                 if(tbr)
-                    DemolishRoad(tbr);
+                    demolishRoad(tbr);
                 else
-                    ShowRoadWindow(mc.pos);
+                    showRoadWindow(mc.pos);
             }
         }
     } else // Not in road building mode
@@ -558,61 +558,61 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
 
         iwAction::Tabs action_tabs;
 
-        const MapPoint cSel = gwv.GetSelectedPt();
+        const MapPoint cSel = gwv.getSelectedPt();
 
         // Vielleicht steht hier auch ein Schiff?
-        if(const noShip* ship = worldViewer.GetShip(cSel))
+        if(const noShip* ship = worldViewer.getShip(cSel))
         {
-            WINDOWMANAGER.Show(std::make_unique<iwShip>(gwv, GAMECLIENT, ship));
+            WINDOWMANAGER.show(std::make_unique<iwShip>(gwv, GAMECLIENT, ship));
             return true;
         }
 
         // Evtl ists nen Haus? (unser Haus)
-        const noBase& selObj = *worldViewer.GetWorld().GetNO(cSel);
-        if(selObj.GetType() == NodalObjectType::Building && worldViewer.IsOwner(cSel))
+        const noBase& selObj = *worldViewer.getWorld().getNO(cSel);
+        if(selObj.getType() == NodalObjectType::Building && worldViewer.isOwner(cSel))
         {
-            if(auto* wnd = WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
+            if(auto* wnd = WINDOWMANAGER.findNonModalWindow(CGI_BUILDING + MapBase::createGUIID(cSel)))
             {
-                WINDOWMANAGER.SetActiveWindow(*wnd);
+                WINDOWMANAGER.setActiveWindow(*wnd);
                 return true;
             }
-            BuildingType bt = static_cast<const noBuilding&>(selObj).GetBuildingType();
+            BuildingType bt = static_cast<const noBuilding&>(selObj).getBuildingType();
             // HQ
             if(bt == BuildingType::Headquarters)
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHQ>(cSel)));
+                WINDOWMANAGER.show(
+                  std::make_unique<iwHQ>(gwv, GAMECLIENT, worldViewer.getWorldNonConst().getSpecObj<nobHQ>(cSel)));
             // Lagerhäuser
             else if(bt == BuildingType::Storehouse)
-                WINDOWMANAGER.Show(std::make_unique<iwBaseWarehouse>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobStorehouse>(cSel)));
+                WINDOWMANAGER.show(std::make_unique<iwBaseWarehouse>(
+                  gwv, GAMECLIENT, worldViewer.getWorldNonConst().getSpecObj<nobStorehouse>(cSel)));
             // Hafengebäude
             else if(bt == BuildingType::HarborBuilding)
-                WINDOWMANAGER.Show(std::make_unique<iwHarborBuilding>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobHarborBuilding>(cSel)));
+                WINDOWMANAGER.show(std::make_unique<iwHarborBuilding>(
+                  gwv, GAMECLIENT, worldViewer.getWorldNonConst().getSpecObj<nobHarborBuilding>(cSel)));
             // Militärgebäude
-            else if(BuildingProperties::IsMilitary(bt))
-                WINDOWMANAGER.Show(std::make_unique<iwMilitaryBuilding>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobMilitary>(cSel)));
+            else if(BuildingProperties::isMilitary(bt))
+                WINDOWMANAGER.show(std::make_unique<iwMilitaryBuilding>(
+                  gwv, GAMECLIENT, worldViewer.getWorldNonConst().getSpecObj<nobMilitary>(cSel)));
             else if(bt == BuildingType::Temple)
-                WINDOWMANAGER.Show(std::make_unique<iwTempleBuilding>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobTemple>(cSel)));
+                WINDOWMANAGER.show(std::make_unique<iwTempleBuilding>(
+                  gwv, GAMECLIENT, worldViewer.getWorldNonConst().getSpecObj<nobTemple>(cSel)));
             else
-                WINDOWMANAGER.Show(std::make_unique<iwBuilding>(
-                  gwv, GAMECLIENT, worldViewer.GetWorldNonConst().GetSpecObj<nobUsual>(cSel)));
+                WINDOWMANAGER.show(std::make_unique<iwBuilding>(
+                  gwv, GAMECLIENT, worldViewer.getWorldNonConst().getSpecObj<nobUsual>(cSel)));
             return true;
         }
         // oder vielleicht eine Baustelle?
-        else if(selObj.GetType() == NodalObjectType::Buildingsite && worldViewer.IsOwner(cSel))
+        else if(selObj.getType() == NodalObjectType::Buildingsite && worldViewer.isOwner(cSel))
         {
-            if(!WINDOWMANAGER.FindNonModalWindow(CGI_BUILDING + MapBase::CreateGUIID(cSel)))
-                WINDOWMANAGER.Show(
-                  std::make_unique<iwBuildingSite>(gwv, worldViewer.GetWorld().GetSpecObj<noBuildingSite>(cSel)));
+            if(!WINDOWMANAGER.findNonModalWindow(CGI_BUILDING + MapBase::createGUIID(cSel)))
+                WINDOWMANAGER.show(
+                  std::make_unique<iwBuildingSite>(gwv, worldViewer.getWorld().getSpecObj<noBuildingSite>(cSel)));
             return true;
         }
 
         action_tabs.watch = true;
         // Unser Land
-        if(worldViewer.IsOwner(cSel))
+        if(worldViewer.isOwner(cSel))
         {
             const BuildingQuality bq = worldViewer.GetBQ(cSel);
             // Kann hier was gebaut werden?
@@ -631,24 +631,24 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
                     default: break;
                 }
 
-                if(!worldViewer.GetWorld().IsFlagAround(cSel))
+                if(!worldViewer.getWorld().isFlagAround(cSel))
                     action_tabs.setflag = true;
 
                 // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
                 // Militärgebäude gebaut werden
                 enable_military_buildings =
-                  !worldViewer.GetWorld().IsMilitaryBuildingNearNode(cSel, worldViewer.GetPlayerId());
+                  !worldViewer.getWorld().isMilitaryBuildingNearNode(cSel, worldViewer.getPlayerId());
             } else if(bq == BuildingQuality::Flag)
                 action_tabs.setflag = true;
-            else if(selObj.GetType() == NodalObjectType::Flag)
+            else if(selObj.getType() == NodalObjectType::Flag)
                 action_tabs.flag = true;
 
-            if(selObj.GetType() != NodalObjectType::Flag && selObj.GetType() != NodalObjectType::Building)
+            if(selObj.getType() != NodalObjectType::Flag && selObj.getType() != NodalObjectType::Building)
             {
                 // Check if there are roads
                 for(const Direction dir : helpers::EnumRange<Direction>{})
                 {
-                    const PointRoad curRoad = worldViewer.GetVisiblePointRoad(cSel, dir);
+                    const PointRoad curRoad = worldViewer.getVisiblePointRoad(cSel, dir);
                     if(curRoad != PointRoad::None)
                     {
                         action_tabs.cutroad = true;
@@ -658,111 +658,111 @@ bool dskGameInterface::ContextClick(const MouseCoords& mc)
             }
         }
         // evtl ists ein feindliches Militärgebäude, welches NICHT im Nebel liegt?
-        else if(worldViewer.GetVisibility(cSel) == Visibility::Visible)
+        else if(worldViewer.getVisibility(cSel) == Visibility::Visible)
         {
-            if(selObj.GetType() == NodalObjectType::Building)
+            if(selObj.getType() == NodalObjectType::Building)
             {
-                const auto* building = worldViewer.GetWorld().GetSpecObj<noBuilding>(cSel); //-V807
-                BuildingType bt = building->GetBuildingType();
+                const auto* building = worldViewer.getWorld().getSpecObj<noBuilding>(cSel); //-V807
+                BuildingType bt = building->getBuildingType();
 
                 // Only if trade is enabled
-                if(worldViewer.GetWorld().GetGGS().isEnabled(AddonId::TRADE))
+                if(worldViewer.getWorld().getGGS().isEnabled(AddonId::TRADE))
                 {
                     // Allied warehouse? -> Show trade window
-                    if(BuildingProperties::IsWareHouse(bt) && worldViewer.GetPlayer().IsAlly(building->GetPlayer()))
+                    if(BuildingProperties::isWareHouse(bt) && worldViewer.getPlayer().isAlly(building->getPlayer()))
                     {
-                        WINDOWMANAGER.Show(std::make_unique<iwTrade>(*static_cast<const nobBaseWarehouse*>(building),
+                        WINDOWMANAGER.show(std::make_unique<iwTrade>(*static_cast<const nobBaseWarehouse*>(building),
                                                                      worldViewer, GAMECLIENT));
                         return true;
                     }
                 }
 
                 // Ist es ein gewöhnliches Militärgebäude?
-                if(BuildingProperties::IsMilitary(bt))
+                if(BuildingProperties::isMilitary(bt))
                 {
                     // Dann darf es nicht neu gebaut sein!
-                    if(!static_cast<const nobMilitary*>(building)->IsNewBuilt())
+                    if(!static_cast<const nobMilitary*>(building)->isNewBuilt())
                         action_tabs.attack = true;
                 }
                 // oder ein HQ oder Hafen?
                 else if(bt == BuildingType::Headquarters || bt == BuildingType::HarborBuilding)
                     action_tabs.attack = true;
                 action_tabs.sea_attack =
-                  action_tabs.attack && worldViewer.GetWorld().GetGGS().isEnabled(AddonId::SEA_ATTACK);
+                  action_tabs.attack && worldViewer.getWorld().getGGS().isEnabled(AddonId::SEA_ATTACK);
             }
         }
 
         // Bisheriges Actionfenster schließen, falls es eins gab
         // aktuelle Mausposition merken, da diese durch das Schließen verändert werden kann
         if(actionwindow)
-            actionwindow->Close();
-        VIDEODRIVER.SetMousePos(mc.pos);
+            actionwindow->close();
+        VIDEODRIVER.setMousePos(mc.pos);
 
-        ShowActionWindow(action_tabs, cSel, mc.pos, enable_military_buildings);
+        showActionWindow(action_tabs, cSel, mc.pos, enable_military_buildings);
     }
 
     return true;
 }
 
-bool dskGameInterface::Msg_LeftDown(const MouseCoords& mc)
+bool dskGameInterface::msgLeftDown(const MouseCoords& mc)
 {
-    const glArchivItem_Bitmap& imgButtonBar = *LOADER.GetImageN("resource", 29);
-    const auto btOrig = DrawPoint(VIDEODRIVER.GetRenderSize().x / 2 - imgButtonBar.getWidth() / 2,
-                                  VIDEODRIVER.GetRenderSize().y - imgButtonBar.getHeight())
+    const glArchivItem_Bitmap& imgButtonBar = *LOADER.getImageN("resource", 29);
+    const auto btOrig = DrawPoint(VIDEODRIVER.getRenderSize().x / 2 - imgButtonBar.getWidth() / 2,
+                                  VIDEODRIVER.getRenderSize().y - imgButtonBar.getHeight())
                         + btOffset;
     if(IsPointInRect(mc.pos, Rect(btOrig, btSize * 4u)))
         return false;
 
-    if(!VIDEODRIVER.IsTouch())
+    if(!VIDEODRIVER.isTouch())
     {
         // Start scrolling also on Ctrl + left click
-        if(VIDEODRIVER.GetModKeyState().ctrl)
+        if(VIDEODRIVER.getModKeyState().ctrl)
         {
-            Msg_RightDown(mc);
+            msgRightDown(mc);
             return true;
         } else if(isScrolling)
-            StopScrolling();
+            stopScrolling();
 
-        return ContextClick(mc);
+        return contextClick(mc);
 
     } else if(mc.num_tfingers < 2)
-        touchDuration = VIDEODRIVER.GetTickCount();
+        touchDuration = VIDEODRIVER.getTickCount();
     else if(isScrolling) // 2 fingers down -> zoom mode. Do not click or scroll map
-        StopScrolling();
+        stopScrolling();
 
     return true;
 }
 
-bool dskGameInterface::Msg_LeftUp(const MouseCoords& mc)
+bool dskGameInterface::msgLeftUp(const MouseCoords& mc)
 {
     if(isScrolling)
     {
-        StopScrolling();
+        stopScrolling();
         return true;
     }
 
     // num_tfingers is reduced after this function to check if it's still a touch event
     // Was touch duration short enough to trigger conext click?
-    if(mc.num_tfingers == 1 && (VIDEODRIVER.GetTickCount() - touchDuration) < TOUCH_MAX_CLICK_INTERVAL)
-        return ContextClick(mc);
+    if(mc.num_tfingers == 1 && (VIDEODRIVER.getTickCount() - touchDuration) < TOUCH_MAX_CLICK_INTERVAL)
+        return contextClick(mc);
 
     return false;
 }
 
-bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
+bool dskGameInterface::msgMouseMove(const MouseCoords& mc)
 {
     if(!isScrolling)
     {
         if(mc.num_tfingers == 1)
-            Msg_RightDown(mc);
+            msgRightDown(mc);
         else
             return false;
     }
 
     if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
     {
-        const Position mapPos = gwv.ViewPosToMap(mc.pos);
-        gwv.MoveBy(-(mapPos - startScrollPt));
+        const Position mapPos = gwv.viewPosToMap(mc.pos);
+        gwv.moveBy(-(mapPos - startScrollPt));
         startScrollPt = mapPos;
     } else
     {
@@ -771,8 +771,8 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
         if(SETTINGS.interface.mapScrollMode == MapScrollMode::ScrollSame)
             acceleration = -acceleration;
 
-        gwv.MoveBy((mc.pos - startScrollPt) * acceleration);
-        VIDEODRIVER.SetMousePos(startScrollPt);
+        gwv.moveBy((mc.pos - startScrollPt) * acceleration);
+        VIDEODRIVER.setMousePos(startScrollPt);
 
         if(!SETTINGS.global.smartCursor)
             startScrollPt = mc.pos;
@@ -781,23 +781,23 @@ bool dskGameInterface::Msg_MouseMove(const MouseCoords& mc)
     return true;
 }
 
-bool dskGameInterface::Msg_RightDown(const MouseCoords& mc)
+bool dskGameInterface::msgRightDown(const MouseCoords& mc)
 {
     if(SETTINGS.interface.mapScrollMode == MapScrollMode::GrabAndDrag)
-        StartScrolling(gwv.ViewPosToMap(mc.pos));
+        startScrolling(gwv.viewPosToMap(mc.pos));
     else
-        StartScrolling(mc.pos);
+        startScrolling(mc.pos);
     return true;
 }
 
-bool dskGameInterface::Msg_RightUp(const MouseCoords& /*mc*/) //-V524
+bool dskGameInterface::msgRightUp(const MouseCoords& /*mc*/) //-V524
 {
     if(isScrolling)
-        StopScrolling();
+        stopScrolling();
     return false;
 }
 
-bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
+bool dskGameInterface::msgKeyDown(const KeyEvent& ke)
 {
     cheatCommandTracker_.onKeyEvent(ke);
 
@@ -805,57 +805,57 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
     {
         default: break;
         case KeyType::Return: // Open chat
-            WINDOWMANAGER.Show(std::make_unique<iwChat>(this));
+            WINDOWMANAGER.show(std::make_unique<iwChat>(this));
             return true;
 
         case KeyType::Left: // Scroll left
-            gwv.MoveBy({-30, 0});
+            gwv.moveBy({-30, 0});
             return true;
         case KeyType::Right: // Scroll right
-            gwv.MoveBy({30, 0});
+            gwv.moveBy({30, 0});
             return true;
         case KeyType::Up: // Scroll up
-            gwv.MoveBy({0, -30});
+            gwv.moveBy({0, -30});
             return true;
         case KeyType::Down: // Scroll down
-            gwv.MoveBy({0, 30});
+            gwv.moveBy({0, 30});
             return true;
 
         case KeyType::F2: // Open save game window
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>());
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwSave>());
             return true;
         case KeyType::F3: // Map debug window
         {
-            const bool replayMode = GAMECLIENT.IsReplayModeOn();
+            const bool replayMode = GAMECLIENT.isReplayModeOn();
             if(replayMode)
-                DisableFoW(true);
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMapDebug>(gwv, game_->world_.IsSinglePlayer() || replayMode));
+                disableFoW(true);
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwMapDebug>(gwv, game_->world_.isSinglePlayer() || replayMode));
             return true;
         }
         case KeyType::F8:
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
             return true;
         case KeyType::F9:
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!")));
             return true;
-        case KeyType::F10: WINDOWMANAGER.ToggleWindow(std::make_unique<iwSettings>()); return true;
+        case KeyType::F10: WINDOWMANAGER.toggleWindow(std::make_unique<iwSettings>()); return true;
         case KeyType::F11: // Music player (midi files)
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>());
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwMusicPlayer>());
             return true;
         case KeyType::F12: // Ingame options
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwOptionsWindow>(gwv.GetSoundMgr()));
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwOptionsWindow>(gwv.getSoundMgr()));
             return true;
     }
 
     switch(ke.c)
     {
         case '+':
-            if(GAMECLIENT.IsReplayModeOn() || game_->world_.IsSinglePlayer())
-                GAMECLIENT.IncreaseSpeed();
+            if(GAMECLIENT.isReplayModeOn() || game_->world_.isSinglePlayer())
+                GAMECLIENT.increaseSpeed();
             return true;
         case '-':
-            if(GAMECLIENT.IsReplayModeOn() || game_->world_.IsSinglePlayer())
-                GAMECLIENT.DecreaseSpeed();
+            if(GAMECLIENT.isReplayModeOn() || game_->world_.isSinglePlayer())
+                GAMECLIENT.decreaseSpeed();
             return true;
 
         // Switch to specific player
@@ -869,114 +869,114 @@ bool dskGameInterface::Msg_KeyDown(const KeyEvent& ke)
         case '8':
         {
             unsigned playerIdx = ke.c - '1';
-            if(GAMECLIENT.IsReplayModeOn())
+            if(GAMECLIENT.isReplayModeOn())
             {
-                unsigned oldPlayerId = worldViewer.GetPlayerId();
-                GAMECLIENT.ChangePlayerIngame(worldViewer.GetPlayerId(), playerIdx);
-                RTTR_Assert(worldViewer.GetPlayerId() == oldPlayerId || worldViewer.GetPlayerId() == playerIdx);
-            } else if(playerIdx < worldViewer.GetWorld().GetNumPlayers())
+                unsigned oldPlayerId = worldViewer.getPlayerId();
+                GAMECLIENT.changePlayerIngame(worldViewer.getPlayerId(), playerIdx);
+                RTTR_Assert(worldViewer.getPlayerId() == oldPlayerId || worldViewer.getPlayerId() == playerIdx);
+            } else if(playerIdx < worldViewer.getWorld().getNumPlayers())
             {
                 // On multiplayer this currently asyncs, but as this is a debug feature anyway just disable it.
                 // If this should be enabled again, look into the handling/clearing of accumulated GCs
-                if(game_->world_.IsSinglePlayer())
+                if(game_->world_.isSinglePlayer())
                 {
-                    const GamePlayer& player = worldViewer.GetWorld().GetPlayer(playerIdx);
+                    const GamePlayer& player = worldViewer.getWorld().getPlayer(playerIdx);
                     if(player.ps == PlayerState::AI && player.aiInfo.type == AI::Type::Dummy)
-                        GAMECLIENT.RequestSwapToPlayer(playerIdx);
+                        GAMECLIENT.requestSwapToPlayer(playerIdx);
                 }
             }
             return true;
         }
 
-        case 'b': gwv.MoveToLastPosition(); return true;
+        case 'b': gwv.moveToLastPosition(); return true;
         case 'v':
-            if(game_->world_.IsSinglePlayer())
-                GAMECLIENT.IncreaseSpeed(true);
+            if(game_->world_.isSinglePlayer())
+                GAMECLIENT.increaseSpeed(true);
             return true;
         case 'c': // Show/hide building names
-            gwv.ToggleShowNames();
+            gwv.toggleShowNames();
             return true;
         case 'd': // Enable/Disable fog of war (in replay mode)
-            ToggleFoW();
+            toggleFoW();
             return true;
         case 'h': // Go to HQ
         {
-            const GamePlayer& player = worldViewer.GetPlayer();
+            const GamePlayer& player = worldViewer.getPlayer();
             // HQ might not exist anymore
-            if(player.GetHQPos().isValid())
-                gwv.MoveToMapPt(player.GetHQPos());
+            if(player.getHQPos().isValid())
+                gwv.moveToMapPt(player.getHQPos());
         }
             return true;
         case 'i': // Show inventory
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwInventory>(worldViewer.GetPlayer()));
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwInventory>(worldViewer.getPlayer()));
             return true;
         case 'j': // Skip GFs (fast forward)
-            if(game_->world_.IsSinglePlayer() || GAMECLIENT.IsReplayModeOn())
-                WINDOWMANAGER.ToggleWindow(std::make_unique<iwSkipGFs>(gwv));
+            if(game_->world_.isSinglePlayer() || GAMECLIENT.isReplayModeOn())
+                WINDOWMANAGER.toggleWindow(std::make_unique<iwSkipGFs>(gwv));
             return true;
         case 'l': // Show minimap
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMinimap>(minimap, gwv));
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwMinimap>(minimap, gwv));
             return true;
         case 'm': // Show main menu
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT));
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwMainMenu>(gwv, GAMECLIENT));
             return true;
         case 'n': // Show message window
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwPostWindow>(gwv, GetPostBox()));
-            UpdatePostIcon(GetPostBox().GetNumMsgs(), false);
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwPostWindow>(gwv, getPostBox()));
+            updatePostIcon(getPostBox().getNumMsgs(), false);
             return true;
         case 'p': // Pause
-            GAMECLIENT.TogglePause();
+            GAMECLIENT.togglePause();
             return true;
         case 'q': // Quit game (dialog)
             if(ke.alt)
-                WINDOWMANAGER.ToggleWindow(std::make_unique<iwEndgame>());
+                WINDOWMANAGER.toggleWindow(std::make_unique<iwEndgame>());
             return true;
         case 's': // Show/hide productivity overlay
-            gwv.ToggleShowProductivity();
+            gwv.toggleShowProductivity();
             return true;
         case ' ': // Show/hide construction aid
             // workaround for Wayland which does not capture SDLK_SPACE when SDL_StartTextInput() was called
-            gwv.ToggleShowBQ();
+            gwv.toggleShowBQ();
             return true;
         case 26: // ctrl+z
-            gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
+            gwv.setZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
             return true;
         case 'z':
             if(ke.ctrl) // Reset zoom
-                gwv.SetZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
+                gwv.setZoomFactor(ZOOM_FACTORS[ZOOM_DEFAULT_INDEX]);
             else // zoom in
-                gwv.SetZoomFactor(getNextZoomLevel(gwv.GetCurrentTargetZoomFactor()));
+                gwv.setZoomFactor(getNextZoomLevel(gwv.getCurrentTargetZoomFactor()));
             return true;
         case 'Z': // shift-z, zoom out
-            gwv.SetZoomFactor(getPreviousZoomLevel(gwv.GetCurrentTargetZoomFactor()));
+            gwv.setZoomFactor(getPreviousZoomLevel(gwv.getCurrentTargetZoomFactor()));
             return true;
     }
 
     return false;
 }
 
-bool dskGameInterface::Msg_WheelUp(const MouseCoords&)
+bool dskGameInterface::msgWheelUp(const MouseCoords&)
 {
-    WheelZoom(ZOOM_WHEEL_INCREMENT);
+    wheelZoom(ZOOM_WHEEL_INCREMENT);
     return true;
 }
-bool dskGameInterface::Msg_WheelDown(const MouseCoords&)
+bool dskGameInterface::msgWheelDown(const MouseCoords&)
 {
-    WheelZoom(-ZOOM_WHEEL_INCREMENT);
+    wheelZoom(-ZOOM_WHEEL_INCREMENT);
     return true;
 }
 
-void dskGameInterface::WheelZoom(const float step)
+void dskGameInterface::wheelZoom(const float step)
 {
-    auto targetZoomFactor = gwv.GetCurrentTargetZoomFactor() * (1 + step);
+    auto targetZoomFactor = gwv.getCurrentTargetZoomFactor() * (1 + step);
     targetZoomFactor = std::clamp(targetZoomFactor, ZOOM_FACTORS.front(), ZOOM_FACTORS.back());
     if(targetZoomFactor > 1 - ZOOM_WHEEL_INCREMENT && targetZoomFactor < 1 + ZOOM_WHEEL_INCREMENT)
         targetZoomFactor = 1.f; // Snap to 100%
 
-    gwv.SetZoomFactor(targetZoomFactor);
+    gwv.setZoomFactor(targetZoomFactor);
 }
 
-void dskGameInterface::OnBuildingNote(const BuildingNote& note)
+void dskGameInterface::onBuildingNote(const BuildingNote& note)
 {
     switch(note.type)
     {
@@ -985,46 +985,46 @@ void dskGameInterface::OnBuildingNote(const BuildingNote& note)
         case BuildingNote::Lost:
             // Close the related window as the building does not exist anymore
             // In "Constructed" this means the buildingsite
-            WINDOWMANAGER.Close(CGI_BUILDING + MapBase::CreateGUIID(note.pos));
+            WINDOWMANAGER.close(CGI_BUILDING + MapBase::createGUIID(note.pos));
             break;
         default: break;
     }
 }
 
-void dskGameInterface::Run()
+void dskGameInterface::run()
 {
     // Reset draw counter of the trees before drawing
-    noTree::ResetDrawCounter();
+    noTree::resetDrawCounter();
 
     unsigned water_percent;
     // Draw mouse only if not on window
-    bool drawMouse = WINDOWMANAGER.FindWindowAtPos(VIDEODRIVER.GetMousePos()) == nullptr;
-    gwv.Draw(road, actionwindow != nullptr ? actionwindow->GetSelectedPt() : MapPoint::Invalid(), drawMouse,
+    bool drawMouse = WINDOWMANAGER.findWindowAtPos(VIDEODRIVER.getMousePos()) == nullptr;
+    gwv.draw(road, actionwindow != nullptr ? actionwindow->getSelectedPt() : MapPoint::invalid(), drawMouse,
              &water_percent);
 
     // Indicate that the game is paused by darkening the screen (dark semi-transparent overlay)
-    if(GAMECLIENT.IsPaused())
-        DrawRectangle(Rect(DrawPoint(0, 0), VIDEODRIVER.GetRenderSize()), COLOR_SHADOW);
+    if(GAMECLIENT.isPaused())
+        drawRectangle(Rect(DrawPoint(0, 0), VIDEODRIVER.getRenderSize()), COLOR_SHADOW);
     else
     {
         // Play ambient sounds if game is not paused
-        worldViewer.GetSoundMgr().playOceanBrawling(water_percent);
-        worldViewer.GetSoundMgr().playBirdSounds(noTree::QueryDrawCounter());
+        worldViewer.getSoundMgr().playOceanBrawling(water_percent);
+        worldViewer.getSoundMgr().playBirdSounds(noTree::queryDrawCounter());
     }
 
-    messenger.Draw();
+    messenger.draw();
 }
 
 void dskGameInterface::GI_StartRoadBuilding(const MapPoint startPt, bool waterRoad)
 {
     // Im Replay keine Straßen bauen
-    if(GAMECLIENT.IsReplayModeOn())
+    if(GAMECLIENT.isReplayModeOn())
         return;
 
     road.mode = waterRoad ? RoadBuildMode::Boat : RoadBuildMode::Normal;
     road.route.clear();
     road.start = road.point = startPt;
-    WINDOWMANAGER.SetCursor(Cursor::Remove);
+    WINDOWMANAGER.setCursor(Cursor::remove);
 }
 
 void dskGameInterface::GI_CancelRoadBuilding()
@@ -1032,11 +1032,11 @@ void dskGameInterface::GI_CancelRoadBuilding()
     if(road.mode == RoadBuildMode::Disabled)
         return;
     road.mode = RoadBuildMode::Disabled;
-    worldViewer.RemoveVisualRoad(road.start, road.route);
-    WINDOWMANAGER.SetCursor(isScrolling ? Cursor::Scroll : Cursor::Hand);
+    worldViewer.removeVisualRoad(road.start, road.route);
+    WINDOWMANAGER.setCursor(isScrolling ? Cursor::Scroll : Cursor::Hand);
 }
 
-bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
+bool dskGameInterface::buildRoadPart(MapPoint& cSel)
 {
     std::vector<Direction> new_route =
       FindPathForRoad(worldViewer, road.point, cSel, road.mode == RoadBuildMode::Boat, 100);
@@ -1047,7 +1047,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
     // Test on water way length
     if(road.mode == RoadBuildMode::Boat)
     {
-        unsigned char index = worldViewer.GetWorld().GetGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
+        unsigned char index = worldViewer.getWorld().getGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
 
         RTTR_Assert(index < waterwayLengths.size());
         const unsigned max_length = waterwayLengths[index];
@@ -1069,12 +1069,12 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
     // Weg (visuell) bauen
     for(const auto dir : new_route)
     {
-        worldViewer.SetVisiblePointRoad(road.point, dir,
+        worldViewer.setVisiblePointRoad(road.point, dir,
                                         (road.mode == RoadBuildMode::Boat) ? PointRoad::Boat : PointRoad::Normal);
-        worldViewer.RecalcBQForRoad(road.point);
-        road.point = worldViewer.GetWorld().GetNeighbour(road.point, dir);
+        worldViewer.recalcBQForRoad(road.point);
+        road.point = worldViewer.getWorld().getNeighbour(road.point, dir);
     }
-    worldViewer.RecalcBQForRoad(road.point);
+    worldViewer.recalcBQForRoad(road.point);
 
     // Zielpunkt updaten (für Wasserweg)
     cSel = road.point;
@@ -1084,7 +1084,7 @@ bool dskGameInterface::BuildRoadPart(MapPoint& cSel)
     return true;
 }
 
-unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
+unsigned dskGameInterface::getIdInCurBuildRoad(const MapPoint pt)
 {
     MapPoint curPt = road.start;
     for(unsigned i = 0; i < road.route.size(); ++i)
@@ -1092,21 +1092,21 @@ unsigned dskGameInterface::GetIdInCurBuildRoad(const MapPoint pt)
         if(curPt == pt)
             return i + 1;
 
-        curPt = worldViewer.GetNeighbour(curPt, road.route[i]);
+        curPt = worldViewer.getNeighbour(curPt, road.route[i]);
     }
     return 0;
 }
 
-void dskGameInterface::ShowRoadWindow(const Position& mousePos)
+void dskGameInterface::showRoadWindow(const Position& mousePos)
 {
-    roadwindow = &WINDOWMANAGER.Show(
+    roadwindow = &WINDOWMANAGER.show(
       std::make_unique<iwRoadWindow>(*this, worldViewer.GetBQ(road.point) != BuildingQuality::Nothing, mousePos), true);
 }
 
-void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
+void dskGameInterface::showActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
                                         const bool enable_military_buildings)
 {
-    const GameWorldBase& world = worldViewer.GetWorld();
+    const GameWorldBase& world = worldViewer.getWorld();
 
     iwAction::Params params;
 
@@ -1114,18 +1114,18 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     if(action_tabs.setflag)
     {
         auto isWater = [](const auto& desc) { return desc.kind == TerrainKind::Water; };
-        if(world.HasTerrain(cSel, isWater))
+        if(world.hasTerrain(cSel, isWater))
             params = iwAction::FlagType::WaterFlag;
     }
 
     // Wenn es einen Flaggen-Tab gibt, dann den Flaggentyp herausfinden und die Art des Fensters entsprechende setzen
     if(action_tabs.flag)
     {
-        if(world.GetNO(world.GetNeighbour(cSel, Direction::NorthWest))->GetGOT() == GO_Type::NobHq)
+        if(world.getNO(world.getNeighbour(cSel, Direction::NorthWest))->getGOT() == GO_Type::NobHq)
             params = iwAction::FlagType::HQ;
-        else if(world.GetNO(cSel)->GetType() == NodalObjectType::Flag)
+        else if(world.getNO(cSel)->getType() == NodalObjectType::Flag)
         {
-            if(world.GetSpecObj<noFlag>(cSel)->GetFlagType() == FlagType::Water)
+            if(world.getSpecObj<noFlag>(cSel)->getFlagType() == FlagType::Water)
                 params = iwAction::FlagType::WaterFlag;
         }
     }
@@ -1133,21 +1133,21 @@ void dskGameInterface::ShowActionWindow(const iwAction::Tabs& action_tabs, MapPo
     // Angriffstab muss wissen, wieviel Soldaten maximal entsendet werden können
     if(action_tabs.attack)
     {
-        params = worldViewer.GetNumSoldiersForAttack(cSel);
+        params = worldViewer.getNumSoldiersForAttack(cSel);
     }
 
-    actionwindow = &WINDOWMANAGER.Show(
+    actionwindow = &WINDOWMANAGER.show(
       std::make_unique<iwAction>(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings), true);
 }
 
-void dskGameInterface::OnChatCommand(const std::string& cmd)
+void dskGameInterface::onChatCommand(const std::string& cmd)
 {
     cheatCommandTracker_.onChatCommand(cmd);
 
     if(cmd == "surrender")
         GAMECLIENT.Surrender();
     else if(cmd == "async")
-        (void)RANDOM.Rand(RANDOM_CONTEXT2(0), 255);
+        (void)RANDOM.rand(RANDOM_CONTEXT2(0), 255);
     else if(cmd == "segfault")
     {
         char* x = nullptr;
@@ -1158,8 +1158,8 @@ void dskGameInterface::OnChatCommand(const std::string& cmd)
         GameDataLoader gdLoader(newDesc);
         if(gdLoader.Load())
         {
-            const_cast<GameWorld&>(game_->world_).GetDescriptionWriteable() = newDesc;
-            worldViewer.InitTerrainRenderer();
+            const_cast<GameWorld&>(game_->world_).getDescriptionWriteable() = newDesc;
+            worldViewer.initTerrainRenderer();
         }
     }
 }
@@ -1169,11 +1169,11 @@ void dskGameInterface::GI_BuildRoad()
     if(GAMECLIENT.BuildRoad(road.start, road.mode == RoadBuildMode::Boat, road.route))
     {
         road.mode = RoadBuildMode::Disabled;
-        WINDOWMANAGER.SetCursor(Cursor::Hand);
+        WINDOWMANAGER.setCursor(Cursor::Hand);
     }
 }
 
-void dskGameInterface::Msg_WindowClosed(IngameWindow& wnd)
+void dskGameInterface::msgWindowClosed(IngameWindow& wnd)
 {
     if(actionwindow == &wnd)
         actionwindow = nullptr;
@@ -1192,8 +1192,8 @@ void dskGameInterface::GI_FlagDestroyed(const MapPoint pt)
     // Evtl Actionfenster schließen, da sich das ja auch auf diese Flagge bezieht
     if(actionwindow)
     {
-        if(actionwindow->GetSelectedPt() == pt)
-            actionwindow->Close();
+        if(actionwindow->getSelectedPt() == pt)
+            actionwindow->close();
     }
 }
 
@@ -1201,58 +1201,58 @@ void dskGameInterface::CI_PlayerLeft(const unsigned playerId)
 {
     // Info-Meldung ausgeben
     std::string text =
-      helpers::format(_("Player '%s' left the game!"), worldViewer.GetWorld().GetPlayer(playerId).name);
-    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_RED);
+      helpers::format(_("Player '%s' left the game!"), worldViewer.getWorld().getPlayer(playerId).name);
+    messenger.addMessage("", 0, ChatDestination::System, text, COLOR_RED);
     // Im Spiel anzeigen, dass die KI das Spiel betreten hat
     text = helpers::format(_("Player '%s' joined the game!"), "KI");
-    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_GREEN);
+    messenger.addMessage("", 0, ChatDestination::System, text, COLOR_GREEN);
 }
 
 void dskGameInterface::CI_GGSChanged(const GlobalGameSettings& /*ggs*/)
 {
     // TODO: print what has changed
     const std::string text = helpers::format(_("Note: Game settings changed by the server%s"), "");
-    messenger.AddMessage("", 0, ChatDestination::System, text);
+    messenger.addMessage("", 0, ChatDestination::System, text);
 }
 
 void dskGameInterface::CI_Chat(const unsigned playerId, const ChatDestination cd, const std::string& msg)
 {
-    messenger.AddMessage(worldViewer.GetWorld().GetPlayer(playerId).name,
-                         worldViewer.GetWorld().GetPlayer(playerId).color, cd, msg);
+    messenger.addMessage(worldViewer.getWorld().getPlayer(playerId).name,
+                         worldViewer.getWorld().getPlayer(playerId).color, cd, msg);
 }
 
 void dskGameInterface::CI_Async(const std::string& checksums_list)
 {
-    messenger.AddMessage("", 0, ChatDestination::System,
+    messenger.addMessage("", 0, ChatDestination::System,
                          _("The Game is not in sync. Checksums of some players don't match."), COLOR_RED);
-    messenger.AddMessage("", 0, ChatDestination::System, checksums_list, COLOR_YELLOW);
-    messenger.AddMessage("", 0, ChatDestination::System, _("A auto-savegame is created..."), COLOR_RED);
+    messenger.addMessage("", 0, ChatDestination::System, checksums_list, COLOR_YELLOW);
+    messenger.addMessage("", 0, ChatDestination::System, _("A auto-savegame is created..."), COLOR_RED);
 }
 
 void dskGameInterface::CI_ReplayAsync(const std::string& msg)
 {
-    messenger.AddMessage("", 0, ChatDestination::System, msg, COLOR_RED);
+    messenger.addMessage("", 0, ChatDestination::System, msg, COLOR_RED);
 }
 
 void dskGameInterface::CI_ReplayEndReached(const std::string& msg)
 {
-    messenger.AddMessage("", 0, ChatDestination::System, msg, COLOR_BLUE);
+    messenger.addMessage("", 0, ChatDestination::System, msg, COLOR_BLUE);
 }
 
 void dskGameInterface::CI_GamePaused()
 {
-    messenger.AddMessage(_("SYSTEM"), COLOR_GREY, ChatDestination::System, _("Game was paused."));
+    messenger.addMessage(_("SYSTEM"), COLOR_GREY, ChatDestination::System, _("Game was paused."));
 }
 
 void dskGameInterface::CI_GameResumed()
 {
-    messenger.AddMessage(_("SYSTEM"), COLOR_GREY, ChatDestination::System, _("Game was resumed."));
+    messenger.addMessage(_("SYSTEM"), COLOR_GREY, ChatDestination::System, _("Game was resumed."));
 }
 
 void dskGameInterface::CI_Error(const ClientError ce)
 {
-    messenger.AddMessage("", 0, ChatDestination::System, ClientErrorToStr(ce), COLOR_RED);
-    GAMECLIENT.SetPause(true);
+    messenger.addMessage("", 0, ChatDestination::System, clientErrorToStr(ce), COLOR_RED);
+    GAMECLIENT.setPause(true);
 }
 
 /**
@@ -1260,7 +1260,7 @@ void dskGameInterface::CI_Error(const ClientError ce)
  */
 void dskGameInterface::LC_Status_ConnectionLost()
 {
-    messenger.AddMessage("", 0, ChatDestination::System, _("Lost connection to lobby!"), COLOR_RED);
+    messenger.addMessage("", 0, ChatDestination::System, _("Lost connection to lobby!"), COLOR_RED);
 }
 
 /**
@@ -1268,25 +1268,25 @@ void dskGameInterface::LC_Status_ConnectionLost()
  */
 void dskGameInterface::LC_Status_Error(const std::string& error)
 {
-    messenger.AddMessage("", 0, ChatDestination::System, error, COLOR_RED);
+    messenger.addMessage("", 0, ChatDestination::System, error, COLOR_RED);
 }
 
 void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned player2)
 {
     // Meldung anzeigen
-    std::string text = "Player '" + worldViewer.GetWorld().GetPlayer(player1).name + "' switched to player '"
-                       + worldViewer.GetWorld().GetPlayer(player2).name + "'";
-    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_YELLOW);
+    std::string text = "Player '" + worldViewer.getWorld().getPlayer(player1).name + "' switched to player '"
+                       + worldViewer.getWorld().getPlayer(player2).name + "'";
+    messenger.addMessage("", 0, ChatDestination::System, text, COLOR_YELLOW);
 
     // Sichtbarkeiten und Minimap neu berechnen, wenn wir ein von den beiden Spielern sind
-    const unsigned localPlayerId = worldViewer.GetPlayerId();
+    const unsigned localPlayerId = worldViewer.getPlayerId();
     if(player1 == localPlayerId || player2 == localPlayerId)
     {
-        worldViewer.ChangePlayer(player1 == localPlayerId ? player2 : player1);
+        worldViewer.changePlayer(player1 == localPlayerId ? player2 : player1);
         // Set visual settings back to the actual ones
-        GAMECLIENT.ResetVisualSettings();
-        minimap.UpdateAll();
-        InitPlayer();
+        GAMECLIENT.resetVisualSettings();
+        minimap.updateAll();
+        initPlayer();
     }
 }
 
@@ -1296,31 +1296,31 @@ void dskGameInterface::CI_PlayersSwapped(const unsigned player1, const unsigned 
 void dskGameInterface::GI_PlayerDefeated(const unsigned playerId)
 {
     const std::string text =
-      helpers::format(_("Player '%s' was defeated!"), worldViewer.GetWorld().GetPlayer(playerId).name);
-    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_ORANGE);
+      helpers::format(_("Player '%s' was defeated!"), worldViewer.getWorld().getPlayer(playerId).name);
+    messenger.addMessage("", 0, ChatDestination::System, text, COLOR_ORANGE);
 
     /// Lokaler Spieler?
-    if(playerId == worldViewer.GetPlayerId())
+    if(playerId == worldViewer.getPlayerId())
     {
         /// Sichtbarkeiten neu berechnen
-        worldViewer.RecalcAllColors();
+        worldViewer.recalcAllColors();
         // Minimap updaten
-        minimap.UpdateAll();
+        minimap.updateAll();
     }
 }
 
 void dskGameInterface::GI_UpdateMinimap(const MapPoint pt)
 {
     // Minimap Bescheid sagen
-    minimap.UpdateNode(pt);
+    minimap.updateNode(pt);
 }
 
 void dskGameInterface::GI_UpdateMapVisibility()
 {
     // recalculate visibility
-    worldViewer.RecalcAllColors();
+    worldViewer.recalcAllColors();
     // update minimap
-    minimap.UpdateAll();
+    minimap.updateAll();
 }
 
 /**
@@ -1329,27 +1329,27 @@ void dskGameInterface::GI_UpdateMapVisibility()
 void dskGameInterface::GI_TreatyOfAllianceChanged(unsigned playerId)
 {
     // Nur wenn Team-Sicht aktiviert ist, können sihc die Sichtbarkeiten auch ändern
-    if(playerId == worldViewer.GetPlayerId() && worldViewer.GetWorld().GetGGS().teamView)
+    if(playerId == worldViewer.getPlayerId() && worldViewer.getWorld().getGGS().teamView)
     {
         /// Sichtbarkeiten neu berechnen
-        worldViewer.RecalcAllColors();
+        worldViewer.recalcAllColors();
         // Minimap updaten
-        minimap.UpdateAll();
+        minimap.updateAll();
     }
 }
 
 /**
  *  Baut Weg zurück von Ende bis zu start_id
  */
-void dskGameInterface::DemolishRoad(const unsigned start_id)
+void dskGameInterface::demolishRoad(const unsigned start_id)
 {
     RTTR_Assert(start_id > 0);
     for(unsigned i = road.route.size(); i >= start_id; --i)
     {
         MapPoint t = road.point;
-        road.point = worldViewer.GetWorld().GetNeighbour(road.point, road.route[i - 1] + 3u);
-        worldViewer.SetVisiblePointRoad(road.point, road.route[i - 1], PointRoad::None);
-        worldViewer.RecalcBQForRoad(t);
+        road.point = worldViewer.getWorld().getNeighbour(road.point, road.route[i - 1] + 3u);
+        worldViewer.setVisiblePointRoad(road.point, road.route[i - 1], PointRoad::None);
+        worldViewer.recalcBQForRoad(t);
     }
 
     road.route.resize(start_id - 1);
@@ -1358,42 +1358,42 @@ void dskGameInterface::DemolishRoad(const unsigned start_id)
 /**
  *  Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
  */
-void dskGameInterface::UpdatePostIcon(const unsigned postmessages_count, bool showPigeon)
+void dskGameInterface::updatePostIcon(const unsigned postmessages_count, bool showPigeon)
 {
     // Taube setzen oder nicht (Post)
     if(postmessages_count == 0 || !showPigeon)
-        GetCtrl<ctrlImageButton>(3)->SetImage(LOADER.GetImageN("io", 62));
+        getCtrl<ctrlImageButton>(3)->setImage(LOADER.getImageN("io", 62));
     else
-        GetCtrl<ctrlImageButton>(3)->SetImage(LOADER.GetImageN("io", 59));
+        getCtrl<ctrlImageButton>(3)->setImage(LOADER.getImageN("io", 59));
 
     // und Anzahl der Postnachrichten aktualisieren
     if(postmessages_count > 0)
     {
-        GetCtrl<ctrlText>(ID_txtNumMsg)->SetText(std::to_string(postmessages_count));
+        getCtrl<ctrlText>(ID_txtNumMsg)->setText(std::to_string(postmessages_count));
     } else
-        GetCtrl<ctrlText>(ID_txtNumMsg)->SetText("");
+        getCtrl<ctrlText>(ID_txtNumMsg)->setText("");
 }
 
 /**
  *  Neue Post-Nachricht eingetroffen
  */
-void dskGameInterface::NewPostMessage(const PostMsg& msg, const unsigned msgCt)
+void dskGameInterface::newPostMessage(const PostMsg& msg, const unsigned msgCt)
 {
-    UpdatePostIcon(msgCt, true);
-    SoundEffect soundEffect = msg.GetSoundEffect();
+    updatePostIcon(msgCt, true);
+    SoundEffect soundEffect = msg.getSoundEffect();
     switch(soundEffect)
     {
-        case SoundEffect::Pidgeon: LOADER.GetSoundN("sound", 114)->Play(100, false); break;
-        case SoundEffect::Fanfare: LOADER.GetSoundN("sound", 110)->Play(100, false);
+        case SoundEffect::Pidgeon: LOADER.getSoundN("sound", 114)->play(100, false); break;
+        case SoundEffect::Fanfare: LOADER.getSoundN("sound", 110)->play(100, false);
     }
 }
 
 /**
  *  Es wurde eine Postnachricht vom Spieler gelöscht
  */
-void dskGameInterface::PostMessageDeleted(const unsigned msgCt)
+void dskGameInterface::postMessageDeleted(const unsigned msgCt)
 {
-    UpdatePostIcon(msgCt, false);
+    updatePostIcon(msgCt, false);
 }
 
 /**
@@ -1401,10 +1401,10 @@ void dskGameInterface::PostMessageDeleted(const unsigned msgCt)
  */
 void dskGameInterface::GI_Winner(const unsigned playerId)
 {
-    const std::string name = worldViewer.GetWorld().GetPlayer(playerId).name;
+    const std::string name = worldViewer.getWorld().getPlayer(playerId).name;
     const std::string text = (boost::format(_("Player '%s' is the winner!")) % name).str();
-    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_ORANGE);
-    WINDOWMANAGER.Show(std::make_unique<iwVictory>(std::vector<std::string>(1, name)));
+    messenger.addMessage("", 0, ChatDestination::System, text, COLOR_ORANGE);
+    WINDOWMANAGER.show(std::make_unique<iwVictory>(std::vector<std::string>(1, name)));
 }
 
 /**
@@ -1413,14 +1413,14 @@ void dskGameInterface::GI_Winner(const unsigned playerId)
 void dskGameInterface::GI_TeamWinner(const unsigned playerMask)
 {
     std::vector<std::string> winners;
-    const GameWorldBase& world = worldViewer.GetWorld();
-    for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+    const GameWorldBase& world = worldViewer.getWorld();
+    for(unsigned i = 0; i < world.getNumPlayers(); i++)
     {
         if(playerMask & (1 << i))
-            winners.push_back(world.GetPlayer(i).name);
+            winners.push_back(world.getPlayer(i).name);
     }
     const std::string text =
       (boost::format(_("%1% are the winners!")) % helpers::join(winners, ", ", _(" and "))).str();
-    messenger.AddMessage("", 0, ChatDestination::System, text, COLOR_ORANGE);
-    WINDOWMANAGER.Show(std::make_unique<iwVictory>(winners));
+    messenger.addMessage("", 0, ChatDestination::System, text, COLOR_ORANGE);
+    WINDOWMANAGER.show(std::make_unique<iwVictory>(winners));
 }

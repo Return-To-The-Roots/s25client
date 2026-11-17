@@ -166,7 +166,7 @@ std::array<MapPoint, 3> GetTriangleEdges(const Triangle& t, const MapExtent& siz
     int x2 = p.x + (!rsu && odd ? 1 : 0);
     int y2 = p.y + 1;
 
-    return {p, MakeMapPoint(Position(x1, y1), size), MakeMapPoint(Position(x2, y2), size)};
+    return {p, makeMapPoint(Position(x1, y1), size), makeMapPoint(Position(x2, y2), size)};
 }
 
 } // namespace rttr::mapGenerator

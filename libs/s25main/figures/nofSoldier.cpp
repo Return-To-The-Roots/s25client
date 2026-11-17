@@ -15,7 +15,7 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMi
     : noFigure(SOLDIER_JOBS[rank], pos, player, goal), homeBld(home), hitpoints(HITPOINTS[rank])
 {
     hasArmor_ = armor;
-    RTTR_Assert(IsSoldier());
+    RTTR_Assert(isSoldier());
 }
 
 nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMilitary& home, const unsigned char rank,
@@ -23,54 +23,54 @@ nofSoldier::nofSoldier(const MapPoint pos, const unsigned char player, nobBaseMi
     : noFigure(SOLDIER_JOBS[rank], pos, player), homeBld(&home), hitpoints(HITPOINTS[rank])
 {
     hasArmor_ = armor;
-    RTTR_Assert(IsSoldier());
+    RTTR_Assert(isSoldier());
 }
 
-void nofSoldier::Serialize(SerializedGameData& sgd) const
+void nofSoldier::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
-        sgd.PushObject(homeBld);
+        sgd.pushObject(homeBld);
 
     sgd.PushUnsignedChar(hitpoints);
 }
 
 nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
 {
-    RTTR_Assert(IsSoldier());
+    RTTR_Assert(isSoldier());
 
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
-        homeBld = sgd.PopObject<nobBaseMilitary>();
+        homeBld = sgd.popObject<nobBaseMilitary>();
     else
         homeBld = nullptr;
 
     hitpoints = sgd.PopUnsignedChar();
 }
 
-void nofSoldier::DrawSoldierWaiting(DrawPoint drawPt)
+void nofSoldier::drawSoldierWaiting(DrawPoint drawPt)
 {
-    const GamePlayer& owner = world->GetPlayer(player);
-    LOADER.getBobSprite(owner.nation, job_, GetCurMoveDir(), 2).drawForPlayer(drawPt, owner.color);
+    const GamePlayer& owner = world->getPlayer(player);
+    LOADER.getBobSprite(owner.nation, job_, getCurMoveDir(), 2).drawForPlayer(drawPt, owner.color);
     if(hasArmor_)
-        this->DrawArmor(drawPt);
+        this->drawArmor(drawPt);
 }
 
-void nofSoldier::AbrogateWorkplace()
+void nofSoldier::abrogateWorkplace()
 {
     if(homeBld)
     {
-        homeBld->SoldierLost(this);
+        homeBld->soldierLost(this);
         homeBld = nullptr;
     }
 }
 
-unsigned char nofSoldier::GetRank() const
+unsigned char nofSoldier::getRank() const
 {
     return getSoldierRank(job_);
 }
 
-unsigned char nofSoldier::GetHitpoints() const
+unsigned char nofSoldier::getHitpoints() const
 {
     return hitpoints;
 }

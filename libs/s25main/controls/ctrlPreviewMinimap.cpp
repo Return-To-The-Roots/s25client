@@ -12,55 +12,55 @@ ctrlPreviewMinimap::ctrlPreviewMinimap(Window* parent, const unsigned id, const 
                                        libsiedler2::ArchivItem_Map* s2map)
     : ctrlMinimap(parent, id, pos, size, Extent(2, 2), Extent(0, 0)), minimap(nullptr)
 {
-    SetMap(s2map);
+    setMap(s2map);
 }
 
 /**
  *  Zeichnet die MapPreview
  */
-void ctrlPreviewMinimap::Draw_()
+void ctrlPreviewMinimap::drawImpl()
 {
     if(mapSize == Extent::all(0))
         return;
 
     // Button drumrum zeichnen
-    Draw3DBorder(GetBoundaryRect(), TextureColor::Grey, true);
+    draw3DBorder(getBoundaryRect(), TextureColor::Grey, true);
 
     // Map ansich zeichnen
-    DrawMap(minimap);
+    drawMap(minimap);
 
     const Extent playerPxlSize(4, 4);
-    const DrawPoint basePos = GetDrawPos();
+    const DrawPoint basePos = getDrawPos();
     // Startpositionen zeichnen
     for(const Player& player : players)
     {
         // Spieler anwesend?
         if(player.pos.isValid())
-            DrawRectangle(Rect(basePos + CalcMapCoord(player.pos), playerPxlSize), player.color);
+            drawRectangle(Rect(basePos + calcMapCoord(player.pos), playerPxlSize), player.color);
     }
 }
 
-Rect ctrlPreviewMinimap::GetBoundaryRect() const
+Rect ctrlPreviewMinimap::getBoundaryRect() const
 {
-    Rect borderRect = Rect::move(GetMapDrawArea(), -DrawPoint(padding));
+    Rect borderRect = Rect::move(getMapDrawArea(), -DrawPoint(padding));
     borderRect.setSize(borderRect.getSize() + padding * 2u);
     return borderRect;
 }
 
-void ctrlPreviewMinimap::SetMap(const libsiedler2::ArchivItem_Map* const s2map)
+void ctrlPreviewMinimap::setMap(const libsiedler2::ArchivItem_Map* const s2map)
 {
     for(auto& player : players)
-        player.pos = MapPoint::Invalid();
+        player.pos = MapPoint::invalid();
     if(!s2map)
     {
-        SetMapSize(Extent::all(0));
+        setMapSize(Extent::all(0));
         return;
     }
 
     const unsigned short map_width = s2map->getHeader().getWidth();
     const unsigned short map_height = s2map->getHeader().getHeight();
-    SetMapSize(Extent(map_width, map_height));
-    minimap.SetMap(*s2map);
+    setMapSize(Extent(map_width, map_height));
+    minimap.setMap(*s2map);
 
     // Startpositionen merken
     for(unsigned short y = 0; y < map_height; ++y)

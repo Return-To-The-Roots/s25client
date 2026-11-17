@@ -43,8 +43,8 @@ static void BM_PathFinding(benchmark::State& state)
 
     for(auto _ : state)
     {
-        const bool result = state.range() < 6 ? world.FindHumanPath(start, goal).has_value() :
-                                                world.FindShipPath(start, goal, 600, nullptr, nullptr);
+        const bool result = state.range() < 6 ? world.findHumanPath(start, goal).has_value() :
+                                                world.findShipPath(start, goal, 600, nullptr, nullptr);
         benchmark::DoNotOptimize(result);
     }
 }
@@ -71,7 +71,7 @@ static void BM_BQ_Calculation(benchmark::State& state)
 
     for(auto _ : state)
     {
-        world.InitAfterLoad();
+        world.initAfterLoad();
         benchmark::DoNotOptimize(world);
     }
 }

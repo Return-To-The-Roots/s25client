@@ -24,33 +24,33 @@ public:
     ctrlMultiline(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                   const glFont* font, FontStyle format);
 
-    void Resize(const Extent& newSize) override;
-    void AddString(const std::string& str, unsigned color, bool scroll = true);
+    void resize(const Extent& newSize) override;
+    void addString(const std::string& str, unsigned color, bool scroll = true);
     /// Deletes all lines
-    void Clear();
-    unsigned GetNumLines() const { return static_cast<unsigned>(lines.size()); }
+    void clear();
+    unsigned getNumLines() const { return static_cast<unsigned>(lines.size()); }
     /// Gibt den index-ten Eintrag zurück
-    const std::string& GetLine(unsigned index) const { return lines[index].str; }
-    void SetLine(unsigned index, const std::string& str, unsigned color);
+    const std::string& getLine(unsigned index) const { return lines[index].str; }
+    void setLine(unsigned index, const std::string& str, unsigned color);
     /// Resizes the height such that the given number of lines can be shown
-    void SetNumVisibleLines(unsigned numLines);
+    void setNumVisibleLines(unsigned numLines);
     /// Return the currently used size including padding and the (possible) scrollbar (<=width,  <= height)
-    Extent GetContentSize() const;
+    Extent getContentSize() const;
 
     /// Schaltet Box ein und aus
-    void ShowBackground(bool showBackground) { showBackground_ = showBackground; }
+    void showBackground(bool showBackground) { showBackground_ = showBackground; }
     /// (Dis-)allows a scrollbar. If scrollbar is disabled, text will be restricted by the current height and succeeding
     /// lines won't be shown
-    void SetScrollBarAllowed(bool allowed);
+    void setScrollBarAllowed(bool allowed);
 
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
     struct Line
@@ -61,7 +61,7 @@ private:
         Line(std::string str, unsigned color) : str(std::move(str)), color(color) {}
     };
 
-    unsigned GetContentWidth() const;
+    unsigned getContentWidth() const;
 
     TextureColor tc_;
     const glFont* font;
@@ -77,6 +77,6 @@ private:
     /// Width of content as last calculated or 0
     mutable unsigned cachedContentWidth;
 
-    void RecalcVisibleLines();
-    void RecalcWrappedLines();
+    void recalcVisibleLines();
+    void recalcWrappedLines();
 };

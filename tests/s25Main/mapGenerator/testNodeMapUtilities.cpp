@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE(GetDifference_returns_maximum_difference_between_range)
 {
     ValueRange<int> range(4, 20);
 
-    BOOST_TEST(range.GetDifference() == 16);
+    BOOST_TEST(range.getDifference() == 16);
 }
 
 BOOST_AUTO_TEST_CASE(MapValueToIndex_returns_zero_for_minimum_value)
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(GetRange_returns_range_of_map_values)
 {
     MapExtent size(16, 8);
     NodeMapBase<int> values;
-    values.Resize(size, 2);
+    values.resize(size, 2);
     values[3] = -1;
     values[7] = 7;
 
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(GetMaximumPoint_returns_map_point_for_maximum_value)
 {
     MapExtent size(16, 8);
     NodeMapBase<int> values;
-    values.Resize(size, 4);
+    values.resize(size, 4);
     MapPoint maximumPoint(3, 5);
     values[maximumPoint] = 5;
 

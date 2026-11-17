@@ -24,31 +24,31 @@ nofDefender::nofDefender(const nofPassiveSoldier& other, nofAttacker& attacker)
     : nofActiveSoldier(other, SoldierState::DefendingWalkingTo), attacker(&attacker)
 {}
 
-void nofDefender::Serialize(SerializedGameData& sgd) const
+void nofDefender::serialize(SerializedGameData& sgd) const
 {
-    nofActiveSoldier::Serialize(sgd);
+    nofActiveSoldier::serialize(sgd);
 
     if(state != SoldierState::FigureWork)
-        sgd.PushObject(attacker, true);
+        sgd.pushObject(attacker, true);
 }
 
 nofDefender::nofDefender(SerializedGameData& sgd, const unsigned obj_id) : nofActiveSoldier(sgd, obj_id)
 {
     if(state != SoldierState::FigureWork)
-        attacker = sgd.PopObject<nofAttacker>(GO_Type::NofAttacker);
+        attacker = sgd.popObject<nofAttacker>(GO_Type::NofAttacker);
     else
         attacker = nullptr;
 }
 
-void nofDefender::Walked()
+void nofDefender::walked()
 {
     switch(state)
     {
         case SoldierState::DefendingWalkingTo:
             // Start fight with attacker
-            world->AddFigure(pos, std::make_unique<noFighting>(*attacker, *this));
+            world->addFigure(pos, std::make_unique<noFighting>(*attacker, *this));
             state = SoldierState::Fighting;
-            attacker->FightVsDefenderStarted();
+            attacker->fightVsDefenderStarted();
             break;
         case SoldierState::DefendingWalkingFrom:
             if(!homeBld)
@@ -56,8 +56,8 @@ void nofDefender::Walked()
                 // Home destroyed -> Start wandering around
                 attacker = nullptr;
                 state = SoldierState::FigureWork;
-                StartWandering();
-                Wander();
+                startWandering();
+                wander();
             } else
             {
                 // Arrived in building
@@ -65,13 +65,13 @@ void nofDefender::Walked()
                 {
                     // An attacker arrived in the meantime so go back out
                     state = SoldierState::DefendingWalkingTo;
-                    StartWalking(Direction::SouthEast);
+                    startWalking(Direction::SouthEast);
                 } else
                 {
                     nobBaseMilitary* bld = homeBld;
-                    RTTR_Assert(bld->GetDefender() == this); // I should be the defender
-                    bld->AddActiveSoldier(world->RemoveFigure(pos, *this));
-                    RTTR_Assert(!bld->GetDefender()); // No defender anymore
+                    RTTR_Assert(bld->getDefender() == this); // I should be the defender
+                    bld->addActiveSoldier(world->RemoveFigure(pos, *this));
+                    RTTR_Assert(!bld->getDefender()); // No defender anymore
                 }
             }
             break;
@@ -79,7 +79,7 @@ void nofDefender::Walked()
     }
 }
 
-void nofDefender::HomeDestroyed()
+void nofDefender::homeDestroyed()
 {
     homeBld = nullptr;
 
@@ -89,13 +89,13 @@ void nofDefender::HomeDestroyed()
             // Handle now as we are not moving
             attacker = nullptr;
             state = SoldierState::FigureWork;
-            StartWandering();
-            Wander();
+            startWandering();
+            wander();
             break;
         case SoldierState::DefendingWalkingTo:
         case SoldierState::DefendingWalkingFrom:
             attacker = nullptr;
-            StartWandering();
+            startWandering();
             state = SoldierState::FigureWork;
             break;
         case SoldierState::Fighting:
@@ -104,21 +104,21 @@ void nofDefender::HomeDestroyed()
     }
 }
 
-void nofDefender::HomeDestroyedAtBegin()
+void nofDefender::homeDestroyedAtBegin()
 {
     homeBld = nullptr;
 
     state = SoldierState::FigureWork;
 
-    StartWandering();
-    StartWalking(RANDOM_ENUM(Direction));
+    startWandering();
+    startWalking(RANDOM_ENUM(Direction));
 }
 
-void nofDefender::WonFighting()
+void nofDefender::wonFighting()
 {
     // addon BattlefieldPromotion active? -> increase rank!
-    if(world->GetGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
-        IncreaseRank();
+    if(world->getGGS().isEnabled(AddonId::BATTLEFIELD_PROMOTION))
+        increaseRank();
     // Attacker is dead
     attacker = nullptr;
 
@@ -126,13 +126,13 @@ void nofDefender::WonFighting()
     {
         // Home destroyed so abort and wander around
         state = SoldierState::FigureWork;
-        StartWandering();
-        Wander();
+        startWandering();
+        wander();
 
         return;
     }
 
-    attacker = homeBld->FindAttackerNearBuilding();
+    attacker = homeBld->findAttackerNearBuilding();
     if(attacker)
     {
         // New attacker found so wait for him
@@ -141,36 +141,36 @@ void nofDefender::WonFighting()
     {
         // Otherwise go back into the building
         state = SoldierState::DefendingWalkingFrom;
-        StartWalking(Direction::NorthWest);
+        startWalking(Direction::NorthWest);
     }
 }
 
-void nofDefender::LostFighting()
+void nofDefender::lostFighting()
 {
     attacker = nullptr;
 
     // Notify building if it still exists
     if(homeBld)
     {
-        homeBld->ResetDefender();
+        homeBld->resetDefender();
         // A military building potentially needs to get new soldiers if this wasn't the last one
-        if(BuildingProperties::IsMilitary(homeBld->GetBuildingType()))
+        if(BuildingProperties::isMilitary(homeBld->getBuildingType()))
         {
             RTTR_Assert(dynamic_cast<nobBaseMilitary*>(homeBld));
-            if(static_cast<nobMilitary*>(homeBld)->GetNumTroops())
-                static_cast<nobMilitary*>(homeBld)->RegulateTroops();
+            if(static_cast<nobMilitary*>(homeBld)->getNumTroops())
+                static_cast<nobMilitary*>(homeBld)->regulateTroops();
         }
         homeBld = nullptr;
     }
 }
 
-void nofDefender::AttackerArrested()
+void nofDefender::attackerArrested()
 {
-    attacker = homeBld->FindAttackerNearBuilding();
+    attacker = homeBld->findAttackerNearBuilding();
     if(!attacker)
     {
         // Go back into the building
         state = SoldierState::DefendingWalkingFrom;
-        StartWalking(Direction::NorthWest);
+        startWalking(Direction::NorthWest);
     }
 }

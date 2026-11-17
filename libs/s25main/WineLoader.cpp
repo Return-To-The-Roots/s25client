@@ -33,51 +33,51 @@ helpers::EnumArray<unsigned, BobTypes> bobIndex = {1,   17,  22,  27,  32,  37, 
                                                    540, 270, 282, 289, 295, 600, 650, 700, 750, 412, 461, 510,
                                                    517, 525, 526, 527, 528, 529, 530, 532, 533, 535, 536};
 
-ITexture* GetWareTex(const GoodType good)
+ITexture* getWareTex(const GoodType good)
 {
-    return LOADER.GetImageN("wine_bobs",
+    return LOADER.getImageN("wine_bobs",
                             bobIndex[good == GoodType::Wine ? BobTypes::WINE_WARE_ICON : BobTypes::GRAPES_WARE_ICON]);
 }
 
-ITexture* GetWareStackTex(const GoodType good)
+ITexture* getWareStackTex(const GoodType good)
 {
-    return LOADER.GetImageN("wine_bobs", bobIndex[good == GoodType::Wine ? BobTypes::WINE_WARE_ON_GROUND_OF_FLAG :
+    return LOADER.getImageN("wine_bobs", bobIndex[good == GoodType::Wine ? BobTypes::WINE_WARE_ON_GROUND_OF_FLAG :
                                                                            BobTypes::GRAPES_WARE_ON_GROUND_OF_FLAG]);
 }
 
-ITexture* GetWareDonkeyTex(const GoodType good)
+ITexture* getWareDonkeyTex(const GoodType good)
 {
-    return LOADER.GetImageN("wine_bobs", bobIndex[good == GoodType::Wine ? BobTypes::DONKEY_BOAT_CARRYING_WINE_WARE :
+    return LOADER.getImageN("wine_bobs", bobIndex[good == GoodType::Wine ? BobTypes::DONKEY_BOAT_CARRYING_WINE_WARE :
                                                                            BobTypes::DONKEY_BOAT_CARRYING_GRAPES_WARE]);
 }
 
-ITexture* GetJobTex(Job job)
+ITexture* getJobTex(Job job)
 {
     switch(job)
     {
-        case Job::Winegrower: return LOADER.GetImageN("wine_bobs", bobIndex[BobTypes::WINEGROWER_JOB_ICON]);
-        case Job::Vintner: return LOADER.GetImageN("wine_bobs", bobIndex[BobTypes::VINTNER_JOB_ICON]);
-        case Job::TempleServant: return LOADER.GetImageN("wine_bobs", bobIndex[BobTypes::TEMPLESERVANT_JOB_ICON]);
+        case Job::Winegrower: return LOADER.getImageN("wine_bobs", bobIndex[BobTypes::WINEGROWER_JOB_ICON]);
+        case Job::Vintner: return LOADER.getImageN("wine_bobs", bobIndex[BobTypes::VINTNER_JOB_ICON]);
+        case Job::TempleServant: return LOADER.getImageN("wine_bobs", bobIndex[BobTypes::TEMPLESERVANT_JOB_ICON]);
         default: return nullptr;
     }
 }
 
-ITexture* GetTempleProductionModeTex(ProductionMode productionMode)
+ITexture* getTempleProductionModeTex(ProductionMode productionMode)
 {
     switch(productionMode)
     {
         case ProductionMode::Default:
-            return LOADER.GetImageN("wine_bobs", bobIndex[BobTypes::TEMPLE_OUTPUT_WARE_ICON_RANDOM]);
-        case ProductionMode::IronOre: return LOADER.GetWareTex(GoodType::IronOre);
-        case ProductionMode::Coal: return LOADER.GetWareTex(GoodType::Coal);
-        case ProductionMode::Stone: return LOADER.GetWareTex(GoodType::Stones);
+            return LOADER.getImageN("wine_bobs", bobIndex[BobTypes::TEMPLE_OUTPUT_WARE_ICON_RANDOM]);
+        case ProductionMode::IronOre: return LOADER.getWareTex(GoodType::IronOre);
+        case ProductionMode::Coal: return LOADER.getWareTex(GoodType::Coal);
+        case ProductionMode::Stone: return LOADER.getWareTex(GoodType::Stones);
     }
     return nullptr;
 }
 
 bool isAddonActive(const GameWorldBase& gwb)
 {
-    return gwb.GetGGS().isEnabled(AddonId::WINE);
+    return gwb.getGGS().isEnabled(AddonId::WINE);
 }
 
 helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
@@ -92,8 +92,8 @@ void fillCache(glTexturePacker& stp)
         {
             glSmartBitmap& bmp = grapefield_cache[type][size];
             bmp.reset();
-            bmp.add(LOADER.GetImageN("wine_bobs", field + size));
-            bmp.addShadow(LOADER.GetImageN("wine_bobs", shadow + size));
+            bmp.add(LOADER.getImageN("wine_bobs", field + size));
+            bmp.addShadow(LOADER.getImageN("wine_bobs", shadow + size));
             stp.add(bmp);
         }
     }

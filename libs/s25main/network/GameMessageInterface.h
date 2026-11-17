@@ -14,7 +14,7 @@
     BOOST_PP_SEQ_FOR_EACH(__GENERATE_FWD_DECL_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 
 #define __GENERATE_CALLBACK_SINGLE(s, data, expression) \
-    virtual bool OnGameMessage(const expression& /*msg*/) { return false; }
+    virtual bool onGameMessage(const expression& /*msg*/) { return false; }
 #define __GENERATE_CALLBACKS(...) \
     BOOST_PP_SEQ_FOR_EACH(__GENERATE_CALLBACK_SINGLE, 0, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))
 

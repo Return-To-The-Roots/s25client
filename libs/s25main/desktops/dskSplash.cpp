@@ -27,54 +27,54 @@ dskSplash::dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg)
     : Desktop(splashImg.get()), splashImg(std::move(splashImg)), isLoading(false), isLoaded(false)
 {
     background->setInterpolateTexture(false);
-    WINDOWMANAGER.SetCursor(Cursor::None);
+    WINDOWMANAGER.setCursor(Cursor::None);
 }
 
 dskSplash::~dskSplash()
 {
-    WINDOWMANAGER.SetCursor();
+    WINDOWMANAGER.setCursor();
 }
 
-void dskSplash::SetActive(bool activate)
+void dskSplash::setActive(bool activate)
 {
-    Desktop::SetActive(activate);
-    if(activate && !GetCtrl<ctrlTimer>(0))
-        AddTimer(0, 1ms);
+    Desktop::setActive(activate);
+    if(activate && !getCtrl<ctrlTimer>(0))
+        addTimer(0, 1ms);
 }
 
-void dskSplash::Msg_Timer(const unsigned ctrl_id)
+void dskSplash::msgTimer(const unsigned ctrl_id)
 {
-    GetCtrl<ctrlTimer>(ctrl_id)->Stop();
+    getCtrl<ctrlTimer>(ctrl_id)->stop();
     if(ctrl_id == 0)
-        AddTimer(1, 1ms);
+        addTimer(1, 1ms);
     else if(ctrl_id == 1 && !isLoaded && !isLoading)
     {
         isLoading = true;
-        LoadFiles();
+        loadFiles();
     } else if(isLoaded)
-        WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>());
 }
 
-bool dskSplash::Msg_LeftDown(const MouseCoords& /*mc*/)
+bool dskSplash::msgLeftDown(const MouseCoords& /*mc*/)
 {
     if(isLoaded)
-        WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>());
 
     return true;
 }
 
-void dskSplash::LoadFiles()
+void dskSplash::loadFiles()
 {
     ApplicationLoader loader(RTTRCONFIG, LOADER, LOG, SETTINGS.sound.playlist);
     if(loader.load())
     {
         isLoaded = true;
-        AddTimer(2, 5s);
-        SetFpsDisplay(true);
+        addTimer(2, 5s);
+        setFpsDisplay(true);
         if(loader.getPlaylist())
-            MUSICPLAYER.SetPlaylist(std::move(*loader.getPlaylist()));
+            MUSICPLAYER.setPlaylist(std::move(*loader.getPlaylist()));
         if(SETTINGS.sound.musicEnabled)
-            MUSICPLAYER.Play();
+            MUSICPLAYER.play();
 
     } else
     {
@@ -84,7 +84,7 @@ void dskSplash::LoadFiles()
                          % RTTRCONFIG.ExpandPath("<RTTR_GAME>").string();
 
         s25util::error(fmt.str());
-        VIDEODRIVER.ShowErrorMessage(_("Missing game files"), fmt.str());
+        VIDEODRIVER.showErrorMessage(_("Missing game files"), fmt.str());
 
         GLOBALVARS.notdone = false;
     }

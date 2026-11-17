@@ -33,7 +33,7 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* ms
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
                    const ResourceId& iconFile, unsigned iconIdx, unsigned msgboxid /* = 0 */)
-    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.GetImageN("resource", 41),
+    : IngameWindow(CGI_MSGBOX, IngameWindow::posLastOrCenter, Extent(420, 140), title, LOADER.getImageN("resource", 41),
                    true, CloseBehavior::Custom),
       button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {
@@ -42,72 +42,72 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* ms
 
 void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigned iconIdx)
 {
-    glArchivItem_Bitmap* icon = LOADER.GetImageN(iconFile, iconIdx);
+    glArchivItem_Bitmap* icon = LOADER.getImageN(iconFile, iconIdx);
     if(icon)
-        AddImage(ID_ICON, contentOffset + DrawPoint(30, 20), icon);
-    int textX = icon ? icon->getWidth() - icon->getNx() + GetCtrl<Window>(ID_ICON)->GetPos().x : contentOffset.x;
+        addImage(ID_ICON, contentOffset + DrawPoint(30, 20), icon);
+    int textX = icon ? icon->getWidth() - icon->getNx() + getCtrl<Window>(ID_ICON)->getPos().x : contentOffset.x;
     textX += paddingX;
-    Extent txtSize = Extent(std::max<int>(minTextWidth, GetRightBottomBoundary().x - textX - paddingX), maxTextHeight);
+    Extent txtSize = Extent(std::max<int>(minTextWidth, getRightBottomBoundary().x - textX - paddingX), maxTextHeight);
     ctrlMultiline* multiline =
-      AddMultiline(ID_TEXT, DrawPoint(textX, contentOffset.y + 5), txtSize, TextureColor::Green2, NormalFont);
-    multiline->ShowBackground(false);
-    multiline->AddString(text, COLOR_YELLOW);
-    multiline->Resize(multiline->GetContentSize());
+      addMultiline(ID_TEXT, DrawPoint(textX, contentOffset.y + 5), txtSize, TextureColor::Green2, NormalFont);
+    multiline->showBackground(false);
+    multiline->addString(text, COLOR_YELLOW);
+    multiline->resize(multiline->getContentSize());
     // 10 padding, button/button padding
-    Extent newIwSize(multiline->GetPos() + multiline->GetSize() + Extent(paddingX, 10 + btSize.y * 2));
+    Extent newIwSize(multiline->getPos() + multiline->getSize() + Extent(paddingX, 10 + btSize.y * 2));
     // Increase window size if required
-    SetIwSize(elMax(GetIwSize(), newIwSize));
+    setIwSize(elMax(getIwSize(), newIwSize));
 
     unsigned defaultBt = 0;
     // Buttons erstellen
     switch(button)
     {
         case MsgboxButton::Ok:
-            AddButton(ID_BT_0, GetSize().x / 2 - 45, _("OK"), TextureColor::Green2);
+            addButton(ID_BT_0, getSize().x / 2 - 45, _("OK"), TextureColor::Green2);
             defaultBt = 0;
             break;
 
         case MsgboxButton::OkCancel:
-            AddButton(ID_BT_0, GetSize().x / 2 - 3 - 90, _("OK"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 + 3, _("Cancel"), TextureColor::Red1);
+            addButton(ID_BT_0, getSize().x / 2 - 3 - 90, _("OK"), TextureColor::Green2);
+            addButton(ID_BT_0 + 1, getSize().x / 2 + 3, _("Cancel"), TextureColor::Red1);
             defaultBt = 1;
             break;
 
         case MsgboxButton::YesNo:
-            AddButton(ID_BT_0, GetSize().x / 2 - 3 - 90, _("Yes"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 + 3, _("No"), TextureColor::Red1);
+            addButton(ID_BT_0, getSize().x / 2 - 3 - 90, _("Yes"), TextureColor::Green2);
+            addButton(ID_BT_0 + 1, getSize().x / 2 + 3, _("No"), TextureColor::Red1);
             defaultBt = 1;
             break;
 
         case MsgboxButton::YesNoCancel:
-            AddButton(ID_BT_0, GetSize().x / 2 - 45 - 6 - 90, _("Yes"), TextureColor::Green2);
-            AddButton(ID_BT_0 + 1, GetSize().x / 2 - 45, _("No"), TextureColor::Red1);
-            AddButton(ID_BT_0 + 2, GetSize().x / 2 + 45 + 6, _("Cancel"), TextureColor::Grey);
+            addButton(ID_BT_0, getSize().x / 2 - 45 - 6 - 90, _("Yes"), TextureColor::Green2);
+            addButton(ID_BT_0 + 1, getSize().x / 2 - 45, _("No"), TextureColor::Red1);
+            addButton(ID_BT_0 + 2, getSize().x / 2 + 45 + 6, _("Cancel"), TextureColor::Grey);
             defaultBt = 2;
             break;
     }
-    const Window* defBt = GetCtrl<Window>(defaultBt + ID_BT_0);
+    const Window* defBt = getCtrl<Window>(defaultBt + ID_BT_0);
     if(defBt)
-        VIDEODRIVER.SetMousePos(defBt->GetDrawPos() + DrawPoint(defBt->GetSize()) / 2);
-    WINDOWMANAGER.SetCursor();
+        VIDEODRIVER.setMousePos(defBt->getDrawPos() + DrawPoint(defBt->getSize()) / 2);
+    WINDOWMANAGER.setCursor();
 }
 
 iwMsgbox::~iwMsgbox() = default;
 
-void iwMsgbox::MoveIcon(const DrawPoint& pos)
+void iwMsgbox::moveIcon(const DrawPoint& pos)
 {
-    auto* icon = GetCtrl<ctrlImage>(ID_ICON);
+    auto* icon = getCtrl<ctrlImage>(ID_ICON);
     if(icon)
     {
-        icon->SetPos(elMax(pos, DrawPoint(0, 0)));
-        const ITexture* iconImg = icon->GetImage();
-        DrawPoint iconPos(icon->GetPos() - iconImg->GetOrigin());
+        icon->setPos(elMax(pos, DrawPoint(0, 0)));
+        const ITexture* iconImg = icon->getImage();
+        DrawPoint iconPos(icon->getPos() - iconImg->getOrigin());
         DrawPoint textPos = contentOffset + DrawPoint(paddingX, 5);
         Extent textMaxSize;
         if(iconPos.x < 100)
         {
             // icon left
-            textPos.x = iconPos.x + iconImg->GetSize().x + paddingX;
+            textPos.x = iconPos.x + iconImg->getSize().x + paddingX;
             textMaxSize.x = std::max<int>(minTextWidth, 400 - textPos.x - paddingX);
             textMaxSize.y = maxTextHeight;
         } else if(iconPos.x > 300)
@@ -115,10 +115,10 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
             // icon right
             textMaxSize.x = iconPos.x - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
-        } else if(iconPos.y + iconImg->GetSize().y < 50)
+        } else if(iconPos.y + iconImg->getSize().y < 50)
         {
             // icon top
-            textPos.y = iconPos.y + iconImg->GetSize().x + paddingX;
+            textPos.y = iconPos.y + iconImg->getSize().x + paddingX;
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
         } else if(iconPos.y > 150)
@@ -132,23 +132,23 @@ void iwMsgbox::MoveIcon(const DrawPoint& pos)
             textMaxSize.x = 400 - 2 * paddingX;
             textMaxSize.y = maxTextHeight;
         }
-        auto* multiline = GetCtrl<ctrlMultiline>(ID_TEXT);
-        multiline->SetPos(textPos);
-        multiline->Resize(textMaxSize);
-        multiline->Resize(multiline->GetContentSize());
+        auto* multiline = getCtrl<ctrlMultiline>(ID_TEXT);
+        multiline->setPos(textPos);
+        multiline->resize(textMaxSize);
+        multiline->resize(multiline->getContentSize());
 
-        DrawPoint newSize = iconPos + DrawPoint(iconImg->GetSize());
-        newSize = elMax(newSize, multiline->GetPos() + DrawPoint(multiline->GetSize()) + DrawPoint::all(paddingX));
+        DrawPoint newSize = iconPos + DrawPoint(iconImg->getSize());
+        newSize = elMax(newSize, multiline->getPos() + DrawPoint(multiline->getSize()) + DrawPoint::all(paddingX));
         newSize += DrawPoint(0, 10 + btSize.y * 2) + DrawPoint(contentOffsetEnd);
-        DrawPoint btMoveDelta(newSize - GetSize());
+        DrawPoint btMoveDelta(newSize - getSize());
         btMoveDelta.x /= 2;
         for(unsigned i = 0; i < 3; i++)
         {
-            auto* bt = GetCtrl<Window>(i + ID_BT_0);
+            auto* bt = getCtrl<Window>(i + ID_BT_0);
             if(bt)
-                bt->SetPos(bt->GetPos() + btMoveDelta);
+                bt->setPos(bt->getPos() + btMoveDelta);
         }
-        Resize(Extent(newSize));
+        resize(Extent(newSize));
     }
 }
 
@@ -158,14 +158,14 @@ constexpr helpers::EnumArray<std::array<MsgboxResult, 3>, MsgboxButton> RET_IDS 
    {MsgboxResult::Yes, MsgboxResult::No},
    {MsgboxResult::Yes, MsgboxResult::No, MsgboxResult::Cancel}}};
 
-void iwMsgbox::Msg_ButtonClick(const unsigned ctrl_id)
+void iwMsgbox::msgButtonClick(const unsigned ctrl_id)
 {
     if(msgHandler_)
-        msgHandler_->Msg_MsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - ID_BT_0]);
-    Close();
+        msgHandler_->msgMsgBoxResult(msgboxid, RET_IDS[button][ctrl_id - ID_BT_0]);
+    close();
 }
 
-void iwMsgbox::AddButton(unsigned short id, int x, const std::string& text, const TextureColor tc)
+void iwMsgbox::addButton(unsigned short id, int x, const std::string& text, const TextureColor tc)
 {
-    AddTextButton(id, DrawPoint(x, GetRightBottomBoundary().y - btSize.y * 2), btSize, tc, text, NormalFont);
+    addTextButton(id, DrawPoint(x, getRightBottomBoundary().y - btSize.y * 2), btSize, tc, text, NormalFont);
 }

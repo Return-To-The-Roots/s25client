@@ -15,61 +15,61 @@ nofWorkman::nofWorkman(const Job job, const MapPoint pos, const unsigned char pl
 
 nofWorkman::nofWorkman(SerializedGameData& sgd, const unsigned obj_id) : nofBuildingWorker(sgd, obj_id) {}
 
-void nofWorkman::HandleDerivedEvent(const unsigned /*id*/)
+void nofWorkman::handleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
-        case State::Waiting1: HandleStateWaiting1(); break;
-        case State::Work: HandleStateWork(); break;
-        case State::Waiting2: HandleStateWaiting2(); break;
+        case State::Waiting1: handleStateWaiting1(); break;
+        case State::Work: handleStateWork(); break;
+        case State::Waiting2: handleStateWaiting2(); break;
         default: break;
     }
 }
 
-bool nofWorkman::StartWorking()
+bool nofWorkman::startWorking()
 {
-    current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].work_length, 1);
+    current_ev = getEvMgr().addEvent(this, JOB_CONSTS[job_].work_length, 1);
     state = State::Work;
     workplace->is_working = true;
     // Waren verbrauchen
-    workplace->ConsumeWares();
+    workplace->consumeWares();
     return true;
 }
 
-void nofWorkman::HandleStateWaiting1()
+void nofWorkman::handleStateWaiting1()
 {
     current_ev = nullptr;
-    if(!StartWorking())
+    if(!startWorking())
     {
         state = State::WaitingForWaresOrProductionStopped;
-        workplace->StartNotWorking();
+        workplace->startNotWorking();
     }
 }
 
-void nofWorkman::HandleStateWaiting2()
+void nofWorkman::handleStateWaiting2()
 {
     current_ev = nullptr;
     // Ware erzeugen... (noch nicht "richtig"!, sondern nur viruell erstmal)
-    if(!(ware = ProduceWare()).has_value())
+    if(!(ware = produceWare()).has_value())
     {
         // Soll keine erzeugt werden --> wieder anfangen zu arbeiten
-        TryToWork();
+        tryToWork();
     } else
     {
         // und diese raustragen
-        StartWalking(Direction::SouthEast);
+        startWalking(Direction::SouthEast);
         state = State::CarryoutWare;
     }
 
     // abgeleiteten Klassen Bescheid sagen
-    WorkFinished();
+    workFinished();
 }
 
-void nofWorkman::HandleStateWork()
+void nofWorkman::handleStateWork()
 {
     // Nach Arbeiten wird noch ein bisschen gewartet, bevor das Produkt herausgetragen wird
     // Bei 0 mind. 1 GF
-    current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait2_length ? JOB_CONSTS[job_].wait2_length : 1, 1);
+    current_ev = getEvMgr().addEvent(this, JOB_CONSTS[job_].wait2_length ? JOB_CONSTS[job_].wait2_length : 1, 1);
     state = State::Waiting2;
     // wir arbeiten nicht mehr
     workplace->is_working = false;
@@ -77,7 +77,7 @@ void nofWorkman::HandleStateWork()
     // Evtl. Sounds löschen
     if(was_sounding)
     {
-        world->GetSoundMgr().stopSounds(*this);
+        world->getSoundMgr().stopSounds(*this);
         was_sounding = false;
     }
 }
@@ -89,11 +89,11 @@ struct NodeHasResource
     const ResourceType res;
     NodeHasResource(const GameWorld& world, const ResourceType res) : world(world), res(res) {}
 
-    bool operator()(const MapPoint pt) { return world.GetNode(pt).resources.has(res); }
+    bool operator()(const MapPoint pt) { return world.getNode(pt).resources.has(res); }
 };
 } // namespace
 
-MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
+MapPoint nofWorkman::findPointWithResource(ResourceType type) const
 {
     // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
     const std::vector<MapPoint> pts =
@@ -101,5 +101,5 @@ MapPoint nofWorkman::FindPointWithResource(ResourceType type) const
     if(!pts.empty())
         return pts.front();
 
-    return MapPoint::Invalid();
+    return MapPoint::invalid();
 }

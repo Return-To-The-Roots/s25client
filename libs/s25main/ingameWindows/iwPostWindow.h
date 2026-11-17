@@ -17,9 +17,9 @@ class iwPostWindow : public IngameWindow
 {
 public:
     iwPostWindow(GameWorldView& gwv, PostBox& postBox);
-    void Msg_PaintBefore() override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    bool Msg_KeyDown(const KeyEvent& ke) override;
+    void msgPaintBefore() override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    bool msgKeyDown(const KeyEvent& ke) override;
 
 private:
     GameWorldView& gwv;
@@ -33,11 +33,11 @@ private:
     bool lastHasMissionGoal;
 
     /// Passt Steuerelemente an, setzt Einstellung für diverse Controls passend für die aktuelle PostMessage
-    void DisplayPostMessage();
+    void displayPostMessage();
     /// Setzt den Text mehrzeilig in das Postfenster
-    void SetMessageText(const std::string& message);
-    void FilterMessages();
-    bool ValidateMessages();
-    const PostMsg* GetMsg(unsigned id) const;
-    void SwitchCategory(PostCategory cat);
+    void setMessageText(const std::string& message);
+    void filterMessages();
+    bool validateMessages();
+    const PostMsg* getMsg(unsigned id) const;
+    void switchCategory(PostCategory cat);
 };

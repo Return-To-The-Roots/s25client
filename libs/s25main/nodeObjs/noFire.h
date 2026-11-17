@@ -28,15 +28,15 @@ public:
     noFire(SerializedGameData& sgd, unsigned obj_id);
 
     ~noFire() override;
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Fire; }
+    GO_Type getGOT() const final { return GO_Type::Fire; }
 
-    BlockingManner GetBM() const override { return BlockingManner::FlagsAround; }
+    BlockingManner getBM() const override { return BlockingManner::FlagsAround; }
 
     /// Zeichnen
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
     /// Benachrichtigen, wenn neuer gf erreicht wurde
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 };

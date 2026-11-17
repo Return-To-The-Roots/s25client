@@ -18,13 +18,13 @@ public:
     static const std::array<BuildingType, 4> militaryBldTypes;
 
     /// True iff the building type is used (not nothing)
-    static bool IsValid(BuildingType bld);
+    static bool isValid(BuildingType bld);
     /// True iff this is a regular military building
-    static bool IsMilitary(BuildingType bld);
+    static bool isMilitary(BuildingType bld);
     /// True iff this is a mine
-    static bool IsMine(BuildingType bld);
+    static bool isMine(BuildingType bld);
     /// True iff wares can be stored in this building
-    static bool IsWareHouse(BuildingType bld);
+    static bool isWareHouse(BuildingType bld);
     /// True iff this is a "usual" building, i.e. production.
-    static bool IsUsual(BuildingType bld);
+    static bool isUsual(BuildingType bld);
 };

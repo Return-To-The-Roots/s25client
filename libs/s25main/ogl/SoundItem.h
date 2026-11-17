@@ -18,7 +18,7 @@ protected:
     /// Load the sound item into the driver
     virtual SoundHandle Load() = 0;
     /// Return the handle loading it if required
-    SoundHandle& GetSoundHandle()
+    SoundHandle& getSoundHandle()
     {
         if(!handle)
             handle = Load();

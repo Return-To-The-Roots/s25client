@@ -25,17 +25,17 @@ public:
             SoundEffect soundEffect = SoundEffect::Pidgeon);
     virtual ~PostMsg() = default;
 
-    unsigned GetSendFrame() const { return sendFrame_; }
-    const std::string& GetText() const { return text_; }
-    PostCategory GetCategory() const { return cat_; }
+    unsigned getSendFrame() const { return sendFrame_; }
+    const std::string& getText() const { return text_; }
+    PostCategory getCategory() const { return cat_; }
     /// Get position related to this message (optional, defaults to invalid)
-    MapPoint GetPos() const { return pt_; }
-    SoundEffect GetSoundEffect() const { return soundEffect_; }
+    MapPoint getPos() const { return pt_; }
+    SoundEffect getSoundEffect() const { return soundEffect_; }
     /// Get Associated image or nullptr if none exists
-    virtual ITexture* GetImage_() const { return nullptr; }
+    virtual ITexture* getImage() const { return nullptr; }
 
 protected:
-    void SetText(const std::string& text) { text_ = text; }
+    void setText(const std::string& text) { text_ = text; }
 
 private:
     unsigned sendFrame_;

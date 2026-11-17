@@ -15,15 +15,15 @@ public:
     noSign(MapPoint pos, Resource resource);
     noSign(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Sign; }
+    GO_Type getGOT() const final { return GO_Type::Sign; }
 
     /// An x,y zeichnen.
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Return the resources found, as drawn on the sign.
-    Resource GetResource() const { return resource; }
+    Resource getResource() const { return resource; }
 
 private:
     Resource resource;

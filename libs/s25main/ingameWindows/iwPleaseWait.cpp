@@ -16,13 +16,13 @@
  */
 iwPleaseWait::iwPleaseWait()
     : IngameWindow(CGI_PLEASEWAIT, IngameWindow::posLastOrCenter, Extent(300, 60), _("Please wait..."),
-                   LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom)
+                   LOADER.getImageN("resource", 41), true, CloseBehavior::Custom)
 {
-    WINDOWMANAGER.SetCursor(Cursor::Moon);
-    AddText(0, GetSize() / 2, _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, NormalFont);
+    WINDOWMANAGER.setCursor(Cursor::Moon);
+    addText(0, getSize() / 2, _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER, NormalFont);
 }
 
 iwPleaseWait::~iwPleaseWait()
 {
-    WINDOWMANAGER.SetCursor();
+    WINDOWMANAGER.setCursor();
 }

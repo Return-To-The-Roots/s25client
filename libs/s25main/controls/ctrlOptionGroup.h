@@ -17,18 +17,18 @@ public:
     ctrlOptionGroup(Window* parent, unsigned id, GroupSelectType select_type);
 
     /// Selektiert einen neuen Button
-    void SetSelection(unsigned selection, bool notify = false);
+    void setSelection(unsigned selection, bool notify = false);
     /// Gibt den aktuell selektierten Button zurück
-    unsigned GetSelection() const;
+    unsigned getSelection() const;
     // Gibt einen Button aus der Gruppe zurück zum direkten Bearbeiten
-    ctrlButton* GetButton(unsigned id) { return GetCtrl<ctrlButton>(id); }
+    ctrlButton* getButton(unsigned id) { return getCtrl<ctrlButton>(id); }
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
 
 private:
     std::optional<unsigned>

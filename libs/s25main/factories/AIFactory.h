@@ -17,5 +17,5 @@ class AIFactory
 public:
     AIFactory() = delete;
 
-    static std::unique_ptr<AIPlayer> Create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world);
+    static std::unique_ptr<AIPlayer> create(const AI::Info& aiInfo, unsigned playerId, const GameWorldBase& world);
 };

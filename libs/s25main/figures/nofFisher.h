@@ -17,14 +17,14 @@ class nofFisher : public nofFarmhand
 
 private:
     /// Malt den Arbeiter beim Arbeiten
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override;
+    unsigned short getCarryID() const override;
 
     /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-    void WorkStarted() override;
+    void workStarted() override;
     /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-    void WorkFinished() override;
+    void workFinished() override;
 
 public:
     nofFisher(MapPoint pos, unsigned char player, nobUsual* workplace);
@@ -32,10 +32,10 @@ public:
 
     ~nofFisher() override = default;
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofFisher; }
+    GO_Type getGOT() const final { return GO_Type::NofFisher; }
 
     /// Returns the quality of this working point or determines if the worker can work here at all
-    PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const override;
+    PointQuality getPointQuality(MapPoint pt, bool isBeforeWork) const override;
 };

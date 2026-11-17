@@ -57,75 +57,75 @@ public:
                  CloseBehavior closeBehavior = CloseBehavior::Regular, Window* parent = nullptr);
 
     /// Set background image
-    void SetBackground(glArchivItem_Bitmap* background) { this->background = background; }
+    void setBackground(glArchivItem_Bitmap* background) { this->background = background; }
     /// Get background image
-    glArchivItem_Bitmap* GetBackground() const { return background; }
+    glArchivItem_Bitmap* getBackground() const { return background; }
 
     /// Set window title
-    void SetTitle(const std::string& title) { this->title_ = title; }
+    void setTitle(const std::string& title) { this->title_ = title; }
     /// Get window title
-    const std::string& GetTitle() const { return title_; }
+    const std::string& getTitle() const { return title_; }
 
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
     /// Set the size of the (expanded) content area
-    void SetIwSize(const Extent& newSize);
+    void setIwSize(const Extent& newSize);
     /// Get the size of the (expanded) content area
-    Extent GetIwSize() const;
+    Extent getIwSize() const;
     /// Get the full size of the window, even when minimized
-    Extent GetFullSize() const;
+    Extent getFullSize() const;
     /// Get the current lower right corner of the content area
-    DrawPoint GetRightBottomBoundary();
+    DrawPoint getRightBottomBoundary();
 
     /// Set the position for the window after adjusting newPos so the window is in the visible area
-    void SetPos(DrawPoint newPos, bool saveRestorePos = true);
+    void setPos(DrawPoint newPos, bool saveRestorePos = true);
 
     /// Queue the window for closing, will be done in next draw cycle
-    virtual void Close();
+    virtual void close();
     /// Return if the window will be closes
-    bool ShouldBeClosed() const { return closeme; }
+    bool shouldBeClosed() const { return closeme; }
 
     /// Minimize window (only title bar and bottom border remains)
-    void SetMinimized(bool minimized = true);
+    void setMinimized(bool minimized = true);
     /// Return whether the window is minimized
-    bool IsMinimized() const { return isMinimized_; }
+    bool isMinimized() const { return isMinimized_; }
 
-    void SetPinned(bool pinned = true);
-    bool IsPinned() const { return isPinned_; }
+    void setPinned(bool pinned = true);
+    bool isPinned() const { return isPinned_; }
 
     CloseBehavior getCloseBehavior() const { return closeBehavior_; }
 
     /// Modal windows cannot be minimized, are always active and stay on top of non-modal ones
-    bool IsModal() const { return isModal_; }
+    bool isModal() const { return isModal_; }
 
-    GUI_ID GetGUIID() const { return static_cast<GUI_ID>(Window::GetID()); }
+    GUI_ID getGUIID() const { return static_cast<GUI_ID>(Window::getID()); }
 
-    bool Msg_LeftDown(const MouseCoords&) override;
-    bool Msg_LeftUp(const MouseCoords&) override;
-    bool Msg_MiddleDown(const MouseCoords&) override;
-    bool Msg_MiddleUp(const MouseCoords&) override;
-    bool Msg_MouseMove(const MouseCoords&) override;
+    bool msgLeftDown(const MouseCoords&) override;
+    bool msgLeftUp(const MouseCoords&) override;
+    bool msgMiddleDown(const MouseCoords&) override;
+    bool msgMiddleUp(const MouseCoords&) override;
+    bool msgMouseMove(const MouseCoords&) override;
 
 protected:
-    void Draw_() final;
+    void drawImpl() final;
     /// Called when not minimized before drawing the frame
-    virtual void DrawBackground();
+    virtual void drawBackground();
     /// Called when not minimized after the frame and background have been drawn
-    virtual void DrawContent() {}
+    virtual void drawContent() {}
 
     /// Move window to center of screen
-    void MoveToCenter();
+    void moveToCenter();
     /// Move window next to current cursor position
-    void MoveNextToMouse();
+    void moveNextToMouse();
 
     /// Return if events (mouse move...) should be passed to controls of the window
-    bool IsMessageRelayAllowed() const override;
+    bool isMessageRelayAllowed() const override;
 
-    void SaveOpenStatus(bool isOpen) const;
+    void saveOpenStatus(bool isOpen) const;
 
-    void StartDragging(const Position& pos);
+    void startDragging(const Position& pos);
 
     // Return true if dragging stopped
-    bool StopDragging();
+    bool stopDragging();
 
     unsigned short iwHeight;
     std::string title_;
@@ -140,7 +140,7 @@ protected:
 
 private:
     /// Get bounds of given button
-    Rect GetButtonBounds(IwButton btn) const;
+    Rect getButtonBounds(IwButton btn) const;
 
     bool isModal_;
     bool closeme;

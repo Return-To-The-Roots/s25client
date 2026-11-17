@@ -15,84 +15,84 @@
 
 nofWarehouseWorker::nofWarehouseWorker(const MapPoint pos, const unsigned char player, std::unique_ptr<Ware> ware,
                                        const bool task)
-    : noFigure(Job::Helper, pos, player, world->GetSpecObj<noFlag>(world->GetNeighbour(pos, Direction::SouthEast))),
+    : noFigure(Job::Helper, pos, player, world->getSpecObj<noFlag>(world->getNeighbour(pos, Direction::SouthEast))),
       carried_ware(std::move(ware)), shouldBringWareIn(task), fat((RANDOM_RAND(2)) != 0)
 {
     // New figure
-    world->GetPlayer(player).IncreaseInventoryJob(Job::Helper, 1);
+    world->getPlayer(player).increaseInventoryJob(Job::Helper, 1);
 
     /// Set the road to building flag (1-piece)
-    cur_rs = static_cast<noFlag*>(GetGoal())->GetRoute(Direction::NorthWest);
-    RTTR_Assert(cur_rs->GetLength() == 1);
+    cur_rs = static_cast<noFlag*>(getGoal())->getRoute(Direction::NorthWest);
+    RTTR_Assert(cur_rs->getLength() == 1);
     rs_dir = true;
 }
 
 nofWarehouseWorker::~nofWarehouseWorker() = default;
 
-void nofWarehouseWorker::Destroy()
+void nofWarehouseWorker::destroy()
 {
     RTTR_Assert(!carried_ware); // TODO Check if this holds true and remove the LooseWare below
-    LooseWare();
+    looseWare();
 }
 
-void nofWarehouseWorker::Serialize(SerializedGameData& sgd) const
+void nofWarehouseWorker::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
-    sgd.PushObject(carried_ware, true);
+    sgd.pushObject(carried_ware, true);
     sgd.PushBool(shouldBringWareIn);
     sgd.PushBool(fat);
 }
 
 nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), carried_ware(sgd.PopObject<Ware>(GO_Type::Ware)), shouldBringWareIn(sgd.PopBool()),
+    : noFigure(sgd, obj_id), carried_ware(sgd.popObject<Ware>(GO_Type::Ware)), shouldBringWareIn(sgd.PopBool()),
       fat(sgd.PopBool())
 {}
 
-void nofWarehouseWorker::Draw(DrawPoint drawPt)
+void nofWarehouseWorker::draw(DrawPoint drawPt)
 {
     if(carried_ware)
-        DrawWalkingCarrier(drawPt, carried_ware->type, fat);
+        drawWalkingCarrier(drawPt, carried_ware->type, fat);
     else
-        DrawWalkingCarrier(drawPt, std::nullopt, fat);
+        drawWalkingCarrier(drawPt, std::nullopt, fat);
 }
 
-void nofWarehouseWorker::GoalReached()
+void nofWarehouseWorker::goalReached()
 {
     // When worker is still working, the warehouse (and its flag) exists
-    auto& wh = assertNonNull(world->GetSpecObj<nobBaseWarehouse>(world->GetNeighbour(pos, Direction::NorthWest)));
-    auto& flag = assertNonNull(wh.GetFlag());
+    auto& wh = assertNonNull(world->getSpecObj<nobBaseWarehouse>(world->getNeighbour(pos, Direction::NorthWest)));
+    auto& flag = assertNonNull(wh.getFlag());
     if(!shouldBringWareIn)
     {
         // Put ware down at flag if enough space.
         // Might need to take it back in if goal was destroyed or changed to the warehouse
-        if(flag.HasSpaceForWare() && carried_ware->GetGoal() && carried_ware->GetGoal() != &wh)
+        if(flag.hasSpaceForWare() && carried_ware->getGoal() && carried_ware->getGoal() != &wh)
         {
             // TODO: Remove assert. Was added to verify prior condition
-            RTTR_Assert(carried_ware->GetGoal() != carried_ware->GetLocation());
+            RTTR_Assert(carried_ware->getGoal() != carried_ware->getLocation());
 
-            carried_ware->WaitAtFlag(flag);
-            carried_ware->RecalcRoute();
-            flag.AddWare(std::move(carried_ware));
+            carried_ware->waitAtFlag(flag);
+            carried_ware->recalcRoute();
+            flag.addWare(std::move(carried_ware));
         } else
         {
             // Bring back in
-            carried_ware->Carry(wh);
+            carried_ware->carry(wh);
         }
     } else
     {
         // Take ware if any
-        carried_ware = flag.SelectWare(Direction::NorthWest, false, this);
+        carried_ware = flag.selectWare(Direction::NorthWest, false, this);
         if(carried_ware)
-            carried_ware->Carry(wh);
+            carried_ware->carry(wh);
     }
 
     // Start walking back
-    StartWalking(Direction::NorthWest);
-    InitializeRoadWalking(wh.GetRoute(Direction::SouthEast), 0, false);
+    startWalking(Direction::NorthWest);
+    initializeRoadWalking(wh.getRoute(Direction::SouthEast), 0, false);
 }
 
-void nofWarehouseWorker::Walked()
+void nofWarehouseWorker::walked()
 {
     // Arrived back. Check if we were supposed to bring a ware or carry on out
     if(!shouldBringWareIn)
@@ -102,20 +102,20 @@ void nofWarehouseWorker::Walked()
         if(carried_ware)
         {
             // Add to warehouse inventory (if it still exists and was not burnt down)
-            if(world->GetNO(pos)->GetType() == NodalObjectType::Building)
+            if(world->getNO(pos)->getType() == NodalObjectType::Building)
             {
-                auto* wh = world->GetSpecObj<nobBaseWarehouse>(pos);
+                auto* wh = world->getSpecObj<nobBaseWarehouse>(pos);
                 // Store the ware if its goal is this warehouse or it has no goal (anymore)
                 // Else it wants to go somewhere else, so add to waiting wares
-                if(!carried_ware->GetGoal() || carried_ware->GetGoal() == wh)
+                if(!carried_ware->getGoal() || carried_ware->getGoal() == wh)
                 {
                     // TODO: Remove assert. Was added to verify prior condition
-                    RTTR_Assert(!carried_ware->GetGoal() || carried_ware->GetGoal() == carried_ware->GetLocation());
-                    wh->AddWare(std::move(carried_ware));
+                    RTTR_Assert(!carried_ware->getGoal() || carried_ware->getGoal() == carried_ware->getLocation());
+                    wh->addWare(std::move(carried_ware));
                 } else
-                    wh->AddWaitingWare(std::move(carried_ware));
+                    wh->addWaitingWare(std::move(carried_ware));
             } else
-                LooseWare(); // Warehouse is missing --> destroy ware
+                looseWare(); // Warehouse is missing --> destroy ware
             RTTR_Assert(carried_ware == nullptr);
         }
     } else
@@ -123,36 +123,36 @@ void nofWarehouseWorker::Walked()
         if(carried_ware)
         {
             // Add ware to warehouse if it still exists
-            if(world->GetNO(pos)->GetType() == NodalObjectType::Building)
-                world->GetSpecObj<nobBaseWarehouse>(pos)->AddWare(std::move(carried_ware));
+            if(world->getNO(pos)->getType() == NodalObjectType::Building)
+                world->getSpecObj<nobBaseWarehouse>(pos)->addWare(std::move(carried_ware));
             else
-                LooseWare(); // Warehouse is missing --> destroy ware
+                looseWare(); // Warehouse is missing --> destroy ware
             RTTR_Assert(carried_ware == nullptr);
         }
     }
 
     // Remove myself
-    GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
-    world->GetPlayer(player).DecreaseInventoryJob(Job::Helper, 1);
+    getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+    world->getPlayer(player).decreaseInventoryJob(Job::Helper, 1);
 }
 
-void nofWarehouseWorker::AbrogateWorkplace()
+void nofWarehouseWorker::abrogateWorkplace()
 {
-    LooseWare();
-    StartWandering();
+    looseWare();
+    startWandering();
 }
 
-void nofWarehouseWorker::LooseWare()
+void nofWarehouseWorker::looseWare()
 {
     // Destroy carried ware if any
     if(carried_ware)
     {
-        carried_ware->WareLost(player);
-        carried_ware->Destroy();
+        carried_ware->wareLost(player);
+        carried_ware->destroy();
         carried_ware.reset();
     }
 }
 
-void nofWarehouseWorker::HandleDerivedEvent(const unsigned /*id*/) {}
+void nofWarehouseWorker::handleDerivedEvent(const unsigned /*id*/) {}
 
-void nofWarehouseWorker::CarryWare(Ware* /*ware*/) {}
+void nofWarehouseWorker::carryWare(Ware* /*ware*/) {}

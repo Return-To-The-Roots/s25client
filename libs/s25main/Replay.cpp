@@ -13,7 +13,7 @@
 #include <memory>
 #include <mygettext/mygettext.h>
 
-std::string Replay::GetSignature() const
+std::string Replay::getSignature() const
 {
     return "RTTRRP2";
 }
@@ -35,7 +35,7 @@ static const uint8_t currentReplayDataVersion = 1;
 // clang-format on
 
 /// Format version of replay files
-uint8_t Replay::GetLatestMinorVersion() const
+uint8_t Replay::getLatestMinorVersion() const
 {
     // 8.1: Portraits support
     // 8.2: Set correct initial distributions if replay starts without savegame for leather addon (see GameClient.cpp
@@ -45,7 +45,7 @@ uint8_t Replay::GetLatestMinorVersion() const
     return 4;
 }
 
-uint8_t Replay::GetLatestMajorVersion() const
+uint8_t Replay::getLatestMajorVersion() const
 {
     // Search for "TODO(Replay)" when increasing this (breaking Replay compatibility)
     // and handle/remove the relevant code
@@ -57,16 +57,16 @@ uint8_t Replay::GetLatestMajorVersion() const
 Replay::Replay() = default;
 Replay::~Replay() = default;
 
-void Replay::Close()
+void Replay::close()
 {
     file_.Close();
     uncompressedDataFile_.reset();
     isRecording_ = false;
     filepath_.clear();
-    ClearPlayers();
+    clearPlayers();
 }
 
-bool Replay::StopRecording()
+bool Replay::stopRecording()
 {
     if(!isRecording_)
         return true;
@@ -129,7 +129,7 @@ bool Replay::StopRecording()
     }
 }
 
-bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo, const unsigned randomSeed)
+bool Replay::startRecording(const boost::filesystem::path& filepath, const MapInfo& mapInfo, const unsigned randomSeed)
 {
     // Deny overwrite, also avoids double-opening by different processes
     if(boost::filesystem::exists(filepath))
@@ -144,7 +144,7 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
     mapType_ = mapInfo.type;
     randomSeed_ = randomSeed;
 
-    WriteAllHeaderData(file_, mapInfo.title);
+    writeAllHeaderData(file_, mapInfo.title);
     file_.WriteUnsignedChar(rttr::enum_cast(mapType_));
     // TODO(Replay): Move before mapType
     file_.WriteUnsignedChar(subVersion_ = currentReplayDataVersion);
@@ -153,15 +153,15 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
 
     // For (savegame) format validation
     if(mapType_ == MapType::Savegame)
-        mapInfo.savegame->WriteFileHeader(file_);
+        mapInfo.savegame->writeFileHeader(file_);
 
     // store position to update it later
     lastGfFilePos_ = file_.Tell();
     file_.WriteUnsignedInt(lastGF_);
     file_.WriteUnsignedChar(0); // Compressed flag
 
-    WritePlayerData(file_);
-    WriteGGS(file_);
+    writePlayerData(file_);
+    writeGGS(file_);
 
     // Game data
     file_.WriteUnsignedInt(randomSeed_);
@@ -180,7 +180,7 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
             if(!mapInfo.luaData.data.empty())
                 file_.WriteRawData(mapInfo.luaData.data.data(), mapInfo.luaData.data.size());
             break;
-        case MapType::Savegame: mapInfo.savegame->Save(file_, GetMapName()); break;
+        case MapType::Savegame: mapInfo.savegame->save(file_, getMapName()); break;
     }
     // Flush now to not loose any information
     file_.Flush();
@@ -188,15 +188,15 @@ bool Replay::StartRecording(const boost::filesystem::path& filepath, const MapIn
     return true;
 }
 
-const boost::filesystem::path& Replay::GetPath() const
+const boost::filesystem::path& Replay::getPath() const
 {
     RTTR_Assert(file_.IsOpen());
     return filepath_;
 }
 
-bool Replay::LoadHeader(const boost::filesystem::path& filepath)
+bool Replay::loadHeader(const boost::filesystem::path& filepath)
 {
-    Close();
+    close();
     if(!file_.Open(filepath, OpenFileMode::Read))
     {
         lastErrorMsg = _("File could not be opened.");
@@ -207,7 +207,7 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath)
     try
     {
         // Check file header
-        if(!ReadAllHeaderData(file_))
+        if(!readAllHeaderData(file_))
             return false;
 
         mapType_ = static_cast<MapType>(file_.ReadUnsignedChar());
@@ -238,9 +238,9 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath)
         {
             // Validate savegame
             Savegame save;
-            if(!save.ReadFileHeader(file_))
+            if(!save.readFileHeader(file_))
             {
-                lastErrorMsg = std::string(_("Savegame error: ")) + save.GetLastErrorMsg();
+                lastErrorMsg = std::string(_("Savegame error: ")) + save.getLastErrorMsg();
                 return false;
             }
         }
@@ -255,7 +255,7 @@ bool Replay::LoadHeader(const boost::filesystem::path& filepath)
     return true;
 }
 
-bool Replay::LoadGameData(MapInfo& mapInfo)
+bool Replay::loadGameData(MapInfo& mapInfo)
 {
     try
     {
@@ -269,18 +269,18 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
             file_.ReadRawData(compressedData.data.data(), compressedSize);
             uncompressedDataFile_ = std::make_unique<TmpFile>(".rpl");
             uncompressedDataFile_->close();
-            compressedData.DecompressToFile(uncompressedDataFile_->filePath);
+            compressedData.decompressToFile(uncompressedDataFile_->filePath);
             file_.Close();
             file_.Open(uncompressedDataFile_->filePath, OpenFileMode::Read);
         }
 
-        ReadPlayerData(file_);
-        ReadGGS(file_);
+        readPlayerData(file_);
+        readGGS(file_);
         randomSeed_ = file_.ReadUnsignedInt();
 
-        mapInfo.Clear();
+        mapInfo.clear();
         mapInfo.type = mapType_;
-        mapInfo.title = GetMapName();
+        mapInfo.title = getMapName();
         mapInfo.filepath = file_.ReadLongString();
         switch(mapType_)
         {
@@ -298,7 +298,7 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
                 mapInfo.savegame = std::make_unique<Savegame>();
                 if(!mapInfo.savegame->Load(file_, SaveGameDataToLoad::All))
                 {
-                    lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo.savegame->GetLastErrorMsg();
+                    lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo.savegame->getLastErrorMsg();
                     return false;
                 }
                 break;
@@ -311,9 +311,9 @@ bool Replay::LoadGameData(MapInfo& mapInfo)
     return true;
 }
 
-void Replay::AddChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str)
+void Replay::addChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str)
 {
-    RTTR_Assert(IsRecording());
+    RTTR_Assert(isRecording());
     if(!file_.IsOpen())
         return;
 
@@ -328,9 +328,9 @@ void Replay::AddChatCommand(unsigned gf, uint8_t player, ChatDestination dest, c
     file_.Flush();
 }
 
-void Replay::AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds)
+void Replay::addGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds)
 {
-    RTTR_Assert(IsRecording());
+    RTTR_Assert(isRecording());
     if(!file_.IsOpen())
         return;
 
@@ -339,16 +339,16 @@ void Replay::AddGameCommand(unsigned gf, uint8_t player, const PlayerGameCommand
     file_.WriteUnsignedChar(rttr::enum_cast(CommandType::Game));
     Serializer ser;
     ser.PushUnsignedChar(player);
-    cmds.Serialize(ser);
+    cmds.serialize(ser);
     ser.WriteToFile(file_);
 
     // Prevent loss in case of crash
     file_.Flush();
 }
 
-std::optional<unsigned> Replay::ReadGF()
+std::optional<unsigned> Replay::readGF()
 {
-    RTTR_Assert(IsReplaying());
+    RTTR_Assert(isReplaying());
     try
     {
         return file_.ReadUnsignedInt();
@@ -360,9 +360,9 @@ std::optional<unsigned> Replay::ReadGF()
     }
 }
 
-boost_variant2<Replay::ChatCommand, Replay::GameCommand> Replay::ReadCommand()
+boost_variant2<Replay::ChatCommand, Replay::GameCommand> Replay::readCommand()
 {
-    RTTR_Assert(IsReplaying());
+    RTTR_Assert(isReplaying());
     const auto type = static_cast<CommandType>(file_.ReadUnsignedChar() - (subVersion_ == 0 ? 1 : 0));
     switch(type)
     {
@@ -372,9 +372,9 @@ boost_variant2<Replay::ChatCommand, Replay::GameCommand> Replay::ReadCommand()
     }
 }
 
-void Replay::UpdateLastGF(unsigned last_gf)
+void Replay::updateLastGF(unsigned last_gf)
 {
-    RTTR_Assert(IsRecording());
+    RTTR_Assert(isRecording());
     if(!file_.IsOpen())
         return;
 
@@ -394,5 +394,5 @@ Replay::GameCommand::GameCommand(BinaryFile& file, const unsigned version)
     gc::Deserializer ser{version};
     ser.ReadFromFile(file);
     player = ser.PopUnsignedChar();
-    cmds.Deserialize(ser);
+    cmds.deserialize(ser);
 }

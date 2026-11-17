@@ -18,32 +18,32 @@ MusicPlayer::MusicPlayer() : playing(false) {}
 /**
  *  Startet Abspielvorgang
  */
-void MusicPlayer::Play()
+void MusicPlayer::play()
 {
     playing = true;
-    PlayNext();
+    playNext();
 }
 
 /**
  *  Stoppt Abspielvorgang
  */
-void MusicPlayer::Stop()
+void MusicPlayer::stop()
 {
-    AUDIODRIVER.StopMusic();
+    AUDIODRIVER.stopMusic();
     playing = false;
 }
 
 /**
  * Spielt nächstes Stück ab
  */
-void MusicPlayer::PlayNext()
+void MusicPlayer::playNext()
 {
     std::string song = list.getNextSong();
 
     // Am Ende der Liste angekommen?
     if(song.empty())
     {
-        Stop();
+        stop();
         return;
     }
 
@@ -52,7 +52,7 @@ void MusicPlayer::PlayNext()
     {
         unsigned nr = s25util::fromStringClassicDef(song.substr(1), 999u);
         if(nr > 0 && nr <= LOADER.sng_lst.size())
-            LOADER.sng_lst[nr - 1]->Play();
+            LOADER.sng_lst[nr - 1]->play();
         return;
     }
 
@@ -66,7 +66,7 @@ void MusicPlayer::PlayNext()
     if(int ec = libsiedler2::loader::LoadSND(song, sng))
     {
         LOG.write(_("Error: %1%\n")) % libsiedler2::getErrorString(ec);
-        Stop();
+        stop();
         return;
     }
     LOG.write(_("OK\n"));
@@ -74,5 +74,5 @@ void MusicPlayer::PlayNext()
     // Und abspielen
     auto* curSong = dynamic_cast<MusicItem*>(sng[0]);
     if(curSong)
-        curSong->Play();
+        curSong->play();
 }

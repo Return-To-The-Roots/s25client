@@ -25,7 +25,7 @@ struct ValueRange
      *
      * @returns the difference between maximum and minimum.
      */
-    T_Value GetDifference() const { return maximum - minimum; }
+    T_Value getDifference() const { return maximum - minimum; }
 };
 
 /**
@@ -42,7 +42,7 @@ struct ValueRange
 template<typename T_Value>
 unsigned MapValueToIndex(T_Value value, const ValueRange<T_Value>& range, size_t size)
 {
-    T_Value difference = range.GetDifference();
+    T_Value difference = range.getDifference();
 
     if(difference)
     {
@@ -113,7 +113,7 @@ MapPoint GetMaximumPoint(const NodeMapBase<T_Value>& values)
 {
     auto maximum = std::max_element(values.begin(), values.end());
     auto index = std::distance(values.begin(), maximum);
-    return MapPoint(static_cast<unsigned>(index % values.GetWidth()), static_cast<unsigned>(index / values.GetWidth()));
+    return MapPoint(static_cast<unsigned>(index % values.getWidth()), static_cast<unsigned>(index / values.getWidth()));
 }
 
 /**

@@ -75,9 +75,9 @@ public:
     /// Starts Preparation of an sea expedition in a habor
     bool StartStopExpedition(MapPoint pt, bool start);
     /// Lets a ship found a colony
-    bool FoundColony(unsigned shipID);
+    bool foundColony(unsigned shipID);
     /// Lets a ship travel to a new harbor spot in a given direction
-    bool TravelToNextSpot(ShipDirection direction, unsigned shipID);
+    bool travelToNextSpot(ShipDirection direction, unsigned shipID);
     /// Cancels an expedition
     bool CancelExpedition(unsigned shipID);
     bool StartStopExplorationExpedition(MapPoint pt, bool start);
@@ -86,5 +86,5 @@ public:
 protected:
     virtual ~GameCommandFactory() = default;
     /// Called for each created GC. Return true iff this is going to be executed
-    virtual bool AddGC(gc::GameCommandPtr gc) = 0;
+    virtual bool addGC(gc::GameCommandPtr gc) = 0;
 };

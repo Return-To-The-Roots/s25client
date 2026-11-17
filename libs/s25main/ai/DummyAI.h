@@ -14,7 +14,7 @@ class DummyAI final : public AIPlayer
 public:
     DummyAI(unsigned char playerId, const GameWorldBase& gwb, const AI::Level level) : AIPlayer(playerId, gwb, level) {}
 
-    void RunGF(unsigned /*gf*/, bool /*gfisnwf*/) override {}
+    void runGF(unsigned /*gf*/, bool /*gfisnwf*/) override {}
 
-    void OnChatMessage(unsigned /*sendPlayerId*/, ChatDestination, const std::string& /*msg*/) override {}
+    void onChatMessage(unsigned /*sendPlayerId*/, ChatDestination, const std::string& /*msg*/) override {}
 };

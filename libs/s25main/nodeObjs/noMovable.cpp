@@ -19,52 +19,52 @@ noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
     : noCoordBase(nop, pos), curMoveDir(Direction::SouthEast), ascent(0), moving(false), current_ev(nullptr)
 {}
 
-void noMovable::Serialize(SerializedGameData& sgd) const
+void noMovable::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(curMoveDir);
+    sgd.pushEnum<uint8_t>(curMoveDir);
     sgd.PushUnsignedChar(ascent);
-    sgd.PushEvent(current_ev);
+    sgd.pushEvent(current_ev);
     sgd.PushUnsignedInt(pauseEv.elapsed);
     sgd.PushUnsignedInt(pauseEv.length);
     sgd.PushBool(moving);
 }
 
 noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), curMoveDir(sgd.Pop<Direction>()), ascent(sgd.PopUnsignedChar())
+    : noCoordBase(sgd, obj_id), curMoveDir(sgd.pop<Direction>()), ascent(sgd.PopUnsignedChar())
 {
-    current_ev = sgd.PopEvent();
+    current_ev = sgd.popEvent();
     pauseEv = EventState(sgd);
     moving = sgd.PopBool();
 }
 
-void noMovable::Walk()
+void noMovable::walk()
 {
     moving = false;
     const MapPoint oldPos = pos;
-    pos = world->GetNeighbour(pos, curMoveDir);
-    world->AddFigure(pos, world->RemoveFigure(oldPos, *this));
+    pos = world->getNeighbour(pos, curMoveDir);
+    world->addFigure(pos, world->RemoveFigure(oldPos, *this));
 }
 
-void noMovable::FaceDir(Direction newDir)
+void noMovable::faceDir(Direction newDir)
 {
     curMoveDir = newDir;
 }
 
-void noMovable::StartMoving(const Direction dir, unsigned gf_length)
+void noMovable::startMoving(const Direction dir, unsigned gf_length)
 {
     RTTR_Assert(!moving);
 
     // Ist das Wesen stehengeblieben mitten aufm Weg?
-    if(IsStoppedBetweenNodes())
+    if(isStoppedBetweenNodes())
     {
         // Das Laufevent fortführen
         RTTR_Assert(dir == curMoveDir);
         // Avoid setting an event for current gf by increasing the length
         if(pauseEv.length == pauseEv.elapsed)
             pauseEv.length++;
-        current_ev = GetEvMgr().AddEvent(this, pauseEv.length, 0, pauseEv.elapsed);
+        current_ev = getEvMgr().addEvent(this, pauseEv.length, 0, pauseEv.elapsed);
         pauseEv = EventState();
         moving = true;
         return;
@@ -72,7 +72,7 @@ void noMovable::StartMoving(const Direction dir, unsigned gf_length)
 
     // Steigung ermitteln, muss entsprechend langsamer (hoch) bzw. schneller (runter) laufen
     // runter natürlich nich so viel schneller werden wie langsamer hoch
-    switch(int(world->GetNeighbourNode(pos, dir).altitude) - int(world->GetNode(pos).altitude))
+    switch(int(world->getNeighbourNode(pos, dir).altitude) - int(world->getNode(pos).altitude))
     {
         default: ascent = 3; break; // gerade
         case 1:
@@ -96,12 +96,12 @@ void noMovable::StartMoving(const Direction dir, unsigned gf_length)
         case -5: ascent = 0; break; // steil runter
     }
 
-    current_ev = GetEvMgr().AddEvent(this, gf_length);
+    current_ev = getEvMgr().addEvent(this, gf_length);
     this->curMoveDir = dir;
     moving = true;
 }
 
-DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
+DrawPoint noMovable::calcRelative(DrawPoint curPt, DrawPoint nextPt) const
 {
     if(current_ev)
     {
@@ -111,12 +111,12 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
             LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay. "
                       "noMovable::CalcRelative: "
                       "current_ev->gf_length = 0!\n")
-              % GetEvMgr().GetCurrentGF();
+              % getEvMgr().getCurrentGF();
             return Position(0, 0);
         }
     }
 
-    RTTR_Assert(IsMoving() || IsStoppedBetweenNodes());
+    RTTR_Assert(isMoving() || isStoppedBetweenNodes());
 
     using milliseconds_i32_t = std::chrono::duration<int32_t, std::milli>;
 
@@ -125,9 +125,9 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
     milliseconds_i32_t frame_time;
     if(current_ev)
     {
-        curState.elapsed = GetEvMgr().GetCurrentGF() - current_ev->startGF;
+        curState.elapsed = getEvMgr().getCurrentGF() - current_ev->startGF;
         curState.length = current_ev->length;
-        frame_time = GAMECLIENT.GetFrameTime();
+        frame_time = GAMECLIENT.getFrameTime();
     } else
     {
         curState = pauseEv;
@@ -135,7 +135,7 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
     }
 
     // Convert to real world time
-    const milliseconds_i32_t gfLength = GAMECLIENT.GetGFLength();
+    const milliseconds_i32_t gfLength = GAMECLIENT.getGFLength();
     // Time since the start of the event
     milliseconds_i32_t curTimePassed = curState.elapsed * gfLength + frame_time;
     // Duration of the event
@@ -145,7 +145,7 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
     RTTR_Assert(curTimePassed <= duration);
 
     // Check for map border crossing
-    const Position mapDrawSize = world->GetSize() * Position(TR_W, TR_H);
+    const Position mapDrawSize = world->getSize() * Position(TR_W, TR_H);
     if(std::abs(nextPt.x - curPt.x) >= mapDrawSize.x / 2)
     {
         // So we need to get closer to nextPt
@@ -166,37 +166,37 @@ DrawPoint noMovable::CalcRelative(DrawPoint curPt, DrawPoint nextPt) const
 }
 
 /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
-DrawPoint noMovable::CalcWalkingRelative() const
+DrawPoint noMovable::calcWalkingRelative() const
 {
-    Position curPt = world->GetNodePos(pos);
-    Position nextPt = world->GetNodePos(world->GetNeighbour(pos, curMoveDir));
+    Position curPt = world->getNodePos(pos);
+    Position nextPt = world->getNodePos(world->getNeighbour(pos, curMoveDir));
 
-    return CalcRelative(curPt, nextPt);
+    return calcRelative(curPt, nextPt);
 }
 
-void noMovable::PauseWalking()
+void noMovable::pauseWalking()
 {
-    RTTR_Assert(IsMoving());
+    RTTR_Assert(isMoving());
     // Frames festhalten, bis zu denen wir gekommen sind
-    pauseEv = EventState(GetEvMgr().GetCurrentGF() - current_ev->startGF, current_ev->length);
+    pauseEv = EventState(getEvMgr().getCurrentGF() - current_ev->startGF, current_ev->length);
     // Event abmelden
-    GetEvMgr().RemoveEvent(current_ev);
+    getEvMgr().removeEvent(current_ev);
     moving = false;
 }
 
 /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
-bool noMovable::IsMoving() const
+bool noMovable::isMoving() const
 {
     return current_ev && (current_ev->id == 0);
 }
 
 /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
-MapPoint noMovable::GetDestinationForCurrentMove() const
+MapPoint noMovable::getDestinationForCurrentMove() const
 {
     // Bewegt sich das Ding gerade?
-    if(IsMoving())
+    if(isMoving())
         // Dann unsere Zielrichtung zur Berechnung verwenden
-        return world->GetNeighbour(pos, curMoveDir);
+        return world->getNeighbour(pos, curMoveDir);
 
     return pos;
 }

@@ -13,23 +13,23 @@
 iwTempleBuilding::iwTempleBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* const building)
     : iwBuilding(gwv, gcFactory, building, Extent(226, 223))
 {
-    GetCtrl<Window>(1)->SetPos(DrawPoint(117, 160));
-    GetCtrl<ctrlImage>(3)->SetImage(wineaddon::GetTempleProductionModeTex(ProductionMode::Default));
-    AddImageButton(8, DrawPoint(130, 176), Extent(34, 32), TextureColor::Grey,
-                   wineaddon::GetTempleProductionModeTex(static_cast<nobTemple*>(building)->GetProductionMode()),
+    getCtrl<Window>(1)->setPos(DrawPoint(117, 160));
+    getCtrl<ctrlImage>(3)->setImage(wineaddon::getTempleProductionModeTex(ProductionMode::Default));
+    addImageButton(8, DrawPoint(130, 176), Extent(34, 32), TextureColor::Grey,
+                   wineaddon::getTempleProductionModeTex(static_cast<nobTemple*>(building)->getProductionMode()),
                    _("Output mineral"));
 }
 
-void iwTempleBuilding::Msg_ButtonClick(const unsigned ctrl_id)
+void iwTempleBuilding::msgButtonClick(const unsigned ctrl_id)
 {
     if(ctrl_id == 8)
     {
         const auto nextProductionMode = static_cast<nobTemple*>(building)->getNextProductionMode();
-        if(gcFactory.SetTempleProductionMode(building->GetPos(), nextProductionMode))
+        if(gcFactory.SetTempleProductionMode(building->getPos(), nextProductionMode))
         {
-            GetCtrl<ctrlImageButton>(8)->SetImage(wineaddon::GetTempleProductionModeTex(nextProductionMode));
-            static_cast<nobTemple*>(building)->SetProductionMode(nextProductionMode);
+            getCtrl<ctrlImageButton>(8)->setImage(wineaddon::getTempleProductionModeTex(nextProductionMode));
+            static_cast<nobTemple*>(building)->setProductionMode(nextProductionMode);
         }
     } else
-        iwBuilding::Msg_ButtonClick(ctrl_id);
+        iwBuilding::msgButtonClick(ctrl_id);
 }

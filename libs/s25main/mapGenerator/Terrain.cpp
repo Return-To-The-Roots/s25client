@@ -11,7 +11,7 @@
 
 namespace rttr::mapGenerator {
 
-void Restructure(Map& map, const std::function<bool(const MapPoint&)>& predicate, double weight)
+void restructure(Map& map, const std::function<bool(const MapPoint&)>& predicate, double weight)
 {
     auto& z = map.z;
     const MapExtent& size = map.size;
@@ -27,10 +27,10 @@ void Restructure(Map& map, const std::function<bool(const MapPoint&)>& predicate
         z[pt] = static_cast<uint8_t>(round(std::pow(value, weight) * z[pt]));
     }
 
-    Scale(z, map.height.minimum, map.height.maximum);
+    scale(z, map.height.minimum, map.height.maximum);
 }
 
-void ResetSeaLevel(Map& map, RandomUtility& rnd, unsigned seaLevel)
+void resetSeaLevel(Map& map, RandomUtility& rnd, unsigned seaLevel)
 {
     auto& z = map.z;
 
@@ -53,7 +53,7 @@ void ResetSeaLevel(Map& map, RandomUtility& rnd, unsigned seaLevel)
     if(maximum > map.height.maximum)
     {
         maximum = map.height.maximum;
-        Scale(coastDistance, minimum, maximum);
+        scale(coastDistance, minimum, maximum);
     }
 
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -62,7 +62,7 @@ void ResetSeaLevel(Map& map, RandomUtility& rnd, unsigned seaLevel)
         {
             const unsigned base = coastDistance[pt];
 
-            z[pt] = rnd.RandomValue(std::max(minimum + 1, base), std::min(maximum, base + 1));
+            z[pt] = rnd.randomValue(std::max(minimum + 1, base), std::min(maximum, base + 1));
         }
     }
 }

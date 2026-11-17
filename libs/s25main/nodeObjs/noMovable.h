@@ -36,35 +36,35 @@ class noMovable : public noCoordBase
 protected:
     const GameEvent* current_ev;
     /// Pausiert ein gerade laufendes Wesen
-    void PauseWalking();
+    void pauseWalking();
 
 public:
     noMovable(NodalObjectType nop, MapPoint pos);
     noMovable(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
     /// Sets the position. Usually not required as all position changes are done by the walk functions
-    void SetPos(const MapPoint& pos) { this->pos = pos; }
+    void setPos(const MapPoint& pos) { this->pos = pos; }
 
     /// Returns the direction in which the object is moving/which it is facing
-    Direction GetCurMoveDir() const { return curMoveDir; }
-    uint8_t GetAscent() const { return ascent; }
-    const EventState& GetPausedEvent() { return pauseEv; }
+    Direction getCurMoveDir() const { return curMoveDir; }
+    uint8_t getAscent() const { return ascent; }
+    const EventState& getPausedEvent() { return pauseEv; }
     /// "Turns" the object in that direction without starting to walk
-    void FaceDir(Direction newDir);
+    void faceDir(Direction newDir);
     /// In aktueller Richtung ein Stück zurücklegen
-    void Walk();
+    void walk();
     // Starten zu Laufen, Event anmelden
-    void StartMoving(Direction dir, unsigned gf_length);
+    void startMoving(Direction dir, unsigned gf_length);
     // Interpoliert die Position zwischen zwei Knoten punkten
-    DrawPoint CalcRelative(DrawPoint curPt, DrawPoint nextPt) const;
+    DrawPoint calcRelative(DrawPoint curPt, DrawPoint nextPt) const;
     /// Interpoliert fürs Laufen zwischen zwei Kartenpunkten
-    DrawPoint CalcWalkingRelative() const;
+    DrawPoint calcWalkingRelative() const;
     // Steht er in der zwischen 2 Wegpunkten?
-    bool IsStoppedBetweenNodes() const { return pauseEv.elapsed > 0; }
+    bool isStoppedBetweenNodes() const { return pauseEv.elapsed > 0; }
     /// Gibt die Position zurück, wo wir uns hinbewegen (selbe Position, wenn Schiff steht)
-    MapPoint GetDestinationForCurrentMove() const;
+    MapPoint getDestinationForCurrentMove() const;
     /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
-    bool IsMoving() const override;
+    bool isMoving() const override;
 };

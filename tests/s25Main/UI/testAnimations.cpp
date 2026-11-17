@@ -43,7 +43,7 @@ struct TestWindow : public Window
     {}
 
 protected:
-    void Draw_() override {}
+    void drawImpl() override {}
 };
 
 struct WindowFixture
@@ -55,11 +55,11 @@ struct WindowFixture
     double lastNextFramepartTime;
     unsigned lastFrame;
     WindowFixture()
-        : wnd(DrawPoint(0, 0), 0, nullptr, Extent(800, 600)), animMgr(wnd.GetAnimationManager()), animFinished(false)
+        : wnd(DrawPoint(0, 0), 0, nullptr, Extent(800, 600)), animMgr(wnd.getAnimationManager()), animFinished(false)
     {
-        bt = wnd.AddTextButton(0, DrawPoint(10, 20), Extent(100, 20), TextureColor::Red1, "Test", NormalFont);
-        bt2 = wnd.AddTextButton(1, DrawPoint(10, 40), Extent(100, 20), TextureColor::Red1, "Test", NormalFont);
-        wnd.Draw();
+        bt = wnd.addTextButton(0, DrawPoint(10, 20), Extent(100, 20), TextureColor::Red1, "Test", NormalFont);
+        bt2 = wnd.addTextButton(1, DrawPoint(10, 40), Extent(100, 20), TextureColor::Red1, "Test", NormalFont);
+        wnd.draw();
     }
 
     PredRes testAdvanceTime(TestAnimation* anim, unsigned time, bool reqUpdate, unsigned reqCurFrame,
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(AddRemoveAnimations)
         BOOST_TEST_REQUIRE(animMgr.getAnimation(animIds[i]) == anims[i]);
         BOOST_TEST_REQUIRE(animMgr.getAnimationId(anims[i]) == animIds[i]);
     }
-    std::vector<Animation*> elAnims = animMgr.getElementAnimations(bt->GetID());
+    std::vector<Animation*> elAnims = animMgr.getElementAnimations(bt->getID());
     BOOST_TEST_REQUIRE(elAnims.size() == 3u);
     for(unsigned i = 0; i < anims.size(); i++)
         BOOST_TEST_REQUIRE(helpers::contains(anims, elAnims[i]));
@@ -171,10 +171,10 @@ BOOST_AUTO_TEST_CASE(AddRemoveAnimations)
     // and not removed for removeElementAnimations
     animMgr.addAnimation(new TestAnimation(*this, bt2, 10, 10, Animation::RepeatType::Repeat));
     BOOST_TEST_REQUIRE(animMgr.getNumActiveAnimations() == 3u);
-    BOOST_TEST_REQUIRE(animMgr.getElementAnimations(bt->GetID()).size() == 2u);
-    animMgr.removeElementAnimations(bt->GetID());
+    BOOST_TEST_REQUIRE(animMgr.getElementAnimations(bt->getID()).size() == 2u);
+    animMgr.removeElementAnimations(bt->getID());
     BOOST_TEST_REQUIRE(animMgr.getNumActiveAnimations() == 1u);
-    BOOST_TEST_REQUIRE(animMgr.getElementAnimations(bt->GetID()).size() == 0u);
+    BOOST_TEST_REQUIRE(animMgr.getElementAnimations(bt->getID()).size() == 0u);
 }
 
 BOOST_AUTO_TEST_CASE(AnimationSetterGetter)
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
         // Finish before it started -> 1 frame executed right away
         lastFrame = 9999;
         animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
-        animMgr.finishElementAnimations(bt->GetID(), false);
+        animMgr.finishElementAnimations(bt->getID(), false);
         BOOST_TEST_REQUIRE(animMgr.getNumActiveAnimations() == 0u);
         BOOST_TEST_REQUIRE(lastFrame == expectedLastFrame);
 
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
         lastFrame = 9999;
         animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.update(time += 10);
-        animMgr.finishElementAnimations(bt->GetID(), false);
+        animMgr.finishElementAnimations(bt->getID(), false);
         // Non-oscillating have to go to end, oscillate already are
         if(!isOscillate)
         {
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
         lastFrame = 9999;
         animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.update(time += 10);
-        animMgr.finishElementAnimations(bt->GetID(), true);
+        animMgr.finishElementAnimations(bt->getID(), true);
         BOOST_TEST_REQUIRE(animMgr.getNumActiveAnimations() == 0u);
         BOOST_TEST_REQUIRE(lastFrame == expectedLastFrame);
 
@@ -318,7 +318,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
         animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.update(time += 10);
         animMgr.update(time += 10);
-        animMgr.finishElementAnimations(bt->GetID(), false);
+        animMgr.finishElementAnimations(bt->getID(), false);
         BOOST_TEST_REQUIRE(animMgr.getNumActiveAnimations() == 1u);
         animMgr.update(time += 40);
         // Those have to go back
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
         animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
         animMgr.update(time += 10);
         animMgr.update(time += 50);
-        animMgr.finishElementAnimations(bt->GetID(), false);
+        animMgr.finishElementAnimations(bt->getID(), false);
         // Those have to go back
         if(isOscillate)
         {
@@ -353,7 +353,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
         // Another frame for repeat mode
         if(rpt == Animation::RepeatType::Repeat)
             animMgr.update(time += 10);
-        animMgr.finishElementAnimations(bt->GetID(), false);
+        animMgr.finishElementAnimations(bt->getID(), false);
         BOOST_TEST_REQUIRE(animMgr.getNumActiveAnimations() == 0u);
         BOOST_TEST_REQUIRE(lastFrame == expectedLastFrame);
     }
@@ -368,7 +368,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
         // Unstarted
         lastFrame = 9999;
         animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
-        animMgr.finishElementAnimations(bt->GetID(), true);
+        animMgr.finishElementAnimations(bt->getID(), true);
         BOOST_TEST_REQUIRE(animMgr.getNumActiveAnimations() == 0u);
         BOOST_TEST_REQUIRE(lastFrame == expectedLastFrame);
         // Start and run some time -> always at last frame
@@ -378,7 +378,7 @@ BOOST_AUTO_TEST_CASE(FinishAnims)
             animMgr.addAnimation(new TestAnimation(*this, bt, 6, 10, rpt));
             animMgr.update(time += 1);
             animMgr.update(time += dt);
-            animMgr.finishElementAnimations(bt->GetID(), true);
+            animMgr.finishElementAnimations(bt->getID(), true);
             BOOST_TEST_REQUIRE(animMgr.getNumActiveAnimations() == 0u);
             BOOST_TEST_REQUIRE(lastFrame == expectedLastFrame);
         }
@@ -628,7 +628,7 @@ BOOST_AUTO_TEST_CASE(LinearInterpolationFactor)
 
 BOOST_AUTO_TEST_CASE(MoveAni)
 {
-    bt->SetPos(DrawPoint(100, 200));
+    bt->setPos(DrawPoint(100, 200));
     DrawPoint targetPt(110, 300);
     animMgr.addAnimation(new MoveAnimation(bt, targetPt, 500, Animation::RepeatType::None));
     // Init with any start time
@@ -636,74 +636,74 @@ BOOST_AUTO_TEST_CASE(MoveAni)
     animMgr.update(time);
     // Move half way
     animMgr.update(time += 250);
-    BOOST_TEST_REQUIRE(bt->GetPos() == DrawPoint(105, 250));
+    BOOST_TEST_REQUIRE(bt->getPos() == DrawPoint(105, 250));
     // Move over target
     animMgr.update(time += 270);
-    BOOST_TEST_REQUIRE(bt->GetPos() == targetPt);
+    BOOST_TEST_REQUIRE(bt->getPos() == targetPt);
     BOOST_TEST_REQUIRE(animMgr.getNumActiveAnimations() == 0u);
 
-    bt->SetPos(DrawPoint(100, 200));
+    bt->setPos(DrawPoint(100, 200));
     unsigned animId = animMgr.addAnimation(new MoveAnimation(bt, targetPt, 500, Animation::RepeatType::Repeat));
     unsigned frameRate = animMgr.getAnimation(animId)->getFrameRate();
     animMgr.update(time += 1);
     // Move over target: Animation is 500ms long and restarts after 1 frame -> 500 + frame + 50(10%)
     animMgr.update(time += (550 + frameRate));
-    BOOST_TEST_REQUIRE(bt->GetPos() == DrawPoint(101, 210));
+    BOOST_TEST_REQUIRE(bt->getPos() == DrawPoint(101, 210));
     BOOST_TEST_REQUIRE(animMgr.isAnimationActive(animId));
 
     animMgr.getAnimation(animId)->setRepeat(Animation::RepeatType::Oscillate);
     // Move over target. Here we don't need the additional frame as we move directly to the 2nd last frame
     animMgr.update(time + 500);
-    BOOST_TEST_REQUIRE(bt->GetPos() == DrawPoint(109, 290));
+    BOOST_TEST_REQUIRE(bt->getPos() == DrawPoint(109, 290));
     BOOST_TEST_REQUIRE(animMgr.isAnimationActive(animId));
 }
 
 BOOST_AUTO_TEST_CASE(MoveAniScale)
 {
-    MockupVideoDriver* video = uiHelper::GetVideoDriver();
-    auto* dsk = WINDOWMANAGER.Switch(std::make_unique<Desktop>(nullptr));
-    WINDOWMANAGER.Draw();
-    bt = dsk->AddTextButton(0, DrawPoint(10, 20), Extent(100, 150), TextureColor::Red1, "", NormalFont);
+    MockupVideoDriver* video = uiHelper::getVideoDriver();
+    auto* dsk = WINDOWMANAGER.switchTo(std::make_unique<Desktop>(nullptr));
+    WINDOWMANAGER.draw();
+    bt = dsk->addTextButton(0, DrawPoint(10, 20), Extent(100, 150), TextureColor::Red1, "", NormalFont);
     ctrlButton* btReference =
-      dsk->AddTextButton(1, DrawPoint(130, bt->GetPos().y), bt->GetSize(), TextureColor::Red1, "", NormalFont);
-    dsk->GetAnimationManager().addAnimation(
-      new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RepeatType::None));
-    dsk->Msg_PaintBefore();
+      dsk->addTextButton(1, DrawPoint(130, bt->getPos().y), bt->getSize(), TextureColor::Red1, "", NormalFont);
+    dsk->getAnimationManager().addAnimation(
+      new MoveAnimation(bt, btReference->getPos(), 1000, Animation::RepeatType::None));
+    dsk->msgPaintBefore();
     // Pass the animation
     video->tickCount_ += 1100;
-    dsk->Msg_PaintBefore();
-    BOOST_TEST_REQUIRE(bt->GetPos() == btReference->GetPos());
+    dsk->msgPaintBefore();
+    BOOST_TEST_REQUIRE(bt->getPos() == btReference->getPos());
 
     // Restart
-    bt->SetPos(DrawPoint(10, 20));
-    dsk->GetAnimationManager().addAnimation(
-      new MoveAnimation(bt, btReference->GetPos(), 1000, Animation::RepeatType::None));
+    bt->setPos(DrawPoint(10, 20));
+    dsk->getAnimationManager().addAnimation(
+      new MoveAnimation(bt, btReference->getPos(), 1000, Animation::RepeatType::None));
     video->tickCount_ += 1;
-    dsk->Msg_PaintBefore();
+    dsk->msgPaintBefore();
     // Resize the screen and test that the final position got updated too
-    VIDEODRIVER.ResizeScreen(VideoMode(1024, 768), DisplayMode::Windowed);
+    VIDEODRIVER.resizeScreen(VideoMode(1024, 768), DisplayMode::Windowed);
     // Pass the animation
     video->tickCount_ += 1100;
-    dsk->Msg_PaintBefore();
-    BOOST_TEST_REQUIRE(bt->GetPos() == btReference->GetPos());
+    dsk->msgPaintBefore();
+    BOOST_TEST_REQUIRE(bt->getPos() == btReference->getPos());
 }
 
 BOOST_AUTO_TEST_CASE(ToogleAnim)
 {
-    animMgr.addAnimation(new ToggleAnimation<Window>(bt, &Window::SetVisible, true, 1000));
+    animMgr.addAnimation(new ToggleAnimation<Window>(bt, &Window::setVisible, true, 1000));
     animMgr.addAnimation(new BlinkButtonAnim(bt2, true, 1000));
     // Init with any start time
     unsigned time = 100;
     animMgr.update(time);
-    BOOST_TEST_REQUIRE(bt->IsVisible());
-    BOOST_TEST_REQUIRE(bt2->GetIlluminated());
+    BOOST_TEST_REQUIRE(bt->isVisible());
+    BOOST_TEST_REQUIRE(bt2->getIlluminated());
     // Switch
     animMgr.update(time += 1000);
-    BOOST_TEST_REQUIRE(!bt->IsVisible());
-    BOOST_TEST_REQUIRE(!bt2->GetIlluminated());
+    BOOST_TEST_REQUIRE(!bt->isVisible());
+    BOOST_TEST_REQUIRE(!bt2->getIlluminated());
     animMgr.update(time + 1000);
-    BOOST_TEST_REQUIRE(bt->IsVisible());
-    BOOST_TEST_REQUIRE(bt2->GetIlluminated());
+    BOOST_TEST_REQUIRE(bt->isVisible());
+    BOOST_TEST_REQUIRE(bt2->getIlluminated());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

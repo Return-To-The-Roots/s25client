@@ -91,13 +91,13 @@ public:
     }
 
     /// Builds a GameCommand depending on Type
-    static GameCommandPtr Deserialize(Deserializer& ser);
+    static GameCommandPtr deserialize(Deserializer& ser);
 
     /// Serializes this GameCommand
-    virtual void Serialize(Serializer& ser) const;
+    virtual void serialize(Serializer& ser) const;
 
     /// Execute this GameCommand
-    virtual void Execute(GameWorld& world, uint8_t playerId) = 0;
+    virtual void execute(GameWorld& world, uint8_t playerId) = 0;
 
 protected:
     GameCommand(const GCType gcType) : gcType(gcType), refCounter_(0) {}

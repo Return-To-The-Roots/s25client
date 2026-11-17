@@ -59,7 +59,7 @@ struct MapNode
     MapNode(MapNode&&) = default;
     MapNode& operator=(const MapNode&) = delete;
     MapNode& operator=(MapNode&&) = default;
-    void Serialize(SerializedGameData& sgd, unsigned numPlayers, const WorldDescription& desc) const;
-    void Deserialize(SerializedGameData& sgd, unsigned numPlayers, const WorldDescription& desc,
+    void serialize(SerializedGameData& sgd, unsigned numPlayers, const WorldDescription& desc) const;
+    void deserialize(SerializedGameData& sgd, unsigned numPlayers, const WorldDescription& desc,
                      const std::vector<DescIdx<TerrainDesc>>& landscapeTerrains);
 };

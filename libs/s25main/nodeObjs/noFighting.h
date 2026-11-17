@@ -29,25 +29,25 @@ class noFighting : public noBase
 private:
     /// Bestimmt, ob der Angreifer erfolgreich angreift oder ob der Verteidiger sich verteidigt usw
     /// bereitet also alles für eine solche Angrifsseinheit vor
-    void StartAttack();
+    void startAttack();
 
 public:
     noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2);
     noFighting(SerializedGameData& sgd, unsigned obj_id);
     ~noFighting() override;
 
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Fighting; }
+    GO_Type getGOT() const final { return GO_Type::Fighting; }
 
-    void Draw(DrawPoint drawPt) override;
-    void HandleEvent(unsigned id) override;
+    void draw(DrawPoint drawPt) override;
+    void handleEvent(unsigned id) override;
 
     /// Dürfen andern Figuren diesen Kampf schon durchqueren?
     bool IsActive() const;
-    bool IsFighter(const nofActiveSoldier& as) const { return &as == soldiers[0].get() || &as == soldiers[1].get(); }
+    bool isFighter(const nofActiveSoldier& as) const { return &as == soldiers[0].get() || &as == soldiers[1].get(); }
 
     /// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist
-    bool IsSoldierOfPlayer(unsigned char player) const;
+    bool isSoldierOfPlayer(unsigned char player) const;
 };

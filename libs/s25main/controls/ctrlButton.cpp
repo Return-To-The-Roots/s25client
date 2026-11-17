@@ -15,41 +15,41 @@ ctrlButton::ctrlButton(Window* parent, unsigned id, const DrawPoint& pos, const 
 
 ctrlButton::~ctrlButton() = default;
 
-void ctrlButton::SetEnabled(bool enable /*= true*/)
+void ctrlButton::setEnabled(bool enable /*= true*/)
 {
     isEnabled = enable;
     state = ButtonState::Up;
 }
 
-void ctrlButton::SetActive(bool activate)
+void ctrlButton::setActive(bool activate)
 {
-    Window::SetActive(activate);
+    Window::setActive(activate);
     if(!activate)
         state = ButtonState::Up;
-    else if(IsMouseOver())
+    else if(isMouseOver())
         state = ButtonState::Hover;
 }
 
-bool ctrlButton::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlButton::msgMouseMove(const MouseCoords& mc)
 {
-    if(isEnabled && IsMouseOver(mc))
+    if(isEnabled && isMouseOver(mc))
     {
         if(state != ButtonState::Pressed)
             state = ButtonState::Hover;
 
-        ShowTooltip();
+        showTooltip();
         return true;
     } else
     {
         state = ButtonState::Up;
-        HideTooltip();
+        hideTooltip();
         return false;
     }
 }
 
-bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlButton::msgLeftDown(const MouseCoords& mc)
 {
-    if(isEnabled && IsMouseOver(mc))
+    if(isEnabled && isMouseOver(mc))
     {
         state = ButtonState::Pressed;
         return true;
@@ -58,14 +58,14 @@ bool ctrlButton::Msg_LeftDown(const MouseCoords& mc)
     return false;
 }
 
-bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlButton::msgLeftUp(const MouseCoords& mc)
 {
     if(state == ButtonState::Pressed)
     {
-        if(isEnabled && IsMouseOver(mc))
+        if(isEnabled && isMouseOver(mc))
         {
             state = ButtonState::Hover;
-            GetParent()->Msg_ButtonClick(GetID());
+            getParent()->msgButtonClick(getID());
             return true;
         } else
             state = ButtonState::Up;
@@ -77,9 +77,9 @@ bool ctrlButton::Msg_LeftUp(const MouseCoords& mc)
 /**
  *  zeichnet das Fenster.
  */
-void ctrlButton::Draw_()
+void ctrlButton::drawImpl()
 {
-    if(GetSize().x == 0 || GetSize().y == 0)
+    if(getSize().x == 0 || getSize().y == 0)
         return;
 
     if(tc != TextureColor::Invisible)
@@ -89,11 +89,11 @@ void ctrlButton::Draw_()
         bool isElevated = !isChecked && state != ButtonState::Pressed;
         bool isHighlighted = isEnabled && !isChecked && state == ButtonState::Hover;
         if(hasBorder)
-            Draw3D(GetDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
+            draw3D(getDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
         else
-            Draw3DContent(GetDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
+            draw3DContent(getDrawRect(), tc, isElevated, isHighlighted, isCurIlluminated, color);
     }
 
     /// Inhalt malen (Text, Bilder usw.)
-    DrawContent();
+    drawContent();
 }

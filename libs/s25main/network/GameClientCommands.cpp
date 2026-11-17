@@ -15,26 +15,26 @@
  *  @param[in] text        Der Text
  *  @param[in] destination Ziel der Nachricht
  */
-void GameClient::Command_Chat(const std::string& text, const ChatDestination cd)
+void GameClient::commandChat(const std::string& text, const ChatDestination cd)
 {
     // Replaymodus oder kein Text --> nichts senden
-    if(IsReplayModeOn() || text.empty())
+    if(isReplayModeOn() || text.empty())
         return;
 
     mainPlayer.sendMsgAsync(new GameMessage_Chat(0xff, cd, text));
 }
 
-void GameClient::Command_SetNation(Nation newNation)
+void GameClient::commandSetNation(Nation newNation)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Nation(0xff, newNation));
 }
 
-void GameClient::Command_SetPortrait(unsigned portraitIndex)
+void GameClient::commandSetPortrait(unsigned portraitIndex)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Portrait(0xff, portraitIndex));
 }
 
-void GameClient::Command_SetTeam(Team newTeam)
+void GameClient::commandSetTeam(Team newTeam)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Team(0xff, newTeam));
 }
@@ -42,12 +42,12 @@ void GameClient::Command_SetTeam(Team newTeam)
 /**
  *  sendet den "Bereit"-Status.
  */
-void GameClient::Command_SetReady(bool isReady)
+void GameClient::commandSetReady(bool isReady)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Ready(0xFF, isReady));
 }
 
-void GameClient::Command_SetColor(unsigned newColor)
+void GameClient::commandSetColor(unsigned newColor)
 {
     mainPlayer.sendMsgAsync(new GameMessage_Player_Color(0xFF, newColor));
 }
@@ -58,7 +58,7 @@ void GameClient::Command_SetColor(unsigned newColor)
  *  @param[in] old_id Alte Spieler-ID
  *  @param[in] new_id Neue Spieler-ID
  */
-void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigned char playerId2)
+void GameClient::changePlayerIngame(const unsigned char playerId1, const unsigned char playerId2)
 {
     RTTR_Assert(state == ClientState::Game); // Must be ingame
 
@@ -69,38 +69,38 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
         return;
 
     // ID auch innerhalb der Spielerzahl?
-    if(playerId2 >= GetNumPlayers() || playerId1 >= GetNumPlayers())
+    if(playerId2 >= getNumPlayers() || playerId1 >= getNumPlayers())
         return;
 
-    if(IsReplayModeOn())
+    if(isReplayModeOn())
     {
-        RTTR_Assert(playerId1 == GetPlayerId());
+        RTTR_Assert(playerId1 == getPlayerId());
         // There must be someone at this slot
-        if(!GetPlayer(playerId2).isUsed())
+        if(!getPlayer(playerId2).isUsed())
             return;
 
         // In replay mode we don't touch the player
     } else
     {
         // old_id must be a player
-        GamePlayer& player1 = GetPlayer(playerId1);
+        GamePlayer& player1 = getPlayer(playerId1);
         if(player1.ps != PlayerState::Occupied)
             return;
         // new_id must be an AI
-        GamePlayer& player2 = GetPlayer(playerId2);
+        GamePlayer& player2 = getPlayer(playerId2);
         if(player2.ps != PlayerState::AI)
             return;
 
         std::swap(player1.ps, player2.ps);
         std::swap(player1.aiInfo, player2.aiInfo);
-        if(IsHost())
+        if(isHost())
         {
             // Switch AIs
-            game->aiPlayers_.erase_if([playerId2](const auto& player) { return player.GetPlayerId() == playerId2; });
-            game->AddAIPlayer(CreateAIPlayer(playerId1, AI::Info(AI::Type::Dummy)));
+            game->aiPlayers_.erase_if([playerId2](const auto& player) { return player.getPlayerId() == playerId2; });
+            game->addAIPlayer(createAIPlayer(playerId1, AI::Info(AI::Type::Dummy)));
         }
-        GetPlayer(playerId1).ps = PlayerState::AI;
-        GetPlayer(playerId2).ps = PlayerState::Occupied;
+        getPlayer(playerId1).ps = PlayerState::AI;
+        getPlayer(playerId2).ps = PlayerState::Occupied;
     }
 
     // Wenn wir betroffen waren, unsere ID neu setzen
@@ -108,7 +108,7 @@ void GameClient::ChangePlayerIngame(const unsigned char playerId1, const unsigne
     {
         mainPlayer.playerId = playerId2;
 
-        if(!IsReplayModeOn())
+        if(!isReplayModeOn())
         {
             // Our currently accumulated gamecommands are invalid after the change, as they would modify the old player
             gameCommands_.clear();

@@ -21,25 +21,25 @@ class TradeRoute
     MapPoint curPos;
     unsigned curRouteIdx;
 
-    helpers::OptionalEnum<TradeDirection> RecalcRoute();
+    helpers::OptionalEnum<TradeDirection> recalcRoute();
 
 public:
     TradeRoute(const GameWorld& world, unsigned char player, const MapPoint& start, const MapPoint& goal);
     TradeRoute(SerializedGameData& sgd, const GameWorld& world, unsigned char player);
 
-    void Serialize(SerializedGameData& sgd) const;
+    void serialize(SerializedGameData& sgd) const;
 
     /// Gets the next direction the caravane has to take, TradeDirection::ReachedGoal or std::nullopt_t
-    helpers::OptionalEnum<TradeDirection> GetNextDir();
+    helpers::OptionalEnum<TradeDirection> getNextDir();
     /// Returns the current position. This is assumed to be the position currently walking to and reached by the time
     /// GetNextDir should be called
-    MapPoint GetCurPos() const { return curPos; }
+    MapPoint getCurPos() const { return curPos; }
 
     /// Returns true, if this is a valid route
-    bool IsValid() const { return !path.route.empty() || path.start == path.goal; }
+    bool isValid() const { return !path.route.empty() || path.start == path.goal; }
 
     /// Assigns new start and goal positions and hence, a new route
-    void AssignNewGoal(const MapPoint& start, const MapPoint& newGoal);
+    void assignNewGoal(const MapPoint& start, const MapPoint& newGoal);
 
-    const TradePath& GetTradePath() const { return path; }
+    const TradePath& getTradePath() const { return path; }
 };

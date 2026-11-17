@@ -7,27 +7,27 @@
 
 RttrLobbyClient::RttrLobbyClient(LobbyClient& client) : client_(client) {}
 
-bool RttrLobbyClient::IsLoggedIn() const
+bool RttrLobbyClient::isLoggedIn() const
 {
     return client_.IsLoggedIn();
 }
 
-void RttrLobbyClient::AddListener(LobbyInterface* listener)
+void RttrLobbyClient::addListener(LobbyInterface* listener)
 {
     client_.AddListener(listener);
 }
 
-void RttrLobbyClient::RemoveListener(LobbyInterface* listener)
+void RttrLobbyClient::removeListener(LobbyInterface* listener)
 {
     client_.RemoveListener(listener);
 }
 
-void RttrLobbyClient::SendServerJoinRequest()
+void RttrLobbyClient::sendServerJoinRequest()
 {
     client_.SendServerJoinRequest();
 }
 
-void RttrLobbyClient::SendChat(const std::string& text)
+void RttrLobbyClient::sendChat(const std::string& text)
 {
     client_.SendChat(text);
 }

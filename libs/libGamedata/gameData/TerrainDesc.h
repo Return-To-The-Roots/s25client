@@ -80,15 +80,15 @@ struct TerrainDesc
     /// Get the building quality of the terrain from the flags
     TerrainBQ GetBQ() const;
     /// Returns whether "regular" animals walk on that terrain (no water or snow animals)
-    bool IsUsableByAnimals() const;
+    bool isUsableByAnimals() const;
     /// Returns whether corn fields can grow on the terrain (no dessert, mountain etc)
-    bool IsVital() const;
+    bool isVital() const;
     /// Return true if the terrain has the given attribute
     bool Is(ETerrain what) const;
     /// Get the position of the up side down triangle
-    Triangle GetUSDTriangle() const;
+    Triangle getUSDTriangle() const;
     /// Get the position of right side up down triangle
-    Triangle GetRSUTriangle() const;
+    Triangle getRSUTriangle() const;
 };
 
 inline bool TerrainDesc::Is(ETerrain what) const

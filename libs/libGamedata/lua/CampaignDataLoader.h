@@ -19,15 +19,15 @@ public:
     ~CampaignDataLoader() override;
 
     /// Return version of the interface. Changes here reflect breaking changes
-    static unsigned GetVersion();
+    static unsigned getVersion();
 
     bool Load();
 
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
 private:
     CampaignDescription& campaignDesc_;
     boost::filesystem::path basePath_;
 
-    bool CheckScriptVersion();
+    bool checkScriptVersion();
 };

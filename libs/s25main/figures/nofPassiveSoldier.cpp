@@ -16,7 +16,7 @@
 nofPassiveSoldier::nofPassiveSoldier(const nofSoldier& soldier) : nofSoldier(soldier), healing_event(nullptr)
 {
     // Soldat von einer Mission nach Hause gekommen --> ggf heilen!
-    Heal();
+    heal();
     // Laufevent nullen, laufen ja nicht mehr
     current_ev = nullptr;
 }
@@ -28,30 +28,30 @@ nofPassiveSoldier::nofPassiveSoldier(const MapPoint pos, const unsigned char pla
 
 nofPassiveSoldier::~nofPassiveSoldier() = default;
 
-void nofPassiveSoldier::Destroy()
+void nofPassiveSoldier::destroy()
 {
-    GetEvMgr().RemoveEvent(healing_event);
-    nofSoldier::Destroy();
+    getEvMgr().removeEvent(healing_event);
+    nofSoldier::destroy();
 }
 
-void nofPassiveSoldier::Serialize(SerializedGameData& sgd) const
+void nofPassiveSoldier::serialize(SerializedGameData& sgd) const
 {
-    nofSoldier::Serialize(sgd);
+    nofSoldier::serialize(sgd);
 
-    sgd.PushEvent(healing_event);
+    sgd.pushEvent(healing_event);
 }
 
 nofPassiveSoldier::nofPassiveSoldier(SerializedGameData& sgd, const unsigned obj_id)
-    : nofSoldier(sgd, obj_id), healing_event(sgd.PopEvent())
+    : nofSoldier(sgd, obj_id), healing_event(sgd.popEvent())
 {}
 
-void nofPassiveSoldier::Draw(DrawPoint drawPt)
+void nofPassiveSoldier::draw(DrawPoint drawPt)
 {
     // Soldat normal laufend zeichnen
-    DrawWalkingBobJobs(drawPt, job_);
+    drawWalkingBobJobs(drawPt, job_);
 }
 
-void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
+void nofPassiveSoldier::handleDerivedEvent(const unsigned id)
 {
     switch(id)
     {
@@ -64,14 +64,14 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
             if(fs == FigureState::Job)
             {
                 // Dann uns heilen, wenn wir nicht schon gesund sind
-                if(hitpoints < HITPOINTS[GetRank()])
+                if(hitpoints < HITPOINTS[getRank()])
                 {
                     ++hitpoints;
 
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
-                    if(hitpoints < HITPOINTS[GetRank()])
+                    if(hitpoints < HITPOINTS[getRank()])
                         healing_event =
-                          GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
+                          getEvMgr().addEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
                 }
             }
         }
@@ -79,68 +79,68 @@ void nofPassiveSoldier::HandleDerivedEvent(const unsigned id)
     }
 }
 
-void nofPassiveSoldier::Heal()
+void nofPassiveSoldier::heal()
 {
     // Schon ein Event angemeldet?
     // Dann muss dieses entfernt werden, wahrscheinlich war er zuvor draußen gewesen
     if(healing_event)
     {
-        GetEvMgr().RemoveEvent(healing_event);
+        getEvMgr().removeEvent(healing_event);
         healing_event = nullptr;
     }
 
     // Ist er verletzt?
     // Dann muss er geheilt werden
-    if(hitpoints < HITPOINTS[GetRank()])
-        healing_event = GetEvMgr().AddEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
+    if(hitpoints < HITPOINTS[getRank()])
+        healing_event = getEvMgr().addEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
 }
 
-void nofPassiveSoldier::GoalReached()
+void nofPassiveSoldier::goalReached()
 {
-    static_cast<nobMilitary*>(homeBld)->AddPassiveSoldier(world->RemoveFigure(pos, *this));
+    static_cast<nobMilitary*>(homeBld)->addPassiveSoldier(world->RemoveFigure(pos, *this));
 }
 
-void nofPassiveSoldier::LeaveBuilding()
+void nofPassiveSoldier::leaveBuilding()
 {
     // Nach Hause in ein Lagerhaus gehen
     rs_dir = true;
     rs_pos = 1;
-    cur_rs = homeBld->GetRoute(Direction::SouthEast);
-    GoHome();
+    cur_rs = homeBld->getRoute(Direction::SouthEast);
+    goHome();
 
     homeBld = nullptr;
 }
 
-void nofPassiveSoldier::Upgrade()
+void nofPassiveSoldier::upgrade()
 {
     // We must not be in the buildings list while upgrading. This would destroy the ordered list
-    RTTR_Assert(!homeBld || !static_cast<nobMilitary*>(homeBld)->IsInTroops(*this));
+    RTTR_Assert(!homeBld || !static_cast<nobMilitary*>(homeBld)->isInTroops(*this));
     // Einen Rang höher
     job_ = Job(unsigned(job_) + 1);
 
     // wieder heilen bzw. Hitpoints anpasen
-    GamePlayer& owner = world->GetPlayer(player);
-    hitpoints = HITPOINTS[GetRank()];
+    GamePlayer& owner = world->getPlayer(player);
+    hitpoints = HITPOINTS[getRank()];
 
     // Inventur entsprechend erhöhen und verringern
-    owner.IncreaseInventoryJob(job_, 1);
-    owner.DecreaseInventoryJob(Job(unsigned(job_) - 1), 1);
+    owner.increaseInventoryJob(job_, 1);
+    owner.decreaseInventoryJob(Job(unsigned(job_) - 1), 1);
     if(hasArmor_)
     {
-        owner.IncreaseInventoryJob(jobEnumToAmoredSoldierEnum(job_), 1);
-        owner.DecreaseInventoryJob(jobEnumToAmoredSoldierEnum(Job(unsigned(job_) - 1)), 1);
+        owner.increaseInventoryJob(jobEnumToAmoredSoldierEnum(job_), 1);
+        owner.decreaseInventoryJob(jobEnumToAmoredSoldierEnum(Job(unsigned(job_) - 1)), 1);
     }
 }
 
-void nofPassiveSoldier::Walked()
+void nofPassiveSoldier::walked()
 {
     throw std::logic_error("Passive soldiers shall not walk");
 }
 
-void nofPassiveSoldier::NotNeeded()
+void nofPassiveSoldier::notNeeded()
 {
     homeBld = nullptr;
-    GoHome();
+    goHome();
 }
 
 nobMilitary* nofPassiveSoldier::getHome() const

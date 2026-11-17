@@ -20,7 +20,7 @@ struct StoreGCFactory : public GameCommandFactory
     std::vector<gc::GameCommandPtr> gcs;
 
 protected:
-    bool AddGC(gc::GameCommandPtr gc) override
+    bool addGC(gc::GameCommandPtr gc) override
     {
         gcs.push_back(gc);
         return true;
@@ -139,10 +139,10 @@ BOOST_FIXTURE_TEST_CASE(CheatCommands, CheatCommandTrackerFixture1P)
 BOOST_FIXTURE_TEST_CASE(CheatKeys, CheatCommandTrackerFixture4P)
 {
     using RRM = Cheats::ResourceRevealMode;
-    auto& p1 = world.GetPlayer(0);
-    auto& p2 = world.GetPlayer(1);
-    auto& p3 = world.GetPlayer(2);
-    auto& p4 = world.GetPlayer(3);
+    auto& p1 = world.getPlayer(0);
+    auto& p2 = world.getPlayer(1);
+    auto& p3 = world.getPlayer(2);
+    auto& p4 = world.getPlayer(3);
     p2.ps = p3.ps = p4.ps = PlayerState::AI;
 
     const KeyEvent evKeyVisible(KeyType::F7);

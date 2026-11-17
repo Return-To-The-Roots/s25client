@@ -18,4 +18,4 @@ enum class ClientError
     InvalidMap
 };
 
-const char* ClientErrorToStr(ClientError error);
+const char* clientErrorToStr(ClientError error);

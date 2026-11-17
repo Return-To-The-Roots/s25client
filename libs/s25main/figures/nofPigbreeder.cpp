@@ -20,21 +20,21 @@ nofPigbreeder::nofPigbreeder(const MapPoint pos, const unsigned char player, nob
 
 nofPigbreeder::nofPigbreeder(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofPigbreeder::DrawWorking(DrawPoint drawPt)
+void nofPigbreeder::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{10, 2}, {10, 2}, {10, 2}, {10, 2}, {10, 2}}};
     constexpr helpers::EnumArray<DrawPoint, Nation> walkstart = {{{-6, -6}, {-6, -6}, {-6, -6}, {-6, -6}, {-6, -6}}};
 
     unsigned max_id = 240;
-    int now_id = GAMECLIENT.Interpolate(max_id, current_ev);
-    const Nation wpNation = workplace->GetNation();
-    unsigned plColor = world->GetPlayer(player).color;
+    int now_id = GAMECLIENT.interpolate(max_id, current_ev);
+    const Nation wpNation = workplace->getNation();
+    unsigned plColor = world->getPlayer(player).color;
     int walksteps = 16;
 
     if(now_id < 16)
     {
         if(now_id < 8)
-            LOADER.building_cache[wpNation][BuildingType::PigFarm].door.DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::PigFarm].door.drawFull(drawPt);
         // TODO: Use GlobalAnimation?
         DrawPoint walkPos =
           drawPt + walkstart[wpNation] + (offsets[wpNation] - walkstart[wpNation]) * now_id / walksteps;
@@ -43,19 +43,19 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
           .draw(walkPos, COLOR_WHITE, plColor);
     } else if(now_id < 40)
     {
-        LOADER.GetPlayerImage("rom_bobs", 148 + (now_id - 16) / 2)
-          ->DrawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+        LOADER.getPlayerImage("rom_bobs", 148 + (now_id - 16) / 2)
+          ->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
 
         // Evtl Sound abspielen
         if((now_id - 16) == 10)
         {
-            world->GetSoundMgr().playNOSound(65, *this, 0);
+            world->getSoundMgr().playNOSound(65, *this, 0);
             was_sounding = true;
         }
     } else if(now_id < 56)
     {
         if(now_id > 46)
-            LOADER.building_cache[wpNation][BuildingType::PigFarm].door.DrawFull(drawPt);
+            LOADER.building_cache[wpNation][BuildingType::PigFarm].door.drawFull(drawPt);
         // TODO: Use GlobalAnimation?
         DrawPoint walkPos =
           drawPt + walkstart[wpNation] + (walkstart[wpNation] - offsets[wpNation]) * (now_id - 40) / walksteps;
@@ -64,19 +64,19 @@ void nofPigbreeder::DrawWorking(DrawPoint drawPt)
     }
 }
 
-helpers::OptionalEnum<GoodType> nofPigbreeder::ProduceWare()
+helpers::OptionalEnum<GoodType> nofPigbreeder::produceWare()
 {
     return GoodType::Ham;
 }
 
-void nofPigbreeder::MakePigSounds()
+void nofPigbreeder::makePigSounds()
 {
     /// Ist es wieder Zeit für einen Schweine-Sound?
-    unsigned timeDiffSound = 600 + unsigned(rand() % 200) - workplace->GetProductivity() * 5u;
-    if(GetEvMgr().GetCurrentGF() - last_id > timeDiffSound)
+    unsigned timeDiffSound = 600 + unsigned(rand() % 200) - workplace->getProductivity() * 5u;
+    if(getEvMgr().getCurrentGF() - last_id > timeDiffSound)
     {
         // "Oink"
-        world->GetSoundMgr().playNOSound(86, *this, 1);
-        last_id = GetEvMgr().GetCurrentGF();
+        world->getSoundMgr().playNOSound(86, *this, 1);
+        last_id = getEvMgr().getCurrentGF();
     }
 }

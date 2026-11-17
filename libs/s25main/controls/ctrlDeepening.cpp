@@ -11,8 +11,8 @@ ctrlDeepening::ctrlDeepening(Window* parent, unsigned id, DrawPoint pos, const E
 /**
  *  zeichnet das Fenster.
  */
-void ctrlDeepening::Draw_()
+void ctrlDeepening::drawImpl()
 {
-    Draw3D(Rect(GetDrawPos(), GetSize()), tc, false);
-    DrawContent();
+    draw3D(Rect(getDrawPos(), getSize()), tc, false);
+    drawContent();
 }

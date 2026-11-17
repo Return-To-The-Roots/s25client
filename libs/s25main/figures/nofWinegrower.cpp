@@ -27,22 +27,22 @@ nofWinegrower::nofWinegrower(SerializedGameData& sgd, const unsigned obj_id)
     : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool())
 {}
 
-void nofWinegrower::Serialize(SerializedGameData& sgd) const
+void nofWinegrower::serialize(SerializedGameData& sgd) const
 {
-    nofFarmhand::Serialize(sgd);
+    nofFarmhand::serialize(sgd);
     sgd.PushBool(harvest);
 }
 
-void nofWinegrower::DrawWorking(DrawPoint drawPt)
+void nofWinegrower::drawWorking(DrawPoint drawPt)
 {
     if(harvest)
     {
-        const unsigned now_id = GAMECLIENT.Interpolate(44, current_ev);
-        LOADER.GetPlayerImage("wine_bobs", bobIndex[BobTypes::WINEGROWER_PICKING_GRAPES_ANIMATION] + now_id % 4)
-          ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
+        const unsigned now_id = GAMECLIENT.interpolate(44, current_ev);
+        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::WINEGROWER_PICKING_GRAPES_ANIMATION] + now_id % 4)
+          ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
     } else
     {
-        const unsigned now_id = GAMECLIENT.Interpolate(3 * 16 + 8 * 4, current_ev);
+        const unsigned now_id = GAMECLIENT.interpolate(3 * 16 + 8 * 4, current_ev);
         unsigned draw_id;
         if(now_id < 48)
         {
@@ -51,13 +51,13 @@ void nofWinegrower::DrawWorking(DrawPoint drawPt)
             // Shovel-Sound
             if(now_id % 16 == 5)
             {
-                world->GetSoundMgr().playNOSound(76, *this, now_id, 200);
+                world->getSoundMgr().playNOSound(76, *this, now_id, 200);
                 was_sounding = true;
             }
         } else
             draw_id = bobIndex[BobTypes::WINEGROWER_PLANTING_ANIMATION] + now_id % 4;
 
-        LOADER.GetPlayerImage("wine_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
+        LOADER.getPlayerImage("wine_bobs", draw_id)->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
     }
 }
 
@@ -66,7 +66,7 @@ void nofWinegrower::DrawWorking(DrawPoint drawPt)
 #    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
 #endif
 
-unsigned short nofWinegrower::GetCarryID() const
+unsigned short nofWinegrower::getCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
@@ -75,44 +75,44 @@ unsigned short nofWinegrower::GetCarryID() const
 #    pragma warning(pop)
 #endif
 
-void nofWinegrower::WorkStarted()
+void nofWinegrower::workStarted()
 {
     // Inform grapefield to not disappear during harvesting
     if(harvest)
-        world->GetSpecObj<noGrapefield>(pos)->BeginHarvesting();
+        world->getSpecObj<noGrapefield>(pos)->beginHarvesting();
 }
 
-void nofWinegrower::WorkFinished()
+void nofWinegrower::workFinished()
 {
     if(harvest)
     {
         // Destroy grapefield, and take before the ID of the harvested grapefield, which will be set as normal
         // ornamental object
-        noBase* nob = world->GetNO(pos);
+        noBase* nob = world->getNO(pos);
         // Check if there is still a grapes field at this position
-        if(nob->GetGOT() != GO_Type::Grapefield)
+        if(nob->getGOT() != GO_Type::Grapefield)
             return;
-        const unsigned wine_bobs = static_cast<noGrapefield*>(nob)->GetHarvestID();
-        world->DestroyNO(pos);
-        world->SetNO(pos, new noEnvObject(pos, wine_bobs, 7));
+        const unsigned wine_bobs = static_cast<noGrapefield*>(nob)->getHarvestID();
+        world->destroyNO(pos);
+        world->setNO(pos, new noEnvObject(pos, wine_bobs, 7));
 
         // Take harvested grapes into hands
         ware = GoodType::Grapes;
     } else
     {
         // If the point got bad (e.g. something was build), abort work
-        if(GetPointQuality(pos) == PointQuality::NotPossible)
+        if(getPointQuality(pos) == PointQuality::NotPossible)
             return;
 
         // What is currently here
-        const NodalObjectType noType = world->GetNO(pos)->GetType();
+        const NodalObjectType noType = world->getNO(pos)->getType();
 
         // Only demolish ornamental objects and signs
         if(noType == NodalObjectType::Environment || noType == NodalObjectType::Nothing)
         {
-            world->DestroyNO(pos, false);
+            world->destroyNO(pos, false);
             // place new grapefield
-            world->SetNO(pos, new noGrapefield(pos));
+            world->setNO(pos, new noGrapefield(pos));
         }
 
         // We have only planted (take nothing into hand)
@@ -120,15 +120,15 @@ void nofWinegrower::WorkFinished()
     }
 
     // recompute BQ around
-    world->RecalcBQAroundPoint(pos);
+    world->recalcBQAroundPoint(pos);
 }
 
-nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt, const bool isBeforeWork) const
+nofFarmhand::PointQuality nofWinegrower::getPointQuality(const MapPoint pt, const bool isBeforeWork) const
 {
     // Either a grapefield exists we can harvest...
-    if(world->GetNO(pt)->GetType() == NodalObjectType::Grapefield)
+    if(world->getNO(pt)->getType() == NodalObjectType::Grapefield)
     {
-        if(world->GetSpecObj<noGrapefield>(pt)->IsHarvestable())
+        if(world->getSpecObj<noGrapefield>(pt)->isHarvestable())
             return PointQuality::Class1;
         else
             return PointQuality::NotPossible;
@@ -136,29 +136,29 @@ nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt, cons
     {
         // Try to "plant" a new grapefield
         // Still enough wares when starting new work
-        if(isBeforeWork && !workplace->WaresAvailable())
+        if(isBeforeWork && !workplace->waresAvailable())
             return PointQuality::NotPossible;
 
         // Do not build on road
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            if(world->GetPointRoad(pt, dir) != PointRoad::None)
+            if(world->getPointRoad(pt, dir) != PointRoad::None)
                 return PointQuality::NotPossible;
         }
 
         // Investigate terrain
-        if(!world->IsOfTerrain(pt, [](const auto& desc) { return desc.IsVital(); }))
+        if(!world->isOfTerrain(pt, [](const auto& desc) { return desc.isVital(); }))
             return PointQuality::NotPossible;
 
         // Is space free?
-        NodalObjectType noType = world->GetNO(pt)->GetType();
+        NodalObjectType noType = world->getNO(pt)->getType();
         if(noType != NodalObjectType::Environment && noType != NodalObjectType::Nothing)
             return PointQuality::NotPossible;
 
-        for(const MapPoint nb : world->GetNeighbours(pt))
+        for(const MapPoint nb : world->getNeighbours(pt))
         {
             // Do not build near to other grapefields and buildings!
-            noType = world->GetNO(nb)->GetType();
+            noType = world->getNO(nb)->getType();
             if(noType == NodalObjectType::Grapefield || noType == NodalObjectType::Grainfield
                || noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite)
                 return PointQuality::NotPossible;
@@ -168,40 +168,40 @@ nofFarmhand::PointQuality nofWinegrower::GetPointQuality(const MapPoint pt, cons
     }
 }
 
-void nofWinegrower::WorkAborted()
+void nofWinegrower::workAborted()
 {
-    nofFarmhand::WorkAborted();
+    nofFarmhand::workAborted();
     // inform the grapefield, so it can wither, when we harvest it
     if(harvest && state == State::Work)
-        world->GetSpecObj<noGrapefield>(pos)->AbortHarvesting();
+        world->getSpecObj<noGrapefield>(pos)->abortHarvesting();
 }
 
-void nofWinegrower::WalkingStarted()
+void nofWinegrower::walkingStarted()
 {
     // When walking to a grapefield, harvest it or plant a new one
-    harvest = (world->GetNO(dest)->GetType() == NodalObjectType::Grapefield);
+    harvest = (world->getNO(dest)->getType() == NodalObjectType::Grapefield);
 
     if(!harvest)
-        workplace->ConsumeWares();
+        workplace->consumeWares();
 }
 
-void nofWinegrower::DrawWalkingWithWare(DrawPoint drawPt)
+void nofWinegrower::drawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::WINEGROWER_WALKING_WITH_FULL_BASKET]);
+    drawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::WINEGROWER_WALKING_WITH_FULL_BASKET]);
 }
 
-void nofWinegrower::DrawOtherStates(DrawPoint drawPt)
+void nofWinegrower::drawOtherStates(DrawPoint drawPt)
 {
     if(state == State::WalkToWorkpoint)
     {
         if(harvest) // Go to harvest grapes
-            DrawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::WINEGROWER_WALKING_WITH_EMPTY_BASKET]);
+            drawWalking(drawPt, "wine_bobs", bobIndex[BobTypes::WINEGROWER_WALKING_WITH_EMPTY_BASKET]);
         else // Draw normal walking
-            DrawWalking(drawPt);
+            drawWalking(drawPt);
     }
 }
 
-bool nofWinegrower::AreWaresAvailable() const
+bool nofWinegrower::areWaresAvailable() const
 {
     // wine grower doesn't need wares for harvesting!
     // -> Wares are considered when calling GetPointQuality!

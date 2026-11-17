@@ -9,7 +9,7 @@
 class IChatCmdListener
 {
 public:
-    virtual void OnChatCommand(const std::string& cmd) = 0;
+    virtual void onChatCommand(const std::string& cmd) = 0;
 };
 
 class iwChat : public IngameWindow
@@ -18,7 +18,7 @@ public:
     iwChat(Window* parent);
 
 private:
-    void Msg_PaintBefore() override;
-    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
-    void Msg_EditEnter(unsigned ctrl_id) override;
+    void msgPaintBefore() override;
+    void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    void msgEditEnter(unsigned ctrl_id) override;
 };

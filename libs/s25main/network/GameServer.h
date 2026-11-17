@@ -39,100 +39,100 @@ public:
     ~GameServer();
 
     /// Starts the server
-    bool Start(const CreateServerInfo& csi, const MapDescription& map, const std::string& hostPw);
+    bool start(const CreateServerInfo& csi, const MapDescription& map, const std::string& hostPw);
 
-    void Run();
+    void run();
 
-    void RunStateGame();
+    void runStateGame();
 
-    void RunStateConfig();
+    void runStateConfig();
 
-    void Stop();
+    void stop();
 
     /// Assign players that do not have a fixed team, return true if any player was assigned.
     static bool assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerInfos);
 
 private:
-    bool StartGame();
+    bool startGame();
 
-    unsigned CalcNWFLength(std::chrono::milliseconds minDuration) const;
+    unsigned calcNWFLength(std::chrono::milliseconds minDuration) const;
 
-    GameServerPlayer* GetNetworkPlayer(unsigned playerId);
+    GameServerPlayer* getNetworkPlayer(unsigned playerId);
     /// Swap players ingame or during config
-    void SwapPlayer(uint8_t player1, uint8_t player2);
+    void swapPlayer(uint8_t player1, uint8_t player2);
 
-    void SendToAll(const GameMessage& msg);
-    void SendNWFDone(const NWFServerInfo& info);
+    void sendToAll(const GameMessage& msg);
+    void sendNWFDone(const NWFServerInfo& info);
 
     /// Kick a player (free slot and set socket to invalid. Does NOT remove it from NetworkPlayers)
-    void KickPlayer(uint8_t playerId, KickReason cause, uint32_t param);
+    void kickPlayer(uint8_t playerId, KickReason cause, uint32_t param);
 
-    void ClientWatchDog();
+    void clientWatchDog();
 
-    void WaitForClients();
-    void FillPlayerQueues();
+    void waitForClients();
+    void fillPlayerQueues();
 
-    unsigned GetNumFilledSlots() const;
+    unsigned getNumFilledSlots() const;
     /// Notifies listeners (e.g. Lobby) that the game status has changed (e.g player count)
-    void AnnounceStatusChange();
-    void SetPaused(bool paused);
+    void announceStatusChange();
+    void setPaused(bool paused);
 
     void LC_Status_Error(const std::string& error) override;
     void LC_Created() override;
 
     RTTR_IGNORE_OVERLOADED_VIRTUAL
-    bool OnGameMessage(const GameMessage_Pong& msg) override;
-    bool OnGameMessage(const GameMessage_Server_Type& msg) override;
-    bool OnGameMessage(const GameMessage_Server_Password& msg) override;
-    bool OnGameMessage(const GameMessage_Chat& msg) override;
-    bool OnGameMessage(const GameMessage_GGSChange& msg) override;
-    bool OnGameMessage(const GameMessage_Player_State& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Name& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Portrait& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Nation& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Team& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Color& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Ready& msg) override;
-    bool OnGameMessage(const GameMessage_Player_Swap& msg) override;
-    bool OnGameMessage(const GameMessage_Player_SwapConfirm& msg) override;
-    bool OnGameMessage(const GameMessage_MapRequest& msg) override;
-    bool OnGameMessage(const GameMessage_Map_Checksum& msg) override;
-    bool OnGameMessage(const GameMessage_GameCommand& msg) override;
-    bool OnGameMessage(const GameMessage_Speed& msg) override;
-    bool OnGameMessage(const GameMessage_AsyncLog& msg) override;
-    bool OnGameMessage(const GameMessage_RemoveLua& msg) override;
-    bool OnGameMessage(const GameMessage_Countdown& msg) override;
-    bool OnGameMessage(const GameMessage_CancelCountdown& msg) override;
-    bool OnGameMessage(const GameMessage_Pause& msg) override;
-    bool OnGameMessage(const GameMessage_SkipToGF& msg) override;
+    bool onGameMessage(const GameMessage_Pong& msg) override;
+    bool onGameMessage(const GameMessage_Server_Type& msg) override;
+    bool onGameMessage(const GameMessage_Server_Password& msg) override;
+    bool onGameMessage(const GameMessage_Chat& msg) override;
+    bool onGameMessage(const GameMessage_GGSChange& msg) override;
+    bool onGameMessage(const GameMessage_Player_State& msg) override;
+    bool onGameMessage(const GameMessage_Player_Name& msg) override;
+    bool onGameMessage(const GameMessage_Player_Portrait& msg) override;
+    bool onGameMessage(const GameMessage_Player_Nation& msg) override;
+    bool onGameMessage(const GameMessage_Player_Team& msg) override;
+    bool onGameMessage(const GameMessage_Player_Color& msg) override;
+    bool onGameMessage(const GameMessage_Player_Ready& msg) override;
+    bool onGameMessage(const GameMessage_Player_Swap& msg) override;
+    bool onGameMessage(const GameMessage_Player_SwapConfirm& msg) override;
+    bool onGameMessage(const GameMessage_MapRequest& msg) override;
+    bool onGameMessage(const GameMessage_Map_Checksum& msg) override;
+    bool onGameMessage(const GameMessage_GameCommand& msg) override;
+    bool onGameMessage(const GameMessage_Speed& msg) override;
+    bool onGameMessage(const GameMessage_AsyncLog& msg) override;
+    bool onGameMessage(const GameMessage_RemoveLua& msg) override;
+    bool onGameMessage(const GameMessage_Countdown& msg) override;
+    bool onGameMessage(const GameMessage_CancelCountdown& msg) override;
+    bool onGameMessage(const GameMessage_Pause& msg) override;
+    bool onGameMessage(const GameMessage_SkipToGF& msg) override;
     RTTR_POP_DIAGNOSTIC
 
-    void CancelCountdown();
-    bool ArePlayersReady() const;
+    void cancelCountdown();
+    bool arePlayersReady() const;
     /// Some player data has changed. Set non-ready and cancel countdown
-    void PlayerDataChanged(unsigned playerIdx);
+    void playerDataChanged(unsigned playerIdx);
 
     /// Sets the color of this player to the given color.
     /// If ensureUnique is true and the color is already used it will be set to the next free one
     /// Sends a notification to all players if the color was changed
-    void CheckAndSetColor(unsigned playerIdx, unsigned newColor, bool ensureUnique);
+    void checkAndSetColor(unsigned playerIdx, unsigned newColor, bool ensureUnique);
 
     /// Handles advancing of GFs, actions of AI and potentially the NWF
-    void ExecuteGameFrame();
-    void ExecuteNWF();
+    void executeGameFrame();
+    void executeNWF();
 
-    bool CheckForAsync();
-    boost::filesystem::path SaveAsyncLog();
-    void SendAsyncLog(const boost::filesystem::path& asyncLogFilePath);
+    bool checkForAsync();
+    boost::filesystem::path saveAsyncLog();
+    void sendAsyncLog(const boost::filesystem::path& asyncLogFilePath);
 
-    void CheckAndKickLaggingPlayers();
-    bool CheckForLaggingPlayers();
-    JoinPlayerInfo& GetJoinPlayer(unsigned playerIdx);
+    void checkAndKickLaggingPlayers();
+    bool checkForLaggingPlayers();
+    JoinPlayerInfo& getJoinPlayer(unsigned playerIdx);
 
     /// Is the player with the given idx the host?
-    bool IsHost(unsigned playerIdx) const;
+    bool isHost(unsigned playerIdx) const;
     /// Get the player this message concerns. which is msg.player, msg.senderPlayer or -1 on error/wrong values
-    int GetTargetPlayer(const GameMessageWithPlayer& msg);
+    int getTargetPlayer(const GameMessageWithPlayer& msg);
 
     unsigned skiptogf;
 
@@ -150,7 +150,7 @@ private:
     struct ServerConfig
     {
         ServerConfig();
-        void Clear();
+        void clear();
 
         ServerType servertype;
         std::string gamename;
@@ -177,12 +177,12 @@ private:
     public:
         CountDown();
         /// Starts a countdown at curTime of timeInSec seconds
-        void Start(unsigned timeInSec);
-        void Stop();
+        void start(unsigned timeInSec);
+        void stop();
         /// Updates the state and returns true on change. Stops 1s after remainingSecs reached zero
-        bool Update();
+        bool update();
         bool IsActive() const { return isActive; }
-        unsigned GetRemainingSecs() const { return remainingSecs; }
+        unsigned getRemainingSecs() const { return remainingSecs; }
     } countdown;
 
     struct AsyncLog;
@@ -192,7 +192,7 @@ private:
     std::chrono::steady_clock::time_point loadStartTime;
 
     LANDiscoveryService lanAnnouncer;
-    void RunStateLoading();
+    void runStateLoading();
 };
 
 ///////////////////////////////////////////////////////////////////////////////

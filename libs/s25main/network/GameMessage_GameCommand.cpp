@@ -18,17 +18,17 @@ GameMessage_GameCommand::GameMessage_GameCommand(uint8_t player, const AsyncChec
 void GameMessage_GameCommand::Serialize(Serializer& ser) const
 {
     GameMessageWithPlayer::Serialize(ser);
-    cmds.Serialize(ser);
+    cmds.serialize(ser);
 }
 
 void GameMessage_GameCommand::Deserialize(Serializer& ser)
 {
     GameMessageWithPlayer::Deserialize(ser);
     gc::Deserializer deser(ser);
-    cmds.Deserialize(deser);
+    cmds.deserialize(deser);
 }
 
-bool GameMessage_GameCommand::Run(GameMessageInterface* callback) const
+bool GameMessage_GameCommand::runGame(GameMessageInterface* callback) const
 {
-    return callback->OnGameMessage(*this);
+    return callback->onGameMessage(*this);
 }

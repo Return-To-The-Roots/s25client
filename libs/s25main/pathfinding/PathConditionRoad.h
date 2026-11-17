@@ -17,13 +17,13 @@ struct PathConditionRoad
     {}
 
     // Called for every node but the start & goal and should return true, if this point is usable
-    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
+    BOOST_FORCEINLINE bool isNodeOk(const MapPoint& pt) const
     {
-        return worldOrViewer.IsPlayerTerritory(pt) && worldOrViewer.IsRoadAvailable(isBoatRoad, pt);
+        return worldOrViewer.isPlayerTerritory(pt) && worldOrViewer.isRoadAvailable(isBoatRoad, pt);
     }
 
     // Called for every edge (node to other node)
-    BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& /*fromPt*/, const Direction /*dir*/) const { return true; }
+    BOOST_FORCEINLINE bool isEdgeOk(const MapPoint& /*fromPt*/, const Direction /*dir*/) const { return true; }
 };
 
 template<class T_WorldOrViewer>

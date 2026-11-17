@@ -12,7 +12,7 @@ struct VideoMode;
 
 class VideoSDL2 final : public VideoDriver
 {
-    void CleanUp();
+    void cleanUp();
 
 public:
     VideoSDL2(VideoDriverLoaderInterface* CallBack);
@@ -20,47 +20,47 @@ public:
     ~VideoSDL2() override;
 
     /// Get the name of the driver
-    const char* GetName() const override;
+    const char* getName() const override;
 
-    bool Initialize() override;
+    bool initialize() override;
 
-    bool CreateScreen(const std::string& title, VideoMode size, DisplayMode displayMode) override;
-    bool ResizeScreen(VideoMode newSize, DisplayMode displayMode) override;
+    bool createScreen(const std::string& title, VideoMode size, DisplayMode displayMode) override;
+    bool resizeScreen(VideoMode newSize, DisplayMode displayMode) override;
 
-    void DestroyScreen() override;
+    void destroyScreen() override;
 
     /// Swap the OpenGL buffer
-    bool SwapBuffers() override;
+    bool swapBuffers() override;
 
-    bool MessageLoop() override;
+    bool messageLoop() override;
 
-    void ShowErrorMessage(const std::string& title, const std::string& message) override;
+    void showErrorMessage(const std::string& title, const std::string& message) override;
 
     /// Get a timestamp
-    unsigned long GetTickCount() const override;
+    unsigned long getTickCount() const override;
 
-    OpenGL_Loader_Proc GetLoaderFunction() const override;
+    OpenGL_Loader_Proc getLoaderFunction() const override;
 
     /// Get supported video modes
-    std::vector<VideoMode> ListVideoModes() const override;
+    std::vector<VideoMode> listVideoModes() const override;
 
     /// Set mouse position
-    void SetMousePos(Position pos) override;
+    void setMousePos(Position pos) override;
 
     /// Get state of the modifier keys
-    KeyEvent GetModKeyState() const override;
+    KeyEvent getModKeyState() const override;
 
     /// Get (device-dependent!) window pointer, HWND in Windows
-    void* GetMapPointer() const override;
+    void* getMapPointer() const override;
 
-    static void PrintError();
-    static void PrintError(const std::string& msg);
+    static void printError();
+    static void printError(const std::string& msg);
 
 private:
-    void HandlePaste();
-    void UpdateCurrentSizes();
-    void MoveWindowToCenter();
-    void UpdateCurrentDisplayMode();
+    void handlePaste();
+    void updateCurrentSizes();
+    void moveWindowToCenter();
+    void updateCurrentDisplayMode();
 
     SDL_Window* window;
     SDL_GLContext context;

@@ -17,13 +17,13 @@ private:
 public:
     iwDirectIPConnect(ServerType serverType);
     /// Connects to the given server or fills in the info if it has a password
-    void Connect(const std::string& hostOrIp, unsigned short port, bool isIPv6, bool hasPwd);
+    void connect(const std::string& hostOrIp, unsigned short port, bool isIPv6, bool hasPwd);
 
 private:
-    void SetStatus(const std::string& text, unsigned color);
+    void setStatus(const std::string& text, unsigned color);
 
-    void Msg_EditChange(unsigned ctrl_id) override;
-    void Msg_EditEnter(unsigned ctrl_id) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    void msgEditChange(unsigned ctrl_id) override;
+    void msgEditEnter(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
 };

@@ -13,19 +13,19 @@ static_assert(MAX_FILE_SIZE <= std::numeric_limits<uint32_t>::max() / 4u, "Max s
 
 MapInfo::MapInfo()
 {
-    Clear();
+    clear();
 }
 
 MapInfo::~MapInfo() = default;
 
-void MapInfo::Clear()
+void MapInfo::clear()
 {
     type = MapType::OldMap;
     title.clear();
     filepath.clear();
     luaFilepath.clear();
-    mapData.Clear();
-    luaData.Clear();
+    mapData.clear();
+    luaData.clear();
     mapChecksum = 0;
     luaChecksum = 0;
     savegame.reset();

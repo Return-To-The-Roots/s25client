@@ -79,15 +79,15 @@ public:
     SerializedGameData();
 
     /// Nimmt das gesamte Spiel auf und speichert es im Buffer
-    void MakeSnapshot(const Game& game);
+    void makeSnapshot(const Game& game);
 
     /// Reads the snapshot from the internal buffer
-    void ReadSnapshot(Game& game, ILocalGameState& localGameState);
+    void readSnapshot(Game& game, ILocalGameState& localGameState);
 
     /// Get the format version the data is saved in. Deserializing methods can use this to support
     /// loading data saved in an earlier format.
     /// See `currentGameDataVersion` in SerializedGameData.cpp for version history
-    unsigned GetGameDataVersion() const { return gameDataVersion; }
+    unsigned getGameDataVersion() const { return gameDataVersion; }
 
     //////////////////////////////////////////////////////////////////////////
     // Write methods
@@ -95,42 +95,42 @@ public:
 
     /// Write a GameObject
     template<class T>
-    void PushObject(const T* go, bool known = false)
+    void pushObject(const T* go, bool known = false)
     {
         /* The assert below basically checks the virtual function table.
            If the dynamic_cast fails, we tried to push an object of another type or it was deleted */
         const auto* goTmp = static_cast<const GameObject*>(go);
         RTTR_Assert(dynamic_cast<const T*>(goTmp) == go); //-V547
-        PushObject_(goTmp, known);
+        pushObjectImpl(goTmp, known);
     }
     template<class T>
-    void PushObject(const std::unique_ptr<T>& go, bool known = false)
+    void pushObject(const std::unique_ptr<T>& go, bool known = false)
     {
-        PushObject(go.get(), known);
+        pushObject(go.get(), known);
     }
 
-    void PushEvent(const GameEvent* event);
+    void pushEvent(const GameEvent* event);
 
     /// Write a container of GameObjects
     template<typename T>
-    void PushObjectContainer(const T& gos, bool known = false);
+    void pushObjectContainer(const T& gos, bool known = false);
 
     /// FoW-Objekt
-    void PushFOWObject(const FOWObject* fowobj);
+    void pushFOWObject(const FOWObject* fowobj);
 
     /// Serialize an enum as T_SavedType which must be the underlying type (as that is what is deserialized by Pop<T>)
     /// Requires MaxEnumValue<T> to be specialized and T_SavedType to be able to hold all enumerators (checked only for
     /// max value)
     template<typename T_SavedType, typename T>
-    void PushEnum(const T val)
+    void pushEnum(const T val)
     {
         helpers::pushEnum<T_SavedType>(*this, val);
     }
     template<typename T_SavedType, typename T>
-    void PushOptionalEnum(const helpers::OptionalEnum<T> val)
+    void pushOptionalEnum(const helpers::OptionalEnum<T> val)
     {
         if(val)
-            PushEnum<T_SavedType>(*val);
+            pushEnum<T_SavedType>(*val);
         else
             Push<T_SavedType>(helpers::OptionalEnum<T>::invalidValue);
     }
@@ -145,46 +145,46 @@ public:
     /// Read a GameObject
     template<typename T>
     RTTR_ATTRIBUTE_NO_UBSAN(vptr)
-    T* PopObject(helpers::OptionalEnum<GO_Type> got = {})
+    T* popObject(helpers::OptionalEnum<GO_Type> got = {})
     {
-        return static_cast<T*>(PopObject_(got));
+        return static_cast<T*>(popObjectImpl(got));
     }
 
-    const GameEvent* PopEvent();
+    const GameEvent* popEvent();
 
     /// FoW-Objekt
-    std::unique_ptr<FOWObject> PopFOWObject();
+    std::unique_ptr<FOWObject> popFOWObject();
 
     /// Read a container of GameObjects
     template<typename T>
-    void PopObjectContainer(T& gos, helpers::OptionalEnum<GO_Type> got = {});
+    void popObjectContainer(T& gos, helpers::OptionalEnum<GO_Type> got = {});
 
     /// Read a container of values.  Values must have fixed-width types!
     template<typename T>
-    void PopContainer(T& result);
+    void popContainer(T& result);
 
     template<typename T>
-    helpers::OptionalEnum<T> PopOptionalEnum();
+    helpers::OptionalEnum<T> popOptionalEnum();
 
     /// Read a trivial type (integral, enum, ...)
     template<typename T>
-    std::enable_if_t<std::is_enum_v<T>, T> Pop();
+    std::enable_if_t<std::is_enum_v<T>, T> pop();
     template<typename T>
-    std::enable_if_t<!std::is_enum_v<T>, T> Pop();
+    std::enable_if_t<!std::is_enum_v<T>, T> pop();
 
-    MapPoint PopMapPoint() { return helpers::popPoint<MapPoint>(*this); }
+    MapPoint popMapPoint() { return helpers::popPoint<MapPoint>(*this); }
 
     /// Adds a deserialized object to the storage. Must be called exactly once per read GameObject
-    void AddObject(GameObject* go);
+    void addObject(GameObject* go);
     /// Adds a deserialized event to the storage. Return instanceId. Must be called exactly once per read event
-    unsigned AddEvent(unsigned instanceId, GameEvent* ev);
+    unsigned addEvent(unsigned instanceId, GameEvent* ev);
     /// Only valid during writing
-    bool IsEventSerialized(unsigned evInstanceid) const;
+    bool isEventSerialized(unsigned evInstanceid) const;
     bool debugMode;
 
 private:
-    static unsigned short GetSafetyCode(const GameObject& go);
-    static unsigned short GetSafetyCode(const GameEvent& ev);
+    static unsigned short getSafetyCode(const GameObject& go);
+    static unsigned short getSafetyCode(const GameEvent& ev);
     static Error makeOutOfRange(unsigned value, unsigned maxValue);
 
     /// Version of the game data that is read. Gets set to the current version for writing
@@ -208,20 +208,20 @@ private:
     bool isReading;
 
     /// Starts reading or writing according to the param
-    void Prepare(bool reading);
+    void prepare(bool reading);
     /// Erzeugt GameObject
-    std::unique_ptr<GameObject> Create_GameObject(GO_Type got, unsigned obj_id);
+    std::unique_ptr<GameObject> createGameObject(GO_Type got, unsigned obj_id);
     /// Erzeugt FOWObject
-    std::unique_ptr<FOWObject> Create_FOWObject(FoW_Type fowtype);
+    std::unique_ptr<FOWObject> createFOWObject(FoW_Type fowtype);
 
-    void PushObject_(const GameObject* go, bool known);
+    void pushObjectImpl(const GameObject* go, bool known);
     /// Objekt(referenzen) lesen
-    GameObject* PopObject_(helpers::OptionalEnum<GO_Type> got);
+    GameObject* popObjectImpl(helpers::OptionalEnum<GO_Type> got);
 
     /// Returns the object with the given id when it was read, nullptr otherwise (only valid during reading)
-    GameObject* GetReadGameObject(unsigned obj_id) const;
+    GameObject* getReadGameObject(unsigned obj_id) const;
     /// Returns whether the object with the given id was already serialized (only valid during writing)
-    bool IsObjectSerialized(unsigned obj_id) const;
+    bool isObjectSerialized(unsigned obj_id) const;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -229,36 +229,36 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 
 template<typename T>
-void SerializedGameData::PushObjectContainer(const T& gos, bool known)
+void SerializedGameData::pushObjectContainer(const T& gos, bool known)
 {
     // Anzahl
     PushVarSize(gos.size());
     // einzelne Objekte
     for(const auto& go : gos)
-        PushObject(go, known);
+        pushObject(go, known);
 }
 
 template<typename T>
-void SerializedGameData::PopObjectContainer(T& gos, helpers::OptionalEnum<GO_Type> got)
+void SerializedGameData::popObjectContainer(T& gos, helpers::OptionalEnum<GO_Type> got)
 {
     using Elements = typename T::value_type;
     using Object = std::remove_reference_t<decltype(**gos.begin())>;
 
-    unsigned size = (GetGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
+    unsigned size = (getGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
     gos.clear();
     if constexpr(detail::has_reserve_v<decltype(gos)>)
         gos.reserve(size);
 
     auto it = detail::get_back_inserter(gos);
     for(unsigned i = 0; i < size; ++i)
-        *it = Elements(PopObject<Object>(got)); // Conversion required to support unique_ptr
+        *it = Elements(popObject<Object>(got)); // Conversion required to support unique_ptr
 }
 
 template<typename T>
-void SerializedGameData::PopContainer(T& result)
+void SerializedGameData::popContainer(T& result)
 {
     // Remove this method after raising GameDataVersion
-    if(GetGameDataVersion() >= 2)
+    if(getGameDataVersion() >= 2)
         helpers::popContainer(*this, result);
     else
     {
@@ -268,7 +268,7 @@ void SerializedGameData::PopContainer(T& result)
 }
 
 template<typename T>
-helpers::OptionalEnum<T> SerializedGameData::PopOptionalEnum()
+helpers::OptionalEnum<T> SerializedGameData::popOptionalEnum()
 {
     using Integral = std::underlying_type_t<T>;
     const auto value = Serializer::Pop<Integral>();
@@ -279,7 +279,7 @@ helpers::OptionalEnum<T> SerializedGameData::PopOptionalEnum()
 }
 
 template<typename T>
-std::enable_if_t<std::is_enum_v<T>, T> SerializedGameData::Pop()
+std::enable_if_t<std::is_enum_v<T>, T> SerializedGameData::pop()
 {
     try
     {
@@ -290,7 +290,7 @@ std::enable_if_t<std::is_enum_v<T>, T> SerializedGameData::Pop()
     }
 }
 template<typename T>
-std::enable_if_t<!std::is_enum_v<T>, T> SerializedGameData::Pop()
+std::enable_if_t<!std::is_enum_v<T>, T> SerializedGameData::pop()
 {
     return Serializer::Pop<T>();
 }

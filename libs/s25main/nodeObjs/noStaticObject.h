@@ -20,27 +20,27 @@ public:
                    NodalObjectType type = NodalObjectType::Object);
     noStaticObject(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
-    GO_Type GetGOT() const override { return GO_Type::Staticobject; }
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
+    GO_Type getGOT() const override { return GO_Type::Staticobject; }
 
     /// gibt die Item-ID zurück (nr in der jeweiligen File)
-    unsigned short GetItemID() const { return id; }
+    unsigned short getItemID() const { return id; }
     /// gibt die Nr der File zurück)
-    unsigned short GetItemFile() const { return file; }
+    unsigned short getItemFile() const { return file; }
     /// gibt die Größe des Objekts zurück.
-    unsigned char GetSize() const { return size; }
+    unsigned char getSize() const { return size; }
 
-    BlockingManner GetBM() const override;
+    BlockingManner getBM() const override;
 
     /// zeichnet das Objekt.
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     static Textures getTextures(unsigned short file, unsigned short id);
-    bool IsAnimated() const;
+    bool isAnimated() const;
 
 protected:
-    static bool IsOpenGateway(unsigned short file, unsigned short id);
+    static bool isOpenGateway(unsigned short file, unsigned short id);
     unsigned short id;
     unsigned short file;
     unsigned char size;

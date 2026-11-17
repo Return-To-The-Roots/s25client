@@ -7,11 +7,11 @@
 #include <string>
 
 namespace rttr::version {
-std::string GetTitle();
-std::string GetVersion();
-std::string GetBuildDate();
-std::string GetRevision();
-std::string GetShortRevision();
-std::string GetYear();
-std::string GetReadableVersion();
+std::string getTitle();
+std::string getVersion();
+std::string getBuildDate();
+std::string getRevision();
+std::string getShortRevision();
+std::string getYear();
+std::string getReadableVersion();
 } // namespace rttr::version

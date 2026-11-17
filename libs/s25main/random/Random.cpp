@@ -24,18 +24,18 @@ Random<T_PRNG>::Random()
 template<class T_PRNG>
 void Random<T_PRNG>::Init(const uint64_t& seed)
 {
-    ResetState(PRNG(static_cast<typename PRNG::result_type>(seed)));
+    resetState(PRNG(static_cast<typename PRNG::result_type>(seed)));
 }
 
 template<class T_PRNG>
-void Random<T_PRNG>::ResetState(const PRNG& newState)
+void Random<T_PRNG>::resetState(const PRNG& newState)
 {
     rng_ = newState;
     numInvocations_ = 0;
 }
 
 template<class T_PRNG>
-int Random<T_PRNG>::Rand(const RandomContext& context, const int maxExcl)
+int Random<T_PRNG>::rand(const RandomContext& context, const int maxExcl)
 {
     history_[numInvocations_ % history_.size()] = RandomEntry(numInvocations_, maxExcl, rng_, context);
     ++numInvocations_;
@@ -44,13 +44,13 @@ int Random<T_PRNG>::Rand(const RandomContext& context, const int maxExcl)
 }
 
 template<class T_PRNG>
-unsigned Random<T_PRNG>::GetChecksum() const
+unsigned Random<T_PRNG>::getChecksum() const
 {
-    return CalcChecksum(rng_);
+    return calcChecksum(rng_);
 }
 
 template<class T_PRNG>
-unsigned Random<T_PRNG>::CalcChecksum(const PRNG& rng)
+unsigned Random<T_PRNG>::calcChecksum(const PRNG& rng)
 {
     // This is designed in a way that makes the checksum be equivalent
     // to the state of the OldLCG for compatibility with old versions
@@ -65,7 +65,7 @@ unsigned Random<T_PRNG>::CalcChecksum(const PRNG& rng)
 }
 
 template<class T_PRNG>
-const typename Random<T_PRNG>::PRNG& Random<T_PRNG>::GetCurrentState() const
+const typename Random<T_PRNG>::PRNG& Random<T_PRNG>::getCurrentState() const
 {
     return rng_;
 }
@@ -99,7 +99,7 @@ std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::GetAsyncLog()
 //////////////////////////////////////////////////////////////////////////
 
 template<class T_PRNG>
-void Random<T_PRNG>::RandomEntry::Serialize(Serializer& ser) const
+void Random<T_PRNG>::RandomEntry::serialize(Serializer& ser) const
 {
     ser.PushUnsignedInt(counter);
     ser.PushSignedInt(maxExcl);
@@ -112,7 +112,7 @@ void Random<T_PRNG>::RandomEntry::Serialize(Serializer& ser) const
 }
 
 template<class T_PRNG>
-void Random<T_PRNG>::RandomEntry::Deserialize(Serializer& ser)
+void Random<T_PRNG>::RandomEntry::deserialize(Serializer& ser)
 {
     counter = ser.PopUnsignedInt();
     maxExcl = ser.PopSignedInt();
@@ -126,7 +126,7 @@ void Random<T_PRNG>::RandomEntry::Deserialize(Serializer& ser)
 }
 
 template<class T_PRNG>
-int Random<T_PRNG>::RandomEntry::GetValue() const
+int Random<T_PRNG>::RandomEntry::getValue() const
 {
     PRNG tmpRng(rngState);
     return calcRandValue(tmpRng, maxExcl);

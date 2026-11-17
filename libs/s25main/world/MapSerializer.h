@@ -12,6 +12,6 @@ class ILocalGameState;
 class MapSerializer
 {
 public:
-    static void Serialize(const GameWorldBase& world, SerializedGameData& sgd);
-    static void Deserialize(GameWorldBase& world, SerializedGameData& sgd, Game& game, ILocalGameState& localgameState);
+    static void serialize(const GameWorldBase& world, SerializedGameData& sgd);
+    static void deserialize(GameWorldBase& world, SerializedGameData& sgd, Game& game, ILocalGameState& localgameState);
 };

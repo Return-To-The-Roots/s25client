@@ -12,11 +12,11 @@
 iwMissionStatement::iwMissionStatement(const std::string& title, const std::string& content, bool pauseGame,
                                        HelpImage image)
     : IngameWindow(CGI_MISSION_STATEMENT, IngameWindow::posLastOrCenter, Extent(640, 480), title,
-                   LOADER.GetImageN("io", 5), true, CloseBehavior::Custom),
-      pauseGame_(pauseGame && !GAMECLIENT.IsReplayModeOn())
+                   LOADER.getImageN("io", 5), true, CloseBehavior::Custom),
+      pauseGame_(pauseGame && !GAMECLIENT.isReplayModeOn())
 {
-    glArchivItem_Bitmap* img = (image == IM_NONE) ? nullptr : LOADER.GetImageN("io", image);
-    const Extent imgSize(img ? img->GetSize() : Extent::all(0));
+    glArchivItem_Bitmap* img = (image == IM_NONE) ? nullptr : LOADER.getImageN("io", image);
+    const Extent imgSize(img ? img->getSize() : Extent::all(0));
     const unsigned minImgSpaceTop = img ? 60u : 0u;
     const unsigned imgSpaceRight = img ? 20u : 0u;
     const unsigned imgSpaceLeft = img ? 10u : 0u;
@@ -25,40 +25,40 @@ iwMissionStatement::iwMissionStatement(const std::string& title, const std::stri
     const unsigned buttonSpace = 12u;
     const Extent buttonSize(100, 22);
 
-    const unsigned short maxTextWidth = GetIwSize().x - imgSize.x - textSpace - imgSpace;
-    ctrlMultiline* text = AddMultiline(0, contentOffset + DrawPoint::all(textSpace),
-                                       Extent(maxTextWidth, GetIwSize().y), TextureColor::Green2, NormalFont);
-    text->ShowBackground(false);
-    text->AddString(content, COLOR_YELLOW, false);
-    text->Resize(text->GetContentSize());
+    const unsigned short maxTextWidth = getIwSize().x - imgSize.x - textSpace - imgSpace;
+    ctrlMultiline* text = addMultiline(0, contentOffset + DrawPoint::all(textSpace),
+                                       Extent(maxTextWidth, getIwSize().y), TextureColor::Green2, NormalFont);
+    text->showBackground(false);
+    text->addString(content, COLOR_YELLOW, false);
+    text->resize(text->getContentSize());
 
     // set window width to our determined max width
-    Extent newIwSize = text->GetSize() + Extent::all(textSpace) + Extent(imgSize.x + imgSpace, buttonSize.y + 2);
+    Extent newIwSize = text->getSize() + Extent::all(textSpace) + Extent(imgSize.x + imgSpace, buttonSize.y + 2);
     newIwSize = elMax(newIwSize, buttonSize);
     newIwSize.y = std::max(newIwSize.y, imgSize.y + minImgSpaceTop) + buttonSpace;
-    SetIwSize(newIwSize);
+    setIwSize(newIwSize);
 
-    AddTextButton(1,
-                  DrawPoint((GetSize().x - buttonSize.x) / 2, GetRightBottomBoundary().y - buttonSpace - buttonSize.y),
+    addTextButton(1,
+                  DrawPoint((getSize().x - buttonSize.x) / 2, getRightBottomBoundary().y - buttonSpace - buttonSize.y),
                   buttonSize, TextureColor::Grey, _("Continue"), NormalFont);
     if(img)
     {
         DrawPoint imgPos =
-          GetRightBottomBoundary() + img->GetOrigin() - DrawPoint(imgSize) - DrawPoint(imgSpaceRight, buttonSpace);
-        AddImage(2, imgPos, img);
+          getRightBottomBoundary() + img->getOrigin() - DrawPoint(imgSize) - DrawPoint(imgSpaceRight, buttonSpace);
+        addImage(2, imgPos, img);
     }
 }
 
-void iwMissionStatement::Msg_ButtonClick(const unsigned /*ctrl_id*/)
+void iwMissionStatement::msgButtonClick(const unsigned /*ctrl_id*/)
 {
-    if(pauseGame_ && GAMECLIENT.GetState() != ClientState::Stopped)
-        GAMECLIENT.SetPause(false);
-    Close();
+    if(pauseGame_ && GAMECLIENT.getState() != ClientState::Stopped)
+        GAMECLIENT.setPause(false);
+    close();
 }
 
-void iwMissionStatement::SetActive(bool activate)
+void iwMissionStatement::setActive(bool activate)
 {
-    IngameWindow::SetActive(activate);
-    if(IsActive() && pauseGame_ && GAMECLIENT.GetState() != ClientState::Stopped)
-        GAMECLIENT.SetPause(true);
+    IngameWindow::setActive(activate);
+    if(IsActive() && pauseGame_ && GAMECLIENT.getState() != ClientState::Stopped)
+        GAMECLIENT.setPause(true);
 }

@@ -23,5 +23,5 @@ struct TradePath
     {}
     TradePath(SerializedGameData& sgd);
 
-    void Serialize(SerializedGameData& sgd) const;
+    void serialize(SerializedGameData& sgd) const;
 };

@@ -16,17 +16,17 @@ BOOST_AUTO_TEST_CASE(CreateIsland_keeps_minimum_distance_to_land)
     RandomUtility rnd(0);
     Map map = createMap(MapExtent(26, 34));
     MapPoint land(0, 0);
-    map.z.Resize(map.size, map.height.minimum); // all sea
+    map.z.resize(map.size, map.height.minimum); // all sea
     map.z[land] = map.height.minimum + 1;
 
     const double mountainCoverage = 0.1;
     const unsigned minLandDist = 5;
     const unsigned size = 800;
-    const auto island = CreateIsland(map, rnd, size, minLandDist, mountainCoverage);
+    const auto island = createIsland(map, rnd, size, minLandDist, mountainCoverage);
 
     for(MapPoint p : island)
     {
-        BOOST_TEST(map.z.CalcDistance(p, land) >= minLandDist);
+        BOOST_TEST(map.z.calcDistance(p, land) >= minLandDist);
     }
 }
 

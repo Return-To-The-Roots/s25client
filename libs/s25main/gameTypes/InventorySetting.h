@@ -17,16 +17,16 @@ enum class EInventorySetting : unsigned
 struct InventorySetting
 {
     constexpr InventorySetting() noexcept = default;
-    constexpr InventorySetting(const EInventorySetting setting) noexcept : state(MakeBitField(setting)) {}
-    constexpr explicit InventorySetting(uint8_t state) noexcept : state(state) { MakeValid(); }
-    constexpr bool IsSet(EInventorySetting setting) const noexcept;
-    constexpr InventorySetting Toggle(EInventorySetting setting) noexcept;
-    constexpr void MakeValid() noexcept;
+    constexpr InventorySetting(const EInventorySetting setting) noexcept : state(makeBitField(setting)) {}
+    constexpr explicit InventorySetting(uint8_t state) noexcept : state(state) { makeValid(); }
+    constexpr bool isSet(EInventorySetting setting) const noexcept;
+    constexpr InventorySetting toggle(EInventorySetting setting) noexcept;
+    constexpr void makeValid() noexcept;
     constexpr explicit operator uint8_t() const noexcept { return state; }
     friend constexpr bool operator==(const InventorySetting& lhs, const InventorySetting& rhs) noexcept;
 
 private:
-    static constexpr uint8_t MakeBitField(EInventorySetting setting) noexcept;
+    static constexpr uint8_t makeBitField(EInventorySetting setting) noexcept;
     // Current state as a bitfield!
     uint8_t state = 0;
 };
@@ -35,36 +35,36 @@ private:
 // Implementation
 //////////////////////////////////////////////////////////////////////////
 
-constexpr bool InventorySetting::IsSet(const EInventorySetting setting) const noexcept
+constexpr bool InventorySetting::isSet(const EInventorySetting setting) const noexcept
 {
-    return (state & MakeBitField(setting)) != 0;
+    return (state & makeBitField(setting)) != 0;
 }
 
-constexpr InventorySetting InventorySetting::Toggle(const EInventorySetting setting) noexcept
+constexpr InventorySetting InventorySetting::toggle(const EInventorySetting setting) noexcept
 {
-    state ^= MakeBitField(setting);
+    state ^= makeBitField(setting);
     // If we changed collect, then allow only collect to be set
     // Else clear collect (Collect with anything else makes no sense)
     if(setting == EInventorySetting::Collect)
-        state &= MakeBitField(EInventorySetting::Collect);
+        state &= makeBitField(EInventorySetting::Collect);
     else
-        state &= ~MakeBitField(EInventorySetting::Collect);
+        state &= ~makeBitField(EInventorySetting::Collect);
     return *this;
 }
 
-constexpr uint8_t InventorySetting::MakeBitField(const EInventorySetting setting) noexcept
+constexpr uint8_t InventorySetting::makeBitField(const EInventorySetting setting) noexcept
 {
     return static_cast<uint8_t>(1 << static_cast<unsigned>(setting));
 }
 
-constexpr void InventorySetting::MakeValid() noexcept
+constexpr void InventorySetting::makeValid() noexcept
 {
     switch(state)
     {
-        case MakeBitField(EInventorySetting::Stop):
-        case MakeBitField(EInventorySetting::Send):
-        case MakeBitField(EInventorySetting::Collect):
-        case static_cast<uint8_t>(MakeBitField(EInventorySetting::Stop) | MakeBitField(EInventorySetting::Send)): break;
+        case makeBitField(EInventorySetting::Stop):
+        case makeBitField(EInventorySetting::Send):
+        case makeBitField(EInventorySetting::Collect):
+        case static_cast<uint8_t>(makeBitField(EInventorySetting::Stop) | makeBitField(EInventorySetting::Send)): break;
         default: state = 0; break;
     }
 }

@@ -16,11 +16,11 @@ public:
     ctrlText(Window* parent, unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
              FontStyle format, const glFont* font);
 
-    Rect GetBoundaryRect() const override;
+    Rect getBoundaryRect() const override;
     void setMaxWidth(unsigned short maxWidth) { maxWidth_ = maxWidth; }
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
     FontStyle format_;
     unsigned short maxWidth_;

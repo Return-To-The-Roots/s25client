@@ -6,9 +6,9 @@
 
 #ifdef _WIN32
 #    include <windows.h>
-BOOL WINAPI ConsoleSignalHandler(DWORD dwCtrlType);
+BOOL WINAPI consoleSignalHandler(DWORD dwCtrlType);
 #else
 /// Kill instantly on CTRL-C or just terminate
 extern bool killme;
-void ConsoleSignalHandler(int sig);
+void consoleSignalHandler(int sig);
 #endif // _WIN32

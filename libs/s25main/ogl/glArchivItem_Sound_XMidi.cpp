@@ -11,5 +11,5 @@ SoundHandle glArchivItem_Sound_XMidi::Load()
     const libsiedler2::MIDI_Track& midiTrack = getMidiTrack(0);
     libsiedler2::ArchivItem_Sound_Midi soundArchiv;
     soundArchiv.addTrack(midiTrack);
-    return AUDIODRIVER.LoadMusic(soundArchiv, ".midi");
+    return AUDIODRIVER.loadMusic(soundArchiv, ".midi");
 }

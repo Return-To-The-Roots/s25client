@@ -56,6 +56,6 @@ struct FoWNode
     BoundaryStones boundary_stones;
 
     FoWNode();
-    void Serialize(SerializedGameData& sgd) const;
-    void Deserialize(SerializedGameData& sgd);
+    void serialize(SerializedGameData& sgd) const;
+    void deserialize(SerializedGameData& sgd);
 };

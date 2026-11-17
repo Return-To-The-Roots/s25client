@@ -16,19 +16,19 @@ public:
                  unsigned force_color, const std::string& tooltip, const std::string& button_minus_tooltip = "",
                  const std::string& button_plus_tooltip = "", unsigned short* write_val = nullptr);
 
-    void Resize(const Extent& newSize) override;
-    void SetPosition(unsigned short position);
-    const unsigned short& GetPosition() const { return position; }
+    void resize(const Extent& newSize) override;
+    void setPosition(unsigned short position);
+    const unsigned short& getPosition() const { return position; }
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
     TextureColor tc;
@@ -42,5 +42,5 @@ private:
     /// Falls der Balken immer eine bestimmte Farben haben soll, ansonsten 0 setzen!
     unsigned force_color;
 
-    unsigned CalcBarWidth() const;
+    unsigned calcBarWidth() const;
 };

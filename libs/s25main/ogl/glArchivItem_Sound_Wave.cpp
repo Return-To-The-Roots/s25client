@@ -7,5 +7,5 @@
 
 SoundHandle glArchivItem_Sound_Wave::Load()
 {
-    return AUDIODRIVER.LoadEffect(*this, ".wav");
+    return AUDIODRIVER.loadEffect(*this, ".wav");
 }

@@ -24,7 +24,7 @@ using River = std::set<MapPoint, MapPointLess>;
  *
  * @returns all nodes the stream (incl. split up streams) is covering.
  */
-River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
+River createStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
                    unsigned splitRate = 0);
 
 } // namespace rttr::mapGenerator

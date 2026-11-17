@@ -8,11 +8,11 @@
 #include "gameTypes/Direction.h"
 #include "gameTypes/MapCoordinates.h"
 
-Position GetNeighbour(const Position& p, Direction dir);
-Position GetNeighbour2(Position pt, unsigned dir);
-MapPoint MakeMapPoint(Position pt, const MapExtent& size);
+Position getNeighbour(const Position& p, Direction dir);
+Position getNeighbour2(Position pt, unsigned dir);
+MapPoint makeMapPoint(Position pt, const MapExtent& size);
 /// Return the position of the node on a flat map
-Position GetNodePos(MapPoint pt);
-Position GetNodePos(Position pt);
+Position getNodePos(MapPoint pt);
+Position getNodePos(Position pt);
 /// Return the height adjusted point
-Position GetNodePos(MapPoint pt, uint8_t height);
+Position getNodePos(MapPoint pt, uint8_t height);

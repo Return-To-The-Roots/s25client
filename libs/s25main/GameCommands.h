@@ -48,9 +48,9 @@ protected:
     Coords(const GCType gst, Serializer& ser) : GameCommand(gst), pt_(helpers::popPoint<MapPoint>(ser)) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushPoint(ser, pt_);
     }
 };
@@ -65,7 +65,7 @@ protected:
     SetFlag(Serializer& ser) : Coords(GCType::SetFlag, ser) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Flagge zerstören
@@ -78,7 +78,7 @@ protected:
     DestroyFlag(Serializer& ser) : Coords(GCType::DestroyFlag, ser) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Straße bauen
@@ -97,9 +97,9 @@ protected:
     BuildRoad(Serializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override;
+    void serialize(Serializer& ser) const override;
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Straße zerstören
@@ -114,9 +114,9 @@ protected:
     DestroyRoad(Serializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override;
+    void serialize(Serializer& ser) const override;
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Straße aufwerten
@@ -131,9 +131,9 @@ protected:
     UpgradeRoad(Serializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override;
+    void serialize(Serializer& ser) const override;
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Warenverteilung ändern
@@ -148,13 +148,13 @@ protected:
     ChangeDistribution(Deserializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushContainer(ser, data);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Baureihenfolge ändern
@@ -173,15 +173,15 @@ protected:
     ChangeBuildOrder(Deserializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         ser.PushBool(useCustomBuildOrder);
         for(auto i : data)
             helpers::pushEnum<uint8_t>(ser, i);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Baustelle setzen
@@ -196,14 +196,14 @@ protected:
     SetBuildingSite(Serializer& ser) : Coords(GCType::SetBuildingsite, ser), bt(helpers::popEnum<BuildingType>(ser)) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         helpers::pushEnum<uint8_t>(ser, bt);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Gebäude zerstören
@@ -216,7 +216,7 @@ protected:
     DestroyBuilding(Serializer& ser) : Coords(GCType::DestroyBuilding, ser) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Set the desired garrison size of a military building
@@ -235,15 +235,15 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushUnsignedChar(rank);
         ser.PushUnsignedInt(count);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Transportreihenfolge ändern
@@ -258,13 +258,13 @@ protected:
     ChangeTransport(Deserializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushContainer(ser, data);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Transportreihenfolge ändern
@@ -279,13 +279,13 @@ protected:
     ChangeMilitary(Serializer& ser) : GameCommand(GCType::ChangeMilitary) { helpers::popContainer(ser, data); }
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushContainer(ser, data);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Werkzeugeinstellungen ändern
@@ -306,14 +306,14 @@ protected:
     }
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushContainer(ser, data);
         helpers::pushContainer(ser, orders);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Geologen rufen
@@ -327,12 +327,12 @@ protected:
     CallSpecialist(Serializer& ser) : Coords(GCType::CallSpecialist, ser), job(helpers::popEnum<Job>(ser)) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, job);
     }
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Basisklasse für beide Angriffstypen
@@ -354,9 +354,9 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushUnsignedInt(soldiers_count);
         ser.PushBool(strong_soldiers);
@@ -375,7 +375,7 @@ protected:
     Attack(Serializer& ser) : BaseAttack(GCType::Attack, ser) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// See-Angriff starten
@@ -390,7 +390,7 @@ protected:
     SeaAttack(Serializer& ser) : BaseAttack(GCType::SeaAttack, ser) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Goldzufuhr in einem Gebäude stoppen/erlauben
@@ -404,12 +404,12 @@ protected:
     SetCoinsAllowed(Serializer& ser) : Coords(GCType::SetCoinsAllowed, ser), enabled(ser.PopBool()) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(enabled);
     }
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Allow/stop armor delivery to building
@@ -423,12 +423,12 @@ protected:
     SetArmorAllowed(Serializer& ser) : Coords(GCType::SetArmorAllowed, ser), enabled(ser.PopBool()) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(enabled);
     }
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
@@ -443,12 +443,12 @@ protected:
     SetProductionEnabled(Serializer& ser) : Coords(GCType::SetProductionEnabled, ser), enabled(ser.PopBool()) {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(enabled);
     }
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Produktivität in einem Gebäude deaktivieren/aktivieren
@@ -461,7 +461,7 @@ protected:
     NotifyAlliesOfLocation(Serializer& ser) : Coords(GCType::NotifyAlliesOfLocation, ser) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Einlagerungseinstellungen von einem Lagerhaus verändern
@@ -486,16 +486,16 @@ protected:
     }
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushBool(holds_alternative<Job>(what));
         visit([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
         ser.PushUnsignedChar(static_cast<uint8_t>(state));
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Alle Einlagerungseinstellungen (für alle Menschen oder Waren) von einem Lagerhaus verändern
@@ -513,9 +513,9 @@ protected:
     SetAllInventorySettings(Deserializer& ser);
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushBool(isJob);
         RTTR_Assert(states.size() == (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>));
@@ -523,7 +523,7 @@ public:
             ser.PushUnsignedChar(static_cast<uint8_t>(state));
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Verändert die Reserve im HQ auf einen bestimmten Wert
@@ -544,15 +544,15 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushUnsignedChar(rank);
         ser.PushUnsignedInt(count);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Alle Fahnen zerstören
@@ -565,7 +565,7 @@ protected:
     CheatArmageddon(Serializer& /*ser*/) : GameCommand(GCType::CheatArmageddon) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Aufgeben
@@ -578,7 +578,7 @@ protected:
     Surrender(Serializer& /*ser*/) : GameCommand(GCType::Surrender) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Alle eigenen Fahnen zerstören
@@ -591,7 +591,7 @@ protected:
     DestroyAll(Serializer& /*ser*/) : GameCommand(GCType::DestroyAll) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Unterbreitet anderen Spielern einen Bündnisvertrag
@@ -615,15 +615,15 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         ser.PushUnsignedChar(targetPlayer);
         helpers::pushEnum<uint8_t>(ser, pt);
         ser.PushUnsignedInt(duration);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Antwortet auf einen Bündnisvorschlag mit Annehmen oder Ablehnung
@@ -647,15 +647,15 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         ser.PushUnsignedInt(id);
         helpers::pushEnum<uint8_t>(ser, pt);
         ser.PushUnsignedChar(fromPlayer);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Bündnis abbrechen bzw. das Angebot zurücknehmen, falls dieses schon gestellt wurde
@@ -676,14 +676,14 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, pt);
         ser.PushUnsignedChar(otherPlayer);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 /// Zwischen Boote und Schiffen beim Schiffsbauer hin- und herschalten
@@ -697,10 +697,10 @@ protected:
     SetShipYardMode(Serializer& ser) : Coords(GCType::SetShipyardMode, ser), buildShips(ser.PopBool()) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
-    void Serialize(Serializer& ser) const override
+    void execute(GameWorld& world, uint8_t playerId) override;
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(buildShips);
     }
 };
@@ -720,10 +720,10 @@ protected:
     {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
-    void Serialize(Serializer& ser) const override
+    void execute(GameWorld& world, uint8_t playerId) override;
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, productionMode);
     }
 };
@@ -739,10 +739,10 @@ protected:
     StartStopExpedition(Serializer& ser) : Coords(GCType::StartStopExpedition, ser), start(ser.PopBool()) {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
-    void Serialize(Serializer& ser) const override
+    void execute(GameWorld& world, uint8_t playerId) override;
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(start);
     }
 };
@@ -762,10 +762,10 @@ protected:
     {}
 
 public:
-    void Execute(GameWorld& world, uint8_t playerId) override;
-    void Serialize(Serializer& ser) const override
+    void execute(GameWorld& world, uint8_t playerId) override;
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
         ser.PushBool(start);
     }
 };
@@ -799,14 +799,14 @@ protected:
     {}
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        GameCommand::Serialize(ser);
+        GameCommand::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, action);
         ser.PushUnsignedInt(ship_id);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 
 private:
     /// Die Aktion, die ausgeführt werden soll
@@ -838,16 +838,16 @@ protected:
     }
 
 public:
-    void Serialize(Serializer& ser) const override
+    void serialize(Serializer& ser) const override
     {
-        Coords::Serialize(ser);
+        Coords::serialize(ser);
 
         ser.PushBool(holds_alternative<Job>(what));
         visit([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
         ser.PushUnsignedInt(count);
     }
 
-    void Execute(GameWorld& world, uint8_t playerId) override;
+    void execute(GameWorld& world, uint8_t playerId) override;
 };
 
 } // namespace gc

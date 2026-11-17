@@ -25,10 +25,10 @@ unsigned AddonBool::getNumOptions() const
 AddonBool::Gui::Gui(const Addon& addon, Window& window, bool readonly)
     : AddonGui(addon, window, readonly),
       cb_(assertNonNull(
-        window.AddCheckBox(2, DrawPoint(430, 0), Extent(220, 20), TextureColor::Grey, _("Use"), NormalFont, readonly)))
+        window.addCheckBox(2, DrawPoint(430, 0), Extent(220, 20), TextureColor::Grey, _("Use"), NormalFont, readonly)))
 {
     if(readonly)
-        window.AddImage(3, cb_.GetPos() - DrawPoint(1, 0), LOADER.GetImageN("io_new", 14), _("Locked"));
+        window.addImage(3, cb_.getPos() - DrawPoint(1, 0), LOADER.getImageN("io_new", 14), _("Locked"));
 }
 
 void AddonBool::Gui::setStatus(unsigned status)

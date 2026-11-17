@@ -132,7 +132,7 @@ bool glTexturePacker::pack()
     return false;
 }
 
-glTexture::glTexture() : handle(VIDEODRIVER.GenerateTexture()), size(0, 0)
+glTexture::glTexture() : handle(VIDEODRIVER.generateTexture()), size(0, 0)
 {
     if(!handle)
         return;
@@ -154,20 +154,20 @@ glTexture& glTexture::operator=(glTexture&& rhs) noexcept
 
 void glTexture::bind() const
 {
-    VIDEODRIVER.BindTexture(handle);
+    VIDEODRIVER.bindTexture(handle);
 }
 
 glTexture::~glTexture()
 {
     if(handle)
-        VIDEODRIVER.DeleteTexture(handle);
+        VIDEODRIVER.deleteTexture(handle);
 }
 
 bool glTexture::checkSize(const Extent& size) const
 {
     if(!handle)
         return false;
-    VIDEODRIVER.BindTexture(handle);
+    VIDEODRIVER.bindTexture(handle);
     glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_BGRA, GL_UNSIGNED_BYTE, nullptr);
     int resultWidth;
     glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &resultWidth);
@@ -179,7 +179,7 @@ bool glTexture::uploadData(const libsiedler2::PixelBufferBGRA& buffer)
 {
     if(!handle)
         return false;
-    VIDEODRIVER.BindTexture(handle);
+    VIDEODRIVER.bindTexture(handle);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, buffer.getWidth(), buffer.getHeight(), 0, GL_BGRA, GL_UNSIGNED_BYTE,
                  buffer.getPixelPtr());
     size = Extent(buffer.getWidth(), buffer.getHeight());

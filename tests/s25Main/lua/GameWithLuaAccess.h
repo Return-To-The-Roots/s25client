@@ -35,16 +35,16 @@ public:
 
     void executeAICommands()
     {
-        AIPlayer* ai = GetAIPlayer(1);
+        AIPlayer* ai = getAIPlayer(1);
         std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
         for(unsigned i = 0; i < 5; i++)
         {
-            em_->ExecuteNextGF();
-            ai->RunGF(em_->GetCurrentGF(), i == 0);
+            em_->executeNextGF();
+            ai->runGF(em_->getCurrentGF(), i == 0);
         }
         for(gc::GameCommandPtr& gc : aiGcs)
         {
-            gc->Execute(world_, 1);
+            gc->execute(world_, 1);
         }
     }
 
@@ -80,8 +80,8 @@ public:
 
     LuaTestsFixture() : world(game.world_)
     {
-        game.SetLua(std::make_unique<LuaInterfaceGame>(game, localGameState));
-        setLua(&world.GetLua());
+        game.setLua(std::make_unique<LuaInterfaceGame>(game, localGameState));
+        setLua(&world.getLua());
     }
 
     void initWorld()
@@ -89,22 +89,22 @@ public:
         // For consistent results
         initGameRNG(0);
 
-        loadGameData(world.GetDescriptionWriteable());
+        loadGameData(world.getDescriptionWriteable());
         world.Init(MapExtent(24, 32));
         hqPositions.push_back(MapPoint(0, 1));
-        hqPositions.push_back(MapPoint(world.GetSize() / 2u + hqPositions[0]));
+        hqPositions.push_back(MapPoint(world.getSize() / 2u + hqPositions[0]));
         std::vector<Nation> playerNations;
-        playerNations.push_back(world.GetPlayer(0).nation);
-        playerNations.push_back(world.GetPlayer(1).nation);
-        BOOST_TEST_REQUIRE(MapLoader::PlaceHQs(world, hqPositions, false));
+        playerNations.push_back(world.getPlayer(0).nation);
+        playerNations.push_back(world.getPlayer(1).nation);
+        BOOST_TEST_REQUIRE(MapLoader::placeHQs(world, hqPositions, false));
 
-        for(unsigned id = 0; id < world.GetNumPlayers(); id++)
+        for(unsigned id = 0; id < world.getNumPlayers(); id++)
         {
-            GamePlayer& player = world.GetPlayer(id);
+            GamePlayer& player = world.getPlayer(id);
             if(!player.isHuman() && player.isUsed())
-                game.AddAIPlayer(AIFactory::Create(world.GetPlayer(id).aiInfo, id, world));
+                game.addAIPlayer(AIFactory::create(world.getPlayer(id).aiInfo, id, world));
         }
     }
 
-    GameWorld& GetWorld() override { return world; }
+    GameWorld& getWorld() override { return world; }
 };

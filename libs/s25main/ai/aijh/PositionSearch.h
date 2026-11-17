@@ -29,8 +29,8 @@ public:
                    bool searchGlobalOptimum = false);
 
     PositionSearchState execute(const AIPlayerJH& player);
-    BuildingType GetBld() const { return bld; }
-    MapPoint GetResultPt() const { return resultPt; }
+    BuildingType getBld() const { return bld; }
+    MapPoint getResultPt() const { return resultPt; }
 
 private:
     /// where did the search start?

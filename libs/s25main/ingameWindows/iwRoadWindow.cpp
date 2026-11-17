@@ -12,27 +12,27 @@
 
 iwRoadWindow::iwRoadWindow(GameInterface& gi, bool flagpossible, const Position& mousePos)
     : IngameWindow(CGI_ROADWINDOW, IngameWindow::posAtMouse, Extent(200, 100), _("Activity window"),
-                   LOADER.GetImageN("io", 1)),
+                   LOADER.getImageN("io", 1)),
       gi(gi), mousePosAtOpen_(mousePos)
 {
     // Bau abbrechen
-    ctrlButton* cancel = AddImageButton(1, DrawPoint(10, 20), Extent(36, 36), TextureColor::Grey,
-                                        LOADER.GetImageN("io", 110), _("Interrupt road building"));
+    ctrlButton* cancel = addImageButton(1, DrawPoint(10, 20), Extent(36, 36), TextureColor::Grey,
+                                        LOADER.getImageN("io", 110), _("Interrupt road building"));
     ctrlButton* defaultBt = cancel;
 
     if(flagpossible)
     {
         // Flagge platzieren
-        defaultBt = AddImageButton(0, DrawPoint(10, 20), Extent(36, 36), TextureColor::Grey, LOADER.GetImageN("io", 70),
+        defaultBt = addImageButton(0, DrawPoint(10, 20), Extent(36, 36), TextureColor::Grey, LOADER.getImageN("io", 70),
                                    _("Erect flag"));
         // Abbrechen button daneben schieben
-        cancel->SetPos(DrawPoint(46, 20));
+        cancel->setPos(DrawPoint(46, 20));
     }
 
-    VIDEODRIVER.SetMousePos(defaultBt->GetDrawPos() + DrawPoint(defaultBt->GetSize()) / 2);
+    VIDEODRIVER.setMousePos(defaultBt->getDrawPos() + DrawPoint(defaultBt->getSize()) / 2);
 }
 
-void iwRoadWindow::Msg_ButtonClick(const unsigned ctrl_id)
+void iwRoadWindow::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -49,8 +49,8 @@ void iwRoadWindow::Msg_ButtonClick(const unsigned ctrl_id)
     }
 
     // Maus an vorherige Stelle setzen
-    VIDEODRIVER.SetMousePos(mousePosAtOpen_);
+    VIDEODRIVER.setMousePos(mousePosAtOpen_);
 
     // und fenster schließen
-    Close();
+    close();
 }

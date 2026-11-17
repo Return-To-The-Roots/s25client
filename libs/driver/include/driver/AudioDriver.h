@@ -19,11 +19,11 @@ public:
     ~AudioDriver() override;
 
     /// prüft auf Initialisierung.
-    bool IsInitialized() final override { return initialized; }
-    void CleanUp() override;
+    bool isInitialized() final override { return initialized; }
+    void cleanUp() override;
 
-    EffectPlayId PlayEffect(const RawSoundHandle& sound, uint8_t volume, bool loop) final override;
-    void StopEffect(EffectPlayId play_id) final override;
+    EffectPlayId playEffect(const RawSoundHandle& sound, uint8_t volume, bool loop) final override;
+    void stopEffect(EffectPlayId play_id) final override;
 
     void unloadSound(RawSoundHandle handle) final override;
     /// Register this handle pointer so that the driverData is reset when the sound gets unloaded
@@ -32,11 +32,11 @@ public:
 protected:
     static constexpr unsigned DEFAULT_NUM_CHANNELS = 64;
     /// Sets the actual number of channels used. Must be called before using channels
-    void SetNumChannels(unsigned numChannels);
+    void setNumChannels(unsigned numChannels);
     /// Get the channel an effect is being played at or -1 if not found
-    int GetEffectChannel(EffectPlayId playId) const;
+    int getEffectChannel(EffectPlayId playId) const;
     /// Removes the effect from the channel list
-    void RemoveEffect(EffectPlayId playId);
+    void removeEffect(EffectPlayId playId);
     /// Add the sound to the list of loaded sounds and return a RawSoundHandle
     RawSoundHandle createRawSoundHandle(RawSoundHandle::DriverData driverData, SoundType type);
 
@@ -54,7 +54,7 @@ protected:
 
 private:
     /// Generates a play id
-    EffectPlayId GeneratePlayID();
+    EffectPlayId generatePlayID();
     /// Next play id
     EffectPlayId nextPlayID_;
     std::vector<RawSoundHandle> loadedSounds_;

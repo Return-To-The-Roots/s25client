@@ -28,41 +28,41 @@ protected:
     friend constexpr auto maxEnumValue(PointQuality) { return PointQuality::Class3; }
 
     /// Called by base class (noFigure) after having walked to new point
-    void WalkedDerived() override;
+    void walkedDerived() override;
 
     /// Stop work as workplace becomes unavailable
-    void WorkAborted() override;
+    void workAborted() override;
 
     /// Start walking to work point
-    void WalkToWorkpoint();
+    void walkToWorkpoint();
     /// Get ready to work back to workplace
-    void StartWalkingHome();
+    void startWalkingHome();
     /// Do next step for walking home
-    void WalkHome();
+    void walkHome();
 
     /// Inform derived class about the start of the whole working process
     /// (at the beginning when walking out of the house)
-    virtual void WalkingStarted();
+    virtual void walkingStarted();
     /// Inform derived class when starting work at the work point
-    virtual void WorkStarted() = 0;
+    virtual void workStarted() = 0;
     /// Inform derived class when work at work point is done
-    virtual void WorkFinished() = 0;
+    virtual void workFinished() = 0;
 
     /// Draw in other work-related states
-    void DrawOtherStates(DrawPoint drawPt) override;
+    void drawOtherStates(DrawPoint drawPt) override;
 
 public:
     nofFarmhand(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     nofFarmhand(SerializedGameData& sgd, unsigned obj_id);
 
-    static unsigned GetWorkRadius(const GlobalGameSettings& ggs, Job job);
-    unsigned GetWorkRadius(Job job);
+    static unsigned getWorkRadius(const GlobalGameSettings& ggs, Job job);
+    unsigned getWorkRadius(Job job);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    void HandleDerivedEvent(unsigned id) override;
+    void handleDerivedEvent(unsigned id) override;
     /// Return the quality of this working point (including if the worker can work here at all)
     /// isBeforeWork determines whether the evaluation happens before leaving for work or afterwards
-    virtual PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const = 0;
-    PointQuality GetPointQuality(MapPoint pt) const { return GetPointQuality(pt, false); }
+    virtual PointQuality getPointQuality(MapPoint pt, bool isBeforeWork) const = 0;
+    PointQuality getPointQuality(MapPoint pt) const { return getPointQuality(pt, false); }
 };

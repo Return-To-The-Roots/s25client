@@ -12,7 +12,7 @@ struct FramesInfo
     using UsedClock = std::chrono::steady_clock;
 
     FramesInfo();
-    void Clear();
+    void clear();
 
     /// Length of one GF in ms (~ 1/speed of the game)
     std::chrono::milliseconds gf_length;
@@ -32,7 +32,7 @@ struct FramesInfo
 struct FramesInfoClient : public FramesInfo
 {
     FramesInfoClient();
-    void Clear();
+    void clear();
 
     /// Force pause the game (start TS and length) e.g. to compensate for lags
     UsedClock::time_point forcePauseStart;

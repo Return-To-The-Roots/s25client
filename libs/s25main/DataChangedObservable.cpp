@@ -7,21 +7,21 @@
 
 DataChangedObservable::~DataChangedObservable()
 {
-    NotifyListeners(0);
+    notifyListeners(0);
 }
 
-void DataChangedObservable::AddListener(IDataChangedListener* listener)
+void DataChangedObservable::addListener(IDataChangedListener* listener)
 {
     listeners.push_back(listener);
 }
 
-void DataChangedObservable::RemoveListener(IDataChangedListener* listener)
+void DataChangedObservable::removeListener(IDataChangedListener* listener)
 {
     listeners.remove(listener);
 }
 
-void DataChangedObservable::NotifyListeners(unsigned changeId)
+void DataChangedObservable::notifyListeners(unsigned changeId)
 {
     for(auto* listener : listeners)
-        listener->OnChange(changeId);
+        listener->onChange(changeId);
 }

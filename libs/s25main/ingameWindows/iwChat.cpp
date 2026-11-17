@@ -16,52 +16,52 @@ ChatDestination lastChatDestination = ChatDestination::All;
 
 iwChat::iwChat(Window* parent)
     : IngameWindow(CGI_CHAT, IngameWindow::posLastOrCenter, Extent(300, 150), _("Chat Window"),
-                   LOADER.GetImageN("resource", 41), false, CloseBehavior::Regular, parent)
+                   LOADER.getImageN("resource", 41), false, CloseBehavior::Regular, parent)
 {
     // Eingabefeld für Chattext
-    AddEdit(0, DrawPoint(20, 30), Extent(260, 22), TextureColor::Grey, NormalFont);
+    addEdit(0, DrawPoint(20, 30), Extent(260, 22), TextureColor::Grey, NormalFont);
 
-    ctrlOptionGroup* group = AddOptionGroup(1, GroupSelectType::Check);
+    ctrlOptionGroup* group = addOptionGroup(1, GroupSelectType::Check);
     // "Alle"
-    group->AddTextButton(rttr::enum_cast(ChatDestination::All), DrawPoint(20, 80), Extent(260, 22), TextureColor::Grey,
+    group->addTextButton(rttr::enum_cast(ChatDestination::All), DrawPoint(20, 80), Extent(260, 22), TextureColor::Grey,
                          _("All"), NormalFont);
     // "Verbündete"
-    group->AddTextButton(rttr::enum_cast(ChatDestination::Allies), DrawPoint(20, 112), Extent(125, 22),
+    group->addTextButton(rttr::enum_cast(ChatDestination::Allies), DrawPoint(20, 112), Extent(125, 22),
                          TextureColor::Green2, _("Allies"), NormalFont);
     // "Feinde"
-    group->AddTextButton(rttr::enum_cast(ChatDestination::Enemies), DrawPoint(155, 112), Extent(125, 22),
+    group->addTextButton(rttr::enum_cast(ChatDestination::Enemies), DrawPoint(155, 112), Extent(125, 22),
                          TextureColor::Red1, _("Enemies"), NormalFont);
 
     // Entspr. vom letzten Mal auswählen auswählen
-    group->SetSelection(rttr::enum_cast(lastChatDestination));
+    group->setSelection(rttr::enum_cast(lastChatDestination));
 }
 
-void iwChat::Msg_PaintBefore()
+void iwChat::msgPaintBefore()
 {
-    IngameWindow::Msg_PaintBefore();
-    GetCtrl<ctrlEdit>(0)->SetFocus();
+    IngameWindow::msgPaintBefore();
+    getCtrl<ctrlEdit>(0)->setFocus();
 }
 
-void iwChat::Msg_OptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
+void iwChat::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
 {
     RTTR_Assert(selection <= helpers::MaxEnumValue_v<ChatDestination>);
     lastChatDestination = static_cast<ChatDestination>(selection);
-    GetCtrl<ctrlEdit>(0)->SetFocus();
+    getCtrl<ctrlEdit>(0)->setFocus();
 }
 
-void iwChat::Msg_EditEnter(const unsigned /*ctrl_id*/)
+void iwChat::msgEditEnter(const unsigned /*ctrl_id*/)
 {
-    Close();
+    close();
 
-    auto* edit = GetCtrl<ctrlEdit>(0);
-    std::string text = edit->GetText();
-    edit->SetText("");
+    auto* edit = getCtrl<ctrlEdit>(0);
+    std::string text = edit->getText();
+    edit->setText("");
 
     if(text.size() > 3u && text[0] == '!')
     {
-        auto* listener = dynamic_cast<IChatCmdListener*>(GetParent());
+        auto* listener = dynamic_cast<IChatCmdListener*>(getParent());
         if(listener)
-            listener->OnChatCommand(text.substr(1));
+            listener->onChatCommand(text.substr(1));
     } else
-        GAMECLIENT.Command_Chat(text, ChatDestination(lastChatDestination));
+        GAMECLIENT.commandChat(text, ChatDestination(lastChatDestination));
 }

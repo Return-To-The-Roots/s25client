@@ -53,16 +53,16 @@ VideoWinAPI::VideoWinAPI(VideoDriverLoaderInterface* CallBack)
 
 VideoWinAPI::~VideoWinAPI()
 {
-    DestroyScreen();
+    destroyScreen();
     pVideoWinAPI = nullptr;
 }
 
-const char* VideoWinAPI::GetName() const
+const char* VideoWinAPI::getName() const
 {
     return GetDriverName();
 }
 
-bool VideoWinAPI::Initialize()
+bool VideoWinAPI::initialize()
 {
     screen = nullptr;
     screen_dc = nullptr;
@@ -74,25 +74,25 @@ bool VideoWinAPI::Initialize()
     return initialized;
 }
 
-void VideoWinAPI::CleanUp()
+void VideoWinAPI::cleanUp()
 {
-    DestroyScreen();
+    destroyScreen();
     initialized = false;
 }
 
-bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode newSize, DisplayMode displayMode)
+bool VideoWinAPI::createScreen(const std::string& title, const VideoMode newSize, DisplayMode displayMode)
 {
     if(!initialized)
         return false;
 
-    if(!RegisterAndCreateWindow(title, newSize, displayMode))
+    if(!registerAndCreateWindow(title, newSize, displayMode))
         return false;
 
-    if(displayMode == DisplayMode::Fullscreen && !MakeFullscreen(GetWindowSize()))
+    if(displayMode == DisplayMode::Fullscreen && !makeFullscreen(getWindowSize()))
         return false;
 
     displayMode_ = displayMode;
-    if(!InitOGL())
+    if(!initOGL())
         return false;
 
     // Hide mouse cursor by resetting the texture. This way we still have the resize mouse cursor etc.
@@ -105,15 +105,15 @@ bool VideoWinAPI::CreateScreen(const std::string& title, const VideoMode newSize
     return true;
 }
 
-bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
+bool VideoWinAPI::resizeScreen(const VideoMode newSize, DisplayMode displayMode)
 {
     if(!initialized || !isDisplayModeChangeable)
         return false;
 
-    if(displayMode == displayMode_ && newSize == GetWindowSize())
+    if(displayMode == displayMode_ && newSize == getWindowSize())
         return true;
 
-    VideoMode windowSize = (displayMode == DisplayMode::Fullscreen) ? FindClosestVideoMode(newSize) : newSize;
+    VideoMode windowSize = (displayMode == DisplayMode::Fullscreen) ? findClosestVideoMode(newSize) : newSize;
     // Try to switch full screen first
     if(displayMode_ == DisplayMode::Fullscreen && displayMode != DisplayMode::Fullscreen)
     {
@@ -126,7 +126,7 @@ bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
     } else if(displayMode == DisplayMode::Fullscreen)
     {
         ShowWindow(screen, SW_HIDE);
-        if(!MakeFullscreen(windowSize))
+        if(!makeFullscreen(windowSize))
         {
             ShowWindow(screen, SW_SHOW);
             return false;
@@ -134,17 +134,17 @@ bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
     }
 
     // Adjust style
-    const auto [style, exStyle] = GetStyleFlags(displayMode);
+    const auto [style, exStyle] = getStyleFlags(displayMode);
     SetWindowLongPtr(screen, GWL_STYLE, style);
     SetWindowLongPtr(screen, GWL_EXSTYLE, exStyle);
     displayMode_ = displayMode;
 
-    const auto [wndArea, adjustedSize] = CalculateWindowRect(displayMode, windowSize);
+    const auto [wndArea, adjustedSize] = calculateWindowRect(displayMode, windowSize);
 
     // Set size and position
     UINT flags = SWP_SHOWWINDOW | SWP_DRAWFRAME | SWP_FRAMECHANGED;
     SetWindowPos(screen, HWND_TOP, wndArea.left, wndArea.top, wndArea.getSize().x, wndArea.getSize().y, flags);
-    SetNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
+    setNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
 
     ShowWindow(screen, SW_SHOW);
     SetActiveWindow(screen);
@@ -154,7 +154,7 @@ bool VideoWinAPI::ResizeScreen(const VideoMode newSize, DisplayMode displayMode)
     return true;
 }
 
-std::pair<DWORD, DWORD> VideoWinAPI::GetStyleFlags(const DisplayMode mode) const
+std::pair<DWORD, DWORD> VideoWinAPI::getStyleFlags(const DisplayMode mode) const
 {
     if(mode == DisplayMode::Fullscreen)
         return std::make_pair(WS_POPUP, WS_EX_APPWINDOW);
@@ -174,13 +174,13 @@ std::pair<DWORD, DWORD> VideoWinAPI::GetStyleFlags(const DisplayMode mode) const
     }
 }
 
-std::pair<Rect, VideoMode> VideoWinAPI::CalculateWindowRect(const DisplayMode mode, VideoMode requestedSize) const
+std::pair<Rect, VideoMode> VideoWinAPI::calculateWindowRect(const DisplayMode mode, VideoMode requestedSize) const
 {
     switch(mode.type)
     {
         case DisplayMode::Fullscreen:
         {
-            const auto size = FindClosestVideoMode(requestedSize);
+            const auto size = findClosestVideoMode(requestedSize);
             return std::make_pair(Rect(Position::all(0), size.width, size.height), size);
         };
         case DisplayMode::BorderlessWindow:
@@ -202,7 +202,7 @@ std::pair<Rect, VideoMode> VideoWinAPI::CalculateWindowRect(const DisplayMode mo
             wRect.right = wRect.left + size.width;
             wRect.bottom = wRect.top + size.height;
             // Calculate real right/bottom based on the window style
-            const auto [style, exStyle] = GetStyleFlags(mode);
+            const auto [style, exStyle] = getStyleFlags(mode);
             AdjustWindowRectEx(&wRect, style, false, exStyle);
             // Make sure border/title bar is visible
             wRect.left = std::max<LONG>(wRect.left, 0);
@@ -215,7 +215,7 @@ std::pair<Rect, VideoMode> VideoWinAPI::CalculateWindowRect(const DisplayMode mo
     BOOST_UNREACHABLE_RETURN(std::make_pair(RECT{0, 0, requestedSize.width, requestedSize.height}, requestedSize));
 }
 
-bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoMode wndSize, DisplayMode displayMode)
+bool VideoWinAPI::registerAndCreateWindow(const std::string& title, const VideoMode wndSize, DisplayMode displayMode)
 {
     std::wstring wTitle = boost::nowide::widen(title);
     windowClassName = wTitle.substr(0, wTitle.find(' '));
@@ -223,7 +223,7 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
     // Register window class
     WNDCLASSW wc;
     wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-    wc.lpfnWndProc = WindowProc;
+    wc.lpfnWndProc = windowProc;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = GetModuleHandle(nullptr);
@@ -237,8 +237,8 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
         return false;
 
     // Create window
-    const auto [wndArea, adjustedSize] = CalculateWindowRect(displayMode, wndSize);
-    const auto [style, exStyle] = GetStyleFlags(displayMode);
+    const auto [wndArea, adjustedSize] = calculateWindowRect(displayMode, wndSize);
+    const auto [style, exStyle] = getStyleFlags(displayMode);
     screen =
       CreateWindowExW(exStyle, windowClassName.c_str(), wTitle.c_str(), style, wndArea.left, wndArea.top,
                       wndArea.getSize().x, wndArea.getSize().y, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
@@ -246,7 +246,7 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
     if(screen == nullptr)
         return false;
 
-    SetNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
+    setNewSize(adjustedSize, Extent(adjustedSize.width, adjustedSize.height));
 
     SetClipboardViewer(screen);
 
@@ -255,7 +255,7 @@ bool VideoWinAPI::RegisterAndCreateWindow(const std::string& title, const VideoM
     return true;
 }
 
-bool VideoWinAPI::InitOGL()
+bool VideoWinAPI::initOGL()
 {
     RTTR_Assert(!screen_dc && !screen_rc);
     // Pixelformat zuweisen
@@ -311,7 +311,7 @@ bool VideoWinAPI::InitOGL()
     return true;
 }
 
-bool VideoWinAPI::MakeFullscreen(const VideoMode resolution)
+bool VideoWinAPI::makeFullscreen(const VideoMode resolution)
 {
     DEVMODE dm;
     memset(&dm, 0, sizeof(dm));
@@ -349,7 +349,7 @@ VideoMode VideoWinAPI::getDesktopSize(const VideoMode fallback) const
         return fallback;
 }
 
-void VideoWinAPI::DestroyScreen()
+void VideoWinAPI::destroyScreen()
 {
     EndDialog(screen, 0);
 
@@ -380,16 +380,16 @@ void VideoWinAPI::DestroyScreen()
     UnregisterClassW(windowClassName.c_str(), GetModuleHandle(nullptr));
 }
 
-bool VideoWinAPI::SwapBuffers()
+bool VideoWinAPI::swapBuffers()
 {
     if(!screen_dc)
         return false;
 
-    ::SwapBuffers(screen_dc);
+    SwapBuffers(screen_dc);
     return true;
 }
 
-bool VideoWinAPI::MessageLoop()
+bool VideoWinAPI::messageLoop()
 {
     MSG msg;
     if(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
@@ -403,14 +403,14 @@ bool VideoWinAPI::MessageLoop()
     return true;
 }
 
-void VideoWinAPI::ShowErrorMessage(const std::string& title, const std::string& message)
+void VideoWinAPI::showErrorMessage(const std::string& title, const std::string& message)
 {
     MessageBoxA(nullptr, message.c_str(), title.c_str(), MB_OK | MB_ICONEXCLAMATION);
 }
 
-unsigned long VideoWinAPI::GetTickCount() const
+unsigned long VideoWinAPI::getTickCount() const
 {
-    return ::GetTickCount();
+    return GetTickCount();
 }
 
 static void* wglGetProcAddress_Wrapper(const char* name)
@@ -424,12 +424,12 @@ static void* wglGetProcAddress_Wrapper(const char* name)
     return func;
 }
 
-OpenGL_Loader_Proc VideoWinAPI::GetLoaderFunction() const
+OpenGL_Loader_Proc VideoWinAPI::getLoaderFunction() const
 {
     return wglGetProcAddress_Wrapper;
 }
 
-std::vector<VideoMode> VideoWinAPI::ListVideoModes() const
+std::vector<VideoMode> VideoWinAPI::listVideoModes() const
 {
     DEVMODE dm;
     memset(&dm, 0, sizeof(dm));
@@ -445,7 +445,7 @@ std::vector<VideoMode> VideoWinAPI::ListVideoModes() const
     return video_modes;
 }
 
-void VideoWinAPI::SetMousePos(Position pos)
+void VideoWinAPI::setMousePos(Position pos)
 {
     if(GetActiveWindow())
     {
@@ -457,7 +457,7 @@ void VideoWinAPI::SetMousePos(Position pos)
     }
 }
 
-void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
+void VideoWinAPI::onWMChar(unsigned c, bool disablepaste, LPARAM lParam)
 {
     KeyEvent ke(c);
     setSpecialKeys(ke, lParam);
@@ -466,15 +466,15 @@ void VideoWinAPI::OnWMChar(unsigned c, bool disablepaste, LPARAM lParam)
     {
         if(!disablepaste && ke.ctrl)
         {
-            OnWMPaste();
+            onWMPaste();
             return;
         }
     }
 
-    CallBack->Msg_KeyDown(ke);
+    CallBack->msgKeyDown(ke);
 }
 
-void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
+void VideoWinAPI::onWMKeyDown(unsigned c, LPARAM lParam)
 {
     KeyEvent ke;
     setSpecialKeys(ke, lParam);
@@ -512,10 +512,10 @@ void VideoWinAPI::OnWMKeyDown(unsigned c, LPARAM lParam)
     }
 
     if(ke.kt != KeyType::Invalid)
-        CallBack->Msg_KeyDown(ke);
+        CallBack->msgKeyDown(ke);
 }
 
-void VideoWinAPI::OnWMPaste()
+void VideoWinAPI::onWMPaste()
 {
     if(!IsClipboardFormatAvailable(CF_UNICODETEXT))
         return;
@@ -528,19 +528,19 @@ void VideoWinAPI::OnWMPaste()
     while(pData && *pData)
     {
         wchar_t c = *(pData++);
-        OnWMKeyDown(c);
-        OnWMChar(c, true);
+        onWMKeyDown(c);
+        onWMChar(c, true);
     }
 
     GlobalUnlock(hData);
     CloseClipboard();
 }
 
-LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK VideoWinAPI::windowProc(HWND window, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch(msg)
     {
-        case WM_PASTE: pVideoWinAPI->OnWMPaste(); break;
+        case WM_PASTE: pVideoWinAPI->onWMPaste(); break;
         case WM_CLOSE: PostQuitMessage(0); return 0;
         case WM_SIZE:
         {
@@ -549,12 +549,12 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
             if(wParam != SIZE_MAXIMIZED && wParam != SIZE_RESTORED)
                 break;
             VideoMode newSize(LOWORD(lParam), HIWORD(lParam));
-            if(pVideoWinAPI->GetWindowSize() != newSize || pVideoWinAPI->isMinimized)
+            if(pVideoWinAPI->getWindowSize() != newSize || pVideoWinAPI->isMinimized)
             {
-                pVideoWinAPI->SetNewSize(newSize, Extent(newSize.width, newSize.height));
+                pVideoWinAPI->setNewSize(newSize, Extent(newSize.width, newSize.height));
 
                 pVideoWinAPI->isDisplayModeChangeable = false;
-                pVideoWinAPI->CallBack->WindowResized();
+                pVideoWinAPI->CallBack->windowResized();
                 pVideoWinAPI->isDisplayModeChangeable = true;
             }
             pVideoWinAPI->isMinimized = false;
@@ -566,7 +566,7 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
                 case SC_SCREENSAVE:
                 case SC_MONITORPOWER: return 0;
                 case SC_KEYMENU: // F10-Fehler beheben -> will sonst Fenster verschieben, was das Zeichnen unterbindet
-                    pVideoWinAPI->OnWMKeyDown(VK_F10, 0); // pretend we got a F10 stroke
+                    pVideoWinAPI->onWMKeyDown(VK_F10, 0); // pretend we got a F10 stroke
                     return 0;
             }
             break;
@@ -577,31 +577,31 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
         case WM_MOUSEMOVE:
             pVideoWinAPI->mouse_xy.pos.x = LOWORD(lParam);
             pVideoWinAPI->mouse_xy.pos.y = HIWORD(lParam);
-            pVideoWinAPI->CallBack->Msg_MouseMove(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgMouseMove(pVideoWinAPI->mouse_xy);
             break;
         case WM_LBUTTONDOWN:
             pVideoWinAPI->mouse_xy.ldown = true;
-            pVideoWinAPI->CallBack->Msg_LeftDown(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgLeftDown(pVideoWinAPI->mouse_xy);
             break;
         case WM_LBUTTONUP:
             pVideoWinAPI->mouse_xy.ldown = false;
-            pVideoWinAPI->CallBack->Msg_LeftUp(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgLeftUp(pVideoWinAPI->mouse_xy);
             break;
         case WM_RBUTTONDOWN:
             pVideoWinAPI->mouse_xy.rdown = true;
-            pVideoWinAPI->CallBack->Msg_RightDown(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgRightDown(pVideoWinAPI->mouse_xy);
             break;
         case WM_RBUTTONUP:
             pVideoWinAPI->mouse_xy.rdown = false;
-            pVideoWinAPI->CallBack->Msg_RightUp(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgRightUp(pVideoWinAPI->mouse_xy);
             break;
         case WM_MBUTTONDOWN:
             pVideoWinAPI->mouse_xy.mdown = true;
-            pVideoWinAPI->CallBack->Msg_MiddleDown(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgMiddleDown(pVideoWinAPI->mouse_xy);
             break;
         case WM_MBUTTONUP:
             pVideoWinAPI->mouse_xy.mdown = false;
-            pVideoWinAPI->CallBack->Msg_MiddleUp(pVideoWinAPI->mouse_xy);
+            pVideoWinAPI->CallBack->msgMiddleUp(pVideoWinAPI->mouse_xy);
             break;
         case WM_MOUSEWHEEL:
             // Obtain scrolling distance. For every multiple of WHEEL_DELTA, we have to fire an event, because we treat
@@ -615,27 +615,27 @@ LRESULT CALLBACK VideoWinAPI::WindowProc(HWND window, UINT msg, WPARAM wParam, L
                 if(pVideoWinAPI->mouse_z > 0) // Scrolled to top
                 {
                     pVideoWinAPI->mouse_z -= WHEEL_DELTA;
-                    pVideoWinAPI->CallBack->Msg_WheelUp(pVideoWinAPI->mouse_xy);
+                    pVideoWinAPI->CallBack->msgWheelUp(pVideoWinAPI->mouse_xy);
                 } else // Scrolled to bottom
                 {
                     pVideoWinAPI->mouse_z += WHEEL_DELTA;
-                    pVideoWinAPI->CallBack->Msg_WheelDown(pVideoWinAPI->mouse_xy);
+                    pVideoWinAPI->CallBack->msgWheelDown(pVideoWinAPI->mouse_xy);
                 }
             }
             break;
         case WM_KEYDOWN:
             //  case WM_SYSKEYDOWN: // auch abfangen, wenn linkes ALT mit gedrückt wurde
-            pVideoWinAPI->OnWMKeyDown((unsigned)wParam, lParam);
+            pVideoWinAPI->onWMKeyDown((unsigned)wParam, lParam);
             return 0;
         case WM_CHAR:
         case WM_SYSCHAR: // auch abfangen, wenn linkes ALT mit gedrückt wurde
-            pVideoWinAPI->OnWMChar((unsigned)wParam, false, lParam);
+            pVideoWinAPI->onWMChar((unsigned)wParam, false, lParam);
             return 0;
     }
     return DefWindowProcW(window, msg, wParam, lParam);
 }
 
-KeyEvent VideoWinAPI::GetModKeyState() const
+KeyEvent VideoWinAPI::getModKeyState() const
 {
     KeyEvent ke;
     ke.ctrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
@@ -644,7 +644,7 @@ KeyEvent VideoWinAPI::GetModKeyState() const
     return ke;
 }
 
-void* VideoWinAPI::GetMapPointer() const
+void* VideoWinAPI::getMapPointer() const
 {
     return (void*)this->screen;
 }

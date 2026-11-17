@@ -30,19 +30,19 @@ GameManager::GameManager(Log& log, Settings& settings, VideoDriverWrapper& video
     : log_(log), settings_(settings), videoDriver_(videoDriver), audioDriver_(audioDriver),
       windowManager_(windowManager)
 {
-    ResetAverageGFPS();
+    resetAverageGFPS();
 }
 
 /**
  *  Spiel starten
  */
-bool GameManager::Start()
+bool GameManager::start()
 {
     // Einstellungen laden
     settings_.Load();
 
     /// Videotreiber laden
-    if(!videoDriver_.LoadDriver(settings_.driver.video))
+    if(!videoDriver_.loadDriver(settings_.driver.video))
     {
         s25util::error(_("Video driver couldn't be loaded!"));
         return false;
@@ -51,66 +51,66 @@ bool GameManager::Start()
     // Fenster erstellen
     const auto screenSize = (settings_.video.displayMode == DisplayMode::Fullscreen) ? settings_.video.fullscreenSize :
                                                                                        settings_.video.windowedSize;
-    if(!videoDriver_.CreateScreen(screenSize, settings_.video.displayMode))
+    if(!videoDriver_.createScreen(screenSize, settings_.video.displayMode))
         return false;
     videoDriver_.setTargetFramerate(settings_.video.framerate);
-    videoDriver_.SetMouseWarping(settings_.global.smartCursor);
+    videoDriver_.setMouseWarping(settings_.global.smartCursor);
     videoDriver_.setGuiScalePercent(settings_.video.guiScale);
 
     /// Audiodriver laden
-    if(!audioDriver_.LoadDriver(settings_.driver.audio))
+    if(!audioDriver_.loadDriver(settings_.driver.audio))
     {
         s25util::warning(_("Audio driver couldn't be loaded!"));
         // return false;
     }
 
     /// Lautstärken gleich mit setzen
-    audioDriver_.SetMasterEffectVolume(settings_.sound.effectsVolume); //-V807
-    audioDriver_.SetMusicVolume(settings_.sound.musicVolume);
+    audioDriver_.setMasterEffectVolume(settings_.sound.effectsVolume); //-V807
+    audioDriver_.setMusicVolume(settings_.sound.musicVolume);
 
     // Treibereinstellungen abspeichern
-    settings_.Save();
+    settings_.save();
 
     log_.write(_("\nStarting the game\n"));
-    return ShowSplashscreen();
+    return showSplashscreen();
 }
 
 /**
  *  Spiel beenden.
  */
-void GameManager::Stop()
+void GameManager::stop()
 {
-    GAMECLIENT.Stop();
-    GAMESERVER.Stop();
+    GAMECLIENT.stop();
+    GAMESERVER.stop();
     LOBBYCLIENT.Stop();
     // Global Einstellungen speichern
-    settings_.Save();
+    settings_.save();
 
     // Fenster beenden
-    videoDriver_.DestroyScreen();
+    videoDriver_.destroyScreen();
 }
 
 /**
  *  Hauptschleife.
  */
-bool GameManager::Run()
+bool GameManager::run()
 {
     // Nachrichtenschleife
-    if(!videoDriver_.Run())
+    if(!videoDriver_.run())
         GLOBALVARS.notdone = false;
 
     LOBBYCLIENT.Run();
 
     // Get this before the run so we know if we are currently skipping
     const unsigned targetSkipGF = GAMECLIENT.skiptogf;
-    GAMECLIENT.Run();
-    GAMESERVER.Run();
+    GAMECLIENT.run();
+    GAMESERVER.run();
 
     if(targetSkipGF)
     {
         // if we skip drawing write a comment every 5k gf
-        unsigned current_time = videoDriver_.GetTickCount();
-        const unsigned curGF = GAMECLIENT.GetGFNumber();
+        unsigned current_time = videoDriver_.getTickCount();
+        const unsigned curGF = GAMECLIENT.getGFNumber();
         if(targetSkipGF > curGF)
         {
             if(curGF % 5000 == 0)
@@ -145,20 +145,20 @@ bool GameManager::Run()
         }
     } else
     {
-        videoDriver_.ClearScreen();
-        windowManager_.Draw();
-        videoDriver_.SwapBuffers();
+        videoDriver_.clearScreen();
+        windowManager_.draw();
+        videoDriver_.swapBuffers();
     }
     gfCounter_.update();
 
     // Fenstermanager aufräumen
     if(!GLOBALVARS.notdone)
-        windowManager_.CleanUp();
+        windowManager_.cleanUp();
 
     return GLOBALVARS.notdone;
 }
 
-bool GameManager::ShowSplashscreen()
+bool GameManager::showSplashscreen()
 {
     libsiedler2::Archiv arSplash;
     if(!LOADER.Load(arSplash, RTTRCONFIG.ExpandPath(s25::files::splash)))
@@ -169,29 +169,29 @@ bool GameManager::ShowSplashscreen()
         s25util::error(_("Splash screen couldn't be loaded!"));
         return false;
     }
-    windowManager_.Switch(std::make_unique<dskSplash>(std::move(image)));
+    windowManager_.switchTo(std::make_unique<dskSplash>(std::move(image)));
     return true;
 }
 
 /**
  *  zeigt das Hauptmenü.
  */
-bool GameManager::ShowMenu()
+bool GameManager::showMenu()
 {
-    GAMECLIENT.Stop();
-    GAMESERVER.Stop();
+    GAMECLIENT.stop();
+    GAMESERVER.stop();
 
     if(LOBBYCLIENT.IsLoggedIn())
         // Lobby zeigen
-        windowManager_.Switch(std::make_unique<dskLobby>());
+        windowManager_.switchTo(std::make_unique<dskLobby>());
     else
         // Hauptmenü zeigen
-        windowManager_.Switch(std::make_unique<dskMainMenu>());
+        windowManager_.switchTo(std::make_unique<dskMainMenu>());
 
     return true;
 }
 
-void GameManager::ResetAverageGFPS()
+void GameManager::resetAverageGFPS()
 {
     gfCounter_ = FrameCounter(FrameCounter::clock::duration::max()); // Never update
 }

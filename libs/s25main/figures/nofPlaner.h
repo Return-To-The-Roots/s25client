@@ -34,22 +34,22 @@ class nofPlaner : public noFigure
     friend constexpr auto maxEnumValue(PlaningDir) { return PlaningDir::Counterclockwise; }
 
 private:
-    void GoalReached() override;
-    void Walked() override;
-    void AbrogateWorkplace() override;
-    void HandleDerivedEvent(unsigned id) override;
+    void goalReached() override;
+    void walked() override;
+    void abrogateWorkplace() override;
+    void handleDerivedEvent(unsigned id) override;
 
 public:
     nofPlaner(MapPoint pos, unsigned char player, noBuildingSite* building_site);
     nofPlaner(SerializedGameData& sgd, unsigned obj_id);
     nofPlaner(const nofPlaner&) = delete;
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofPlaner; }
+    GO_Type getGOT() const final { return GO_Type::NofPlaner; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
-    void LostWork();
+    void lostWork();
 };

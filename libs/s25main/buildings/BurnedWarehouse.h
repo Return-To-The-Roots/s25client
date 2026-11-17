@@ -17,15 +17,15 @@ public:
 
     ~BurnedWarehouse() override;
 
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Burnedwarehouse; }
+    GO_Type getGOT() const final { return GO_Type::Burnedwarehouse; }
 
     /// Benachrichtigen, wenn neuer GF erreicht wurde.
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 
-    void Draw(DrawPoint /*drawPt*/) override {}
+    void draw(DrawPoint /*drawPt*/) override {}
 
 private:
     /// Spieler des ehemaligen Lagerhauses

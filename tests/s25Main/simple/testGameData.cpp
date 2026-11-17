@@ -55,13 +55,13 @@ BOOST_AUTO_TEST_CASE(ProductionBuildingsAreNobUsual)
 {
     for(const auto bld : helpers::enumRange<BuildingType>())
     {
-        if(!BuildingProperties::IsValid(bld))
+        if(!BuildingProperties::isValid(bld))
             continue;
         // Only nobUsuals can produce wares (though not all do)
         if(!holds_alternative<std::nullopt_t>(BLD_WORK_DESC[bld].producedWare))
         {
             BOOST_TEST_INFO("bld: " << bld);
-            BOOST_TEST(BuildingProperties::IsUsual(bld));
+            BOOST_TEST(BuildingProperties::isUsual(bld));
         }
     }
 }

@@ -28,7 +28,7 @@ public:
     const std::string& getNextSong();
 
     /// Save playlist to file
-    bool SaveAs(const boost::filesystem::path& filepath) const;
+    bool saveAs(const boost::filesystem::path& filepath) const;
     /// Load playlist from file
     bool Load(Log& logger, const boost::filesystem::path& filepath);
 
@@ -38,11 +38,11 @@ public:
 
     /// Moves the song with the given index (in the songs_ array) to the front of the list of songs to be played
     /// Has no effect if the song is not in the queue (anymore), e.g. if it was already played
-    void SetStartSong(unsigned id);
+    void setStartSong(unsigned id);
 
 private:
     /// Get the playlist ready for playing
-    void Prepare();
+    void prepare();
 
     std::vector<std::string> songs_; /// Filenames of titles to play
     unsigned numRepeats_ = 1;        /// How often to repeat each song

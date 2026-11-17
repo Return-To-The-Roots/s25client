@@ -24,8 +24,8 @@ public:
     GlobalGameSettings& operator=(GlobalGameSettings&&) noexcept;
 
     /// Serialisierung und Deserialisierung
-    void Serialize(Serializer& ser) const;
-    void Deserialize(Serializer& ser);
+    void serialize(Serializer& ser) const;
+    void deserialize(Serializer& ser);
 
     GameSpeed speed;
     GameObjective objective;
@@ -54,15 +54,15 @@ public:
     void applyLegacyInexhaustibleMines();
 
     /// loads the saved addon configuration from the SETTINGS.
-    void LoadSettings();
+    void loadSettings();
     /// saves the current addon configuration to the SETTINGS.
-    void SaveSettings() const;
+    void saveSettings() const;
 
     /// Get current maximum rank for soldiers
     /// 0 = Private, 1 = Private First Class, ...
-    unsigned GetMaxMilitaryRank() const;
+    unsigned getMaxMilitaryRank() const;
     /// Returns number of scouts required for exploration expeditions
-    unsigned GetNumScoutsExpedition() const;
+    unsigned getNumScoutsExpedition() const;
 
 private:
     struct AddonWithState

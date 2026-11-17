@@ -31,40 +31,40 @@ nofSkinner::nofSkinner(const MapPoint pos, const unsigned char player, nobUsual*
 nofSkinner::nofSkinner(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id)
 {
     if(state != State::FigureWork && state != State::Waiting1)
-        animal = sgd.PopObject<noAnimal>(GO_Type::Animal);
+        animal = sgd.popObject<noAnimal>(GO_Type::Animal);
     else
         animal = nullptr;
 }
 
-void nofSkinner::Serialize(SerializedGameData& sgd) const
+void nofSkinner::serialize(SerializedGameData& sgd) const
 {
-    nofBuildingWorker::Serialize(sgd);
+    nofBuildingWorker::serialize(sgd);
 
     if(state != State::FigureWork && state != State::Waiting1)
-        sgd.PushObject(animal, true);
+        sgd.pushObject(animal, true);
 }
 
-void nofSkinner::WorkAborted()
+void nofSkinner::workAborted()
 {
     if(animal)
     {
-        animal->StopSkinning();
+        animal->stopSkinning();
         animal = nullptr;
     }
 }
 
-void nofSkinner::AnimalLost()
+void nofSkinner::animalLost()
 {
     animal = nullptr;
 
     switch(state)
     {
         default: return;
-        case State::SkinnerWalkingToCarcass: StartWalkingHome(); break;
+        case State::SkinnerWalkingToCarcass: startWalkingHome(); break;
         case State::SkinnerSkinningCarcass:
             // Remove Working-Event
-            GetEvMgr().RemoveEvent(current_ev);
-            StartWalkingHome();
+            getEvMgr().removeEvent(current_ev);
+            startWalkingHome();
             break;
     }
 }
@@ -74,7 +74,7 @@ void nofSkinner::AnimalLost()
 #    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
 #endif
 
-unsigned short nofSkinner::GetCarryID() const
+unsigned short nofSkinner::getCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
@@ -83,32 +83,32 @@ unsigned short nofSkinner::GetCarryID() const
 #    pragma warning(pop)
 #endif
 
-void nofSkinner::DrawWalkingWithWare(DrawPoint drawPt)
+void nofSkinner::drawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "leather_bobs", bobIndex[BobType::SkinnerCarryingSkins]);
+    drawWalking(drawPt, "leather_bobs", bobIndex[BobType::SkinnerCarryingSkins]);
 }
 
-void nofSkinner::HandleDerivedEvent(unsigned)
+void nofSkinner::handleDerivedEvent(unsigned)
 {
     switch(state)
     {
-        case State::Waiting1: TryStartSkinning(); break;
-        case State::Work: HandleStateWork(); break;
-        case State::Waiting2: HandleStateWaiting2(); break;
-        case State::SkinnerSkinningCarcass: HandleStateSkinningCarcass(); break;
+        case State::Waiting1: tryStartSkinning(); break;
+        case State::Work: handleStateWork(); break;
+        case State::Waiting2: handleStateWaiting2(); break;
+        case State::SkinnerSkinningCarcass: handleStateSkinningCarcass(); break;
         default: break;
     }
 }
 
-void nofSkinner::DrawWorking(DrawPoint drawPt)
+void nofSkinner::drawWorking(DrawPoint drawPt)
 {
-    const GamePlayer& owner = world->GetPlayer(player);
+    const GamePlayer& owner = world->getPlayer(player);
     switch(state)
     {
         default: break;
         case State::SkinnerSkinningCarcass:
         {
-            unsigned short id = GAMECLIENT.Interpolate(45, current_ev);
+            unsigned short id = GAMECLIENT.interpolate(45, current_ev);
             unsigned short draw_id =
               leatheraddon::bobIndex[leatheraddon::BobType::SkinnerSkinningAnimalCarcassAnimation];
 
@@ -119,136 +119,136 @@ void nofSkinner::DrawWorking(DrawPoint drawPt)
             else
                 draw_id = (draw_id + 12) + id - 36;
 
-            LOADER.GetPlayerImage("leather_bobs", draw_id)->drawForPlayer(drawPt, owner.color);
+            LOADER.getPlayerImage("leather_bobs", draw_id)->drawForPlayer(drawPt, owner.color);
         }
         break;
     }
 }
 
-void nofSkinner::HandleStateSkinningCarcass()
+void nofSkinner::handleStateSkinningCarcass()
 {
     // see comment at noAnimal::HandleEvent for explanation of ownership of animal
-    animal->Skinned();
-    if(!animal->IsHunted())
+    animal->skinned();
+    if(!animal->isHunted())
     {
         // Tier verschwinden lassen
         auto ownedAnimal = world->RemoveFigure(pos, *animal);
         // Tier vernichten
-        ownedAnimal->Destroy();
+        ownedAnimal->destroy();
     }
     animal = nullptr;
 
-    ware = ProduceWare();
-    StartWalkingHome();
+    ware = produceWare();
+    startWalkingHome();
 }
 
-void nofSkinner::StartWalkingHome()
+void nofSkinner::startWalkingHome()
 {
-    WorkAborted();
+    workAborted();
     state = State::WalkingHome;
     // We may be still walking in which case we delay finding a path home until we reached the next node
-    if(!IsMoving())
-        HandleStateWalkingHome();
+    if(!isMoving())
+        handleStateWalkingHome();
 }
 
-void nofSkinner::HandleStateWalkingHome()
+void nofSkinner::handleStateWalkingHome()
 {
     // We reached our home? (exactly at the flag !!)
-    MapPoint homeFlagPos = world->GetNeighbour(workplace->GetPos(), Direction::SouthEast);
+    MapPoint homeFlagPos = world->getNeighbour(workplace->getPos(), Direction::SouthEast);
     if(pos == homeFlagPos)
     {
         // Redirect to nofBuildingWorker
-        WorkingReady();
+        workingReady();
         return;
     }
 
     // Search for way if we can go home (add tolerance to avoid dying, if he walked some fields to far away)
-    const auto dir = world->FindHumanPath(pos, homeFlagPos, MAX_SKINNING_DISTANCE + MAX_SKINNING_DISTANCE / 4);
+    const auto dir = world->findHumanPath(pos, homeFlagPos, MAX_SKINNING_DISTANCE + MAX_SKINNING_DISTANCE / 4);
     if(dir)
-        StartWalking(*dir);
+        startWalking(*dir);
     else
     {
         // no way to home
-        AbrogateWorkplace();
-        StartWandering();
-        Wander();
+        abrogateWorkplace();
+        startWandering();
+        wander();
     }
 }
 
-void nofSkinner::TryStartSkinning()
+void nofSkinner::tryStartSkinning()
 {
-    if(workplace->IsProductionDisabled())
+    if(workplace->isProductionDisabled())
     {
-        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
-        workplace->StartNotWorking();
+        current_ev = getEvMgr().addEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+        workplace->startNotWorking();
         return;
     }
 
     // pigs have higher priority then going skinning dead animals
-    if(AreWaresAvailable())
-        HandleStateWaiting1();
+    if(areWaresAvailable())
+        handleStateWaiting1();
     else
     {
-        const auto available_animals = nofHunter::GetAnimalsInRange(
-          *world, pos, ANIMAL_RADIUS, MAX_SKINNING_DISTANCE, [](const noAnimal* a) { return a->CanBeSkinned(); });
+        const auto available_animals = nofHunter::getAnimalsInRange(
+          *world, pos, ANIMAL_RADIUS, MAX_SKINNING_DISTANCE, [](const noAnimal* a) { return a->canBeSkinned(); });
 
         if(!available_animals.empty())
         {
             animal = RANDOM_ELEMENT(available_animals);
             state = State::SkinnerWalkingToCarcass;
             workplace->is_working = true;
-            animal->BeginSkinning(this);
-            StartWalking(Direction::SouthEast);
-            workplace->StopNotWorking();
+            animal->beginSkinning(this);
+            startWalking(Direction::SouthEast);
+            workplace->stopNotWorking();
         } else
         {
-            current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
-            workplace->StartNotWorking();
+            current_ev = getEvMgr().addEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+            workplace->startNotWorking();
         }
     }
 }
 
-void nofSkinner::TryToWork()
+void nofSkinner::tryToWork()
 {
-    if(AreWaresAvailable())
-        nofBuildingWorker::TryToWork();
+    if(areWaresAvailable())
+        nofBuildingWorker::tryToWork();
     else
     {
         state = State::Waiting1;
-        current_ev = GetEvMgr().AddEvent(this, JOB_CONSTS[job_].wait1_length, 1);
-        workplace->StartNotWorking();
+        current_ev = getEvMgr().addEvent(this, JOB_CONSTS[job_].wait1_length, 1);
+        workplace->startNotWorking();
     }
 }
 
-void nofSkinner::WalkedDerived()
+void nofSkinner::walkedDerived()
 {
     switch(state)
     {
         default: break;
         case State::SkinnerWalkingToCarcass:
         {
-            if(pos == animal->GetPos())
+            if(pos == animal->getPos())
             {
                 state = State::SkinnerSkinningCarcass;
-                current_ev = GetEvMgr().AddEvent(this, 80, 1);
+                current_ev = getEvMgr().addEvent(this, 80, 1);
             } else
             {
-                const auto dir = world->FindHumanPath(pos, animal->GetPos(), MAX_SKINNING_DISTANCE);
+                const auto dir = world->findHumanPath(pos, animal->getPos(), MAX_SKINNING_DISTANCE);
                 if(dir)
-                    StartWalking(*dir);
+                    startWalking(*dir);
                 else
                 {
                     // no way --> go home
-                    StartWalkingHome();
+                    startWalkingHome();
                 }
             }
             break;
         }
-        case State::WalkingHome: HandleStateWalkingHome(); break;
+        case State::WalkingHome: handleStateWalkingHome(); break;
     }
 }
 
-helpers::OptionalEnum<GoodType> nofSkinner::ProduceWare()
+helpers::OptionalEnum<GoodType> nofSkinner::produceWare()
 {
     return GoodType::Skins;
 }

@@ -43,13 +43,13 @@ private:
         std::vector<unsigned char> values;
     };
 
-    void Bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmapRLE, BdrBitmap& bdrBitmap);
-    static void BdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmapRLE);
+    void bitmap2BdrBitmap(const glArchivItem_Bitmap& bitmapRLE, BdrBitmap& bdrBitmap);
+    static void bdrBitmap2Bitmap(BdrBitmap& bdrBitmap, glArchivItem_Bitmap& bitmapRLE);
 
-    static void FindEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths,
+    static void findEdgeDistribution(unsigned toFill, std::array<unsigned short, 3>& lengths,
                                      std::array<unsigned char, 3>& shouldCounts);
     template<size_t T_numEdges, size_t T_numFillers>
-    void WriteEdgeDistribution(const ImgPos& pos, unsigned toFill,
+    void writeEdgeDistribution(const ImgPos& pos, unsigned toFill,
                                bool direction, // false = waagerecht, true = senkrecht
                                const std::array<unsigned short, 3>& edgeLengths,
                                std::array<unsigned char, 3>& edgeCounts, // wird verändert, nicht weiterbenutzen

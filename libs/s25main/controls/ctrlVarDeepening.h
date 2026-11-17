@@ -19,5 +19,5 @@ public:
                      const std::string& fmtString, const glFont* font, unsigned color, unsigned count, va_list fmtArgs);
 
 protected:
-    void DrawContent() const override;
+    void drawContent() const override;
 };

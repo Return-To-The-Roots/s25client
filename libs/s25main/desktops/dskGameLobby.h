@@ -27,34 +27,34 @@ public:
     ~dskGameLobby();
 
     /// Größe ändern-Reaktionen die nicht vom Skaling-Mechanismus erfasst werden.
-    void Resize(const Extent& newSize) override;
-    void SetActive(bool activate = true) override;
+    void resize(const Extent& newSize) override;
+    void setActive(bool activate = true) override;
 
 private:
-    void SetPlayerReady(unsigned char player, bool ready);
+    void setPlayerReady(unsigned char player, bool ready);
     // GGS von den Controls auslesen
-    void UpdateGGS();
+    void updateGGS();
     /// Aktualisiert eine Spielerreihe (löscht Controls und legt neue an)
-    void UpdatePlayerRow(unsigned row);
+    void updatePlayerRow(unsigned row);
 
     /// Füllt die Felder einer Reihe aus
-    void ChangeTeam(unsigned player, Team);
-    void ChangeReady(unsigned player, bool ready);
-    void ChangeNation(unsigned player, Nation);
-    void ChangePortrait(unsigned player, unsigned portraitIndex);
-    void ChangePing(unsigned playerId);
-    void ChangeColor(unsigned player, unsigned color);
+    void changeTeam(unsigned player, Team);
+    void changeReady(unsigned player, bool ready);
+    void changeNation(unsigned player, Nation);
+    void changePortrait(unsigned player, unsigned portraitIndex);
+    void changePing(unsigned playerId);
+    void changeColor(unsigned player, unsigned color);
 
-    void Msg_PaintBefore() override;
-    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
-    void Msg_Group_CheckboxChange(unsigned group_id, unsigned ctrl_id, bool checked) override;
-    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_EditEnter(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
-    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    void msgPaintBefore() override;
+    void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void msgGroupCheckboxChange(unsigned group_id, unsigned ctrl_id, bool checked) override;
+    void msgGroupComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgEditEnter(unsigned ctrl_id) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+    void msgCheckboxChange(unsigned ctrl_id, bool checked) override;
+    void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
 
     void CI_Error(ClientError ce) override;
 
@@ -73,7 +73,7 @@ private:
     void CI_Countdown(unsigned remainingTimeInSec) override;
     void CI_CancelCountdown(bool error) override;
 
-    void FlashGameChat();
+    void flashGameChat();
 
     void LC_Status_Error(const std::string& error) override;
     void LC_Chat(const std::string& player, const std::string& text) override;
@@ -82,10 +82,10 @@ private:
     bool forceOptions = false;
     bool checkOptions();
 
-    void GoBack();
-    bool IsSinglePlayer() const { return serverType == ServerType::Local; }
+    void goBack();
+    bool isSinglePlayer() const { return serverType == ServerType::Local; }
     /// Check whether the given setting can be changed, i.e. is not disabled by lua
-    bool IsChangeAllowed(const std::string& setting) const;
+    bool isChangeAllowed(const std::string& setting) const;
 
     const ServerType serverType;
     std::shared_ptr<GameLobby> gameLobby_;
