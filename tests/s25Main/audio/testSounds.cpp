@@ -178,7 +178,7 @@ static auto isType(SoundType expected)
     return [=](const driver::RawSoundHandle& actual) { return actual.getType() == expected; };
 }
 
-static void release_soundhandle(const driver::RawSoundHandle& h)
+static void releaseSoundHandle(const driver::RawSoundHandle& h)
 {
     delete static_cast<MockupSoundData*>(h.getDriverData());
 }
@@ -216,7 +216,7 @@ BOOST_FIXTURE_TEST_CASE(PlayListRepeatsCorrect, LoadMockupAudio)
     // Use the type to distinguish the 2 songs
     MOCK_EXPECT(audioDriverMock->LoadMusicFromData).with(mock::any, ".ogg").calls(makeDoLoad(SoundType::Effect));
     MOCK_EXPECT(audioDriverMock->LoadMusicFromData).with(mock::any, ".midi").calls(makeDoLoad(SoundType::Music));
-    MOCK_EXPECT(audioDriverMock->doUnloadSound).calls(release_soundhandle);
+    MOCK_EXPECT(audioDriverMock->doUnloadSound).calls(releaseSoundHandle);
 
     // Play both songs twice (1 repeat), then play first again
     Playlist playlist_repeat(playlist.getSongs(), 1, false);

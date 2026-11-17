@@ -1788,7 +1788,7 @@ std::string GameClient::formatGFTime(const unsigned gf) const
     using minutes = std::chrono::duration<uint32_t, std::chrono::minutes::period>;
     using std::chrono::duration_cast;
 
-    seconds numSeconds = duration_cast<seconds>(gfs_to_duration(gf));
+    seconds numSeconds = duration_cast<seconds>(gfsToDuration(gf));
 
     hours numHours = duration_cast<hours>(numSeconds);
     numSeconds -= numHours;
@@ -1827,7 +1827,7 @@ unsigned GameClient::getTournamentModeDuration() const
             < rttr::enumCast(GameObjective::Tournament1) + NUM_TOURNAMENT_MODES)
     {
         const auto turnamentMode = rttr::enumCast(game->ggs_.objective) - rttr::enumCast(GameObjective::Tournament1);
-        return duration_to_gfs(TOURNAMENT_MODES_DURATION[turnamentMode]);
+        return durationToGfs(TOURNAMENT_MODES_DURATION[turnamentMode]);
     } else
         return 0;
 }

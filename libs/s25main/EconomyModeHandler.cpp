@@ -25,9 +25,9 @@
 EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), gfLastUpdated(0)
 {
     constexpr auto specialGoodPool =
-      helpers::make_array(GoodType::Tongs, GoodType::Hammer, GoodType::Axe, GoodType::Saw, GoodType::PickAxe,
-                          GoodType::Shovel, GoodType::Crucible, GoodType::RodAndLine, GoodType::Scythe,
-                          GoodType::Cleaver, GoodType::Rollingpin, GoodType::Bow);
+      helpers::makeArray(GoodType::Tongs, GoodType::Hammer, GoodType::Axe, GoodType::Saw, GoodType::PickAxe,
+                         GoodType::Shovel, GoodType::Crucible, GoodType::RodAndLine, GoodType::Scythe,
+                         GoodType::Cleaver, GoodType::Rollingpin, GoodType::Bow);
 
     std::vector<GoodType> commonGoodPool = {
       GoodType::Beer,  GoodType::Water, GoodType::Boat,    GoodType::Sword,  GoodType::Iron,   GoodType::Flour,

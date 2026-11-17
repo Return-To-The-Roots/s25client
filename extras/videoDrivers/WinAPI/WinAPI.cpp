@@ -413,7 +413,7 @@ unsigned long VideoWinAPI::getTickCount() const
     return GetTickCount();
 }
 
-static void* wglGetProcAddress_Wrapper(const char* name)
+static void* wglGetProcAddressWrapper(const char* name)
 {
     auto* func = reinterpret_cast<void*>(wglGetProcAddress(name));
     if(!func)
@@ -426,7 +426,7 @@ static void* wglGetProcAddress_Wrapper(const char* name)
 
 OpenGL_Loader_Proc VideoWinAPI::getLoaderFunction() const
 {
-    return wglGetProcAddress_Wrapper;
+    return wglGetProcAddressWrapper;
 }
 
 std::vector<VideoMode> VideoWinAPI::listVideoModes() const

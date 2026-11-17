@@ -168,7 +168,7 @@ iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.getTextureN("io", 47), 30)
         // Start selection index at 1, 0 is "disabled"
         for(const auto& i : AUTO_SAVE_INTERVALS | boost::adaptors::indexed(1))
         {
-            if(SETTINGS.interface.autosaveInterval == duration_to_gfs(i.value()))
+            if(SETTINGS.interface.autosaveInterval == durationToGfs(i.value()))
             {
                 combo->setSelection(static_cast<unsigned>(i.index()));
                 break;
@@ -187,7 +187,7 @@ void iwSave::msgComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selec
     {
         // selection is the index into the array ignoring the first ("disabled") entry
         RTTR_Assert(selection >= 1 && selection <= AUTO_SAVE_INTERVALS.size());
-        SETTINGS.interface.autosaveInterval = duration_to_gfs(AUTO_SAVE_INTERVALS[selection - 1]);
+        SETTINGS.interface.autosaveInterval = durationToGfs(AUTO_SAVE_INTERVALS[selection - 1]);
     }
 }
 

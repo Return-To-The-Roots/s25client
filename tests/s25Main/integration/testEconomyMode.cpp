@@ -53,7 +53,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, EconModeFixture)
     game->start(false);
     BOOST_TEST(world.getEconHandler()); // Just test that we have any
 
-    constexpr auto amountsToAdd = helpers::make_array(63, 100, 85);
+    constexpr auto amountsToAdd = helpers::makeArray(63, 100, 85);
 
     EconomyModeHandler econHandler(4);
     const auto& goodsToCollect = econHandler.getGoodTypesToCollect();

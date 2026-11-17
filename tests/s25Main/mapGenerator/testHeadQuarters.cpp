@@ -14,8 +14,8 @@ using namespace rttr::mapGenerator;
 
 static MountainDistance randomMountainDistance()
 {
-    constexpr auto values = helpers::make_array(MountainDistance::Close, MountainDistance::Normal,
-                                                MountainDistance::Far, MountainDistance::VeryFar);
+    constexpr auto values = helpers::makeArray(MountainDistance::Close, MountainDistance::Normal, MountainDistance::Far,
+                                               MountainDistance::VeryFar);
     return helpers::getRandomElement(rttr::test::getRandState(), values);
 }
 

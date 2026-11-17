@@ -355,10 +355,10 @@ BOOST_AUTO_TEST_CASE(drawPercent)
 {
     // Make sure that test passes across different image heights, including some random ones
     auto sizes =
-      helpers::make_array<Extent>(Extent{rttr::test::randomValue<unsigned int>(10, 50), 50},
-                                  Extent{rttr::test::randomValue<unsigned int>(10, 50), 35},
-                                  rttr::test::randomPoint<Extent>(10, 50), rttr::test::randomPoint<Extent>(10, 50),
-                                  rttr::test::randomPoint<Extent>(10, 50), rttr::test::randomPoint<Extent>(10, 50));
+      helpers::makeArray<Extent>(Extent{rttr::test::randomValue<unsigned int>(10, 50), 50},
+                                 Extent{rttr::test::randomValue<unsigned int>(10, 50), 35},
+                                 rttr::test::randomPoint<Extent>(10, 50), rttr::test::randomPoint<Extent>(10, 50),
+                                 rttr::test::randomPoint<Extent>(10, 50), rttr::test::randomPoint<Extent>(10, 50));
 
     RTTR_STUB_FUNCTION(glVertexPointer, rttrOglMock2::glVertexPointer);
     RTTR_STUB_FUNCTION(glDrawArrays, rttrOglMock2::glDrawArrays);
