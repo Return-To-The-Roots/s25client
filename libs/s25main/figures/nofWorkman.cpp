@@ -97,7 +97,7 @@ MapPoint nofWorkman::findPointWithResource(ResourceType type) const
 {
     // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
     const std::vector<MapPoint> pts =
-      world->GetMatchingPointsInRadius<1>(pos, MINER_RADIUS, NodeHasResource(*world, type), true);
+      world->getMatchingPointsInRadius<1>(pos, MINER_RADIUS, NodeHasResource(*world, type), true);
     if(!pts.empty())
         return pts.front();
 

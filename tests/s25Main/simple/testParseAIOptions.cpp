@@ -21,14 +21,14 @@ BOOST_AUTO_TEST_SUITE(ParseAIOptionsTests)
 BOOST_AUTO_TEST_CASE(EmptyOptions)
 {
     std::vector<std::string> options;
-    std::vector<AI::Info> aiInfos = ParseAIOptions(options);
+    std::vector<AI::Info> aiInfos = parseAIOptions(options);
     BOOST_TEST(aiInfos.empty());
 }
 
 BOOST_AUTO_TEST_CASE(ParsingAIJH)
 {
     std::vector<std::string> options = {"aijh", "AIJH", "AiJh"};
-    std::vector<AI::Info> aiInfos = ParseAIOptions(options);
+    std::vector<AI::Info> aiInfos = parseAIOptions(options);
     BOOST_TEST_REQUIRE(aiInfos.size() == 3u);
     BOOST_TEST(aiInfos[0].type == AI::Type::Default);
     BOOST_TEST(aiInfos[1].type == AI::Type::Default);
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(ParsingAIJH)
 BOOST_AUTO_TEST_CASE(ParsingDummy)
 {
     std::vector<std::string> options = {"dummy", "Dummy", "DUMMY"};
-    std::vector<AI::Info> aiInfos = ParseAIOptions(options);
+    std::vector<AI::Info> aiInfos = parseAIOptions(options);
     BOOST_TEST_REQUIRE(aiInfos.size() == 3u);
     BOOST_TEST(aiInfos[0].type == AI::Type::Dummy);
     BOOST_TEST(aiInfos[1].type == AI::Type::Dummy);
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE(ParsingDummy)
 BOOST_AUTO_TEST_CASE(ParsingMultiple)
 {
     std::vector<std::string> options = {"dummy", "aijh", "dummy", "aijh"};
-    std::vector<AI::Info> aiInfos = ParseAIOptions(options);
+    std::vector<AI::Info> aiInfos = parseAIOptions(options);
     BOOST_TEST_REQUIRE(aiInfos.size() == 4u);
     BOOST_TEST(aiInfos[0].type == AI::Type::Dummy);
     BOOST_TEST(aiInfos[1].type == AI::Type::Default);
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(ParsingMultiple)
 BOOST_AUTO_TEST_CASE(ParsingFailed)
 {
     std::vector<std::string> options = {"invalid"};
-    BOOST_CHECK_THROW(ParseAIOptions(options), std::invalid_argument);
+    BOOST_CHECK_THROW(parseAIOptions(options), std::invalid_argument);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

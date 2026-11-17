@@ -18,7 +18,7 @@ using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(RandomMapTests)
 
-static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
+static void validateMap(const Map& map, const MapExtent& size, unsigned players)
 {
     BOOST_TEST_REQUIRE(map.players == players);
     BOOST_TEST(map.size == size);
@@ -36,7 +36,7 @@ static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
         for(const MapPoint pt : neighbors)
             BOOST_TEST_REQUIRE(map.z[pt] == map.z[hqPos], "At point " << pt);
 
-        const auto neighbors2 = map.z.GetPointsInRadiusWithCenter(hqPos, 2);
+        const auto neighbors2 = map.z.getPointsInRadiusWithCenter(hqPos, 2);
 
         const auto compareHeight = [&](const MapPoint& p1, const MapPoint& p2) { return map.z[p1] < map.z[p2]; };
         const MapPoint lowestPoint = *std::min_element(neighbors2.begin(), neighbors2.end(), compareHeight);
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_land_map)
     settings.style = MapStyle::Land;
 
     Map map = generateRandomMap(rnd, worldDesc, settings);
-    ValidateMap(map, settings.size, settings.numPlayers);
+    validateMap(map, settings.size, settings.numPlayers);
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_water_map)
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_water_map)
     settings.style = MapStyle::Water;
 
     Map map = generateRandomMap(rnd, worldDesc, settings);
-    ValidateMap(map, settings.size, settings.numPlayers);
+    validateMap(map, settings.size, settings.numPlayers);
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mixed_map)
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mixed_map)
     settings.style = MapStyle::Mixed;
 
     Map map = generateRandomMap(rnd, worldDesc, settings);
-    ValidateMap(map, settings.size, settings.numPlayers);
+    validateMap(map, settings.size, settings.numPlayers);
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_for_many_islands_returns_valid_map)
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_for_many_islands_returns_valid_map)
     settings.style = MapStyle::Mixed;
 
     Map map = generateRandomMap(rnd, worldDesc, settings);
-    ValidateMap(map, settings.size, settings.numPlayers);
+    validateMap(map, settings.size, settings.numPlayers);
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
@@ -141,7 +141,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
     settings.style = MapStyle::Land;
 
     Map map = generateRandomMap(rnd, worldDesc, settings);
-    ValidateMap(map, settings.size, settings.numPlayers);
+    validateMap(map, settings.size, settings.numPlayers);
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mapfile_with_max_players)

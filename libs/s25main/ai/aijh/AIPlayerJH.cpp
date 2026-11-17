@@ -47,7 +47,7 @@
 #include <type_traits>
 
 namespace {
-void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
+void handleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
 {
     std::unique_ptr<AIEvent::Base> ev;
     using namespace AIEvent;
@@ -78,7 +78,7 @@ void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
     }
     eventMgr.addAIEvent(std::move(ev));
 }
-void HandleExpeditionNote(AIEventManager& eventMgr, const ExpeditionNote& note)
+void handleExpeditionNote(AIEventManager& eventMgr, const ExpeditionNote& note)
 {
     switch(note.type)
     {
@@ -90,11 +90,11 @@ void HandleExpeditionNote(AIEventManager& eventMgr, const ExpeditionNote& note)
             break;
     }
 }
-void HandleResourceNote(AIEventManager& eventMgr, const ResourceNote& note)
+void handleResourceNote(AIEventManager& eventMgr, const ResourceNote& note)
 {
     eventMgr.addAIEvent(std::make_unique<AIEvent::Resource>(AIEvent::EventType::ResourceFound, note.pos, note.res));
 }
-void HandleRoadNote(AIEventManager& eventMgr, const RoadNote& note)
+void handleRoadNote(AIEventManager& eventMgr, const RoadNote& note)
 {
     switch(note.type)
     {
@@ -108,7 +108,7 @@ void HandleRoadNote(AIEventManager& eventMgr, const RoadNote& note)
             break;
     }
 }
-void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
+void handleShipNote(AIEventManager& eventMgr, const ShipNote& note)
 {
     if(note.type == ShipNote::Constructed)
         eventMgr.addAIEvent(std::make_unique<AIEvent::Location>(AIEvent::EventType::ShipBuilt, note.pos));
@@ -193,23 +193,23 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     NotificationManager& notifications = gwb.getNotifications();
     subBuilding = notifications.subscribe<BuildingNote>([this, playerId](const BuildingNote& note) {
         if(note.player == playerId)
-            HandleBuildingNote(eventManager, note);
+            handleBuildingNote(eventManager, note);
     });
     subExpedition = notifications.subscribe<ExpeditionNote>([this, playerId](const ExpeditionNote& note) {
         if(note.player == playerId)
-            HandleExpeditionNote(eventManager, note);
+            handleExpeditionNote(eventManager, note);
     });
     subResource = notifications.subscribe<ResourceNote>([this, playerId](const ResourceNote& note) {
         if(note.player == playerId)
-            HandleResourceNote(eventManager, note);
+            handleResourceNote(eventManager, note);
     });
     subRoad = notifications.subscribe<RoadNote>([this, playerId](const RoadNote& note) {
         if(note.player == playerId)
-            HandleRoadNote(eventManager, note);
+            handleRoadNote(eventManager, note);
     });
     subShip = notifications.subscribe<ShipNote>([this, playerId](const ShipNote& note) {
         if(note.player == playerId)
-            HandleShipNote(eventManager, note);
+            handleShipNote(eventManager, note);
     });
     subBQ = recordBQsToUpdate(this->gwb, this->nodesWithOutdatedBQ);
 }

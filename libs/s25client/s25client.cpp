@@ -82,7 +82,7 @@ struct RttrExitException : std::exception
 };
 
 namespace {
-void WaitForEnter()
+void waitForEnter()
 {
     static bool waited = false;
     if(waited)
@@ -94,7 +94,7 @@ void WaitForEnter()
     bnw::cin.get();
 }
 
-std::string GetProgramDescription()
+std::string getProgramDescription()
 {
     std::stringstream s;
     s << rttr::version::getTitle() << " v" << rttr::version::getVersion() << "-" << rttr::version::getRevision() << "\n"
@@ -112,7 +112,7 @@ std::string GetProgramDescription()
  *  @param[in] exception_type    Typ der Exception (siehe GetExceptionCode)
  *  @param[in] exception_pointer Genaue Beschreibung der Exception (siehe GetExceptionInformation)
  */
-void CExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_pointer)
+void cExceptionHandler(unsigned exception_type, _EXCEPTION_POINTERS* exception_pointer)
 {
     fatal_error("C-Exception caught\n");
 }
@@ -198,21 +198,21 @@ void handleException(void* pCtx = nullptr) noexcept
 }
 
 #ifdef _MSC_VER
-LONG WINAPI ExceptionHandler(LPEXCEPTION_POINTERS info)
+LONG WINAPI exceptionHandler(LPEXCEPTION_POINTERS info)
 {
     handleException(info->ContextRecord);
     terminateProgramm();
     return EXCEPTION_EXECUTE_HANDLER;
 }
 #else
-[[noreturn]] void ExceptionHandler(int /*sig*/)
+[[noreturn]] void exceptionHandler(int /*sig*/)
 {
     handleException();
     terminateProgramm();
 }
 #endif
 
-void InstallSignalHandlers()
+void installSignalHandlers()
 {
 #ifdef _WIN32
     SetConsoleCtrlHandler(consoleSignalHandler, TRUE);
@@ -228,10 +228,10 @@ void InstallSignalHandlers()
 #endif
 
 #ifdef _MSC_VER
-    SetUnhandledExceptionFilter(ExceptionHandler);
+    SetUnhandledExceptionFilter(exceptionHandler);
 #    ifdef _DEBUG
 #        ifdef RTTR_HWETRANS
-    _set_se_translator(CExceptionHandler);
+    _set_se_translator(cExceptionHandler);
 #        endif // RTTR_HWETRANS
 #        ifdef RTTR_CRTDBG
     // Enable Memory-Leak-Detection
@@ -240,19 +240,19 @@ void InstallSignalHandlers()
 #    endif     // _DEBUG
 
 #else
-    signal(SIGSEGV, ExceptionHandler);
+    signal(SIGSEGV, exceptionHandler);
 #endif // _MSC_VER
 }
 
 /**
  *  Exit-Handler, wird bei @p exit ausgeführt.
  */
-void ExitHandler()
+void exitHandler()
 {
     Socket::Shutdown();
 }
 
-void SetAppSymbol()
+void setAppSymbol()
 {
 #ifdef _WIN32
     // set console window icon
@@ -263,7 +263,7 @@ void SetAppSymbol()
 #endif // _WIN32
 }
 
-bool MigrateFilesAndDirectories()
+bool migrateFilesAndDirectories()
 {
     struct MigrationEntry
     {
@@ -337,13 +337,13 @@ bool MigrateFilesAndDirectories()
     return true;
 }
 
-bool InitDirectories()
+bool initDirectories()
 {
     // Note: Do not use logger yet. Filepath may not exist
     const auto curPath = bfs::current_path();
     LOG.write("Starting in %1%\n", LogTarget::Stdout) % curPath;
 
-    if(!MigrateFilesAndDirectories())
+    if(!migrateFilesAndDirectories())
         return false;
 
     // Create all required/useful folders
@@ -380,7 +380,7 @@ bool InitDirectories()
     try
     {
         LOG.open();
-        LOG.write("%1%\n\n", LogTarget::File) % GetProgramDescription();
+        LOG.write("%1%\n\n", LogTarget::File) % getProgramDescription();
         LOG.write("Starting in %1%\n", LogTarget::File) % curPath;
     } catch(const std::exception& e)
     {
@@ -391,7 +391,7 @@ bool InitDirectories()
     return true;
 }
 
-bool InitGame(GameManager& gameManager)
+bool initGame(GameManager& gameManager)
 {
     libsiedler2::setAllocator(new GlAllocator());
 
@@ -412,18 +412,18 @@ bool InitGame(GameManager& gameManager)
     return true;
 }
 
-int RunProgram(po::variables_map& options)
+int runProgram(po::variables_map& options)
 {
-    LOG.write("%1%\n\n", LogTarget::Stdout) % GetProgramDescription();
+    LOG.write("%1%\n\n", LogTarget::Stdout) % getProgramDescription();
     if(!LocaleHelper::init())
         return 1;
     if(!RTTRCONFIG.init())
         return 1;
-    SetAppSymbol();
-    InstallSignalHandlers();
+    setAppSymbol();
+    installSignalHandlers();
     // Exit-Handler initialisieren
-    atexit(&ExitHandler);
-    if(!InitDirectories())
+    atexit(&exitHandler);
+    if(!initDirectories())
         return 1;
 
     // Zufallsgenerator initialisieren (Achtung: nur für Animations-Offsets interessant, für alles andere
@@ -447,7 +447,7 @@ int RunProgram(po::variables_map& options)
                                                       WINDOWMANAGER);
     try
     {
-        if(!InitGame(gameManager))
+        if(!initGame(gameManager))
             return 2;
 
         if(options.count("map"))
@@ -534,14 +534,14 @@ int main(int argc, char** argv)
     }
     if(options.count("version"))
     {
-        bnw::cout << GetProgramDescription() << std::endl;
+        bnw::cout << getProgramDescription() << std::endl;
         return 0;
     }
 
     int result;
     try
     {
-        result = RunProgram(options);
+        result = runProgram(options);
     } catch(const RttrExitException& e)
     {
         result = e.code;
@@ -557,7 +557,7 @@ int main(int argc, char** argv)
         result = 1;
     }
     if(result)
-        WaitForEnter();
+        waitForEnter();
 
     return result;
 }

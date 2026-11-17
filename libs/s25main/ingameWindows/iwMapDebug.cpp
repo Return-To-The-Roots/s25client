@@ -109,7 +109,7 @@ public:
         RTTR_FOREACH_PT(MapPoint, bqMap.getSize())
         {
             for(const unsigned playerIdx : usedPlayerIdxs)
-                bqMap[pt][playerIdx] = gw.GetBQ(pt, playerIdx);
+                bqMap[pt][playerIdx] = gw.getBQ(pt, playerIdx);
         }
         nodeSub = AIJH::recordBQsToUpdate(this->gw, this->pointsToUpdate);
     }
@@ -122,10 +122,10 @@ public:
         {
             for(const unsigned playerIdx : usedPlayerIdxs)
             {
-                if(bqMap[pt][playerIdx] != gw.GetBQ(pt, playerIdx))
+                if(bqMap[pt][playerIdx] != gw.getBQ(pt, playerIdx))
                 {
                     boost::nowide::cerr << "BQs mismatch at " << pt << " for player " << playerIdx << ": "
-                                        << bqMap[pt][playerIdx] << "!=" << gw.GetBQ(pt, playerIdx) << std::endl;
+                                        << bqMap[pt][playerIdx] << "!=" << gw.getBQ(pt, playerIdx) << std::endl;
                 }
             }
         }
@@ -135,7 +135,7 @@ private:
     void updateBq(MapPoint pt)
     {
         for(const unsigned playerIdx : usedPlayerIdxs)
-            bqMap[pt][playerIdx] = gw.GetBQ(pt, playerIdx);
+            bqMap[pt][playerIdx] = gw.getBQ(pt, playerIdx);
     }
     const GameWorldBase& gw;
     std::vector<unsigned> usedPlayerIdxs;

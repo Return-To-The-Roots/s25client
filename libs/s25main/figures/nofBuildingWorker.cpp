@@ -151,7 +151,7 @@ void nofBuildingWorker::workingReady()
             auto real_ware = std::make_unique<Ware>(*ware, nullptr, flag);
             real_ware->waitAtFlag(*flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
-            GoodType ware_type = ConvertShields(real_ware->type);
+            GoodType ware_type = convertShields(real_ware->type);
             world->getPlayer(player).increaseInventoryWare(ware_type, 1);
             // Abnehmer für Ware finden
             real_ware->setGoal(world->getPlayer(player).findClientForWare(*real_ware));

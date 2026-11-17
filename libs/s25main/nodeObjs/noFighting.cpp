@@ -24,8 +24,8 @@ noFighting::noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2) :
     RTTR_Assert(soldier1.getPlayer() != soldier2.getPlayer());
     const MapPoint pos = soldier1.getPos();
 
-    soldiers[0] = world->RemoveFigure(pos, soldier1);
-    soldiers[1] = world->RemoveFigure(pos, soldier2);
+    soldiers[0] = world->removeFigure(pos, soldier1);
+    soldiers[1] = world->removeFigure(pos, soldier2);
     turn = 2;
     defending_animation = 0;
     player_won = 0xFF;
@@ -250,7 +250,7 @@ void noFighting::handleEvent(const unsigned id)
                 world->getSoundMgr().stopSounds(*this);
 
                 // Kampf ist endgültig beendet
-                getEvMgr().addToKillList(world->RemoveFigure(pt, *this));
+                getEvMgr().addToKillList(world->removeFigure(pt, *this));
 
                 // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
                 NodalObjectType noType = world->getNO(pt)->getType();
@@ -310,7 +310,7 @@ void noFighting::startAttack()
     current_ev = getEvMgr().addEvent(this, 15);
 }
 
-bool noFighting::IsActive() const
+bool noFighting::isActive() const
 {
     return turn < 3;
 }

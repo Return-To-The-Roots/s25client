@@ -10,6 +10,6 @@
 struct WorldDescription;
 
 // Get unwalkable, but shippable water terrain
-DescIdx<TerrainDesc> GetWaterTerrain(const WorldDescription& desc);
+DescIdx<TerrainDesc> getWaterTerrain(const WorldDescription& desc);
 // Get land terrain with given additional property
-DescIdx<TerrainDesc> GetLandTerrain(const WorldDescription& desc, ETerrain property = ETerrain::Walkable);
+DescIdx<TerrainDesc> getLandTerrain(const WorldDescription& desc, ETerrain property = ETerrain::Walkable);

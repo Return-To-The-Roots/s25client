@@ -77,7 +77,7 @@ public:
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
-    void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>(0)) override;
+    void init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>(0)) override;
     // Remaining initialization after loading (BQ...)
     void initAfterLoad();
 

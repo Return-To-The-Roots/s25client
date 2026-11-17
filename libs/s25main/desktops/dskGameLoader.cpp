@@ -133,7 +133,7 @@ void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
 void dskGameLoader::showErrorMsg(const std::string& error)
 {
     auto wnd = std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0);
-    if(IsActive())
+    if(isActive())
         WINDOWMANAGER.show(std::move(wnd));
     else
         WINDOWMANAGER.showAfterSwitch(std::move(wnd));

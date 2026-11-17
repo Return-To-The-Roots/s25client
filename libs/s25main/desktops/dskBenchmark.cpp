@@ -130,7 +130,7 @@ void dskBenchmark::msgPaintAfter()
 
 void dskBenchmark::setActive(bool activate)
 {
-    if(!IsActive() && activate)
+    if(!isActive() && activate)
         VIDEODRIVER.resizeScreen(VideoMode(1600, 900), DisplayMode::Windowed);
     dskMenuBase::setActive(activate);
 }
@@ -312,7 +312,7 @@ void dskBenchmark::finishTest()
 
 void dskBenchmark::createGame()
 {
-    RANDOM.Init(42);
+    RANDOM.init(42);
     std::vector<PlayerInfo> players;
     PlayerInfo p;
     p.ps = PlayerState::Occupied;
@@ -327,7 +327,7 @@ void dskBenchmark::createGame()
     try
     {
         loadGameData(world.getDescriptionWriteable());
-        world.Init(MapExtent(128, 128));
+        world.init(MapExtent(128, 128));
         const WorldDescription& desc = world.getDescription();
         DescIdx<TerrainDesc> lastTerrain(0);
         int lastHeight = 10;

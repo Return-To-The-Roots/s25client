@@ -58,7 +58,7 @@ void Ware::serialize(SerializedGameData& sgd) const
     helpers::pushPoint(sgd, next_harbor);
 }
 
-static RoadPathDirection PopRoadPathDirection(SerializedGameData& sgd)
+static RoadPathDirection popRoadPathDirection(SerializedGameData& sgd)
 {
     if(sgd.getGameDataVersion() < 5)
     {
@@ -75,7 +75,7 @@ static RoadPathDirection PopRoadPathDirection(SerializedGameData& sgd)
 }
 
 Ware::Ware(SerializedGameData& sgd, const unsigned obj_id)
-    : GameObject(sgd, obj_id), next_dir(PopRoadPathDirection(sgd)), state(sgd.pop<State>()),
+    : GameObject(sgd, obj_id), next_dir(popRoadPathDirection(sgd)), state(sgd.pop<State>()),
       location(sgd.popObject<noRoadNode>()), type([&]() {
           // GoodType::Nothing is moved because of adding new wares due addons
           auto ware = sgd.pop<GoodType>();

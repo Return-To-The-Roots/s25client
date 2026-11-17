@@ -13,10 +13,10 @@ Island createIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLan
     Island island;
 
     const auto land = [&map](const MapPoint& pt) { return map.z[pt] > map.height.minimum; };
-    const auto distances = DistancesTo(map.size, land);
+    const auto distances = distancesTo(map.size, land);
     const unsigned maxDistance = *std::max_element(distances.begin(), distances.end());
     const unsigned minDistance = std::min(maxDistance, minLandDist * 10);
-    const auto possibleCenters = SelectPoints(
+    const auto possibleCenters = selectPoints(
       [&distances, minDistance](const MapPoint& pt) { return distances[pt] >= minDistance; }, distances.getSize());
     const MapPoint center = rnd.randomItem(possibleCenters);
 
@@ -60,7 +60,7 @@ Island createIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLan
                                    [&island](const MapPoint& pt) { return !helpers::contains(island, pt); });
     };
 
-    const auto& coastDistance = Distances(map.size, island, 0, isCoast);
+    const auto& coastDistance = rttr::mapGenerator::distances(map.size, island, 0, isCoast);
 
     for(const MapPoint& pt : island)
     {
@@ -69,11 +69,11 @@ Island createIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLan
         map.z[pt] = std::min(static_cast<uint8_t>(minimum), map.height.maximum);
     }
 
-    auto mountain = map.textureMap.FindAll(isMinableMountain);
-    auto mountainLevel = LimitFor(coastDistance, island, 1. - mountainCoverage, map.height.minimum + 1u);
-    auto mountainRange = ValueRange<unsigned>(mountainLevel, GetMaximum(coastDistance, island));
+    auto mountain = map.textureMap.findAll(isMinableMountain);
+    auto mountainLevel = limitFor(coastDistance, island, 1. - mountainCoverage, map.height.minimum + 1u);
+    auto mountainRange = ValueRange<unsigned>(mountainLevel, getMaximum(coastDistance, island));
 
-    auto textures = map.textureMap.FindAll(isBuildableLand);
+    auto textures = map.textureMap.findAll(isBuildableLand);
     auto textureRange = ValueRange<unsigned>(0u, mountainLevel);
 
     map.textureMap.sort(textures, byHumidity);
@@ -82,10 +82,10 @@ Island createIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLan
     {
         if(coastDistance[pt] < mountainLevel)
         {
-            map.textureMap.set(pt, textures[MapValueToIndex(coastDistance[pt], textureRange, textures.size())]);
+            map.textureMap.set(pt, textures[mapValueToIndex(coastDistance[pt], textureRange, textures.size())]);
         } else
         {
-            map.textureMap.set(pt, mountain[MapValueToIndex(coastDistance[pt], mountainRange, mountain.size())]);
+            map.textureMap.set(pt, mountain[mapValueToIndex(coastDistance[pt], mountainRange, mountain.size())]);
         }
     }
 

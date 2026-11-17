@@ -68,7 +68,7 @@ struct MineProductionFixture : WorldWithGCExecution1P
         return minePos;
     }
 
-    static void seedProductionRng(const unsigned seed) { RANDOM.Init(seed); }
+    static void seedProductionRng(const unsigned seed) { RANDOM.init(seed); }
 };
 
 // One S4-like "no output" fallback scenario: a nearly exhausted mine that keeps working but usually mines nothing,

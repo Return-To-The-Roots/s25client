@@ -44,12 +44,12 @@ constexpr unsigned halfWidth = (contentWidth - ctrlSpacingX) / 2;
 constexpr unsigned rightColumnX = contentX + halfWidth + ctrlSpacingX;
 } // namespace
 
-static bfs::path GetPresetsDir()
+static bfs::path getPresetsDir()
 {
     return RTTRCONFIG.expandPath(s25::folders::addonPresets);
 }
 
-static std::optional<std::map<unsigned, unsigned>> LoadPresetsFromFile(const bfs::path& filePath)
+static std::optional<std::map<unsigned, unsigned>> loadPresetsFromFile(const bfs::path& filePath)
 {
     libsiedler2::Archiv archive;
     if(libsiedler2::Load(filePath, archive) != 0)
@@ -94,7 +94,7 @@ iwAddonPresetsBase::iwAddonPresetsBase(const std::string& title, const std::stri
     addTable(ID_tblPresets, DrawPoint(contentX, tableY), Extent(contentWidth, tableHeight), TextureColor::Green2,
              NormalFont, ctrlTable::Columns{{_("Preset Name"), contentWidth, SRT::String}, {}});
 
-    addText(ID_txtFolder, DrawPoint(contentX, tableY + tableHeight + ctrlSpacingY), GetPresetsDir().string(),
+    addText(ID_txtFolder, DrawPoint(contentX, tableY + tableHeight + ctrlSpacingY), getPresetsDir().string(),
             COLOR_YELLOW, FontStyle::TOP, SmallFont)
       ->setMaxWidth(contentWidth);
 
@@ -114,7 +114,7 @@ void iwAddonPresetsBase::refreshTable()
     auto& table = assertNonNull(getCtrl<ctrlTable>(ID_tblPresets));
     table.deleteAllItems();
 
-    for(const auto& file : ListDir(GetPresetsDir(), "ini"))
+    for(const auto& file : listDir(getPresetsDir(), "ini"))
         table.addRow({file.stem().string(), file.string()});
 
     table.sortRows(0, TableSortDir::Ascending);
@@ -255,7 +255,7 @@ void iwSaveAddonPreset::doAction()
             return;
         case FileNameStatus::Valid: break;
     }
-    const bfs::path filePath = GetPresetsDir() / fileNameResult.name;
+    const bfs::path filePath = getPresetsDir() / fileNameResult.name;
 
     if(bfs::exists(filePath))
     {
@@ -305,7 +305,7 @@ void iwSaveAddonPreset::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxRe
 
     const auto fileNameResult = getCtrl<ctrlEdit>(ID_edtName)->getFileName(".ini");
     if(fileNameResult.status == FileNameStatus::Valid)
-        saveToPath(GetPresetsDir() / fileNameResult.name);
+        saveToPath(getPresetsDir() / fileNameResult.name);
 }
 
 iwLoadAddonPreset::iwLoadAddonPreset(std::function<void(const std::map<unsigned, unsigned>&)> onLoad)
@@ -318,7 +318,7 @@ void iwLoadAddonPreset::doAction()
     if(filePath.empty())
         return;
 
-    const auto states = LoadPresetsFromFile(filePath);
+    const auto states = loadPresetsFromFile(filePath);
     if(!states)
     {
         WINDOWMANAGER.show(std::make_unique<iwMsgbox>(

@@ -31,13 +31,13 @@ dskTextureTest::dskTextureTest()
 {
     addText(ID_txtTitle, DrawPoint(300, 20), "Test screen for textures", COLOR_ORANGE, FontStyle::CENTER, LargeFont);
     addComboBox(ID_cbTexture, DrawPoint(630, 50), Extent(100, 22), TextureColor::Green2, NormalFont, 100);
-    Load();
+    load();
     addTextButton(ID_btBack, DrawPoint(630, 565), Extent(150, 22), TextureColor::Red1, _("Back"), NormalFont);
 }
 
 dskTextureTest::~dskTextureTest() = default;
 
-void dskTextureTest::Load()
+void dskTextureTest::load()
 {
     WorldDescription newDesc;
     GameDataLoader gdLoader(newDesc);
@@ -130,7 +130,7 @@ bool dskTextureTest::msgKeyDown(const KeyEvent& ke)
 {
     if(ke.kt == KeyType::F5)
     {
-        Load();
+        load();
         return true;
     }
     return dskMenuBase::msgKeyDown(ke);

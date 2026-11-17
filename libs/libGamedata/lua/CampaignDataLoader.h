@@ -21,7 +21,7 @@ public:
     /// Return version of the interface. Changes here reflect breaking changes
     static unsigned getVersion();
 
-    bool Load();
+    bool load();
 
     static void registerClasses(kaguya::State& state);
 

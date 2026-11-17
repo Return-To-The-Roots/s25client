@@ -278,10 +278,10 @@ BOOST_AUTO_TEST_CASE(ClientStoresReceivedSavegamesInSaveFolder)
 static constexpr std::array allServerTypes{ServerType::Local, ServerType::LAN, ServerType::Direct, ServerType::Lobby};
 static constexpr std::array allMapTypes{MapType::Savegame, MapType::OldMap};
 #ifndef __INTELLISENSE__
-BOOST_DATA_TEST_CASE(ClientTreatsLocalSavegameFilenameVerbatim,
+BOOST_DATA_TEST_CASE(clientTreatsLocalSavegameFilenameVerbatim,
                      dataset::make(allServerTypes) * dataset::make(allMapTypes), serverType, mapType)
 #else
-void ClientTreatsLocalSavegameFilenameVerbatim(ServerType serverType, MapType mapType)
+void clientTreatsLocalSavegameFilenameVerbatim(ServerType serverType, MapType mapType)
 #endif
 {
     rttr::test::TmpFolder testUserData;

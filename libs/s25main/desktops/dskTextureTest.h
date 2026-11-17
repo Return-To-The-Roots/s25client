@@ -14,7 +14,7 @@ public:
     dskTextureTest();
     ~dskTextureTest();
 
-    void Load();
+    void load();
 
     void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     void msgButtonClick(unsigned ctrl_id) override;

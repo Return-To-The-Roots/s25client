@@ -135,7 +135,7 @@ struct IsScoutable
 void nofScout_Free::goToNewNode()
 {
     std::vector<MapPoint> available_points =
-      world->GetMatchingPointsInRadius<-1>(flag->getPos(), SCOUT_RANGE, IsScoutable(player, *world));
+      world->getMatchingPointsInRadius<-1>(flag->getPos(), SCOUT_RANGE, IsScoutable(player, *world));
     RANDOM_SHUFFLE(available_points);
     for(MapPoint pt : available_points)
     {

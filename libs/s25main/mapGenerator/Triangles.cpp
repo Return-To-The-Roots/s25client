@@ -9,7 +9,7 @@
 
 namespace rttr::mapGenerator {
 
-std::array<Triangle, 2> GetTriangles(const MapPoint& p, const MapExtent& size, Direction direction)
+std::array<Triangle, 2> getTriangles(const MapPoint& p, const MapExtent& size, Direction direction)
 {
     if(p.y & 1)
     {
@@ -84,7 +84,7 @@ std::array<Triangle, 2> GetTriangles(const MapPoint& p, const MapExtent& size, D
     throw std::invalid_argument("direction not supported");
 }
 
-std::array<Triangle, 6> GetTriangles(const MapPoint& p, const MapExtent& size)
+std::array<Triangle, 6> getTriangles(const MapPoint& p, const MapExtent& size)
 {
     // Every node point on the grid has exactly 6 directly triangles.
     // 3 of those triangles are RSU triangles, the other 3 are LSD triangles.
@@ -110,7 +110,7 @@ std::array<Triangle, 6> GetTriangles(const MapPoint& p, const MapExtent& size)
             Triangle(false, p), Triangle(false, lsd1, size), Triangle(false, lsd2, size)};
 }
 
-std::array<Triangle, 3> GetTriangleNeighbors(const Triangle& t, const MapExtent& size)
+std::array<Triangle, 3> getTriangleNeighbors(const Triangle& t, const MapExtent& size)
 {
     // Every triangle has exactly 3 triangle neighbors on the map.
     // For an RSU triangle, each neighbor must be LSD and the other way around.
@@ -140,7 +140,7 @@ std::array<Triangle, 3> GetTriangleNeighbors(const Triangle& t, const MapExtent&
     return {Triangle(!rsu, p), Triangle(!rsu, Position(x1, y1), size), Triangle(!rsu, Position(x2, y2), size)};
 }
 
-std::array<MapPoint, 3> GetTriangleEdges(const Triangle& t, const MapExtent& size)
+std::array<MapPoint, 3> getTriangleEdges(const Triangle& t, const MapExtent& size)
 {
     // Every triangle has exactly 3 edge points on the map.
     // Note that every 2nd row is shifted by half a triangle to the left,

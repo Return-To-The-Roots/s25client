@@ -34,7 +34,7 @@ static boost::test_tools::predicate_result verifyNoDesync(const std::optional<Re
     result.message() << "Desync at GF " << desync->gf << ":\n"
                      << desync->actual << " != \n"
                      << desync->expected << '\n';
-    for(const auto& entry : RANDOM.GetAsyncLog())
+    for(const auto& entry : RANDOM.getAsyncLog())
         result.message() << entry << '\n';
     return result;
     // LCOV_EXCL_STOP

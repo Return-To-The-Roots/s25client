@@ -57,7 +57,7 @@ void nofTradeDonkey::goalReached()
     whOwner.increaseInventoryJob(this->getJobType(), 1);
     if(hasArmor_)
         whOwner.increaseInventoryJob(jobEnumToAmoredSoldierEnum(this->getJobType()), 1);
-    wh->addFigure(world->RemoveFigure(pos, *this));
+    wh->addFigure(world->removeFigure(pos, *this));
 }
 
 void nofTradeDonkey::walked()

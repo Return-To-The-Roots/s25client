@@ -11,5 +11,5 @@
 /// List all files in the given path with a given extension
 /// @extension Extension that files/folders must have (dot is added automatically to front) or empty to list all
 /// @includeDirectories tells whether directories should be added too
-std::vector<boost::filesystem::path> ListDir(const boost::filesystem::path& path, std::string extension,
+std::vector<boost::filesystem::path> listDir(const boost::filesystem::path& path, std::string extension,
                                              bool includeDirectories = false);

@@ -18,11 +18,11 @@ int calcRandValue(T_PRNG& rng, int maxExcl)
 template<class T_PRNG>
 Random<T_PRNG>::Random()
 {
-    Init(123456789);
+    init(123456789);
 }
 
 template<class T_PRNG>
-void Random<T_PRNG>::Init(const uint64_t& seed)
+void Random<T_PRNG>::init(const uint64_t& seed)
 {
     resetState(PRNG(static_cast<typename PRNG::result_type>(seed)));
 }
@@ -71,7 +71,7 @@ const typename Random<T_PRNG>::PRNG& Random<T_PRNG>::getCurrentState() const
 }
 
 template<class T_PRNG>
-std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::GetAsyncLog()
+std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::getAsyncLog()
 {
     std::vector<RandomEntry> ret;
 

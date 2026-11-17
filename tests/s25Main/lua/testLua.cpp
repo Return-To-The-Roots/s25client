@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(GameFunctions)
         for([[maybe_unused]] const auto i : helpers::range(5))
         {
             inv[rttr::test::randomEnum<Job>()] = rttr::test::randomValue(1u, 10u);
-            inv[ConvertShields(rttr::test::randomEnum<GoodType>())] = rttr::test::randomValue(1u, 10u);
+            inv[convertShields(rttr::test::randomEnum<GoodType>())] = rttr::test::randomValue(1u, 10u);
         }
         inv[Job::BoatCarrier] = 0;
         hq->addToInventory(inv, true);

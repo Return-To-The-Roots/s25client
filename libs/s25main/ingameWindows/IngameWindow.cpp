@@ -319,7 +319,7 @@ bool IngameWindow::msgMouseMove(const MouseCoords& mc)
 
 void IngameWindow::drawImpl()
 {
-    if(isModal_ && !IsActive())
+    if(isModal_ && !isActive())
         setActive(true);
     if(!isMinimized_)
         drawBackground();
@@ -379,7 +379,7 @@ void IngameWindow::drawImpl()
 
     // The title bar
     unsigned titleIndex;
-    if(IsActive())
+    if(isActive())
         titleIndex = isMoving ? 44 : 43;
     else
         titleIndex = 42;

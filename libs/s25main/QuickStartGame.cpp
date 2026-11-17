@@ -32,7 +32,7 @@ public:
     }
 };
 
-std::vector<AI::Info> ParseAIOptions(const std::vector<std::string>& aiOptions)
+std::vector<AI::Info> parseAIOptions(const std::vector<std::string>& aiOptions)
 {
     std::vector<AI::Info> aiInfos;
 
@@ -72,7 +72,7 @@ bool quickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     std::vector<AI::Info> aiInfos;
     try
     {
-        aiInfos = ParseAIOptions(ais);
+        aiInfos = parseAIOptions(ais);
     } catch(const std::invalid_argument& e)
     {
         LOG.write(e.what());

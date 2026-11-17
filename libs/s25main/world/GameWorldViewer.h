@@ -50,7 +50,7 @@ public:
     unsigned getNumSoldiersForSeaAttack(MapPoint pt) const;
 
     /// Get BQ for this player
-    BuildingQuality GetBQ(const MapPoint& pt) const;
+    BuildingQuality getBQ(const MapPoint& pt) const;
     /// Recalculates the visual BQ when a road part is build at that point
     void recalcBQForRoad(const MapPoint& pt);
     /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden

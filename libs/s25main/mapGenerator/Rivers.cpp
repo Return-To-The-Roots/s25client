@@ -17,20 +17,20 @@ River createStream(RandomUtility& rnd, Map& map, const MapPoint& source, Directi
     std::vector<Direction> exlcuded{direction + 2, direction + 3, direction + 4};
 
     auto& textures = map.textureMap;
-    const auto water = textures.Find(isWater);
+    const auto water = textures.find(isWater);
 
     MapPoint currentNode = source;
     Direction currentDir = direction;
 
     for(unsigned node = 0; node < length; ++node)
     {
-        const auto& triangles = GetTriangles(currentNode, size, currentDir);
+        const auto& triangles = getTriangles(currentNode, size, currentDir);
 
         for(const auto& triangle : triangles)
         {
             textures.set(triangle, water);
 
-            const auto& edges = GetTriangleEdges(triangle, size);
+            const auto& edges = getTriangleEdges(triangle, size);
             for(const MapPoint& edge : edges)
             {
                 river.insert(edge);

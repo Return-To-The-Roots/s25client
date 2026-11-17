@@ -79,7 +79,7 @@ MapPoint AIResourceMap::findBestPosition(const MapPoint& pt, BuildingQuality siz
     MapPoint best = MapPoint::invalid();
     int best_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
 
-    std::vector<MapPoint> pts = aii.gwb.GetPointsInRadiusWithCenter(pt, radius);
+    std::vector<MapPoint> pts = aii.gwb.getPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& curPt : pts)
     {
         const unsigned idx = map.getIdx(curPt);

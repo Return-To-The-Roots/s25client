@@ -133,7 +133,7 @@ class TestWorld : public World
 {
 public:
     TestWorld() = default;
-    TestWorld(const MapExtent size, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>{1}) { Init(size, lt); }
+    TestWorld(const MapExtent size, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>{1}) { init(size, lt); }
     using World::getNodeInt;
 
 protected:

@@ -25,7 +25,7 @@ constexpr unsigned GRANITE_FALLBACK_25_PERCENT = 25;
 constexpr unsigned GRANITE_FALLBACK_50_PERCENT = 50;
 constexpr unsigned S4LIKE_MIN_RESOURCE_AMOUNT = 1;
 
-MineNoOutputFallback GetConfiguredNoOutputFallback(const GlobalGameSettings& settings)
+MineNoOutputFallback getConfiguredNoOutputFallback(const GlobalGameSettings& settings)
 {
     const unsigned selection = settings.getSelection(AddonId::MINE_NO_OUTPUT_FALLBACK);
     if(!helpers::isValidEnumValue<MineNoOutputFallback>(selection))
@@ -33,7 +33,7 @@ MineNoOutputFallback GetConfiguredNoOutputFallback(const GlobalGameSettings& set
     return static_cast<MineNoOutputFallback>(selection);
 }
 
-unsigned GetGraniteFallbackChance(const MineNoOutputFallback fallback)
+unsigned getGraniteFallbackChance(const MineNoOutputFallback fallback)
 {
     switch(fallback)
     {
@@ -44,7 +44,7 @@ unsigned GetGraniteFallbackChance(const MineNoOutputFallback fallback)
     }
 }
 
-helpers::OptionalEnum<GoodType> GetLowerGradeFallbackGood(const BuildingType buildingType)
+helpers::OptionalEnum<GoodType> getLowerGradeFallbackGood(const BuildingType buildingType)
 {
     switch(buildingType)
     {
@@ -55,11 +55,11 @@ helpers::OptionalEnum<GoodType> GetLowerGradeFallbackGood(const BuildingType bui
     }
 }
 
-helpers::OptionalEnum<GoodType> GetNoOutputFallbackGood(const GlobalGameSettings& settings,
+helpers::OptionalEnum<GoodType> getNoOutputFallbackGood(const GlobalGameSettings& settings,
                                                         const BuildingType buildingType, const unsigned objId)
 {
-    const MineNoOutputFallback fallback = GetConfiguredNoOutputFallback(settings);
-    const unsigned graniteFallbackChance = GetGraniteFallbackChance(fallback);
+    const MineNoOutputFallback fallback = getConfiguredNoOutputFallback(settings);
+    const unsigned graniteFallbackChance = getGraniteFallbackChance(fallback);
     if(graniteFallbackChance > 0)
     {
         if(graniteFallbackChance == MAX_PRODUCTION_PERCENT
@@ -71,18 +71,18 @@ helpers::OptionalEnum<GoodType> GetNoOutputFallbackGood(const GlobalGameSettings
     }
 
     if(fallback == MineNoOutputFallback::ProduceLowerGradeResource)
-        return GetLowerGradeFallbackGood(buildingType);
+        return getLowerGradeFallbackGood(buildingType);
 
     return {};
 }
 
-std::vector<MapPoint> GetPointsWithResource(const GameWorld& world, const MapPoint pos, const ResourceType type)
+std::vector<MapPoint> getPointsWithResource(const GameWorld& world, const MapPoint pos, const ResourceType type)
 {
-    return world.GetMatchingPointsInRadius(
+    return world.getMatchingPointsInRadius(
       pos, MINER_RADIUS, [&world, type](const MapPoint pt) { return world.getNode(pt).resources.has(type); }, true);
 }
 
-void ReduceS4LikeResource(GameWorld& world, const std::vector<MapPoint>& resourcePts)
+void reduceS4LikeResource(GameWorld& world, const std::vector<MapPoint>& resourcePts)
 {
     for(const MapPoint pt : resourcePts)
     {
@@ -148,16 +148,16 @@ helpers::OptionalEnum<GoodType> nofMiner::produceWare()
 
     if(behavior == MineResourceBehavior::S4LikeExhaustion)
     {
-        const std::vector<MapPoint> resourcePts = GetPointsWithResource(*world, pos, getRequiredResType());
+        const std::vector<MapPoint> resourcePts = getPointsWithResource(*world, pos, getRequiredResType());
         const auto productionRoll = static_cast<unsigned>(RANDOM_RAND(MAX_PRODUCTION_PERCENT));
         const bool produceNothingThisCycle = resourcePts.empty()
                                              || productionRoll >= getS4LikeMineProductionChance(
                                                   getRemainingMineResources(*world, pos, getRequiredResType()));
         if(produceNothingThisCycle)
-            return GetNoOutputFallbackGood(settings, workplace->getBuildingType(), getObjId());
+            return getNoOutputFallbackGood(settings, workplace->getBuildingType(), getObjId());
 
         // S4-like exhaustion always depletes, but only down to the minimum amount
-        ReduceS4LikeResource(*world, resourcePts);
+        reduceS4LikeResource(*world, resourcePts);
     }
 
     return getMineOutput(workplace->getBuildingType());

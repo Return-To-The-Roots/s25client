@@ -211,7 +211,7 @@ void nofAttacker::walked()
                     auto* goal = static_cast<nobMilitary*>(attacked_goal);
                     goal->capture(player);
                     homeBld = attacked_goal;
-                    attacked_goal->addActiveSoldier(world->RemoveFigure(pos, *this));
+                    attacked_goal->addActiveSoldier(world->removeFigure(pos, *this));
                     removeFromAttackedGoal();
                     // This might call other capturers
                     goal->capturingSoldierArrived();
@@ -252,7 +252,7 @@ void nofAttacker::walked()
             if(pos == harborPos) // When we arrived add to harbor
             {
                 state = SoldierState::SeaattackingWaitInHarbor;
-                world->getSpecObj<nobHarborBuilding>(pos)->addSeaAttacker(world->RemoveFigure(pos, *this));
+                world->getSpecObj<nobHarborBuilding>(pos)->addSeaAttacker(world->removeFigure(pos, *this));
             } else // Go to flag then walk inside the building
             {
                 const MapPoint harborFlagPos = world->getNeighbour(harborPos, Direction::SouthEast);
@@ -661,7 +661,7 @@ void nofAttacker::capturingWalking()
         if(ship_obj_id)
             cancelAtShip();
         homeBld = attacked_goal;
-        attacked_goal->addActiveSoldier(world->RemoveFigure(pos, *this));
+        attacked_goal->addActiveSoldier(world->removeFigure(pos, *this));
 
         // No longer attacking
         if(BuildingProperties::isMilitary(attacked_goal->getBuildingType()))
@@ -834,7 +834,7 @@ void nofAttacker::startReturnViaShip(noShip& ship)
 {
     if(pos.isValid())
     {
-        ship.addReturnedAttacker(world->RemoveFigure(pos, *this));
+        ship.addReturnedAttacker(world->removeFigure(pos, *this));
         pos = MapPoint::invalid(); // Similar to start ship journey
     } else
     {

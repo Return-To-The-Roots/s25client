@@ -16,7 +16,7 @@ void GameClient::executeGameFrameReplay()
     RTTR_Assert(replayinfo->nextGF.value_or(curGF) >= curGF || curGF > replayinfo->replay.getLastGF()); //-V807
 
     const ReplayCommandsResult result =
-      ExecuteReplayCommands(replayinfo->replay, replayinfo->nextGF, *game, [this](const Replay::ChatCommand& cmd) {
+      executeReplayCommands(replayinfo->replay, replayinfo->nextGF, *game, [this](const Replay::ChatCommand& cmd) {
           if(ci)
               ci->CI_Chat(cmd.player, cmd.dest, cmd.msg);
       });

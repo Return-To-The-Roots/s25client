@@ -172,11 +172,11 @@ int main(int argc, char** argv)
         const bfs::path logDir = RTTRCONFIG.expandPath(s25::folders::logs);
         bfs::create_directories(logDir);
         LOG.setLogFilepath(logDir);
-        RANDOM.Init(opts.random_init);
+        RANDOM.init(opts.random_init);
         AI::getRandomGenerator().seed(opts.random_ai_init);
 
         const bfs::path mapPath = RTTRCONFIG.expandPath(opts.map);
-        const std::vector<AI::Info> ais = ParseAIOptions(opts.ais);
+        const std::vector<AI::Info> ais = parseAIOptions(opts.ais);
 
         GlobalGameSettings ggs;
         if(opts.objective == "domination")

@@ -652,7 +652,7 @@ void nobBaseWarehouse::handleLeaveEvent()
             // Send first ware
             auto ware = std::move(waiting_wares.front());
             waiting_wares.pop_front();
-            inventory.visual.remove(ConvertShields(ware->type));
+            inventory.visual.remove(convertShields(ware->type));
             ware->carry(*getFlag());
             world->addFigure(pos, std::make_unique<nofWarehouseWorker>(pos, player, std::move(ware), false))
               .walkToGoal();
@@ -716,7 +716,7 @@ Ware* nobBaseWarehouse::orderWare(const GoodType good, noBaseBuilding& goal)
 
 void nobBaseWarehouse::addWaitingWare(std::unique_ptr<Ware> ware)
 {
-    inventory.visual.add(ConvertShields(ware->type));
+    inventory.visual.add(convertShields(ware->type));
     ware->waitInWarehouse(*this);
     waiting_wares.push_back(std::move(ware));
     addLeavingEvent();
@@ -751,7 +751,7 @@ void nobBaseWarehouse::addWare(std::unique_ptr<Ware> ware)
         RTTR_Assert(!isWareDependent(*ware));
 
     // Die Schilde der verschiedenen Nation in eine "Schild-Sorte" (den der Römer) umwandeln!
-    GoodType type = ConvertShields(ware->type);
+    GoodType type = convertShields(ware->type);
 
     world->getPlayer(player).removeWare(*ware);
 
@@ -901,7 +901,7 @@ void nobBaseWarehouse::wareLost(Ware& ware)
 
 void nobBaseWarehouse::cancelWare(Ware*& ware)
 {
-    inventory.real.add(ConvertShields(ware->type));
+    inventory.real.add(convertShields(ware->type));
     helpers::extractPtr(waiting_wares, ware);
     ware = nullptr;
 }
@@ -1146,7 +1146,7 @@ void nobBaseWarehouse::addToInventory(const GoodCounts& goods, bool addToPlayer)
         if(!goods[i])
             continue;
         // Can only add canonical shields (romans)
-        RTTR_Assert(i == GoodType::ShieldRomans || ConvertShields(i) != GoodType::ShieldRomans);
+        RTTR_Assert(i == GoodType::ShieldRomans || convertShields(i) != GoodType::ShieldRomans);
 
         inventory.add(i, goods[i]);
         if(addToPlayer)
@@ -1223,7 +1223,7 @@ InventorySetting nobBaseWarehouse::getInventorySettingVisual(const Job job) cons
 
 InventorySetting nobBaseWarehouse::getInventorySettingVisual(const GoodType ware) const
 {
-    return inventorySettingsVisual[ConvertShields(ware)];
+    return inventorySettingsVisual[convertShields(ware)];
 }
 
 InventorySetting nobBaseWarehouse::getInventorySetting(const Job job) const
@@ -1233,7 +1233,7 @@ InventorySetting nobBaseWarehouse::getInventorySetting(const Job job) const
 
 InventorySetting nobBaseWarehouse::getInventorySetting(const GoodType ware) const
 {
-    return inventorySettings[ConvertShields(ware)];
+    return inventorySettings[convertShields(ware)];
 }
 
 void nobBaseWarehouse::setInventorySettingVisual(const boost_variant2<GoodType, Job>& what, InventorySetting state)

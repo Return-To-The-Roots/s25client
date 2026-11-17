@@ -97,7 +97,7 @@ protected:
     }
 };
 
-void AddReplayCmds(Replay& replay, const PlayerGameCommands& cmds)
+void addReplayCmds(Replay& replay, const PlayerGameCommands& cmds)
 {
     replay.updateLastGF(1);
     replay.addChatCommand(1, 2, ChatDestination::Enemies, "Hello");
@@ -109,7 +109,7 @@ void AddReplayCmds(Replay& replay, const PlayerGameCommands& cmds)
     replay.updateLastGF(5);
 }
 
-void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
+void checkReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
 {
     BOOST_TEST_REQUIRE(loadReplay.isReplaying());
 
@@ -164,7 +164,7 @@ void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
     BOOST_TEST(!gf);
 }
 
-void PushSerializedGGSHeader(Serializer& ser)
+void pushSerializedGGSHeader(Serializer& ser)
 {
     helpers::pushEnum<uint8_t>(ser, GameSpeed::Normal);
     helpers::pushEnum<uint8_t>(ser, GameObjective::None);
@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(SerializeGGS)
 BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeMigratesToPerMineBehaviors)
 {
     Serializer ser;
-    PushSerializedGGSHeader(ser);
+    pushSerializedGGSHeader(ser);
     ser.PushUnsignedInt(1);
     ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
     ser.PushUnsignedInt(1);
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeAlsoMigratesLegacyGranit
     // refactor the separate INEXHAUSTIBLE_MINES setting turned granite mines inexhaustible on its own, so migration
     // must not let a disabled granite value suppress that: granite still becomes Inexhaustible here.
     Serializer ser;
-    PushSerializedGGSHeader(ser);
+    pushSerializedGGSHeader(ser);
     ser.PushUnsignedInt(2);
     ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
     ser.PushUnsignedInt(1);
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeAlsoMigratesLegacyGranit
 BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeDoesNotOverridePerMineBehavior)
 {
     Serializer ser;
-    PushSerializedGGSHeader(ser);
+    pushSerializedGGSHeader(ser);
     ser.PushUnsignedInt(2);
     ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
     ser.PushUnsignedInt(1);
@@ -521,7 +521,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
     GlobalGameSettings ggs = replay.ggs;
     Game game(ggs, 0u, players);
     PlayerGameCommands cmds = GetTestCommands().create(game).result;
-    AddReplayCmds(replay, cmds);
+    addReplayCmds(replay, cmds);
     BOOST_TEST(replay.getLastGF() == 5u);
     BOOST_TEST_REQUIRE(replay.stopRecording());
     BOOST_TEST_REQUIRE(!replay.isRecording());
@@ -569,7 +569,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
         BOOST_TEST(newMap.mapData.data == map.mapData.data, boost::test_tools::per_element());
         BOOST_TEST(newMap.luaData.data == map.luaData.data, boost::test_tools::per_element());
 
-        CheckReplayCmds(loadReplay, cmds);
+        checkReplayCmds(loadReplay, cmds);
     }
 }
 
@@ -595,7 +595,7 @@ BOOST_FIXTURE_TEST_CASE(BrokenReplayWithMap, ReplayMapFixture)
         BOOST_TEST_REQUIRE(replay.startRecording(tmpFile.filePath, map, randomInit));
         saveTime = replay.getSaveTime();
         BOOST_TEST_REQUIRE(replay.isRecording());
-        AddReplayCmds(replay, cmds);
+        addReplayCmds(replay, cmds);
         BOOST_TEST(replay.getLastGF() == 5u);
         // Assume an exception/crash here so Replay is simply destroyed without Close or StopRecording
     }
@@ -628,7 +628,7 @@ BOOST_FIXTURE_TEST_CASE(BrokenReplayWithMap, ReplayMapFixture)
     BOOST_TEST(newMap.mapData.data == map.mapData.data, boost::test_tools::per_element());
     BOOST_TEST(newMap.luaData.data == map.luaData.data, boost::test_tools::per_element());
 
-    CheckReplayCmds(loadReplay, cmds);
+    checkReplayCmds(loadReplay, cmds);
 }
 
 BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
@@ -675,7 +675,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     BOOST_TEST(!replay.isReplaying());
 
     PlayerGameCommands cmds = GetTestCommands().create(*game).result;
-    AddReplayCmds(replay, cmds);
+    addReplayCmds(replay, cmds);
     BOOST_TEST(replay.getLastGF() == 5u);
     BOOST_TEST_REQUIRE(replay.stopRecording());
     BOOST_TEST(!replay.isRecording());
@@ -726,7 +726,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
                                         map.savegame->sgd.GetData(),
                                         map.savegame->sgd.GetData() + map.savegame->sgd.GetLength());
 
-        CheckReplayCmds(loadReplay, cmds);
+        checkReplayCmds(loadReplay, cmds);
     }
 }
 

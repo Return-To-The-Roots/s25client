@@ -19,7 +19,7 @@
 #include <boost/nowide/iostream.hpp>
 #include <chrono>
 
-std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams);
+std::vector<PlayerInfo> generatePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams);
 
 namespace bfs = boost::filesystem;
 namespace bnw = boost::nowide;
@@ -28,7 +28,7 @@ using bfs::canonical;
 
 HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais,
                            const bfs::path& luaPath, const std::vector<Team>& teams)
-    : map_(map), game_(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais, teams)), world_(game_.world_),
+    : map_(map), game_(ggs, std::make_unique<EventManager>(0), generatePlayerInfo(ais, teams)), world_(game_.world_),
       em_(*static_cast<EventManager*>(game_.em_.get()))
 {
     MapInfo mapInfo;
@@ -75,7 +75,7 @@ void HeadlessGame::run(unsigned maxGF)
                 world_.getPlayer(playerId);
                 AIPlayer* player = players_[playerId].get();
                 PlayerGameCommands cmds;
-                cmds.gcs = player->FetchGameCommands();
+                cmds.gcs = player->fetchGameCommands();
 
                 if(replay_.isRecording() && !cmds.gcs.empty())
                 {
@@ -173,7 +173,7 @@ void HeadlessGame::printState()
     lastReportGf_ = em_.getCurrentGF();
 }
 
-std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams)
+std::vector<PlayerInfo> generatePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams)
 {
     std::vector<PlayerInfo> ret;
     for(const AI::Info& ai : ais)

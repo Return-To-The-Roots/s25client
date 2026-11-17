@@ -59,7 +59,7 @@ void nofActiveSoldier::goalReached()
             throw std::runtime_error("No building found for soldier");
         }
     }
-    homeBld->addActiveSoldier(world->RemoveFigure(pos, *this));
+    homeBld->addActiveSoldier(world->removeFigure(pos, *this));
 }
 
 void nofActiveSoldier::returnHome()
@@ -86,7 +86,7 @@ void nofActiveSoldier::walkingHome()
     if(getPos() == homeBld->getFlagPos())   // Are we already at the flag?
         startWalking(Direction::NorthWest); // Enter via the door
     else if(getPos() == homeBld->getPos())  // or are we at the building
-        homeBld->addActiveSoldier(world->RemoveFigure(pos, *this));
+        homeBld->addActiveSoldier(world->removeFigure(pos, *this));
     else
     {
         const auto dir = world->findHumanPath(pos, homeBld->getFlagPos(), 100);
@@ -213,7 +213,7 @@ bool nofActiveSoldier::tryFightingNearbyEnemy(const std::optional<unsigned char>
 
     const GamePlayer& owner = world->getPlayer(player);
     // Check all close points
-    for(const auto& curPos : world->GetPointsInRadiusWithCenter(pos, 2))
+    for(const auto& curPos : world->getPointsInRadiusWithCenter(pos, 2))
     {
         for(noBase& object : world->getFigures(curPos))
         {
@@ -423,7 +423,7 @@ std::optional<MapPoint> nofActiveSoldier::getFightSpotNear(const nofActiveSoldie
                    || world->findHumanPath(other.getPos(), pt, MEET_FOR_FIGHT_DISTANCE * 2, false));
     };
     const std::vector<MapPoint> pts =
-      world->GetMatchingPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, isGoodFightingSpot, true);
+      world->getMatchingPointsInRadius<1>(middle, MEET_FOR_FIGHT_DISTANCE, isGoodFightingSpot, true);
     if(pts.empty())
         return std::nullopt;
     else

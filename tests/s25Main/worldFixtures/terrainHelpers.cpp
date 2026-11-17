@@ -6,7 +6,7 @@
 #include "gameData/TerrainDesc.h"
 #include "gameData/WorldDescription.h"
 
-DescIdx<TerrainDesc> GetWaterTerrain(const WorldDescription& desc)
+DescIdx<TerrainDesc> getWaterTerrain(const WorldDescription& desc)
 {
     const auto tWater = desc.terrain.find([](const TerrainDesc& t) {
         return t.kind == TerrainKind::Water && !t.is(ETerrain::Walkable) && t.is(ETerrain::Shippable);
@@ -16,7 +16,7 @@ DescIdx<TerrainDesc> GetWaterTerrain(const WorldDescription& desc)
     return tWater;
 }
 
-DescIdx<TerrainDesc> GetLandTerrain(const WorldDescription& desc, const ETerrain property)
+DescIdx<TerrainDesc> getLandTerrain(const WorldDescription& desc, const ETerrain property)
 {
     const auto tLand =
       desc.terrain.find([property](const TerrainDesc& t) { return t.kind == TerrainKind::Land && t.is(property); });

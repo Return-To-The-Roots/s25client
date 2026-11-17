@@ -286,7 +286,7 @@ bool Loader::loadSounds()
     logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
 
     const bfs::path oggPath = config_.expandPath(s25::folders::sng);
-    std::vector<bfs::path> oggFiles = ListDir(oggPath, "ogg");
+    std::vector<bfs::path> oggFiles = listDir(oggPath, "ogg");
 
     sng_lst.reserve(oggFiles.size());
     for(const auto& oggFile : oggFiles)

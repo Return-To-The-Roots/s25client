@@ -145,7 +145,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const Drive
 #endif     // !_WIN32
 
     LOG.write(_("Searching for drivers in %s\n")) % driverDir;
-    const std::vector<boost::filesystem::path> driver_files = ListDir(driverDir, extension, false);
+    const std::vector<boost::filesystem::path> driver_files = listDir(driverDir, extension, false);
 
     for(const auto& path : driver_files)
     {

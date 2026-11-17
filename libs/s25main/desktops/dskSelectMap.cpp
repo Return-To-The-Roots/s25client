@@ -155,14 +155,14 @@ void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned sel
 
     const size_t numFaultyMapsPrior = brokenMapPaths.size();
     const bfs::path mapPath = RTTRCONFIG.expandPath(ids[selection]);
-    fillTable(ListDir(mapPath, "swd"));
-    fillTable(ListDir(mapPath, "wld"));
+    fillTable(listDir(mapPath, "swd"));
+    fillTable(listDir(mapPath, "wld"));
     // For own maps (WORLDS folder) also use the one in the installation folder as S2 does
     if(mapPath.filename() == "WORLDS")
     {
         const bfs::path worldsPath = RTTRCONFIG.expandPath("WORLDS");
-        fillTable(ListDir(worldsPath, "swd"));
-        fillTable(ListDir(worldsPath, "wld"));
+        fillTable(listDir(worldsPath, "swd"));
+        fillTable(listDir(worldsPath, "wld"));
     }
 
     if(brokenMapPaths.size() > numFaultyMapsPrior)

@@ -9,7 +9,7 @@
 
 namespace rttr::mapGenerator {
 
-std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
+std::vector<MapPoint> findLargestConnectedArea(const Map& map)
 {
     std::set<MapPoint, MapPointLess> visited;
     std::vector<MapPoint> connectedArea;
@@ -24,7 +24,7 @@ std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
     {
         if(visited.insert(pt).second)
         {
-            auto area = Collect(map.getTextures(), pt, partiallyConnected);
+            auto area = collect(map.getTextures(), pt, partiallyConnected);
 
             visited.insert(area.begin(), area.end());
 
@@ -47,7 +47,7 @@ void placeHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistanc
     auto maxRetries = retries;
     auto success = false;
 
-    auto area = FindLargestConnectedArea(map);
+    auto area = findLargestConnectedArea(map);
 
     while(!success && retries > 0)
     {
@@ -55,7 +55,7 @@ void placeHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistanc
 
         for(int index = 0; index < number; index++)
         {
-            auto possiblePositions = FindHqPositions(map, area, distance);
+            auto possiblePositions = findHqPositions(map, area, distance);
 
             if(possiblePositions.empty())
             {

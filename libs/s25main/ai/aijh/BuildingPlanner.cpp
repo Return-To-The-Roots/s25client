@@ -17,7 +17,7 @@
 
 namespace AIJH {
 namespace {
-    bool HasAnyInexhaustibleOreMine(const GlobalGameSettings& ggs)
+    bool hasAnyInexhaustibleOreMine(const GlobalGameSettings& ggs)
     {
         return !isMineResourceDepletable(ggs, BuildingType::CoalMine)
                || !isMineResourceDepletable(ggs, BuildingType::IronMine)
@@ -234,7 +234,7 @@ void BuildingPlanner::updateBuildingsWanted(const AIPlayerJH& aijh)
         // brewery count = 1+(armory/5) if there is at least 1 armory or armory /6 for exhaustible mines
         if(getNumBuildings(BuildingType::Armory) > 0 && getNumBuildings(BuildingType::Farm) > 0)
         {
-            if(HasAnyInexhaustibleOreMine(aijh.ggs))
+            if(hasAnyInexhaustibleOreMine(aijh.ggs))
                 buildingsWanted[BuildingType::Brewery] = 1 + getNumBuildings(BuildingType::Armory) / 5;
             else
                 buildingsWanted[BuildingType::Brewery] = 1 + getNumBuildings(BuildingType::Armory) / 6;
@@ -302,7 +302,7 @@ void BuildingPlanner::updateBuildingsWanted(const AIPlayerJH& aijh)
                   (getNumBuildings(BuildingType::Farm) + getNumBuildings(BuildingType::Fishery)) / 2 + 2;
             if(getNumBuildings(BuildingType::Farm) > 7) // quite the empire just scale mines with farms
             {
-                if(HasAnyInexhaustibleOreMine(aijh.ggs)) // inexhaustible mines? -> more farms required for each mine
+                if(hasAnyInexhaustibleOreMine(aijh.ggs)) // inexhaustible mines? -> more farms required for each mine
                     buildingsWanted[BuildingType::IronMine] = std::min(getNumBuildings(BuildingType::Ironsmelter) + 1,
                                                                        getNumBuildings(BuildingType::Farm) * 2 / 5);
                 else

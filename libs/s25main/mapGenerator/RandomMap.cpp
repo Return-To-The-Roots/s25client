@@ -115,7 +115,7 @@ void smoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range)
     int radius = getSmoothRadius(z.getSize());
     int iterations = getSmoothIterations(z.getSize());
 
-    Smooth(iterations, radius, z);
+    smooth(iterations, radius, z);
     scale(z, range.minimum, range.maximum);
 }
 
@@ -195,9 +195,9 @@ void RandomMap::createMixedMap()
     const double mountain = 0.1;
     const double land = 1. - sea - mountain;
 
-    resetSeaLevel(map_, rnd_, LimitFor(map_.z, sea, map_.height.minimum));
+    resetSeaLevel(map_, rnd_, limitFor(map_.z, sea, map_.height.minimum));
 
-    const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(map_.height.minimum + 1)) + 1;
+    const auto mountainLevel = limitFor(map_.z, land, static_cast<uint8_t>(map_.height.minimum + 1)) + 1;
     const auto rivers = createRivers(center);
     const unsigned waterNodes = helpers::count(map_.z, map_.height.minimum);
 
@@ -223,13 +223,13 @@ void RandomMap::createWaterMap()
 
     const double sea = 0.80;      // 20% of map is center island (100% - 80% water)
     const double mountain = 0.05; // 20% of center island is mountain (5% of 20% land)
-    const auto seaLevel = LimitFor(map_.z, sea, map_.height.minimum);
+    const auto seaLevel = limitFor(map_.z, sea, map_.height.minimum);
 
     resetSeaLevel(map_, rnd_, seaLevel);
 
     const unsigned waterNodes = helpers::count(map_.z, map_.height.minimum);
     const auto land = 1. - static_cast<double>(waterNodes) / (map_.size.x * map_.size.y) - mountain;
-    const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
+    const auto mountainLevel = limitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
     const auto islandSize = getIslandSize(map_.size);
     const auto islandRadius = getIslandRadius(map_.size);
 
@@ -253,7 +253,7 @@ void RandomMap::createWaterMap()
 
     for(unsigned i = 0; i < map_.players; i++)
     {
-        PlaceHeadquarter(map_, islands[i], settings_.mountainDistance);
+        placeHeadquarter(map_, islands[i], settings_.mountainDistance);
     }
 }
 
@@ -266,9 +266,9 @@ void RandomMap::createLandMap()
     const double mountain = rnd_.randomDouble(0.15, 0.4 - sea);
     const double land = 1. - sea - mountain;
 
-    resetSeaLevel(map_, rnd_, LimitFor(map_.z, sea, map_.height.minimum));
+    resetSeaLevel(map_, rnd_, limitFor(map_.z, sea, map_.height.minimum));
 
-    const auto mountainLevel = LimitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
+    const auto mountainLevel = limitFor(map_.z, land, static_cast<uint8_t>(1)) + 1;
     createRivers();
 
     texturizer_.addTextures(mountainLevel, getCoastline(map_.size));

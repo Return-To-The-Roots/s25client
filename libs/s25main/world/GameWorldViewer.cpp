@@ -108,7 +108,7 @@ unsigned GameWorldViewer::getNumSoldiersForAttack(const MapPoint pt) const
     return total_count;
 }
 
-BuildingQuality GameWorldViewer::GetBQ(const MapPoint& pt) const
+BuildingQuality GameWorldViewer::getBQ(const MapPoint& pt) const
 {
     return getWorld().adjustBQ(pt, playerId_, visualNodes[pt].bq);
 }

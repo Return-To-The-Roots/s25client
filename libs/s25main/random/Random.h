@@ -59,7 +59,7 @@ public:
 
     Random();
     /// Initialize the rng with a given seed
-    void Init(const uint64_t& seed);
+    void init(const uint64_t& seed);
     /// Reset the Random class to start from a given state
     void resetState(const PRNG& newState);
     /// Return a random number in the range [0, maxExcl)
@@ -72,7 +72,7 @@ public:
     /// Get current rng state
     const PRNG& getCurrentState() const;
 
-    std::vector<RandomEntry> GetAsyncLog();
+    std::vector<RandomEntry> getAsyncLog();
 
 private:
     PRNG rng_; /// the PRNG

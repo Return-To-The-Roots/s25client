@@ -44,7 +44,7 @@
 #include <set>
 #include <stdexcept>
 
-inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorld& world)
+inline std::vector<GamePlayer> createPlayers(const std::vector<PlayerInfo>& playerInfos, GameWorld& world)
 {
     std::vector<GamePlayer> players;
     players.reserve(playerInfos.size());
@@ -54,7 +54,7 @@ inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& play
 }
 
 GameWorld::GameWorld(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em)
-    : GameWorldBase(CreatePlayers(players, *this), gameSettings, em)
+    : GameWorldBase(createPlayers(players, *this), gameSettings, em)
 {
     GameObject::attachWorld(this);
 }
@@ -71,7 +71,7 @@ MilitarySquares& GameWorld::getMilitarySquares()
 
 bool GameWorld::SetFlag(const MapPoint pt, const unsigned char player)
 {
-    if(GetBQ(pt, player) == BuildingQuality::Nothing)
+    if(getBQ(pt, player) == BuildingQuality::Nothing)
         return false;
     // There must be no other flag around that point
     if(isFlagAround(pt))
@@ -134,7 +134,7 @@ void GameWorld::SetBuildingSite(const BuildingType type, const MapPoint pt, cons
         return;
 
     // Gucken, ob das Gebäude hier überhaupt noch gebaut wrden kann
-    if(!canUseBq(GetBQ(pt, player), BUILDING_SIZE[type]))
+    if(!canUseBq(getBQ(pt, player), BUILDING_SIZE[type]))
         return;
 
     // Wenn das ein Militärgebäude ist und andere Militärgebäude bereits in der Nähe sind, darf dieses nicht gebaut
@@ -886,7 +886,7 @@ bool GameWorld::isRoadNodeForFigures(const MapPoint pt)
         // Kampf
         if(object.getGOT() == GO_Type::Fighting)
         {
-            if(static_cast<const noFighting&>(object).IsActive())
+            if(static_cast<const noFighting&>(object).isActive())
                 return false;
         } else if(object.getGOT() == GO_Type::NofAttacker) // wartende Angreifer
         {
@@ -1021,7 +1021,7 @@ bool GameWorld::isValidPointForFighting(MapPoint pt, const nofActiveSoldier& sol
             const auto& fight = static_cast<const noFighting&>(figure);
             // A soldier currently fighting shouldn't look for a new fighting spot
             RTTR_Assert(!fight.isFighter(soldier));
-            if(fight.IsActive())
+            if(fight.isActive())
                 return false;
         }
     }
@@ -1181,7 +1181,7 @@ void GameWorld::makeVisible(const MapPoint pt, const unsigned char player)
 void GameWorld::recalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player,
                                               const noBaseBuilding* const exception)
 {
-    std::vector<MapPoint> pts = GetPointsInRadiusWithCenter(pt, radius);
+    std::vector<MapPoint> pts = getPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& pt : pts)
         recalcVisibility(pt, player, exception);
 }
@@ -1189,7 +1189,7 @@ void GameWorld::recalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord 
 /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegründen Alternative zu oberem)
 void GameWorld::makeVisibleAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player)
 {
-    std::vector<MapPoint> pts = GetPointsInRadiusWithCenter(pt, radius);
+    std::vector<MapPoint> pts = getPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& curPt : pts)
         makeVisible(curPt, player);
 }

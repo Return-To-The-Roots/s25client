@@ -288,7 +288,7 @@ void GameWorldView::drawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 unsigned mid = 22;
                 if(rb.mode == RoadBuildMode::Disabled)
                 {
-                    switch(gwv.GetBQ(curPt))
+                    switch(gwv.getBQ(curPt))
                     {
                         case BuildingQuality::Flag: mid = 40; break;
                         case BuildingQuality::Mine: mid = 41; break;
@@ -527,7 +527,7 @@ constexpr auto getBqImgs()
 
 void GameWorldView::drawConstructionAid(const MapPoint& pt, const DrawPoint& curPos)
 {
-    BuildingQuality bq = gwv.GetBQ(pt);
+    BuildingQuality bq = gwv.getBQ(pt);
     if(bq != BuildingQuality::Nothing)
     {
         constexpr auto bqImgs = getBqImgs();

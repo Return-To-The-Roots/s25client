@@ -201,7 +201,7 @@ bool iwObservate::moveToFollowedObj()
     // First look around the center (figure is normally still there)
     const GameWorldBase& world = view->getWorld();
     const MapPoint centerPt = world.makeMapPoint((view->getFirstPt() + view->getLastPt()) / 2);
-    const std::vector<MapPoint> centerPts = world.GetPointsInRadiusWithCenter(centerPt, 2);
+    const std::vector<MapPoint> centerPts = world.getPointsInRadiusWithCenter(centerPt, 2);
     for(const MapPoint& curPt : centerPts)
     {
         if(moveToFollowedObj(curPt))

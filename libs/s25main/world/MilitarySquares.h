@@ -21,7 +21,7 @@ class MilitarySquares
 
 public:
     MilitarySquares();
-    void Init(const MapExtent& mapSize);
+    void init(const MapExtent& mapSize);
     void clear();
     void add(nobBaseMilitary* bld);
     void remove(nobBaseMilitary* bld);

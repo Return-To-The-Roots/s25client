@@ -107,7 +107,7 @@ void WindowManager::draw()
 bool WindowManager::isDesktopActive() const
 {
     if(curDesktop)
-        return curDesktop->IsActive();
+        return curDesktop->isActive();
     return false;
 }
 
@@ -116,7 +116,7 @@ void WindowManager::relayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
     // When there is no desktop, don't check it or any window
     if(!curDesktop)
         return;
-    if(curDesktop->IsActive())
+    if(curDesktop->isActive())
     {
         // Desktop active -> relay msg to desktop
         CALL_MEMBER_FN(*curDesktop, msg)(ke);
@@ -250,7 +250,7 @@ Window* WindowManager::findAndActivateWindow(const Position mousePos)
     }
     if(!activeWindow)
         activeWindow = curDesktop.get();
-    if(activeWindow && !activeWindow->IsActive())
+    if(activeWindow && !activeWindow->isActive())
         setActiveWindow(*activeWindow);
     return activeWindow;
 }
@@ -531,7 +531,7 @@ void WindowManager::closeMarkedIngameWnds()
 }
 
 template<class T_Windows>
-void SetActiveWindowImpl(const Window& wnd, Desktop& desktop, T_Windows& windows)
+void setActiveWindowImpl(const Window& wnd, Desktop& desktop, T_Windows& windows)
 {
     auto itWnd = helpers::findIf(windows, [&wnd](const auto& it) { return it.get() == &wnd; });
     if(itWnd != windows.end())
@@ -555,9 +555,9 @@ void SetActiveWindowImpl(const Window& wnd, Desktop& desktop, T_Windows& windows
 void WindowManager::setActiveWindow(Window& wnd)
 {
     if(curDesktop)
-        SetActiveWindowImpl(wnd, *curDesktop, windows);
+        setActiveWindowImpl(wnd, *curDesktop, windows);
     if(nextdesktop) // NOLINTNEXTLINE(clang-analyzer-cplusplus.Move)
-        SetActiveWindowImpl(wnd, *nextdesktop, nextWnds);
+        setActiveWindowImpl(wnd, *nextdesktop, nextWnds);
 }
 
 void WindowManager::takeScreenshot() const

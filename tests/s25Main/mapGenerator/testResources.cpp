@@ -18,9 +18,9 @@ struct ResourceTestFixture : MapGenFixture
 
     ResourceTestFixture() : map(createMap(size))
     {
-        auto mountain = map.textureMap.Find(isMinableMountain);
-        auto water = map.textureMap.Find(isWater);
-        auto land = map.textureMap.Find(isBuildableCoast);
+        auto mountain = map.textureMap.find(isMinableMountain);
+        auto water = map.textureMap.find(isWater);
+        auto land = map.textureMap.find(isBuildableCoast);
 
         /*
          * ========== Test Map ===========

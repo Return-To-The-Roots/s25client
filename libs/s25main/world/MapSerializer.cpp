@@ -18,7 +18,7 @@ void MapSerializer::serialize(const GameWorldBase& world, SerializedGameData& sg
 {
     // Headinformationen
     helpers::pushPoint(sgd, world.getSize());
-    sgd.PushString(world.getDescription().get(world.GetLandscapeType()).name);
+    sgd.PushString(world.getDescription().get(world.getLandscapeType()).name);
 
     sgd.PushUnsignedInt(GameObject::getObjIDCounter());
 
@@ -101,7 +101,7 @@ void MapSerializer::deserialize(GameWorldBase& world, SerializedGameData& sgd, G
         if(!lt)
             throw SerializedGameData::Error(std::string("Invalid landscape: ") + sLandscape);
     }
-    world.Init(size, lt);
+    world.init(size, lt);
     GameObject::resetCounters(sgd.PopUnsignedInt());
 
     std::vector<DescIdx<TerrainDesc>> landscapeTerrains;

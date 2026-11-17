@@ -51,7 +51,7 @@ bool MapLoader::load(const libsiedler2::ArchivItem_Map& map, Exploration explora
     uint8_t gfxSet = map.getHeader().getGfxSet();
     DescIdx<LandscapeDesc> lt =
       world_.getDescription().landscapes.find([gfxSet](const LandscapeDesc& l) { return l.s2Id == gfxSet; });
-    world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), lt); //-V807
+    world_.init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), lt); //-V807
 
     if(!initNodes(map, exploration))
         return false;
@@ -229,7 +229,7 @@ void MapLoader::setMapExplored(World& world)
 
 DescIdx<TerrainDesc> MapLoader::getTerrainFromS2(uint8_t s2Id) const
 {
-    return world_.getDescription().terrain.find([s2Id, landscape = world_.GetLandscapeType()](const TerrainDesc& t) {
+    return world_.getDescription().terrain.find([s2Id, landscape = world_.getLandscapeType()](const TerrainDesc& t) {
         return t.s2Id == s2Id && t.landscape == landscape;
     });
 }

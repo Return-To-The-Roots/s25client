@@ -53,7 +53,7 @@ GoodType getMineOutput(const BuildingType buildingType)
     }
 }
 
-helpers::OptionalEnum<BuildingType> GetMineBuildingType(const ResourceType resourceType)
+helpers::OptionalEnum<BuildingType> getMineBuildingType(const ResourceType resourceType)
 {
     switch(resourceType)
     {
@@ -68,7 +68,7 @@ helpers::OptionalEnum<BuildingType> GetMineBuildingType(const ResourceType resou
 unsigned getRemainingMineResources(const GameWorld& world, const MapPoint pos, const ResourceType resourceType)
 {
     unsigned resourceAmount = 0;
-    const auto resourcePts = world.GetMatchingPointsInRadius(
+    const auto resourcePts = world.getMatchingPointsInRadius(
       pos, MINER_RADIUS,
       [&world, resourceType](const MapPoint pt) { return world.getNode(pt).resources.has(resourceType); }, true);
     for(const MapPoint pt : resourcePts)

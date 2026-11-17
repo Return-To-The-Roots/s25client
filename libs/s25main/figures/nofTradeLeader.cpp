@@ -68,7 +68,7 @@ void nofTradeLeader::goalReached()
     }
 
     world->getPlayer(targetWarehouse->getPlayer()).increaseInventoryJob(this->getJobType(), 1);
-    targetWarehouse->addFigure(world->RemoveFigure(pos, *this));
+    targetWarehouse->addFigure(world->removeFigure(pos, *this));
 }
 
 void nofTradeLeader::walked()

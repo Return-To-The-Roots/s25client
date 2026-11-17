@@ -149,7 +149,7 @@ void noFigure::actAtFirst()
                 auto* wh = checkedCast<nobBaseWarehouse*>(goal_);
                 goal_ = nullptr;
                 cur_rs = nullptr;
-                wh->addFigure(world->RemoveFigure(pos, *this));
+                wh->addFigure(world->removeFigure(pos, *this));
             } else
                 // ansonsten ganz normal rausgehen
                 walkToGoal();
@@ -296,7 +296,7 @@ void noFigure::walkToGoal()
             if(fs == FigureState::GoHome)
             {
                 // Mann im Lagerhaus angekommen
-                static_cast<nobBaseWarehouse*>(goal)->addFigure(world->RemoveFigure(pos, *this));
+                static_cast<nobBaseWarehouse*>(goal)->addFigure(world->removeFigure(pos, *this));
             } else
             {
                 // abgeleiteter Klasse sagen, dass das Ziel erreicht wurde
@@ -347,7 +347,7 @@ void noFigure::walkToGoal()
                 {
                     // Uns in den Hafen einquartieren
                     cur_rs = nullptr; // wir laufen nicht mehr auf einer Straße
-                    static_cast<nobHarborBuilding*>(hb)->addFigureForShip(world->RemoveFigure(pos, *this), next_harbor);
+                    static_cast<nobHarborBuilding*>(hb)->addFigureForShip(world->removeFigure(pos, *this), next_harbor);
                 }
             } else
             {
@@ -875,7 +875,7 @@ void noFigure::drawArmor(DrawPoint drawPt)
 void noFigure::die()
 {
     // Weg mit mir
-    getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+    getEvMgr().addToKillList(world->removeFigure(pos, *this));
     // ggf. Leiche hinlegen, falls da nix ist
     if(!world->getSpecObj<noBase>(pos))
         world->setNO(pos, new noSkeleton(pos));
@@ -904,7 +904,7 @@ void noFigure::removeFromInventory()
 void noFigure::dieFailedTrade()
 {
     // Weg mit mir
-    getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+    getEvMgr().addToKillList(world->removeFigure(pos, *this));
     // ggf. Leiche hinlegen, falls da nix ist
     if(!world->getSpecObj<noBase>(pos))
         world->setNO(pos, new noSkeleton(pos));

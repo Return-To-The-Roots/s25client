@@ -56,7 +56,7 @@ inline bool playerHasBld(const GamePlayer& player, BuildingType type)
     return !blds.getBuildings(type).empty();
 }
 
-DescIdx<TerrainDesc> GetMineableTerrain(const WorldDescription& desc)
+DescIdx<TerrainDesc> getMineableTerrain(const WorldDescription& desc)
 {
     const auto terrain = desc.terrain.find([](const TerrainDesc& t) { return t.is(ETerrain::Mineable); });
     BOOST_TEST_REQUIRE(terrain);
@@ -65,7 +65,7 @@ DescIdx<TerrainDesc> GetMineableTerrain(const WorldDescription& desc)
 
 void makeWorldMineable(GameWorld& world)
 {
-    const DescIdx<TerrainDesc> mineableTerrain = GetMineableTerrain(world.getDescription());
+    const DescIdx<TerrainDesc> mineableTerrain = getMineableTerrain(world.getDescription());
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         MapNode& node = world.getNodeWriteable(pt);
@@ -82,7 +82,7 @@ void initAIJhNodes(AIJH::AIPlayerJH& aijh, const GameWorld& world, const unsigne
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         AIJH::Node& node = aijh.getAINode(pt);
-        node.bq = world.GetBQ(pt, player);
+        node.bq = world.getBQ(pt, player);
         node.owned = true;
         node.reachable = true;
         node.farmed = false;
@@ -248,7 +248,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
         RTTR_FOREACH_PT(MapPoint, world.getSize())
         {
             BOOST_TEST_INFO(pt);
-            BOOST_TEST(this->world.GetBQ(pt, curPlayer) == aijh.getAINode(pt).bq);
+            BOOST_TEST(this->world.getBQ(pt, curPlayer) == aijh.getAINode(pt).bq);
         }
     };
     const auto assertBqEqualAround = [this, &aijh](const unsigned lineNr, MapPoint pt, unsigned radius) {
@@ -257,7 +257,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
           pt, radius,
           [&](const MapPoint curPt, unsigned) {
               BOOST_TEST_INFO(curPt);
-              BOOST_TEST(this->world.GetBQ(curPt, curPlayer) == aijh.getAINode(curPt).bq);
+              BOOST_TEST(this->world.getBQ(curPt, curPlayer) == aijh.getAINode(curPt).bq);
               return false;
           },
           true);
@@ -275,7 +275,7 @@ BOOST_FIXTURE_TEST_CASE(KeepBQUpdated, BiggerWorldWithGCExecution)
     std::vector<MapPoint> possibleFlagNodes;
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        if(world.GetBQ(pt, curPlayer) != BuildingQuality::Nothing && !world.isFlagAround(pt))
+        if(world.getBQ(pt, curPlayer) != BuildingQuality::Nothing && !world.isFlagAround(pt))
             possibleFlagNodes.push_back(pt);
     }
     for(const MapPoint flagPos : possibleFlagNodes)
@@ -400,7 +400,7 @@ BOOST_FIXTURE_TEST_CASE(BuildWoodIndustry, WorldWithGCExecution<1>)
     // Build a woodcutter, sawmill and forester at some point
     for(unsigned gf = 0; gf < 2000;)
     {
-        std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
+        std::vector<gc::GameCommandPtr> aiGcs = ai->fetchGameCommands();
         for(unsigned i = 0; i < 5; i++, gf++)
         {
             em.executeNextGF();
@@ -430,7 +430,7 @@ void forceExpansion(const GamePlayer& player, GameWorld& world)
     }
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        BOOST_TEST_REQUIRE(world.GetBQ(pt, player.getPlayerId()) <= BuildingQuality::Hut);
+        BOOST_TEST_REQUIRE(world.getBQ(pt, player.getPlayerId()) <= BuildingQuality::Hut);
     }
 }
 
@@ -440,7 +440,7 @@ void runUntilMilitaryBuildingSiteFound(TestEventManager& em, unsigned curPlayer,
     auto ai = AIFactory::create(AI::Info(AI::Type::Default, AI::Level::Hard), curPlayer, world);
     for(unsigned gf = 0; gf < 2000;)
     {
-        std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
+        std::vector<gc::GameCommandPtr> aiGcs = ai->fetchGameCommands();
         for(unsigned i = 0; i < 5; i++, gf++)
         {
             em.executeNextGF();

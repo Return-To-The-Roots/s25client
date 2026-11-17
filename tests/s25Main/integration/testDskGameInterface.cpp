@@ -151,7 +151,7 @@ BOOST_FIXTURE_TEST_CASE(Scrolling, GameInterfaceFixture)
         // Closing it doesn't either
         WINDOWMANAGER.msgKeyDown(key);
         WINDOWMANAGER.draw();
-        BOOST_TEST_REQUIRE(gameDesktop->IsActive());
+        BOOST_TEST_REQUIRE(gameDesktop->isActive());
         BOOST_TEST_REQUIRE(!WINDOWMANAGER.getTopMostWindow());
         BOOST_TEST_REQUIRE(WINDOWMANAGER.getCursor() == Cursor::Scroll);
         mouse.pos = startPos + Position(-6, 7);

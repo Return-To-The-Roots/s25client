@@ -22,7 +22,7 @@ constexpr std::array<std::tuple<const char*, MapPoint, MapPoint>, 7> routes = {{
                                                                                 {"Hard", {21, 200}, {42, 188}},
                                                                                 {"Water", {152, 66}, {198, 34}}}};
 
-static void BM_PathFinding(benchmark::State& state)
+static void bmPathFinding(benchmark::State& state)
 {
     rttr::test::Fixture f;
     libsiedler2::setAllocator(new GlAllocator);
@@ -48,11 +48,11 @@ static void BM_PathFinding(benchmark::State& state)
         benchmark::DoNotOptimize(result);
     }
 }
-BENCHMARK(BM_PathFinding)->DenseRange(0, routes.size() - 1);
+BENCHMARK(bmPathFinding)->DenseRange(0, routes.size() - 1);
 
 constexpr std::array<std::tuple<const char*, unsigned>, 3> maps = {
   {{"AM_FANGDERZEIT", 7}, {"TueranTuer", 2}, {"Suedameri", 5}}};
-static void BM_BQ_Calculation(benchmark::State& state)
+static void bmBQCalculation(benchmark::State& state)
 {
     const auto& curValues = maps[static_cast<size_t>(state.range())];
 
@@ -75,4 +75,4 @@ static void BM_BQ_Calculation(benchmark::State& state)
         benchmark::DoNotOptimize(world);
     }
 }
-BENCHMARK(BM_BQ_Calculation)->DenseRange(0, maps.size() - 1);
+BENCHMARK(bmBQCalculation)->DenseRange(0, maps.size() - 1);

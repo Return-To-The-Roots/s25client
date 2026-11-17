@@ -21,7 +21,7 @@ using FreePathNodes = std::vector<FreePathNode>;
 MapNodes nodes;
 FreePathNodes fpNodes;
 
-void FreePathFinder::Init(const MapExtent& mapSize)
+void FreePathFinder::init(const MapExtent& mapSize)
 {
     currentVisit = 0;
     size_ = Extent(mapSize);

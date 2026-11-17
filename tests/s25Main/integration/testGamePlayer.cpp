@@ -78,7 +78,7 @@ struct MineProductivityFixture : WorldFixture<CreateEmptyWorld, 1, MINE_MAP_SIZE
         coalMine = static_cast<nobUsual*>(
           BuildingFactory::createBuilding(world, BuildingType::CoalMine, minePos, 0, Nation::Romans));
         // Clear resources in the radius explicitly.
-        for(const MapPoint pt : world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS))
+        for(const MapPoint pt : world.getPointsInRadiusWithCenter(minePos, MINER_RADIUS))
             world.setResource(pt, Resource());
     }
 
@@ -93,7 +93,7 @@ struct MineProductivityFixture : WorldFixture<CreateEmptyWorld, 1, MINE_MAP_SIZE
     // Only the summed amount in range matters, so the exact distribution is irrelevant.
     void spreadCoalInRadius(const unsigned total)
     {
-        const std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS);
+        const std::vector<MapPoint> pts = world.getPointsInRadiusWithCenter(minePos, MINER_RADIUS);
         unsigned remaining = total;
         for(unsigned i = 0; i < pts.size(); ++i)
         {

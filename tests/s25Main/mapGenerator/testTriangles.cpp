@@ -16,8 +16,8 @@ BOOST_AUTO_TEST_CASE(GetTriangleNeighbors_always_returns_three_neighbors)
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_TEST_REQUIRE(GetTriangleNeighbors(Triangle(true, pt), size).size() == 3u);
-        BOOST_TEST_REQUIRE(GetTriangleNeighbors(Triangle(false, pt), size).size() == 3u);
+        BOOST_TEST_REQUIRE(getTriangleNeighbors(Triangle(true, pt), size).size() == 3u);
+        BOOST_TEST_REQUIRE(getTriangleNeighbors(Triangle(false, pt), size).size() == 3u);
     }
 }
 
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(GetTriangles_always_returns_six_triangles)
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_TEST_REQUIRE(GetTriangles(pt, size).size() == 6u);
+        BOOST_TEST_REQUIRE(getTriangles(pt, size).size() == 6u);
     }
 }
 
@@ -37,8 +37,8 @@ BOOST_AUTO_TEST_CASE(GetTriangleEdges_always_returns_three_edges)
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        BOOST_TEST_REQUIRE(GetTriangleEdges(Triangle(true, pt), size).size() == 3u);
-        BOOST_TEST_REQUIRE(GetTriangleEdges(Triangle(false, pt), size).size() == 3u);
+        BOOST_TEST_REQUIRE(getTriangleEdges(Triangle(true, pt), size).size() == 3u);
+        BOOST_TEST_REQUIRE(getTriangleEdges(Triangle(false, pt), size).size() == 3u);
     }
 }
 

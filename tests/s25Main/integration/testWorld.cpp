@@ -169,10 +169,10 @@ BOOST_AUTO_TEST_CASE(HQPlacement)
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
 {
     loadGameData(world.getDescriptionWriteable());
-    const auto tWater = GetWaterTerrain(world.getDescription());
-    const auto tLand = GetLandTerrain(world.getDescription());
+    const auto tWater = getWaterTerrain(world.getDescription());
+    const auto tLand = getLandTerrain(world.getDescription());
 
-    world.Init(MapExtent(30, 30));
+    world.init(MapExtent(30, 30));
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         MapNode& node = world.getNodeWriteable(pt);

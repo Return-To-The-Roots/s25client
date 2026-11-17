@@ -33,7 +33,7 @@ public:
     ~TerrainRenderer();
 
     /// Generates data structures (uninitialized)
-    void Init(const MapExtent& size);
+    void init(const MapExtent& size);
     /// Generate OpenGL structs and init data (also calls Init)
     void generateOpenGL(const GameWorldViewer& gwv);
 

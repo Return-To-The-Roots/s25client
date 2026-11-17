@@ -888,7 +888,7 @@ void GamePlayer::findWarehouseForAllJobs(const Job job)
     }
 }
 
-static bool IsWareFineWithEmergencyProtocol(GoodType goodType, const noBaseBuilding& goal)
+static bool isWareFineWithEmergencyProtocol(GoodType goodType, const noBaseBuilding& goal)
 {
     return (goodType != GoodType::Boards && goodType != GoodType::Stones)
            || goal.getBuildingType() == BuildingType::Woodcutter || goal.getBuildingType() == BuildingType::Sawmill;
@@ -907,7 +907,7 @@ Ware* GamePlayer::orderWare(const GoodType ware, noBaseBuilding& goal)
         else
         {
             // Wenn Notfallprogramm aktiv nur an Holzfäller und Sägewerke Bretter/Steine liefern
-            if(IsWareFineWithEmergencyProtocol(ware, goal))
+            if(isWareFineWithEmergencyProtocol(ware, goal))
                 return wh->orderWare(ware, goal);
             else
                 return nullptr;
@@ -1871,12 +1871,12 @@ bool GamePlayer::isWareDependent(const Ware& ware)
 
 void GamePlayer::increaseInventoryWare(const GoodType ware, const unsigned count)
 {
-    global_inventory.add(ConvertShields(ware), count);
+    global_inventory.add(convertShields(ware), count);
 }
 
 void GamePlayer::decreaseInventoryWare(const GoodType ware, const unsigned count)
 {
-    global_inventory.remove(ConvertShields(ware), count);
+    global_inventory.remove(convertShields(ware), count);
 }
 
 void GamePlayer::registerShip(noShip& ship)
@@ -2099,7 +2099,7 @@ void GamePlayer::cancelWaresForEmergencyProtocol()
     {
         Ware* ware = *it;
         if(ware->isWaitingInWarehouse() && ware->getGoal()
-           && !IsWareFineWithEmergencyProtocol(ware->type, *ware->getGoal()))
+           && !isWareFineWithEmergencyProtocol(ware->type, *ware->getGoal()))
         {
             ware->notifyGoalAboutLostWare();
             static_cast<nobBaseWarehouse*>(ware->getLocation())->cancelWare(ware);

@@ -20,7 +20,7 @@
 #include <boost/container/static_vector.hpp>
 
 namespace {
-bool IsPotentialNewFieldForOwnFarm(GameWorld& world, const MapPoint pt, const unsigned char player)
+bool isPotentialNewFieldForOwnFarm(GameWorld& world, const MapPoint pt, const unsigned char player)
 {
     if(nofFarmer::getNewFieldPointQuality(world, pt) == nofFarmhand::PointQuality::NotPossible)
         return false;
@@ -92,7 +92,7 @@ void nofForester::workFinished()
         // Je nach Landschaft andere Bäume pflanzbar!
         const std::array<boost::container::static_vector<unsigned char, 6>, 3> AVAILABLE_TREES = {
           {{0, 1, 2, 6, 7, 8}, {0, 1, 7}, {0, 1, 6, 8}}};
-        uint8_t landscapeType = std::min<uint8_t>(world->GetLandscapeType().value, AVAILABLE_TREES.size() - 1);
+        uint8_t landscapeType = std::min<uint8_t>(world->getLandscapeType().value, AVAILABLE_TREES.size() - 1);
 
         // jungen Baum einsetzen
         world->setNO(pos, new noTree(pos, RANDOM_ELEMENT(AVAILABLE_TREES[landscapeType]), 0));
@@ -134,7 +134,7 @@ nofFarmhand::PointQuality nofForester::getPointQuality(const MapPoint pt, bool /
     }
 
     if(world->getGGS().isEnabled(AddonId::FORESTER_FARM_FIELD_AVOIDANCE)
-       && IsPotentialNewFieldForOwnFarm(*world, pt, player))
+       && isPotentialNewFieldForOwnFarm(*world, pt, player))
         return PointQuality::NotPossible;
 
     // Terrain untersuchen

@@ -18,7 +18,7 @@
 #include <sstream>
 
 /// Return <0 for a < b; >0 for a>b and 0 for a==b
-static int Compare(const std::string& a, const std::string& b, ctrlTable::SortType sortType)
+static int compare(const std::string& a, const std::string& b, ctrlTable::SortType sortType)
 {
     using SRT = ctrlTable::SortType;
     switch(sortType)
@@ -293,7 +293,7 @@ void ctrlTable::sortRows(unsigned column, const TableSortDir sortDir)
     const auto compareFunc = [sortType, sortDir, column](const Row& lhs, const Row& rhs) {
         const std::string a = s25util::toLower(lhs.columns[column]);
         const std::string b = s25util::toLower(rhs.columns[column]);
-        const int cmpResult = Compare(a, b, sortType);
+        const int cmpResult = compare(a, b, sortType);
         return (sortDir == TableSortDir::Ascending) ? cmpResult < 0 : cmpResult > 0;
     };
     helpers::sort(rows_, compareFunc);

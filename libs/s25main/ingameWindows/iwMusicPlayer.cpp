@@ -395,7 +395,7 @@ void iwMusicPlayer::msgInput(const unsigned win_id, const std::string& msg)
         break;
         case ID_wndAddTrackDir:
         {
-            std::vector<boost::filesystem::path> oggFiles = ListDir(msg, "ogg");
+            std::vector<boost::filesystem::path> oggFiles = listDir(msg, "ogg");
 
             for(const auto& oggFile : oggFiles)
                 getCtrl<ctrlList>(ID_lstSongs)->addItem(oggFile.string());
@@ -434,7 +434,7 @@ void iwMusicPlayer::updatePlaylistCombo(const std::string& highlight_entry)
     auto* cbPlaylist = getCtrl<ctrlComboBox>(ID_cbPlaylist);
     cbPlaylist->deleteAllItems();
 
-    std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.expandPath(s25::folders::playlists), "pll");
+    std::vector<boost::filesystem::path> playlists = listDir(RTTRCONFIG.expandPath(s25::folders::playlists), "pll");
     playlists.insert(playlists.begin(), RTTRCONFIG.expandPath(s25::files::defaultPlaylist));
     const auto currentPath = RTTRCONFIG.expandPath(highlight_entry);
 

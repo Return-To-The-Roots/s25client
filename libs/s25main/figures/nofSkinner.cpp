@@ -132,7 +132,7 @@ void nofSkinner::handleStateSkinningCarcass()
     if(!animal->isHunted())
     {
         // Tier verschwinden lassen
-        auto ownedAnimal = world->RemoveFigure(pos, *animal);
+        auto ownedAnimal = world->removeFigure(pos, *animal);
         // Tier vernichten
         ownedAnimal->destroy();
     }

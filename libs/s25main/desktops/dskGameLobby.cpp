@@ -537,7 +537,7 @@ void dskGameLobby::updatePlayerRow(const unsigned row)
         changeReady(row, player.isReady);
         changeColor(row, player.color);
     }
-    group->setActive(IsActive());
+    group->setActive(isActive());
 }
 
 /**

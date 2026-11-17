@@ -113,7 +113,7 @@ public:
     // Make the window visible or hide it
     virtual void setVisible(bool visible) { visible_ = visible; }
     bool isVisible() const { return visible_; }
-    bool IsActive() const { return active_; }
+    bool isActive() const { return active_; }
     /// Get the parent window (containing this) or nullptr if this is a top-level window
     Window* getParent() const { return parent_; }
     unsigned getID() const { return id_; }

@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(missionStatement)
     executeLua("rttr:MissionStatement(1, 'Title', 'Text')");
     const auto* wnd = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.getTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
-    BOOST_TEST(wnd->IsActive());
+    BOOST_TEST(wnd->isActive());
     BOOST_TEST(wnd->getTitle() == _("Title"));
 
     // double windows stack, newest modal goes on top
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(missionStatement)
     executeLua("rttr:MissionStatement(1, 'Title', 'Text', IM_NONE)");
     wnd = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.getTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
-    BOOST_TEST(wnd->IsActive());
+    BOOST_TEST(wnd->isActive());
     BOOST_TEST(wnd->getTitle() == _("Title"));
     BOOST_TEST(wnd->getCtrls<ctrlImage>().empty());
     WINDOWMANAGER.closeNow(const_cast<iwMissionStatement*>(wnd));
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(missionStatement)
     executeLua("rttr:MissionStatement(1, 'Title', 'Text', IM_AVATAR10)");
     wnd = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.getTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
-    BOOST_TEST(wnd->IsActive());
+    BOOST_TEST(wnd->isActive());
     BOOST_TEST(wnd->getTitle() == _("Title"));
     BOOST_TEST(!wnd->getCtrls<ctrlImage>().empty());
     WINDOWMANAGER.closeNow(const_cast<iwMissionStatement*>(wnd));
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(missionStatement)
     executeLua("rttr:MissionStatement(1, 'Title', 'Text', 999999)");
     wnd = dynamic_cast<iwMissionStatement*>(WINDOWMANAGER.getTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
-    BOOST_TEST(wnd->IsActive());
+    BOOST_TEST(wnd->isActive());
     BOOST_TEST(wnd->getTitle() == _("Title"));
     BOOST_TEST(wnd->getCtrls<ctrlImage>().empty());
     WINDOWMANAGER.closeNow(const_cast<iwMissionStatement*>(wnd));
@@ -90,7 +90,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     executeLua("rttr:MsgBox('Title', string.rep('Text\\n', 15))");
     const auto* wnd = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.getTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
-    BOOST_TEST(wnd->IsActive());
+    BOOST_TEST(wnd->isActive());
     BOOST_TEST(wnd->getTitle() == _("Title"));
     BOOST_TEST(!wnd->getCtrls<ctrlImage>().empty());
     BOOST_TEST(wnd->getCtrls<ctrlImage>().front()->getImage()
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     executeLua("rttr:MsgBox('Title', 'Text', true)");
     wnd = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.getTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
-    BOOST_TEST(wnd->IsActive());
+    BOOST_TEST(wnd->isActive());
     BOOST_TEST(wnd->getTitle() == _("Title"));
     BOOST_TEST(!wnd->getCtrls<ctrlImage>().empty());
     BOOST_TEST(wnd->getCtrls<ctrlImage>().front()->getImage()
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     executeLua("rttr:MsgBoxEx('Title', 'Text', 'io', 100)");
     wnd = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.getTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
-    BOOST_TEST(wnd->IsActive());
+    BOOST_TEST(wnd->isActive());
     BOOST_TEST(wnd->getTitle() == _("Title"));
     BOOST_TEST(!wnd->getCtrls<ctrlImage>().empty());
     BOOST_TEST(wnd->getCtrls<ctrlImage>().front()->getImage() == LOADER.getImageN("io", 100));
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     executeLua("rttr:MsgBoxEx('Title', 'Text', 'io', 101, 500, 200)");
     wnd = dynamic_cast<iwMsgbox*>(WINDOWMANAGER.getTopMostWindow());
     BOOST_TEST_REQUIRE(wnd);
-    BOOST_TEST(wnd->IsActive());
+    BOOST_TEST(wnd->isActive());
     BOOST_TEST(wnd->getTitle() == _("Title"));
     BOOST_TEST(!wnd->getCtrls<ctrlImage>().empty());
     const ctrlImage* img = wnd->getCtrls<ctrlImage>().front();

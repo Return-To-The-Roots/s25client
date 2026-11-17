@@ -157,7 +157,7 @@ void nofBuilder::handleDerivedEvent(const unsigned id)
                 {
                     auto* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen
-                    wh->addFigure(world->RemoveFigure(pos, *this));
+                    wh->addFigure(world->removeFigure(pos, *this));
 
                     // Evtl Träger aus dem HQ wieder verwenden
                     owner.findCarrierForAllRoads();

@@ -37,10 +37,10 @@ iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* ms
                    true, CloseBehavior::Custom),
       button(button), msgboxid(msgboxid), msgHandler_(msgHandler)
 {
-    Init(text, iconFile, iconIdx);
+    init(text, iconFile, iconIdx);
 }
 
-void iwMsgbox::Init(const std::string& text, const ResourceId& iconFile, unsigned iconIdx)
+void iwMsgbox::init(const std::string& text, const ResourceId& iconFile, unsigned iconIdx)
 {
     glArchivItem_Bitmap* icon = LOADER.getImageN(iconFile, iconIdx);
     if(icon)

@@ -61,7 +61,7 @@ auto calcSum(const T& collection)
     return std::accumulate(std::begin(collection), std::end(collection), 0u);
 }
 
-std::array<unsigned, NUM_SOLDIER_RANKS> CountTroopsByRank(const nobMilitary& bld)
+std::array<unsigned, NUM_SOLDIER_RANKS> countTroopsByRank(const nobMilitary& bld)
 {
     std::array<unsigned, NUM_SOLDIER_RANKS> counts{};
     for(const auto& soldier : bld.getTroops())
@@ -69,7 +69,7 @@ std::array<unsigned, NUM_SOLDIER_RANKS> CountTroopsByRank(const nobMilitary& bld
     return counts;
 }
 
-void DeliverCoin(nobMilitary& bld, GameWorld& world, const MapPoint hqPos)
+void deliverCoin(nobMilitary& bld, GameWorld& world, const MapPoint hqPos)
 {
     auto* hq = world.getSpecObj<nobBaseWarehouse>(hqPos);
     BOOST_TEST_REQUIRE(hq);
@@ -99,9 +99,9 @@ void moveObjTo(GameWorldBase& world, noFigure& obj, const MapPoint& pos)
 {
     std::unique_ptr<noFigure> ownedObj;
     if(world.hasFigureAt(obj.getPos(), obj))
-        ownedObj = world.RemoveFigure(obj.getPos(), obj);
+        ownedObj = world.removeFigure(obj.getPos(), obj);
     else
-        ownedObj = world.RemoveFigure(world.getNeighbour(obj.getPos(), obj.getCurMoveDir() + 3u), obj);
+        ownedObj = world.removeFigure(world.getNeighbour(obj.getPos(), obj.getCurMoveDir() + 3u), obj);
     obj.setPos(world.getNeighbour(pos, Direction::West));
     world.addFigure(obj.getPos(), std::move(ownedObj));
     if(obj.isMoving())
@@ -219,19 +219,19 @@ struct NumSoldierTestFixture : public AttackFixtureBase<3, 56, 38>
 
         // Build some military buildings
         milBld0Pos = hqPos[0] + MapPoint(7, 0);
-        BOOST_TEST_REQUIRE(world.GetBQ(milBld0Pos, 0) == BuildingQuality::Castle);
+        BOOST_TEST_REQUIRE(world.getBQ(milBld0Pos, 0) == BuildingQuality::Castle);
         milBld0 = dynamic_cast<nobMilitary*>(
           BuildingFactory::createBuilding(world, BuildingType::Watchtower, milBld0Pos, 0, Nation::Babylonians));
         BOOST_TEST_REQUIRE(milBld0);
 
         milBld1NearPos = hqPos[1] - MapPoint(7, 0);
-        BOOST_TEST_REQUIRE(world.GetBQ(milBld1NearPos, 1) == BuildingQuality::Castle);
+        BOOST_TEST_REQUIRE(world.getBQ(milBld1NearPos, 1) == BuildingQuality::Castle);
         milBld1Near = dynamic_cast<nobMilitary*>(
           BuildingFactory::createBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, Nation::Romans));
         BOOST_TEST_REQUIRE(milBld1Near);
 
         milBld1FarPos = hqPos[1] + MapPoint(3, 1);
-        BOOST_TEST_REQUIRE(world.GetBQ(milBld1FarPos, 1) == BuildingQuality::Castle);
+        BOOST_TEST_REQUIRE(world.getBQ(milBld1FarPos, 1) == BuildingQuality::Castle);
         milBld1Far = dynamic_cast<nobMilitary*>(
           BuildingFactory::createBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, Nation::Romans));
         BOOST_TEST_REQUIRE(milBld1Far);
@@ -266,13 +266,13 @@ struct AttackFixture : public AttackFixtureBase<T_numPlayers, T_width, T_height>
     {
         // Build some military buildings far away enough for holding some area outside HQ
         milBld0Pos = world.makeMapPoint(hqPos[0] + Position(0, 6));
-        BOOST_TEST_REQUIRE(world.GetBQ(milBld0Pos, 0) == BuildingQuality::Castle);
+        BOOST_TEST_REQUIRE(world.getBQ(milBld0Pos, 0) == BuildingQuality::Castle);
         milBld0 = static_cast<nobMilitary*>(
           BuildingFactory::createBuilding(world, BuildingType::Watchtower, milBld0Pos, 0, Nation::Babylonians));
         BOOST_TEST_REQUIRE(milBld0);
 
         milBld1Pos = world.makeMapPoint(hqPos[1] + Position(0, 6));
-        BOOST_TEST_REQUIRE(world.GetBQ(milBld1Pos, 1) == BuildingQuality::Castle);
+        BOOST_TEST_REQUIRE(world.getBQ(milBld1Pos, 1) == BuildingQuality::Castle);
         milBld1 = static_cast<nobMilitary*>(
           BuildingFactory::createBuilding(world, BuildingType::Watchtower, milBld1Pos, 1, Nation::Romans));
         BOOST_TEST_REQUIRE(milBld1);
@@ -357,12 +357,12 @@ BOOST_FIXTURE_TEST_CASE(startAttack, AttackFixture<>)
 
     const nobMilitary& attackSrc = *milBld0;
     const MapPoint usualBldPos = hqPos[1] - MapPoint(2, 3);
-    BOOST_TEST_REQUIRE(world.GetBQ(usualBldPos, 1) >= BuildingQuality::Hut);
+    BOOST_TEST_REQUIRE(world.getBQ(usualBldPos, 1) >= BuildingQuality::Hut);
     const noBuilding* usualBld =
       BuildingFactory::createBuilding(world, BuildingType::Woodcutter, usualBldPos, 1, Nation::Romans);
     BOOST_TEST_REQUIRE(usualBld);
     const MapPoint storehousePos = hqPos[1] - MapPoint(2, 0);
-    BOOST_TEST_REQUIRE(world.GetBQ(storehousePos, 1) >= BuildingQuality::House);
+    BOOST_TEST_REQUIRE(world.getBQ(storehousePos, 1) >= BuildingQuality::House);
     const noBuilding* storeHouse =
       BuildingFactory::createBuilding(world, BuildingType::Storehouse, storehousePos, 1, Nation::Romans);
     BOOST_TEST_REQUIRE(storeHouse);
@@ -625,11 +625,11 @@ BOOST_FIXTURE_TEST_CASE(CoinTrainingUpgradesRankChainByDefault, AttackFixture<>)
     addSoldiers(milBld0Pos, 1, Job::Sergeant);
 
     buildRoadForBlds(milBld0Pos, hqPos[0]);
-    DeliverCoin(*milBld0, world, hqPos[0]);
+    deliverCoin(*milBld0, world, hqPos[0]);
 
-    RTTR_EXEC_TILL(5000, CountTroopsByRank(*milBld0)[3] == 1u);
+    RTTR_EXEC_TILL(5000, countTroopsByRank(*milBld0)[3] == 1u);
 
-    const auto counts = CountTroopsByRank(*milBld0);
+    const auto counts = countTroopsByRank(*milBld0);
     BOOST_TEST_REQUIRE(counts[0] == 0u);
     BOOST_TEST_REQUIRE(counts[1] == 1u);
     BOOST_TEST_REQUIRE(counts[2] == 1u);
@@ -645,11 +645,11 @@ BOOST_FIXTURE_TEST_CASE(SingleSoldierCoinTrainingUpgradesOnlyLowestRankSoldier, 
     addSoldiers(milBld0Pos, 1, Job::Sergeant);
 
     buildRoadForBlds(milBld0Pos, hqPos[0]);
-    DeliverCoin(*milBld0, world, hqPos[0]);
+    deliverCoin(*milBld0, world, hqPos[0]);
 
-    RTTR_EXEC_TILL(5000, CountTroopsByRank(*milBld0)[1] == 2u);
+    RTTR_EXEC_TILL(5000, countTroopsByRank(*milBld0)[1] == 2u);
 
-    const auto counts = CountTroopsByRank(*milBld0);
+    const auto counts = countTroopsByRank(*milBld0);
     BOOST_TEST_REQUIRE(counts[0] == 0u);
     BOOST_TEST_REQUIRE(counts[1] == 2u);
     BOOST_TEST_REQUIRE(counts[2] == 1u);
@@ -1070,7 +1070,7 @@ BOOST_FIXTURE_TEST_CASE(FlagBecomesUnreachableForWaitingAttacker, AttackFixture<
     {
         // RSU triangle of building so it is reachable from flag
         auto& node = world.getNodeWriteable(defenderBldPos);
-        node.t1 = GetLandTerrain(world.getDescription()); // RSU triangle of node right of B
+        node.t1 = getLandTerrain(world.getDescription()); // RSU triangle of node right of B
     }
     GameWorldViewer gwv(plAttacker, world);
     BOOST_TEST_REQUIRE(gwv.getNumSoldiersForAttack(defenderBldPos) == 0u);

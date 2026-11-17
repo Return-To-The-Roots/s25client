@@ -132,7 +132,7 @@ void nofWarehouseWorker::walked()
     }
 
     // Remove myself
-    getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+    getEvMgr().addToKillList(world->removeFigure(pos, *this));
     world->getPlayer(player).decreaseInventoryJob(Job::Helper, 1);
 }
 

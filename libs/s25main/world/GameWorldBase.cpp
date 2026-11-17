@@ -36,11 +36,11 @@ GameWorldBase::GameWorldBase(std::vector<GamePlayer> players, const GlobalGameSe
 
 GameWorldBase::~GameWorldBase() = default;
 
-void GameWorldBase::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
+void GameWorldBase::init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {
     RTTR_Assert(getDescription().terrain.size() > 0); // Must have game data initialized
-    World::Init(mapSize, lt);
-    freePathFinder->Init(mapSize);
+    World::init(mapSize, lt);
+    freePathFinder->init(mapSize);
 }
 
 void GameWorldBase::initAfterLoad()
@@ -206,7 +206,7 @@ void GameWorldBase::recalcBQForRoad(const MapPoint pt)
 }
 
 namespace {
-bool IsMilBldOfOwner(const GameWorldBase& gwb, MapPoint pt, unsigned char owner)
+bool isMilBldOfOwner(const GameWorldBase& gwb, MapPoint pt, unsigned char owner)
 {
     return gwb.isMilitaryBuildingOnNode(pt, false) && (gwb.getNode(pt).owner == owner);
 }
@@ -216,7 +216,7 @@ bool GameWorldBase::isMilitaryBuildingNearNode(const MapPoint nPt, const unsigne
 {
     // Im Umkreis von 4 Punkten ein Militärgebäude suchen
     return checkPointsInRadius(
-      nPt, 4, [this, player](auto pt, auto) { return IsMilBldOfOwner(*this, pt, player + 1); }, false);
+      nPt, 4, [this, player](auto pt, auto) { return isMilBldOfOwner(*this, pt, player + 1); }, false);
 }
 
 bool GameWorldBase::isMilitaryBuildingOnNode(const MapPoint pt, bool attackBldsOnly) const
@@ -723,7 +723,7 @@ void GameWorldBase::recalcBQ(const MapPoint pt)
 
 void GameWorldBase::setComputerBarrier(const MapPoint& pt, unsigned radius)
 {
-    for(const auto& pt : GetPointsInRadiusWithCenter(pt, radius))
+    for(const auto& pt : getPointsInRadiusWithCenter(pt, radius))
         ptsInsideComputerBarriers.insert(pt);
 }
 

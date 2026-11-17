@@ -32,22 +32,22 @@ struct Param_RoadPath
     bool boat_road;
 };
 
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction, const void* param)
+bool isPointOKRoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction, const void* param)
 {
     const auto* prp = static_cast<const Param_RoadPath*>(param);
     return makePathConditionRoad(gwb, prp->boat_road).isNodeOk(pt);
 }
 
 /// Condition for comfort road construction with a possible flag every 2 steps
-bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param)
+bool isPointOKRoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param)
 {
-    if(!IsPointOK_RoadPath(gwb, pt, dir, param))
+    if(!isPointOKRoadPath(gwb, pt, dir, param))
         return false;
     const auto* prp = static_cast<const Param_RoadPath*>(param);
-    return prp->boat_road || gwb.GetBQ(pt, gwb.getNode(pt).owner - 1) != BuildingQuality::Nothing;
+    return prp->boat_road || gwb.getBQ(pt, gwb.getNode(pt).owner - 1) != BuildingQuality::Nothing;
 }
 
-int GetS4LikeMineResourceRating(const Resource resource, const unsigned defaultRating)
+int getS4LikeMineResourceRating(const Resource resource, const unsigned defaultRating)
 {
     if(resource.getAmount() == 0u)
         return 0;
@@ -171,11 +171,11 @@ int AIInterface::getResourceRating(const MapPoint pt, AIResource res) const
             const Resource subres = gwb.getNode(pt).resources;
             if(convertToNodeResource(getSubsurfaceResource(pt)) == res)
             {
-                const auto mineBuildingType = GetMineBuildingType(subres.getType());
+                const auto mineBuildingType = getMineBuildingType(subres.getType());
                 if(mineBuildingType
                    && getMineResourceBehavior(gwb.getGGS(), *mineBuildingType)
                         == MineResourceBehavior::S4LikeExhaustion)
-                    return GetS4LikeMineResourceRating(subres, RES_RADIUS[res]);
+                    return getS4LikeMineResourceRating(subres, RES_RADIUS[res]);
 
                 return RES_RADIUS[res];
             }
@@ -198,7 +198,7 @@ bool AIInterface::isMineResourceWorkEverywhere(const AIResource res) const
     if(!resourceType)
         return false;
 
-    const auto mineBuildingType = GetMineBuildingType(*resourceType);
+    const auto mineBuildingType = getMineBuildingType(*resourceType);
     return mineBuildingType
            && getMineResourceBehavior(gwb.getGGS(), *mineBuildingType) == MineResourceBehavior::WorkEverywhere;
 }
@@ -209,7 +209,7 @@ int AIInterface::calcResourceValue(const MapPoint pt, AIResource res, helpers::O
     const unsigned resRadius = RES_RADIUS[res];
     if(!direction) // calculate complete value from scratch (3n^2+3n+1)
     {
-        std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, resRadius);
+        std::vector<MapPoint> pts = gwb.getPointsInRadiusWithCenter(pt, resRadius);
         return std::accumulate(pts.begin(), pts.end(), 0, [this, res](int lhs, const auto& curPt) {
             return lhs + this->getResourceRating(curPt, res);
         });
@@ -266,8 +266,8 @@ bool AIInterface::findFreePathForNewRoad(MapPoint start, MapPoint target, std::v
 {
     bool boat = false;
     return gwb.getFreePathFinder().findPathAlternatingConditions(start, target, false, 100, route, length, nullptr,
-                                                                 IsPointOK_RoadPath, IsPointOK_RoadPathEvenStep,
-                                                                 nullptr, (void*)&boat);
+                                                                 isPointOKRoadPath, isPointOKRoadPathEvenStep, nullptr,
+                                                                 (void*)&boat);
 }
 
 bool AIInterface::calcBQSumDifference(const MapPoint pt1, const MapPoint pt2) const
@@ -277,7 +277,7 @@ bool AIInterface::calcBQSumDifference(const MapPoint pt1, const MapPoint pt2) co
 
 BuildingQuality AIInterface::getBuildingQuality(const MapPoint pt) const
 {
-    return gwb.GetBQ(pt, playerID_);
+    return gwb.getBQ(pt, playerID_);
 }
 
 BuildingQuality AIInterface::getBuildingQualityAnyOwner(const MapPoint pt) const

@@ -73,14 +73,14 @@ public:
                       T_IsValidPt&& isValid = T_IsValidPt{}, bool includePt = false) const;
     /// Return all points in the given radius that match the condition
     template<int T_maxResults = -1, class T_IsValidPt>
-    std::vector<MapPoint> GetMatchingPointsInRadius(MapPoint pt, unsigned radius, T_IsValidPt&& isValid,
+    std::vector<MapPoint> getMatchingPointsInRadius(MapPoint pt, unsigned radius, T_IsValidPt&& isValid,
                                                     bool includePt = false) const
     {
         return getPointsInRadius<T_maxResults>(pt, radius, ReturnMapPoint{}, std::forward<T_IsValidPt>(isValid),
                                                includePt);
     }
     /// Convenience method to return all points in the given radious including the center point
-    std::vector<MapPoint> GetPointsInRadiusWithCenter(const MapPoint pt, unsigned radius) const
+    std::vector<MapPoint> getPointsInRadiusWithCenter(const MapPoint pt, unsigned radius) const
     {
         return getPointsInRadius(pt, radius, ReturnMapPoint{}, AlwaysTrue{}, true);
     }

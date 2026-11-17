@@ -192,7 +192,7 @@ void noAnimal::handleEvent(const unsigned id)
         case 3:
         {
             // von der Karte tilgen
-            getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+            getEvMgr().addToKillList(world->removeFigure(pos, *this));
         }
         break;
     }

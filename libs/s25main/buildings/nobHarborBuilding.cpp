@@ -604,7 +604,7 @@ void nobHarborBuilding::shipArrived(noShip& ship)
                 if((*it)->getNextHarbor() == dest)
                 {
                     (*it)->startShipJourney();
-                    inventory.visual.remove(ConvertShields((*it)->type));
+                    inventory.visual.remove(convertShields((*it)->type));
                     wares.push_back(std::move(*it));
                     it = wares_for_ships.erase(it);
                 } else
@@ -876,7 +876,7 @@ void nobHarborBuilding::addFigureForShip(std::unique_ptr<noFigure> fig, MapPoint
 void nobHarborBuilding::addWareForShip(std::unique_ptr<Ware> ware)
 {
     // Anzahl visuell erhöhen
-    inventory.visual.add(ConvertShields(ware->type));
+    inventory.visual.add(convertShields(ware->type));
     ware->waitForShip(this);
     wares_for_ships.emplace_back(std::move(ware));
     orderShip();
@@ -1097,7 +1097,7 @@ nofAggressiveDefender* nobHarborBuilding::sendAggressiveDefender(nofAttacker& at
 std::unique_ptr<Ware> nobHarborBuilding::cancelWareForShip(Ware* ware)
 {
     // Ware zur Inventur hinzufügen
-    inventory.real.add(ConvertShields(ware->type));
+    inventory.real.add(convertShields(ware->type));
     return helpers::extractPtr(wares_for_ships, ware);
 }
 

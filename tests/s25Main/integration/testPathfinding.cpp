@@ -101,8 +101,8 @@ BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
 BOOST_FIXTURE_TEST_CASE(WalkAlongCoast, WorldFixtureEmpty0P)
 {
     const MapPoint startPt(5, 2);
-    const auto tWater = GetWaterTerrain(world.getDescription());
-    const auto tLand = GetLandTerrain(world.getDescription());
+    const auto tWater = getWaterTerrain(world.getDescription());
+    const auto tLand = getLandTerrain(world.getDescription());
 
     setupTestcase1(world, startPt, tWater, tLand);
     // 4 steps right
@@ -142,7 +142,7 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
 
     const auto deepWaterTerrains = world.getDescription().terrain.findAll(
       [](const TerrainDesc& t) { return !t.is(ETerrain::Walkable) && !t.is(ETerrain::Unreachable); });
-    const auto tLand = GetLandTerrain(world.getDescription());
+    const auto tLand = getLandTerrain(world.getDescription());
     for(DescIdx<TerrainDesc> deepWater : deepWaterTerrains)
     {
         for(Direction dir : testDirections)
@@ -194,7 +194,7 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
                                                 Direction::West, Direction::SouthWest, Direction::NorthWest};
     std::vector<DescIdx<TerrainDesc>> deadlyTerrains =
       world.getDescription().terrain.findAll([](const TerrainDesc& t) { return t.is(ETerrain::Unreachable); });
-    const auto tLand = GetLandTerrain(world.getDescription());
+    const auto tLand = getLandTerrain(world.getDescription());
     for(DescIdx<TerrainDesc> deadlyTerrain : deadlyTerrains)
     {
         for(Direction dir : testDirections)

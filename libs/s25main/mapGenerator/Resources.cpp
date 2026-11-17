@@ -12,7 +12,7 @@
 
 namespace rttr::mapGenerator {
 
-std::vector<Tree> CreateTrees(const TextureMap& textures)
+std::vector<Tree> createTrees(const TextureMap& textures)
 {
     const auto landscapeId = textures.getLandscapeId();
 
@@ -64,7 +64,7 @@ void addObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
     {
         if(harborOrHeadquarter(pt))
         {
-            auto suroundingArea = map.getTextures().GetPointsInRadiusWithCenter(pt, 5);
+            auto suroundingArea = map.getTextures().getPointsInRadiusWithCenter(pt, 5);
             excludedArea.insert(suroundingArea.begin(), suroundingArea.end());
         } else if(map.textureMap.any(pt, isSnowOrLava))
         {
@@ -72,7 +72,7 @@ void addObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
         }
     }
 
-    const auto distanceToExcludedArea = DistancesTo(excludedArea, map.size);
+    const auto distanceToExcludedArea = distancesTo(excludedArea, map.size);
 
     // 1) compute maximum water distance until mountain area
     // 2) probabilities
@@ -85,10 +85,10 @@ void addObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
 
     auto& textureMap = map.textureMap;
     const auto mountain = [&textureMap](const MapPoint& pt) { return textureMap.any(pt, isMountainOrSnowOrLava); };
-    const auto mountainDistance = DistancesTo(map.size, mountain);
+    const auto mountainDistance = distancesTo(map.size, mountain);
 
     const auto water = [&textureMap](const MapPoint& pt) { return textureMap.any(pt, isWater); };
-    auto waterDistance = DistancesTo(map.size, water);
+    auto waterDistance = distancesTo(map.size, water);
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
@@ -100,13 +100,13 @@ void addObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
         }
     }
 
-    const auto range = GetRange(waterDistance);
+    const auto range = getRange(waterDistance);
     const auto probRange = ValueRange<unsigned>(settings.trees / 2, settings.trees);
     const unsigned probDiff = probRange.getDifference();
 
     const auto mountainFoot = [&map](const MapPoint& pt) { return !map.textureMap.all(pt, isMountainOrSnowOrLava); };
-    const auto mountainDepth = DistancesTo(map.size, mountainFoot);
-    const auto mountainRange = GetRange(mountainDepth);
+    const auto mountainDepth = distancesTo(map.size, mountainFoot);
+    const auto mountainRange = getRange(mountainDepth);
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
@@ -114,12 +114,12 @@ void addObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
         {
             if(mountainDistance[pt] > 0)
             {
-                const unsigned prob = probDiff ? MapValueToIndex(waterDistance[pt], range, probDiff) : 0;
+                const unsigned prob = probDiff ? mapValueToIndex(waterDistance[pt], range, probDiff) : 0;
                 probabilities[pt] = prob + probRange.minimum;
             } else
             {
                 const unsigned diff = mountainRange.maximum - mountainDepth[pt];
-                const unsigned prob = probDiff ? MapValueToIndex(diff, mountainRange, probDiff) : 0;
+                const unsigned prob = probDiff ? mapValueToIndex(diff, mountainRange, probDiff) : 0;
                 probabilities[pt] = prob + probRange.minimum;
             }
         } else
@@ -128,13 +128,13 @@ void addObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
         }
     }
 
-    const auto trees = CreateTrees(map.textureMap);
+    const auto trees = createTrees(map.textureMap);
     const auto treeForPoint = [&mountainDistance, &waterDistance, &range, &trees](const MapPoint& pt) {
         if(mountainDistance[pt] == 0)
         {
             return trees.back();
         }
-        auto index = MapValueToIndex(waterDistance[pt], range, trees.size());
+        auto index = mapValueToIndex(waterDistance[pt], range, trees.size());
         return trees[index];
     };
 

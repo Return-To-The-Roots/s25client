@@ -125,7 +125,7 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     for(const auto i : helpers::enumRange<GoodType>())
     {
         // Only roman shields get added
-        if(ConvertShields(i) == GoodType::ShieldRomans && i != GoodType::ShieldRomans)
+        if(convertShields(i) == GoodType::ShieldRomans && i != GoodType::ShieldRomans)
             continue;
         newGoods[i] = rttr::enumCast(i) + 2;
         numGoods[i] += rttr::enumCast(i) + 2;
@@ -236,7 +236,7 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
     }
     for(const auto good : helpers::enumRange<GoodType>())
     {
-        if(ConvertShields(good) != good)
+        if(convertShields(good) != good)
             continue;
         inv[good] = 1;
     }
@@ -250,7 +250,7 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
     }
     for(const auto good : helpers::enumRange<GoodType>())
     {
-        if(ConvertShields(good) != good)
+        if(convertShields(good) != good)
             continue;
         SetInventorySetting(wh2Pos, good, EInventorySetting::Collect);
     }
@@ -277,7 +277,7 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
     }
     for(const auto good : helpers::enumRange<GoodType>())
     {
-        if(ConvertShields(good) != good)
+        if(convertShields(good) != good)
             continue;
         BOOST_TEST_INFO_SCOPE("Good: " << rttr::enumCast(good));
         BOOST_TEST(wh2->getNumVisualWares(good) == 1u);

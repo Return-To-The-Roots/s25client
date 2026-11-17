@@ -92,7 +92,7 @@ void iwSaveLoad::refreshTable()
 
     table->deleteAllItems();
 
-    std::vector<boost::filesystem::path> saveFiles = ListDir(RTTRCONFIG.expandPath(s25::folders::save), "sav");
+    std::vector<boost::filesystem::path> saveFiles = listDir(RTTRCONFIG.expandPath(s25::folders::save), "sav");
     for(const auto& saveFile : saveFiles)
     {
         Savegame save;

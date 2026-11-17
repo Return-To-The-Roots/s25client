@@ -403,7 +403,7 @@ void nofHunter::handleStateEviscerating()
     if(!animal->isGettingSkinned())
     {
         // Tier verschwinden lassen
-        auto ownedAnimal = world->RemoveFigure(pos, *animal);
+        auto ownedAnimal = world->removeFigure(pos, *animal);
         // Tier vernichten
         ownedAnimal->destroy();
     }

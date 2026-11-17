@@ -36,9 +36,9 @@ public:
     }
 };
 
-std::vector<bfs::path> GetReplays()
+std::vector<bfs::path> getReplays()
 {
-    return ListDir(RTTRCONFIG.expandPath(s25::folders::replays), "rpl");
+    return listDir(RTTRCONFIG.expandPath(s25::folders::replays), "rpl");
 }
 } // namespace
 
@@ -80,7 +80,7 @@ void iwPlayReplay::populateTable()
 
     unsigned numInvalid = 0;
 
-    const std::vector<bfs::path> replays = GetReplays();
+    const std::vector<bfs::path> replays = getReplays();
     for(const auto& path : replays)
     {
         Replay replay;
@@ -189,7 +189,7 @@ void iwPlayReplay::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     // Sollen alle Replays gelöscht werden?
     if(msgbox_id == 1 && mbr == MsgboxResult::Yes)
     {
-        const std::vector<bfs::path> replays = GetReplays();
+        const std::vector<bfs::path> replays = getReplays();
         for(const auto& replay : replays)
         {
             boost::system::error_code ec;
@@ -200,7 +200,7 @@ void iwPlayReplay::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         getCtrl<ctrlTable>(0)->deleteAllItems();
     } else if(msgbox_id == 3 && mbr == MsgboxResult::Yes)
     {
-        const std::vector<bfs::path> replays = GetReplays();
+        const std::vector<bfs::path> replays = getReplays();
         for(const auto& it : replays)
         {
             Replay replay;

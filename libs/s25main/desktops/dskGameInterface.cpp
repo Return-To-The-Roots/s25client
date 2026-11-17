@@ -204,7 +204,7 @@ dskGameInterface::~dskGameInterface()
 
 void dskGameInterface::setActive(bool activate)
 {
-    if(activate == IsActive())
+    if(activate == isActive())
         return;
     if(!activate && isScrolling)
     {
@@ -514,7 +514,7 @@ bool dskGameInterface::contextClick(const MouseCoords& mc)
                 MapPoint targetPt = selPt;
                 if(!buildRoadPart(targetPt))
                     showRoadWindow(mc.pos);
-            } else if(worldViewer.GetBQ(selPt) != BuildingQuality::Nothing)
+            } else if(worldViewer.getBQ(selPt) != BuildingQuality::Nothing)
             {
                 // Wurde bereits auf das gebaute Stück geklickt?
                 unsigned idOnRoad = getIdInCurBuildRoad(selPt);
@@ -614,7 +614,7 @@ bool dskGameInterface::contextClick(const MouseCoords& mc)
         // Unser Land
         if(worldViewer.isOwner(cSel))
         {
-            const BuildingQuality bq = worldViewer.GetBQ(cSel);
+            const BuildingQuality bq = worldViewer.getBQ(cSel);
             // Kann hier was gebaut werden?
             if(bq >= BuildingQuality::Mine)
             {
@@ -1039,7 +1039,7 @@ void dskGameInterface::GI_CancelRoadBuilding()
 bool dskGameInterface::buildRoadPart(MapPoint& cSel)
 {
     std::vector<Direction> new_route =
-      FindPathForRoad(worldViewer, road.point, cSel, road.mode == RoadBuildMode::Boat, 100);
+      findPathForRoad(worldViewer, road.point, cSel, road.mode == RoadBuildMode::Boat, 100);
     // Weg gefunden?
     if(new_route.empty())
         return false;
@@ -1100,7 +1100,7 @@ unsigned dskGameInterface::getIdInCurBuildRoad(const MapPoint pt)
 void dskGameInterface::showRoadWindow(const Position& mousePos)
 {
     roadwindow = &WINDOWMANAGER.show(
-      std::make_unique<iwRoadWindow>(*this, worldViewer.GetBQ(road.point) != BuildingQuality::Nothing, mousePos), true);
+      std::make_unique<iwRoadWindow>(*this, worldViewer.getBQ(road.point) != BuildingQuality::Nothing, mousePos), true);
 }
 
 void dskGameInterface::showActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,

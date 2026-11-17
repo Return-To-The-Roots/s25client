@@ -44,7 +44,7 @@ void noMovable::walk()
     moving = false;
     const MapPoint oldPos = pos;
     pos = world->getNeighbour(pos, curMoveDir);
-    world->addFigure(pos, world->RemoveFigure(oldPos, *this));
+    world->addFigure(pos, world->removeFigure(oldPos, *this));
 }
 
 void noMovable::faceDir(Direction newDir)

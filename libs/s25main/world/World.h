@@ -80,12 +80,12 @@ public:
     virtual ~World();
 
     /// Initialize the world
-    virtual void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt);
+    virtual void init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt);
     /// Clean up (free objects and reset world to uninitialized state)
     void unload();
 
     /// Return the type of the landscape
-    DescIdx<LandscapeDesc> GetLandscapeType() const { return lt; }
+    DescIdx<LandscapeDesc> getLandscapeType() const { return lt; }
 
     const WorldDescription& getDescription() const { return description_; }
     WorldDescription& getDescriptionWriteable() { return description_; }
@@ -102,12 +102,12 @@ public:
         return static_cast<T&>(addFigureImpl(pt, std::move(fig)));
     }
     template<typename T>
-    std::unique_ptr<T> RemoveFigure(MapPoint pt, T& fig)
+    std::unique_ptr<T> removeFigure(MapPoint pt, T& fig)
     {
         return std::unique_ptr<T>(static_cast<T*>(removeFigureImpl(pt, fig)));
     }
     template<typename T>
-    std::unique_ptr<T> RemoveFigure(MapPoint pt, T*& fig) = delete;
+    std::unique_ptr<T> removeFigure(MapPoint pt, T*& fig) = delete;
     /// Return the NO from that point or a "nothing"-object if there is none
     noBase* getNO(MapPoint pt);
     /// Return the NO from that point or a "nothing"-object if there is none
@@ -138,7 +138,7 @@ public:
     bool isPlayerTerritory(MapPoint pt, unsigned char owner = 0) const;
 
     /// Return the BQ for the given player at the point (including ownership constraints)
-    BuildingQuality GetBQ(MapPoint pt, unsigned char player) const;
+    BuildingQuality getBQ(MapPoint pt, unsigned char player) const;
     /// Incorporates node ownership into the given BQ
     BuildingQuality adjustBQ(MapPoint pt, unsigned char player, BuildingQuality nodeBQ) const;
 

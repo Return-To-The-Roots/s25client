@@ -53,7 +53,7 @@ BOOST_FIXTURE_TEST_CASE(InitialPactStates, WorldWithGCExecution3P)
 
 namespace {
 /// Validate the state of a pact between to players. Also checks that the state for the other player is the same
-void CheckPactState(const GameWorldBase& world, unsigned playerIdFrom, unsigned playerIdTo, PactType pact,
+void checkPactState(const GameWorldBase& world, unsigned playerIdFrom, unsigned playerIdTo, PactType pact,
                     PactState expectedState)
 {
     const GamePlayer& playerFrom = world.getPlayer(playerIdFrom);
@@ -102,10 +102,10 @@ BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P, *utf::depends_on("
 
     // Invalid length
     this->SuggestPact(2, PactType::NonAgressionPact, 0u);
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
     // Own player
     this->SuggestPact(1, PactType::NonAgressionPact, 0u);
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
     BOOST_TEST_REQUIRE(postbox2.getNumMsgs() == 0u);
 
     const unsigned duration = 10;
@@ -118,24 +118,24 @@ BOOST_FIXTURE_TEST_CASE(MakePactTest, WorldWithGCExecution3P, *utf::depends_on("
     BOOST_TEST(msg->getPlayerId() == curPlayer);
     BOOST_TEST(msg->isAccept() == true);
     // should be in progress for player1
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::InProgress);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::InProgress);
 
     // Same player sends accept -> Disallowed
     this->AcceptPact(msg->getPactId(), PactType::NonAgressionPact, 2);
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::InProgress);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::InProgress);
 
     curPlayer = 2;
     // Wrong ID
     this->AcceptPact(msg->getPactId() + 1, PactType::NonAgressionPact, msg->getPlayerId());
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::InProgress);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::InProgress);
     // Wrong Pact
     this->AcceptPact(msg->getPactId(), PactType::TreatyOfAlliance, msg->getPlayerId());
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::InProgress);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::InProgress);
     // Correct
     this->AcceptPact(msg->getPactId(), PactType::NonAgressionPact, msg->getPlayerId());
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
     // Other pact should not be affected
-    CheckPactState(world, 1, 2, PactType::TreatyOfAlliance, PactState::None);
+    checkPactState(world, 1, 2, PactType::TreatyOfAlliance, PactState::None);
 
     // Check duration
     BOOST_TEST(player1.getRemainingPactTime(PactType::NonAgressionPact, 2) == duration);
@@ -159,7 +159,7 @@ struct PactCreatedFixture : public WorldWithGCExecution3P
         BOOST_TEST_REQUIRE(msg);
         curPlayer = 2;
         this->AcceptPact(msg->getPactId(), PactType::NonAgressionPact, msg->getPlayerId());
-        CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
+        checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
     }
 };
 
@@ -173,7 +173,7 @@ BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture, *utf::depends_on("
     for(unsigned i = 0; i < duration; i++)
     {
         // Pact still valid
-        CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
+        checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
         BOOST_TEST_REQUIRE(player1.getRemainingPactTime(PactType::NonAgressionPact, 2) == duration - i);
         // Double accept -> Do not change
         this->AcceptPact(msg->getPactId(), PactType::NonAgressionPact, msg->getPlayerId());
@@ -184,7 +184,7 @@ BOOST_FIXTURE_TEST_CASE(PactDurationTest, PactCreatedFixture, *utf::depends_on("
     }
     // On last GF the pact expired
     BOOST_TEST(player1.getRemainingPactTime(PactType::NonAgressionPact, 2) == 0u);
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
 }
 
 BOOST_FIXTURE_TEST_CASE(PactCanceling, PactCreatedFixture, *utf::depends_on("PactTestSuite/MakePactTest"))
@@ -197,7 +197,7 @@ BOOST_FIXTURE_TEST_CASE(PactCanceling, PactCreatedFixture, *utf::depends_on("Pac
     curPlayer = 2;
     this->CancelPact(PactType::NonAgressionPact, 1);
     // Pact still alive
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
     // But player1 should have received a question
     BOOST_TEST_REQUIRE(postbox1.getNumMsgs() == 1u);
     msg = dynamic_cast<const DiplomacyPostQuestion*>(postbox1.getMsg(0));
@@ -211,19 +211,19 @@ BOOST_FIXTURE_TEST_CASE(PactCanceling, PactCreatedFixture, *utf::depends_on("Pac
     // .. or with self
     this->CancelPact(PactType::NonAgressionPact, 2);
     // Pact still alive
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
 
     curPlayer = 1;
     // other player tries self cancel
     this->CancelPact(PactType::NonAgressionPact, 1);
     // Pact still alive
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
 
     // And finally do it. Each player should receive a message
     BOOST_TEST_REQUIRE(postbox1.getNumMsgs() == 2u); // 2 cancel messages
     BOOST_TEST_REQUIRE(postbox2.getNumMsgs() == 0u);
     this->CancelPact(PactType::NonAgressionPact, 2);
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
     BOOST_TEST_REQUIRE(postbox1.getNumMsgs() == 3u);
     BOOST_TEST_REQUIRE(postbox2.getNumMsgs() == 1u);
     // The new message should not be a question
@@ -246,7 +246,7 @@ BOOST_FIXTURE_TEST_CASE(SuggestNewPactAfterExpiration, PactCreatedFixture,
     }
 
     // On last GF the pact expired. Suggest new pact.
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::None);
     curPlayer = 1;
     this->SuggestPact(2, PactType::NonAgressionPact, duration);
 
@@ -258,7 +258,7 @@ BOOST_FIXTURE_TEST_CASE(SuggestNewPactAfterExpiration, PactCreatedFixture,
     curPlayer = 2;
     this->AcceptPact(msg->getPactId(), PactType::NonAgressionPact, msg->getPlayerId());
     // pact state must be accepted
-    CheckPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
+    checkPactState(world, 1, 2, PactType::NonAgressionPact, PactState::Accepted);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

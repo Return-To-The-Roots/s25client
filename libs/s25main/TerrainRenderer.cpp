@@ -265,7 +265,7 @@ void TerrainRenderer::updateBorderVertex(const MapPoint pt)
       / 3.0f;
 }
 
-void TerrainRenderer::Init(const MapExtent& size)
+void TerrainRenderer::init(const MapExtent& size)
 {
     size_ = size;
     // Clear first, so they are default-initialized
@@ -300,7 +300,7 @@ static DescIdx<EdgeDesc> getEdgeType(const TerrainDesc& t1, const TerrainDesc& t
 void TerrainRenderer::generateOpenGL(const GameWorldViewer& gwv)
 {
     const GameWorldBase& world = gwv.getWorld();
-    Init(world.getSize());
+    init(world.getSize());
 
     generateVertices(gwv);
     const WorldDescription& desc = world.getDescription();

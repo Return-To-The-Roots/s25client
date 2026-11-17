@@ -287,7 +287,7 @@ void GameClient::startGame(const unsigned random_init)
     framesinfo.gfLengthReq = framesinfo.gf_length;
 
     // Random-Generator initialisieren
-    RANDOM.Init(random_init);
+    RANDOM.init(random_init);
     AI::getRandomGenerator().seed(random_init);
 
     if(!isReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->load(mapinfo.filepath, SaveGameDataToLoad::All))
@@ -864,7 +864,7 @@ bool GameClient::onGameMessage(const GameMessage_Server_Async& msg)
     const bfs::path filePathSave = RTTRCONFIG.expandPath(s25::folders::save) / makePortableFileName(fileName + ".sav");
     const bfs::path filePathLog =
       RTTRCONFIG.expandPath(s25::folders::logs) / makePortableFileName(fileName + "Player.log");
-    saveRandomLog(filePathLog, RANDOM.GetAsyncLog());
+    saveRandomLog(filePathLog, RANDOM.getAsyncLog());
     saveToFile(filePathSave);
     LOG.write(_("Async log saved at %1%,\ngame saved at %2%\n")) % filePathLog % filePathSave;
     return true;
@@ -1252,7 +1252,7 @@ bool GameClient::onGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
 
     // AsyncLog an den Server senden
 
-    std::vector<RandomEntry> async_log = RANDOM.GetAsyncLog();
+    std::vector<RandomEntry> async_log = RANDOM.getAsyncLog();
 
     // stückeln...
     std::vector<RandomEntry> part;

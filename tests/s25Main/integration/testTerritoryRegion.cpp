@@ -319,9 +319,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForHQs, WorldFixtureEmpty2P)
     const MapPoint hq1Pos = world.getPlayer(1).getHQPos();
     auto distance = hq1Pos.x - hq0Pos.x;
 
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(hq0Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 1); }
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq1Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(hq1Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 2); }
 
     // Remove HQ 1 and its fire to place it closer to HQ 0
@@ -332,9 +332,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForHQs, WorldFixtureEmpty2P)
     distance = 7; // Odd number such that there is no point in the same distance to both HQs
     const MapPoint newHq1Pos = hq0Pos + MapPoint(distance, 0);
     BuildingFactory::createBuilding(world, BuildingType::Headquarters, newHq1Pos, 1, Nation::Africans);
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(hq0Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 1); }
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(newHq1Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(newHq1Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 2); }
 }
 
@@ -345,9 +345,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForDestroyedHQ, WorldFixtureEmpty2P
     const MapPoint hq1Pos = world.getPlayer(1).getHQPos();
     auto distance = hq1Pos.x - hq0Pos.x;
 
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(hq0Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 1); }
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq1Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(hq1Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 2); }
 
     this->ggs.setSelection(AddonId::NO_ALLIED_PUSH, true);
@@ -356,7 +356,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForDestroyedHQ, WorldFixtureEmpty2P
     world.destroyNO(hq1Pos);
     world.destroyNO(hq1Pos);
 
-    auto hq0Region = world.GetPointsInRadiusWithCenter(hq0Pos, 9);
+    auto hq0Region = world.getPointsInRadiusWithCenter(hq0Pos, 9);
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         auto owner = std::find(std::begin(hq0Region), std::end(hq0Region), pt) != std::end(hq0Region) ? 1 : 0;

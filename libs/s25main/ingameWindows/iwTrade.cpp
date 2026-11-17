@@ -48,7 +48,7 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     for(const auto i : helpers::enumRange<GoodType>())
     {
         // Only add one shield type
-        if(i != ConvertShields(i))
+        if(i != convertShields(i))
             continue;
         // Don't add empty water
         if(i == GoodType::WaterEmpty)

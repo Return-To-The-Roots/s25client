@@ -27,5 +27,5 @@ struct ReplayCommandsResult
 
 /// Execute the commands the replay recorded for the game's current GF, handing chat messages to onChat.
 /// nextGF is the GF of the replay's next command and is advanced past the executed ones.
-ReplayCommandsResult ExecuteReplayCommands(Replay& replay, std::optional<unsigned>& nextGF, Game& game,
+ReplayCommandsResult executeReplayCommands(Replay& replay, std::optional<unsigned>& nextGF, Game& game,
                                            const std::function<void(const Replay::ChatCommand&)>& onChat = {});
