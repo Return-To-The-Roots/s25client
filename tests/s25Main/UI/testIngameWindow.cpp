@@ -630,7 +630,7 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
 
         {
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 30));
-            // Reset mouse position to ensure it's properly updated in Msg_MouseMove()
+            // Reset mouse position to ensure it's properly updated in msgMouseMove()
             VIDEODRIVER.setMousePos(Position(0, 0));
             wnd2.msgMouseMove(mc);
             BOOST_TEST(wnd2.getPos() == DrawPoint(100, 500)); // Still in snap range

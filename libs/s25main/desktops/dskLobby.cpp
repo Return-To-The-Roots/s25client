@@ -196,7 +196,7 @@ void dskLobby::msgWindowClosed(IngameWindow& wnd)
 
 bool isServerVersionValid(const LobbyServerInfo& serverInfo)
 {
-    // The server version is/should be rttr::version::GetReadableVersion()
+    // The server version is/should be rttr::version::getReadableVersion()
     if(serverInfo.getVersion() == rttr::version::getReadableVersion())
         return true;
     // If we don't have an exact match we allow at least the same revision.

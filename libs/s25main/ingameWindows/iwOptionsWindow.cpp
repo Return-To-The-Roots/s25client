@@ -97,8 +97,8 @@ iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
     curPos.y += imageButtonSize.y + generalSpacing;
 
     // TODO: Implement
-    // AddImageButton(ID_btLoad, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 48));
-    // AddText(ID_txtLoad, curPos + textOffset, _("Load game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    // addImageButton(ID_btLoad, curPos, imageButtonSize, TextureColor::Green2, LOADER.getImageN("io", 48));
+    // addText(ID_txtLoad, curPos + textOffset, _("Load game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
     // curPos.y += imageButtonSize.y + generalSpacing;
 
     curPos.y += 3 + imageButtonSize.y / 2; // TODO: Delete this row, if the Load button is implemented

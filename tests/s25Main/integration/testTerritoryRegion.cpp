@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(isPointValid)
             RTTR_FOREACH_PT(MapPoint, worldSize)
             {
                 // If the point is in the set, it is in the small rect and should not be in the big rect with this as a
-                // hole
+                // Hole
                 const bool result = !helpers::contains(results, pt);
                 const bool isValid = TerritoryRegion::isPointValid(worldSize, fullArea, pt);
                 BOOST_TEST_INFO(" at " << pt);

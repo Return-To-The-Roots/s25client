@@ -597,7 +597,7 @@ BOOST_FIXTURE_TEST_CASE(BrokenReplayWithMap, ReplayMapFixture)
         BOOST_TEST_REQUIRE(replay.isRecording());
         addReplayCmds(replay, cmds);
         BOOST_TEST(replay.getLastGF() == 5u);
-        // Assume an exception/crash here so Replay is simply destroyed without Close or StopRecording
+        // Assume an exception/crash here so Replay is simply destroyed without Close or stopRecording
     }
 
     Replay loadReplay;
@@ -760,7 +760,7 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
     BOOST_TEST_REQUIRE(deserializedHunter2);
     BOOST_TEST(deserializedHunter1->getState() != deserializedHunter2->getState());
 
-    // serialize again and compare data
+    // Serialize again and compare data
     SerializedGameData sgd2;
     sgd2.makeSnapshot(*game);
     BOOST_CHECK_EQUAL_COLLECTIONS(sgd.getData(), sgd.getData() + sgd.getLength(), sgd2.getData(),

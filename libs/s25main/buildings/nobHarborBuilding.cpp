@@ -644,12 +644,12 @@ void nobHarborBuilding::addWare(std::unique_ptr<Ware> ware)
         {
             // We have a goal but it isn't this and there is no next dir
             // This can only happen when the ware was redirected to a warehouse while being carried,
-            // see Ware::FindRouteToWarehouse called by Ware::RecalcRoute
+            // see Ware::findRouteToWarehouse called by Ware::recalcRoute
 
-            // TODO(Replay) When Ware::FindRouteToWarehouse recalculates the route when called from RecalcRoute
+            // TODO(Replay) When Ware::findRouteToWarehouse recalculates the route when called from recalcRoute
             // and next_dir is None then goal will be NULL or us.
             // So the condition of this branch can never be true and the branch can be replaced by:
-            // RTTR_Assert(!ware->GetGoal() || ware->GetGoal() == this)
+            // RTTR_Assert(!ware->getGoal() || ware->getGoal() == this)
             RTTR_Assert(ware->isCarried());
             // Explicitly calculate the route which now should set it.
             ware->recalcRoute();

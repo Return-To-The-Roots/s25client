@@ -221,7 +221,7 @@ void noFighting::handleEvent(const unsigned id)
                         const MapPoint pos = soldiers[turn]->getPos();
                         auto& winningSoldier = world->addFigure(pos, std::move(soldiers[turn]));
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
-                        // Do this before calling WonFighting so this fight doesn't block the soldier looking for a new
+                        // Do this before calling wonFighting so this fight doesn't block the soldier looking for a new
                         // fight spot
                         turn = 3 + (1 - turn);
                         winningSoldier.wonFighting();

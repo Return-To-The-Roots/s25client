@@ -27,7 +27,7 @@ std::string Replay::getSignature() const
 /// If the change cannot be handled:
 ///     - Remove all code handling this version.
 ///     - Reset this version to 0
-///     - Increase the version in GetVersion
+///     - Increase the version in getVersion
 ///
 /// Changelog:
 /// 1: Unused first CommandType (End) removed, GameCommand version added
@@ -39,7 +39,7 @@ uint8_t Replay::getLatestMinorVersion() const
 {
     // 8.1: Portraits support
     // 8.2: Set correct initial distributions if replay starts without savegame for leather addon (see GameClient.cpp
-    //      StartReplay function for detailed description)
+    //      startReplay function for detailed description)
     // 8.3  Remove invalid fish for replays started from start (i.e. map instead of savegame)
     // 8.4  Hunter/skinner/AI search for animals in a circle instead of a square (radius-based)
     return 4;

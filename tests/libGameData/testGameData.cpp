@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(LoadGameData)
             BOOST_TEST(desc.minimapColor == TerrainData::getColor(lt, t));
         }
     }
-    // TerrainData::PrintEdgePrios();
+    // TerrainData::printEdgePrios();
 }
 
 BOOST_AUTO_TEST_CASE(DetectError)

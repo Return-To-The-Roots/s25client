@@ -280,7 +280,7 @@ dskOptions::dskOptions() : Desktop(LOADER.getImageN("setup013", 0))
     combo->addItem(_("No Proxy"));
     combo->addItem(_("Socks v4"));
     // TODO: not implemented
-    // combo->AddString(_("Socks v5"));
+    // combo->addString(_("Socks v5"));
 
     switch(SETTINGS.proxy.type)
     {

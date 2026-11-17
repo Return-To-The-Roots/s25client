@@ -225,7 +225,7 @@ void iwSaveAddonPreset::msgTableSelectItem(const unsigned ctrl_id, const std::op
     {
         const auto& table = assertNonNull(getCtrl<ctrlTable>(ID_tblPresets));
         auto& edit = assertNonNull(getCtrl<ctrlEdit>(ID_edtName));
-        // Suppress the change event so Msg_EditChange won't deselect the row just selected
+        // Suppress the change event so msgEditChange won't deselect the row just selected
         edit.setNotify(false);
         edit.setText(table.getItemText(*selection, 0));
         edit.setNotify(true);

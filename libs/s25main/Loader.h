@@ -103,7 +103,7 @@ public:
     extractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect, uint8_t startIndex, uint8_t colorCount);
 
     glArchivItem_Bitmap* getImageN(const ResourceId& file, unsigned nr);
-    /// Same as GetImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
+    /// Same as getImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
     ITexture* getTextureN(const ResourceId& file, unsigned nr);
     glArchivItem_Bitmap* getImage(const ResourceId& file, const std::string& name);
     glArchivItem_Bitmap_Player* getPlayerImage(const ResourceId& file, unsigned nr);
@@ -120,7 +120,7 @@ public:
     glArchivItem_Bitmap_Player* getNationPlayerImage(Nation nation, unsigned nr);
     /// Return the map texture with the given number
     ITexture* getMapTexture(unsigned nr);
-    /// Return the more specialized map image. Note: Prefer GetMapTexture which also handles (pseudo) player bitmaps
+    /// Return the more specialized map image. Note: Prefer getMapTexture which also handles (pseudo) player bitmaps
     glArchivItem_Bitmap* getMapImage(unsigned nr);
     /// Get the ware symbol texture
     ITexture* getWareTex(GoodType ware);

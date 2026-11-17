@@ -127,7 +127,7 @@ bool RoadPathFinder::findPathImpl(const noRoadNode& start, const noRoadNode& goa
     }
 
     // If the goal is a flag (unlikely) we have no goal building
-    // TODO(Replay): Change RoadPathFinder::FindPath to target flag instead of building for wares
+    // TODO(Replay): Change RoadPathFinder::findPath to target flag instead of building for wares
     const noRoadNode* goalBld = (goal.getGOT() == GO_Type::Flag) ? nullptr : &goal;
 
     // Use a counter for the visited-states so we don't have to reset them on every invocation
@@ -326,7 +326,7 @@ bool RoadPathFinder::pathExists(const noRoadNode& start, const noRoadNode& goal,
     if(allowWaterRoads)
     {
         // TODO(Replay): Change to target flag instead of its attached building.
-        // Likely combine with RoadPathFinder::FindPath
+        // Likely combine with RoadPathFinder::findPath
         if(forbidden)
             return findPathImpl(start, goal, max, AdditonalCosts::None(), SegmentConstraints::AvoidSegment(forbidden));
         else

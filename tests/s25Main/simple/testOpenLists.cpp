@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(PopRemovesLowestElement)
         BOOST_TEST_REQUIRE(list.arePositionsValid());
         BOOST_TEST(list.size() == i + 1u);
     }
-    // pop all elements should return lowest elements first (hence the set for comparison)
+    // Pop all elements should return lowest elements first (hence the set for comparison)
     for(unsigned i = 0; i < elements.size(); ++i)
     {
         BOOST_TEST_REQUIRE(!list.empty());
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(RearrangeMakesTheHeapValidAgain)
         BOOST_TEST_REQUIRE(list.arePositionsValid());
     }
 
-    // pop all elements in right order
+    // Pop all elements in right order
     for(unsigned i = 0; i < elements.size(); ++i)
     {
         BOOST_TEST_REQUIRE(!list.empty());

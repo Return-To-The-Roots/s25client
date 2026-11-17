@@ -609,7 +609,7 @@ void MapLoader::calcHarborPosNeighbors(World& world)
     }
     PathConditionShip shipPathChecker(world);
 
-    // pre-calculate sea-points, as IsSeaPoint is rather expensive
+    // pre-calculate sea-points, as isSeaPoint is rather expensive
     std::vector<int8_t> ptIsSeaPt(world.nodes.size()); //-V656
 
     RTTR_FOREACH_PT(MapPoint, world.getSize())

@@ -63,7 +63,7 @@ bool FreePathFinder::findPath(const MapPoint start, const MapPoint dest, bool ra
     todo.push(&startNode);
 
     // Bei Zufälliger Richtung anfangen (damit man nicht immer denselben Weg geht, besonders für die Soldaten wichtig)
-    // TODO confirm random: RANDOM.Rand(__FILE__, __LINE__, y_start * GetWidth() + x_start, 6);
+    // TODO confirm random: RANDOM.rand(__FILE__, __LINE__, y_start * getWidth() + x_start, 6);
     const Direction startDir =
       randomRoute ? convertToDirection(gwb_.getIdx(start) * gwb_.getEvMgr().getCurrentGF()) : Direction::West;
 

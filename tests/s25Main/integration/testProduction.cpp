@@ -350,7 +350,7 @@ BOOST_FIXTURE_TEST_CASE(CoalMineWorkEverywhereBehaviorProducesWithoutCreatingRes
     BOOST_TEST(world.getNode(minePos).resources.getAmount() == 0u);
 }
 
-// Regression test: the out-of-resources notification was moved from nofWorkman::FindPointWithResource into its
+// Regression test: the out-of-resources notification was moved from nofWorkman::findPointWithResource into its
 // callers, so every caller (not only mines) must still report it.
 BOOST_FIXTURE_TEST_CASE(WellWithoutWaterReportsOutOfResources, WorldWithGCExecution1P)
 {

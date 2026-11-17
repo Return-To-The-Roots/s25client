@@ -22,7 +22,7 @@ struct FramesInfo
     unsigned nwf_length;
     /// Time since last GF in ms (valid range: [0, gfLength) )
     std::chrono::milliseconds frameTime;
-    /// Timestamp of the last processed GF (--> FrameTime = CurrentTime - LastTime (except for lags) )
+    /// Timestamp of the last processed GF (--> FrameTime = currentTime - LastTime (except for lags) )
     UsedClock::time_point lastTime;
     /// True if the game is paused (no processing of GFs)
     bool isPaused;

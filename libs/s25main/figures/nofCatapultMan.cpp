@@ -69,7 +69,7 @@ void nofCatapultMan::drawWorking(DrawPoint drawPt)
             }
             // else
             //  // Katapult schießend zeichnen
-            //  LOADER.GetPlayerImage("rom_bobs", 1787+(7+wheel_steps)%6)->Draw(x-7,y-19);
+            //  LOADER.getPlayerImage("rom_bobs", 1787+(7+wheel_steps)%6)->draw(x-7,y-19);
         }
         break;
         case State::CatapultBackoff:

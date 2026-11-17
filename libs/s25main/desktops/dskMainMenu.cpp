@@ -53,9 +53,9 @@ dskMainMenu::dskMainMenu()
     if(SETTINGS.global.submitDebugData == SubmitDebugData::AskAtStart)
         addTimer(ID_tmrDebugData, 250ms);
 
-    /*AddText(20, DrawPoint(50, 450), _("Font Test"), COLOR_YELLOW, FontStyle::LEFT, SmallFont);
-    AddText(21, DrawPoint(50, 470), _("Font Test"), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
-    AddText(22, DrawPoint(50, 490), _("Font Test"), COLOR_YELLOW, FontStyle::LEFT, LargeFont);*/
+    /*addText(20, DrawPoint(50, 450), _("Font Test"), COLOR_YELLOW, FontStyle::LEFT, SmallFont);
+    addText(21, DrawPoint(50, 470), _("Font Test"), COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+    addText(22, DrawPoint(50, 490), _("Font Test"), COLOR_YELLOW, FontStyle::LEFT, LargeFont);*/
     //  !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz\\_ABCDEFGHIJKLMNOPQRSTUVWXYZÇüéâäàåçêëèïîì©ÄÅôöòûùÖÜáíóúñ
 }
 

@@ -743,7 +743,7 @@ void GamePlayer::recalcDistributionOfWare(const GoodType ware)
     wareGoals.reserve(goalCount);
 
     // just drop them in the list, the distribution will be handled by going through this list using a prime as step
-    // (see GameClientPlayer::FindClientForWare)
+    // (see GameClientPlayer::findClientForWare)
     for(const BldEntry& bldEntry : bldPercentageMap)
     {
         for(unsigned char i = 0; i < bldEntry.second; ++i)
@@ -1131,7 +1131,7 @@ noBaseBuilding* GamePlayer::findClientForWare(const Ware& ware)
     {
         unsigned pathLength;
 
-        // If our estimate is worse (or equal) best_points, the real value cannot be better.
+        // If our estimate is worse (or equal) bestPoints, the real value cannot be better.
         // As our list is sorted, further entries cannot be better either, so stop searching.
         if(possibleClient.estimate <= bestPoints)
             break;
@@ -1155,8 +1155,8 @@ noBaseBuilding* GamePlayer::findClientForWare(const Ware& ware)
         {
             unsigned score = possibleClient.points - (pathLength / 2);
 
-            // As we have limited our pathfinding to take a maximum of (points - best_points) * 2 - 1 steps,
-            // path_length / 2 can at most be points - best_points - 1, so the score will be greater than best_points.
+            // As we have limited our pathfinding to take a maximum of (points - bestPoints) * 2 - 1 steps,
+            // pathLength / 2 can at most be points - bestPoints - 1, so the score will be greater than bestPoints.
             // :)
             RTTR_Assert(score > bestPoints);
 
@@ -1197,7 +1197,7 @@ template<class T_GetPriority, class T_Buildings>
 typename T_Buildings::value_type GamePlayer::findClientImpl(const Ware& ware, T_GetPriority&& getPriority,
                                                             const T_Buildings& buildings) const
 {
-    // TODO(replay): Unify with FindClientForWare: Sort by estimated priority first for less path finding.
+    // TODO(replay): Unify with findClientForWare: Sort by estimated priority first for less path finding.
     // See PR #1720
     typename T_Buildings::value_type bestClient = nullptr;
     unsigned bestPoints = 0;
@@ -1345,7 +1345,7 @@ void GamePlayer::recalcMilitaryFlags()
 void GamePlayer::newSoldiersAvailable(const unsigned& soldierCount)
 {
     RTTR_Assert(soldierCount > 0);
-    // solange laufen lassen, bis soldier_count = 0, d.h. der Soldat irgendwohin geschickt wurde
+    // solange laufen lassen, bis soldierCount = 0, d.h. der Soldat irgendwohin geschickt wurde
     // Zuerst nach unbesetzten Militärgebäude schauen
     for(nobMilitary* milBld : buildings.getMilitaryBuildings())
     {

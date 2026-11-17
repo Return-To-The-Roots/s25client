@@ -30,14 +30,14 @@ nobBaseMilitary::~nobBaseMilitary() = default;
 void nobBaseMilitary::DestroyBuilding()
 {
     // Notify soldiers on mission.
-    // ATTENTION: iterators can be deleted in HomeDestroyed, -> copy first
+    // ATTENTION: iterators can be deleted in homeDestroyed, -> copy first
     std::vector<nofActiveSoldier*> tmpTroopsOnMission(troops_on_mission.begin(), troops_on_mission.end());
     for(auto* it : tmpTroopsOnMission)
         it->homeDestroyed();
     troops_on_mission.clear();
 
     // Notify soldiers attacking this building
-    // ATTENTION: iterators can be deleted in AttackedGoalDestroyed, -> copy first
+    // ATTENTION: iterators can be deleted in attackedGoalDestroyed, -> copy first
     std::vector<nofAttacker*> tmpAggressors(aggressors.begin(), aggressors.end());
     for(auto* tmpAggressor : tmpAggressors)
         tmpAggressor->attackedGoalDestroyed();

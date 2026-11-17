@@ -795,16 +795,16 @@ void Loader::fillCaches()
 
     // BUILDING FLAG ANIMATION (for military buildings)
     /*
-        for(const auto ani_step: helpers::range(8))
+        for(const auto aniStep: helpers::range(8))
         {
-            glSmartBitmap &bmp = building_flag_cache[ani_step];
+            glSmartBitmap &bmp = building_flag_cache[aniStep];
 
             bmp.reset();
 
-            bmp.add(static_cast<glArchivItem_Bitmap_Player *>(GetMapTexture(3162+ani_step)));
+            bmp.add(static_cast<glArchivItem_Bitmap_Player *>(getMapTexture(3162+aniStep)));
 
             int a, b, c, d;
-            static_cast<glArchivItem_Bitmap_Player *>(GetMapTexture(3162+ani_step))->getVisibleArea(a, b, c, d);
+            static_cast<glArchivItem_Bitmap_Player *>(getMapTexture(3162+aniStep))->getVisibleArea(a, b, c, d);
             fprintf(stderr, "%i,%i (%ix%i)\n", a, b, c, d);
 
 

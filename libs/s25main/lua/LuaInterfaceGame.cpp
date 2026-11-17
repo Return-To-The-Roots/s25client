@@ -167,7 +167,7 @@ LuaInterfaceGame::LuaInterfaceGame(Game& gameInstance, ILocalGameState& localGam
 #define ADD_LUA_CONST(name) lua[#name] = name
     lua["NON_AGGRESSION_PACT"] = PactType::NonAgressionPact;
     lua["TREATY_OF_ALLIANCE"] = PactType::TreatyOfAlliance;
-    // infinite pact duration, see GamePlayer::GetRemainingPactTime
+    // infinite pact duration, see GamePlayer::getRemainingPactTime
     ADD_LUA_CONST(DURATION_INFINITE);
 #undef ADD_LUA_CONST
 

@@ -97,7 +97,7 @@ public:
     bool canBuildBuildingtype(BuildingType bt) const { return player_.isBuildingEnabled(bt); }
     /// Test whether a player is attackable or not (alliances, etc)
     bool isPlayerAttackable(unsigned char playerID) const { return player_.isAttackable(playerID); }
-    /// player.FindWarehouse
+    /// player.findWarehouse
     template<class T_IsWarehouseGood>
     nobBaseWarehouse* findWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh,
                                     bool use_boat_roads, unsigned* length = nullptr,

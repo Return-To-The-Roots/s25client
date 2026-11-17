@@ -40,7 +40,7 @@ void GameObject::destroy() {}
 
 GameObject::~GameObject()
 {
-    // RTTR_Assert(!world || !GetEvMgr().ObjectHasEvents(*this));
+    // RTTR_Assert(!world || !getEvMgr().objectHasEvents(*this));
     RTTR_Assert(!world || !getEvMgr().isObjectInKillList(*this));
     // ein Objekt weniger
     --objCounter_;

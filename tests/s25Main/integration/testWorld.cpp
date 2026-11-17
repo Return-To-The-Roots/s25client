@@ -327,7 +327,7 @@ BOOST_AUTO_TEST_CASE(GetTerrainReturnsCorrectValues)
         BOOST_TEST(terrain.left == calcT2(MapPoint(5, 2)));
         BOOST_TEST(terrain.right == calcT1(MapPoint(0, 2)));
     }
-    // Now assume GetTerrain works and only check for consistency:
+    // Now assume getTerrain works and only check for consistency:
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         BOOST_TEST_CONTEXT(pt)

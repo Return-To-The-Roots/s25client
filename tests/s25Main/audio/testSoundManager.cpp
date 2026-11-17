@@ -169,7 +169,7 @@ BOOST_FIXTURE_TEST_CASE(OceanSounds, LoadMockupAudioWithSounds)
         manager.playOceanBrawling(10);
         mock::verify();
 
-        // Trigger a known bug in SDL_mixer where IsEffectPlaying might wrongly return false but effect is still playing
+        // Trigger a known bug in SDL_mixer where isEffectPlaying might wrongly return false but effect is still playing
         MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(false);
         MOCK_EXPECT(audioDriverMock->doStopEffect).once(); // It should make sure the effect is actually stopped
         MOCK_EXPECT(audioDriverMock->doPlayEffect).once().returns(1);

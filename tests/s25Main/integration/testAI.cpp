@@ -138,7 +138,7 @@ BOOST_FIXTURE_TEST_CASE(AIChat, EmptyWorldFixture2P)
     // Can readd
     const auto dest = rttr::test::randomEnum<ChatDestination>();
     ai.getAIInterface().chat("Hello again!", dest);
-    // Iterate just like in ExecuteNWF function
+    // Iterate just like in executeNWF function
     for(auto& msg : ai.getAIInterface().fetchChatMessages())
     {
         BOOST_TEST(msg->player == 1u);

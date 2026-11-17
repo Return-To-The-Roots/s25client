@@ -166,7 +166,7 @@ bool GameWorldBase::roadAlreadyBuilt(const bool /*boat_road*/, const MapPoint st
 
 bool GameWorldBase::isOnRoad(const MapPoint& pt) const
 {
-    // This must be fast for BQ calculation so don't use GetVisiblePointRoad
+    // This must be fast for BQ calculation so don't use getVisiblePointRoad
     for(const auto roadDir : helpers::EnumRange<RoadDir>{})
         if(getRoad(pt, roadDir) != PointRoad::None)
             return true;

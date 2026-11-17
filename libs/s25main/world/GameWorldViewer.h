@@ -28,7 +28,7 @@ class GameWorldViewer
 public:
     GameWorldViewer(unsigned playerId, GameWorldBase& gwb);
 
-    /// Init the terrain renderer. Must be done before first call to GetTerrainRenderer!
+    /// Init the terrain renderer. Must be done before first call to getTerrainRenderer!
     void initTerrainRenderer();
 
     /// Return the world itself
@@ -54,7 +54,7 @@ public:
     /// Recalculates the visual BQ when a road part is build at that point
     void recalcBQForRoad(const MapPoint& pt);
     /// Ermittelt Sichtbarkeit eines Punktes für den lokalen Spieler, berücksichtigt ggf. Teamkameraden
-    /// If checkAllVisible is false then `IsAllVisible` is assumed to return false, else it is called to check
+    /// If checkAllVisible is false then `isAllVisible` is assumed to return false, else it is called to check
     Visibility getVisibility(MapPoint pt, bool checkAllVisible = true) const;
     /// Check if the whole map should be visible
     bool isAllVisible() const;

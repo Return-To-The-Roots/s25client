@@ -136,8 +136,8 @@ void noAnimal::draw(DrawPoint drawPt)
     - Both do not reach the dead animal in time. It disappears and the noAnimal
       class is responsible for removing and deleting itself afterwards.
     - Both reach the dead animal in time. However finishes last is responsible for removing
-      and deleting the dead animal (see nofSkinner::HandleStateSkinningCarcass and
-      nofHunter::HandleStateEviscerating). No disappearing of the animal.
+      and deleting the dead animal (see nofSkinner::handleStateSkinningCarcass and
+      nofHunter::handleStateEviscerating). No disappearing of the animal.
     - Either doesn't arrive soon enough. If the hunter was first the skin remains there
       and if the skinner was first the meat remains there. The animal disappears and the noAnimal
       class is responsible for removing and deleting itself afterwards.

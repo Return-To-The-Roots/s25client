@@ -84,7 +84,7 @@ public:
     {
         return getPointsInRadius(pt, radius, ReturnMapPoint{}, AlwaysTrue{}, true);
     }
-    /// Returns true, if the IsValid functor returns true for any point in the given radius
+    /// Returns true, if the isValid functor returns true for any point in the given radius
     /// If includePt is true, then the point itself is also checked
     template<class T_IsValidPt>
     bool checkPointsInRadius(MapPoint pt, unsigned radius, T_IsValidPt&& isValid, bool includePt) const;

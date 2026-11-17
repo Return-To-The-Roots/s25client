@@ -1054,7 +1054,7 @@ bool dskGameInterface::buildRoadPart(MapPoint& cSel)
 
         unsigned length = road.route.size() + newRoute.size();
 
-        // max_length == 0 heißt beliebig lang, ansonsten
+        // maxLength == 0 heißt beliebig lang, ansonsten
         // Weg zurechtstutzen.
         if(maxLength > 0)
         {

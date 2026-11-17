@@ -32,6 +32,6 @@ public:
 
 private:
     std::optional<unsigned>
-      selection_;                /// Currently selected button ID, must be set via SetSelection after initialization
+      selection_;                /// Currently selected button ID, must be set via setSelection after initialization
     GroupSelectType select_type; /// Typ der Selektierung
 };

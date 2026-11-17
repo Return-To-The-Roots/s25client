@@ -204,6 +204,6 @@ void nofWinegrower::drawOtherStates(DrawPoint drawPt)
 bool nofWinegrower::areWaresAvailable() const
 {
     // wine grower doesn't need wares for harvesting!
-    // -> Wares are considered when calling GetPointQuality!
+    // -> Wares are considered when calling getPointQuality!
     return true;
 }

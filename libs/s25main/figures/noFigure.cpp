@@ -591,7 +591,7 @@ void noFigure::wander()
                     // dieser Flagge suchen
 
                     // TODO: Actually it is possible! E.g. between us and the flag is a river, so we won't find a path
-                    // within the radius but others (on the other side) could --> Remove ImpossibleForBWU?
+                    // within the radius but others (on the other side) could --> Remove impossibleForBWU?
                     flag->impossibleForBWU(burned_wh_id);
                 }
             }

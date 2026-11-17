@@ -112,7 +112,7 @@ void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
                 showErrorMsg(std::string(_("Failed to init GUI: ")) + e.what());
                 return;
             }
-            // TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
+            // TODO: richtige Messages senden, um das zu laden /*GetMap()->generateOpenGL();*/
 
             // We are done, wait for others
             GAMECLIENT.gameLoaded();

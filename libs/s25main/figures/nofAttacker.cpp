@@ -47,7 +47,7 @@ void nofAttacker::destroy()
     nofActiveSoldier::destroy();
 
     /*unsigned char oplayer = (player == 0) ? 1 : 0;
-    RTTR_Assert(!world->GetPlayer(oplayer).GetFirstWH()->Test(this));*/
+    RTTR_Assert(!world->getPlayer(oplayer).getFirstWH()->Test(this));*/
 }
 
 void nofAttacker::serialize(SerializedGameData& sgd) const

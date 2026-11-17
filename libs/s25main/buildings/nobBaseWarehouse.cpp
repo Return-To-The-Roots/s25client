@@ -1201,7 +1201,7 @@ bool nobBaseWarehouse::tryRecruitJob(const Job job)
 
     auto& owner = world->getPlayer(player);
 
-    const GoodType requiredTool = *JOB_CONSTS[job].tool; // Validity checked in CanRecruit
+    const GoodType requiredTool = *JOB_CONSTS[job].tool; // Validity checked in canRecruit
     if(requiredTool != GoodType::Nothing)
     {
         inventory.remove(requiredTool);

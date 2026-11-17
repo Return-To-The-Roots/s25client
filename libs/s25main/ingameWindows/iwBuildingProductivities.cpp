@@ -93,8 +93,8 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
 
     // Hilfe-Button
     // Original S2 does not have a Help button in this window. Add it if you have something to say.
-    // AddImageButton(500, GetSize().x - 14 - 30, GetSize().y - 20 - 32, 30, 32, TextureColor::Grey,
-    // LOADER.GetImageN("io", 225),
+    // addImageButton(500, getSize().x - 14 - 30, getSize().y - 20 - 32, 30, 32, TextureColor::Grey,
+    // LOADER.getImageN("io", 225),
     // _("Help"));
 }
 

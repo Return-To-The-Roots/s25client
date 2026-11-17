@@ -1037,7 +1037,7 @@ public:
     bool runGame(GameMessageInterface* callback) const override { return callback->onGameMessage(*this); }
 };
 
-/// eingehende SendAsyncLog-Nachricht
+/// eingehende sendAsyncLog-Nachricht
 class GameMessage_AsyncLog : public GameMessage
 {
 public:

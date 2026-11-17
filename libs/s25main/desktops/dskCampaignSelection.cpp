@@ -193,7 +193,7 @@ void dskCampaignSelection::drawImpl()
 {
     Desktop::drawImpl();
 
-    // replace this by AddImageButton as soon as it can handle this scenario correctly
+    // replace this by addImageButton as soon as it can handle this scenario correctly
     if(campaignImage_)
     {
         campaignImage_->drawFull(Rect(scaleIf(DrawPoint(secondColumnOffsetX, getColumnOffsetY())),

@@ -31,7 +31,7 @@ nofWarehouseWorker::~nofWarehouseWorker() = default;
 
 void nofWarehouseWorker::destroy()
 {
-    RTTR_Assert(!carried_ware); // TODO Check if this holds true and remove the LooseWare below
+    RTTR_Assert(!carried_ware); // TODO Check if this holds true and remove the looseWare below
     looseWare();
 }
 

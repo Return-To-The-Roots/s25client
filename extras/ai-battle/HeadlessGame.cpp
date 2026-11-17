@@ -63,7 +63,7 @@ void HeadlessGame::run(unsigned maxGF)
 
     while(em_.getCurrentGF() < maxGF && !game_.isGameFinished())
     {
-        // In the actual game, the network frame intervall is based on ping (highest_ping < NFW-length < 20*gf_length).
+        // In the actual game, the network frame intervall is based on ping (highestPing < NFW-length < 20*gf_length).
         bool isnfw = em_.getCurrentGF() % 20 == 0;
 
         if(isnfw)

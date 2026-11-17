@@ -197,7 +197,7 @@ void nofBuildingWorker::gotWareOrProductionAllowed()
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
     if(state == State::WaitingForWaresOrProductionStopped)
     {
-        // anfangen zu arbeiten
+        // Anfangen zu arbeiten
         tryToWork();
     }
 }

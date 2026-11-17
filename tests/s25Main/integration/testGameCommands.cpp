@@ -58,7 +58,7 @@ static void dummySuppressUnused(std::ostream& out)
 
 namespace {
 // Expose the protected constructors only to serialize the actual command format in this test,
-// rather than duplicating the production Serialize() implementation.
+// rather than duplicating the production serialize() implementation.
 class TestSetTroopLimit : public gc::SetTroopLimit
 {
 public:

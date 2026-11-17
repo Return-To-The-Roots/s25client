@@ -679,7 +679,7 @@ void GameWorld::destroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
        || (noCheckMil->getType() == NodalObjectType::Buildingsite
            && static_cast<const noBuildingSite*>(noCheckMil)->isHarborBuildingSiteFromSea()))
     {
-        // LOG.write(("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y,
+        // LOG.write(("destroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y,
         // %i type, %i \n", x, y, noType);
         return;
     }
@@ -874,12 +874,12 @@ bool GameWorld::isRoadNodeForFigures(const MapPoint pt)
         /*
                 ATTENTION! This leads to figures on the same node blocking each other. -> Ghost jams
 
-                if((*it)->GetType() == NodalObjectType::Figure)
+                if((*it)->getType() == NodalObjectType::Figure)
                 {
                     noFigure * fig = static_cast<noFigure*>(*it);
                     // Figuren dürfen sich nicht gegenüber stehen, sonst warten sie ja ewig aufeinander
                     // Außerdem muss auch die Position stimmen, sonst spinnt der ggf. rum, da
-                    if(fig->IsWaitingForFreeNode() && (fig->GetDir()+3)%6 != dir)
+                    if(fig->isWaitingForFreeNode() && (fig->getDir()+3)%6 != dir)
                         return false;
                 }*/
 
@@ -1304,7 +1304,7 @@ bool GameWorld::foundColony(const HarborId harbor, const unsigned char player, c
         gi->GI_UpdateMinimap(pos);
 
     recalcTerritory(*bs, TerritoryChangeReason::Build);
-    // BQ neu berechnen (evtl durch RecalcTerritory noch nicht geschehen)
+    // BQ neu berechnen (evtl durch recalcTerritory noch nicht geschehen)
     recalcBQAroundPointBig(pos);
 
     getNotifications().publish(ExpeditionNote(ExpeditionNote::ColonyFounded, player, pos));

@@ -12,7 +12,7 @@ ctrlImageButton::ctrlImageButton(Window* parent, unsigned id, const DrawPoint& p
 
 void ctrlImageButton::drawContent() const
 {
-    // Adding of origin compensates for its substraction inside ITexture::Draw()
+    // Adding of origin compensates for its substraction inside ITexture::draw()
     auto pos = getDrawPos() + getImage()->getOrigin();
     auto size = getSize();
 

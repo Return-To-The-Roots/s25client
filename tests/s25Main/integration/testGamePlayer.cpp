@@ -61,7 +61,7 @@ using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 2 * helpers::MaxEn
 
 namespace {
 // S4-like mine productivity reaches the mine's base productivity once this many matching resources remain in the
-// mine radius, degrading linearly below it (see GetS4LikeMineProductionChance).
+// mine radius, degrading linearly below it (see getS4LikeMineProductionChance).
 constexpr unsigned S4LIKE_FULL_PRODUCTIVITY_AMOUNT = 20;
 
 // Places a coal mine and drives its S4-like productivity purely through the resources in its radius.
@@ -204,7 +204,7 @@ BOOST_FIXTURE_TEST_CASE(MineProductivityAccountsForS4LikeResourceChance, MinePro
 
 BOOST_FIXTURE_TEST_CASE(MineProductivityUsesAllMatchingResourcesWithinMineRadius, MineProductivityFixture)
 {
-    // Base productivity 100 so GetProductivity() directly mirrors the resource-based production chance.
+    // Base productivity 100 so getProductivity() directly mirrors the resource-based production chance.
     setProductivity(coalMine, 100);
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
                      static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));

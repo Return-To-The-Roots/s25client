@@ -117,8 +117,8 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(RemoveEnvObjectFromNodeBeforeKill, T, Disappearing
     BOOST_TEST(ensureNonNull(world.getSpecObj<noStaticObject>(testPos2)).getItemID() == DummyWorker::staticObjId);
 }
 
-// noShipBuildingSite has no timed death event; its removal happens synchronously in MakeBuildStep.
-// Completing the build needs a sea (noShip asserts on it), so only the Destroy() guard is
+// noShipBuildingSite has no timed death event; its removal happens synchronously in makeBuildStep.
+// Completing the build needs a sea (noShip asserts on it), so only the destroy() guard is
 // exercised here: the object sits in the kill list while another object already occupies the node.
 BOOST_AUTO_TEST_CASE(ShipBuildingSiteDestroyDoesNotClobberNode)
 {

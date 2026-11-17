@@ -28,7 +28,7 @@ struct RandomContext
 /// Allows getting/restoring the state and provides a log of the last invocations and results
 /// T_PRNG must be a model of the Pseudo-Random Number Generator according to boost:
 ///        http://www.boost.org/doc/libs/1_61_0/doc/html/boost_random/reference.html#boost_random.reference.concepts.pseudo_random_number_generator
-/// Additionally it must implement Serialize and Deserialize functions and provide a static GetName function
+/// Additionally it must implement Serialize and Deserialize functions and provide a static getName function
 template<class T_PRNG>
 class Random : public Singleton<Random<T_PRNG>>
 {

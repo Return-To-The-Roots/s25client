@@ -27,7 +27,7 @@ public:
     void init(const MapExtent& mapSize);
 
     /// Wegfindung in freiem Terrain - Template version. Users need to include FreePathFinderImpl.h
-    /// TNodeChecker must implement: bool IsNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool
+    /// TNodeChecker must implement: bool isNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool
     /// IsNodeToDestOk(MapPoint pt, unsigned char dirFromPrevPt)
     template<class TNodeChecker>
     bool findPath(MapPoint start, MapPoint dest, bool randomRoute, unsigned maxLength, std::vector<Direction>* route,

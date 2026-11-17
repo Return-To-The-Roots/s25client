@@ -241,7 +241,7 @@ public:
         dependent_figures.push_back(&worker);
     }
 
-    //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit TakeWare hinzugefügt)
+    //// Entfernt eine abhängige Ware wieder aus der Liste (wird mit takeWare hinzugefügt)
     void removeDependentWare(Ware& ware)
     {
         RTTR_Assert(isWareDependent(ware));

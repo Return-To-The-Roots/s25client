@@ -90,7 +90,7 @@
 /// Version of the current game data
 /// Usage: Always save for the most current version but include loading code that can cope with file format changes
 /// If a format change occurred that can still be handled increase this version and handle it in the loading code.
-/// If the change is to big to handle increase the version in Savegame.cpp and remove all code referencing GetGameDataVersion.
+/// If the change is to big to handle increase the version in Savegame.cpp and remove all code referencing getGameDataVersion.
 /// Then reset this number to 0.
 /// TODO: Let GO_Type start at 0 again when resetting this
 /// Changelog:
@@ -418,7 +418,7 @@ const GameEvent* SerializedGameData::popEvent()
     if(!instanceId)
         return nullptr;
 
-    // Note: em->GetEventInstanceCtr() might not be set yet
+    // Note: em->getEventInstanceCtr() might not be set yet
     const auto foundObj = readEvents.find(instanceId);
     if(foundObj != readEvents.end())
         return foundObj->second;

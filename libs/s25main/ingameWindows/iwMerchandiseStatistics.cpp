@@ -186,7 +186,7 @@ void iwMerchandiseStatistics::drawStatistic()
     for(unsigned short it : active)
     {
         // Testing only:
-        // DrawLine(topLeft.x, topLeft.y + 3 * (*it), topLeft + DrawPoint(sizeX, 3 * (*it)), 2, BarColors[(*it) - 1]);
+        // drawLine(topLeft.x, topLeft.y + 3 * (*it), topLeft + DrawPoint(sizeX, 3 * (*it)), 2, BarColors[(*it) - 1]);
 
         for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
         {

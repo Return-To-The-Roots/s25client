@@ -1518,7 +1518,7 @@ void nobMilitary::hitOfCatapultStone()
         const bool survived = soldier->hasArmor() && (RANDOM_RAND(100) < 30);
         if(!survived)
         {
-            // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
+            // Shortcut for die(): No need to remove from world as it is inside and we can delete it right away
             soldier->removeFromInventory();
             soldier->leftBuilding();
             soldier->destroy();

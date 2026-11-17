@@ -329,7 +329,7 @@ void AIPlayerJH::planNewBuildings(const unsigned gf)
     const unsigned numResGatherBlds = 14; /* The first n buildings in the above list, that gather resources */
 
     // LOG.write(("new buildorders %i whs and %i mil for player %i
-    // \n",aii.GetStorehouses().size(),aii.GetMilitaryBuildings().size(),playerId);
+    // \n",aii.getStorehouses().size(),aii.getMilitaryBuildings().size(),playerId);
 
     const std::list<nobBaseWarehouse*>& storehouses = aii.getStorehouses();
     if(!storehouses.empty())
@@ -710,14 +710,14 @@ void AIPlayerJH::executeAIJob()
     // if no current job available, take next one! events first, then constructions
     if (!currentJob)
     {
-        if (construction->BuildJobAvailable())
+        if (construction->buildJobAvailable())
         {
-            currentJob = construction->GetBuildJob();
+            currentJob = construction->getBuildJob();
         }
     }
     // Something to do? Do it!
     if (currentJob)
-        currentJob->ExecuteJob();
+        currentJob->executeJob();
         */
 }
 
@@ -1647,7 +1647,7 @@ void AIPlayerJH::trySeaAttack()
                             undefendedTargets.push_back(hb);
                         else // todo: maybe only attack this when there is a fair win chance for the attackers?
                             potentialTargets.push_back(hb);
-                        // LOG.write(("found a defended harbor we can attack at %i,%i \n",hb->GetPos());
+                        // LOG.write(("found a defended harbor we can attack at %i,%i \n",hb->getPos());
                     }
                 } else // cant attack player owning the harbor -> add to list
                 {
@@ -1659,7 +1659,7 @@ void AIPlayerJH::trySeaAttack()
         {
             searcharoundharborspots.push_back(i);
             // LOG.write(("found an unused harborspot we have to look around of at %i,%i
-            // \n",gwb.GetHarborPoint(i).x,gwb.GetHarborPoint(i).y);
+            // \n",gwb.getHarborPoint(i).x,gwb.getHarborPoint(i).y);
         }
     }
     auto& prng = AI::getRandomGenerator();

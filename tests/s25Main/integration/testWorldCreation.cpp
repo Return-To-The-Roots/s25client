@@ -22,7 +22,7 @@ BOOST_FIXTURE_TEST_CASE(HQPlacement, WorldFixtureEmpty1P)
     std::vector<MapPoint> ownerPts = world.getPointsInRadius(hqPos, HQ_RADIUS);
     for(MapPoint pt : ownerPts)
     {
-        // This should be ensured by `GetPointsInRadius`
+        // This should be ensured by `getPointsInRadius`
         BOOST_TEST_REQUIRE(world.calcDistance(pt, hqPos) <= HQ_RADIUS);
         // We must own this point
         BOOST_TEST_REQUIRE(world.getNode(pt).owner == 1);

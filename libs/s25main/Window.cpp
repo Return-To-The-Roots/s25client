@@ -464,7 +464,7 @@ void Window::msgScreenResize(const ScreenResizeEvent& sr)
     RescaleWindowProp rescale(sr.oldSize, sr.newSize);
     for(auto& ctrl : childIdToWnd_ | boost::adaptors::map_values)
     {
-        // Save new size (could otherwise be changed(?) in Msg_ScreenResize)
+        // Save new size (could otherwise be changed(?) in msgScreenResize)
         Extent newSize = rescale(ctrl->getSize());
         ctrl->setPos(rescale(ctrl->getPos()));
         ctrl->msgScreenResize(sr);

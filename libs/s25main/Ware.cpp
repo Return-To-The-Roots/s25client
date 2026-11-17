@@ -148,7 +148,7 @@ void Ware::goalDestroyed()
     if(state == State::WaitInWarehouse)
     {
         // Ware ist noch im Lagerhaus auf der Warteliste
-        RTTR_Assert(false); // Should not happen. noBaseBuilding::WareNotNeeded handles this case!
+        RTTR_Assert(false); // Should not happen. noBaseBuilding::wareNotNeeded handles this case!
         goal = nullptr; // just in case: avoid corruption although the ware itself might be lost (won't ever be carried
                         // again)
     }
@@ -283,7 +283,7 @@ void Ware::wareLost(const unsigned char player)
 
 void Ware::removeWareJobForDir(const RoadPathDirection lastNextDir)
 {
-    // last_next_dir war die letzte Richtung, in die die Ware eigentlich wollte,
+    // lastNextDir war die letzte Richtung, in die die Ware eigentlich wollte,
     // aber nun nicht mehr will, deshalb muss dem Träger Bescheid gesagt werden
 
     // War's überhaupt ne richtige Richtung?

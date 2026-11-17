@@ -218,7 +218,7 @@ void BuildJob::buildMainRoad()
 
     // Wir sind angeschlossen, BQ für den eben gebauten Weg aktualisieren
     // aijh.RecalcBQAround(target);
-    // aijh.RecalcGround(target, route);
+    // aijh.recalcGround(target, route);
 
     switch(type)
     {

@@ -15,7 +15,7 @@ std::function<bool(const BuildingType type)> makeIsUnusedBuilding(const GlobalGa
 std::function<bool(const GoodType type)> makeIsUnusedWare(const GlobalGameSettings& ggs);
 std::function<bool(const Job job)> makeIsUnusedJob(const GlobalGameSettings& ggs);
 
-// Only used for deserialization, can be removed when breaking compatibility (GetGameDataVersion)
+// Only used for deserialization, can be removed when breaking compatibility (getGameDataVersion)
 constexpr auto numLeatherAddonBuildings = 3u;
 constexpr auto numWineAddonBuildings = 3u;
 constexpr auto numWineAndLeatherAddonBuildings = numWineAddonBuildings + numLeatherAddonBuildings;

@@ -81,7 +81,7 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     else if(pos == posAtMouse)
         moveNextToMouse();
     else
-        setPos(pos); // always call SetPos() to update restorePos
+        setPos(pos); // always call setPos() to update restorePos
 }
 
 void IngameWindow::resize(const Extent& newSize)
@@ -330,7 +330,7 @@ void IngameWindow::drawImpl()
     // Solution 1: Use contentOffset for adding controls
     //
     // Solution 2: Define that all controls added to an ingame window have positions relative to the contentOffset.
-    //  This needs a change in GetDrawPos to add this offset and also change all control-add-calls but would be much
+    //  This needs a change in getDrawPos to add this offset and also change all control-add-calls but would be much
     //  cleaner (no more hard coded offsets and we could restyle the ingame windows easily)
     //
     const Rect drawRect = getDrawRect();

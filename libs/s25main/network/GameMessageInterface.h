@@ -23,8 +23,8 @@
 /// Example: GENERATE_GAME_MESSAGE_INTERFACE(GM_Foo, GM_Bar) -->
 ///     class GM_Foo; class GM_Bar;
 ///     class GameMessageInterface (...)
-///         virtual bool OnGameMessage(const GM_Foo& /*msg*/){}
-///         virtual bool OnGameMessage(const GM_Bar& /*msg*/){}
+///         virtual bool onGameMessage(const GM_Foo& /*msg*/){}
+///         virtual bool onGameMessage(const GM_Bar& /*msg*/){}
 ///     };
 ///
 #define GENERATE_GAME_MESSAGE_INTERFACE(...)             \

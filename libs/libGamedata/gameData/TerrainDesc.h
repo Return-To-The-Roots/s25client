@@ -32,7 +32,7 @@ enum class TerrainKind : uint8_t
 };
 /// Bitset of what can be done on that terrain
 enum class ETerrain : uint8_t
-{ /// Can do nothing, but also not dangerous. Don't use in code! Use !Is(Walkable) etc. instead!
+{ /// Can do nothing, but also not dangerous. Don't use in code! Use !is(Walkable) etc. instead!
     Unwalkable = 0,
     /// Dangerous, can't go near
     Unreachable = 1,

@@ -220,7 +220,7 @@ void ctrlComboBox::drawImpl()
                    COLOR_YELLOW, getSize().x - 2 - getSize().y, "");
     }
 
-    // Draw button manually as we can't use DrawControls which would draw the list we do in Msg_PaintAfter
+    // Draw button manually as we can't use DrawControls which would draw the list we do in msgPaintAfter
     auto* button = getCtrl<ctrlButton>(1);
     if(button)
         button->draw();

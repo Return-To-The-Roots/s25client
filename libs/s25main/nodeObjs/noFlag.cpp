@@ -233,7 +233,7 @@ unsigned noFlag::getPunishmentPoints(const Direction dir) const
     constexpr auto PATHFINDING_PENALTY_CARRIER_ARRIVING = 50;
     constexpr auto PATHFINDING_PENALTY_NO_CARRIER = 500;
     // This must be the same as "NO_CARRIER" for replay compatibility
-    // TODO(Replay): Move to `way_costs` in nobHarborBuilding::GetShipConnections
+    // TODO(Replay): Move to `way_costs` in nobHarborBuilding::getShipConnections
     constexpr auto PATHFINDING_PENALTY_START_SHIPPING = 500;
     // 2 Points per ware as carrier has to walk to other point and back for each ware
     unsigned points = getNumWaresForRoad(dir) * 2;

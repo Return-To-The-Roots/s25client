@@ -197,7 +197,7 @@ public:
     };
 
     /// Gibt die Angreifer zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
-    /// defender_harbors sind dabei mögliche Zielhäfen
+    /// defenderHarbors sind dabei mögliche Zielhäfen
     std::vector<SeaAttackerBuilding> getAttackerBuildingsForSeaAttack(const std::vector<HarborId>& defenderHarbors);
     /// Gibt verfügbare Angreifer zurück
     std::vector<SeaAttackerBuilding> getAttackerBuildingsForSeaIdAttack();

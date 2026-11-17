@@ -130,7 +130,7 @@ public:
 
     /// Sagt dem Träger Bescheid, dass es an einer Flagge noch eine Ware zu transportieren gibt
     bool addWareJob(const noRoadNode* rn);
-    /// Das Gegnteil von AddWareJob: wenn eine Ware nicht mehr transportiert werden will, sagt sie dem Träger Bescheid,
+    /// Das Gegnteil von addWareJob: wenn eine Ware nicht mehr transportiert werden will, sagt sie dem Träger Bescheid,
     /// damit er nicht unnötig dort hinläuft zur Flagge
     void removeWareJob();
 

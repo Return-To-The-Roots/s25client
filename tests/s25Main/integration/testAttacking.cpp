@@ -1184,7 +1184,7 @@ void HandleLeavingAggDefendersOnAttack::test(AttackedBldType test_case, bool use
         for(auto& fig : milBld0->getLeavingFigures())
             attackers[i++] = &dynamic_cast<nofAttacker&>(fig);
     }
-    // Let one out then call SendAggressiveDefender for all attackers.
+    // Let one out then call sendAggressiveDefender for all attackers.
     // This is technically wrong but we want to ensure they come from the target bld only and are still in the leave
     // queue when the first attacker calls the defender
     RTTR_EXEC_TILL(50, milBld0->getLeavingFigures().size() < numAttackers);

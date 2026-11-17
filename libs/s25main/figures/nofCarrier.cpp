@@ -122,7 +122,7 @@ void nofCarrier::destroy()
 {
     RTTR_Assert(!workplace);
     // Ware vernichten (abmelden)
-    RTTR_Assert(!carried_ware); // TODO: Check if this is ok so keep the LooseWare call below
+    RTTR_Assert(!carried_ware); // TODO: Check if this is ok so keep the looseWare call below
     looseWare();
     getEvMgr().removeEvent(productivity_ev);
 
@@ -401,7 +401,7 @@ void nofCarrier::walked()
                     {
                         carried_ware->waitAtFlag(this_flag);
 
-                        // Calc next route if not done in the WantInBuilding call
+                        // Calc next route if not done in the wantInBuilding call
                         if(!calculated)
                             carried_ware->recalcRoute();
 
@@ -522,7 +522,7 @@ void nofCarrier::goalReached()
     auto* rn = world->getSpecObj<noRoadNode>(pos);
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        // noRoadNode * rn = world->GetSpecObj<noRoadNode>(x,y);
+        // noRoadNode * rn = world->getSpecObj<noRoadNode>(x,y);
         if(rn->getRoute(dir) == workplace)
         {
             // Am neuen Arbeitsplatz angekommen
@@ -809,7 +809,7 @@ void nofCarrier::removeWareJob()
         if(!workplace->areWareJobs(!rs_dir, ct, false))
             //{
             //// Wenn es an der anderen Flagge noch einen gibt, dort hin gehen
-            // if(workplace->AreWareJobs(rs_dir))
+            // if(workplace->areWareJobs(rs_dir))
             //{
             //  rs_pos = cur_rs->getLength()-rs_pos-2;
             //  rs_dir = !rs_dir;

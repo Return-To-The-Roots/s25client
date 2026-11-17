@@ -195,7 +195,7 @@ void GameWorldViewer::setVisiblePointRoad(MapPoint pt, Direction dir, PointRoad 
 
 bool GameWorldViewer::isOnRoad(const MapPoint& pt) const
 {
-    // This must be fast for BQ calculation so don't use GetVisiblePointRoad
+    // This must be fast for BQ calculation so don't use getVisiblePointRoad
     for(const auto roadDir : helpers::EnumRange<RoadDir>{})
         if(getVisibleRoad(pt, roadDir) != PointRoad::None)
             return true;

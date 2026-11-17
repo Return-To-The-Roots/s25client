@@ -86,7 +86,7 @@ public:
     void setGameInterface(GameInterface* const gi) { this->gi = gi; }
 
     /// Get the economy mode handler if set.
-    /// TODO: Add const correct version, but iwEconomicProgress still needs to be able to call UpdateAmounts
+    /// TODO: Add const correct version, but iwEconomicProgress still needs to be able to call updateAmounts
     EconomyModeHandler* getEconHandler() const { return econHandler.get(); }
 
     /// Can a node be used for a road (no flag/bld, no other road, no danger...)
