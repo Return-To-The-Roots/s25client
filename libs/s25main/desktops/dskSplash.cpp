@@ -81,7 +81,7 @@ void dskSplash::loadFiles()
         const auto fmt = boost::format(_("Some essential game files failed to load.\n"
                                          "Please ensure that the Settlers 2 Gold-Edition is installed in\n"
                                          "%1%"))
-                         % RTTRCONFIG.ExpandPath("<RTTR_GAME>").string();
+                         % RTTRCONFIG.expandPath("<RTTR_GAME>").string();
 
         s25util::error(fmt.str());
         VIDEODRIVER.showErrorMessage(_("Missing game files"), fmt.str());

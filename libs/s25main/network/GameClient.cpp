@@ -142,11 +142,11 @@ bool GameClient::hostGame(const CreateServerInfo& csi, const MapDescription& map
 {
     std::string hostPw = createRandString(20);
     // Copy the map and lua to the played map folders to avoid having to transmit it from the (local) server
-    const auto playedMapPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / map.map_path.filename();
+    const auto playedMapPath = RTTRCONFIG.expandPath(s25::folders::mapsPlayed) / map.map_path.filename();
     copyFileIfPathDifferent(map.map_path, playedMapPath);
     if(map.lua_path)
     {
-        const auto playedMapLuaPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / map.lua_path->filename();
+        const auto playedMapLuaPath = RTTRCONFIG.expandPath(s25::folders::mapsPlayed) / map.lua_path->filename();
         copyFileIfPathDifferent(*map.lua_path, playedMapLuaPath);
     }
     return GAMESERVER.start(csi, map, hostPw) && connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
@@ -290,7 +290,7 @@ void GameClient::startGame(const unsigned random_init)
     RANDOM.Init(random_init);
     AI::getRandomGenerator().seed(random_init);
 
-    if(!isReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, SaveGameDataToLoad::All))
+    if(!isReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->load(mapinfo.filepath, SaveGameDataToLoad::All))
     {
         onError(ClientError::InvalidMap);
         return;
@@ -795,7 +795,7 @@ bool GameClient::onGameMessage(const GameMessage_Chat& msg)
         const GamePlayer& player = game->world_.getPlayer(msg.player);
 
         // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
-        if(player.IsDefeated() && msg.destination != ChatDestination::All)
+        if(player.isDefeated() && msg.destination != ChatDestination::All)
             return true;
 
         const auto isValidRecipient = [&msg, &player](const unsigned playerId) {
@@ -861,9 +861,9 @@ bool GameClient::onGameMessage(const GameMessage_Server_Async& msg)
     fileName += "_" + s25util::toStringClassic(getPlayerId()) + "_";
     fileName += getPlayer(getPlayerId()).name;
 
-    const bfs::path filePathSave = RTTRCONFIG.ExpandPath(s25::folders::save) / makePortableFileName(fileName + ".sav");
+    const bfs::path filePathSave = RTTRCONFIG.expandPath(s25::folders::save) / makePortableFileName(fileName + ".sav");
     const bfs::path filePathLog =
-      RTTRCONFIG.ExpandPath(s25::folders::logs) / makePortableFileName(fileName + "Player.log");
+      RTTRCONFIG.expandPath(s25::folders::logs) / makePortableFileName(fileName + "Player.log");
     saveRandomLog(filePathLog, RANDOM.GetAsyncLog());
     saveToFile(filePathSave);
     LOG.write(_("Async log saved at %1%,\ngame saved at %2%\n")) % filePathLog % filePathSave;
@@ -923,7 +923,7 @@ bool GameClient::onGameMessage(const GameMessage_Map_Info& msg)
         return true;
     }
     const auto targetPath =
-      RTTRCONFIG.ExpandPath((msg.mt == MapType::Savegame) ? s25::folders::save : s25::folders::mapsPlayed);
+      RTTRCONFIG.expandPath((msg.mt == MapType::Savegame) ? s25::folders::save : s25::folders::mapsPlayed);
     bfs::create_directories(targetPath);
     mapinfo.filepath = targetPath / portFilename;
     mapinfo.type = msg.mt;
@@ -1080,7 +1080,7 @@ bool GameClient::createLobby()
         break;
         case MapType::Savegame:
             mapinfo.savegame = std::make_unique<Savegame>();
-            if(!mapinfo.savegame->Load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
+            if(!mapinfo.savegame->load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
                 return false;
 
             numPlayers = mapinfo.savegame->getNumPlayers();
@@ -1399,7 +1399,7 @@ void GameClient::handleAutosave()
         else
             filename = mapinfo.title + " (" + _("Auto-Save") + ").sav";
 
-        saveToFile(RTTRCONFIG.ExpandPath(s25::folders::save) / filename);
+        saveToFile(RTTRCONFIG.expandPath(s25::folders::save) / filename);
     }
 }
 
@@ -1455,7 +1455,7 @@ void GameClient::startReplayRecording(const unsigned random_init)
     writePlayerInfo(replayinfo->replay);
     replayinfo->replay.ggs = game->ggs_;
 
-    if(!replayinfo->replay.startRecording(RTTRCONFIG.ExpandPath(s25::folders::replays) / replayinfo->filename, mapinfo,
+    if(!replayinfo->replay.startRecording(RTTRCONFIG.expandPath(s25::folders::replays) / replayinfo->filename, mapinfo,
                                           random_init))
     {
         LOG.write(_("Replayfile couldn't be opened. No replay will be recorded\n"));
@@ -1518,7 +1518,7 @@ bool GameClient::startReplay(const boost::filesystem::path& path)
         case MapType::OldMap:
         {
             // Richtigen Pfad zur Map erstellen
-            bfs::path mapFilePath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / mapinfo.filepath.filename();
+            bfs::path mapFilePath = RTTRCONFIG.expandPath(s25::folders::mapsPlayed) / mapinfo.filepath.filename();
             mapinfo.filepath = mapFilePath;
             if(!mapinfo.mapData.decompressToFile(mapinfo.filepath))
             {
@@ -1755,7 +1755,7 @@ unsigned GameClient::getLastReplayGF() const
 bool GameClient::addGC(gc::GameCommandPtr gc)
 {
     // Nicht in der Pause oder wenn er besiegt wurde
-    if(framesinfo.isPaused || getPlayer(getPlayerId()).IsDefeated() || isReplayModeOn())
+    if(framesinfo.isPaused || getPlayer(getPlayerId()).isDefeated() || isReplayModeOn())
         return false;
 
     gameCommands_.push_back(gc);
@@ -1822,11 +1822,11 @@ std::shared_ptr<const NWFInfo> GameClient::getNWFInfo() const
 unsigned GameClient::getTournamentModeDuration() const
 {
     using namespace std::chrono;
-    if(game && rttr::enum_cast(game->ggs_.objective) >= rttr::enum_cast(GameObjective::Tournament1)
-       && static_cast<unsigned>(rttr::enum_cast(game->ggs_.objective))
-            < rttr::enum_cast(GameObjective::Tournament1) + NUM_TOURNAMENT_MODES)
+    if(game && rttr::enumCast(game->ggs_.objective) >= rttr::enumCast(GameObjective::Tournament1)
+       && static_cast<unsigned>(rttr::enumCast(game->ggs_.objective))
+            < rttr::enumCast(GameObjective::Tournament1) + NUM_TOURNAMENT_MODES)
     {
-        const auto turnamentMode = rttr::enum_cast(game->ggs_.objective) - rttr::enum_cast(GameObjective::Tournament1);
+        const auto turnamentMode = rttr::enumCast(game->ggs_.objective) - rttr::enumCast(GameObjective::Tournament1);
         return duration_to_gfs(TOURNAMENT_MODES_DURATION[turnamentMode]);
     } else
         return 0;
@@ -1835,8 +1835,8 @@ unsigned GameClient::getTournamentModeDuration() const
 void GameClient::toggleHumanAIPlayer(const AI::Info& aiInfo)
 {
     RTTR_Assert(!isReplayModeOn());
-    auto it = helpers::find_if(game->aiPlayers_,
-                               [id = this->getPlayerId()](const auto& player) { return player.getPlayerId() == id; });
+    auto it = helpers::findIf(game->aiPlayers_,
+                              [id = this->getPlayerId()](const auto& player) { return player.getPlayerId() == id; });
     if(it != game->aiPlayers_.end())
     {
         game->aiPlayers_.erase(it);

@@ -63,7 +63,7 @@ unsigned getNumAlivePlayers(const GameWorldBase& world)
     unsigned numPlayersAlive = 0;
     for(const auto& player : world.getPlayers())
     {
-        if(!player.IsDefeated())
+        if(!player.isDefeated())
             ++numPlayersAlive;
     }
     return numPlayersAlive;
@@ -120,7 +120,7 @@ void Game::checkObjective()
     for(unsigned i = 0; i < world_.getNumPlayers(); ++i)
     {
         const GamePlayer& player = world_.getPlayer(i);
-        if(player.IsDefeated())
+        if(player.isDefeated())
             continue;
         const unsigned points = player.getStatisticCurrentValue(StatisticType::Country);
         if(points > maxPoints)
@@ -140,7 +140,7 @@ void Game::checkObjective()
                     continue;
                 curTeam = curTeam | getPlayerMask(j);
                 const GamePlayer& teamPlayer = world_.getPlayer(j);
-                if(!teamPlayer.IsDefeated())
+                if(!teamPlayer.isDefeated())
                     teamPoints += teamPlayer.getStatisticCurrentValue(StatisticType::Country);
             }
             if(teamPoints > maxTeamPoints)

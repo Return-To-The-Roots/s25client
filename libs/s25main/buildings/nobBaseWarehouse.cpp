@@ -618,7 +618,7 @@ void nobBaseWarehouse::handleLeaveEvent()
         // there's a fight
 
         // try to find a defender
-        const auto it = helpers::find_if(leave_house, [](const auto& sld) {
+        const auto it = helpers::findIf(leave_house, [](const auto& sld) {
             return sld->getGOT() == GO_Type::NofAggressivedefender || sld->getGOT() == GO_Type::NofDefender;
         });
         // no defender found? enqueue next leaving event
@@ -1338,7 +1338,7 @@ bool nobBaseWarehouse::areWaresToEmpty() const
 bool nobBaseWarehouse::defendersAvailable() const
 {
     const auto isNonZero = [](const unsigned ct) { return ct != 0; };
-    if(helpers::contains_if(reserve_soldiers_available, isNonZero))
+    if(helpers::containsIf(reserve_soldiers_available, isNonZero))
         return true;
     for(Job job : SOLDIER_JOBS)
     {

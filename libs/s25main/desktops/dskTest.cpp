@@ -173,7 +173,7 @@ bool dskTest::msgRightUp(const MouseCoords& mc)
     std::vector<ctrlButton*> bts = getCtrls<ctrlButton>();
     for(ctrlButton* bt : bts)
     {
-        if(IsPointInRect(mc.pos, bt->getDrawRect()))
+        if(isPointInRect(mc.pos, bt->getDrawRect()))
         {
             bt->setChecked(!bt->getCheck());
             return true;

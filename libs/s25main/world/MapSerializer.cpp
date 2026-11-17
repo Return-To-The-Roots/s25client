@@ -84,7 +84,7 @@ void MapSerializer::deserialize(GameWorldBase& world, SerializedGameData& sgd, G
 {
     // Initialisierungen
     GameDataLoader gdLoader(world.getDescriptionWriteable());
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
         throw SerializedGameData::Error(_("Failed to load game data!"));
 
     // Headinformationen

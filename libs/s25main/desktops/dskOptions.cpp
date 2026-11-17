@@ -338,7 +338,7 @@ dskOptions::dskOptions() : Desktop(LOADER.getImageN("setup013", 0))
     cbDisplayMode->addItem(_("Windowed"));
     cbDisplayMode->addItem(_("Fullscreen"));
     cbDisplayMode->addItem(_("Borderless window"));
-    cbDisplayMode->setSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
+    cbDisplayMode->setSelection(rttr::enumCast(SETTINGS.video.displayMode.type));
     curPos.y += rowHeight;
 
     auto* grpResolution = groupGraphics->addGroup(ID_grpResolution);

@@ -181,7 +181,7 @@ BOOST_FIXTURE_TEST_CASE(TestUpdateRadiusPreview, GameWorldViewFixture)
     std::vector<const ctrlBuildingIcon*> icons;
     const auto& findIcon = [&](BuildingType type) -> const ctrlBuildingIcon& {
         const auto it =
-          helpers::find_if(icons, [type](const ctrlBuildingIcon* icon) { return icon->getType() == type; });
+          helpers::findIf(icons, [type](const ctrlBuildingIcon* icon) { return icon->getType() == type; });
         BOOST_TEST_REQUIRE((it != icons.end()), "Icon for " << type << " not found");
         return ensureNonNull(*it);
     };
@@ -194,7 +194,7 @@ BOOST_FIXTURE_TEST_CASE(TestUpdateRadiusPreview, GameWorldViewFixture)
         icons = getIcons(action);
         const auto& findIcon = [&](BuildingType type) -> const ctrlBuildingIcon& {
             const auto it =
-              helpers::find_if(icons, [type](const ctrlBuildingIcon* icon) { return icon->getType() == type; });
+              helpers::findIf(icons, [type](const ctrlBuildingIcon* icon) { return icon->getType() == type; });
             BOOST_TEST_REQUIRE((it != icons.end()));
             return ensureNonNull(*it);
         };

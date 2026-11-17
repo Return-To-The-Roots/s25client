@@ -235,7 +235,7 @@ bool ctrlChat::msgLeftUp(const MouseCoords& mc)
 
 bool ctrlChat::msgWheelUp(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(2, 2), getSize() - Extent(2, 4))))
+    if(isPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(2, 2), getSize() - Extent(2, 4))))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(-3);
@@ -246,7 +246,7 @@ bool ctrlChat::msgWheelUp(const MouseCoords& mc)
 
 bool ctrlChat::msgWheelDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(2, 2), getSize() - Extent(2, 4))))
+    if(isPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(2, 2), getSize() - Extent(2, 4))))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(+3);

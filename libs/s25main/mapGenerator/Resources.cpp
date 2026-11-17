@@ -57,7 +57,7 @@ void addObjects(Map& map, RandomUtility& rnd, const MapSettings& settings)
 
     const auto harborOrHeadquarter = [&map](const MapPoint& pt) {
         return helpers::contains(map.hqPositions, pt)
-               || helpers::contains_if(map.harbors, [pt](const Triangle& tr) { return tr.position == pt; });
+               || helpers::containsIf(map.harbors, [pt](const Triangle& tr) { return tr.position == pt; });
     };
 
     RTTR_FOREACH_PT(MapPoint, map.size)

@@ -21,7 +21,7 @@
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const FrontierDistance e)
 {
-    return out << static_cast<unsigned>(rttr::enum_cast(e));
+    return out << static_cast<unsigned>(rttr::enumCast(e));
 }
 // LCOV_EXCL_STOP
 
@@ -104,7 +104,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
     {
         TerrainKind searchedTerrain = terrain == 1 ? TerrainKind::Lava : TerrainKind::Snow;
         const auto tUnreachable = world.getDescription().terrain.find(
-          [searchedTerrain](const TerrainDesc& t) { return t.kind == searchedTerrain && t.Is(ETerrain::Unreachable); });
+          [searchedTerrain](const TerrainDesc& t) { return t.kind == searchedTerrain && t.is(ETerrain::Unreachable); });
 
         for(const auto y : helpers::range(1, +world.getHeight()))
         {

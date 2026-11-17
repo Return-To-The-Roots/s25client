@@ -23,17 +23,17 @@ iwChat::iwChat(Window* parent)
 
     ctrlOptionGroup* group = addOptionGroup(1, GroupSelectType::Check);
     // "Alle"
-    group->addTextButton(rttr::enum_cast(ChatDestination::All), DrawPoint(20, 80), Extent(260, 22), TextureColor::Grey,
+    group->addTextButton(rttr::enumCast(ChatDestination::All), DrawPoint(20, 80), Extent(260, 22), TextureColor::Grey,
                          _("All"), NormalFont);
     // "Verbündete"
-    group->addTextButton(rttr::enum_cast(ChatDestination::Allies), DrawPoint(20, 112), Extent(125, 22),
+    group->addTextButton(rttr::enumCast(ChatDestination::Allies), DrawPoint(20, 112), Extent(125, 22),
                          TextureColor::Green2, _("Allies"), NormalFont);
     // "Feinde"
-    group->addTextButton(rttr::enum_cast(ChatDestination::Enemies), DrawPoint(155, 112), Extent(125, 22),
+    group->addTextButton(rttr::enumCast(ChatDestination::Enemies), DrawPoint(155, 112), Extent(125, 22),
                          TextureColor::Red1, _("Enemies"), NormalFont);
 
     // Entspr. vom letzten Mal auswählen auswählen
-    group->setSelection(rttr::enum_cast(lastChatDestination));
+    group->setSelection(rttr::enumCast(lastChatDestination));
 }
 
 void iwChat::msgPaintBefore()

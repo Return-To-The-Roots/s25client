@@ -12,33 +12,33 @@ BOOST_AUTO_TEST_CASE(PointInRect)
 {
     Rect rect(Position(10, 20), Extent(5, 10));
     // Point on edge. Note: right/bottom is OUTSIDE
-    BOOST_TEST(IsPointInRect(Position(10, 20), rect));
-    BOOST_TEST(!IsPointInRect(Position(15, 20), rect));
-    BOOST_TEST(!IsPointInRect(Position(10, 30), rect));
-    BOOST_TEST(!IsPointInRect(Position(15, 30), rect));
+    BOOST_TEST(isPointInRect(Position(10, 20), rect));
+    BOOST_TEST(!isPointInRect(Position(15, 20), rect));
+    BOOST_TEST(!isPointInRect(Position(10, 30), rect));
+    BOOST_TEST(!isPointInRect(Position(15, 30), rect));
     // Point on line
     // Top
-    BOOST_TEST(IsPointInRect(Position(12, 20), rect));
+    BOOST_TEST(isPointInRect(Position(12, 20), rect));
     // Left
-    BOOST_TEST(IsPointInRect(Position(10, 25), rect));
+    BOOST_TEST(isPointInRect(Position(10, 25), rect));
     // Bottom
-    BOOST_TEST(!IsPointInRect(Position(12, 30), rect));
+    BOOST_TEST(!isPointInRect(Position(12, 30), rect));
     // Right
-    BOOST_TEST(!IsPointInRect(Position(15, 25), rect));
+    BOOST_TEST(!isPointInRect(Position(15, 25), rect));
     // Point in middle
-    BOOST_TEST(IsPointInRect(Position(12, 25), rect));
+    BOOST_TEST(isPointInRect(Position(12, 25), rect));
     // Point outside
     // Top
-    BOOST_TEST(!IsPointInRect(Position(12, 19), rect));
+    BOOST_TEST(!isPointInRect(Position(12, 19), rect));
     // Left
-    BOOST_TEST(!IsPointInRect(Position(9, 25), rect));
+    BOOST_TEST(!isPointInRect(Position(9, 25), rect));
     // Bottom
-    BOOST_TEST(!IsPointInRect(Position(12, 31), rect));
+    BOOST_TEST(!isPointInRect(Position(12, 31), rect));
     // Right
-    BOOST_TEST(!IsPointInRect(Position(16, 25), rect));
+    BOOST_TEST(!isPointInRect(Position(16, 25), rect));
 
     // Right, overload
-    BOOST_TEST(!IsPointInRect(16, 25, rect.getOrigin().x, rect.getOrigin().y, rect.getSize().x, rect.getSize().y));
+    BOOST_TEST(!isPointInRect(16, 25, rect.getOrigin().x, rect.getOrigin().y, rect.getSize().x, rect.getSize().y));
 }
 
 BOOST_AUTO_TEST_CASE(RectIntersect)

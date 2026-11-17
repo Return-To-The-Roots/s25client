@@ -28,7 +28,7 @@ void placeHarborPosition(Map& map, const MapPoint& position)
 
     for(const Triangle& triangle : triangles)
     {
-        if(helpers::contains_if(GetTriangleEdges(triangle, map.size), isWaterTerrain))
+        if(helpers::containsIf(GetTriangleEdges(triangle, map.size), isWaterTerrain))
         {
             map.harbors.push_back(triangle);
         }
@@ -43,7 +43,7 @@ std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vec
     const auto isCoast = [&map](const MapPoint& pt) {
         const auto allWater = [&map](const MapPoint& p) { return map.textureMap.all(p, isWater); };
         return map.textureMap.any(pt, isLand) && map.textureMap.any(pt, isWater)
-               && helpers::contains_if(map.getTextures().getNeighbours(pt), allWater);
+               && helpers::containsIf(map.getTextures().getNeighbours(pt), allWater);
     };
 
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -64,7 +64,7 @@ std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vec
 
     for(std::vector<MapPoint>& coast : coasts)
     {
-        helpers::erase_if(coast, closeToRiver);
+        helpers::eraseIf(coast, closeToRiver);
     }
 
     return coasts;

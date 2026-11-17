@@ -108,15 +108,15 @@ TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldD
 
 TerrainDesc::~TerrainDesc() = default;
 
-TerrainBQ TerrainDesc::GetBQ() const
+TerrainBQ TerrainDesc::getBQ() const
 {
-    if(Is(ETerrain::Buildable))
+    if(is(ETerrain::Buildable))
         return TerrainBQ::Castle;
-    else if(Is(ETerrain::Mineable))
+    else if(is(ETerrain::Mineable))
         return TerrainBQ::Mine;
-    else if(Is(ETerrain::Walkable))
+    else if(is(ETerrain::Walkable))
         return TerrainBQ::Flag;
-    else if(Is(ETerrain::Unreachable))
+    else if(is(ETerrain::Unreachable))
         return TerrainBQ::Danger;
     else
         return TerrainBQ::Nothing;
@@ -125,12 +125,12 @@ TerrainBQ TerrainDesc::GetBQ() const
 bool TerrainDesc::isUsableByAnimals() const
 {
     // If it is buildable land or mountain, animals can use it
-    return (kind == TerrainKind::Land || kind == TerrainKind::Mountain) && Is(ETerrain::Buildable);
+    return (kind == TerrainKind::Land || kind == TerrainKind::Mountain) && is(ETerrain::Buildable);
 }
 
 bool TerrainDesc::isVital() const
 {
-    return kind == TerrainKind::Land && Is(ETerrain::Buildable);
+    return kind == TerrainKind::Land && is(ETerrain::Buildable);
 }
 
 TerrainDesc::Triangle TerrainDesc::getUSDTriangle() const

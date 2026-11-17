@@ -19,10 +19,10 @@
 #include <boost/test/unit_test.hpp>
 
 // LCOV_EXCL_START
-#define RTTR_ENUM_OUTPUT(EnumName)                                                 \
-    static std::ostream& operator<<(std::ostream& out, const EnumName e)           \
-    {                                                                              \
-        return out << #EnumName "::" << static_cast<unsigned>(rttr::enum_cast(e)); \
+#define RTTR_ENUM_OUTPUT(EnumName)                                                \
+    static std::ostream& operator<<(std::ostream& out, const EnumName e)          \
+    {                                                                             \
+        return out << #EnumName "::" << static_cast<unsigned>(rttr::enumCast(e)); \
     }
 
 RTTR_ENUM_OUTPUT(Animation::SkipType)

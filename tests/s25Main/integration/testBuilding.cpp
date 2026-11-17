@@ -27,11 +27,11 @@
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const NodalObjectType& e)
 {
-    return out << static_cast<unsigned>(rttr::enum_cast(e));
+    return out << static_cast<unsigned>(rttr::enumCast(e));
 }
 static std::ostream& operator<<(std::ostream& out, const RoadBuildMode& e)
 {
-    return out << static_cast<unsigned>(rttr::enum_cast(e));
+    return out << static_cast<unsigned>(rttr::enumCast(e));
 }
 // LCOV_EXCL_STOP
 

@@ -166,16 +166,16 @@ int main(int argc, char** argv)
         bnw::cout << "random_ai_init: " << opts.random_ai_init << std::endl;
         bnw::cout << std::endl;
 
-        RTTRCONFIG.Init();
+        RTTRCONFIG.init();
         // Lua errors and the AI log to file; without this that is ./logs, and a missing folder there turned
         // every Lua error into "Could not open logs/... for writing"
-        const bfs::path logDir = RTTRCONFIG.ExpandPath(s25::folders::logs);
+        const bfs::path logDir = RTTRCONFIG.expandPath(s25::folders::logs);
         bfs::create_directories(logDir);
         LOG.setLogFilepath(logDir);
         RANDOM.Init(opts.random_init);
         AI::getRandomGenerator().seed(opts.random_ai_init);
 
-        const bfs::path mapPath = RTTRCONFIG.ExpandPath(opts.map);
+        const bfs::path mapPath = RTTRCONFIG.expandPath(opts.map);
         const std::vector<AI::Info> ais = ParseAIOptions(opts.ais);
 
         GlobalGameSettings ggs;
@@ -205,9 +205,9 @@ int main(int argc, char** argv)
 
         if(opts.settings_path)
         {
-            loadAddonsFromIni(ggs, RTTRCONFIG.ExpandPath(*opts.settings_path));
+            loadAddonsFromIni(ggs, RTTRCONFIG.expandPath(*opts.settings_path));
 
-            bnw::cout << "settings: " << RTTRCONFIG.ExpandPath(*opts.settings_path) << std::endl;
+            bnw::cout << "settings: " << RTTRCONFIG.expandPath(*opts.settings_path) << std::endl;
             bnw::cout << "addon selections (non-default only):" << std::endl;
             for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
             {
@@ -253,15 +253,15 @@ int main(int argc, char** argv)
             }
         }
 
-        HeadlessGame game(ggs, mapPath, ais, opts.lua_path ? RTTRCONFIG.ExpandPath(*opts.lua_path) : bfs::path{},
+        HeadlessGame game(ggs, mapPath, ais, opts.lua_path ? RTTRCONFIG.expandPath(*opts.lua_path) : bfs::path{},
                           teams);
         if(opts.replay_path)
-            game.recordReplay(RTTRCONFIG.ExpandPath(*opts.replay_path), opts.random_init);
+            game.recordReplay(RTTRCONFIG.expandPath(*opts.replay_path), opts.random_init);
 
         game.run(opts.maxGF);
         game.close();
         if(opts.savegame_path)
-            game.saveGame(RTTRCONFIG.ExpandPath(*opts.savegame_path));
+            game.saveGame(RTTRCONFIG.expandPath(*opts.savegame_path));
     } catch(const std::exception& e)
     {
         bnw::cerr << e.what() << std::endl;

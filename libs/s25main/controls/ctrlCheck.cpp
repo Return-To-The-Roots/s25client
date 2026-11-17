@@ -19,7 +19,7 @@ ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Ex
 
 bool ctrlCheck::msgLeftDown(const MouseCoords& mc)
 {
-    if(!readonly && IsPointInRect(mc.pos, getDrawRect()))
+    if(!readonly && isPointInRect(mc.pos, getDrawRect()))
     {
         check = !check;
         getParent()->msgCheckboxChange(getID(), check);

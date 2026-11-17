@@ -39,7 +39,7 @@ constexpr int stepX = diagramSize.x / NUM_STAT_STEPS;
 
 std::string getPlayerStatus(const GamePlayer& player)
 {
-    if(player.IsDefeated())
+    if(player.isDefeated())
         return "---";
     else if(player.isHuman())
         return "#" + std::to_string(player.getPlayerId() + 1);

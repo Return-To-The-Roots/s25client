@@ -275,7 +275,7 @@ void dskBenchmark::finishTest()
 {
     using namespace std::chrono;
     using helpers::withUnit;
-    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % rttr::enum_cast(curTest_)
+    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % rttr::enumCast(curTest_)
       % withUnit(duration_cast<duration<float>>(frameCtr_.getCurIntervalLength()))
       % withUnit(duration_cast<milliseconds>(frameCtr_.getCurIntervalLength() / frameCtr_.getCurNumFrames()));
     if(testDurations_[curTest_] == milliseconds::zero())
@@ -304,7 +304,7 @@ void dskBenchmark::finishTest()
             curTest_ = Benchmark::None;
         else
         {
-            curTest_ = Benchmark(rttr::enum_cast(curTest_) + 1);
+            curTest_ = Benchmark(rttr::enumCast(curTest_) + 1);
             startTest(curTest_);
         }
     }
@@ -377,7 +377,7 @@ void dskBenchmark::printTimes() const
     {
         if(i == Benchmark::None)
             continue;
-        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % rttr::enum_cast(i)
+        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % rttr::enumCast(i)
           % helpers::withUnit(duration_cast<duration<float>>(testDurations_[i]))
           % helpers::withUnit(duration_cast<milliseconds>(testDurations_[i] / numTestFrames));
         total += testDurations_[i];

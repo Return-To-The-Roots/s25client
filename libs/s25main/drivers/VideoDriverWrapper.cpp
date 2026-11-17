@@ -67,7 +67,7 @@ bool VideoDriverWrapper::loadDriver(std::string& preference)
 {
     unloadDriver();
     // DLL laden
-    if(!driver_wrapper.Load(drivers::DriverType::Video, preference))
+    if(!driver_wrapper.load(drivers::DriverType::Video, preference))
         return false;
 
     auto createVideoInstance = driver_wrapper.getFunction<CreateVideoInstance_t>("CreateVideoInstance");

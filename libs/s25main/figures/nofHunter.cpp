@@ -85,7 +85,7 @@ void nofHunter::drawWorking(DrawPoint drawPt)
             } else
             {
                 unsigned short id = GAMECLIENT.interpolate(8, current_ev);
-                LOADER.getPlayerImage("rom_bobs", 1686 + rttr::enum_cast(shooting_dir + 2u) * 8 + id)
+                LOADER.getPlayerImage("rom_bobs", 1686 + rttr::enumCast(shooting_dir + 2u) * 8 + id)
                   ->drawForPlayer(drawPt, owner.color);
 
                 if(id == 7)
@@ -232,7 +232,7 @@ void nofHunter::walkedDerived()
 bool nofHunter::isShootingPointGood(const MapPoint pt)
 {
     // Punkt muss betretbar sein und man muss ihn erreichen können
-    return PathConditionHuman(*world).isNodeOk(pt) && world->findHumanPath(this->pos, pt, 6).has_value();
+    return PathConditionHuman(*world).isNodeOk(pt) && world->findHumanPath(this->pos, pt, 6).hasValue();
 }
 
 void nofHunter::handleStateChasing()

@@ -67,23 +67,23 @@ void GameServer::ServerConfig::clear()
     ipv6 = false;
 }
 
-GameServer::CountDown::CountDown() : isActive(false), remainingSecs(0) {}
+GameServer::CountDown::CountDown() : isActive_(false), remainingSecs(0) {}
 
 void GameServer::CountDown::start(unsigned timeInSec)
 {
-    isActive = true;
+    isActive_ = true;
     remainingSecs = timeInSec;
     lasttime = SteadyClock::now();
 }
 
 void GameServer::CountDown::stop()
 {
-    isActive = false;
+    isActive_ = false;
 }
 
 bool GameServer::CountDown::update()
 {
-    RTTR_Assert(isActive);
+    RTTR_Assert(isActive_);
     SteadyClock::time_point curTime = SteadyClock::now();
 
     // Check if 1s has passed
@@ -151,7 +151,7 @@ bool GameServer::start(const CreateServerInfo& csi, const MapDescription& map, c
         {
             Savegame save;
 
-            if(!save.Load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
+            if(!save.load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
                 return false;
 
             // Spieleranzahl
@@ -309,7 +309,7 @@ void GameServer::run()
             continue;
         player.sendMsgs(10);
     }
-    helpers::erase_if(networkPlayers, [](const auto& player) { return !player.socket.isValid(); });
+    helpers::eraseIf(networkPlayers, [](const auto& player) { return !player.socket.isValid(); });
 
     lanAnnouncer.Run();
 }
@@ -317,10 +317,10 @@ void GameServer::run()
 void GameServer::runStateConfig()
 {
     waitForClients();
-    if(countdown.IsActive() && countdown.update())
+    if(countdown.isActive() && countdown.update())
     {
         // nun echt starten
-        if(!countdown.IsActive())
+        if(!countdown.isActive())
         {
             if(!startGame())
             {
@@ -1138,7 +1138,7 @@ bool GameServer::onGameMessage(const GameMessage_Player_Ready& msg)
     player.isReady = msg.ready;
 
     // countdown ggf abbrechen
-    if(!player.isReady && countdown.IsActive())
+    if(!player.isReady && countdown.isActive())
         cancelCountdown();
 
     sendToAll(GameMessage_Player_Ready(playerID, msg.ready));
@@ -1372,7 +1372,7 @@ bool GameServer::onGameMessage(const GameMessage_Countdown& msg)
     }
 
     NetworkPlayer* nwPlayer = getNetworkPlayer(msg.senderPlayerID);
-    if(!nwPlayer || countdown.IsActive())
+    if(!nwPlayer || countdown.isActive())
         return true;
 
     if(!arePlayersReady())
@@ -1438,7 +1438,7 @@ bool GameServer::onGameMessage(const GameMessage_GGSChange& msg)
 
 void GameServer::cancelCountdown()
 {
-    if(!countdown.IsActive())
+    if(!countdown.isActive())
         return;
     // Countdown-Stop allen mitteilen
     countdown.stop();
@@ -1496,7 +1496,7 @@ bfs::path GameServer::saveAsyncLog()
     unsigned numEntries = 0;
     for(AsyncLog& log : asyncLogs)
     {
-        auto it = helpers::find_if(log.randEntries, [maxCtr](const auto& e) { return e.counter == maxCtr; });
+        auto it = helpers::findIf(log.randEntries, [maxCtr](const auto& e) { return e.counter == maxCtr; });
         log.randEntries.erase(log.randEntries.begin(), it);
         if(numEntries < log.randEntries.size())
             numEntries = log.randEntries.size();
@@ -1537,7 +1537,7 @@ bfs::path GameServer::saveAsyncLog()
     LOG.write(_("There are %1% identical async log entries.\n")) % numIdentical;
 
     bfs::path filePath =
-      RTTRCONFIG.ExpandPath(s25::folders::logs) / (s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log");
+      RTTRCONFIG.expandPath(s25::folders::logs) / (s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log");
 
     // open async log
     bnw::ofstream file(filePath);

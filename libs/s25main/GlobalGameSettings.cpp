@@ -178,7 +178,7 @@ GlobalGameSettings::AddonWithState* GlobalGameSettings::findAddon(AddonId id)
 
 const GlobalGameSettings::AddonWithState* GlobalGameSettings::findAddon(AddonId id) const
 {
-    auto it = helpers::find_if(addons, [id](const AddonWithState& cur) { return cur.addon->getId() == id; });
+    auto it = helpers::findIf(addons, [id](const AddonWithState& cur) { return cur.addon->getId() == id; });
     return it != addons.end() ? &*it : nullptr;
 }
 
@@ -320,7 +320,7 @@ void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
 {
     auto* addon = findAddon(id);
     if(!addon)
-        LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % rttr::enum_cast(id);
+        LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % rttr::enumCast(id);
     else
         addon->status = selection;
 }

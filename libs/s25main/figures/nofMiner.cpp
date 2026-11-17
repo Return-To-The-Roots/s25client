@@ -112,7 +112,7 @@ void nofMiner::drawWorking(DrawPoint drawPt)
         {{{10, 3}, {10, 3}, {10, 3}, {10, 3}}}, // vikings
         {{{8, 3}, {8, 3}, {8, 3}, {8, 3}}}      // babylonians
       }};
-    const unsigned mineIdx = rttr::enum_cast(workplace->getBuildingType()) - rttr::enum_cast(BuildingType::GraniteMine);
+    const unsigned mineIdx = rttr::enumCast(workplace->getBuildingType()) - rttr::enumCast(BuildingType::GraniteMine);
     RTTR_Assert(mineIdx < offsets.size());
 
     unsigned now_id = GAMECLIENT.interpolate(160, current_ev);

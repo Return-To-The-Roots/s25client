@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(NeighbourPts)
         BOOST_TEST_REQUIRE(radiusPts.size() == 1u + 6u + 12u + 18u);
         BOOST_TEST_REQUIRE(radiusPts[0] == pt);
         for(const auto j : helpers::EnumRange<Direction>{})
-            BOOST_TEST_REQUIRE(radiusPts[rttr::enum_cast(j) + 1] == world.getNeighbour(pt, j));
+            BOOST_TEST_REQUIRE(radiusPts[rttr::enumCast(j) + 1] == world.getNeighbour(pt, j));
         for(unsigned j = 0; j < 12; j++)
             BOOST_TEST_REQUIRE(radiusPts[j + 7] == world.getNeighbour2(pt, j));
         for(unsigned j = 0; j < 18; j++)

@@ -57,7 +57,7 @@ void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
     {
         case 3: // "Letztes Spiel fortsetzen"
         {
-            const std::vector<bfs::path> savFiles = ListDir(RTTRCONFIG.ExpandPath(s25::folders::save), "sav");
+            const std::vector<bfs::path> savFiles = ListDir(RTTRCONFIG.expandPath(s25::folders::save), "sav");
 
             bfs::path mostRecentFilepath;
             s25util::time64_t recent = 0;
@@ -66,7 +66,7 @@ void dskSinglePlayer::msgButtonClick(const unsigned ctrl_id)
                 Savegame save;
 
                 // Datei öffnen
-                if(!save.Load(savFile, SaveGameDataToLoad::Header))
+                if(!save.load(savFile, SaveGameDataToLoad::Header))
                     continue;
 
                 if(save.getSaveTime() > recent)

@@ -74,7 +74,7 @@ void setupTestcase2to4(GameWorld& world, const MapPoint& startPt, DescIdx<Terrai
 BOOST_FIXTURE_TEST_CASE(WalkStraight, WorldFixtureEmpty0P)
 {
     const auto friendlyTerrains =
-      world.getDescription().terrain.findAll([](const TerrainDesc& t) { return t.Is(ETerrain::Walkable); });
+      world.getDescription().terrain.findAll([](const TerrainDesc& t) { return t.is(ETerrain::Walkable); });
 
     const MapPoint startPt(0, 6);
 
@@ -141,7 +141,7 @@ BOOST_FIXTURE_TEST_CASE(CrossTerrain, WorldFixtureEmpty1P)
     const std::vector<Direction> testDirections{Direction::East, Direction::SouthEast, Direction::NorthEast};
 
     const auto deepWaterTerrains = world.getDescription().terrain.findAll(
-      [](const TerrainDesc& t) { return !t.Is(ETerrain::Walkable) && !t.Is(ETerrain::Unreachable); });
+      [](const TerrainDesc& t) { return !t.is(ETerrain::Walkable) && !t.is(ETerrain::Unreachable); });
     const auto tLand = GetLandTerrain(world.getDescription());
     for(DescIdx<TerrainDesc> deepWater : deepWaterTerrains)
     {
@@ -193,7 +193,7 @@ BOOST_FIXTURE_TEST_CASE(DontPassTerrain, WorldFixtureEmpty1P)
                                                 // Test cases 4 a)        b)                    c)
                                                 Direction::West, Direction::SouthWest, Direction::NorthWest};
     std::vector<DescIdx<TerrainDesc>> deadlyTerrains =
-      world.getDescription().terrain.findAll([](const TerrainDesc& t) { return t.Is(ETerrain::Unreachable); });
+      world.getDescription().terrain.findAll([](const TerrainDesc& t) { return t.is(ETerrain::Unreachable); });
     const auto tLand = GetLandTerrain(world.getDescription());
     for(DescIdx<TerrainDesc> deadlyTerrain : deadlyTerrains)
     {

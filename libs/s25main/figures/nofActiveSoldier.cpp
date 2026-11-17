@@ -265,7 +265,7 @@ void nofActiveSoldier::increaseRank()
     {
         // Promote and adjust inventory accordingly
         world->getPlayer(player).decreaseInventoryJob(job_, 1);
-        job_ = Job(rttr::enum_cast(job_) + 1);
+        job_ = Job(rttr::enumCast(job_) + 1);
         world->getPlayer(player).increaseInventoryJob(job_, 1);
     }
 }

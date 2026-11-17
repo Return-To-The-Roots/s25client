@@ -16,7 +16,7 @@ namespace utf = boost::unit_test;
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const PactState e)
 {
-    return out << static_cast<unsigned>(rttr::enum_cast(e));
+    return out << static_cast<unsigned>(rttr::enumCast(e));
 }
 // LCOV_EXCL_STOP
 

@@ -46,7 +46,7 @@ constexpr unsigned rightColumnX = contentX + halfWidth + ctrlSpacingX;
 
 static bfs::path GetPresetsDir()
 {
-    return RTTRCONFIG.ExpandPath(s25::folders::addonPresets);
+    return RTTRCONFIG.expandPath(s25::folders::addonPresets);
 }
 
 static std::optional<std::map<unsigned, unsigned>> LoadPresetsFromFile(const bfs::path& filePath)

@@ -173,9 +173,9 @@ void Texturizer::addTextures(unsigned mountainLevel, unsigned coastline)
 
     auto isRiver = [this](const MapPoint& pt) {
         auto suroundedByWater = [this](const MapPoint& pt) { return this->textureMap_.all(pt, isWater); };
-        return !helpers::contains_if(this->textures_.getNeighbours(pt), suroundedByWater);
+        return !helpers::containsIf(this->textures_.getNeighbours(pt), suroundedByWater);
     };
-    helpers::erase_if(coast, isRiver);
+    helpers::eraseIf(coast, isRiver);
 
     applyCoastTexturing(coast, coastline);
 

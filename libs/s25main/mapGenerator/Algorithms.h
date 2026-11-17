@@ -255,7 +255,7 @@ T LimitFor(const NodeMapBase<T>& values, double coverage, T minimum)
     {
         previousNodes = currentNodes;
         currentNodes =
-          helpers::count_if(values, [minimum, limit](const T value) { return value >= minimum && value <= limit; });
+          helpers::countIf(values, [minimum, limit](const T value) { return value >= minimum && value <= limit; });
         limit++;
     }
 
@@ -304,7 +304,7 @@ T LimitFor(const NodeMapBase<T>& values, const T_Area& area, double coverage, T 
     while(currentNodes < expectedNodes && limit <= maximum)
     {
         previousNodes = currentNodes;
-        currentNodes = helpers::count_if(
+        currentNodes = helpers::countIf(
           area, [&values, minimum, limit](const MapPoint& pt) { return values[pt] >= minimum && values[pt] <= limit; });
         limit++;
     }

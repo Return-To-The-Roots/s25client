@@ -50,7 +50,7 @@ std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, M
 
     // 1. look for points within a buildable area of radius 2 (min. req. of HQ)
     const auto obstacleDistance = DistancesTo(map.size, [&map](const MapPoint& pt) {
-        return map.textureMap.any(pt, [](auto t) { return !t.Is(ETerrain::Buildable); });
+        return map.textureMap.any(pt, [](auto t) { return !t.is(ETerrain::Buildable); });
     });
     const auto hasEnoughSpace = [&obstacleDistance](const MapPoint& pt) { return obstacleDistance[pt] >= 2; };
     std::vector<MapPoint> possiblePositions;

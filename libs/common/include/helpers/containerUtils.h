@@ -48,7 +48,7 @@ namespace detail {
 /// Removes an element from a container by its reverse iterator and returns an iterator to the next element
 /// IMPORTANT: For containers other than list and set existing iterators may be invalidated!
 template<typename T>
-auto erase_reverse(T& container, typename T::reverse_iterator it)
+auto eraseReverse(T& container, typename T::reverse_iterator it)
 {
     return typename T::reverse_iterator(container.erase((++it).base()));
 }
@@ -63,7 +63,7 @@ void erase(T& container, T_Element&& element)
 }
 
 template<typename T, typename T_Predicate>
-void erase_if(T& container, T_Predicate&& predicate)
+void eraseIf(T& container, T_Predicate&& predicate)
 {
     using std::begin;
     using std::end;
@@ -73,7 +73,7 @@ void erase_if(T& container, T_Predicate&& predicate)
 
 /// Removes the first element in a container
 template<typename T>
-void pop_front(T& container)
+void popFront(T& container)
 {
     RTTR_Assert(!container.empty());
     if constexpr(detail::has_pop_front_v<T>)
@@ -97,7 +97,7 @@ auto find(T& container, const U& value)
 }
 
 template<typename T, class T_Predicate>
-auto find_if(T& container, T_Predicate&& predicate)
+auto findIf(T& container, T_Predicate&& predicate)
 {
     using std::begin;
     using std::end;
@@ -115,10 +115,10 @@ bool contains(const T& container, const U& value)
 
 /// Returns true if the container contains a value matching the predicate
 template<typename T, class T_Predicate>
-bool contains_if(const T& container, T_Predicate&& predicate)
+bool containsIf(const T& container, T_Predicate&& predicate)
 {
     using std::end;
-    return find_if(container, std::forward<T_Predicate>(predicate)) != end(container);
+    return findIf(container, std::forward<T_Predicate>(predicate)) != end(container);
 }
 
 /// Count the number of occurrences of the given value. Returns an unsigned value
@@ -132,7 +132,7 @@ size_t count(const T& container, const U& value)
 /// Count the number of items for which the predicate returns true.
 /// Returns an unsigned value
 template<typename T, class T_Predicate>
-size_t count_if(const T& container, T_Predicate&& predicate)
+size_t countIf(const T& container, T_Predicate&& predicate)
 {
     const auto result = std::count_if(container.begin(), container.end(), std::forward<T_Predicate>(predicate));
     return static_cast<std::make_unsigned_t<decltype(result)>>(result);
@@ -208,7 +208,7 @@ constexpr std::ptrdiff_t indexOf(const T_Container& container, const T_Element& 
 
 /// Returns the index of the first matching element in the container or -1 when not found
 template<class T_Container, class T_Predicate>
-constexpr std::ptrdiff_t indexOf_if(const T_Container& container, T_Predicate predicate)
+constexpr std::ptrdiff_t indexOfIf(const T_Container& container, T_Predicate predicate)
 {
     std::ptrdiff_t index = 0;
     for(const auto& curEl : container)

@@ -50,14 +50,14 @@ bool Savegame::save(BinaryFile& file, const std::string& mapName)
     return true;
 }
 
-bool Savegame::Load(const boost::filesystem::path& filePath, const SaveGameDataToLoad what)
+bool Savegame::load(const boost::filesystem::path& filePath, const SaveGameDataToLoad what)
 {
     BinaryFile file;
 
-    return file.Open(filePath, OpenFileMode::Read) && Load(file, what);
+    return file.Open(filePath, OpenFileMode::Read) && load(file, what);
 }
 
-bool Savegame::Load(BinaryFile& file, const SaveGameDataToLoad what)
+bool Savegame::load(BinaryFile& file, const SaveGameDataToLoad what)
 {
     try
     {

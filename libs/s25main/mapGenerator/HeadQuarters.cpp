@@ -17,7 +17,7 @@ std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
     auto partiallyBuildable = [&map](const MapPoint& pt) { return map.textureMap.any(pt, isBuildableLand); };
 
     auto partiallyConnected = [&map, &partiallyBuildable](const MapPoint& pt) {
-        return helpers::contains_if(map.getTextures().getNeighbours(pt), partiallyBuildable);
+        return helpers::containsIf(map.getTextures().getNeighbours(pt), partiallyBuildable);
     };
 
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -37,7 +37,7 @@ std::vector<MapPoint> FindLargestConnectedArea(const Map& map)
     // added before due to allowing tiny rivers to be part of
     // connected areas
 
-    helpers::erase_if(connectedArea, [&map](const MapPoint& pt) { return map.textureMap.any(pt, isWater); });
+    helpers::eraseIf(connectedArea, [&map](const MapPoint& pt) { return map.textureMap.any(pt, isWater); });
 
     return connectedArea;
 }

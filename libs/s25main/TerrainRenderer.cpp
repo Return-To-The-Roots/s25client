@@ -64,7 +64,7 @@ TerrainRenderer::~TerrainRenderer() = default;
 
 static constexpr unsigned getFlatIndex(DescIdx<LandscapeDesc> ls, LandRoadType road)
 {
-    return ls.value * helpers::NumEnumValues_v<LandRoadType> + rttr::enum_cast(road);
+    return ls.value * helpers::NumEnumValues_v<LandRoadType> + rttr::enumCast(road);
 }
 
 PointF TerrainRenderer::getNeighbourVertexPos(MapPoint pt, const Direction dir) const

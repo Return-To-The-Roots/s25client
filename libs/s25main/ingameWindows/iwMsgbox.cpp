@@ -28,7 +28,7 @@ const unsigned short maxTextHeight = 200;
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,
                    MsgboxIcon icon, unsigned msgboxid)
-    : iwMsgbox(title, text, msgHandler, button, "io", rttr::enum_cast(icon), msgboxid)
+    : iwMsgbox(title, text, msgHandler, button, "io", rttr::enumCast(icon), msgboxid)
 {}
 
 iwMsgbox::iwMsgbox(const std::string& title, const std::string& text, Window* msgHandler, MsgboxButton button,

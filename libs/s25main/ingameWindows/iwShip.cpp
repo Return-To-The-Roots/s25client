@@ -67,7 +67,7 @@ iwShip::iwShip(GameWorldView& gwv, GameCommandFactory& gcFactory, const noShip* 
 
     // Die 6 Richtungen
     for(const auto dir : helpers::EnumRange<ShipDirection>{})
-        addImageButton(12 + rttr::enum_cast(dir), BUTTON_POS[dir], Extent(18, 18), TextureColor::Grey,
+        addImageButton(12 + rttr::enumCast(dir), BUTTON_POS[dir], Extent(18, 18), TextureColor::Grey,
                        LOADER.getImageN("io", BUTTON_IDs[dir]))
           ->setVisible(false);
 }
@@ -113,7 +113,7 @@ void iwShip::drawContent()
 
         for(const auto dir : helpers::EnumRange<ShipDirection>{})
         {
-            getCtrl<Window>(12 + rttr::enum_cast(dir))
+            getCtrl<Window>(12 + rttr::enumCast(dir))
               ->setVisible(gwv.getWorld()
                              .getNextFreeHarborPoint(ship->getPos(), ship->getCurrentHarbor(), dir, ship->getPlayerId())
                              .isValid());
@@ -262,7 +262,7 @@ void iwShip::drawCargo()
             if(job == Job::PackDonkey)
                 LOADER.getMapTexture(2016)->drawFull(drawPt);
             else if(job == Job::BoatCarrier)
-                LOADER.getBob("carrier")->draw(rttr::enum_cast(GoodType::Boat), libsiedler2::ImgDir::SW, false, 0,
+                LOADER.getBob("carrier")->draw(rttr::enumCast(GoodType::Boat), libsiedler2::ImgDir::SW, false, 0,
                                                drawPt, owner.color);
             else if(wineaddon::isWineAddonJobType(job))
             {

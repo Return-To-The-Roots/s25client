@@ -152,19 +152,19 @@ glArchivItem_Bitmap* Loader::getNationImage(Nation nation, unsigned nr)
 glArchivItem_Bitmap* Loader::getNationIcon(Nation nation, BuildingType bld)
 {
     if(bld == BuildingType::Charburner)
-        return LOADER.getImageN("charburner", rttr::enum_cast(nation) * 8 + 8);
+        return LOADER.getImageN("charburner", rttr::enumCast(nation) * 8 + 8);
     else
-        return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enum_cast(bld)));
+        return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enumCast(bld)));
 }
 
 ITexture* Loader::getBuildingTex(Nation nation, BuildingType bld)
 {
     if(bld == BuildingType::Charburner)
     {
-        unsigned id = rttr::enum_cast(nation) * 8;
+        unsigned id = rttr::enumCast(nation) * 8;
         return getImageN("charburner", id + (isWinterGFX_ ? 6 : 1));
     } else
-        return checkedCast<ITexture*>(getNationImage(nation, 250 + rttr::enum_cast(bld) * 5));
+        return checkedCast<ITexture*>(getNationImage(nation, 250 + rttr::enumCast(bld) * 5));
     return nullptr;
 }
 
@@ -190,7 +190,7 @@ ITexture* Loader::getWareTex(GoodType ware)
     else if(leatheraddon::isLeatherAddonGoodType(ware))
         return leatheraddon::getWareTex(ware);
     else
-        return getMapTexture(WARES_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+        return getMapTexture(WARES_TEX_MAP_OFFSET + rttr::enumCast(ware));
 }
 
 ITexture* Loader::getWareStackTex(GoodType ware)
@@ -200,7 +200,7 @@ ITexture* Loader::getWareStackTex(GoodType ware)
     else if(leatheraddon::isLeatherAddonGoodType(ware))
         return leatheraddon::getWareStackTex(ware);
     else
-        return getMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+        return getMapTexture(WARE_STACK_TEX_MAP_OFFSET + rttr::enumCast(ware));
 }
 
 ITexture* Loader::getWareDonkeyTex(GoodType ware)
@@ -210,7 +210,7 @@ ITexture* Loader::getWareDonkeyTex(GoodType ware)
     if(leatheraddon::isLeatherAddonGoodType(ware))
         return leatheraddon::getWareDonkeyTex(ware);
     else
-        return getMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enum_cast(ware));
+        return getMapTexture(WARES_DONKEY_TEX_MAP_OFFSET + rttr::enumCast(ware));
 }
 
 ITexture* Loader::getJobTex(Job job)
@@ -220,7 +220,7 @@ ITexture* Loader::getJobTex(Job job)
     else if(leatheraddon::isLeatherAddonJobType(job))
         return leatheraddon::getJobTex(job);
     else
-        return (job == Job::CharBurner) ? getTextureN("io_new", 5) : getMapTexture(2300 + rttr::enum_cast(job));
+        return (job == Job::CharBurner) ? getTextureN("io_new", 5) : getMapTexture(2300 + rttr::enumCast(job));
 }
 
 glArchivItem_Bitmap_Player* Loader::getMapPlayerImage(unsigned nr)
@@ -238,7 +238,7 @@ bool Loader::loadFilesAtStart()
     namespace res = s25::resources;
     // Palettes
     if(!loadFiles({res::pal5, res::pal6, res::pal7, res::paletti0, res::paletti1, res::paletti8})
-       || !Load(ResourceId("colors")))
+       || !load(ResourceId("colors")))
         return false;
 
     if(!loadFonts())
@@ -248,8 +248,8 @@ bool Loader::loadFilesAtStart()
                                       res::io,                       // Menu graphics
                                       res::setup013, res::setup015}; // Backgrounds for options and free play
 
-    const std::array<bfs::path, 2> loadScreenFolders{config_.ExpandPath(s25::folders::loadScreens),
-                                                     config_.ExpandPath(s25::folders::loadScreensMissions)};
+    const std::array<bfs::path, 2> loadScreenFolders{config_.expandPath(s25::folders::loadScreens),
+                                                     config_.expandPath(s25::folders::loadScreensMissions)};
     for(const std::string& loadScreenId : LOAD_SCREENS)
     {
         const std::string filename = s25util::toUpper(loadScreenId) + ".LBM";
@@ -270,13 +270,13 @@ bool Loader::loadFilesAtStart()
 
 bool Loader::loadSounds()
 {
-    if(!Load(config_.ExpandPath(s25::files::soundOrig)))
+    if(!load(config_.expandPath(s25::files::soundOrig)))
         return false;
     const Timer timer(true);
     logger_.write(_("Starting sound conversion: "));
     try
     {
-        convertSounds(getArchive("sound"), config_.ExpandPath(s25::files::soundScript));
+        convertSounds(getArchive("sound"), config_.expandPath(s25::files::soundScript));
     } catch(const std::runtime_error& e)
     {
         logger_.write(_("failed: %1%\n")) % e.what();
@@ -285,7 +285,7 @@ bool Loader::loadSounds()
     using namespace std::chrono;
     logger_.write(_("done in %ums\n")) % duration_cast<milliseconds>(timer.getElapsed()).count();
 
-    const bfs::path oggPath = config_.ExpandPath(s25::folders::sng);
+    const bfs::path oggPath = config_.expandPath(s25::folders::sng);
     std::vector<bfs::path> oggFiles = ListDir(oggPath, "ogg");
 
     sng_lst.reserve(oggFiles.size());
@@ -317,16 +317,16 @@ bool Loader::loadSounds()
 
 bool Loader::loadFonts()
 {
-    if(!Load(ResourceId("fonts"), getPaletteN("pal5")))
+    if(!load(ResourceId("fonts"), getPaletteN("pal5")))
         return false;
     fonts.clear();
     const auto& loadedFonts = getArchive("fonts");
     for(const auto i : helpers::enumRange<FontSize>())
     {
-        const auto* curFont = dynamic_cast<const libsiedler2::ArchivItem_Font*>(loadedFonts[rttr::enum_cast(i)]);
+        const auto* curFont = dynamic_cast<const libsiedler2::ArchivItem_Font*>(loadedFonts[rttr::enumCast(i)]);
         if(!curFont)
         {
-            logger_.write(_("Unable to load font at index %1%\n")) % rttr::enum_cast(i);
+            logger_.write(_("Unable to load font at index %1%\n")) % rttr::enumCast(i);
             return false;
         }
         fonts.emplace_back(*curFont);
@@ -386,7 +386,7 @@ void Loader::loadDummyGUIFiles()
     for(const auto i : helpers::enumRange<FontSize>())
     {
         auto font = std::make_unique<libsiedler2::ArchivItem_Font>();
-        const auto offset = rttr::enum_cast(i) * (helpers::MaxEnumValue_v<FontSize> + 1);
+        const auto offset = rttr::enumCast(i) * (helpers::MaxEnumValue_v<FontSize> + 1);
         const unsigned dx = 9 + offset;
         const unsigned dy = 10 + offset;
         font->setDx(dx);
@@ -471,14 +471,14 @@ NationResourcesSource getNationResourcesSource(const Nation nation, bool isWinte
     bfs::path nationFolder;
     // The original ("native") nations use uppercase file names while we use lowercase names for the new ones
     // Especially relevant for case sensitive file systems
-    if(rttr::enum_cast(nation) < NUM_NATIVE_NATIONS)
+    if(rttr::enumCast(nation) < NUM_NATIVE_NATIONS)
     {
-        nationFolder = config.ExpandPath(s25::folders::mbob);
+        nationFolder = config.expandPath(s25::folders::mbob);
         buildingsFilename = s25util::toUpper(buildingsFilename);
         iconsFilename = s25util::toUpper(iconsFilename);
     } else
     {
-        nationFolder = config.ExpandPath(s25::folders::assetsNations) / NationNames[nation];
+        nationFolder = config.expandPath(s25::folders::assetsNations) / NationNames[nation];
         buildingsFilename = s25util::toLower(buildingsFilename);
         iconsFilename = s25util::toLower(iconsFilename);
     }
@@ -510,7 +510,7 @@ bool Loader::loadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
 
     const libsiedler2::ArchivItem_Palette* pal5 = getPaletteN("pal5");
 
-    if(!loadFiles(files) || !Load(ResourceId("map_new"), pal5))
+    if(!loadFiles(files) || !load(ResourceId("map_new"), pal5))
         return false;
 
     // Load nation building and icon graphics
@@ -518,7 +518,7 @@ bool Loader::loadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     for(Nation nation : nations)
     {
         const auto resourceSource = getNationResourcesSource(nation, isWinterGFX, config_);
-        if(!Load(resourceSource.buildingsFilePath, pal5) || !Load(resourceSource.iconsFilePath, pal5))
+        if(!load(resourceSource.buildingsFilePath, pal5) || !load(resourceSource.iconsFilePath, pal5))
             return false;
         nation_gfx[nation] = &files_[ResourceId::make(resourceSource.buildingsFilePath)].archive;
         nationIcons_[nation] = &files_[ResourceId::make(resourceSource.iconsFilePath)].archive;
@@ -534,8 +534,8 @@ bool Loader::loadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
     if(!loadResources({"leather_bobs"}))
         return false;
 
-    const bfs::path mapGFXFile = config_.ExpandPath(mapGfxPath);
-    if(!Load(mapGFXFile, pal5))
+    const bfs::path mapGFXFile = config_.expandPath(mapGfxPath);
+    if(!load(mapGFXFile, pal5))
         return false;
     map_gfx = &getArchive(ResourceId::make(mapGFXFile));
 
@@ -550,8 +550,8 @@ bool Loader::loadFiles(const std::vector<std::string>& files)
     // load the files
     for(const std::string& curFile : files)
     {
-        const bfs::path filePath = config_.ExpandPath(curFile);
-        if(!Load(filePath, pal5))
+        const bfs::path filePath = config_.expandPath(curFile);
+        if(!load(filePath, pal5))
         {
             logger_.write(_("Failed to load %s\n")) % filePath;
             return false;
@@ -566,7 +566,7 @@ bool Loader::loadResources(const std::vector<ResourceId>& resources)
     const libsiedler2::ArchivItem_Palette* pal5 = getPaletteN("pal5");
     for(const ResourceId& curResource : resources)
     {
-        if(!Load(curResource, pal5))
+        if(!load(curResource, pal5))
         {
             logger_.write(_("Failed to load %s\n")) % curResource;
             return false;
@@ -592,7 +592,7 @@ void Loader::fillCaches()
                 bmp.reset();
 
                 bmp.add(getMapImage(ANIMALCONSTS[species].walking_id
-                                    + ANIMALCONSTS[species].animation_steps * rttr::enum_cast(dir + 3u) + ani_step));
+                                    + ANIMALCONSTS[species].animation_steps * rttr::enumCast(dir + 3u) + ani_step));
 
                 if(ANIMALCONSTS[species].shadow_id)
                 {
@@ -601,7 +601,7 @@ void Loader::fillCaches()
                         bmp.addShadow(getMapImage(ANIMALCONSTS[species].shadow_id));
                     else
                         // ansonsten immer pro Richtung einen Schatten
-                        bmp.addShadow(getMapImage(ANIMALCONSTS[species].shadow_id + rttr::enum_cast(dir + 3u)));
+                        bmp.addShadow(getMapImage(ANIMALCONSTS[species].shadow_id + rttr::enumCast(dir + 3u)));
                 }
 
                 stp->add(bmp);
@@ -644,7 +644,7 @@ void Loader::fillCaches()
 
             if(type == BuildingType::Charburner)
             {
-                unsigned id = rttr::enum_cast(nation) * 8;
+                unsigned id = rttr::enumCast(nation) * 8;
 
                 sprites.building.add(getImageN("charburner", id + (isWinterGFX_ ? 6 : 1)));
                 sprites.building.addShadow(getImageN("charburner", id + 2));
@@ -655,8 +655,8 @@ void Loader::fillCaches()
                 sprites.door.add(getImageN("charburner", id + (isWinterGFX_ ? 7 : 5)));
             } else
             {
-                sprites.building.add(getNationImage(nation, 250 + 5 * rttr::enum_cast(type)));
-                sprites.building.addShadow(getNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 1));
+                sprites.building.add(getNationImage(nation, 250 + 5 * rttr::enumCast(type)));
+                sprites.building.addShadow(getNationImage(nation, 250 + 5 * rttr::enumCast(type) + 1));
                 if(type == BuildingType::Headquarters)
                 {
                     // HQ has no skeleton, but we have a tent that can act as an HQ
@@ -664,10 +664,10 @@ void Loader::fillCaches()
                     sprites.skeleton.addShadow(getImageN("mis0bobs", 7));
                 } else
                 {
-                    sprites.skeleton.add(getNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 2));
-                    sprites.skeleton.addShadow(getNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 3));
+                    sprites.skeleton.add(getNationImage(nation, 250 + 5 * rttr::enumCast(type) + 2));
+                    sprites.skeleton.addShadow(getNationImage(nation, 250 + 5 * rttr::enumCast(type) + 3));
                 }
-                sprites.door.add(getNationImage(nation, 250 + 5 * rttr::enum_cast(type) + 4));
+                sprites.door.add(getNationImage(nation, 250 + 5 * rttr::enumCast(type) + 4));
             }
 
             stp->add(sprites.building);
@@ -681,7 +681,7 @@ void Loader::fillCaches()
             for(const auto ani_step : helpers::range(8))
             {
                 // Flaggentyp berücksichtigen
-                int nr = ani_step + 100 + 20 * rttr::enum_cast(type);
+                int nr = ani_step + 100 + 20 * rttr::enumCast(type);
 
                 glSmartBitmap& bmp = flag_cache[nation][type][ani_step];
 
@@ -753,7 +753,7 @@ void Loader::fillCaches()
             return bmp ? bmp : convertChecked<glArchivItem_Bitmap_Player*>(romBobs[altId]);
         };
         // Special handling for non-native nations: Use roman animations if own are missing
-        const Nation fallbackNation = rttr::enum_cast(nation) < NUM_NATIVE_NATIONS ? nation : Nation::Romans;
+        const Nation fallbackNation = rttr::enumCast(nation) < NUM_NATIVE_NATIONS ? nation : Nation::Romans;
         const auto& natFightAnimIds = FIGHT_ANIMATIONS[nation];
         const auto& altNatFightAnimIds = FIGHT_ANIMATIONS[fallbackNation];
         const auto& natHitIds = HIT_SOLDIERS[nation];
@@ -836,8 +836,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(getMapImage(516 + rttr::enum_cast(type) * 6 + size));
-            bmp.addShadow(getMapImage(616 + rttr::enum_cast(type) * 6 + size));
+            bmp.add(getMapImage(516 + rttr::enumCast(type) * 6 + size));
+            bmp.addShadow(getMapImage(616 + rttr::enumCast(type) * 6 + size));
 
             stp->add(bmp);
         }
@@ -868,8 +868,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(getMapImage(2000 + rttr::enum_cast(dir + 3u) * 8 + ani_step));
-            bmp.addShadow(getMapImage(2048 + rttr::enum_cast(dir) % 3));
+            bmp.add(getMapImage(2000 + rttr::enumCast(dir + 3u) * 8 + ani_step));
+            bmp.addShadow(getMapImage(2048 + rttr::enumCast(dir) % 3));
 
             stp->add(bmp);
         }
@@ -884,8 +884,8 @@ void Loader::fillCaches()
 
             bmp.reset();
 
-            bmp.add(getPlayerImage("boat", rttr::enum_cast(dir + 3u) * 8 + ani_step));
-            bmp.addShadow(getMapImage(2048 + rttr::enum_cast(dir) % 3));
+            bmp.add(getPlayerImage("boat", rttr::enumCast(dir + 3u) * 8 + ani_step));
+            bmp.addShadow(getMapImage(2048 + rttr::enumCast(dir) % 3));
 
             stp->add(bmp);
         }
@@ -914,7 +914,7 @@ void Loader::fillCaches()
 
                     // Japanese shield is missing
                     const unsigned id =
-                      rttr::enum_cast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
+                      rttr::enumCast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
 
                     const libsiedler2::ImgDir imgDir = toImgDir(dir);
 
@@ -1077,7 +1077,7 @@ std::unique_ptr<libsiedler2::Archiv> Loader::extractAnimatedTexture(const glArch
     return destination;
 }
 
-bool Loader::Load(libsiedler2::Archiv& archive, const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::load(libsiedler2::Archiv& archive, const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette)
 {
     try
     {
@@ -1089,7 +1089,7 @@ bool Loader::Load(libsiedler2::Archiv& archive, const bfs::path& path, const lib
     }
 }
 
-bool Loader::Load(libsiedler2::Archiv& archive, const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::load(libsiedler2::Archiv& archive, const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette)
 {
     const ResolvedFile resolvedFile = archiveLocator_->resolve(resId);
     if(!resolvedFile)
@@ -1134,12 +1134,12 @@ bool Loader::loadImpl(const T& resIdOrPath, const libsiedler2::ArchivItem_Palett
     return true;
 }
 
-bool Loader::Load(const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::load(const bfs::path& path, const libsiedler2::ArchivItem_Palette* palette)
 {
     return loadImpl(path, palette);
 }
 
-bool Loader::Load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette)
+bool Loader::load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette)
 {
     return loadImpl(resId, palette);
 }
@@ -1148,22 +1148,22 @@ void addDefaultResourceFolders(const RttrConfig& config, ArchiveLocator& locator
                                const std::vector<Nation>& usedNations, const std::vector<AddonId>& enabledAddons)
 {
     locator.clear();
-    locator.addAssetFolder(config.ExpandPath(s25::folders::assetsBase));
+    locator.addAssetFolder(config.expandPath(s25::folders::assetsBase));
     for(Nation nation : usedNations)
     {
-        const auto overrideFolder = config.ExpandPath(s25::folders::assetsNations) / NationNames[nation];
+        const auto overrideFolder = config.expandPath(s25::folders::assetsNations) / NationNames[nation];
         if(bfs::exists(overrideFolder))
             locator.addOverrideFolder(overrideFolder);
     }
-    locator.addOverrideFolder(config.ExpandPath(s25::folders::assetsOverrides));
+    locator.addOverrideFolder(config.expandPath(s25::folders::assetsOverrides));
     for(AddonId addonId : enabledAddons)
     {
-        const auto overrideFolder = config.ExpandPath(s25::folders::assetsAddons)
+        const auto overrideFolder = config.expandPath(s25::folders::assetsAddons)
                                     / s25util::toStringClassic(static_cast<uint32_t>(addonId), true);
         if(bfs::exists(overrideFolder))
             locator.addOverrideFolder(overrideFolder);
     }
-    const bfs::path userOverrides = config.ExpandPath(s25::folders::assetsUserOverrides);
+    const bfs::path userOverrides = config.expandPath(s25::folders::assetsUserOverrides);
     if(exists(userOverrides))
         locator.addOverrideFolder(userOverrides);
 }

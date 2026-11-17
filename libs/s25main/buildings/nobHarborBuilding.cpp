@@ -1105,7 +1105,7 @@ std::unique_ptr<Ware> nobHarborBuilding::cancelWareForShip(Ware* ware)
 void nobHarborBuilding::cancelFigure(noFigure* figure)
 {
     const auto it =
-      helpers::find_if(figures_for_ships, [figure](const FigureForShip& it) { return it.fig.get() == figure; });
+      helpers::findIf(figures_for_ships, [figure](const FigureForShip& it) { return it.fig.get() == figure; });
 
     // Figur ggf. aus der List entfernen
     if(it != figures_for_ships.end())
@@ -1238,7 +1238,7 @@ void nobHarborBuilding::addSeaAttacker(std::unique_ptr<nofAttacker> attacker)
 void nobHarborBuilding::cancelSeaAttacker(nofAttacker* attacker)
 {
     const auto it =
-      helpers::find_if(soldiers_for_ships, [attacker](const auto& it) { return it.attacker.get() == attacker; });
+      helpers::findIf(soldiers_for_ships, [attacker](const auto& it) { return it.attacker.get() == attacker; });
 
     RTTR_Assert(it != soldiers_for_ships.end());
     if(!attacker->getGoal())

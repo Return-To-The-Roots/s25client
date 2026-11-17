@@ -131,7 +131,7 @@ bool GameWorldBase::isRoadAvailable(const bool boat_road, const MapPoint pt) con
 
         for(const DescIdx<TerrainDesc> tIdx : getTerrainsAround(pt))
         {
-            const TerrainBQ bq = getDescription().get(tIdx).GetBQ();
+            const TerrainBQ bq = getDescription().get(tIdx).getBQ();
             if(bq == TerrainBQ::Danger)
                 return false;
             else if(bq != TerrainBQ::Nothing)
@@ -482,7 +482,7 @@ std::vector<HarborId> GameWorldBase::getUsableTargetHarborsForAttack(const MapPo
                 continue;
             // checks previously tested sea ids to skip pathfinding
             bool previouslytested = false;
-            for(unsigned k = 0; k < rttr::enum_cast(dir); k++)
+            for(unsigned k = 0; k < rttr::enumCast(dir); k++)
             {
                 if(seaId == getSeaId(curHbId, Direction(k)))
                 {
@@ -545,7 +545,7 @@ std::vector<SeaId> GameWorldBase::getFilteredSeaIDsForAttack(const MapPoint targ
 
             // checks previously tested sea ids to skip pathfinding
             bool previouslytested = false;
-            for(unsigned k = 0; k < rttr::enum_cast(dir); k++)
+            for(unsigned k = 0; k < rttr::enumCast(dir); k++)
             {
                 if(seaId == getSeaId(curHbId, Direction(k)))
                 {
@@ -680,7 +680,7 @@ GameWorldBase::getSoldiersForSeaAttack(const unsigned char player_attacker, cons
         {
             // Check if the building was already inserted
             auto oldBldIt =
-              helpers::find_if(buildings, nobHarborBuilding::SeaAttackerBuilding::CmpBuilding(itBld.building));
+              helpers::findIf(buildings, nobHarborBuilding::SeaAttackerBuilding::CmpBuilding(itBld.building));
             if(oldBldIt == buildings.end())
             {
                 // Not found -> Add
@@ -704,7 +704,7 @@ GameWorldBase::getSoldiersForSeaAttack(const unsigned char player_attacker, cons
         // Soldaten hinzufügen
         for(nofPassiveSoldier* soldier : tmp_soldiers)
         {
-            RTTR_Assert(!helpers::contains_if(attackers, PotentialSeaAttacker::CmpSoldier(soldier)));
+            RTTR_Assert(!helpers::containsIf(attackers, PotentialSeaAttacker::CmpSoldier(soldier)));
             attackers.push_back(PotentialSeaAttacker(soldier, bld.harbor, bld.distance));
         }
     }

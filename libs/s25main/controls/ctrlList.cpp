@@ -88,7 +88,7 @@ bool ctrlList::msgLeftUp(const MouseCoords& mc)
     auto* scrollbar = getCtrl<ctrlScrollBar>(0);
 
     // Wenn Maus in der Liste
-    if(IsPointInRect(mc.pos, getListDrawArea()))
+    if(isPointInRect(mc.pos, getListDrawArea()))
     {
         // Doppelklick? Dann noch einen extra Eventhandler aufrufen
         if(mc.dbl_click && getParent() && selection_)
@@ -104,7 +104,7 @@ bool ctrlList::msgLeftUp(const MouseCoords& mc)
 bool ctrlList::msgWheelUp(const MouseCoords& mc)
 {
     // If mouse in list or scrollbar
-    if(IsPointInRect(mc.pos, getFullDrawArea()))
+    if(isPointInRect(mc.pos, getFullDrawArea()))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(-1);
@@ -117,7 +117,7 @@ bool ctrlList::msgWheelUp(const MouseCoords& mc)
 bool ctrlList::msgWheelDown(const MouseCoords& mc)
 {
     // If mouse in list
-    if(IsPointInRect(mc.pos, getFullDrawArea()))
+    if(isPointInRect(mc.pos, getFullDrawArea()))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(+1);
@@ -258,7 +258,7 @@ Rect ctrlList::getListDrawArea() const
 std::optional<unsigned> ctrlList::getItemFromPos(const Position& pos) const
 {
     const Rect listDrawArea = getListDrawArea();
-    if(!IsPointInRect(pos, listDrawArea))
+    if(!isPointInRect(pos, listDrawArea))
         return std::nullopt;
     const unsigned itemIdx =
       (pos.y - listDrawArea.getOrigin().y) / font->getHeight() + getCtrl<ctrlScrollBar>(0)->getScrollPos();

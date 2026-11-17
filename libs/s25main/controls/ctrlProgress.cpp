@@ -138,7 +138,7 @@ bool ctrlProgress::msgLeftDown(const MouseCoords& mc)
     // Test if clicked on progress bar
     DrawPoint progressOrigin = getDrawPos() + DrawPoint(padding_) + DrawPoint(getSize().y + 2, 4);
     Extent progressSize = getSize() - Extent((getSize().y + 1) * 2, 8) - padding_ * 2u;
-    if(IsPointInRect(mc.pos, Rect(progressOrigin, progressSize)))
+    if(isPointInRect(mc.pos, Rect(progressOrigin, progressSize)))
     {
         position =
           helpers::iround<uint16_t>(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x);
@@ -158,7 +158,7 @@ bool ctrlProgress::msgLeftUp(const MouseCoords& mc)
 bool ctrlProgress::msgWheelUp(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(IsPointInRect(mc.pos, getDrawRect()))
+    if(isPointInRect(mc.pos, getDrawRect()))
     {
         msgButtonClick(1);
         return true;
@@ -169,7 +169,7 @@ bool ctrlProgress::msgWheelUp(const MouseCoords& mc)
 bool ctrlProgress::msgWheelDown(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(IsPointInRect(mc.pos, getDrawRect()))
+    if(isPointInRect(mc.pos, getDrawRect()))
     {
         msgButtonClick(0);
         return true;
@@ -185,7 +185,7 @@ bool ctrlProgress::msgMouseMove(const MouseCoords& mc)
     Extent offset(getSize().y + padding_.x, 0);
     DrawPoint rectOrig = getDrawPos() + DrawPoint(offset);
     Extent rectSize = getSize() - offset * 2u;
-    if(IsPointInRect(mc.pos, Rect(rectOrig, rectSize)))
+    if(isPointInRect(mc.pos, Rect(rectOrig, rectSize)))
     {
         WINDOWMANAGER.setToolTip(this, tooltip_);
         return true;

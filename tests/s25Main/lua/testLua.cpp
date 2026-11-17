@@ -376,14 +376,14 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     executeLua("player:ClearResources()");
     const Inventory& playerInv = player.getInventory();
     for(const GoodType gd : helpers::EnumRange<GoodType>{})
-        BOOST_TEST_CONTEXT("Good: " << rttr::enum_cast(gd))
+        BOOST_TEST_CONTEXT("Good: " << rttr::enumCast(gd))
         {
             BOOST_TEST(hq->getNumRealWares(gd) == 0u);
             BOOST_TEST(hq->getNumVisualWares(gd) == 0u);
             BOOST_TEST(playerInv[gd] == 0u);
         }
     for(const Job job : helpers::EnumRange<Job>{})
-        BOOST_TEST_CONTEXT("Job: " << rttr::enum_cast(job))
+        BOOST_TEST_CONTEXT("Job: " << rttr::enumCast(job))
         {
             BOOST_TEST(hq->getNumRealFigures(job) == 0u);
             BOOST_TEST(hq->getNumVisualFigures(job) == 0u);
@@ -497,10 +497,10 @@ BOOST_AUTO_TEST_CASE(IngamePlayer)
     MapPoint hqPos = player0.getHQPos();
     BOOST_TEST_REQUIRE(hqPos.isValid());
     BOOST_TEST_REQUIRE(world.getSpecObj<nobHQ>(hqPos));
-    BOOST_TEST_REQUIRE(!player0.IsDefeated());
+    BOOST_TEST_REQUIRE(!player0.isDefeated());
     BOOST_TEST(isLuaEqual("player:IsDefeated()", "false"));
     executeLua("player:Surrender(false)");
-    BOOST_TEST_REQUIRE(player0.IsDefeated());
+    BOOST_TEST_REQUIRE(player0.isDefeated());
     BOOST_TEST(isLuaEqual("player:IsDefeated()", "true"));
     // HQ should still be there
     BOOST_TEST_REQUIRE(player0.getHQPos().isValid());

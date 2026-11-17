@@ -60,7 +60,7 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
 {
     WorldDescription desc;
     GameDataLoader gdLoader(desc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
     {
         LC_Status_Error(_("Failed to load game data!"));
         return;
@@ -154,13 +154,13 @@ void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned sel
                                                     s25::folders::mapsSea, s25::folders::mapsPlayed}};
 
     const size_t numFaultyMapsPrior = brokenMapPaths.size();
-    const bfs::path mapPath = RTTRCONFIG.ExpandPath(ids[selection]);
+    const bfs::path mapPath = RTTRCONFIG.expandPath(ids[selection]);
     fillTable(ListDir(mapPath, "swd"));
     fillTable(ListDir(mapPath, "wld"));
     // For own maps (WORLDS folder) also use the one in the installation folder as S2 does
     if(mapPath.filename() == "WORLDS")
     {
-        const bfs::path worldsPath = RTTRCONFIG.ExpandPath("WORLDS");
+        const bfs::path worldsPath = RTTRCONFIG.expandPath("WORLDS");
         fillTable(ListDir(worldsPath, "swd"));
         fillTable(ListDir(worldsPath, "wld"));
     }
@@ -305,7 +305,7 @@ void dskSelectMap::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned
 void dskSelectMap::createRandomMap()
 {
     // setup filepath for the random map
-    const auto mapPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / "Random.swd";
+    const auto mapPath = RTTRCONFIG.expandPath(s25::folders::mapsPlayed) / "Random.swd";
 
     try
     {

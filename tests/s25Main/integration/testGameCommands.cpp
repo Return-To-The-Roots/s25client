@@ -48,7 +48,7 @@ static std::ostream& operator<<(std::ostream& out, const InventorySetting& setti
 }
 static std::ostream& operator<<(std::ostream& out, const NodalObjectType& e)
 {
-    return out << static_cast<unsigned>(rttr::enum_cast(e));
+    return out << static_cast<unsigned>(rttr::enumCast(e));
 }
 static void dummySuppressUnused(std::ostream& out)
 {
@@ -993,8 +993,8 @@ BOOST_FIXTURE_TEST_CASE(armageddon, WorldWithGCExecution2P)
     }
     BOOST_TEST_REQUIRE(world.getNO(hqPt1)->getGOT() != GO_Type::NobHq);
     BOOST_TEST_REQUIRE(world.getNO(hqPt2)->getGOT() != GO_Type::NobHq);
-    BOOST_TEST_REQUIRE(player1.IsDefeated());
-    BOOST_TEST_REQUIRE(player2.IsDefeated());
+    BOOST_TEST_REQUIRE(player1.isDefeated());
+    BOOST_TEST_REQUIRE(player2.isDefeated());
 }
 
 BOOST_FIXTURE_TEST_CASE(DestroyAllTest, WorldWithGCExecution2P)
@@ -1016,8 +1016,8 @@ BOOST_FIXTURE_TEST_CASE(DestroyAllTest, WorldWithGCExecution2P)
     }
     BOOST_TEST_REQUIRE(world.getNO(hqPt1)->getGOT() != GO_Type::NobHq);
     BOOST_TEST_REQUIRE(world.getNO(hqPt2)->getGOT() == GO_Type::NobHq);
-    BOOST_TEST_REQUIRE(player1.IsDefeated());
-    BOOST_TEST_REQUIRE(!player2.IsDefeated());
+    BOOST_TEST_REQUIRE(player1.isDefeated());
+    BOOST_TEST_REQUIRE(!player2.isDefeated());
 }
 
 BOOST_FIXTURE_TEST_CASE(SurrenderTest, WorldWithGCExecution2P)
@@ -1034,8 +1034,8 @@ BOOST_FIXTURE_TEST_CASE(SurrenderTest, WorldWithGCExecution2P)
     BOOST_TEST_REQUIRE(player2.getHQPos().isValid());
     BOOST_TEST_REQUIRE(world.getNode(hqPt1).obj != (const noBase*)nullptr);
     BOOST_TEST_REQUIRE(world.getNode(hqPt2).obj != (const noBase*)nullptr);
-    BOOST_TEST_REQUIRE(player1.IsDefeated());
-    BOOST_TEST_REQUIRE(!player2.IsDefeated());
+    BOOST_TEST_REQUIRE(player1.isDefeated());
+    BOOST_TEST_REQUIRE(!player2.isDefeated());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

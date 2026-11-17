@@ -50,7 +50,7 @@ dskCredits::dskCredits() : Desktop(LOADER.getImageN("setup013", 0)), itCurEntry(
     pageTimer = addTimer(ID_tmrPage, PAGE_TIME);
     pageTimer->stop();
 
-    LOADER.Load(ResourceId("credits")); // Ignore failure
+    LOADER.load(ResourceId("credits")); // Ignore failure
 
     // order by last name (alphabetical)
     CreditsEntry entry = CreditsEntry("Alexander Grund (Flamefire):", getCreditsImgOrDefault("flamefire"));
@@ -272,7 +272,7 @@ dskCredits::dskCredits() : Desktop(LOADER.getImageN("setup013", 0)), itCurEntry(
 
     WorldDescription worldDesc;
     GameDataLoader gdLoader(worldDesc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
     {
         WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game data"), this, MsgboxButton::Ok,
                                                       MsgboxIcon::ExclamationRed, 0));
@@ -435,7 +435,7 @@ void dskCredits::drawBobs()
             if(isWareDrawable(ware))
             {
                 // Japanese shield is missing
-                b.id = rttr::enum_cast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
+                b.id = rttr::enumCast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
                 b.hasWare = true;
                 b.pos.y = getCtrl<ctrlButton>(0)->getPos().y - 20 - rand() % 150;
                 bobs.push_back(b);

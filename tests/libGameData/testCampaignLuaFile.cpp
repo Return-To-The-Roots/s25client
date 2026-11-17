@@ -148,12 +148,12 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
 
     // maps
     BOOST_TEST(desc.getNumMaps() == 3u);
-    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
-    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
-    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
-    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
-    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
-    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
+    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
+    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
+    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
+    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
+    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
+    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
 }
 
 BOOST_AUTO_TEST_CASE(LoadCampaignWithoutImage)
@@ -466,12 +466,12 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
 
     // maps
     BOOST_TEST(desc.getNumMaps() == 3u);
-    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
-    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
-    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
-    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
-    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
-    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
+    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
+    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
+    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
+    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
+    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
+    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
 
     // selection map
     BOOST_TEST(!desc.selectionMapData);
@@ -532,12 +532,12 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
 
     // maps
     BOOST_TEST(desc.getNumMaps() == 3u);
-    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
-    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
-    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
-    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
-    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
-    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
+    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
+    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
+    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
+    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
+    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
+    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
 
     // selection map
     const auto& selectionMap = desc.selectionMapData;

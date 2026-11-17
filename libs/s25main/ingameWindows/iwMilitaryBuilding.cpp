@@ -279,8 +279,8 @@ void iwMilitaryBuilding::msgButtonClick(const unsigned ctrl_id)
             const std::list<nobMilitary*>& militaryBuildings =
               gwv.getWorld().getPlayer(building->getPlayer()).getBuildingRegister().getMilitaryBuildings();
             // go through list once we get to current building -> open window for the next one and go to next location
-            auto it = helpers::find_if(
-              militaryBuildings, [bldPos = building->getPos()](const auto* it) { return it->getPos() == bldPos; });
+            auto it = helpers::findIf(militaryBuildings,
+                                      [bldPos = building->getPos()](const auto* it) { return it->getPos() == bldPos; });
             if(it != militaryBuildings.end()) // got to current building in the list?
             {
                 // close old window, open new window (todo: only open if it isnt already open), move to location of next

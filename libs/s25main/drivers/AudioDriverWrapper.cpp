@@ -94,7 +94,7 @@ bool AudioDriverWrapper::loadDriver(std::string& preference)
 {
     RTTR_Assert(!audiodriver_);
     // DLL laden
-    if(!driver_wrapper.Load(drivers::DriverType::Audio, preference))
+    if(!driver_wrapper.load(drivers::DriverType::Audio, preference))
         return false;
 
     auto createAudioInstance = driver_wrapper.getFunction<decltype(CreateAudioInstance)>("CreateAudioInstance");

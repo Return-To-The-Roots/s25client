@@ -78,10 +78,10 @@ RTTR_ENUM_OUTPUT(Level, Easy, Medium, Hard)
 #undef RTTR_ENUM_OUTPUT
 
 // Simple only
-#define RTTR_ENUM_OUTPUT(EnumName)                                                 \
-    inline std::ostream& operator<<(std::ostream& out, const EnumName e)           \
-    {                                                                              \
-        return out << #EnumName "::" << static_cast<unsigned>(rttr::enum_cast(e)); \
+#define RTTR_ENUM_OUTPUT(EnumName)                                                \
+    inline std::ostream& operator<<(std::ostream& out, const EnumName e)          \
+    {                                                                             \
+        return out << #EnumName "::" << static_cast<unsigned>(rttr::enumCast(e)); \
     }
 
 RTTR_ENUM_OUTPUT(BuildingType)

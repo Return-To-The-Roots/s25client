@@ -29,7 +29,7 @@ static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
         for(const MapPoint pt : neighbors)
         {
             BOOST_TEST_REQUIRE(
-              map.textureMap.all(pt, [](const TerrainDesc& terrain) { return terrain.GetBQ() == TerrainBQ::Castle; }),
+              map.textureMap.all(pt, [](const TerrainDesc& terrain) { return terrain.getBQ() == TerrainBQ::Castle; }),
               "At point " << pt);
         }
         // All direct neighbors must have the same height as the hqPos

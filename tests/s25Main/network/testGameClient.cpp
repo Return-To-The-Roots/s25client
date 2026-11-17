@@ -43,7 +43,7 @@ struct print_log_value<std::chrono::duration<T, R>>
 BOOST_TEST_DONT_PRINT_LOG_VALUE(ClientState)
 static std::ostream& operator<<(std::ostream& os, const ConnectState& state)
 {
-    return os << rttr::enum_cast(state);
+    return os << rttr::enumCast(state);
 }
 // LCOV_EXCL_STOP
 
@@ -76,7 +76,7 @@ public:
     // which breaks expected flow of events when this map is reused.
     CustomUserMapFolderFixture() : parent_("USERDATA", tmpFolder_)
     {
-        bfs::create_directories(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed));
+        bfs::create_directories(RTTRCONFIG.expandPath(s25::folders::mapsPlayed));
     }
 };
 
@@ -173,9 +173,9 @@ BOOST_DATA_TEST_CASE(ClientFollowsConnectProtocol, usesLuaScriptValues, usesLuaS
         BOOST_TEST_REQUIRE(msg);
         BOOST_TEST(msg->mapChecksum == mapInfo.mapChecksum);
         BOOST_TEST(msg->luaChecksum == mapInfo.luaChecksum);
-        BOOST_TEST(bfs::exists(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / testMapPath.filename()));
+        BOOST_TEST(bfs::exists(RTTRCONFIG.expandPath(s25::folders::mapsPlayed) / testMapPath.filename()));
         if(usesLuaScript)
-            BOOST_TEST(bfs::exists(RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / testLuaPath.filename()));
+            BOOST_TEST(bfs::exists(RTTRCONFIG.expandPath(s25::folders::mapsPlayed) / testLuaPath.filename()));
     }
     {
         MOCK_EXPECT(callbacks.CI_NextConnectState).with(ConnectState::QueryServerName).once();
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE(ClientStoresReceivedSavegamesInSaveFolder)
     clientMsgInterface.onGameMessage(GameMessage_Server_Password("true"));
     client.getMainPlayer().sendQueue.clear();
 
-    const auto expectedSavePath = RTTRCONFIG.ExpandPath(s25::folders::save) / "received.sav";
+    const auto expectedSavePath = RTTRCONFIG.expandPath(s25::folders::save) / "received.sav";
 
     clientMsgInterface.onGameMessage(GameMessage_Map_Info("received.sav", MapType::Savegame, 1, 1, 0, 0));
     const auto msg = boost::dynamic_pointer_cast<GameMessage_MapRequest>(client.getMainPlayer().sendQueue.pop());
@@ -313,7 +313,7 @@ void ClientTreatsLocalSavegameFilenameVerbatim(ServerType serverType, MapType ma
     const bool expectVerbatim = (serverType == ServerType::Local && mapType == MapType::Savegame);
     const std::string sanitizedName = (mapType == MapType::Savegame) ? "my_save.sav" : "my_map.swd";
     const auto targetFolder = (mapType == MapType::Savegame) ? s25::folders::save : s25::folders::mapsPlayed;
-    BOOST_TEST(client.getMapPath() == RTTRCONFIG.ExpandPath(targetFolder) / (expectVerbatim ? rawName : sanitizedName));
+    BOOST_TEST(client.getMapPath() == RTTRCONFIG.expandPath(targetFolder) / (expectVerbatim ? rawName : sanitizedName));
 }
 
 BOOST_AUTO_TEST_CASE(ClientDetectsMapBufferOverflow)

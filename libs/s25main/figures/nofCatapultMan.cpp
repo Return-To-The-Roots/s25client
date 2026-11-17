@@ -199,7 +199,7 @@ void nofCatapultMan::handleDerivedEvent(const unsigned /*id*/)
             }
 
             // "Drehschritte" ausrechnen, da von Richtung 4 aus gedreht wird
-            wheel_steps = int(rttr::enum_cast(shooting_dir)) - 4;
+            wheel_steps = int(rttr::enumCast(shooting_dir)) - 4;
             if(wheel_steps < -3)
                 wheel_steps = 6 + wheel_steps;
 

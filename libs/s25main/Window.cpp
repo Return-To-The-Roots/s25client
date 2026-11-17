@@ -414,7 +414,7 @@ void Window::draw3DBorder(const Rect& rect, TextureColor tc, bool elevated)
 {
     if(tc == TextureColor::Invisible)
         return;
-    glArchivItem_Bitmap* borderImg = LOADER.getImageN("io", 12 + rttr::enum_cast(tc));
+    glArchivItem_Bitmap* borderImg = LOADER.getImageN("io", 12 + rttr::enumCast(tc));
     VIDEODRIVER.getRenderer()->draw3DBorder(rect, elevated, *borderImg);
 }
 
@@ -423,7 +423,7 @@ void Window::draw3DContent(const Rect& rect, TextureColor tc, bool elevated, boo
 {
     if(tc == TextureColor::Invisible)
         return;
-    glArchivItem_Bitmap* contentImg = LOADER.getImageN("io", rttr::enum_cast(tc) * 2 + (highlighted ? 0 : 1));
+    glArchivItem_Bitmap* contentImg = LOADER.getImageN("io", rttr::enumCast(tc) * 2 + (highlighted ? 0 : 1));
     VIDEODRIVER.getRenderer()->draw3DContent(rect, elevated, *contentImg, illuminated, contentColor);
 }
 
@@ -498,7 +498,7 @@ bool Window::isInLockedRegion(const Position& pos, const Window* exception) cons
         // Ignore exception
         if(lockEntry.first == exception)
             continue;
-        if(IsPointInRect(pos, lockEntry.second))
+        if(isPointInRect(pos, lockEntry.second))
             return true;
     }
     return false;
@@ -511,5 +511,5 @@ bool Window::isMouseOver() const
 
 bool Window::isMouseOver(const MouseCoords& mousePos) const
 {
-    return IsPointInRect(mousePos.pos, getBoundaryRect());
+    return isPointInRect(mousePos.pos, getBoundaryRect());
 }

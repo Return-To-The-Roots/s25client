@@ -145,7 +145,7 @@ bool Replay::startRecording(const boost::filesystem::path& filepath, const MapIn
     randomSeed_ = randomSeed;
 
     writeAllHeaderData(file_, mapInfo.title);
-    file_.WriteUnsignedChar(rttr::enum_cast(mapType_));
+    file_.WriteUnsignedChar(rttr::enumCast(mapType_));
     // TODO(Replay): Move before mapType
     file_.WriteUnsignedChar(subVersion_ = currentReplayDataVersion);
     RTTR_Assert(gc::Deserializer::getCurrentVersion() <= std::numeric_limits<decltype(gcVersion_)>::max());
@@ -296,7 +296,7 @@ bool Replay::loadGameData(MapInfo& mapInfo)
                 break;
             case MapType::Savegame:
                 mapInfo.savegame = std::make_unique<Savegame>();
-                if(!mapInfo.savegame->Load(file_, SaveGameDataToLoad::All))
+                if(!mapInfo.savegame->load(file_, SaveGameDataToLoad::All))
                 {
                     lastErrorMsg = std::string(_("Savegame error: ")) + mapInfo.savegame->getLastErrorMsg();
                     return false;
@@ -319,9 +319,9 @@ void Replay::addChatCommand(unsigned gf, uint8_t player, ChatDestination dest, c
 
     file_.WriteUnsignedInt(gf);
 
-    file_.WriteUnsignedChar(rttr::enum_cast(CommandType::Chat));
+    file_.WriteUnsignedChar(rttr::enumCast(CommandType::Chat));
     file_.WriteUnsignedChar(player);
-    file_.WriteUnsignedChar(rttr::enum_cast(dest));
+    file_.WriteUnsignedChar(rttr::enumCast(dest));
     file_.WriteLongString(str);
 
     // Prevent loss in case of crash
@@ -336,7 +336,7 @@ void Replay::addGameCommand(unsigned gf, uint8_t player, const PlayerGameCommand
 
     file_.WriteUnsignedInt(gf);
 
-    file_.WriteUnsignedChar(rttr::enum_cast(CommandType::Game));
+    file_.WriteUnsignedChar(rttr::enumCast(CommandType::Game));
     Serializer ser;
     ser.PushUnsignedChar(player);
     cmds.serialize(ser);
@@ -368,7 +368,7 @@ boost_variant2<Replay::ChatCommand, Replay::GameCommand> Replay::readCommand()
     {
         case CommandType::Chat: return ChatCommand(file_);
         case CommandType::Game: return GameCommand(file_, gcVersion_);
-        default: throw std::invalid_argument("Invalid command type: " + std::to_string(rttr::enum_cast(type)));
+        default: throw std::invalid_argument("Invalid command type: " + std::to_string(rttr::enumCast(type)));
     }
 }
 

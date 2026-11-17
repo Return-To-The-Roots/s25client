@@ -58,7 +58,7 @@ public:
 
     Settings();
 
-    void Load();
+    void load();
     void save();
 
 protected:

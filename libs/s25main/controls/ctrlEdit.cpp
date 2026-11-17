@@ -37,9 +37,9 @@ void ctrlEdit::setText(const std::string& text)
 {
     text_ = s25util::utf8to32(text);
     if(editType_ == EditType::Number)
-        helpers::erase_if(text_, [](char32_t c) { return c < '0' || c > '9'; });
+        helpers::eraseIf(text_, [](char32_t c) { return c < '0' || c > '9'; });
     if(editType_ == EditType::Filename)
-        helpers::erase_if(text_, [](char32_t c) { return !isValidFileNameChar(c); });
+        helpers::eraseIf(text_, [](char32_t c) { return !isValidFileNameChar(c); });
     if(maxLength_ > 0 && text_.size() > maxLength_)
         text_.resize(maxLength_);
 
@@ -243,7 +243,7 @@ void ctrlEdit::resize(const Extent& newSize)
  */
 bool ctrlEdit::msgLeftDown(const MouseCoords& mc)
 {
-    setFocus(IsPointInRect(mc.pos, getDrawRect()));
+    setFocus(isPointInRect(mc.pos, getDrawRect()));
     return false; // "Unhandled" so other edits can handle this too and set their focus accordingly
 }
 

@@ -40,7 +40,7 @@ void PreviewMinimap::setMap(const libsiedler2::ArchivItem_Map& s2map)
 
     WorldDescription worldDesc;
     GameDataLoader gdLoader(worldDesc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
         LOG.write(_("Failed to load game data!"));
     else
     {

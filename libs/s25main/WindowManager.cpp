@@ -178,7 +178,7 @@ IngameWindow& WindowManager::doShow(std::unique_ptr<IngameWindow> window, bool m
     // New modal window goes on top, non-modal window goes behind all modals
     const auto itInsert = window->isModal() ?
                             windows.end() :
-                            helpers::find_if(windows, [](const auto& curWnd) { return curWnd->isModal(); });
+                            helpers::findIf(windows, [](const auto& curWnd) { return curWnd->isModal(); });
     auto& result = **windows.emplace(itInsert, std::move(window));
 
     // Make the new window active (special cases handled in the function)
@@ -220,7 +220,7 @@ IngameWindow* WindowManager::findWindowAtPos(const Position& pos) const
         Rect window_rect = window->getDrawRect();
 
         // trifft die Maus auf ein Fenster?
-        if(IsPointInRect(pos, window_rect))
+        if(isPointInRect(pos, window_rect))
         {
             return window.get();
         }
@@ -233,7 +233,7 @@ IngameWindow* WindowManager::findWindowAtPos(const Position& pos) const
 
 IngameWindow* WindowManager::findNonModalWindow(unsigned id) const
 {
-    auto itWnd = helpers::find_if(
+    auto itWnd = helpers::findIf(
       windows, [id](const auto& wnd) { return !wnd->shouldBeClosed() && !wnd->isModal() && wnd->getID() == id; });
     return itWnd == windows.end() ? nullptr : itWnd->get();
 }
@@ -522,22 +522,22 @@ void WindowManager::doDesktopSwitch()
 void WindowManager::closeMarkedIngameWnds()
 {
     auto isWndMarkedForClose = [](const auto& wnd) { return wnd->shouldBeClosed(); };
-    auto it = helpers::find_if(windows, isWndMarkedForClose);
+    auto it = helpers::findIf(windows, isWndMarkedForClose);
     while(it != windows.end())
     {
         doClose(it->get());
-        it = helpers::find_if(windows, isWndMarkedForClose);
+        it = helpers::findIf(windows, isWndMarkedForClose);
     }
 }
 
 template<class T_Windows>
 void SetActiveWindowImpl(const Window& wnd, Desktop& desktop, T_Windows& windows)
 {
-    auto itWnd = helpers::find_if(windows, [&wnd](const auto& it) { return it.get() == &wnd; });
+    auto itWnd = helpers::findIf(windows, [&wnd](const auto& it) { return it.get() == &wnd; });
     if(itWnd != windows.end())
     {
         // If we have a modal window, don't make this active unless it is the top most one
-        if(&wnd != windows.back().get() && helpers::contains_if(windows, [](const auto& it) { return it->isModal(); }))
+        if(&wnd != windows.back().get() && helpers::containsIf(windows, [](const auto& it) { return it->isModal(); }))
         {
             return;
         }
@@ -567,7 +567,7 @@ void WindowManager::takeScreenshot() const
     glReadPixels(0, 0, windowSize.width, windowSize.height, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     flipVertical(buffer);
     const bfs::path outFilepath =
-      RTTRCONFIG.ExpandPath(s25::folders::screenshots) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
+      RTTRCONFIG.expandPath(s25::folders::screenshots) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
     try
     {
         saveBitmap(buffer, outFilepath);

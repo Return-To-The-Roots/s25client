@@ -16,14 +16,14 @@
 
 struct NotificationManager::NoteCallbackBase
 {
-    NoteCallbackBase() noexcept : isSubscribed(true) {}
-    void setUnsubscribed() noexcept { isSubscribed = false; }
-    bool IsSubscribed() const noexcept { return isSubscribed; }
+    NoteCallbackBase() noexcept : isSubscribed_(true) {}
+    void setUnsubscribed() noexcept { isSubscribed_ = false; }
+    bool isSubscribed() const noexcept { return isSubscribed_; }
 
 private:
     /// Used internally to detect unsubscribed callbacks.
     /// This allows unsubscribing all callbacks when the manager is destroyed
-    bool isSubscribed;
+    bool isSubscribed_;
 };
 
 template<class T_Note>
@@ -63,7 +63,7 @@ Subscription NotificationManager::subscribe(std::function<void(const T_Note&)> c
     return Subscription(subscriber, [this](void* subscription) {
         RTTR_Assert(subscription); // As we use this in a shared_ptr, this can never be nullptr
         auto* callback = static_cast<NoteCallback<T_Note>*>(subscription);
-        if(callback->IsSubscribed())
+        if(callback->isSubscribed())
             this->unsubscribe<T_Note>(callback);
         delete callback;
     });
@@ -72,7 +72,7 @@ Subscription NotificationManager::subscribe(std::function<void(const T_Note&)> c
 template<class T_Note>
 void NotificationManager::unsubscribe(NoteCallback<T_Note>* callback) noexcept
 {
-    RTTR_Assert(callback->IsSubscribed());
+    RTTR_Assert(callback->isSubscribed());
     Subscribers& subs = noteId2Subscriber[T_Note::getNoteId()];
     CallbackList& callbacks = subs.callbacks;
     auto itEl = helpers::find(callbacks, callback);

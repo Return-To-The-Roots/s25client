@@ -50,7 +50,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
             const auto iWare = sgd.PopUnsignedChar();
             // GoodType::Nothing is moved because of adding new wares due addons
             // The old GoodType::Nothing is now GoodType::Grapes
-            if(iWare == rttr::enum_cast(GoodType::Grapes))
+            if(iWare == rttr::enumCast(GoodType::Grapes))
                 ware = std::nullopt;
             else
                 ware = GoodType(iWare);

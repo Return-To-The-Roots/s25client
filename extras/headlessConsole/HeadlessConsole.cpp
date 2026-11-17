@@ -101,8 +101,8 @@ void StatsTablePrinter::print(const HeadlessStats& stats, const GameWorldBase& w
     for(unsigned i = 0; i < numPlayers; ++i)
     {
         const GamePlayer& p = world.getPlayer(i);
-        printConsole("│ %s%-26s%s │ %18s │ %13s │ %10s │ %10s │\n", p.IsDefeated() ? "\x1b[9m" : "", p.name.c_str(),
-                     p.IsDefeated() ? "\x1b[29m" : "",
+        printConsole("│ %s%-26s%s │ %18s │ %13s │ %10s │ %10s │\n", p.isDefeated() ? "\x1b[9m" : "", p.name.c_str(),
+                     p.isDefeated() ? "\x1b[29m" : "",
                      formatNumber(p.getStatisticCurrentValue(StatisticType::Country)).c_str(),
                      formatNumber(p.getStatisticCurrentValue(StatisticType::Buildings)).c_str(),
                      formatNumber(p.getStatisticCurrentValue(StatisticType::Military)).c_str(),

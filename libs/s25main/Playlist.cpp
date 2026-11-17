@@ -54,7 +54,7 @@ bool Playlist::saveAs(const boost::filesystem::path& filepath) const
     return static_cast<bool>(out);
 }
 
-bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
+bool Playlist::load(Log& logger, const boost::filesystem::path& filepath)
 {
     songs_.clear();
     order_.clear();

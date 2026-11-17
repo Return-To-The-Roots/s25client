@@ -168,7 +168,7 @@ void GamePlayer::serialize(SerializedGameData& sgd) const
     if(ps != PlayerState::Occupied && ps != PlayerState::AI)
         return;
 
-    sgd.PushBool(isDefeated);
+    sgd.PushBool(isDefeated_);
 
     buildings.serialize(sgd);
 
@@ -243,7 +243,7 @@ void GamePlayer::deserialize(SerializedGameData& sgd)
     if(origin_ps != PlayerState::Occupied && origin_ps != PlayerState::AI)
         return;
 
-    isDefeated = sgd.PopBool();
+    isDefeated_ = sgd.PopBool();
     buildings.deserialize(sgd);
 
     sgd.popObjectContainer(roads, GO_Type::Roadsegment);
@@ -795,7 +795,7 @@ void GamePlayer::jobNotWanted(noRoadNode* workplace, bool all)
 
 void GamePlayer::oneJobNotWanted(const Job job, noRoadNode* workplace)
 {
-    const auto it = helpers::find_if(
+    const auto it = helpers::findIf(
       jobs_wanted, [workplace, job](const auto& it) { return it.workplace == workplace && it.job == job; });
     if(it != jobs_wanted.end())
         jobs_wanted.erase(it);
@@ -1491,7 +1491,7 @@ void GamePlayer::testDefeat()
 {
     // Nicht schon besiegt?
     // Keine Militärgebäude, keine Lagerhäuser (HQ,Häfen) -> kein Land --> verloren
-    if(!isDefeated && buildings.getMilitaryBuildings().empty() && buildings.getStorehouses().empty())
+    if(!isDefeated_ && buildings.getMilitaryBuildings().empty() && buildings.getStorehouses().empty())
         Surrender();
 }
 
@@ -1507,10 +1507,10 @@ nobHQ* GamePlayer::getHQ()
 
 void GamePlayer::Surrender()
 {
-    if(isDefeated)
+    if(isDefeated_)
         return;
 
-    isDefeated = true;
+    isDefeated_ = true;
 
     // GUI Bescheid sagen
     if(world.getGameInterface())
@@ -1622,7 +1622,7 @@ void GamePlayer::statisticStep()
     {
         if(t == StatisticTime(helpers::MaxEnumValue_v<StatisticTime>))
             break;
-        const auto nextT = StatisticTime(rttr::enum_cast(t) + 1);
+        const auto nextT = StatisticTime(rttr::enumCast(t) + 1);
         if(statistic[t].counter == 4)
         {
             statistic[t].counter = 0;
@@ -2113,7 +2113,7 @@ void GamePlayer::cancelWaresForEmergencyProtocol()
 void GamePlayer::testForEmergencyProgramm()
 {
     // we are already defeated, do not even think about an emergency program - it's too late :-(
-    if(isDefeated)
+    if(isDefeated_)
         return;
 
     // In Lagern vorhandene Bretter und Steine zählen

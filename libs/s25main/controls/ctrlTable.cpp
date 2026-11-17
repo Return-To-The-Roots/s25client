@@ -367,7 +367,7 @@ Rect ctrlTable::getFullDrawArea() const
 
 bool ctrlTable::msgLeftDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, getContentDrawArea()))
+    if(isPointInRect(mc.pos, getContentDrawArea()))
     {
         setSelection(getSelectionFromMouse(mc));
         if(getParent())
@@ -380,7 +380,7 @@ bool ctrlTable::msgLeftDown(const MouseCoords& mc)
 
 bool ctrlTable::msgRightDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, getContentDrawArea()))
+    if(isPointInRect(mc.pos, getContentDrawArea()))
     {
         setSelection(getSelectionFromMouse(mc));
         if(getParent())
@@ -405,7 +405,7 @@ std::optional<unsigned> ctrlTable::getSelectionFromMouse(const MouseCoords& mc) 
 bool ctrlTable::msgWheelUp(const MouseCoords& mc)
 {
     // If mouse in list or scrollbar
-    if(IsPointInRect(mc.pos, getFullDrawArea()))
+    if(isPointInRect(mc.pos, getFullDrawArea()))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(-1);
@@ -416,7 +416,7 @@ bool ctrlTable::msgWheelUp(const MouseCoords& mc)
 
 bool ctrlTable::msgWheelDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, getFullDrawArea()))
+    if(isPointInRect(mc.pos, getFullDrawArea()))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(+1);
@@ -427,7 +427,7 @@ bool ctrlTable::msgWheelDown(const MouseCoords& mc)
 
 bool ctrlTable::msgLeftUp(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, getContentDrawArea()))
+    if(isPointInRect(mc.pos, getContentDrawArea()))
     {
         if(mc.dbl_click && getParent())
         {

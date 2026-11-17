@@ -17,7 +17,7 @@ template<typename T, typename U>
 auto findPtr(T& container, const U* value)
 {
     using SmartPointer = typename std::remove_const_t<T>::value_type;
-    return find_if(container, [value](const SmartPointer& ptr) { return ptr.get() == value; });
+    return findIf(container, [value](const SmartPointer& ptr) { return ptr.get() == value; });
 }
 
 /// Extract the given pointer from a container of unique_ptrs

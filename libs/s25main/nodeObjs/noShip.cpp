@@ -183,12 +183,12 @@ void noShip::draw(DrawPoint drawPt)
 /// Zeichnet das Schiff stehend mit oder ohne Waren
 void noShip::drawFixed(DrawPoint drawPt, const bool draw_wares)
 {
-    LOADER.getImageN("boot_z", rttr::enum_cast(getCurMoveDir() + 3u) * 2 + 1)->drawFull(drawPt, COLOR_SHADOW);
-    LOADER.getImageN("boot_z", rttr::enum_cast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt);
+    LOADER.getImageN("boot_z", rttr::enumCast(getCurMoveDir() + 3u) * 2 + 1)->drawFull(drawPt, COLOR_SHADOW);
+    LOADER.getImageN("boot_z", rttr::enumCast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt);
 
     if(draw_wares)
         /// Waren zeichnen
-        LOADER.getImageN("boot_z", 30 + rttr::enum_cast(getCurMoveDir() + 3u))->drawFull(drawPt);
+        LOADER.getImageN("boot_z", 30 + rttr::enumCast(getCurMoveDir() + 3u))->drawFull(drawPt);
 }
 
 /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
@@ -197,8 +197,8 @@ void noShip::drawDriving(DrawPoint& drawPt)
     // Interpolieren zwischen beiden Knotenpunkten
     drawPt += calcWalkingRelative();
 
-    LOADER.getImageN("boot_z", 13 + rttr::enum_cast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt, COLOR_SHADOW);
-    LOADER.getImageN("boot_z", 12 + rttr::enum_cast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt);
+    LOADER.getImageN("boot_z", 13 + rttr::enumCast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt, COLOR_SHADOW);
+    LOADER.getImageN("boot_z", 12 + rttr::enumCast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt);
 }
 
 /// Zeichnet normales Fahren auf dem Meer mit Gütern
@@ -206,7 +206,7 @@ void noShip::drawDrivingWithWares(DrawPoint& drawPt)
 {
     drawDriving(drawPt);
     /// Waren zeichnen
-    LOADER.getImageN("boot_z", 30 + rttr::enum_cast(getCurMoveDir() + 3u))->drawFull(drawPt);
+    LOADER.getImageN("boot_z", 30 + rttr::enumCast(getCurMoveDir() + 3u))->drawFull(drawPt);
 }
 
 void noShip::handleEvent(const unsigned id)

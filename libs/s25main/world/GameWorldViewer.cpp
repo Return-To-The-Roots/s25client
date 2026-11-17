@@ -131,7 +131,7 @@ bool GameWorldViewer::isAllVisible() const
         return true;
 
     // Spieler schon tot? Dann auch alles sichtbar?
-    if(getPlayer().IsDefeated())
+    if(getPlayer().isDefeated())
         return true;
     return false;
 }

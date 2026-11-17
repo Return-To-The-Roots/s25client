@@ -42,7 +42,7 @@ void nofFisher::drawWorking(DrawPoint drawPt)
     if(id < 16)
     {
         // Angel reinlassen
-        const unsigned iFishingDir = rttr::enum_cast(fishing_dir);
+        const unsigned iFishingDir = rttr::enumCast(fishing_dir);
         if(iFishingDir < 3)
             draw_id = 1566 + 8 * iFishingDir + (id / 2);
         else
@@ -56,17 +56,17 @@ void nofFisher::drawWorking(DrawPoint drawPt)
     } else if(id < 216)
     {
         // Angel im Wasser hängen lassen und warten
-        draw_id = 1590 + 8 * rttr::enum_cast(fishing_dir + 3) + (id % 8);
+        draw_id = 1590 + 8 * rttr::enumCast(fishing_dir + 3) + (id % 8);
     } else
     {
         // Angel wieder rausholn
         if(successful)
             // Mit Fisch an der Angel
-            draw_id = 1638 + 8 * rttr::enum_cast(fishing_dir + 3) + (id - 216) / 2;
+            draw_id = 1638 + 8 * rttr::enumCast(fishing_dir + 3) + (id - 216) / 2;
         else
         {
             // Ohne Fisch (wie das Reinlassen, bloß umgekehrt)
-            const unsigned iFishingDir = rttr::enum_cast(fishing_dir);
+            const unsigned iFishingDir = rttr::enumCast(fishing_dir);
             if(iFishingDir < 3)
                 draw_id = 1566 + 8 * iFishingDir + 7 - (id - 216) / 2;
             else

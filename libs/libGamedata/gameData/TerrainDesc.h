@@ -78,20 +78,20 @@ struct TerrainDesc
     TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
     ~TerrainDesc();
     /// Get the building quality of the terrain from the flags
-    TerrainBQ GetBQ() const;
+    TerrainBQ getBQ() const;
     /// Returns whether "regular" animals walk on that terrain (no water or snow animals)
     bool isUsableByAnimals() const;
     /// Returns whether corn fields can grow on the terrain (no dessert, mountain etc)
     bool isVital() const;
     /// Return true if the terrain has the given attribute
-    bool Is(ETerrain what) const;
+    bool is(ETerrain what) const;
     /// Get the position of the up side down triangle
     Triangle getUSDTriangle() const;
     /// Get the position of right side up down triangle
     Triangle getRSUTriangle() const;
 };
 
-inline bool TerrainDesc::Is(ETerrain what) const
+inline bool TerrainDesc::is(ETerrain what) const
 {
     return (static_cast<uint8_t>(flags) & static_cast<uint8_t>(what)) == static_cast<uint8_t>(what);
 }

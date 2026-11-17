@@ -20,7 +20,7 @@ public:
     GameDataLoader(WorldDescription& worldDesc);
     ~GameDataLoader() override;
 
-    bool Load();
+    bool load();
 
     static void registerClasses(kaguya::State& state);
 

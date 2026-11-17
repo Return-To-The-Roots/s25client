@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     BOOST_TEST(wnd->getTitle() == _("Title"));
     BOOST_TEST(!wnd->getCtrls<ctrlImage>().empty());
     BOOST_TEST(wnd->getCtrls<ctrlImage>().front()->getImage()
-               == LOADER.getImageN("io", rttr::enum_cast(MsgboxIcon::ExclamationGreen)));
+               == LOADER.getImageN("io", rttr::enumCast(MsgboxIcon::ExclamationGreen)));
     BOOST_TEST(!wnd->getCtrls<ctrlButton>().empty());
     // 15 lines of text, button must be below
     BOOST_TEST(wnd->getCtrls<ctrlButton>().front()->getPos().y > 15 * NormalFont->getHeight());
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(MessageBoxTest)
     BOOST_TEST(wnd->getTitle() == _("Title"));
     BOOST_TEST(!wnd->getCtrls<ctrlImage>().empty());
     BOOST_TEST(wnd->getCtrls<ctrlImage>().front()->getImage()
-               == LOADER.getImageN("io", rttr::enum_cast(MsgboxIcon::ExclamationRed)));
+               == LOADER.getImageN("io", rttr::enumCast(MsgboxIcon::ExclamationRed)));
     WINDOWMANAGER.closeNow(const_cast<iwMsgbox*>(wnd));
     // MsgBoxEx
     executeLua("rttr:MsgBoxEx('Title', 'Text', 'io', 100)");

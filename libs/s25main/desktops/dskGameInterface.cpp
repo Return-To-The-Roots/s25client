@@ -710,7 +710,7 @@ bool dskGameInterface::msgLeftDown(const MouseCoords& mc)
     const auto btOrig = DrawPoint(VIDEODRIVER.getRenderSize().x / 2 - imgButtonBar.getWidth() / 2,
                                   VIDEODRIVER.getRenderSize().y - imgButtonBar.getHeight())
                         + btOffset;
-    if(IsPointInRect(mc.pos, Rect(btOrig, btSize * 4u)))
+    if(isPointInRect(mc.pos, Rect(btOrig, btSize * 4u)))
         return false;
 
     if(!VIDEODRIVER.isTouch())
@@ -1156,7 +1156,7 @@ void dskGameInterface::onChatCommand(const std::string& cmd)
     {
         WorldDescription newDesc;
         GameDataLoader gdLoader(newDesc);
-        if(gdLoader.Load())
+        if(gdLoader.load())
         {
             const_cast<GameWorld&>(game_->world_).getDescriptionWriteable() = newDesc;
             worldViewer.initTerrainRenderer();

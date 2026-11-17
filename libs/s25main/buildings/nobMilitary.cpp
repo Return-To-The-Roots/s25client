@@ -247,7 +247,7 @@ void nobMilitary::draw(DrawPoint drawPt)
     {
         if(frontier_distance_tmp == FrontierDistance::Near)
             frontier_distance_tmp = FrontierDistance::Harbor;
-        bitmap = LOADER.getMapTexture(3150 + rttr::enum_cast(frontier_distance_tmp) * 4 + animationFrame);
+        bitmap = LOADER.getMapTexture(3150 + rttr::enumCast(frontier_distance_tmp) * 4 + animationFrame);
     }
     if(bitmap)
         bitmap->drawFull(drawPt + BORDER_FLAG_OFFSET[nation][size]);
@@ -345,7 +345,7 @@ void nobMilitary::handleEvent(const unsigned id)
                         last_rank = soldier->getRank();
                         // Remove from sorted container as changing it breaks sorting
                         soldiersToUpgrade.push_back(std::move(soldier));
-                        it = helpers::erase_reverse(troops, it);
+                        it = helpers::eraseReverse(troops, it);
                     } else
                         ++it;
                 }
@@ -613,7 +613,7 @@ void nobMilitary::regulateTroops()
                 if(canReturnHome(**it))
                 {
                     notNeededSoldiers.push_back(*it);
-                    it = helpers::erase_reverse(ordered_troops, it);
+                    it = helpers::eraseReverse(ordered_troops, it);
                     ++diff;
                 } else
                 {
@@ -655,7 +655,7 @@ void nobMilitary::regulateTroops()
                 {
                     (*it)->leaveBuilding();
                     addLeavingFigure(std::move(*it));
-                    it = helpers::erase_reverse(troops, it);
+                    it = helpers::eraseReverse(troops, it);
                     ++diff;
                 } else
                 {
@@ -697,12 +697,12 @@ void nobMilitary::regulateTroops()
 unsigned nobMilitary::calcRequiredNumTroops() const
 {
     return calcRequiredNumTroops(frontier_distance,
-                                 world->getPlayer(player).getMilitarySetting(4 + rttr::enum_cast(frontier_distance)));
+                                 world->getPlayer(player).getMilitarySetting(4 + rttr::enumCast(frontier_distance)));
 }
 
 unsigned nobMilitary::calcRequiredNumTroops(FrontierDistance assumedFrontierDistance, unsigned settingValue) const
 {
-    return (getMaxTroopsCt() - 1) * settingValue / MILITARY_SETTINGS_SCALE[4 + rttr::enum_cast(assumedFrontierDistance)]
+    return (getMaxTroopsCt() - 1) * settingValue / MILITARY_SETTINGS_SCALE[4 + rttr::enumCast(assumedFrontierDistance)]
            + 1;
 }
 
@@ -1053,8 +1053,8 @@ unsigned nobMilitary::getSoldiersStrength() const
 bool nobMilitary::hasMaxRankSoldier() const
 {
     const unsigned maxRank = world->getGGS().getMaxMilitaryRank();
-    return helpers::contains_if(helpers::reverse(troops),
-                                [maxRank](const auto& it) { return it->getRank() >= maxRank; });
+    return helpers::containsIf(helpers::reverse(troops),
+                               [maxRank](const auto& it) { return it->getRank() >= maxRank; });
 }
 
 std::unique_ptr<nofDefender> nobMilitary::provideDefender(nofAttacker& attacker)
@@ -1380,7 +1380,7 @@ unsigned nobMilitary::calcArmorPoints() const
     points -= (numArmor + ordered_armor.size()) * 30;
 
     auto numberOfUpgradeSoldier =
-      helpers::count_if(troops, [](OwnedSortedTroops::value_type const& troop) { return !troop->hasArmor(); });
+      helpers::countIf(troops, [](OwnedSortedTroops::value_type const& troop) { return !troop->hasArmor(); });
 
     points += static_cast<int>(numberOfUpgradeSoldier * 20);
 
@@ -1512,7 +1512,7 @@ void nobMilitary::hitOfCatapultStone()
     if(!troops.empty())
     {
         std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
-        helpers::pop_front(troops);
+        helpers::popFront(troops);
 
         // 30 percent chance to survive if the soldier has an armor
         const bool survived = soldier->hasArmor() && (RANDOM_RAND(100) < 30);

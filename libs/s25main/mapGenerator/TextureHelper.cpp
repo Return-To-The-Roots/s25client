@@ -18,7 +18,7 @@ bool isWater(const TerrainDesc& terrain)
 
 bool isSwamp(const TerrainDesc& terrain)
 {
-    return !terrain.Is(ETerrain::Walkable) && terrain.humidity > 0;
+    return !terrain.is(ETerrain::Walkable) && terrain.humidity > 0;
 }
 
 bool isLand(const TerrainDesc& terrain)
@@ -28,32 +28,32 @@ bool isLand(const TerrainDesc& terrain)
 
 bool isShipableWater(const TerrainDesc& terrain)
 {
-    return terrain.kind == TerrainKind::Water && terrain.Is(ETerrain::Shippable);
+    return terrain.kind == TerrainKind::Water && terrain.is(ETerrain::Shippable);
 }
 
 bool isBuildableLand(const TerrainDesc& terrain)
 {
-    return terrain.kind == TerrainKind::Land && terrain.Is(ETerrain::Buildable);
+    return terrain.kind == TerrainKind::Land && terrain.is(ETerrain::Buildable);
 }
 
 bool isCoastTerrain(const TerrainDesc& terrain)
 {
-    return terrain.kind == TerrainKind::Land && terrain.Is(ETerrain::Walkable) && terrain.GetBQ() == TerrainBQ::Flag;
+    return terrain.kind == TerrainKind::Land && terrain.is(ETerrain::Walkable) && terrain.getBQ() == TerrainBQ::Flag;
 }
 
 bool isBuildableCoast(const TerrainDesc& terrain)
 {
-    return terrain.GetBQ() == TerrainBQ::Castle && terrain.isVital() && terrain.humidity < 100;
+    return terrain.getBQ() == TerrainBQ::Castle && terrain.isVital() && terrain.humidity < 100;
 }
 
 bool isBuildableMountain(const TerrainDesc& terrain)
 {
-    return terrain.kind == TerrainKind::Mountain && terrain.Is(ETerrain::Buildable);
+    return terrain.kind == TerrainKind::Mountain && terrain.is(ETerrain::Buildable);
 }
 
 bool isMinableMountain(const TerrainDesc& terrain)
 {
-    return terrain.kind == TerrainKind::Mountain && terrain.Is(ETerrain::Mineable);
+    return terrain.kind == TerrainKind::Mountain && terrain.is(ETerrain::Mineable);
 }
 
 bool isSnowOrLava(const TerrainDesc& terrain)

@@ -164,7 +164,7 @@ static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::invalid()), resourceMaps(createResourceMaps(aii, aiMap)),
-      isInitGfCompleted(false), defeated(player.IsDefeated()), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
+      isInitGfCompleted(false), defeated(player.isDefeated()), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
       construction(std::make_unique<AIConstruction>(*this))
 {
     initNodes();
@@ -1024,7 +1024,7 @@ unsigned AIPlayerJH::getDensity(MapPoint pt, AIResource res, int radius)
         // return aiMap[curPt].res == res;
         return calcResource(curPt) == res;
     };
-    const unsigned numGoodPts = helpers::count_if(pts, hasResource);
+    const unsigned numGoodPts = helpers::countIf(pts, hasResource);
     return (numGoodPts * 100) / numAllPTs;
 }
 

@@ -219,8 +219,8 @@ bool dskLobby::connectToSelectedGame()
         return false;
     const auto selectedId = boost::lexical_cast<unsigned>(table->getItemText(*selectedRow, 0));
     const auto serverList = LOBBYCLIENT.GetServerList();
-    const auto itServer = helpers::find_if(
-      serverList, [selectedId](const LobbyServerInfo& server) { return server.getId() == selectedId; });
+    const auto itServer =
+      helpers::findIf(serverList, [selectedId](const LobbyServerInfo& server) { return server.getId() == selectedId; });
     if(itServer == serverList.end())
     {
         WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Sorry!"), _("The selected game was not found anymore."), this,

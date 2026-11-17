@@ -203,21 +203,21 @@ public:
     RoadDir toRoadDir(MapPoint& pt, const Direction dir) const
     {
         // Uses knowledge about Direction<->RoadDir to avoid switch, see static_asserts
-        using rttr::enum_cast;
-        auto iDir = enum_cast(dir);
-        if(iDir >= enum_cast(Direction::East))
+        using rttr::enumCast;
+        auto iDir = enumCast(dir);
+        if(iDir >= enumCast(Direction::East))
         {
-            static_assert(enum_cast(Direction::East) - 3 == enum_cast(RoadDir::East)
-                            && enum_cast(Direction::SouthEast) - 3 == enum_cast(RoadDir::SouthEast)
-                            && enum_cast(Direction::SouthWest) - 3 == enum_cast(RoadDir::SouthWest),
+            static_assert(enumCast(Direction::East) - 3 == enumCast(RoadDir::East)
+                            && enumCast(Direction::SouthEast) - 3 == enumCast(RoadDir::SouthEast)
+                            && enumCast(Direction::SouthWest) - 3 == enumCast(RoadDir::SouthWest),
                           "Mismatch");
             iDir -= 3u; // Map East->East etc
         } else
         {
             // Will map iDir to opposite
-            static_assert(enum_cast(Direction::West) == enum_cast(RoadDir::East)
-                            && enum_cast(Direction::NorthWest) == enum_cast(RoadDir::SouthEast)
-                            && enum_cast(Direction::NorthEast) == enum_cast(RoadDir::SouthWest),
+            static_assert(enumCast(Direction::West) == enumCast(RoadDir::East)
+                            && enumCast(Direction::NorthWest) == enumCast(RoadDir::SouthEast)
+                            && enumCast(Direction::NorthEast) == enumCast(RoadDir::SouthWest),
                           "Mismatch");
             pt = getNeighbour(pt, dir);
         }

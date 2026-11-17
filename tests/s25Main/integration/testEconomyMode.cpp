@@ -126,7 +126,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
     TmpFile tmpFile;
     BOOST_TEST_REQUIRE(save.save(tmpFile.filePath, "MapTitle"));
     Savegame loadSave;
-    BOOST_TEST_REQUIRE(loadSave.Load(tmpFile.filePath, SaveGameDataToLoad::All));
+    BOOST_TEST_REQUIRE(loadSave.load(tmpFile.filePath, SaveGameDataToLoad::All));
     BOOST_TEST_REQUIRE(loadSave.getNumPlayers() == 3u);
     std::vector<PlayerInfo> players;
     for(unsigned j = 0; j < 3; j++)

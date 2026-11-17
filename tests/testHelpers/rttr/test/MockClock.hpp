@@ -11,7 +11,7 @@ struct MockClock : public BaseClock
 {
     duration& currentTime;
     MockClock(duration& timeRef) : currentTime(timeRef) {}
-    duration time_since_epoch() override { return currentTime; }
+    duration timeSinceEpoch() override { return currentTime; }
 };
 
 struct MockClockFixture

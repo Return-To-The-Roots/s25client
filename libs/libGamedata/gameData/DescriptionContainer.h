@@ -53,7 +53,7 @@ inline DescIdx<T> DescriptionContainer<T>::add(T desc)
         if(size() >= DescIdx<T>::INVALID)
             throw std::runtime_error("To many entries!");
         DescIdx<T> idx(size());
-        items.push_back(desc);
+        items.pushBack(desc);
         name2Idx[desc.name] = idx.value;
         return idx;
     }
@@ -99,7 +99,7 @@ template<typename T>
 template<class Predicate>
 constexpr DescIdx<T> DescriptionContainer<T>::find(Predicate&& predicate) const
 {
-    const auto idx = helpers::indexOf_if(items, std::forward<Predicate>(predicate));
+    const auto idx = helpers::indexOfIf(items, std::forward<Predicate>(predicate));
     return idx >= 0 ? DescIdx<T>(static_cast<typename DescIdx<T>::value_type>(idx)) : DescIdx<T>();
 }
 

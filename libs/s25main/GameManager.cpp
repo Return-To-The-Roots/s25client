@@ -39,7 +39,7 @@ GameManager::GameManager(Log& log, Settings& settings, VideoDriverWrapper& video
 bool GameManager::start()
 {
     // Einstellungen laden
-    settings_.Load();
+    settings_.load();
 
     /// Videotreiber laden
     if(!videoDriver_.loadDriver(settings_.driver.video))
@@ -161,7 +161,7 @@ bool GameManager::run()
 bool GameManager::showSplashscreen()
 {
     libsiedler2::Archiv arSplash;
-    if(!LOADER.Load(arSplash, RTTRCONFIG.ExpandPath(s25::files::splash)))
+    if(!LOADER.load(arSplash, RTTRCONFIG.expandPath(s25::files::splash)))
         return false;
     auto image = boost::dynamic_pointer_cast<glArchivItem_Bitmap>(arSplash.release(0));
     if(!image)

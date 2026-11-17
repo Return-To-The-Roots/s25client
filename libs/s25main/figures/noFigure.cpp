@@ -771,7 +771,7 @@ unsigned noFigure::calcWalkAnimationFrame() const
 unsigned noFigure::calcWalkFrameIndex(const unsigned imgSetIndex, const Direction dir, const unsigned animationStep)
 {
     RTTR_Assert(animationStep < 8);
-    return imgSetIndex + rttr::enum_cast(toImgDir(dir)) * 8 + animationStep;
+    return imgSetIndex + rttr::enumCast(toImgDir(dir)) * 8 + animationStep;
 }
 
 DrawPoint noFigure::interpolateWalkDrawPos(DrawPoint drawPt) const
@@ -834,7 +834,7 @@ void noFigure::drawWalking(DrawPoint drawPt)
 
             LOADER.getMapTexture(calcWalkFrameIndex(2000, getCurMoveDir(), ani_step))->drawFull(drawPt);
             // donkey shadow
-            LOADER.getMapTexture(2048 + rttr::enum_cast(getCurMoveDir()) % 3)->drawFull(drawPt, COLOR_SHADOW);
+            LOADER.getMapTexture(2048 + rttr::enumCast(getCurMoveDir()) % 3)->drawFull(drawPt, COLOR_SHADOW);
         }
         break;
         case Job::CharBurner: drawWalking(drawPt, "charburner_bobs", 53); break;
@@ -950,7 +950,7 @@ void noFigure::abrogate()
             {
                 LOG.write("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i "
                           "pos %u,%u \n")
-                  % player % rttr::enum_cast(fs) % pos.x % pos.y;
+                  % player % rttr::enumCast(fs) % pos.x % pos.y;
                 // RTTR_Assert(false);
             }
         }

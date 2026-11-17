@@ -106,7 +106,7 @@ enum CtrlIds
 template<typename T>
 constexpr T nextEnumValue(T value)
 {
-    return T((rttr::enum_cast(value) + 1) % helpers::NumEnumValues_v<T>);
+    return T((rttr::enumCast(value) + 1) % helpers::NumEnumValues_v<T>);
 }
 
 std::array NATION_ORDER = {

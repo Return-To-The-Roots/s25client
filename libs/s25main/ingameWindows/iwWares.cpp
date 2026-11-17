@@ -114,8 +114,8 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
                                        Job::Sergeant,      Job::Officer,
                                        Job::General};
 
-    helpers::erase_if(WARE_DISPLAY_ORDER, makeIsUnusedWare(player.getGameWorld().getGGS()));
-    helpers::erase_if(JOB_DISPLAY_ORDER, makeIsUnusedJob(player.getGameWorld().getGGS()));
+    helpers::eraseIf(WARE_DISPLAY_ORDER, makeIsUnusedWare(player.getGameWorld().getGGS()));
+    helpers::eraseIf(JOB_DISPLAY_ORDER, makeIsUnusedJob(player.getGameWorld().getGGS()));
 
     // Warenseite hinzufügen
     ctrlGroup& waresPage = addPage();
@@ -145,14 +145,14 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
         {
             const GoodType rawWare = WARE_DISPLAY_ORDER[idx];
             const GoodType ware = convertShieldToNation(rawWare, player.nation);
-            addElement(waresPage, font, btPos, btSize, rttr::enum_cast(rawWare), _(WARE_NAMES[rawWare]),
+            addElement(waresPage, font, btPos, btSize, rttr::enumCast(rawWare), _(WARE_NAMES[rawWare]),
                        LOADER.getWareTex(ware), allow_outhousing);
         }
 
         if(idx < JOB_DISPLAY_ORDER.size())
         {
             const Job job = JOB_DISPLAY_ORDER[idx];
-            addElement(figuresPage, font, btPos, btSize, rttr::enum_cast(job), _(JOB_NAMES[job]), LOADER.getJobTex(job),
+            addElement(figuresPage, font, btPos, btSize, rttr::enumCast(job), _(JOB_NAMES[job]), LOADER.getJobTex(job),
                        allow_outhousing);
         }
     }

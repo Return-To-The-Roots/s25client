@@ -39,7 +39,7 @@ using SoldierState = nofActiveSoldier::SoldierState;
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const SoldierState s)
 {
-    return out << static_cast<unsigned>(rttr::enum_cast(s));
+    return out << static_cast<unsigned>(rttr::enumCast(s));
 }
 // LCOV_EXCL_STOP
 
@@ -585,7 +585,7 @@ BOOST_FIXTURE_TEST_CASE(ArmoredSoldierLosesArmorInFight, AttackFixture<>)
 BOOST_FIXTURE_TEST_CASE(TroopLimitKeepsOrderedRestrictedSoldier, AttackFixture<>)
 {
     MilitarySettings milSettings = MILITARY_SETTINGS_SCALE;
-    milSettings[4 + rttr::enum_cast(FrontierDistance::Far)] = 0;
+    milSettings[4 + rttr::enumCast(FrontierDistance::Far)] = 0;
     this->ChangeMilitary(milSettings);
 
     auto* hq = world.getSpecObj<nobBaseWarehouse>(hqPos[0]);
@@ -1037,7 +1037,7 @@ BOOST_FIXTURE_TEST_CASE(FlagBecomesUnreachableForWaitingAttacker, AttackFixture<
     addSoldiers(attackerBldPos, 6, Job::Private);
     // Make defender building flag unreachable
     const auto terrain = this->world.getDescription().terrain.find(
-      [](const TerrainDesc& t) { return !t.Is(ETerrain::Walkable) && t.GetBQ() != TerrainBQ::Danger; });
+      [](const TerrainDesc& t) { return !t.is(ETerrain::Walkable) && t.getBQ() != TerrainBQ::Danger; });
     const auto flagPos = defenderBld->getFlagPos();
     // At right there is 1 node of water, so not passable but soldiers can stand on other side
     /* "B"=Attacked building, "F"=Flag, "L"=Land terrain, Rest is water
@@ -1382,7 +1382,7 @@ struct FreeFightFixture : AttackFixture<2>
     void blockDefenderBuilding(const MapCoord x)
     {
         const auto terrain =
-          this->world.getDescription().terrain.find([](const TerrainDesc& t) { return !t.Is(ETerrain::Walkable); });
+          this->world.getDescription().terrain.find([](const TerrainDesc& t) { return !t.is(ETerrain::Walkable); });
         for(const auto y : helpers::range(this->world.getHeight()))
         {
             auto& node = this->world.getNodeWriteable(MapPoint(x, y));

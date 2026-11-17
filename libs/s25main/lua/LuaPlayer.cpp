@@ -263,7 +263,7 @@ void LuaPlayer::modifyHQ(bool isTent)
 
 bool LuaPlayer::IsDefeated() const
 {
-    return player.IsDefeated();
+    return player.isDefeated();
 }
 
 void LuaPlayer::Surrender(bool destroyBlds)

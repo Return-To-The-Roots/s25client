@@ -41,7 +41,7 @@ public:
     unsigned getNumPlayers() const { return gwb.getNumPlayers(); }
     const std::vector<HarborId>& getUsableHarbors() const { return usableHarbors_; }
 
-    bool IsDefeated() const { return player_.IsDefeated(); }
+    bool IsDefeated() const { return player_.isDefeated(); }
     /// Return the resource buried on a given spot (gold, coal, iron ore, granite (sub), fish, nothing)
     AISubSurfaceResource getSubsurfaceResource(MapPoint pt) const;
     /// Return the resource on top on a given spot (wood, stones, nothing)

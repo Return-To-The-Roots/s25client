@@ -108,7 +108,7 @@ AISurfaceResource AIInterface::getSurfaceResource(const MapPoint pt) const
     NodalObjectType no = node.obj ? node.obj->getType() : NodalObjectType::Nothing;
     DescIdx<TerrainDesc> t1 = node.t1;
     // valid terrain?
-    if(gwb.getDescription().get(t1).Is(ETerrain::Walkable))
+    if(gwb.getDescription().get(t1).is(ETerrain::Walkable))
     {
         if(no == NodalObjectType::Tree)
         {
@@ -159,7 +159,7 @@ int AIInterface::getResourceRating(const MapPoint pt, AIResource res) const
             {
                 const auto& desc = gwb.getDescription();
                 const auto& node = gwb.getNode(pt);
-                if(desc.get(node.t1).Is(ETerrain::Walkable) || desc.get(node.t2).Is(ETerrain::Walkable))
+                if(desc.get(node.t1).is(ETerrain::Walkable) || desc.get(node.t2).is(ETerrain::Walkable))
                     return RES_RADIUS[res];
             }
             break;
@@ -180,7 +180,7 @@ int AIInterface::getResourceRating(const MapPoint pt, AIResource res) const
                 return RES_RADIUS[res];
             }
             if(isMineResourceWorkEverywhere(res)
-               && gwb.isOfTerrain(pt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Mineable); }))
+               && gwb.isOfTerrain(pt, [](const TerrainDesc& desc) { return desc.is(ETerrain::Mineable); }))
                 return RES_RADIUS[res];
             break;
         }
@@ -215,7 +215,7 @@ int AIInterface::calcResourceValue(const MapPoint pt, AIResource res, helpers::O
         });
     } else // calculate different nodes only (4n+2 ?anyways much faster)
     {
-        const auto iDirection = rttr::enum_cast(*direction);
+        const auto iDirection = rttr::enumCast(*direction);
         int returnVal = lastval;
         // add new points
         // first: go radius steps towards direction-1

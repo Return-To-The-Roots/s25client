@@ -170,7 +170,7 @@ private:
     /// der Spielstartcountdown
     class CountDown
     {
-        bool isActive;
+        bool isActive_;
         unsigned remainingSecs;
         std::chrono::steady_clock::time_point lasttime;
 
@@ -181,7 +181,7 @@ private:
         void stop();
         /// Updates the state and returns true on change. Stops 1s after remainingSecs reached zero
         bool update();
-        bool IsActive() const { return isActive; }
+        bool isActive() const { return isActive_; }
         unsigned getRemainingSecs() const { return remainingSecs; }
     } countdown;
 

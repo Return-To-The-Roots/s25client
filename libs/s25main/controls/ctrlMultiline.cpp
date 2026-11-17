@@ -147,7 +147,7 @@ bool ctrlMultiline::msgLeftUp(const MouseCoords& mc)
 bool ctrlMultiline::msgWheelUp(const MouseCoords& mc)
 {
     const Extent padding(PADDING, PADDING);
-    if(IsPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(padding), getSize() - padding * 2u)))
+    if(isPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(padding), getSize() - padding * 2u)))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(-3);
@@ -159,7 +159,7 @@ bool ctrlMultiline::msgWheelUp(const MouseCoords& mc)
 bool ctrlMultiline::msgWheelDown(const MouseCoords& mc)
 {
     const Extent padding(PADDING, PADDING);
-    if(IsPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(padding), getSize() - padding * 2u)))
+    if(isPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(padding), getSize() - padding * 2u)))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(+3);

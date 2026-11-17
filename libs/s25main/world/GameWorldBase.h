@@ -33,20 +33,20 @@ class SoundManager;
 
 constexpr Direction getOppositeDir(const RoadDir roadDir) noexcept
 {
-    static_assert(rttr::enum_cast(Direction::West) == rttr::enum_cast(RoadDir::East)
-                    && rttr::enum_cast(Direction::NorthWest) == rttr::enum_cast(RoadDir::SouthEast)
-                    && rttr::enum_cast(Direction::NorthEast) == rttr::enum_cast(RoadDir::SouthWest),
+    static_assert(rttr::enumCast(Direction::West) == rttr::enumCast(RoadDir::East)
+                    && rttr::enumCast(Direction::NorthWest) == rttr::enumCast(RoadDir::SouthEast)
+                    && rttr::enumCast(Direction::NorthEast) == rttr::enumCast(RoadDir::SouthWest),
                   "Opposite directions don't match");
-    return Direction(rttr::enum_cast(roadDir));
+    return Direction(rttr::enumCast(roadDir));
 }
 
 constexpr Direction toDirection(const RoadDir roadDir) noexcept
 {
-    static_assert(rttr::enum_cast(Direction::East) == rttr::enum_cast(RoadDir::East) + 3u
-                    && rttr::enum_cast(Direction::SouthEast) == rttr::enum_cast(RoadDir::SouthEast) + 3u
-                    && rttr::enum_cast(Direction::SouthWest) == rttr::enum_cast(RoadDir::SouthWest) + 3u,
+    static_assert(rttr::enumCast(Direction::East) == rttr::enumCast(RoadDir::East) + 3u
+                    && rttr::enumCast(Direction::SouthEast) == rttr::enumCast(RoadDir::SouthEast) + 3u
+                    && rttr::enumCast(Direction::SouthWest) == rttr::enumCast(RoadDir::SouthWest) + 3u,
                   "Directions don't match");
-    return Direction(rttr::enum_cast(roadDir) + 3u);
+    return Direction(rttr::enumCast(roadDir) + 3u);
 }
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten

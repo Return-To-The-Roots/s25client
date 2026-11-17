@@ -25,12 +25,12 @@ using WorldFixtureEmpty2P = WorldFixture<CreateEmptyWorld, 2>;
 
 BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
 {
-    BOOST_TEST_REQUIRE(!world.getPlayer(0).IsDefeated());
-    BOOST_TEST_REQUIRE(!world.getPlayer(1).IsDefeated());
+    BOOST_TEST_REQUIRE(!world.getPlayer(0).isDefeated());
+    BOOST_TEST_REQUIRE(!world.getPlayer(1).isDefeated());
     // Destroy HQ -> defeated
     world.destroyNO(world.getPlayer(1).getHQPos()); //-V522
-    BOOST_TEST_REQUIRE(!world.getPlayer(0).IsDefeated());
-    BOOST_TEST_REQUIRE(world.getPlayer(1).IsDefeated());
+    BOOST_TEST_REQUIRE(!world.getPlayer(0).isDefeated());
+    BOOST_TEST_REQUIRE(world.getPlayer(1).isDefeated());
     // Destroy HQ but leave a military bld
     MapPoint milBldPos = world.makeMapPoint(world.getPlayer(0).getFirstWH()->getPos() + Position(4, 0)); //-V522
     auto* milBld = dynamic_cast<nobMilitary*>(
@@ -39,10 +39,10 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
     milBld->gotWorker(Job::Private, sld);
     sld.walkToGoal();
     world.destroyNO(world.getPlayer(0).getHQPos());
-    BOOST_TEST_REQUIRE(!world.getPlayer(0).IsDefeated());
+    BOOST_TEST_REQUIRE(!world.getPlayer(0).isDefeated());
     // Destroy this -> defeated
     world.destroyNO(milBldPos);
-    BOOST_TEST_REQUIRE(world.getPlayer(0).IsDefeated());
+    BOOST_TEST_REQUIRE(world.getPlayer(0).isDefeated());
 }
 
 namespace {

@@ -162,7 +162,7 @@ void iwMusicPlayer::msgComboSelectItem(const unsigned ctrl_id, const unsigned se
     RTTR_Assert(ctrl_id == ID_cbPlaylist);
     Playlist pl;
     const std::string playlistName = getCtrl<ctrlComboBox>(ID_cbPlaylist)->getText(selection);
-    if(pl.Load(LOG, getFullPlaylistPath(playlistName)))
+    if(pl.load(LOG, getFullPlaylistPath(playlistName)))
     {
         updateFromPlaylist(pl);
         changed = true;
@@ -189,7 +189,7 @@ void iwMusicPlayer::msgListChooseItem(const unsigned /*ctrl_id*/, const unsigned
 boost::filesystem::path iwMusicPlayer::getFullPlaylistPath(const std::string& name)
 {
     const boost::filesystem::path folder =
-      RTTRCONFIG.ExpandPath(isReadonlyPlaylist(name) ? s25::folders::music : s25::folders::playlists);
+      RTTRCONFIG.expandPath(isReadonlyPlaylist(name) ? s25::folders::music : s25::folders::playlists);
     return folder / (name + ".pll");
 }
 
@@ -275,7 +275,7 @@ void iwMusicPlayer::msgButtonClick(const unsigned ctrl_id)
 
                 boost::system::error_code ec;
                 boost::filesystem::remove(getFullPlaylistPath(*playlistName), ec);
-                SETTINGS.sound.playlist = RTTRCONFIG.ExpandPath(s25::files::defaultPlaylist).string();
+                SETTINGS.sound.playlist = RTTRCONFIG.expandPath(s25::files::defaultPlaylist).string();
                 updatePlaylistCombo(SETTINGS.sound.playlist);
             }
         }
@@ -434,9 +434,9 @@ void iwMusicPlayer::updatePlaylistCombo(const std::string& highlight_entry)
     auto* cbPlaylist = getCtrl<ctrlComboBox>(ID_cbPlaylist);
     cbPlaylist->deleteAllItems();
 
-    std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.ExpandPath(s25::folders::playlists), "pll");
-    playlists.insert(playlists.begin(), RTTRCONFIG.ExpandPath(s25::files::defaultPlaylist));
-    const auto currentPath = RTTRCONFIG.ExpandPath(highlight_entry);
+    std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.expandPath(s25::folders::playlists), "pll");
+    playlists.insert(playlists.begin(), RTTRCONFIG.expandPath(s25::files::defaultPlaylist));
+    const auto currentPath = RTTRCONFIG.expandPath(highlight_entry);
 
     unsigned i = 0;
     for(const auto& playlistPath : playlists)

@@ -40,7 +40,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         bool flagPossible = false;
         for(const DescIdx<TerrainDesc> tIdx : world.getTerrainsAround(pt))
         {
-            TerrainBQ bq = desc.get(tIdx).GetBQ();
+            TerrainBQ bq = desc.get(tIdx).getBQ();
             if(bq == TerrainBQ::Danger)
                 return BuildingQuality::Nothing;
             else if(bq != TerrainBQ::Nothing)
@@ -54,7 +54,7 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     {
         for(const DescIdx<TerrainDesc> tIdx : world.getTerrainsAround(pt))
         {
-            TerrainBQ bq = desc.get(tIdx).GetBQ();
+            TerrainBQ bq = desc.get(tIdx).getBQ();
             if(bq == TerrainBQ::Castle)
                 ++building_hits;
             else if(bq == TerrainBQ::Mine)

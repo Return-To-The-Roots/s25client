@@ -516,14 +516,14 @@ bool GameWorld::doesDestructionChangeTerritory(const noBaseBuilding& building) c
             continue;
         // AI can ignore water/snow/lava/swamp terrain (because it wouldn't help win the game)
         // So we check if any terrain is usable and if it is -> Land is important
-        if(getDescription().get(node.t1).Is(ETerrain::Walkable) && getDescription().get(node.t2).Is(ETerrain::Walkable))
+        if(getDescription().get(node.t1).is(ETerrain::Walkable) && getDescription().get(node.t2).is(ETerrain::Walkable))
             return true;
         // also check neighboring nodes since border will still count as player territory but not allow any buildings!
         for(const MapPoint neighbourPt : getNeighbours(curMapPt))
         {
             const MapNode& nNode = getNode(neighbourPt);
-            if(getDescription().get(nNode.t1).Is(ETerrain::Walkable)
-               || getDescription().get(nNode.t2).Is(ETerrain::Walkable))
+            if(getDescription().get(nNode.t1).is(ETerrain::Walkable)
+               || getDescription().get(nNode.t2).is(ETerrain::Walkable))
                 return true;
         }
     }
@@ -755,7 +755,7 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
                 /* Insert new soldier before current one if:
                         new soldiers rank is greater
                         OR new soldiers rank is equal AND new soldiers distance is smaller */
-                const auto itInsertPos = helpers::find_if(
+                const auto itInsertPos = helpers::findIf(
                   potentialAttackers, [curRank = curSoldier.getRank(), distance](const PotentialAttacker& pa) {
                       return pa.soldier->getRank() < curRank
                              || (pa.soldier->getRank() == curRank && pa.distance > distance);
@@ -773,7 +773,7 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
                 /* Insert new soldier before current one if:
                            new soldiers rank is less
                            OR new soldiers rank is equal AND new soldiers distance is smaller */
-                const auto itInsertPos = helpers::find_if(
+                const auto itInsertPos = helpers::findIf(
                   potentialAttackers, [curRank = curSoldier.getRank(), distance](const PotentialAttacker& pa) {
                       return pa.soldier->getRank() > curRank
                              || (pa.soldier->getRank() == curRank && pa.distance > distance);
@@ -985,7 +985,7 @@ bool GameWorld::validWaitingAroundBuildingPoint(const MapPoint pt, const MapPoin
             return false;
     }
     // object wall or impassable terrain increasing my path to target length to a higher value than the direct distance?
-    return findHumanPath(pt, center, calcDistance(pt, center)).has_value();
+    return findHumanPath(pt, center, calcDistance(pt, center)).hasValue();
 }
 
 bool GameWorld::isValidPointForFighting(MapPoint pt, const nofActiveSoldier& soldier,

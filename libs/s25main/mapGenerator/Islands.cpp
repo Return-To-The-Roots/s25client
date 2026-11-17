@@ -56,8 +56,8 @@ Island createIsland(Map& map, RandomUtility& rnd, unsigned size, unsigned minLan
     }
 
     auto isCoast = [&map, &island](const MapPoint& pt) {
-        return helpers::contains_if(map.z.getNeighbours(pt),
-                                    [&island](const MapPoint& pt) { return !helpers::contains(island, pt); });
+        return helpers::containsIf(map.z.getNeighbours(pt),
+                                   [&island](const MapPoint& pt) { return !helpers::contains(island, pt); });
     };
 
     const auto& coastDistance = Distances(map.size, island, 0, isCoast);

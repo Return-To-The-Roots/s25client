@@ -493,7 +493,7 @@ GameObject* SerializedGameData::popObjectImpl(helpers::OptionalEnum<GO_Type> got
     {
         LOG.write(
           "SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n")
-          % objId % rttr::enum_cast(*got);
+          % objId % rttr::enumCast(*got);
         throw Error("Invalid safety code after PopObject");
     }
 
@@ -502,7 +502,7 @@ GameObject* SerializedGameData::popObjectImpl(helpers::OptionalEnum<GO_Type> got
 
 unsigned short SerializedGameData::getSafetyCode(const GameObject& go)
 {
-    return 0xFFFF ^ rttr::enum_cast(go.getGOT()) ^ go.getObjId();
+    return 0xFFFF ^ rttr::enumCast(go.getGOT()) ^ go.getObjId();
 }
 
 unsigned short SerializedGameData::getSafetyCode(const GameEvent& ev)

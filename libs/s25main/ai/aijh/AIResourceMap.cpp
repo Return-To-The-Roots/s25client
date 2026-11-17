@@ -60,7 +60,7 @@ void AIResourceMap::init()
         {
             // Calculate only if we can build there
             const bool isValid =
-              aii.gwb.isOfTerrain(pt, [requiredTerrain](const TerrainDesc& desc) { return desc.Is(requiredTerrain); });
+              aii.gwb.isOfTerrain(pt, [requiredTerrain](const TerrainDesc& desc) { return desc.is(requiredTerrain); });
             map[pt] = isValid ? aii.calcResourceValue(pt, res) : 0;
         }
     }

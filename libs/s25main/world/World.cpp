@@ -328,7 +328,7 @@ void World::saveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
 
 bool World::isSeaPoint(const MapPoint pt) const
 {
-    return World::isOfTerrain(pt, [](const auto& desc) { return desc.Is(ETerrain::Shippable); });
+    return World::isOfTerrain(pt, [](const auto& desc) { return desc.is(ETerrain::Shippable); });
 }
 
 bool World::isWaterPoint(const MapPoint pt) const

@@ -206,7 +206,7 @@ void dskCampaignSelection::loadCampaigns()
     unsigned numBroken = 0;
     for(const std::string campaignFolder : {s25::folders::campaignsBuiltin, s25::folders::campaignsUser})
     {
-        for(const bfs::path& folder : ListDir(RTTRCONFIG.ExpandPath(campaignFolder), "", true))
+        for(const bfs::path& folder : ListDir(RTTRCONFIG.expandPath(campaignFolder), "", true))
         {
             if(!is_directory(folder))
                 continue;

@@ -42,10 +42,10 @@ class noBase;
 
 MapLoader::MapLoader(GameWorldBase& world) : world_(world) {}
 
-bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration exploration)
+bool MapLoader::load(const libsiedler2::ArchivItem_Map& map, Exploration exploration)
 {
     GameDataLoader gdLoader(world_.getDescriptionWriteable());
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
         return false;
 
     uint8_t gfxSet = map.getHeader().getGfxSet();
@@ -70,7 +70,7 @@ bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration explora
     return true;
 }
 
-bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
+bool MapLoader::load(const boost::filesystem::path& mapFilePath)
 {
     // Map laden
     libsiedler2::Archiv mapArchiv;
@@ -81,7 +81,7 @@ bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
 
     const libsiedler2::ArchivItem_Map& map = *static_cast<libsiedler2::ArchivItem_Map*>(mapArchiv[0]);
 
-    if(!Load(map, world_.getGGS().exploration))
+    if(!load(map, world_.getGGS().exploration))
         return false;
     if(!placeHQs())
         return false;
@@ -197,7 +197,7 @@ void MapLoader::removeUnusableFishResources(GameWorldBase& world)
 
             if(world.getNode(pt).resources.has(ResourceType::Fish))
             {
-                if(isWaterPoint(pt) && (previousHasFish || helpers::contains_if(world.getNeighbours(pt), isWaterPoint)))
+                if(isWaterPoint(pt) && (previousHasFish || helpers::containsIf(world.getNeighbours(pt), isWaterPoint)))
                     hasFish = true;
                 else
                     world.setResource(pt, Resource(ResourceType::Nothing, 0));

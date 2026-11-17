@@ -108,14 +108,14 @@ public:
     bool any(const MapPoint& point, T_Predicate predicate) const
     {
         auto condition = [this, &predicate](auto triangle) { return this->check(triangle, predicate); };
-        return helpers::contains_if(GetTriangles(point, textures_.getSize()), condition);
+        return helpers::containsIf(GetTriangles(point, textures_.getSize()), condition);
     }
 
     template<class T_Predicate>
     bool all(const MapPoint& point, T_Predicate predicate) const
     {
         auto condition = [this, &predicate](auto triangle) { return !this->check(triangle, predicate); };
-        return !helpers::contains_if(GetTriangles(point, textures_.getSize()), condition);
+        return !helpers::containsIf(GetTriangles(point, textures_.getSize()), condition);
     }
 
     /**

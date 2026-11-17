@@ -506,7 +506,7 @@ void VideoWinAPI::onWMKeyDown(unsigned c, LPARAM lParam)
         {
             // Die 12 F-Tasten
             if(c >= VK_F1 && c <= VK_F12)
-                ke.kt = static_cast<KeyType>(rttr::enum_cast(KeyType::F1) + c - VK_F1);
+                ke.kt = static_cast<KeyType>(rttr::enumCast(KeyType::F1) + c - VK_F1);
         }
         break;
     }

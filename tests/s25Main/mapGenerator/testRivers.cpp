@@ -51,7 +51,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_connected_nodes)
 
         for(const MapPoint& pt : river)
         {
-            BOOST_TEST_REQUIRE(helpers::contains_if(map.z.getNeighbours(pt), containedByRiver));
+            BOOST_TEST_REQUIRE(helpers::containsIf(map.z.getNeighbours(pt), containedByRiver));
         }
     }
 }

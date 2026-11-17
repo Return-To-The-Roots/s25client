@@ -485,7 +485,7 @@ void nobUsual::takeWare(Ware* ware)
 
 bool nobUsual::areThereAnyOrderedWares() const
 {
-    return helpers::contains_if(orderedWares, [](const auto& wareList) { return !wareList.empty(); });
+    return helpers::containsIf(orderedWares, [](const auto& wareList) { return !wareList.empty(); });
 }
 
 void nobUsual::workerArrived()

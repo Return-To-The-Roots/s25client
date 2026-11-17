@@ -296,7 +296,7 @@ bool MigrateFilesAndDirectories()
     {
         for(const MigrationEntry& entry : migrations)
         {
-            const bfs::path oldName = RTTRCONFIG.ExpandPath(entry.oldName);
+            const bfs::path oldName = RTTRCONFIG.expandPath(entry.oldName);
             if(!exists(oldName))
                 continue;
             if(entry.isFolder && !is_directory(oldName))
@@ -311,7 +311,7 @@ bool MigrateFilesAndDirectories()
                     throw std::runtime_error(helpers::format("Failed to delete %1%: %2%", oldName, ec.message()));
             } else
             {
-                const bfs::path newName = RTTRCONFIG.ExpandPath(entry.newName);
+                const bfs::path newName = RTTRCONFIG.expandPath(entry.newName);
                 if(exists(newName))
                 {
                     throw std::runtime_error(helpers::format(
@@ -354,7 +354,7 @@ bool InitDirectories()
 
     for(const std::string& rawDir : dirs)
     {
-        const bfs::path dir = RTTRCONFIG.ExpandPath(rawDir);
+        const bfs::path dir = RTTRCONFIG.expandPath(rawDir);
         boost::system::error_code ec;
         bfs::create_directories(dir, ec);
         if(ec != boost::system::errc::success)
@@ -373,10 +373,10 @@ bool InitDirectories()
         }
     }
     LOG.write("Directory for user data (config etc.): %1%\n", LogTarget::Stdout)
-      % RTTRCONFIG.ExpandPath(s25::folders::config);
+      % RTTRCONFIG.expandPath(s25::folders::config);
 
     // Write this to file too, after folders are created
-    LOG.setLogFilepath(RTTRCONFIG.ExpandPath(s25::folders::logs));
+    LOG.setLogFilepath(RTTRCONFIG.expandPath(s25::folders::logs));
     try
     {
         LOG.open();
@@ -417,7 +417,7 @@ int RunProgram(po::variables_map& options)
     LOG.write("%1%\n\n", LogTarget::Stdout) % GetProgramDescription();
     if(!LocaleHelper::init())
         return 1;
-    if(!RTTRCONFIG.Init())
+    if(!RTTRCONFIG.init())
         return 1;
     SetAppSymbol();
     InstallSignalHandlers();
@@ -434,7 +434,7 @@ int RunProgram(po::variables_map& options)
     {
         try
         {
-            convertAndSaveSounds(RTTRCONFIG, RTTRCONFIG.ExpandPath("<RTTR_USERDATA>/convertedSoundeffects"));
+            convertAndSaveSounds(RTTRCONFIG, RTTRCONFIG.expandPath("<RTTR_USERDATA>/convertedSoundeffects"));
             return 0;
         } catch(const std::runtime_error& e)
         {

@@ -40,7 +40,7 @@ void DriverWrapper::unload()
     dll.unload();
 }
 
-bool DriverWrapper::Load(const DriverType dt, std::string& preference)
+bool DriverWrapper::load(const DriverType dt, std::string& preference)
 {
     // ggf. aufräumen vorher
     unload();
@@ -55,7 +55,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
         return false;
 
     /// Suche, ob der Treiber dabei ist, den wir wünschen
-    const auto it = helpers::find_if(drivers, [preference](const auto& it) { return it.getName() == preference; });
+    const auto it = helpers::findIf(drivers, [preference](const auto& it) { return it.getName() == preference; });
     if(it != drivers.end())
     {
         // Dann den gleich nehmen
@@ -132,7 +132,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const Drive
 {
     std::vector<DriverItem> driver_list;
 
-    const auto driverDir = RTTRCONFIG.ExpandPath(s25::folders::driver) / getName(dt);
+    const auto driverDir = RTTRCONFIG.expandPath(s25::folders::driver) / getName(dt);
     std::string extension =
 #ifdef _WIN32
       "dll";
@@ -158,7 +158,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const Drive
 #    else
           {"dbg_", "Debug_"};
 #    endif
-        const bool isBlacklisted = helpers::contains_if(blacklistedPrefixes, [&filename](const std::string& prefix) {
+        const bool isBlacklisted = helpers::containsIf(blacklistedPrefixes, [&filename](const std::string& prefix) {
             return filename.substr(0, prefix.length()) == prefix;
         });
         if(isBlacklisted)

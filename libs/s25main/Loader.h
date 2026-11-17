@@ -89,12 +89,12 @@ public:
     void loadDummyMapFiles();
     void loadDummySoundFiles();
     /// Load a file and save it into the loader repo
-    bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
-    bool Load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     /// Load a file or directory and its overrides into the archive
-    bool Load(libsiedler2::Archiv& archive, const boost::filesystem::path& path,
+    bool load(libsiedler2::Archiv& archive, const boost::filesystem::path& path,
               const libsiedler2::ArchivItem_Palette* palette = nullptr);
-    bool Load(libsiedler2::Archiv& archive, const ResourceId& resId,
+    bool load(libsiedler2::Archiv& archive, const ResourceId& resId,
               const libsiedler2::ArchivItem_Palette* palette = nullptr);
 
     void fillCaches();
@@ -201,13 +201,13 @@ public:
     std::array<AnimationSprites, 6> boat_cache;
     glSmartBitmap& getBoatCarrierSprite(Direction dir, unsigned aniFrame)
     {
-        return boat_cache[rttr::enum_cast(dir)][aniFrame];
+        return boat_cache[rttr::enumCast(dir)][aniFrame];
     }
     /// Donkey: Direction, AnimationFrame
     std::array<AnimationSprites, 6> donkey_cache;
     glSmartBitmap& getDonkeySprite(Direction dir, unsigned aniFrame)
     {
-        return donkey_cache[rttr::enum_cast(dir)][aniFrame];
+        return donkey_cache[rttr::enumCast(dir)][aniFrame];
     }
     /// Gateway: AnimationFrame
     std::array<glSmartBitmap, 5> gateway_cache;

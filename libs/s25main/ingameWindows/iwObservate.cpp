@@ -260,11 +260,11 @@ bool iwObservate::msgMouseMove(const MouseCoords& mc)
 
 bool iwObservate::msgRightDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, Rect(view->getPos(), view->getSize()))
-       && !IsPointInRect(mc.pos, getCtrl<ctrlImageButton>(1)->getDrawRect())
-       && !IsPointInRect(mc.pos, getCtrl<ctrlImageButton>(2)->getDrawRect())
-       && !IsPointInRect(mc.pos, getCtrl<ctrlImageButton>(3)->getDrawRect())
-       && !IsPointInRect(mc.pos, getCtrl<ctrlImageButton>(4)->getDrawRect()))
+    if(isPointInRect(mc.pos, Rect(view->getPos(), view->getSize()))
+       && !isPointInRect(mc.pos, getCtrl<ctrlImageButton>(1)->getDrawRect())
+       && !isPointInRect(mc.pos, getCtrl<ctrlImageButton>(2)->getDrawRect())
+       && !isPointInRect(mc.pos, getCtrl<ctrlImageButton>(3)->getDrawRect())
+       && !isPointInRect(mc.pos, getCtrl<ctrlImageButton>(4)->getDrawRect()))
     {
         scrollOrigin = mc.pos;
 

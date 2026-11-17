@@ -24,6 +24,6 @@ struct PathConditionShip
         const auto terrains = world.getTerrain(fromPt, dir);
         const TerrainDesc& tLeft = world.getDescription().get(terrains.left);
         const TerrainDesc& tRight = world.getDescription().get(terrains.right);
-        return tLeft.Is(ETerrain::Shippable) && tRight.Is(ETerrain::Shippable);
+        return tLeft.is(ETerrain::Shippable) && tRight.is(ETerrain::Shippable);
     }
 };

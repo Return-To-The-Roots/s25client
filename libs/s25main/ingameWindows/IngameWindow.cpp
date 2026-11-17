@@ -195,7 +195,7 @@ bool IngameWindow::msgLeftDown(const MouseCoords& mc)
 {
     for(const auto btn : helpers::enumRange<IwButton>())
     {
-        if(IsPointInRect(mc.pos, getButtonBounds(btn)))
+        if(isPointInRect(mc.pos, getButtonBounds(btn)))
         {
             buttonStates_[btn] = ButtonState::Pressed;
             if(btn == IwButton::Title)
@@ -225,7 +225,7 @@ bool IngameWindow::msgLeftUp(const MouseCoords& mc)
                && (btn == IwButton::Title || btn == IwButton::PinOrMinimize)))
             continue;
 
-        if(IsPointInRect(mc.pos, getButtonBounds(btn)))
+        if(isPointInRect(mc.pos, getButtonBounds(btn)))
         {
             switch(btn)
             {
@@ -306,7 +306,7 @@ bool IngameWindow::msgMouseMove(const MouseCoords& mc)
         // Check the buttons
         for(const auto btn : helpers::enumRange<IwButton>())
         {
-            if(IsPointInRect(mc.pos, getButtonBounds(btn)))
+            if(isPointInRect(mc.pos, getButtonBounds(btn)))
             {
                 if(!mc.ldown)
                     buttonStates_[btn] = ButtonState::Hover;

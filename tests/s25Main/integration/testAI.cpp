@@ -40,8 +40,8 @@ using EmptyWorldFixture2P = WorldFixture<CreateEmptyWorld, 2>;
 template<class T_Col>
 inline bool containsBldType(const T_Col& collection, BuildingType type)
 {
-    return helpers::contains_if(collection,
-                                [type](const noBaseBuilding* bld) { return bld->getBuildingType() == type; });
+    return helpers::containsIf(collection,
+                               [type](const noBaseBuilding* bld) { return bld->getBuildingType() == type; });
 }
 
 inline bool playerHasBld(const GamePlayer& player, BuildingType type)
@@ -58,7 +58,7 @@ inline bool playerHasBld(const GamePlayer& player, BuildingType type)
 
 DescIdx<TerrainDesc> GetMineableTerrain(const WorldDescription& desc)
 {
-    const auto terrain = desc.terrain.find([](const TerrainDesc& t) { return t.Is(ETerrain::Mineable); });
+    const auto terrain = desc.terrain.find([](const TerrainDesc& t) { return t.is(ETerrain::Mineable); });
     BOOST_TEST_REQUIRE(terrain);
     return terrain;
 }
@@ -221,7 +221,7 @@ BOOST_FIXTURE_TEST_CASE(GraniteMineResourceBehaviorAffectsAIMineSearch, EmptyWor
     // But if we place a granite deposit, the AI can find it
     world.getNodeWriteable(searchCenter).resources = Resource(ResourceType::Granite, 1);
     for(const auto behavior : helpers::EnumRange<MineResourceBehavior>{})
-        BOOST_TEST_CONTEXT("Behavior: " << rttr::enum_cast(behavior))
+        BOOST_TEST_CONTEXT("Behavior: " << rttr::enumCast(behavior))
         {
             BOOST_TEST(findsMineSpotFor(behavior, AIResource::Granite));
             BOOST_TEST(!findsMineSpotFor(behavior, AIResource::Coal));

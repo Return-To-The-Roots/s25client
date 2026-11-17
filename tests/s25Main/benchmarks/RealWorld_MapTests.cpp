@@ -33,7 +33,7 @@ static void BM_PathFinding(benchmark::State& state)
     auto game = std::make_shared<Game>(GlobalGameSettings(), 0, players);
     GameWorld& world = game->world_;
     MapLoader loader(world);
-    if(!loader.Load(rttr::test::rttrBaseDir / "data/RTTR/MAPS/NEW/AM_FANGDERZEIT.SWD"))
+    if(!loader.load(rttr::test::rttrBaseDir / "data/RTTR/MAPS/NEW/AM_FANGDERZEIT.SWD"))
         state.SkipWithError("Map failed to load");
 
     const auto& curValues = routes[static_cast<size_t>(state.range())];
@@ -43,7 +43,7 @@ static void BM_PathFinding(benchmark::State& state)
 
     for(auto _ : state)
     {
-        const bool result = state.range() < 6 ? world.findHumanPath(start, goal).has_value() :
+        const bool result = state.range() < 6 ? world.findHumanPath(start, goal).hasValue() :
                                                 world.findShipPath(start, goal, 600, nullptr, nullptr);
         benchmark::DoNotOptimize(result);
     }
@@ -66,7 +66,7 @@ static void BM_BQ_Calculation(benchmark::State& state)
     const std::string curMap = std::get<0>(curValues);
     state.SetLabel(curMap);
     const std::string mapPath = "data/RTTR/MAPS/NEW/" + curMap + ".SWD";
-    if(!loader.Load(rttr::test::rttrBaseDir / mapPath))
+    if(!loader.load(rttr::test::rttrBaseDir / mapPath))
         state.SkipWithError(("Map " + curMap + " failed to load").c_str());
 
     for(auto _ : state)

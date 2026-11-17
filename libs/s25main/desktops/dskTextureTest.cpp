@@ -41,7 +41,7 @@ void dskTextureTest::Load()
 {
     WorldDescription newDesc;
     GameDataLoader gdLoader(newDesc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
     {
         WINDOWMANAGER.showAfterSwitch(std::make_unique<iwMsgbox>(_("Error"), "Failed to load game data!", nullptr,
                                                                  MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
@@ -64,7 +64,7 @@ void dskTextureTest::msgComboSelectItem(const unsigned ctrl_id, const unsigned s
     if(!curTerrainIdx)
         return;
     const TerrainDesc& cur = desc.get(curTerrainIdx);
-    LOADER.Load(RTTRCONFIG.ExpandPath(cur.texturePath));
+    LOADER.load(RTTRCONFIG.expandPath(cur.texturePath));
     const auto textureName = ResourceId::make(bfs::path(cur.texturePath));
     glArchivItem_Bitmap* texBmp = LOADER.getImageN(textureName, 0);
     curTexture = LOADER.extractTexture(*texBmp, cur.posInTexture);

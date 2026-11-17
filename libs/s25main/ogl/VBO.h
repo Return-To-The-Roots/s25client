@@ -43,7 +43,7 @@ public:
     {
         bind();
         size_ = numElems;
-        glBufferData(rttr::enum_cast(target_), numElems * sizeof(T), data, rttr::enum_cast(usageHint));
+        glBufferData(rttr::enumCast(target_), numElems * sizeof(T), data, rttr::enumCast(usageHint));
     }
     /// Initialize the buffer with data from a container of contiguous memory.
     template<class T_Container, typename = RequireContiguousMemory<T_Container>>
@@ -57,7 +57,7 @@ public:
         if(offset + numElems > size_)
             throw std::range_error("VBO is smaller than given size and offset");
         bind();
-        glBufferSubData(rttr::enum_cast(target_), offset * sizeof(T), numElems * sizeof(T), data);
+        glBufferSubData(rttr::enumCast(target_), offset * sizeof(T), numElems * sizeof(T), data);
     }
     /// Update data in the buffer from a container of contiguous memory.
     /// May pass an offset (in number of elements)
@@ -69,8 +69,8 @@ public:
     void bind() const
     {
         RTTR_Assert(isValid());
-        glBindBuffer(rttr::enum_cast(target_), handle_.get());
+        glBindBuffer(rttr::enumCast(target_), handle_.get());
     }
-    void unbind() const { glBindBuffer(rttr::enum_cast(target_), 0u); }
+    void unbind() const { glBindBuffer(rttr::enumCast(target_), 0u); }
 };
 } // namespace ogl
