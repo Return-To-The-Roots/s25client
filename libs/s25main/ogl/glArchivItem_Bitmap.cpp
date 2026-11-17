@@ -59,7 +59,7 @@ void glArchivItem_Bitmap::draw(Rect dstArea, Rect srcArea, unsigned color /*= CO
     glVertexPointer(2, GL_FLOAT, 0, vertices.data());
     glTexCoordPointer(2, GL_FLOAT, 0, texCoords.data());
     VIDEODRIVER.bindTexture(getTexture());
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+    glColor4ub(getRed(color), getGreen(color), getBlue(color), getAlpha(color));
     glDrawArrays(GL_QUADS, 0, 4);
 }
 

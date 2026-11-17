@@ -22,15 +22,15 @@ nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : n
 /// Malt den Arbeiter beim Arbeiten
 void nofStonemason::drawWorking(DrawPoint drawPt)
 {
-    unsigned now_id;
+    unsigned nowId;
 
     // Stein hauen
-    LOADER.getPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.interpolate(64, current_ev)) % 8)
+    LOADER.getPlayerImage("rom_bobs", 40 + (nowId = GAMECLIENT.interpolate(64, current_ev)) % 8)
       ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
 
-    if(now_id % 8 == 5)
+    if(nowId % 8 == 5)
     {
-        world->getSoundMgr().playNOSound(56, *this, now_id);
+        world->getSoundMgr().playNOSound(56, *this, nowId);
         was_sounding = true;
     }
 }

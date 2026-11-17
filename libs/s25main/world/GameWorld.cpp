@@ -44,7 +44,7 @@
 #include <set>
 #include <stdexcept>
 
-inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& playerInfos, GameWorld& world)
+inline std::vector<GamePlayer> createPlayers(const std::vector<PlayerInfo>& playerInfos, GameWorld& world)
 {
     std::vector<GamePlayer> players;
     players.reserve(playerInfos.size());
@@ -54,7 +54,7 @@ inline std::vector<GamePlayer> CreatePlayers(const std::vector<PlayerInfo>& play
 }
 
 GameWorld::GameWorld(const std::vector<PlayerInfo>& players, const GlobalGameSettings& gameSettings, EventManager& em)
-    : GameWorldBase(CreatePlayers(players, *this), gameSettings, em)
+    : GameWorldBase(createPlayers(players, *this), gameSettings, em)
 {
     GameObject::attachWorld(this);
 }
@@ -71,7 +71,7 @@ MilitarySquares& GameWorld::getMilitarySquares()
 
 bool GameWorld::SetFlag(const MapPoint pt, const unsigned char player)
 {
-    if(GetBQ(pt, player) == BuildingQuality::Nothing)
+    if(getBQ(pt, player) == BuildingQuality::Nothing)
         return false;
     // There must be no other flag around that point
     if(isFlagAround(pt))
@@ -134,7 +134,7 @@ void GameWorld::SetBuildingSite(const BuildingType type, const MapPoint pt, cons
         return;
 
     // Gucken, ob das Gebäude hier überhaupt noch gebaut wrden kann
-    if(!canUseBq(GetBQ(pt, player), BUILDING_SIZE[type]))
+    if(!canUseBq(getBQ(pt, player), BUILDING_SIZE[type]))
         return;
 
     // Wenn das ein Militärgebäude ist und andere Militärgebäude bereits in der Nähe sind, darf dieses nicht gebaut
@@ -516,14 +516,14 @@ bool GameWorld::doesDestructionChangeTerritory(const noBaseBuilding& building) c
             continue;
         // AI can ignore water/snow/lava/swamp terrain (because it wouldn't help win the game)
         // So we check if any terrain is usable and if it is -> Land is important
-        if(getDescription().get(node.t1).Is(ETerrain::Walkable) && getDescription().get(node.t2).Is(ETerrain::Walkable))
+        if(getDescription().get(node.t1).is(ETerrain::Walkable) && getDescription().get(node.t2).is(ETerrain::Walkable))
             return true;
         // also check neighboring nodes since border will still count as player territory but not allow any buildings!
         for(const MapPoint neighbourPt : getNeighbours(curMapPt))
         {
             const MapNode& nNode = getNode(neighbourPt);
-            if(getDescription().get(nNode.t1).Is(ETerrain::Walkable)
-               || getDescription().get(nNode.t2).Is(ETerrain::Walkable))
+            if(getDescription().get(nNode.t1).is(ETerrain::Walkable)
+               || getDescription().get(nNode.t2).is(ETerrain::Walkable))
                 return true;
         }
     }
@@ -679,7 +679,7 @@ void GameWorld::destroyPlayerRests(const MapPoint pt, unsigned char newOwner, co
        || (noCheckMil->getType() == NodalObjectType::Buildingsite
            && static_cast<const noBuildingSite*>(noCheckMil)->isHarborBuildingSiteFromSea()))
     {
-        // LOG.write(("DestroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y,
+        // LOG.write(("destroyPlayerRests of hq, military, harbor or colony-harbor in construction stopped at x, %i y,
         // %i type, %i \n", x, y, noType);
         return;
     }
@@ -717,11 +717,11 @@ struct PotentialAttacker
     unsigned distance;
 };
 
-void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, const unsigned short soldiers_count,
+void GameWorld::Attack(const unsigned char playerAttacker, const MapPoint pt, const unsigned short soldiers_count,
                        const bool strong_soldiers)
 {
     auto* attacked_building = getSpecObj<nobBaseMilitary>(pt);
-    if(!attacked_building || !attacked_building->isAttackable(player_attacker))
+    if(!attacked_building || !attacked_building->isAttackable(playerAttacker))
         return;
 
     // Militärgebäude in der Nähe finden
@@ -733,7 +733,7 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
     for(const auto* building : buildings)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
-        if(building->getPlayer() != player_attacker || !BuildingProperties::isMilitary(building->getBuildingType()))
+        if(building->getPlayer() != playerAttacker || !BuildingProperties::isMilitary(building->getBuildingType()))
             continue;
 
         const auto& milBld = static_cast<const nobMilitary&>(*building);
@@ -755,7 +755,7 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
                 /* Insert new soldier before current one if:
                         new soldiers rank is greater
                         OR new soldiers rank is equal AND new soldiers distance is smaller */
-                const auto itInsertPos = helpers::find_if(
+                const auto itInsertPos = helpers::findIf(
                   potentialAttackers, [curRank = curSoldier.getRank(), distance](const PotentialAttacker& pa) {
                       return pa.soldier->getRank() < curRank
                              || (pa.soldier->getRank() == curRank && pa.distance > distance);
@@ -773,7 +773,7 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
                 /* Insert new soldier before current one if:
                            new soldiers rank is less
                            OR new soldiers rank is equal AND new soldiers distance is smaller */
-                const auto itInsertPos = helpers::find_if(
+                const auto itInsertPos = helpers::findIf(
                   potentialAttackers, [curRank = curSoldier.getRank(), distance](const PotentialAttacker& pa) {
                       return pa.soldier->getRank() > curRank
                              || (pa.soldier->getRank() == curRank && pa.distance > distance);
@@ -796,7 +796,7 @@ void GameWorld::Attack(const unsigned char player_attacker, const MapPoint pt, c
 
     if(curNumSoldiers > 0 && hasLua())
     {
-        getLua().eventAttack(player_attacker, attacked_building->getPlayer(), curNumSoldiers);
+        getLua().eventAttack(playerAttacker, attacked_building->getPlayer(), curNumSoldiers);
     }
 }
 
@@ -822,11 +822,11 @@ struct CmpSeaAttacker : private T_RankCmp
     }
 };
 
-void GameWorld::attackViaSea(const unsigned char player_attacker, const MapPoint pt,
-                             const unsigned short soldiers_count, const bool strong_soldiers)
+void GameWorld::attackViaSea(const unsigned char playerAttacker, const MapPoint pt, const unsigned short soldiers_count,
+                             const bool strong_soldiers)
 {
     // Verfügbare Soldaten herausfinden
-    std::vector<GameWorldBase::PotentialSeaAttacker> attackers = getSoldiersForSeaAttack(player_attacker, pt);
+    std::vector<GameWorldBase::PotentialSeaAttacker> attackers = getSoldiersForSeaAttack(playerAttacker, pt);
     if(attackers.empty())
         return;
 
@@ -848,7 +848,7 @@ void GameWorld::attackViaSea(const unsigned char player_attacker, const MapPoint
 
     if(counter > 0 && hasLua())
     {
-        getLua().eventAttack(player_attacker, attacked_building.getPlayer(), counter);
+        getLua().eventAttack(playerAttacker, attacked_building.getPlayer(), counter);
     }
 }
 
@@ -874,19 +874,19 @@ bool GameWorld::isRoadNodeForFigures(const MapPoint pt)
         /*
                 ATTENTION! This leads to figures on the same node blocking each other. -> Ghost jams
 
-                if((*it)->GetType() == NodalObjectType::Figure)
+                if((*it)->getType() == NodalObjectType::Figure)
                 {
                     noFigure * fig = static_cast<noFigure*>(*it);
                     // Figuren dürfen sich nicht gegenüber stehen, sonst warten sie ja ewig aufeinander
                     // Außerdem muss auch die Position stimmen, sonst spinnt der ggf. rum, da
-                    if(fig->IsWaitingForFreeNode() && (fig->GetDir()+3)%6 != dir)
+                    if(fig->isWaitingForFreeNode() && (fig->getDir()+3)%6 != dir)
                         return false;
                 }*/
 
         // Kampf
         if(object.getGOT() == GO_Type::Fighting)
         {
-            if(static_cast<const noFighting&>(object).IsActive())
+            if(static_cast<const noFighting&>(object).isActive())
                 return false;
         } else if(object.getGOT() == GO_Type::NofAttacker) // wartende Angreifer
         {
@@ -985,7 +985,7 @@ bool GameWorld::validWaitingAroundBuildingPoint(const MapPoint pt, const MapPoin
             return false;
     }
     // object wall or impassable terrain increasing my path to target length to a higher value than the direct distance?
-    return findHumanPath(pt, center, calcDistance(pt, center)).has_value();
+    return findHumanPath(pt, center, calcDistance(pt, center)).hasValue();
 }
 
 bool GameWorld::isValidPointForFighting(MapPoint pt, const nofActiveSoldier& soldier,
@@ -1021,7 +1021,7 @@ bool GameWorld::isValidPointForFighting(MapPoint pt, const nofActiveSoldier& sol
             const auto& fight = static_cast<const noFighting&>(figure);
             // A soldier currently fighting shouldn't look for a new fighting spot
             RTTR_Assert(!fight.isFighter(soldier));
-            if(fight.IsActive())
+            if(fight.isActive())
                 return false;
         }
     }
@@ -1141,7 +1141,7 @@ bool GameWorld::isPointScoutedByShip(const MapPoint& pt, unsigned player) const
 void GameWorld::recalcVisibility(const MapPoint pt, const unsigned char player, const noBaseBuilding* const exception)
 {
     /// Zustand davor merken
-    Visibility visibility_before = getNode(pt).fow[player].visibility;
+    Visibility visibilityBefore = getNode(pt).fow[player].visibility;
 
     /// Herausfinden, ob vollständig sichtbar
     bool visible = isPointCompletelyVisible(pt, player, exception);
@@ -1163,7 +1163,7 @@ void GameWorld::recalcVisibility(const MapPoint pt, const unsigned char player, 
             case Exploration::FogOfWar:
             case Exploration::FogOfWarExplored:
                 // wenn es mal sichtbar war, nun im Nebel des Krieges
-                if(visibility_before == Visibility::Visible)
+                if(visibilityBefore == Visibility::Visible)
                 {
                     setVisibility(pt, player, Visibility::FogOfWar, getEvMgr().getCurrentGF());
                 }
@@ -1181,7 +1181,7 @@ void GameWorld::makeVisible(const MapPoint pt, const unsigned char player)
 void GameWorld::recalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player,
                                               const noBaseBuilding* const exception)
 {
-    std::vector<MapPoint> pts = GetPointsInRadiusWithCenter(pt, radius);
+    std::vector<MapPoint> pts = getPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& pt : pts)
         recalcVisibility(pt, player, exception);
 }
@@ -1189,7 +1189,7 @@ void GameWorld::recalcVisibilitiesAroundPoint(const MapPoint pt, const MapCoord 
 /// Setzt die Sichtbarkeiten um einen Punkt auf sichtbar (aus Performancegründen Alternative zu oberem)
 void GameWorld::makeVisibleAroundPoint(const MapPoint pt, const MapCoord radius, const unsigned char player)
 {
-    std::vector<MapPoint> pts = GetPointsInRadiusWithCenter(pt, radius);
+    std::vector<MapPoint> pts = getPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& curPt : pts)
         makeVisible(curPt, player);
 }
@@ -1197,7 +1197,7 @@ void GameWorld::makeVisibleAroundPoint(const MapPoint pt, const MapCoord radius,
 /// Bestimmt bei der Bewegung eines spähenden Objekts die Sichtbarkeiten an
 /// den Rändern neu
 void GameWorld::recalcMovingVisibilities(const MapPoint pt, const unsigned char player, const MapCoord radius,
-                                         const Direction moving_dir, MapPoint* enemy_territory)
+                                         const Direction moving_dir, MapPoint* enemyTerritory)
 {
     // Neue Sichtbarkeiten zuerst setzen
     // Zum Eckpunkt der beiden neuen sichtbaren Kanten gehen
@@ -1214,19 +1214,19 @@ void GameWorld::recalcMovingVisibilities(const MapPoint pt, const unsigned char 
         tt = getNeighbour(tt, dir);
         // Sichtbarkeit und für FOW-Gebiet vorherigen Besitzer merken
         // (d.h. der dort  zuletzt war, als es für Spieler player sichtbar war)
-        Visibility old_vis = calcVisiblityWithAllies(tt, player);
-        unsigned char old_owner = getNode(tt).fow[player].owner;
+        Visibility oldVis = calcVisiblityWithAllies(tt, player);
+        unsigned char oldOwner = getNode(tt).fow[player].owner;
         makeVisible(tt, player);
         // Neues feindliches Gebiet entdeckt?
         // Muss vorher undaufgedeckt oder FOW gewesen sein, aber in dem Fall darf dort vorher noch kein
         // Territorium entdeckt worden sein
-        unsigned char current_owner = getNode(tt).owner;
-        if(current_owner
-           && (old_vis == Visibility::Invisible || (old_vis == Visibility::FogOfWar && old_owner != current_owner)))
+        unsigned char currentOwner = getNode(tt).owner;
+        if(currentOwner
+           && (oldVis == Visibility::Invisible || (oldVis == Visibility::FogOfWar && oldOwner != currentOwner)))
         {
-            if(getPlayer(player).isAttackable(current_owner - 1) && enemy_territory)
+            if(getPlayer(player).isAttackable(currentOwner - 1) && enemyTerritory)
             {
-                *enemy_territory = tt;
+                *enemyTerritory = tt;
             }
         }
     }
@@ -1238,19 +1238,19 @@ void GameWorld::recalcMovingVisibilities(const MapPoint pt, const unsigned char 
         tt = getNeighbour(tt, dir);
         // Sichtbarkeit und für FOW-Gebiet vorherigen Besitzer merken
         // (d.h. der dort  zuletzt war, als es für Spieler player sichtbar war)
-        Visibility old_vis = calcVisiblityWithAllies(tt, player);
-        unsigned char old_owner = getNode(tt).fow[player].owner;
+        Visibility oldVis = calcVisiblityWithAllies(tt, player);
+        unsigned char oldOwner = getNode(tt).fow[player].owner;
         makeVisible(tt, player);
         // Neues feindliches Gebiet entdeckt?
         // Muss vorher undaufgedeckt oder FOW gewesen sein, aber in dem Fall darf dort vorher noch kein
         // Territorium entdeckt worden sein
-        unsigned char current_owner = getNode(tt).owner;
-        if(current_owner
-           && (old_vis == Visibility::Invisible || (old_vis == Visibility::FogOfWar && old_owner != current_owner)))
+        unsigned char currentOwner = getNode(tt).owner;
+        if(currentOwner
+           && (oldVis == Visibility::Invisible || (oldVis == Visibility::FogOfWar && oldOwner != currentOwner)))
         {
-            if(getPlayer(player).isAttackable(current_owner - 1) && enemy_territory)
+            if(getPlayer(player).isAttackable(currentOwner - 1) && enemyTerritory)
             {
-                *enemy_territory = tt;
+                *enemyTerritory = tt;
             }
         }
     }
@@ -1258,13 +1258,13 @@ void GameWorld::recalcMovingVisibilities(const MapPoint pt, const unsigned char 
     // Dasselbe für die zurückgebliebenen Punkte
     // Diese müssen allerdings neu berechnet werden!
     t = pt;
-    Direction anti_moving_dir = moving_dir + 3u;
+    Direction antiMovingDir = moving_dir + 3u;
     for(MapCoord i = 0; i < radius + 1; ++i)
-        t = getNeighbour(t, anti_moving_dir);
+        t = getNeighbour(t, antiMovingDir);
 
     recalcVisibility(t, player, nullptr);
     tt = t;
-    dir = anti_moving_dir + 2u;
+    dir = antiMovingDir + 2u;
     for(MapCoord i = 0; i < radius; ++i)
     {
         tt = getNeighbour(tt, dir);
@@ -1272,7 +1272,7 @@ void GameWorld::recalcMovingVisibilities(const MapPoint pt, const unsigned char 
     }
 
     tt = t;
-    dir = anti_moving_dir - 2u;
+    dir = antiMovingDir - 2u;
     for(unsigned i = 0; i < radius; ++i)
     {
         tt = getNeighbour(tt, dir);
@@ -1304,7 +1304,7 @@ bool GameWorld::foundColony(const HarborId harbor, const unsigned char player, c
         gi->GI_UpdateMinimap(pos);
 
     recalcTerritory(*bs, TerritoryChangeReason::Build);
-    // BQ neu berechnen (evtl durch RecalcTerritory noch nicht geschehen)
+    // BQ neu berechnen (evtl durch recalcTerritory noch nicht geschehen)
     recalcBQAroundPointBig(pos);
 
     getNotifications().publish(ExpeditionNote(ExpeditionNote::ColonyFounded, player, pos));

@@ -124,7 +124,7 @@ void iwBaseWarehouse::msgGroupButtonClick(const unsigned group_id, const unsigne
             {
                 // optisch schonmal setzen
                 wh->setInventorySettingVisual(what, state);
-                updateOverlay(rttr::enum_cast(what));
+                updateOverlay(rttr::enumCast(what));
             }
         };
         if(getCurPage() == warePageID)
@@ -196,11 +196,11 @@ void iwBaseWarehouse::msgButtonClick(const unsigned ctrl_id)
                 if(getCurPage() == warePageID)
                 {
                     for(const auto i : helpers::enumRange<GoodType>())
-                        wh->setInventorySettingVisual(i, states[rttr::enum_cast(i)]);
+                        wh->setInventorySettingVisual(i, states[rttr::enumCast(i)]);
                 } else
                 {
                     for(const auto i : helpers::enumRange<Job>())
-                        wh->setInventorySettingVisual(i, states[rttr::enum_cast(i)]);
+                        wh->setInventorySettingVisual(i, states[rttr::enumCast(i)]);
                 }
                 updateOverlays();
             }
@@ -223,7 +223,7 @@ void iwBaseWarehouse::msgButtonClick(const unsigned ctrl_id)
               gwv.getWorld().getPlayer(wh->getPlayer()).getBuildingRegister().getStorehouses();
             // go through list once we get to current building -> open window for the next one and go to next location
             auto it =
-              helpers::find_if(storehouses, [whPos = wh->getPos()](const auto* it) { return it->getPos() == whPos; });
+              helpers::findIf(storehouses, [whPos = wh->getPos()](const auto* it) { return it->getPos() == whPos; });
             if(it != storehouses.end()) // got to current building in the list?
             {
                 // close old window, open new window (todo: only open if it isnt already open), move to location of next

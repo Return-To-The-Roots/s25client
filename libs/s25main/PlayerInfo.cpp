@@ -10,12 +10,12 @@ PlayerInfo::PlayerInfo() : isHost(false), ping(0) {}
 PlayerInfo::PlayerInfo(const BasePlayerInfo& baseInfo) : BasePlayerInfo(baseInfo), isHost(false), ping(0) {}
 
 PlayerInfo::PlayerInfo(Serializer& ser, int basePlayerInfoVersion)
-    : BasePlayerInfo(ser, basePlayerInfoVersion, false), isHost(ser.PopBool()), ping(ser.PopUnsignedInt())
+    : BasePlayerInfo(ser, basePlayerInfoVersion, false), isHost(ser.popBool()), ping(ser.popUnsignedInt())
 {}
 
 void PlayerInfo::serialize(Serializer& ser) const
 {
     BasePlayerInfo::serialize(ser, false);
-    ser.PushBool(isHost);
-    ser.PushUnsignedInt(ping);
+    ser.pushBool(isHost);
+    ser.pushUnsignedInt(ping);
 }

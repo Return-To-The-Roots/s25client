@@ -80,16 +80,16 @@ nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char p
 {}
 
 nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
-    : noFigure(sgd, obj_id), ct(sgd.pop<CarrierType>()), state(sgd.pop<CarrierState>()), fat(sgd.PopBool()),
+    : noFigure(sgd, obj_id), ct(sgd.pop<CarrierType>()), state(sgd.pop<CarrierState>()), fat(sgd.popBool()),
       workplace(sgd.popObject<RoadSegment>(GO_Type::Roadsegment)), carried_ware(sgd.popObject<Ware>(GO_Type::Ware)),
-      productivity_ev(sgd.popEvent()), productivity(sgd.PopUnsignedInt()), worked_gf(sgd.PopUnsignedInt()),
-      since_working_gf(sgd.PopUnsignedInt()), next_animation(0)
+      productivity_ev(sgd.popEvent()), productivity(sgd.popUnsignedInt()), worked_gf(sgd.popUnsignedInt()),
+      since_working_gf(sgd.popUnsignedInt()), next_animation(0)
 {
     if(state == CarrierState::BoatcarrierWanderOnWater)
     {
         if(sgd.getGameDataVersion() < 7)
         {
-            shore_path.resize(sgd.PopUnsignedInt());
+            shore_path.resize(sgd.popUnsignedInt());
             helpers::popContainer(sgd, shore_path, true);
         } else
             helpers::popContainer(sgd, shore_path);
@@ -102,13 +102,13 @@ void nofCarrier::serialize(SerializedGameData& sgd) const
 
     sgd.pushEnum<uint8_t>(ct);
     sgd.pushEnum<uint8_t>(state);
-    sgd.PushBool(fat);
+    sgd.pushBool(fat);
     sgd.pushObject(workplace, true);
     sgd.pushObject(carried_ware, true);
     sgd.pushEvent(productivity_ev);
-    sgd.PushUnsignedInt(productivity);
-    sgd.PushUnsignedInt(worked_gf);
-    sgd.PushUnsignedInt(since_working_gf);
+    sgd.pushUnsignedInt(productivity);
+    sgd.pushUnsignedInt(worked_gf);
+    sgd.pushUnsignedInt(since_working_gf);
 
     if(state == CarrierState::BoatcarrierWanderOnWater)
     {
@@ -122,7 +122,7 @@ void nofCarrier::destroy()
 {
     RTTR_Assert(!workplace);
     // Ware vernichten (abmelden)
-    RTTR_Assert(!carried_ware); // TODO: Check if this is ok so keep the LooseWare call below
+    RTTR_Assert(!carried_ware); // TODO: Check if this is ok so keep the looseWare call below
     looseWare();
     getEvMgr().removeEvent(productivity_ev);
 
@@ -142,17 +142,17 @@ void nofCarrier::draw(DrawPoint drawPt)
                 bool animation = false;
 
                 // Ist es schon Zeit für eine Animation?
-                unsigned current_gf = getEvMgr().getCurrentGF();
+                unsigned currentGf = getEvMgr().getCurrentGF();
 
-                if(current_gf >= next_animation)
+                if(currentGf >= next_animation)
                 {
                     // Animationstype bestimmen
-                    unsigned animation_id = next_animation % ANIMATIONS[fat ? 1 : 0].size();
+                    unsigned animationId = next_animation % ANIMATIONS[fat ? 1 : 0].size();
                     bool useNewyearsEgg = false;
 
                     // <Silvesteregg>
                     // day of year, 0-365, accuracy about 1/4 day
-                    int doy = (s25util::Time::CurrentTime() % 31556925) / 86400;
+                    int doy = (s25util::Time::currentTime() % 31556925) / 86400;
 
                     // last hours of last or first day of year
                     if((doy > 364) || (doy < 1))
@@ -164,8 +164,8 @@ void nofCarrier::draw(DrawPoint drawPt)
 
                     // Ist die Animation schon vorbei?
                     if((!useNewyearsEgg
-                        && (current_gf >= next_animation + ANIMATIONS[fat ? 1 : 0][animation_id].size() * FRAME_GF))
-                       || (useNewyearsEgg && (current_gf >= next_animation + 32 * 3)))
+                        && (currentGf >= next_animation + ANIMATIONS[fat ? 1 : 0][animationId].size() * FRAME_GF))
+                       || (useNewyearsEgg && (currentGf >= next_animation + 32 * 3)))
                     {
                         // Neuen nächsten Animationszeitpunkt bestimmen
                         setNewAnimationMoment();
@@ -179,12 +179,12 @@ void nofCarrier::draw(DrawPoint drawPt)
                             LOADER
                               .getPlayerImage(
                                 "rom_bobs",
-                                ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
+                                ANIMATIONS[fat ? 1 : 0][animationId][(currentGf - next_animation) / FRAME_GF])
                               ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
                         } else // Silvesteregg
                         {
                             glArchivItem_Bitmap_Player* bmp =
-                              LOADER.getPlayerImage("firework", (current_gf - next_animation) / 3 + 1);
+                              LOADER.getPlayerImage("firework", (currentGf - next_animation) / 3 + 1);
 
                             if(bmp)
                                 bmp->drawFull(drawPt - DrawPoint(26, 104), COLOR_WHITE, world->getPlayer(player).color);
@@ -241,20 +241,20 @@ void nofCarrier::draw(DrawPoint drawPt)
                 LOADER.getWareDonkeyTex(carried_ware->type)->drawFull(drawPt + WARE_POS_DONKEY[getCurMoveDir()][0]);
             } else
             {
-                const unsigned ani_step = calcWalkAnimationFrame();
+                const unsigned aniStep = calcWalkAnimationFrame();
 
                 drawPt += calcFigurRelative();
 
                 // Läuft normal mit oder ohne Ware
 
                 // Esel
-                LOADER.getDonkeySprite(getCurMoveDir(), ani_step).draw(drawPt);
+                LOADER.getDonkeySprite(getCurMoveDir(), aniStep).draw(drawPt);
 
                 if(carried_ware)
                 {
                     // Ware im Korb zeichnen
                     LOADER.getWareDonkeyTex(carried_ware->type)
-                      ->drawFull(drawPt + WARE_POS_DONKEY[getCurMoveDir()][ani_step]);
+                      ->drawFull(drawPt + WARE_POS_DONKEY[getCurMoveDir()][aniStep]);
                 }
             }
         }
@@ -280,12 +280,12 @@ void nofCarrier::draw(DrawPoint drawPt)
                 LOADER.getWareDonkeyTex(carried_ware->type)->drawFull(drawPt + WARE_POS_BOAT[getCurMoveDir()]);
             } else
             {
-                const unsigned ani_step = calcWalkAnimationFrame();
+                const unsigned aniStep = calcWalkAnimationFrame();
 
                 drawPt += calcFigurRelative();
 
                 // ruderndes Boot zeichnen
-                LOADER.getBoatCarrierSprite(getCurMoveDir(), ani_step)
+                LOADER.getBoatCarrierSprite(getCurMoveDir(), aniStep)
                   .draw(drawPt, 0xFFFFFFFF, world->getPlayer(player).color);
 
                 // Läuft normal mit oder ohne Ware
@@ -294,10 +294,10 @@ void nofCarrier::draw(DrawPoint drawPt)
                     LOADER.getWareDonkeyTex(carried_ware->type)->drawFull(drawPt + WARE_POS_BOAT[getCurMoveDir()]);
 
                 // Sound ggf. abspielen
-                if(ani_step == 2)
+                if(aniStep == 2)
                     world->getSoundMgr().playNOSound(84, *this, 0);
 
-                last_id = ani_step;
+                last_id = aniStep;
             }
         }
         break;
@@ -401,7 +401,7 @@ void nofCarrier::walked()
                     {
                         carried_ware->waitAtFlag(this_flag);
 
-                        // Calc next route if not done in the WantInBuilding call
+                        // Calc next route if not done in the wantInBuilding call
                         if(!calculated)
                             carried_ware->recalcRoute();
 
@@ -416,13 +416,13 @@ void nofCarrier::walked()
 
                         // Temporary store carried ware, so we can fetch another one before putting down the old one
                         // which triggers a search for an available carrier which must not be us
-                        auto tmp_ware = std::move(carried_ware);
+                        auto tmpWare = std::move(carried_ware);
                         fetchWare(true);
 
-                        tmp_ware->waitAtFlag(this_flag);
+                        tmpWare->waitAtFlag(this_flag);
                         if(!calculated)
-                            tmp_ware->recalcRoute();
-                        this_flag.addWare(std::move(tmp_ware));
+                            tmpWare->recalcRoute();
+                        this_flag.addWare(std::move(tmpWare));
                     } else
                     {
                         // No space at flag, go back and try again later
@@ -522,7 +522,7 @@ void nofCarrier::goalReached()
     auto* rn = world->getSpecObj<noRoadNode>(pos);
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        // noRoadNode * rn = world->GetSpecObj<noRoadNode>(x,y);
+        // noRoadNode * rn = world->getSpecObj<noRoadNode>(x,y);
         if(rn->getRoute(dir) == workplace)
         {
             // Am neuen Arbeitsplatz angekommen
@@ -632,7 +632,7 @@ void nofCarrier::lostWork()
             // Look for the shore
             const unsigned maxNodeDistance = 5;
             const auto coastPoints =
-              world->GetMatchingPointsInRadius(tmpPos, maxNodeDistance, IsCoastalAndForFigs(*world));
+              world->getMatchingPointsInRadius(tmpPos, maxNodeDistance, IsCoastalAndForFigs(*world));
             shore_path.clear();
             for(const auto& it : coastPoints)
             {
@@ -809,7 +809,7 @@ void nofCarrier::removeWareJob()
         if(!workplace->areWareJobs(!rs_dir, ct, false))
             //{
             //// Wenn es an der anderen Flagge noch einen gibt, dort hin gehen
-            // if(workplace->AreWareJobs(rs_dir))
+            // if(workplace->areWareJobs(rs_dir))
             //{
             //  rs_pos = cur_rs->getLength()-rs_pos-2;
             //  rs_dir = !rs_dir;

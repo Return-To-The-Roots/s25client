@@ -83,14 +83,14 @@ bool ctrlComboBox::msgLeftDown(const MouseCoords& mc)
     auto* list = getCtrl<ctrlList>(0);
 
     // Irgendwo anders hingeklickt --> Liste ausblenden
-    if(!readonly && !IsPointInRect(mc.pos, getFullDrawRect(list)))
+    if(!readonly && !isPointInRect(mc.pos, getFullDrawRect(list)))
     {
         // Liste wieder ausblenden
         showList(false);
         return false;
     }
 
-    if(!readonly && IsPointInRect(mc.pos, getDrawRect()))
+    if(!readonly && isPointInRect(mc.pos, getDrawRect()))
     {
         // Liste wieder ein/ausblenden
         showList(!list->isVisible());
@@ -115,7 +115,7 @@ bool ctrlComboBox::msgRightDown(const MouseCoords& mc)
     bool ret = relayMouseMessage(&Window::msgRightDown, mc);
 
     // Clicked on list -> close it
-    if(!readonly && IsPointInRect(mc.pos, list->getDrawRect()))
+    if(!readonly && isPointInRect(mc.pos, list->getDrawRect()))
     {
         // Liste wieder ausblenden
         showList(false);
@@ -130,10 +130,10 @@ bool ctrlComboBox::msgWheelUp(const MouseCoords& mc)
         return false;
 
     auto* list = getCtrl<ctrlList>(0);
-    if(list->isVisible() && IsPointInRect(mc.pos, list->getDrawRect()))
+    if(list->isVisible() && isPointInRect(mc.pos, list->getDrawRect()))
         return relayMouseMessage(&Window::msgWheelUp, mc);
 
-    if(IsPointInRect(mc.pos, getDrawRect()))
+    if(isPointInRect(mc.pos, getDrawRect()))
     {
         // Don't scroll too far down
         if(list->getSelection().value_or(0u) > 0u)
@@ -151,13 +151,13 @@ bool ctrlComboBox::msgWheelDown(const MouseCoords& mc)
 
     auto* list = getCtrl<ctrlList>(0);
 
-    if(list->isVisible() && IsPointInRect(mc.pos, list->getDrawRect()))
+    if(list->isVisible() && isPointInRect(mc.pos, list->getDrawRect()))
     {
         // Scrolled in opened list ->
         return relayMouseMessage(&Window::msgWheelDown, mc);
     }
 
-    if(IsPointInRect(mc.pos, getDrawRect()))
+    if(isPointInRect(mc.pos, getDrawRect()))
     {
         // Will be ignored by the list if to high
         list->setSelection(list->getSelection() ? *list->getSelection() + 1u : 0u);
@@ -220,7 +220,7 @@ void ctrlComboBox::drawImpl()
                    COLOR_YELLOW, getSize().x - 2 - getSize().y, "");
     }
 
-    // Draw button manually as we can't use DrawControls which would draw the list we do in Msg_PaintAfter
+    // Draw button manually as we can't use DrawControls which would draw the list we do in msgPaintAfter
     auto* button = getCtrl<ctrlButton>(1);
     if(button)
         button->draw();

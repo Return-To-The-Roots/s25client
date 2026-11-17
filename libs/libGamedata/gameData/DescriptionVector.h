@@ -35,8 +35,8 @@ public:
 
     void resize(const size_t new_size) { storage.resize(new_size); }
     void clear() { storage.clear(); }
-    void push_back(const T_Element& value) { storage.push_back(value); }
-    void push_back(T_Element&& value) { storage.push_back(std::move(value)); }
+    void pushBack(const T_Element& value) { storage.push_back(value); }
+    void pushBack(T_Element&& value) { storage.push_back(std::move(value)); }
 
     /// Return an iterable yielding all indices in order
     index_range_type indices() const

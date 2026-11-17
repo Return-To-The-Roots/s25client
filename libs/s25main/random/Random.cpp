@@ -18,11 +18,11 @@ int calcRandValue(T_PRNG& rng, int maxExcl)
 template<class T_PRNG>
 Random<T_PRNG>::Random()
 {
-    Init(123456789);
+    init(123456789);
 }
 
 template<class T_PRNG>
-void Random<T_PRNG>::Init(const uint64_t& seed)
+void Random<T_PRNG>::init(const uint64_t& seed)
 {
     resetState(PRNG(static_cast<typename PRNG::result_type>(seed)));
 }
@@ -57,10 +57,10 @@ unsigned Random<T_PRNG>::calcChecksum(const PRNG& rng)
     Serializer ser;
     rng.serialize(ser);
     unsigned checksum = 0;
-    while(ser.GetBytesLeft() >= sizeof(unsigned))
-        checksum += ser.PopUnsignedInt();
-    while(ser.GetBytesLeft())
-        checksum += ser.PopUnsignedChar();
+    while(ser.getBytesLeft() >= sizeof(unsigned))
+        checksum += ser.popUnsignedInt();
+    while(ser.getBytesLeft())
+        checksum += ser.popUnsignedChar();
     return checksum;
 }
 
@@ -71,7 +71,7 @@ const typename Random<T_PRNG>::PRNG& Random<T_PRNG>::getCurrentState() const
 }
 
 template<class T_PRNG>
-std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::GetAsyncLog()
+std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::getAsyncLog()
 {
     std::vector<RandomEntry> ret;
 
@@ -101,28 +101,28 @@ std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::GetAsyncLog()
 template<class T_PRNG>
 void Random<T_PRNG>::RandomEntry::serialize(Serializer& ser) const
 {
-    ser.PushUnsignedInt(counter);
-    ser.PushSignedInt(maxExcl);
+    ser.pushUnsignedInt(counter);
+    ser.pushSignedInt(maxExcl);
     // We save the type a) for double checking and b) for future extension
-    ser.PushLongString(T_PRNG::getName());
+    ser.pushLongString(T_PRNG::getName());
     rngState.serialize(ser);
-    ser.PushLongString(srcName);
-    ser.PushUnsignedInt(srcLine);
-    ser.PushUnsignedInt(objId);
+    ser.pushLongString(srcName);
+    ser.pushUnsignedInt(srcLine);
+    ser.pushUnsignedInt(objId);
 }
 
 template<class T_PRNG>
 void Random<T_PRNG>::RandomEntry::deserialize(Serializer& ser)
 {
-    counter = ser.PopUnsignedInt();
-    maxExcl = ser.PopSignedInt();
-    std::string name = ser.PopLongString();
+    counter = ser.popUnsignedInt();
+    maxExcl = ser.popSignedInt();
+    std::string name = ser.popLongString();
     if(name != T_PRNG::getName())
         throw std::runtime_error("Wrong random number generator");
     rngState.deserialize(ser);
-    srcName = ser.PopLongString();
-    srcLine = ser.PopUnsignedInt();
-    objId = ser.PopUnsignedInt();
+    srcName = ser.popLongString();
+    srcLine = ser.popUnsignedInt();
+    objId = ser.popUnsignedInt();
 }
 
 template<class T_PRNG>

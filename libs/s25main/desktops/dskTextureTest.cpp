@@ -31,17 +31,17 @@ dskTextureTest::dskTextureTest()
 {
     addText(ID_txtTitle, DrawPoint(300, 20), "Test screen for textures", COLOR_ORANGE, FontStyle::CENTER, LargeFont);
     addComboBox(ID_cbTexture, DrawPoint(630, 50), Extent(100, 22), TextureColor::Green2, NormalFont, 100);
-    Load();
+    load();
     addTextButton(ID_btBack, DrawPoint(630, 565), Extent(150, 22), TextureColor::Red1, _("Back"), NormalFont);
 }
 
 dskTextureTest::~dskTextureTest() = default;
 
-void dskTextureTest::Load()
+void dskTextureTest::load()
 {
     WorldDescription newDesc;
     GameDataLoader gdLoader(newDesc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
     {
         WINDOWMANAGER.showAfterSwitch(std::make_unique<iwMsgbox>(_("Error"), "Failed to load game data!", nullptr,
                                                                  MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
@@ -64,7 +64,7 @@ void dskTextureTest::msgComboSelectItem(const unsigned ctrl_id, const unsigned s
     if(!curTerrainIdx)
         return;
     const TerrainDesc& cur = desc.get(curTerrainIdx);
-    LOADER.Load(RTTRCONFIG.ExpandPath(cur.texturePath));
+    LOADER.load(RTTRCONFIG.expandPath(cur.texturePath));
     const auto textureName = ResourceId::make(bfs::path(cur.texturePath));
     glArchivItem_Bitmap* texBmp = LOADER.getImageN(textureName, 0);
     curTexture = LOADER.extractTexture(*texBmp, cur.posInTexture);
@@ -130,7 +130,7 @@ bool dskTextureTest::msgKeyDown(const KeyEvent& ke)
 {
     if(ke.kt == KeyType::F5)
     {
-        Load();
+        load();
         return true;
     }
     return dskMenuBase::msgKeyDown(ke);

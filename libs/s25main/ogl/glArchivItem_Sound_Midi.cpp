@@ -5,7 +5,7 @@
 #include "glArchivItem_Sound_Midi.h"
 #include "drivers/AudioDriverWrapper.h"
 
-SoundHandle glArchivItem_Sound_Midi::Load()
+SoundHandle glArchivItem_Sound_Midi::load()
 {
     return AUDIODRIVER.loadMusic(*this, ".midi");
 }

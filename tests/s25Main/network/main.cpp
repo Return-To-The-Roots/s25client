@@ -16,8 +16,8 @@
 
 struct NetworkFixture : rttr::test::Fixture
 {
-    NetworkFixture() { Socket::Initialize(); }
-    ~NetworkFixture() { Socket::Shutdown(); }
+    NetworkFixture() { Socket::initialize(); }
+    ~NetworkFixture() { Socket::shutdown(); }
 };
 
 BOOST_GLOBAL_FIXTURE(NetworkFixture);
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(TestServer_Works)
     BOOST_TEST(runServer());
 
     Socket sock;
-    BOOST_TEST_REQUIRE(sock.Connect("localhost", port, false));
+    BOOST_TEST_REQUIRE(sock.connect("localhost", port, false));
     BOOST_TEST(server.run(true));
     BOOST_TEST_REQUIRE(server.connections.size() == 1u);
     BOOST_TEST(server.stop());
@@ -46,13 +46,13 @@ BOOST_AUTO_TEST_CASE(TestServer_Works)
 
     BOOST_TEST_REQUIRE(server.listen(port));
     Socket sock2;
-    BOOST_TEST_REQUIRE(sock.Connect("localhost", port, false));
+    BOOST_TEST_REQUIRE(sock.connect("localhost", port, false));
     BOOST_TEST(server.run(true));
-    BOOST_TEST_REQUIRE(sock2.Connect("localhost", port, false));
+    BOOST_TEST_REQUIRE(sock2.connect("localhost", port, false));
     BOOST_TEST(server.run(true));
     BOOST_TEST_REQUIRE(server.connections.size() == 2u);
     BOOST_TEST(runServer());
-    sock.Close();
+    sock.close();
     BOOST_TEST(runServer());
     if(rttr::isRunningOnCI()) // On CI retry to avoid flakes
     {
@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(TestServer_Works)
         {
             if(server.connections.size() == 2u)
             {
-                sock.Sleep(50);          // LCOV_EXCL_LINE
+                sock.sleep(50);          // LCOV_EXCL_LINE
                 BOOST_TEST(runServer()); // LCOV_EXCL_LINE
             }
         }

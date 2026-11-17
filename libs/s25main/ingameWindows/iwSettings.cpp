@@ -60,7 +60,7 @@ iwSettings::iwSettings()
     cbDisplayMode->addItem(_("Windowed"));
     cbDisplayMode->addItem(_("Fullscreen"));
     cbDisplayMode->addItem(_("Borderless window"));
-    cbDisplayMode->setSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
+    cbDisplayMode->setSelection(rttr::enumCast(SETTINGS.video.displayMode.type));
     curPos.y += ctrlSize.y + 5;
 
     auto* grpResolution = addGroup(ID_grpResolution);

@@ -433,8 +433,8 @@ BOOST_AUTO_TEST_CASE(TitleBarButtons)
 }
 
 namespace {
-void WindowPositioning_testOne(IngameWindow& wnd, const char* context, const std::function<void()>& checkNormal,
-                               const std::function<void()>& checkMinimized)
+void windowPositioningTestOne(IngameWindow& wnd, const char* context, const std::function<void()>& checkNormal,
+                              const std::function<void()>& checkMinimized)
 {
     BOOST_TEST_CONTEXT(context)
     {
@@ -481,7 +481,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
 
         IngameWindow wnd(idPersisted, IngameWindow::posLastOrCenter, wndSizeM, "Test Window", nullptr);
 
-        WindowPositioning_testOne(
+        windowPositioningTestOne(
           wnd, "Window should be centered",
           [&]() {
               BOOST_TEST(wnd.getPos() == (renderSize / 2 - wndSizeM / 2));
@@ -497,7 +497,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
           });
 
         const auto restorePos = renderSize - offset; // new position is also the restorePos
-        WindowPositioning_testOne(
+        windowPositioningTestOne(
           wnd, "Move window into bottom right corner, not connecting with the screen edges",
           [&]() {
               wnd.setPos(restorePos);
@@ -513,7 +513,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
               BOOST_TEST(wnd.getSize() == Extent(wndSizeM.x, minHeight));
           });
 
-        WindowPositioning_testOne(
+        windowPositioningTestOne(
           wnd, "Increase size, window connects with screen edges and should move",
           [&]() {
               wnd.resize(wndSizeL);
@@ -529,7 +529,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
               BOOST_TEST(wnd.getSize() == Extent(wndSizeL.x, minHeight));
           });
 
-        WindowPositioning_testOne(
+        windowPositioningTestOne(
           wnd, "Decrease size, window no longer connects with screen edges and should move to restorePos",
           [&]() {
               wnd.resize(wndSizeS);
@@ -557,7 +557,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
 
         IngameWindow wnd(idNonPersisted, IngameWindow::posAtMouse, wndSizeM, "Test Window", nullptr);
 
-        WindowPositioning_testOne(
+        windowPositioningTestOne(
           wnd, "Window should be at cursor",
           [&]() {
               BOOST_TEST(wnd.getPos() == restorePos);
@@ -568,7 +568,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
               BOOST_TEST(wnd.getSize() == Extent(wndSizeM.x, minHeight));
           });
 
-        WindowPositioning_testOne(
+        windowPositioningTestOne(
           wnd, "Increase size, window connects with screen edges and should move",
           [&]() {
               wnd.resize(wndSizeL);
@@ -580,7 +580,7 @@ BOOST_AUTO_TEST_CASE(WindowPositioning)
               BOOST_TEST(wnd.getSize() == Extent(wndSizeL.x, minHeight));
           });
 
-        WindowPositioning_testOne(
+        windowPositioningTestOne(
           wnd, "Decrease size, window no longer connects with screen edges and should move to restorePos",
           [&]() {
               wnd.resize(wndSizeS);
@@ -630,7 +630,7 @@ BOOST_AUTO_TEST_CASE(WindowSnapping)
 
         {
             const auto mc = makeLeftDown(evLDown.pos + DrawPoint(-90, 30));
-            // Reset mouse position to ensure it's properly updated in Msg_MouseMove()
+            // Reset mouse position to ensure it's properly updated in msgMouseMove()
             VIDEODRIVER.setMousePos(Position(0, 0));
             wnd2.msgMouseMove(mc);
             BOOST_TEST(wnd2.getPos() == DrawPoint(100, 500)); // Still in snap range

@@ -106,7 +106,7 @@ enum CtrlIds
 template<typename T>
 constexpr T nextEnumValue(T value)
 {
-    return T((rttr::enum_cast(value) + 1) % helpers::NumEnumValues_v<T>);
+    return T((rttr::enumCast(value) + 1) % helpers::NumEnumValues_v<T>);
 }
 
 std::array NATION_ORDER = {
@@ -537,7 +537,7 @@ void dskGameLobby::updatePlayerRow(const unsigned row)
         changeReady(row, player.isReady);
         changeColor(row, player.color);
     }
-    group->setActive(IsActive());
+    group->setActive(isActive());
 }
 
 /**
@@ -1103,7 +1103,7 @@ void dskGameLobby::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/
 {
     if((playerId != 0xFFFFFFFF) && !isSinglePlayer())
     {
-        std::string time = s25util::Time::FormatTime("(%H:%i:%s)");
+        std::string time = s25util::Time::formatTime("(%H:%i:%s)");
 
         gameChat->addMessage(time, gameLobby_->getPlayer(playerId).name, gameLobby_->getPlayer(playerId).color, msg,
                              0xFFFFFF00); //-V810

@@ -71,7 +71,7 @@ void nofFlagWorker::goToFlag()
         {
             goHome(wh);
             // Vorgaukeln, dass wir ein Stück Straße bereits geschafft haben
-            // damit wir mit WalkToGoal weiter bis zum Ziel laufen können
+            // damit wir mit walkToGoal weiter bis zum Ziel laufen können
             cur_rs = &emulated_wanderroad;
             rs_pos = 0;
             walkToGoal();

@@ -131,9 +131,9 @@ void EventManager::executeEvents(const EventMap::iterator& itEvents)
     // We have to allow 2 cases:
     // 1) Adding of events to current GF -> std::list allows this without invalidating any iterators
     // 2) Checking for events -> Remove all deleted events so only valid ones are in the list
-    for(auto e_it = curEvents.begin(); e_it != curEvents.end(); e_it = curEvents.erase(e_it))
+    for(auto eIt = curEvents.begin(); eIt != curEvents.end(); eIt = curEvents.erase(eIt))
     {
-        const GameEvent* ev = *e_it;
+        const GameEvent* ev = *eIt;
         RTTR_Assert(ev->obj);
         RTTR_Assert(ev->obj->getObjId() <= GameObject::getObjIDCounter());
 
@@ -160,10 +160,10 @@ void EventManager::serialize(SerializedGameData& sgd) const
         throw SerializedGameData::Error((eventCtError % saveEvents.size() % numActiveEvents).str());
     }
 
-    sgd.PushUnsignedInt(saveEvents.size());
+    sgd.pushUnsignedInt(saveEvents.size());
     for(const GameEvent* ev : saveEvents)
         sgd.pushEvent(ev);
-    sgd.PushUnsignedInt(eventInstanceCtr);
+    sgd.pushUnsignedInt(eventInstanceCtr);
 }
 
 void EventManager::deserialize(SerializedGameData& sgd)
@@ -171,11 +171,11 @@ void EventManager::deserialize(SerializedGameData& sgd)
     if(numActiveEvents != 0)
         throw SerializedGameData::Error(_("Cannot deserialize event manager when there are still events active!"));
 
-    unsigned numEvents = sgd.PopUnsignedInt();
+    unsigned numEvents = sgd.popUnsignedInt();
     for(unsigned i = 0; i < numEvents; ++i)
         addEventToQueue(sgd.popEvent());
 
-    eventInstanceCtr = sgd.PopUnsignedInt();
+    eventInstanceCtr = sgd.popUnsignedInt();
 
     // Validation
     if(numEvents != numActiveEvents)
@@ -237,10 +237,10 @@ void EventManager::removeEventFromQueue(const GameEvent& event)
     if(itEventsAtTime != events.end())
     {
         EventList& eventsAtTime = itEventsAtTime->second;
-        auto e_it = helpers::find(eventsAtTime, &event);
-        if(e_it != eventsAtTime.end())
+        auto eIt = helpers::find(eventsAtTime, &event);
+        if(eIt != eventsAtTime.end())
         {
-            eventsAtTime.erase(e_it);
+            eventsAtTime.erase(eIt);
             --numActiveEvents;
             RTTR_Assert(!helpers::contains(eventsAtTime, &event)); // Event existed multiple times?
         } else

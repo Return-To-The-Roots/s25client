@@ -30,14 +30,14 @@ nobBaseMilitary::~nobBaseMilitary() = default;
 void nobBaseMilitary::DestroyBuilding()
 {
     // Notify soldiers on mission.
-    // ATTENTION: iterators can be deleted in HomeDestroyed, -> copy first
+    // ATTENTION: iterators can be deleted in homeDestroyed, -> copy first
     std::vector<nofActiveSoldier*> tmpTroopsOnMission(troops_on_mission.begin(), troops_on_mission.end());
     for(auto* it : tmpTroopsOnMission)
         it->homeDestroyed();
     troops_on_mission.clear();
 
     // Notify soldiers attacking this building
-    // ATTENTION: iterators can be deleted in AttackedGoalDestroyed, -> copy first
+    // ATTENTION: iterators can be deleted in attackedGoalDestroyed, -> copy first
     std::vector<nofAttacker*> tmpAggressors(aggressors.begin(), aggressors.end());
     for(auto* tmpAggressor : tmpAggressors)
         tmpAggressor->attackedGoalDestroyed();
@@ -91,7 +91,7 @@ void nobBaseMilitary::serialize(SerializedGameData& sgd) const
 
     sgd.pushObjectContainer(leave_house);
     sgd.pushEvent(leaving_event);
-    sgd.PushBool(go_out);
+    sgd.pushBool(go_out);
     sgd.pushObjectContainer(troops_on_mission);
     sgd.pushObjectContainer(aggressors, true);
     sgd.pushObjectContainer(aggressive_defenders, true);
@@ -102,9 +102,9 @@ nobBaseMilitary::nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id)
 {
     sgd.popObjectContainer(leave_house);
     leaving_event = sgd.popEvent();
-    go_out = sgd.PopBool();
+    go_out = sgd.popBool();
     if(sgd.getGameDataVersion() < 14)
-        sgd.PopUnsignedInt(); // former age
+        sgd.popUnsignedInt(); // former age
     sgd.popObjectContainer(troops_on_mission);
     sgd.popObjectContainer(aggressors, GO_Type::NofAttacker);
     sgd.popObjectContainer(aggressive_defenders, GO_Type::NofAggressivedefender);
@@ -158,7 +158,7 @@ nofAttacker* nobBaseMilitary::findAggressor(nofAggressiveDefender& defender)
     return nullptr;
 }
 
-MapPoint nobBaseMilitary::findAnAttackerPlace(unsigned short& ret_radius, const nofAttacker& soldier)
+MapPoint nobBaseMilitary::findAnAttackerPlace(unsigned short& retRadius, const nofAttacker& soldier)
 {
     const MapPoint flagPos = getFlagPos();
     const MapPoint soldierPos = soldier.getPos();
@@ -175,20 +175,20 @@ MapPoint nobBaseMilitary::findAnAttackerPlace(unsigned short& ret_radius, const 
         // TODO(Replay) Limit distance by MAX_ATTACKING_RUN_DISTANCE
         if(soldierPos == flagPos || world->findHumanPath(soldierPos, flagPos) != std::nullopt)
         {
-            ret_radius = 0;
+            retRadius = 0;
             return flagPos;
         }
     }
 
     // Check all points around the flag and take shortest
-    unsigned min_length = std::numeric_limits<unsigned>::max();
+    unsigned minLength = std::numeric_limits<unsigned>::max();
     MapPoint minPt = MapPoint::invalid();
     constexpr auto MAX_RADIUS = 3;
-    ret_radius = MAX_RADIUS;
+    retRadius = MAX_RADIUS;
     for(const auto& node : world->getPointsInRadius(flagPos, MAX_RADIUS, ReturnMapPointWithRadius{}))
     {
         // We found a point with a better radius
-        if(node.second > ret_radius)
+        if(node.second > retRadius)
             break;
 
         if(!world->validWaitingAroundBuildingPoint(node.first, pos))
@@ -197,7 +197,7 @@ MapPoint nobBaseMilitary::findAnAttackerPlace(unsigned short& ret_radius, const 
         // If this is where the soldier currently is, it is already the shortest possible distance
         if(soldierPos == node.first)
         {
-            ret_radius = node.second;
+            retRadius = node.second;
             return node.first;
         }
 
@@ -207,11 +207,11 @@ MapPoint nobBaseMilitary::findAnAttackerPlace(unsigned short& ret_radius, const 
         if(world->findHumanPath(soldierPos, node.first, 100, false, &length))
         {
             // Take if shorter
-            if(length < min_length)
+            if(length < minLength)
             {
                 minPt = node.first;
-                ret_radius = node.second;
-                min_length = length;
+                retRadius = node.second;
+                minLength = length;
             }
         }
     }
@@ -260,29 +260,29 @@ bool nobBaseMilitary::callDefender(nofAttacker& attacker)
 
 nofAttacker* nobBaseMilitary::findAttackerNearBuilding()
 {
-    nofAttacker* best_attacker = nullptr;
+    nofAttacker* bestAttacker = nullptr;
     do
     {
         // Call the closest attacker to fight the defender
-        best_attacker = nullptr;
-        unsigned best_radius = 0xFFFFFFFF;
+        bestAttacker = nullptr;
+        unsigned bestRadius = 0xFFFFFFFF;
         for(auto* aggressor : aggressors)
         {
             // Only consider those waiting around the flag, otherwise the defender could go/stay inside
             if(aggressor->isAttackerReady())
             {
-                if(!best_attacker || aggressor->getRadius() < best_radius)
+                if(!bestAttacker || aggressor->getRadius() < bestRadius)
                 {
-                    best_attacker = aggressor;
-                    best_radius = aggressor->getRadius();
+                    bestAttacker = aggressor;
+                    bestRadius = aggressor->getRadius();
                 }
             }
         }
         // Return the attacker if found and he starts attacking, else try again
         // The current one will be removed from aggressors or not be ready again
-        if(best_attacker && best_attacker->attackDefenderAtFlag())
-            return best_attacker;
-    } while(best_attacker); // Stop if we didn't found any attacker at all
+        if(bestAttacker && bestAttacker->attackDefenderAtFlag())
+            return bestAttacker;
+    } while(bestAttacker); // Stop if we didn't found any attacker at all
     return nullptr;
 }
 

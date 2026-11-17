@@ -27,11 +27,11 @@
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const NodalObjectType& e)
 {
-    return out << static_cast<unsigned>(rttr::enum_cast(e));
+    return out << static_cast<unsigned>(rttr::enumCast(e));
 }
 static std::ostream& operator<<(std::ostream& out, const RoadBuildMode& e)
 {
-    return out << static_cast<unsigned>(rttr::enum_cast(e));
+    return out << static_cast<unsigned>(rttr::enumCast(e));
 }
 // LCOV_EXCL_STOP
 
@@ -71,7 +71,7 @@ boost::test_tools::predicate_result checkBQs(const GameWorldBase& world, const s
 BOOST_FIXTURE_TEST_CASE(checkBQs_Correct, EmptyWorldFixture1P)
 {
     const MapPoint flagPos = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(5, 6));
-    const std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(flagPos, 4);
+    const std::vector<MapPoint> pts = world.getPointsInRadiusWithCenter(flagPos, 4);
     std::stringstream s;
     s << flagPos;
 
@@ -93,7 +93,7 @@ BOOST_FIXTURE_TEST_CASE(BQNextToBuilding, EmptyWorldFixture1P)
     const MapPoint flagPos = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(5, 6));
     const MapPoint bldPos = world.getNeighbour(flagPos, Direction::NorthWest);
     // All points possibly affected by a building
-    const std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(bldPos, 4);
+    const std::vector<MapPoint> pts = world.getPointsInRadiusWithCenter(bldPos, 4);
     const std::vector<MapPoint> radius1Pts = world.getPointsInRadius(bldPos, 1);
     ReducedBQMap reducedBQs;
     // Initially all are full
@@ -224,13 +224,13 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     const GameWorldViewer& gwv = gameDesktop.getView().getViewer();
     // Start at a position a bit away from the HQ so all points are castles
     const MapPoint roadPt = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(6, 6));
-    const std::vector<MapPoint> roadRadiusPts = world.GetPointsInRadiusWithCenter(roadPt, 6);
+    const std::vector<MapPoint> roadRadiusPts = world.getPointsInRadiusWithCenter(roadPt, 6);
     for(const MapPoint& pt : roadRadiusPts)
         BOOST_TEST_CONTEXT(" at " << pt)
         {
             BuildingQuality bq = world.getNode(pt).bq;
             BOOST_TEST_REQUIRE(bq == BuildingQuality::Castle);
-            bq = gwv.GetBQ(pt);
+            bq = gwv.getBQ(pt);
             BOOST_TEST_REQUIRE(bq == BuildingQuality::Castle);
         }
     gameDesktop.GI_StartRoadBuilding(roadPt, false);
@@ -254,12 +254,12 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     {
         BOOST_TEST_REQUIRE(gwv.isOnRoad(pt));
         // On the road we only allow flags
-        BOOST_TEST_REQUIRE(gwv.GetBQ(pt) == BuildingQuality::Flag);
+        BOOST_TEST_REQUIRE(gwv.getBQ(pt) == BuildingQuality::Flag);
         // Next to the road should be houses
         // But left to first point is still a castle
         BuildingQuality leftBQ = (pt == roadPts[0]) ? BuildingQuality::Castle : BuildingQuality::House;
-        BOOST_TEST_REQUIRE(gwv.GetBQ(world.getNeighbour(pt, Direction::West)) == leftBQ);
-        BOOST_TEST_REQUIRE(gwv.GetBQ(world.getNeighbour(pt, Direction::East)) == BuildingQuality::House);
+        BOOST_TEST_REQUIRE(gwv.getBQ(world.getNeighbour(pt, Direction::West)) == leftBQ);
+        BOOST_TEST_REQUIRE(gwv.getBQ(world.getNeighbour(pt, Direction::East)) == BuildingQuality::House);
     }
     // Destroy road partially
     // The first point (after start) must have ID 2
@@ -276,7 +276,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     // BQ should be restored
     for(const MapPoint& pt : roadRadiusPts)
     {
-        BuildingQuality bq = gwv.GetBQ(pt);
+        BuildingQuality bq = gwv.getBQ(pt);
         BOOST_TEST_INFO(" at " << pt);
         BOOST_TEST_REQUIRE(bq == BuildingQuality::Castle);
     }
@@ -303,13 +303,13 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     {
         BOOST_TEST_REQUIRE(gwv.isOnRoad(pt));
         // On the road we only allow flags
-        BOOST_TEST_REQUIRE(gwv.GetBQ(pt) == BuildingQuality::Flag);
+        BOOST_TEST_REQUIRE(gwv.getBQ(pt) == BuildingQuality::Flag);
         // Above should be castles
-        BOOST_TEST_REQUIRE(gwv.GetBQ(world.getNeighbour(pt, Direction::NorthWest)) == BuildingQuality::Castle);
-        BOOST_TEST_REQUIRE(gwv.GetBQ(world.getNeighbour(pt, Direction::NorthEast)) == BuildingQuality::Castle);
+        BOOST_TEST_REQUIRE(gwv.getBQ(world.getNeighbour(pt, Direction::NorthWest)) == BuildingQuality::Castle);
+        BOOST_TEST_REQUIRE(gwv.getBQ(world.getNeighbour(pt, Direction::NorthEast)) == BuildingQuality::Castle);
         // Below should be big houses
-        BOOST_TEST_REQUIRE(gwv.GetBQ(world.getNeighbour(pt, Direction::SouthWest)) == BuildingQuality::House);
-        BOOST_TEST_REQUIRE(gwv.GetBQ(world.getNeighbour(pt, Direction::SouthEast)) == BuildingQuality::House);
+        BOOST_TEST_REQUIRE(gwv.getBQ(world.getNeighbour(pt, Direction::SouthWest)) == BuildingQuality::House);
+        BOOST_TEST_REQUIRE(gwv.getBQ(world.getNeighbour(pt, Direction::SouthEast)) == BuildingQuality::House);
     }
 
     // Destroy road
@@ -319,7 +319,7 @@ BOOST_FIXTURE_TEST_CASE(BQWithVisualRoad, EmptyWorldFixture1PBigger)
     // BQ should be restored
     for(const MapPoint& pt : roadRadiusPts)
     {
-        BuildingQuality bq = gwv.GetBQ(pt);
+        BuildingQuality bq = gwv.getBQ(pt);
         BOOST_TEST_INFO(" at " << pt);
         BOOST_TEST_REQUIRE(bq == BuildingQuality::Castle);
     }
@@ -345,27 +345,27 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1PBiggest)
         {
             // Our territory -> No restrictions
             BOOST_TEST_REQUIRE(world.isPlayerTerritory(pt));
-            BOOST_TEST_REQUIRE(world.GetBQ(pt, 0) == BuildingQuality::Castle);
+            BOOST_TEST_REQUIRE(world.getBQ(pt, 0) == BuildingQuality::Castle);
         } else if(distance < hqRadius)
         {
             // Near border, flag if we cant build a buildings flag
             BOOST_TEST_REQUIRE(world.isPlayerTerritory(pt));
             if(!world.isPlayerTerritory(world.getNeighbour(pt, Direction::SouthEast)))
-                BOOST_TEST_REQUIRE(world.GetBQ(pt, 0) == BuildingQuality::Flag);
+                BOOST_TEST_REQUIRE(world.getBQ(pt, 0) == BuildingQuality::Flag);
             else
-                BOOST_TEST_REQUIRE(world.GetBQ(pt, 0) == BuildingQuality::Castle);
+                BOOST_TEST_REQUIRE(world.getBQ(pt, 0) == BuildingQuality::Castle);
         } else if(distance == hqRadius)
         {
             // At border
             BOOST_TEST_REQUIRE(!world.isPlayerTerritory(pt));
             BOOST_TEST_REQUIRE(world.getNode(pt).owner == 0u + 1u);
-            BOOST_TEST_REQUIRE(world.GetBQ(pt, 0) == BuildingQuality::Nothing);
+            BOOST_TEST_REQUIRE(world.getBQ(pt, 0) == BuildingQuality::Nothing);
         } else
         {
             // Outside border
             BOOST_TEST_REQUIRE(!world.isPlayerTerritory(pt));
             BOOST_TEST_REQUIRE(world.getNode(pt).owner == 0u);
-            BOOST_TEST_REQUIRE(world.GetBQ(pt, 0) == BuildingQuality::Nothing);
+            BOOST_TEST_REQUIRE(world.getBQ(pt, 0) == BuildingQuality::Nothing);
         }
     }
 
@@ -374,20 +374,20 @@ BOOST_FIXTURE_TEST_CASE(BQ_AtBorder, EmptyWorldFixture1PBiggest)
     for(unsigned i = 0; i < hqRadius - 2; i++)
         flagPt = world.getNeighbour(flagPt, i % 2 ? Direction::SouthEast : Direction::SouthWest);
     // This is near the border, so only a flag is possible
-    BOOST_TEST_REQUIRE(world.GetBQ(world.getNeighbour(flagPt, Direction::SouthEast), 0) == BuildingQuality::Flag);
+    BOOST_TEST_REQUIRE(world.getBQ(world.getNeighbour(flagPt, Direction::SouthEast), 0) == BuildingQuality::Flag);
     world.SetFlag(flagPt, 0);
     BOOST_TEST_REQUIRE(world.getNO(flagPt)->getGOT() == GO_Type::Flag);
-    BOOST_TEST_REQUIRE(world.GetBQ(world.getNeighbour(flagPt, Direction::West), 0)
+    BOOST_TEST_REQUIRE(world.getBQ(world.getNeighbour(flagPt, Direction::West), 0)
                        == BuildingQuality::Nothing); // Buildings flag or flag to close to this
-    BOOST_TEST_REQUIRE(world.GetBQ(world.getNeighbour(flagPt, Direction::NorthWest), 0)
+    BOOST_TEST_REQUIRE(world.getBQ(world.getNeighbour(flagPt, Direction::NorthWest), 0)
                        == BuildingQuality::Castle); // Building to this flag
-    BOOST_TEST_REQUIRE(world.GetBQ(world.getNeighbour(flagPt, Direction::NorthEast), 0)
+    BOOST_TEST_REQUIRE(world.getBQ(world.getNeighbour(flagPt, Direction::NorthEast), 0)
                        == BuildingQuality::Nothing); // Buildings flag or flag to close to this
-    BOOST_TEST_REQUIRE(world.GetBQ(world.getNeighbour(flagPt, Direction::East), 0)
+    BOOST_TEST_REQUIRE(world.getBQ(world.getNeighbour(flagPt, Direction::East), 0)
                        == BuildingQuality::House); // This flag blocks castles extensions
                                                    // This flag is to close and border prohibits building
-    BOOST_TEST_REQUIRE(world.GetBQ(world.getNeighbour(flagPt, Direction::SouthEast), 0) == BuildingQuality::Nothing);
-    BOOST_TEST_REQUIRE(world.GetBQ(world.getNeighbour(flagPt, Direction::SouthWest), 0) == BuildingQuality::Nothing);
+    BOOST_TEST_REQUIRE(world.getBQ(world.getNeighbour(flagPt, Direction::SouthEast), 0) == BuildingQuality::Nothing);
+    BOOST_TEST_REQUIRE(world.getBQ(world.getNeighbour(flagPt, Direction::SouthWest), 0) == BuildingQuality::Nothing);
 }
 
 static void addStaticObj(GameWorldBase& world, const MapPoint& pos, unsigned size)
@@ -400,7 +400,7 @@ static void addStaticObj(GameWorldBase& world, const MapPoint& pos, unsigned siz
 BOOST_FIXTURE_TEST_CASE(BQNearObjects, EmptyWorldFixture1P)
 {
     const MapPoint objPos = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(3, 6));
-    const std::vector<MapPoint> ptsAroundObj = world.GetPointsInRadiusWithCenter(objPos, 2);
+    const std::vector<MapPoint> ptsAroundObj = world.getPointsInRadiusWithCenter(objPos, 2);
     const std::vector<MapPoint> radius1Pts = world.getPointsInRadius(objPos, 1);
     BOOST_TEST_REQUIRE(checkBQs(world, ptsAroundObj, ReducedBQMap()));
     ReducedBQMap reducedBQs;
@@ -485,7 +485,7 @@ BOOST_FIXTURE_TEST_CASE(RoadRemovesObjs, EmptyWorldFixture1P)
 
 BOOST_FIXTURE_TEST_CASE(FisherIgnoresIsolatedFishWater, EmptyWorldFixture1PBiggest)
 {
-    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.getDescription());
+    const DescIdx<TerrainDesc> tWater = getWaterTerrain(world.getDescription());
 
     const MapPoint fisheryPos = world.makeMapPoint(world.getPlayer(0).getHQPos() - Position(6, 6));
     auto* fishery = dynamic_cast<nobUsual*>(

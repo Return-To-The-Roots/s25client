@@ -71,7 +71,7 @@ std::string AudioDriverWrapper::getName() const
     return (name) ? name : "";
 }
 
-bool AudioDriverWrapper::Init()
+bool AudioDriverWrapper::init()
 {
     if(!audiodriver_ || !audiodriver_->initialize())
     {
@@ -87,14 +87,14 @@ bool AudioDriverWrapper::Init()
 bool AudioDriverWrapper::loadDriver(std::unique_ptr<driver::IAudioDriver> audioDriver)
 {
     audiodriver_ = Handle(audioDriver.release(), [](driver::IAudioDriver* p) { delete p; });
-    return Init();
+    return init();
 }
 
 bool AudioDriverWrapper::loadDriver(std::string& preference)
 {
     RTTR_Assert(!audiodriver_);
     // DLL laden
-    if(!driver_wrapper.Load(drivers::DriverType::Audio, preference))
+    if(!driver_wrapper.load(drivers::DriverType::Audio, preference))
         return false;
 
     auto createAudioInstance = driver_wrapper.getFunction<decltype(CreateAudioInstance)>("CreateAudioInstance");
@@ -103,7 +103,7 @@ bool AudioDriverWrapper::loadDriver(std::string& preference)
 
     // Instanz erzeugen
     audiodriver_ = Handle(createAudioInstance(this, VIDEODRIVER.getMapPointer()), freeAudioInstance);
-    return Init();
+    return init();
 }
 
 void AudioDriverWrapper::unloadDriver()

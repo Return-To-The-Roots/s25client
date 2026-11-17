@@ -280,7 +280,7 @@ dskOptions::dskOptions() : Desktop(LOADER.getImageN("setup013", 0))
     combo->addItem(_("No Proxy"));
     combo->addItem(_("Socks v4"));
     // TODO: not implemented
-    // combo->AddString(_("Socks v5"));
+    // combo->addString(_("Socks v5"));
 
     switch(SETTINGS.proxy.type)
     {
@@ -338,7 +338,7 @@ dskOptions::dskOptions() : Desktop(LOADER.getImageN("setup013", 0))
     cbDisplayMode->addItem(_("Windowed"));
     cbDisplayMode->addItem(_("Fullscreen"));
     cbDisplayMode->addItem(_("Borderless window"));
-    cbDisplayMode->setSelection(rttr::enum_cast(SETTINGS.video.displayMode.type));
+    cbDisplayMode->setSelection(rttr::enumCast(SETTINGS.video.displayMode.type));
     curPos.y += rowHeight;
 
     auto* grpResolution = groupGraphics->addGroup(ID_grpResolution);
@@ -368,12 +368,12 @@ dskOptions::dskOptions() : Desktop(LOADER.getImageN("setup013", 0))
     combo = groupGraphics->addComboBox(ID_cbVideoDriver, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
                                        NormalFont, 100);
 
-    const auto video_drivers = drivers::DriverWrapper::loadDriverList(drivers::DriverType::Video);
+    const auto videoDrivers = drivers::DriverWrapper::loadDriverList(drivers::DriverType::Video);
 
-    for(const auto& video_driver : video_drivers)
+    for(const auto& videoDriver : videoDrivers)
     {
-        combo->addItem(video_driver.getName());
-        if(video_driver.getName() == SETTINGS.driver.video)
+        combo->addItem(videoDriver.getName());
+        if(videoDriver.getName() == SETTINGS.driver.video)
             combo->setSelection(combo->getNumItems() - 1);
     }
     curPos.y += rowHeight;
@@ -419,12 +419,12 @@ dskOptions::dskOptions() : Desktop(LOADER.getImageN("setup013", 0))
     combo = groupSound->addComboBox(ID_cbAudioDriver, curPos + ctrlOffset, ctrlSizeLarge, TextureColor::Grey,
                                     NormalFont, 100);
 
-    const auto audio_drivers = drivers::DriverWrapper::loadDriverList(drivers::DriverType::Audio);
+    const auto audioDrivers = drivers::DriverWrapper::loadDriverList(drivers::DriverType::Audio);
 
-    for(const auto& audio_driver : audio_drivers)
+    for(const auto& audioDriver : audioDrivers)
     {
-        combo->addItem(audio_driver.getName());
-        if(audio_driver.getName() == SETTINGS.driver.audio)
+        combo->addItem(audioDriver.getName());
+        if(audioDriver.getName() == SETTINGS.driver.audio)
             combo->setSelection(combo->getNumItems() - 1);
     }
 
@@ -534,9 +534,9 @@ void dskOptions::msgGroupComboSelectItem(const unsigned group_id, const unsigned
         case ID_cbLanguage:
         {
             // Language changed?
-            std::string old_lang = SETTINGS.language.language; //-V807
+            std::string oldLang = SETTINGS.language.language; //-V807
             SETTINGS.language.language = LANGUAGES.setLanguage(selection);
-            if(SETTINGS.language.language != old_lang)
+            if(SETTINGS.language.language != oldLang)
                 WINDOWMANAGER.switchTo(std::make_unique<dskOptions>());
         }
         break;

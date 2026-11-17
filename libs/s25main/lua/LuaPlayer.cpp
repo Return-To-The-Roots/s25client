@@ -48,7 +48,7 @@ void LuaPlayer::registerClasses(kaguya::State& state)
                                .addFunction("AIConstructionOrder", &LuaPlayer::aIConstructionOrder)
                                .addFunction("ModifyHQ", &LuaPlayer::modifyHQ)
                                .addFunction("GetHQPos", &LuaPlayer::getHQPos)
-                               .addFunction("IsDefeated", &LuaPlayer::IsDefeated)
+                               .addFunction("IsDefeated", &LuaPlayer::isDefeated)
                                .addFunction("Surrender", &LuaPlayer::Surrender)
                                .addFunction("IsAlly", &LuaPlayer::isAlly)
                                .addFunction("IsAttackable", &LuaPlayer::isAttackable)
@@ -261,9 +261,9 @@ void LuaPlayer::modifyHQ(bool isTent)
     player.setHQIsTent(isTent);
 }
 
-bool LuaPlayer::IsDefeated() const
+bool LuaPlayer::isDefeated() const
 {
-    return player.IsDefeated();
+    return player.isDefeated();
 }
 
 void LuaPlayer::Surrender(bool destroyBlds)

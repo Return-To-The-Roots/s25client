@@ -28,7 +28,7 @@
 struct MapTestFixture
 {
     const boost::filesystem::path testMapPath;
-    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(s25::folders::mapsOther) / "Bergruft.swd") {}
+    MapTestFixture() : testMapPath(RTTRCONFIG.expandPath(s25::folders::mapsOther) / "Bergruft.swd") {}
 };
 
 BOOST_FIXTURE_TEST_SUITE(MapTestSuite, MapTestFixture)
@@ -51,7 +51,7 @@ struct LoadWorldAndS2MapCreator : MapTestFixture
         if(map.load(mapFile, false) != 0)
             throw std::runtime_error("Could not load file " + testMapPath.string()); // LCOV_EXCL_LINE
         MapLoader loader(world);
-        if(!loader.Load(map, Exploration::FogOfWar))
+        if(!loader.load(map, Exploration::FogOfWar))
             throw std::runtime_error("Could not load map"); // LCOV_EXCL_LINE
         return true;
     }
@@ -73,7 +73,7 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
     BOOST_TEST(header.getNumPlayers() == 4);
 
     MapLoader loader(world);
-    BOOST_TEST_REQUIRE(loader.Load(fixture.testMapPath));
+    BOOST_TEST_REQUIRE(loader.load(fixture.testMapPath));
     BOOST_TEST(world.getWidth() == map.getHeader().getWidth());
     BOOST_TEST(world.getHeight() == map.getHeader().getHeight());
 }
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(HQPlacement)
         fixture.ggs.randomStartPosition = randStartPos;
         auto& world = fixture.world;
         MapLoader loader(world);
-        BOOST_TEST_REQUIRE(loader.Load(testMapPath));
+        BOOST_TEST_REQUIRE(loader.load(testMapPath));
         auto& hqsMap = randStartPos ? hqsShuffledMap : hqsOriginalMap;
         auto& hqsWorld = randStartPos ? hqsShuffledWorld : hqsOriginalWorld;
         hqsWorld.resize(world.getNumPlayers());
@@ -169,10 +169,10 @@ BOOST_AUTO_TEST_CASE(HQPlacement)
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
 {
     loadGameData(world.getDescriptionWriteable());
-    const auto tWater = GetWaterTerrain(world.getDescription());
-    const auto tLand = GetLandTerrain(world.getDescription());
+    const auto tWater = getWaterTerrain(world.getDescription());
+    const auto tLand = getLandTerrain(world.getDescription());
 
-    world.Init(MapExtent(30, 30));
+    world.init(MapExtent(30, 30));
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         MapNode& node = world.getNodeWriteable(pt);
@@ -327,7 +327,7 @@ BOOST_AUTO_TEST_CASE(GetTerrainReturnsCorrectValues)
         BOOST_TEST(terrain.left == calcT2(MapPoint(5, 2)));
         BOOST_TEST(terrain.right == calcT1(MapPoint(0, 2)));
     }
-    // Now assume GetTerrain works and only check for consistency:
+    // Now assume getTerrain works and only check for consistency:
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         BOOST_TEST_CONTEXT(pt)

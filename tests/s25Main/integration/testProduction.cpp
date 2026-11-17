@@ -68,7 +68,7 @@ struct MineProductionFixture : WorldWithGCExecution1P
         return minePos;
     }
 
-    static void seedProductionRng(const unsigned seed) { RANDOM.Init(seed); }
+    static void seedProductionRng(const unsigned seed) { RANDOM.init(seed); }
 };
 
 // One S4-like "no output" fallback scenario: a nearly exhausted mine that keeps working but usually mines nothing,
@@ -350,7 +350,7 @@ BOOST_FIXTURE_TEST_CASE(CoalMineWorkEverywhereBehaviorProducesWithoutCreatingRes
     BOOST_TEST(world.getNode(minePos).resources.getAmount() == 0u);
 }
 
-// Regression test: the out-of-resources notification was moved from nofWorkman::FindPointWithResource into its
+// Regression test: the out-of-resources notification was moved from nofWorkman::findPointWithResource into its
 // callers, so every caller (not only mines) must still report it.
 BOOST_FIXTURE_TEST_CASE(WellWithoutWaterReportsOutOfResources, WorldWithGCExecution1P)
 {

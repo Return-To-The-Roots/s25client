@@ -22,7 +22,7 @@
 /// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
 /// Return the number of GFs executed
 template<class T>
-unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond)
+unsigned rttrExecTillCtGf(TestEventManager& em, unsigned maxGFs, T&& cond)
 {
     const unsigned endGf = em.getCurrentGF() + maxGFs;
     unsigned gfsExecuted = 0;
@@ -36,8 +36,8 @@ unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond)
     return gfsExecuted;
 }
 
-#define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                           \
-    gfReturnVar = rttr_exec_till_ct_gf(this->em, maxGFs, [&] { return (cond); }); \
+#define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                       \
+    gfReturnVar = rttrExecTillCtGf(this->em, maxGFs, [&] { return (cond); }); \
     BOOST_TEST_REQUIRE((cond))
 
 /// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
@@ -48,12 +48,12 @@ unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond)
         (void)dummyReturnGF;                               \
     }
 
-inline void rttr_skip_gfs(TestEventManager& em, unsigned numGFs)
+inline void rttrSkipGfs(TestEventManager& em, unsigned numGFs)
 {
-    rttr_exec_till_ct_gf(em, numGFs, [] { return false; });
+    rttrExecTillCtGf(em, numGFs, [] { return false; });
 }
 /// Skip up to numGFs GFs or until no event left
-#define RTTR_SKIP_GFS(numGFs) rttr_skip_gfs(this->em, numGFs)
+#define RTTR_SKIP_GFS(numGFs) rttrSkipGfs(this->em, numGFs)
 //////////////////////////////////////////////////////////////////////////
 
 template<unsigned T_numPlayers>
@@ -133,7 +133,7 @@ class TestWorld : public World
 {
 public:
     TestWorld() = default;
-    TestWorld(const MapExtent size, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>{1}) { Init(size, lt); }
+    TestWorld(const MapExtent size, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>{1}) { init(size, lt); }
     using World::getNodeInt;
 
 protected:

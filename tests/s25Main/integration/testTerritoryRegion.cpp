@@ -33,16 +33,16 @@ BOOST_AUTO_TEST_CASE(isPointValid)
                                      MapPoint(14, 14)};
 
     // Reverse it...
-    std::vector<MapPoint> hole_reversed = hole;
-    std::reverse(hole_reversed.begin(), hole_reversed.end());
+    std::vector<MapPoint> holeReversed = hole;
+    std::reverse(holeReversed.begin(), holeReversed.end());
 
     // Outer polygon
     const std::vector<MapPoint> outer{MapPoint(10, 10), MapPoint(20, 10), MapPoint(20, 20), MapPoint(10, 20),
                                       MapPoint(10, 10)};
 
     // Reverse it...
-    std::vector<MapPoint> outer_reversed = outer;
-    std::reverse(outer_reversed.begin(), outer_reversed.end());
+    std::vector<MapPoint> outerReversed = outer;
+    std::reverse(outerReversed.begin(), outerReversed.end());
 
     // Set of MapPoints that should return true
     // Auto-generated data (from different implementation with tests)
@@ -75,11 +75,11 @@ BOOST_AUTO_TEST_CASE(isPointValid)
         // i = 4, 5, 6, 7 -> outer reversed
 
         polygon[i].emplace_back(0, 0);
-        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 1)) ? hole : hole_reversed) :
-                                                      ((i & (1 << 2)) ? outer : outer_reversed));
+        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 1)) ? hole : holeReversed) :
+                                                      ((i & (1 << 2)) ? outer : outerReversed));
         polygon[i].emplace_back(0, 0);
-        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 2)) ? outer : outer_reversed) :
-                                                      ((i & (1 << 1)) ? hole : hole_reversed));
+        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 2)) ? outer : outerReversed) :
+                                                      ((i & (1 << 1)) ? hole : holeReversed));
         polygon[i].emplace_back(0, 0);
     }
 
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(isPointValid)
             RTTR_FOREACH_PT(MapPoint, worldSize)
             {
                 // If the point is in the set, it is in the small rect and should not be in the big rect with this as a
-                // hole
+                // Hole
                 const bool result = !helpers::contains(results, pt);
                 const bool isValid = TerritoryRegion::isPointValid(worldSize, fullArea, pt);
                 BOOST_TEST_INFO(" at " << pt);
@@ -319,9 +319,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForHQs, WorldFixtureEmpty2P)
     const MapPoint hq1Pos = world.getPlayer(1).getHQPos();
     auto distance = hq1Pos.x - hq0Pos.x;
 
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(hq0Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 1); }
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq1Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(hq1Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 2); }
 
     // Remove HQ 1 and its fire to place it closer to HQ 0
@@ -332,9 +332,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForHQs, WorldFixtureEmpty2P)
     distance = 7; // Odd number such that there is no point in the same distance to both HQs
     const MapPoint newHq1Pos = hq0Pos + MapPoint(distance, 0);
     BuildingFactory::createBuilding(world, BuildingType::Headquarters, newHq1Pos, 1, Nation::Africans);
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(hq0Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 1); }
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(newHq1Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(newHq1Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 2); }
 }
 
@@ -345,9 +345,9 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForDestroyedHQ, WorldFixtureEmpty2P
     const MapPoint hq1Pos = world.getPlayer(1).getHQPos();
     auto distance = hq1Pos.x - hq0Pos.x;
 
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq0Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(hq0Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 1); }
-    for(const MapPoint pt : world.GetPointsInRadiusWithCenter(hq1Pos, distance / 2))
+    for(const MapPoint pt : world.getPointsInRadiusWithCenter(hq1Pos, distance / 2))
         BOOST_TEST_CONTEXT("pt: " << pt) { BOOST_TEST(world.getNode(pt).owner == 2); }
 
     this->ggs.setSelection(AddonId::NO_ALLIED_PUSH, true);
@@ -356,7 +356,7 @@ BOOST_FIXTURE_TEST_CASE(CreateTerritoryRegionForDestroyedHQ, WorldFixtureEmpty2P
     world.destroyNO(hq1Pos);
     world.destroyNO(hq1Pos);
 
-    auto hq0Region = world.GetPointsInRadiusWithCenter(hq0Pos, 9);
+    auto hq0Region = world.getPointsInRadiusWithCenter(hq0Pos, 9);
     RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         auto owner = std::find(std::begin(hq0Region), std::end(hq0Region), pt) != std::end(hq0Region) ? 1 : 0;

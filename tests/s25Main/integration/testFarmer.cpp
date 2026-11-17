@@ -63,7 +63,7 @@ BOOST_FIXTURE_TEST_CASE(FarmFieldPlanting, FarmerFixture)
         return farmer->getPointQuality(pt) != nofFarmhand::PointQuality::NotPossible;
     };
 
-    std::vector<MapPoint> radius1Pts = world.GetPointsInRadiusWithCenter(farmPt, 1);
+    std::vector<MapPoint> radius1Pts = world.getPointsInRadiusWithCenter(farmPt, 1);
     // First check points for validity
     // Cannot build directly next to farm
     for(MapPoint pt : radius1Pts)

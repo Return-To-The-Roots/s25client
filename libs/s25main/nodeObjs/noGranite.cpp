@@ -19,11 +19,11 @@ void noGranite::serialize(SerializedGameData& sgd) const
     noBase::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(type);
-    sgd.PushUnsignedChar(state);
+    sgd.pushUnsignedChar(state);
 }
 
 noGranite::noGranite(SerializedGameData& sgd, const unsigned obj_id)
-    : noBase(sgd, obj_id), type(sgd.pop<GraniteType>()), state(sgd.PopUnsignedChar())
+    : noBase(sgd, obj_id), type(sgd.pop<GraniteType>()), state(sgd.popUnsignedChar())
 {}
 
 void noGranite::draw(DrawPoint drawPt)

@@ -97,7 +97,7 @@ void nofPassiveSoldier::heal()
 
 void nofPassiveSoldier::goalReached()
 {
-    static_cast<nobMilitary*>(homeBld)->addPassiveSoldier(world->RemoveFigure(pos, *this));
+    static_cast<nobMilitary*>(homeBld)->addPassiveSoldier(world->removeFigure(pos, *this));
 }
 
 void nofPassiveSoldier::leaveBuilding()

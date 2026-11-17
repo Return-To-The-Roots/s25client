@@ -25,9 +25,9 @@
 EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), gfLastUpdated(0)
 {
     constexpr auto specialGoodPool =
-      helpers::make_array(GoodType::Tongs, GoodType::Hammer, GoodType::Axe, GoodType::Saw, GoodType::PickAxe,
-                          GoodType::Shovel, GoodType::Crucible, GoodType::RodAndLine, GoodType::Scythe,
-                          GoodType::Cleaver, GoodType::Rollingpin, GoodType::Bow);
+      helpers::makeArray(GoodType::Tongs, GoodType::Hammer, GoodType::Axe, GoodType::Saw, GoodType::PickAxe,
+                         GoodType::Shovel, GoodType::Crucible, GoodType::RodAndLine, GoodType::Scythe,
+                         GoodType::Cleaver, GoodType::Rollingpin, GoodType::Bow);
 
     std::vector<GoodType> commonGoodPool = {
       GoodType::Beer,  GoodType::Water, GoodType::Boat,    GoodType::Sword,  GoodType::Iron,   GoodType::Flour,
@@ -88,7 +88,7 @@ EconomyModeHandler::EconomyModeHandler(unsigned endFrame) : endFrame(endFrame), 
 }
 
 EconomyModeHandler::EconomyModeHandler(SerializedGameData& sgd, unsigned objId)
-    : GameObject(sgd, objId), endFrame(sgd.PopUnsignedInt()), gfLastUpdated(0)
+    : GameObject(sgd, objId), endFrame(sgd.popUnsignedInt()), gfLastUpdated(0)
 {
     helpers::popContainer(sgd, goodsToCollect);
 
@@ -108,7 +108,7 @@ void EconomyModeHandler::destroy() {}
 /// Serialisierungsfunktion
 void EconomyModeHandler::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushUnsignedInt(endFrame);
+    sgd.pushUnsignedInt(endFrame);
     helpers::pushContainer(sgd, goodsToCollect);
     std::vector<unsigned> teamBitMasks;
     teamBitMasks.reserve(economyModeTeams.size());
@@ -283,12 +283,12 @@ bool EconomyModeHandler::isOver() const
 }
 
 EconomyModeHandler::EconTeam::EconTeam(SerializedGameData& sgd, unsigned numGoodTypesToCollect)
-    : playersInTeam(sgd.PopSignedInt()), amountsTheTeamCollected(numGoodTypesToCollect, 0), goodTypeWins(0)
+    : playersInTeam(sgd.popSignedInt()), amountsTheTeamCollected(numGoodTypesToCollect, 0), goodTypeWins(0)
 {}
 
 void EconomyModeHandler::EconTeam::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushUnsignedInt(playersInTeam.to_ulong());
+    sgd.pushUnsignedInt(playersInTeam.to_ulong());
 }
 
 bool EconomyModeHandler::EconTeam::containsPlayer(unsigned playerId) const

@@ -8,7 +8,7 @@
 #include "network/PlayerGameCommands.h"
 #include "variant.h"
 
-ReplayCommandsResult ExecuteReplayCommands(Replay& replay, std::optional<unsigned>& nextGF, Game& game,
+ReplayCommandsResult executeReplayCommands(Replay& replay, std::optional<unsigned>& nextGF, Game& game,
                                            const std::function<void(const Replay::ChatCommand&)>& onChat)
 {
     ReplayCommandsResult result;

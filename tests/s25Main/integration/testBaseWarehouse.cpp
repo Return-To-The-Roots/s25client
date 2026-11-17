@@ -42,19 +42,19 @@ struct AddGoodsFixture : public WorldFixture<CreateEmptyWorld, 1>, public rttr::
     {
         nobBaseWarehouse& hq = *world.getSpecObj<nobBaseWarehouse>(world.getPlayer(0).getHQPos());
         for(const auto i : helpers::enumRange<Job>())
-            BOOST_TEST_CONTEXT("Job: " << rttr::enum_cast(i))
+            BOOST_TEST_CONTEXT("Job: " << rttr::enumCast(i))
             {
                 BOOST_TEST(hq.getNumVisualFigures(i) == numPeople[i]);
                 BOOST_TEST(hq.getNumRealFigures(i) == numPeople[i]);
             }
         for(const auto i : helpers::enumRange<ArmoredSoldier>())
-            BOOST_TEST_CONTEXT("ArmoredSoldier: " << rttr::enum_cast(i))
+            BOOST_TEST_CONTEXT("ArmoredSoldier: " << rttr::enumCast(i))
             {
                 BOOST_TEST(hq.getNumVisualArmoredFigures(i) == numArmoredSoldiers[i]);
                 BOOST_TEST(hq.getNumRealArmoredFigures(i) == numArmoredSoldiers[i]);
             }
         for(const auto i : helpers::enumRange<GoodType>())
-            BOOST_TEST_CONTEXT("Good: " << rttr::enum_cast(i))
+            BOOST_TEST_CONTEXT("Good: " << rttr::enumCast(i))
             {
                 BOOST_TEST(hq.getNumVisualWares(i) == numGoods[i]);
                 BOOST_TEST(hq.getNumRealWares(i) == numGoods[i]);
@@ -96,13 +96,13 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
         // Boat carrier gets divided upfront
         if(i == Job::BoatCarrier)
             continue;
-        newGoods[i] = rttr::enum_cast(i) + 1;
-        numPeople[i] += rttr::enum_cast(i) + 1;
+        newGoods[i] = rttr::enumCast(i) + 1;
+        numPeople[i] += rttr::enumCast(i) + 1;
     }
     for(const auto i : helpers::enumRange<ArmoredSoldier>())
     {
-        newGoods[i] = rttr::enum_cast(i) + 1;
-        numArmoredSoldiers[i] += rttr::enum_cast(i) + 1;
+        newGoods[i] = rttr::enumCast(i) + 1;
+        numArmoredSoldiers[i] += rttr::enumCast(i) + 1;
     }
     numPeoplePlayer = numPeople;
     numArmoredSoldiersPlayer = numArmoredSoldiers;
@@ -125,10 +125,10 @@ BOOST_FIXTURE_TEST_CASE(AddGoods, AddGoodsFixture)
     for(const auto i : helpers::enumRange<GoodType>())
     {
         // Only roman shields get added
-        if(ConvertShields(i) == GoodType::ShieldRomans && i != GoodType::ShieldRomans)
+        if(convertShields(i) == GoodType::ShieldRomans && i != GoodType::ShieldRomans)
             continue;
-        newGoods[i] = rttr::enum_cast(i) + 2;
-        numGoods[i] += rttr::enum_cast(i) + 2;
+        newGoods[i] = rttr::enumCast(i) + 2;
+        numGoods[i] += rttr::enumCast(i) + 2;
     }
     numGoodsPlayer = numGoods;
     hq.addToInventory(newGoods, true);
@@ -236,7 +236,7 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
     }
     for(const auto good : helpers::enumRange<GoodType>())
     {
-        if(ConvertShields(good) != good)
+        if(convertShields(good) != good)
             continue;
         inv[good] = 1;
     }
@@ -250,7 +250,7 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
     }
     for(const auto good : helpers::enumRange<GoodType>())
     {
-        if(ConvertShields(good) != good)
+        if(convertShields(good) != good)
             continue;
         SetInventorySetting(wh2Pos, good, EInventorySetting::Collect);
     }
@@ -264,7 +264,7 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
     {
         if(job == Job::BoatCarrier)
             continue;
-        BOOST_TEST_INFO_SCOPE("Job: " << rttr::enum_cast(job));
+        BOOST_TEST_INFO_SCOPE("Job: " << rttr::enumCast(job));
         if(job == Job::Helper) // Helpers get recruited continuously
         {
             BOOST_TEST(wh2->getNumVisualFigures(job) > 10u);
@@ -277,9 +277,9 @@ BOOST_FIXTURE_TEST_CASE(CollectGoodsAndFigures, WorldWithGCExecution1P)
     }
     for(const auto good : helpers::enumRange<GoodType>())
     {
-        if(ConvertShields(good) != good)
+        if(convertShields(good) != good)
             continue;
-        BOOST_TEST_INFO_SCOPE("Good: " << rttr::enum_cast(good));
+        BOOST_TEST_INFO_SCOPE("Good: " << rttr::enumCast(good));
         BOOST_TEST(wh2->getNumVisualWares(good) == 1u);
         BOOST_TEST(wh2->getNumRealWares(good) == 1u);
     }

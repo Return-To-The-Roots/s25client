@@ -17,7 +17,7 @@
  *  Addon allows users to adjust the game length (for Economy Mode)
  */
 constexpr auto AddonEconomyModeGameLengthList =
-  helpers::make_array<std::chrono::minutes>(0, 15, 30, 60, 90, 120, 150, 180, 240, 480);
+  helpers::makeArray<std::chrono::minutes>(0, 15, 30, 60, 90, 120, 150, 180, 240, 480);
 // note that the game length of 0 is used internally for unlimited game length
 
 class AddonEconomyModeGameLength : public AddonList

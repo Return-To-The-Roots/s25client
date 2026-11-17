@@ -21,7 +21,7 @@ using FreePathNodes = std::vector<FreePathNode>;
 MapNodes nodes;
 FreePathNodes fpNodes;
 
-void FreePathFinder::Init(const MapExtent& mapSize)
+void FreePathFinder::init(const MapExtent& mapSize)
 {
     currentVisit = 0;
     size_ = Extent(mapSize);
@@ -197,23 +197,22 @@ bool FreePathFinder::findPathAlternatingConditions(const MapPoint start, const M
 
                     std::vector<MapPoint> evenLocationsOnRoute;
                     bool alternate = false;
-                    unsigned back_id = bestId;
+                    unsigned backId = bestId;
                     for(unsigned i = nodes[bestId].way - 1; i > 1;
                         i--) // backtrack the plannend route and check if another "even" position is too close
                     {
-                        Direction pdir = alternate ? nodes[back_id].dirEven : nodes[back_id].dir;
+                        Direction pdir = alternate ? nodes[backId].dirEven : nodes[backId].dir;
                         p = gwb_.getNeighbour(p, pdir + 3u);
                         if(i % 2 == 0) // even step
                         {
                             evenLocationsOnRoute.push_back(p);
                         }
-                        back_id = alternate ? nodes[back_id].prevEven : nodes[back_id].prev;
+                        backId = alternate ? nodes[backId].prevEven : nodes[backId].prev;
                         alternate = !alternate;
                     }
-                    bool tooClose =
-                      helpers::contains_if(evenLocationsOnRoute, [this, neighbourPos](const MapPoint& it) {
-                          return gwb_.calcDistance(neighbourPos, it) < 2;
-                      });
+                    bool tooClose = helpers::containsIf(evenLocationsOnRoute, [this, neighbourPos](const MapPoint& it) {
+                        return gwb_.calcDistance(neighbourPos, it) < 2;
+                    });
                     if(tooClose)
                         continue;
                     if(gwb_.calcDistance(neighbourPos, start) < 2)

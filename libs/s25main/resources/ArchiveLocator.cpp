@@ -70,8 +70,8 @@ void ArchiveLocator::addOverrideFolder(const boost::filesystem::path& path)
     gatherFiles(path,
                 [&folder](auto&& /*resId*/, const fs::path& filepath) { folder.files.push_back(filepath.filename()); });
     // Don't add folders twice
-    if(helpers::contains_if(overrideFolders_,
-                            [&path](const auto& curOverride) { return fs::equivalent(curOverride.path, path); }))
+    if(helpers::containsIf(overrideFolders_,
+                           [&path](const auto& curOverride) { return fs::equivalent(curOverride.path, path); }))
         throw std::runtime_error(std::string("Path ") + path.string() + " already added");
     overrideFolders_.push_back(std::move(folder));
 }
@@ -96,7 +96,7 @@ ResolvedFile ArchiveLocator::resolve(const boost::filesystem::path& filepath) co
     for(const FolderData& overrideFolder : overrideFolders_)
     {
         auto itFile =
-          helpers::find_if(overrideFolder.files, [resId](const auto& file) { return ResourceId::make(file) == resId; });
+          helpers::findIf(overrideFolder.files, [resId](const auto& file) { return ResourceId::make(file) == resId; });
         if(itFile != overrideFolder.files.end())
         {
             const auto fullFilePath = overrideFolder.path / *itFile;

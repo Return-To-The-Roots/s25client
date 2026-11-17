@@ -36,9 +36,9 @@ public:
     }
 };
 
-std::vector<bfs::path> GetReplays()
+std::vector<bfs::path> getReplays()
 {
-    return ListDir(RTTRCONFIG.ExpandPath(s25::folders::replays), "rpl");
+    return listDir(RTTRCONFIG.expandPath(s25::folders::replays), "rpl");
 }
 } // namespace
 
@@ -80,7 +80,7 @@ void iwPlayReplay::populateTable()
 
     unsigned numInvalid = 0;
 
-    const std::vector<bfs::path> replays = GetReplays();
+    const std::vector<bfs::path> replays = getReplays();
     for(const auto& path : replays)
     {
         Replay replay;
@@ -99,16 +99,16 @@ void iwPlayReplay::populateTable()
         }
 
         // Zeitstamp benutzen
-        std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", replay.getSaveTime());
+        std::string dateStr = s25util::Time::formatTime("%d.%m.%Y - %H:%i", replay.getSaveTime());
 
         // Spielernamen auslesen
-        std::string tmp_players;
+        std::string tmpPlayers;
         for(const std::string& playerName : replay.getPlayerNames())
         {
-            if(!tmp_players.empty())
-                tmp_players += ", ";
+            if(!tmpPlayers.empty())
+                tmpPlayers += ", ";
 
-            tmp_players += playerName;
+            tmpPlayers += playerName;
         }
 
         // Dateiname noch rausextrahieren aus dem Pfad
@@ -118,7 +118,7 @@ void iwPlayReplay::populateTable()
         std::string length = GAMECLIENT.formatGFTime(replay.getLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
-        table->addRow({fileName, dateStr, tmp_players, length, path.string()});
+        table->addRow({fileName, dateStr, tmpPlayers, length, path.string()});
     }
 
     // Erst einmal nach Dateiname sortieren
@@ -189,7 +189,7 @@ void iwPlayReplay::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     // Sollen alle Replays gelöscht werden?
     if(msgbox_id == 1 && mbr == MsgboxResult::Yes)
     {
-        const std::vector<bfs::path> replays = GetReplays();
+        const std::vector<bfs::path> replays = getReplays();
         for(const auto& replay : replays)
         {
             boost::system::error_code ec;
@@ -200,7 +200,7 @@ void iwPlayReplay::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
         getCtrl<ctrlTable>(0)->deleteAllItems();
     } else if(msgbox_id == 3 && mbr == MsgboxResult::Yes)
     {
-        const std::vector<bfs::path> replays = GetReplays();
+        const std::vector<bfs::path> replays = getReplays();
         for(const auto& it : replays)
         {
             Replay replay;

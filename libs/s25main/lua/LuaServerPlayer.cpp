@@ -46,7 +46,7 @@ void LuaServerPlayer::setTeam(lua::SafeEnum<Team> team)
 
 void LuaServerPlayer::setColor(unsigned colorOrIdx)
 {
-    if(GetAlpha(colorOrIdx) == 0)
+    if(getAlpha(colorOrIdx) == 0)
     {
         lua::assertTrue(colorOrIdx < PLAYER_COLORS.size(), "Invalid color");
         player.color = PLAYER_COLORS[colorOrIdx];

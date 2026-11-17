@@ -193,7 +193,7 @@ void dskCampaignSelection::drawImpl()
 {
     Desktop::drawImpl();
 
-    // replace this by AddImageButton as soon as it can handle this scenario correctly
+    // replace this by addImageButton as soon as it can handle this scenario correctly
     if(campaignImage_)
     {
         campaignImage_->drawFull(Rect(scaleIf(DrawPoint(secondColumnOffsetX, getColumnOffsetY())),
@@ -206,14 +206,14 @@ void dskCampaignSelection::loadCampaigns()
     unsigned numBroken = 0;
     for(const std::string campaignFolder : {s25::folders::campaignsBuiltin, s25::folders::campaignsUser})
     {
-        for(const bfs::path& folder : ListDir(RTTRCONFIG.ExpandPath(campaignFolder), "", true))
+        for(const bfs::path& folder : listDir(RTTRCONFIG.expandPath(campaignFolder), "", true))
         {
             if(!is_directory(folder))
                 continue;
 
             CampaignDescription desc;
             CampaignDataLoader loader(desc, folder);
-            if(!loader.Load())
+            if(!loader.load())
             {
                 LOG.write(_("Failed to load campaign %1%.\n")) % folder;
                 numBroken++;

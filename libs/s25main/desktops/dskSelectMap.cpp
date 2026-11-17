@@ -60,7 +60,7 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
 {
     WorldDescription desc;
     GameDataLoader gdLoader(desc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
     {
         LC_Status_Error(_("Failed to load game data!"));
         return;
@@ -130,14 +130,14 @@ dskSelectMap::dskSelectMap(CreateServerInfo csi)
     // "Eigene" auswählen
     optiongroup->setSelection(5, true);
 
-    LOBBYCLIENT.AddListener(this);
+    LOBBYCLIENT.addListener(this);
 }
 
 dskSelectMap::~dskSelectMap()
 {
     // if(mapGenThread)
     //    mapGenThread->join();
-    LOBBYCLIENT.RemoveListener(this);
+    LOBBYCLIENT.removeListener(this);
 }
 
 void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned selection)
@@ -154,15 +154,15 @@ void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned sel
                                                     s25::folders::mapsSea, s25::folders::mapsPlayed}};
 
     const size_t numFaultyMapsPrior = brokenMapPaths.size();
-    const bfs::path mapPath = RTTRCONFIG.ExpandPath(ids[selection]);
-    fillTable(ListDir(mapPath, "swd"));
-    fillTable(ListDir(mapPath, "wld"));
+    const bfs::path mapPath = RTTRCONFIG.expandPath(ids[selection]);
+    fillTable(listDir(mapPath, "swd"));
+    fillTable(listDir(mapPath, "wld"));
     // For own maps (WORLDS folder) also use the one in the installation folder as S2 does
     if(mapPath.filename() == "WORLDS")
     {
-        const bfs::path worldsPath = RTTRCONFIG.ExpandPath("WORLDS");
-        fillTable(ListDir(worldsPath, "swd"));
-        fillTable(ListDir(worldsPath, "wld"));
+        const bfs::path worldsPath = RTTRCONFIG.expandPath("WORLDS");
+        fillTable(listDir(worldsPath, "swd"));
+        fillTable(listDir(worldsPath, "wld"));
     }
 
     if(brokenMapPaths.size() > numFaultyMapsPrior)
@@ -250,7 +250,7 @@ void dskSelectMap::goBack() const
         WINDOWMANAGER.switchTo(std::make_unique<dskSinglePlayer>());
     else if(csi.type == ServerType::LAN)
         WINDOWMANAGER.switchTo(std::make_unique<dskLAN>());
-    else if(csi.type == ServerType::Lobby && LOBBYCLIENT.IsLoggedIn())
+    else if(csi.type == ServerType::Lobby && LOBBYCLIENT.isLoggedIn())
         WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
     else
         WINDOWMANAGER.switchTo(std::make_unique<dskDirectIP>());
@@ -283,7 +283,7 @@ void dskSelectMap::msgButtonClick(const unsigned ctrl_id)
                 newRandMapPath.clear();
                 randMapGenError.clear();
                 waitWnd = &WINDOWMANAGER.show(std::make_unique<iwPleaseWait>());
-                // mapGenThread = new boost::thread(boost::bind(&dskSelectMap::CreateRandomMap, this));
+                // mapGenThread = new boost::thread(boost::bind(&dskSelectMap::createRandomMap, this));
                 createRandomMap();
             }
         }
@@ -305,7 +305,7 @@ void dskSelectMap::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned
 void dskSelectMap::createRandomMap()
 {
     // setup filepath for the random map
-    const auto mapPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / "Random.swd";
+    const auto mapPath = RTTRCONFIG.expandPath(s25::folders::mapsPlayed) / "Random.swd";
 
     try
     {
@@ -373,7 +373,7 @@ void dskSelectMap::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult 
     {
         GAMECLIENT.stop();
 
-        if(csi.type == ServerType::Lobby && LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
+        if(csi.type == ServerType::Lobby && LOBBYCLIENT.isLoggedIn()) // steht die Lobbyverbindung noch?
             WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
         else if(csi.type == ServerType::Lobby)
             WINDOWMANAGER.switchTo(std::make_unique<dskDirectIP>());

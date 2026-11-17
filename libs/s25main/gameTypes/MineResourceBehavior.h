@@ -31,7 +31,7 @@ AddonId getMineResourceBehaviorAddonId(BuildingType buildingType);
 ResourceType getMineResourceType(BuildingType buildingType);
 /// The ware a mine of the given type produces (granite/stones for any non-mineral mine)
 GoodType getMineOutput(BuildingType buildingType);
-helpers::OptionalEnum<BuildingType> GetMineBuildingType(ResourceType resourceType);
+helpers::OptionalEnum<BuildingType> getMineBuildingType(ResourceType resourceType);
 unsigned getRemainingMineResources(const GameWorld& world, MapPoint pos, ResourceType resourceType);
 unsigned getS4LikeMineProductionChance(unsigned remainingMatchingResources);
 MineResourceBehavior getMineResourceBehavior(const GlobalGameSettings& settings, BuildingType buildingType);

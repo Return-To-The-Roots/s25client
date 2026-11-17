@@ -26,7 +26,7 @@ World::~World()
     unload();
 }
 
-void World::Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
+void World::init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt)
 {
     RTTR_Assert(getSize() == MapExtent::all(0)); // Already init
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map
@@ -82,7 +82,7 @@ void World::resize(const MapExtent& newSize)
     if(getSize().x > 0)
     {
         nodes.resize(prodOfComponents(getSize()));
-        militarySquares.Init(getSize());
+        militarySquares.init(getSize());
     }
 }
 
@@ -214,7 +214,7 @@ bool World::isPlayerTerritory(const MapPoint pt, const unsigned char owner) cons
     return true;
 }
 
-BuildingQuality World::GetBQ(const MapPoint pt, const unsigned char player) const
+BuildingQuality World::getBQ(const MapPoint pt, const unsigned char player) const
 {
     return adjustBQ(pt, player, getNode(pt).bq);
 }
@@ -328,7 +328,7 @@ void World::saveFOWNode(const MapPoint pt, const unsigned player, unsigned curTi
 
 bool World::isSeaPoint(const MapPoint pt) const
 {
-    return World::isOfTerrain(pt, [](const auto& desc) { return desc.Is(ETerrain::Shippable); });
+    return World::isOfTerrain(pt, [](const auto& desc) { return desc.is(ETerrain::Shippable); });
 }
 
 bool World::isWaterPoint(const MapPoint pt) const

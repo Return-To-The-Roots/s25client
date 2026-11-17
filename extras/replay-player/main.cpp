@@ -82,14 +82,14 @@ int main(int argc, char** argv)
 
     try
     {
-        RTTRCONFIG.Init();
+        RTTRCONFIG.init();
         // Lua output goes to the log file, and writing it throws if the log directory does not exist
-        const bfs::path logDir = RTTRCONFIG.ExpandPath(s25::folders::logs);
+        const bfs::path logDir = RTTRCONFIG.expandPath(s25::folders::logs);
         bfs::create_directories(logDir);
         LOG.setLogFilepath(logDir);
         libsiedler2::setAllocator(new GlAllocator);
 
-        const bfs::path replayPath = RTTRCONFIG.ExpandPath(options["replay"].as<std::string>());
+        const bfs::path replayPath = RTTRCONFIG.expandPath(options["replay"].as<std::string>());
         const bool verbose = options.count("verbose") > 0;
 
         bnw::cout << "Loading: " << replayPath << "\n";

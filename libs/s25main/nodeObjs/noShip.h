@@ -104,7 +104,7 @@ private:
     Result driveToHarbourPlace();
 
     /// Zeichnet das Schiff stehend mit oder ohne Waren
-    void drawFixed(DrawPoint drawPt, bool draw_wares);
+    void drawFixed(DrawPoint drawPt, bool drawWares);
     /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
     void drawDriving(DrawPoint& drawPt);
     /// Zeichnet normales Fahren auf dem Meer mit Gütern

@@ -97,7 +97,7 @@ protected:
     }
 };
 
-void AddReplayCmds(Replay& replay, const PlayerGameCommands& cmds)
+void addReplayCmds(Replay& replay, const PlayerGameCommands& cmds)
 {
     replay.updateLastGF(1);
     replay.addChatCommand(1, 2, ChatDestination::Enemies, "Hello");
@@ -109,7 +109,7 @@ void AddReplayCmds(Replay& replay, const PlayerGameCommands& cmds)
     replay.updateLastGF(5);
 }
 
-void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
+void checkReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
 {
     BOOST_TEST_REQUIRE(loadReplay.isReplaying());
 
@@ -164,15 +164,15 @@ void CheckReplayCmds(Replay& loadReplay, const PlayerGameCommands& recordedCmds)
     BOOST_TEST(!gf);
 }
 
-void PushSerializedGGSHeader(Serializer& ser)
+void pushSerializedGGSHeader(Serializer& ser)
 {
     helpers::pushEnum<uint8_t>(ser, GameSpeed::Normal);
     helpers::pushEnum<uint8_t>(ser, GameObjective::None);
     helpers::pushEnum<uint8_t>(ser, StartWares::Normal);
-    ser.PushBool(false);
+    ser.pushBool(false);
     helpers::pushEnum<uint8_t>(ser, Exploration::FogOfWar);
-    ser.PushBool(true);
-    ser.PushBool(false);
+    ser.pushBool(true);
+    ser.pushBool(false);
 }
 } // namespace
 
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(SerializeGGS)
     }
     ::Serializer ser;
     ggs.serialize(ser);
-    ::Serializer loader(ser.GetData(), ser.GetLength());
+    ::Serializer loader(ser.getData(), ser.getLength());
     GlobalGameSettings ggsLoaded;
     ggsLoaded.deserialize(loader);
     BOOST_TEST(ggs.speed == ggsLoaded.speed);
@@ -219,12 +219,12 @@ BOOST_AUTO_TEST_CASE(SerializeGGS)
 BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeMigratesToPerMineBehaviors)
 {
     Serializer ser;
-    PushSerializedGGSHeader(ser);
-    ser.PushUnsignedInt(1);
-    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
-    ser.PushUnsignedInt(1);
+    pushSerializedGGSHeader(ser);
+    ser.pushUnsignedInt(1);
+    ser.pushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
+    ser.pushUnsignedInt(1);
 
-    Serializer loader(ser.GetData(), ser.GetLength());
+    Serializer loader(ser.getData(), ser.getLength());
     GlobalGameSettings ggsLoaded;
     ggsLoaded.deserialize(loader);
 
@@ -241,14 +241,14 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeAlsoMigratesLegacyGranit
     // refactor the separate INEXHAUSTIBLE_MINES setting turned granite mines inexhaustible on its own, so migration
     // must not let a disabled granite value suppress that: granite still becomes Inexhaustible here.
     Serializer ser;
-    PushSerializedGGSHeader(ser);
-    ser.PushUnsignedInt(2);
-    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
-    ser.PushUnsignedInt(1);
-    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR));
-    ser.PushUnsignedInt(0);
+    pushSerializedGGSHeader(ser);
+    ser.pushUnsignedInt(2);
+    ser.pushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
+    ser.pushUnsignedInt(1);
+    ser.pushUnsignedInt(static_cast<unsigned>(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR));
+    ser.pushUnsignedInt(0);
 
-    Serializer loader(ser.GetData(), ser.GetLength());
+    Serializer loader(ser.getData(), ser.getLength());
     GlobalGameSettings ggsLoaded;
     ggsLoaded.deserialize(loader);
 
@@ -260,14 +260,14 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeAlsoMigratesLegacyGranit
 BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeDoesNotOverridePerMineBehavior)
 {
     Serializer ser;
-    PushSerializedGGSHeader(ser);
-    ser.PushUnsignedInt(2);
-    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
-    ser.PushUnsignedInt(1);
-    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::COALMINE_RESOURCE_BEHAVIOR));
-    ser.PushUnsignedInt(static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
+    pushSerializedGGSHeader(ser);
+    ser.pushUnsignedInt(2);
+    ser.pushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
+    ser.pushUnsignedInt(1);
+    ser.pushUnsignedInt(static_cast<unsigned>(AddonId::COALMINE_RESOURCE_BEHAVIOR));
+    ser.pushUnsignedInt(static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
 
-    Serializer loader(ser.GetData(), ser.GetLength());
+    Serializer loader(ser.getData(), ser.getLength());
     GlobalGameSettings ggsLoaded;
     ggsLoaded.deserialize(loader);
 
@@ -337,7 +337,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     BOOST_TEST_REQUIRE(tmpFile.isValid());
     tmpFile.close();
 
-    s25util::time64_t saveTime = s25util::Time::CurrentTime();
+    s25util::time64_t saveTime = s25util::Time::currentTime();
     BOOST_TEST_REQUIRE(save.save(tmpFile.filePath, "MapTitle"));
     BOOST_TEST(save.getSaveTime() - saveTime <= 20); // 20s difference max
     const unsigned origObjNum = GameObject::getNumObjs();
@@ -346,7 +346,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     for(const auto what : {SaveGameDataToLoad::Header, SaveGameDataToLoad::HeaderAndSettings, SaveGameDataToLoad::All})
     {
         Savegame loadSave;
-        BOOST_TEST_REQUIRE(loadSave.Load(tmpFile.filePath, what));
+        BOOST_TEST_REQUIRE(loadSave.load(tmpFile.filePath, what));
         BOOST_TEST(loadSave.getSaveTime() == save.getSaveTime());
         BOOST_TEST(loadSave.getMapName() == "MapTitle");
         BOOST_TEST(loadSave.getPlayerNames().size() == 3u);
@@ -378,7 +378,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             BOOST_TEST(loadSave.ggs.speed == ggs.speed);
         }
         if(what != SaveGameDataToLoad::All)
-            BOOST_TEST(loadSave.sgd.GetLength() == 0u);
+            BOOST_TEST(loadSave.sgd.getLength() == 0u);
         else
         {
             std::vector<PlayerInfo> players;
@@ -440,8 +440,8 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
             SerializedGameData loadedSgd;
             loadedSgd.makeSnapshot(game);
-            BOOST_REQUIRE_EQUAL_COLLECTIONS(loadedSgd.GetData(), loadedSgd.GetData() + loadedSgd.GetLength(),
-                                            save.sgd.GetData(), save.sgd.GetData() + save.sgd.GetLength());
+            BOOST_REQUIRE_EQUAL_COLLECTIONS(loadedSgd.getData(), loadedSgd.getData() + loadedSgd.getLength(),
+                                            save.sgd.getData(), save.sgd.getData() + save.sgd.getLength());
         }
     }
 }
@@ -512,7 +512,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
     BOOST_TEST(!replay.isReplaying());
 
     bfs::remove(tmpFile.filePath);
-    s25util::time64_t saveTime = s25util::Time::CurrentTime();
+    s25util::time64_t saveTime = s25util::Time::currentTime();
     BOOST_TEST_REQUIRE(replay.startRecording(tmpFile.filePath, map, 42));
     BOOST_TEST(replay.getSaveTime() - saveTime <= 20); // 20s difference max
     BOOST_TEST_REQUIRE(replay.isRecording());
@@ -521,7 +521,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
     GlobalGameSettings ggs = replay.ggs;
     Game game(ggs, 0u, players);
     PlayerGameCommands cmds = GetTestCommands().create(game).result;
-    AddReplayCmds(replay, cmds);
+    addReplayCmds(replay, cmds);
     BOOST_TEST(replay.getLastGF() == 5u);
     BOOST_TEST_REQUIRE(replay.stopRecording());
     BOOST_TEST_REQUIRE(!replay.isRecording());
@@ -569,7 +569,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
         BOOST_TEST(newMap.mapData.data == map.mapData.data, boost::test_tools::per_element());
         BOOST_TEST(newMap.luaData.data == map.luaData.data, boost::test_tools::per_element());
 
-        CheckReplayCmds(loadReplay, cmds);
+        checkReplayCmds(loadReplay, cmds);
     }
 }
 
@@ -595,9 +595,9 @@ BOOST_FIXTURE_TEST_CASE(BrokenReplayWithMap, ReplayMapFixture)
         BOOST_TEST_REQUIRE(replay.startRecording(tmpFile.filePath, map, randomInit));
         saveTime = replay.getSaveTime();
         BOOST_TEST_REQUIRE(replay.isRecording());
-        AddReplayCmds(replay, cmds);
+        addReplayCmds(replay, cmds);
         BOOST_TEST(replay.getLastGF() == 5u);
-        // Assume an exception/crash here so Replay is simply destroyed without Close or StopRecording
+        // Assume an exception/crash here so Replay is simply destroyed without Close or stopRecording
     }
 
     Replay loadReplay;
@@ -628,7 +628,7 @@ BOOST_FIXTURE_TEST_CASE(BrokenReplayWithMap, ReplayMapFixture)
     BOOST_TEST(newMap.mapData.data == map.mapData.data, boost::test_tools::per_element());
     BOOST_TEST(newMap.luaData.data == map.luaData.data, boost::test_tools::per_element());
 
-    CheckReplayCmds(loadReplay, cmds);
+    checkReplayCmds(loadReplay, cmds);
 }
 
 BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
@@ -668,14 +668,14 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     BOOST_TEST_REQUIRE(tmpFile.isValid());
     tmpFile.close();
     bfs::remove(tmpFile.filePath);
-    s25util::time64_t saveTime = s25util::Time::CurrentTime();
+    s25util::time64_t saveTime = s25util::Time::currentTime();
     BOOST_TEST_REQUIRE(replay.startRecording(tmpFile.filePath, map, 815));
     BOOST_TEST_REQUIRE(replay.getSaveTime() - saveTime <= 20); // 20s difference max
     BOOST_TEST_REQUIRE(replay.isRecording());
     BOOST_TEST(!replay.isReplaying());
 
     PlayerGameCommands cmds = GetTestCommands().create(*game).result;
-    AddReplayCmds(replay, cmds);
+    addReplayCmds(replay, cmds);
     BOOST_TEST(replay.getLastGF() == 5u);
     BOOST_TEST_REQUIRE(replay.stopRecording());
     BOOST_TEST(!replay.isRecording());
@@ -721,12 +721,12 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
         BOOST_TEST(newMap.title == map.title);
         BOOST_TEST(newMap.filepath == map.filepath);
 
-        BOOST_REQUIRE_EQUAL_COLLECTIONS(newMap.savegame->sgd.GetData(),                                    //-V807
-                                        newMap.savegame->sgd.GetData() + newMap.savegame->sgd.GetLength(), //-V807
-                                        map.savegame->sgd.GetData(),
-                                        map.savegame->sgd.GetData() + map.savegame->sgd.GetLength());
+        BOOST_REQUIRE_EQUAL_COLLECTIONS(newMap.savegame->sgd.getData(),                                    //-V807
+                                        newMap.savegame->sgd.getData() + newMap.savegame->sgd.getLength(), //-V807
+                                        map.savegame->sgd.getData(),
+                                        map.savegame->sgd.getData() + map.savegame->sgd.getLength());
 
-        CheckReplayCmds(loadReplay, cmds);
+        checkReplayCmds(loadReplay, cmds);
     }
 }
 
@@ -763,18 +763,18 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
     // Serialize again and compare data
     SerializedGameData sgd2;
     sgd2.makeSnapshot(*game);
-    BOOST_CHECK_EQUAL_COLLECTIONS(sgd.GetData(), sgd.GetData() + sgd.GetLength(), sgd2.GetData(),
-                                  sgd2.GetData() + sgd2.GetLength());
+    BOOST_CHECK_EQUAL_COLLECTIONS(sgd.getData(), sgd.getData() + sgd.getLength(), sgd2.getData(),
+                                  sgd2.getData() + sgd2.getLength());
 }
 
 BOOST_AUTO_TEST_CASE(SerializeGameMessageChat)
 {
     const GameMessage_Chat msg(rttr::test::randomValue(0u, 10u), rttr::test::randomEnum<ChatDestination>(), "Hello");
     Serializer ser;
-    msg.Serialize(ser);
+    msg.serialize(ser);
     std::unique_ptr<Message> newMsg(GameMessage::createGame(msg.getId()));
     BOOST_TEST_REQUIRE(!!newMsg);
-    newMsg->Deserialize(ser);
+    newMsg->deserialize(ser);
     const auto* newMsgChat = dynamic_cast<GameMessage_Chat*>(newMsg.get());
     BOOST_TEST_REQUIRE(newMsgChat);
     BOOST_TEST(newMsgChat->player == msg.player);

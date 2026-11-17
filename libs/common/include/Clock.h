@@ -15,7 +15,7 @@ public:
     using period = duration::period;
 
     virtual ~BaseClock() = default;
-    virtual duration time_since_epoch()
+    virtual duration timeSinceEpoch()
     {
         return std::chrono::duration_cast<duration>(std::chrono::steady_clock::now().time_since_epoch());
     }
@@ -35,7 +35,7 @@ public:
     using rep = BaseClock::rep;
     using duration = BaseClock::duration;
     using time_point = std::chrono::time_point<Clock>;
-    static time_point now() { return time_point(instance()->time_since_epoch()); }
+    static time_point now() { return time_point(instance()->timeSinceEpoch()); }
     // Set to a different clock
     static void setClock(std::unique_ptr<BaseClock> newClock) { instance() = std::move(newClock); }
 };

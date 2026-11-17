@@ -24,8 +24,8 @@ noFighting::noFighting(nofActiveSoldier& soldier1, nofActiveSoldier& soldier2) :
     RTTR_Assert(soldier1.getPlayer() != soldier2.getPlayer());
     const MapPoint pos = soldier1.getPos();
 
-    soldiers[0] = world->RemoveFigure(pos, soldier1);
-    soldiers[1] = world->RemoveFigure(pos, soldier2);
+    soldiers[0] = world->removeFigure(pos, soldier1);
+    soldiers[1] = world->removeFigure(pos, soldier2);
     turn = 2;
     defending_animation = 0;
     player_won = 0xFF;
@@ -47,18 +47,18 @@ void noFighting::serialize(SerializedGameData& sgd) const
 {
     noBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(turn);
-    sgd.PushUnsignedChar(defending_animation);
+    sgd.pushUnsignedChar(turn);
+    sgd.pushUnsignedChar(defending_animation);
     sgd.pushEvent(current_ev);
-    sgd.PushUnsignedChar(player_won);
+    sgd.pushUnsignedChar(player_won);
 
     for(const auto& soldier : soldiers)
         sgd.pushObject(soldier);
 }
 
 noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
-    : noBase(sgd, obj_id), turn(sgd.PopUnsignedChar()), defending_animation(sgd.PopUnsignedChar()),
-      current_ev(sgd.popEvent()), player_won(sgd.PopUnsignedChar())
+    : noBase(sgd, obj_id), turn(sgd.popUnsignedChar()), defending_animation(sgd.popUnsignedChar()),
+      current_ev(sgd.popEvent()), player_won(sgd.popUnsignedChar())
 
 {
     for(auto& soldier : soldiers)
@@ -110,8 +110,8 @@ void noFighting::draw(DrawPoint drawPt)
         case 2:
         {
             // Erste Phase des Kampfes, die Soldaten gehen jeweils nach links bzw. rechts
-            auto x_diff = int(GAMECLIENT.interpolate(12, current_ev));
-            drawPt.x -= x_diff;
+            auto xDiff = int(GAMECLIENT.interpolate(12, current_ev));
+            drawPt.x -= xDiff;
             for(unsigned i : {0, 1})
             {
                 const GamePlayer& owner = world->getPlayer(soldiers[i]->getPlayer());
@@ -121,7 +121,7 @@ void noFighting::draw(DrawPoint drawPt)
                 bmp.draw(drawPt, COLOR_WHITE, owner.color);
                 if(soldiers[i]->hasArmor())
                     soldiers[i]->drawArmor(drawPt);
-                drawPt.x += 2 * x_diff;
+                drawPt.x += 2 * xDiff;
             }
         }
         break;
@@ -221,7 +221,7 @@ void noFighting::handleEvent(const unsigned id)
                         const MapPoint pos = soldiers[turn]->getPos();
                         auto& winningSoldier = world->addFigure(pos, std::move(soldiers[turn]));
                         // Hitpoints sind 0 --> Soldat ist tot, Kampf beendet, turn = 3+welche Soldat stirbt
-                        // Do this before calling WonFighting so this fight doesn't block the soldier looking for a new
+                        // Do this before calling wonFighting so this fight doesn't block the soldier looking for a new
                         // fight spot
                         turn = 3 + (1 - turn);
                         winningSoldier.wonFighting();
@@ -243,14 +243,14 @@ void noFighting::handleEvent(const unsigned id)
             case 3:
             case 4:
             {
-                unsigned player_lost = turn - 3;
-                MapPoint pt = soldiers[player_lost]->getPos();
+                unsigned playerLost = turn - 3;
+                MapPoint pt = soldiers[playerLost]->getPos();
 
                 // Sounds löschen vom Sterben
                 world->getSoundMgr().stopSounds(*this);
 
                 // Kampf ist endgültig beendet
-                getEvMgr().addToKillList(world->RemoveFigure(pt, *this));
+                getEvMgr().addToKillList(world->removeFigure(pt, *this));
 
                 // Wenn da nix war bzw. nur ein Verzierungsobjekt, kommt nun ein Skelett hin
                 NodalObjectType noType = world->getNO(pt)->getType();
@@ -262,15 +262,15 @@ void noFighting::handleEvent(const unsigned id)
 
                 // Sichtradius ausblenden am Ende des Kampfes, an jeweiligen Soldaten dann übergeben, welcher überlebt
                 // hat
-                world->recalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->getPlayer(),
+                world->recalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[playerLost]->getPlayer(),
                                                      nullptr);
                 world->recalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, player_won, nullptr);
 
                 // Soldaten endgültig umbringen
-                world->getPlayer(soldiers[player_lost]->getPlayer())
-                  .decreaseInventoryJob(soldiers[player_lost]->getJobType(), 1);
-                soldiers[player_lost]->destroy();
-                soldiers[player_lost].reset();
+                world->getPlayer(soldiers[playerLost]->getPlayer())
+                  .decreaseInventoryJob(soldiers[playerLost]->getJobType(), 1);
+                soldiers[playerLost]->destroy();
+                soldiers[playerLost].reset();
             }
             break;
         }
@@ -310,7 +310,7 @@ void noFighting::startAttack()
     current_ev = getEvMgr().addEvent(this, 15);
 }
 
-bool noFighting::IsActive() const
+bool noFighting::isActive() const
 {
     return turn < 3;
 }

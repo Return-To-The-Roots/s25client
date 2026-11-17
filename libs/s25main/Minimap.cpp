@@ -46,21 +46,21 @@ unsigned Minimap::varyBrightness(const unsigned color, const int range)
 {
     int add = 100 - rand() % (2 * range);
 
-    int red = GetRed(color) * add / 100;
+    int red = getRed(color) * add / 100;
     if(red < 0)
         red = 0;
     else if(red > 0xFF)
         red = 0xFF;
-    int green = GetGreen(color) * add / 100;
+    int green = getGreen(color) * add / 100;
     if(green < 0)
         green = 0;
     else if(green > 0xFF)
         green = 0xFF;
-    int blue = GetBlue(color) * add / 100;
+    int blue = getBlue(color) * add / 100;
     if(blue < 0)
         blue = 0;
     else if(blue > 0xFF)
         blue = 0xFF;
 
-    return MakeColor(GetAlpha(color), red, green, blue);
+    return makeColor(getAlpha(color), red, green, blue);
 }

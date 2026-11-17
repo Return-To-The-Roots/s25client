@@ -109,17 +109,17 @@ void nofSkinner::drawWorking(DrawPoint drawPt)
         case State::SkinnerSkinningCarcass:
         {
             unsigned short id = GAMECLIENT.interpolate(45, current_ev);
-            unsigned short draw_id =
+            unsigned short drawId =
               leatheraddon::bobIndex[leatheraddon::BobType::SkinnerSkinningAnimalCarcassAnimation];
 
             if(id < 4)
-                draw_id = draw_id + id;
+                drawId = drawId + id;
             else if(id < 36)
-                draw_id = (draw_id + 4) + (id - 4) % 8;
+                drawId = (drawId + 4) + (id - 4) % 8;
             else
-                draw_id = (draw_id + 12) + id - 36;
+                drawId = (drawId + 12) + id - 36;
 
-            LOADER.getPlayerImage("leather_bobs", draw_id)->drawForPlayer(drawPt, owner.color);
+            LOADER.getPlayerImage("leather_bobs", drawId)->drawForPlayer(drawPt, owner.color);
         }
         break;
     }
@@ -127,12 +127,12 @@ void nofSkinner::drawWorking(DrawPoint drawPt)
 
 void nofSkinner::handleStateSkinningCarcass()
 {
-    // see comment at noAnimal::HandleEvent for explanation of ownership of animal
+    // see comment at noAnimal::handleEvent for explanation of ownership of animal
     animal->skinned();
     if(!animal->isHunted())
     {
         // Tier verschwinden lassen
-        auto ownedAnimal = world->RemoveFigure(pos, *animal);
+        auto ownedAnimal = world->removeFigure(pos, *animal);
         // Tier vernichten
         ownedAnimal->destroy();
     }
@@ -189,12 +189,12 @@ void nofSkinner::tryStartSkinning()
         handleStateWaiting1();
     else
     {
-        const auto available_animals = nofHunter::getAnimalsInRange(
-          *world, pos, ANIMAL_RADIUS, MAX_SKINNING_DISTANCE, [](const noAnimal* a) { return a->canBeSkinned(); });
+        const auto availableAnimals = nofHunter::getAnimalsInRange(*world, pos, ANIMAL_RADIUS, MAX_SKINNING_DISTANCE,
+                                                                   [](const noAnimal* a) { return a->canBeSkinned(); });
 
-        if(!available_animals.empty())
+        if(!availableAnimals.empty())
         {
-            animal = RANDOM_ELEMENT(available_animals);
+            animal = RANDOM_ELEMENT(availableAnimals);
             state = State::SkinnerWalkingToCarcass;
             workplace->is_working = true;
             animal->beginSkinning(this);

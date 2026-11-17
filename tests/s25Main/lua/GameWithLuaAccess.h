@@ -31,12 +31,12 @@
 class GameWithLuaAccess : public Game
 {
 public:
-    GameWithLuaAccess() : Game(GlobalGameSettings(), 0u, CreatePlayers()) {}
+    GameWithLuaAccess() : Game(GlobalGameSettings(), 0u, createPlayers()) {}
 
     void executeAICommands()
     {
         AIPlayer* ai = getAIPlayer(1);
-        std::vector<gc::GameCommandPtr> aiGcs = ai->FetchGameCommands();
+        std::vector<gc::GameCommandPtr> aiGcs = ai->fetchGameCommands();
         for(unsigned i = 0; i < 5; i++)
         {
             em_->executeNextGF();
@@ -48,7 +48,7 @@ public:
         }
     }
 
-    static std::vector<PlayerInfo> CreatePlayers()
+    static std::vector<PlayerInfo> createPlayers()
     {
         std::vector<PlayerInfo> players(3);
         players[0].ps = PlayerState::Occupied;
@@ -90,7 +90,7 @@ public:
         initGameRNG(0);
 
         loadGameData(world.getDescriptionWriteable());
-        world.Init(MapExtent(24, 32));
+        world.init(MapExtent(24, 32));
         hqPositions.push_back(MapPoint(0, 1));
         hqPositions.push_back(MapPoint(world.getSize() / 2u + hqPositions[0]));
         std::vector<Nation> playerNations;

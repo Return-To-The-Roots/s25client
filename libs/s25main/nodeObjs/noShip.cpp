@@ -70,29 +70,29 @@ void noShip::serialize(SerializedGameData& sgd) const
 {
     noMovable::serialize(sgd);
 
-    sgd.PushUnsignedChar(ownerId_);
+    sgd.pushUnsignedChar(ownerId_);
     sgd.pushEnum<uint8_t>(state);
-    sgd.PushUnsignedShort(seaId_.value());
-    sgd.PushUnsignedInt(goalHarbor.value());
-    sgd.PushUnsignedChar(goal_dir);
-    sgd.PushString(name);
-    sgd.PushUnsignedInt(curRouteIdx);
-    sgd.PushBool(lost);
-    sgd.PushUnsignedInt(remaining_sea_attackers);
-    sgd.PushUnsignedInt(homeHarbor.value());
-    sgd.PushUnsignedInt(covered_distance);
+    sgd.pushUnsignedShort(seaId_.value());
+    sgd.pushUnsignedInt(goalHarbor.value());
+    sgd.pushUnsignedChar(goal_dir);
+    sgd.pushString(name);
+    sgd.pushUnsignedInt(curRouteIdx);
+    sgd.pushBool(lost);
+    sgd.pushUnsignedInt(remaining_sea_attackers);
+    sgd.pushUnsignedInt(homeHarbor.value());
+    sgd.pushUnsignedInt(covered_distance);
     helpers::pushContainer(sgd, route_);
     sgd.pushObjectContainer(figures);
     sgd.pushObjectContainer(wares, true);
 }
 
 noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), ownerId_(sgd.PopUnsignedChar()), state(sgd.pop<State>()), seaId_(sgd.PopUnsignedShort()),
-      goalHarbor(sgd.PopUnsignedInt()), goal_dir(sgd.PopUnsignedChar()),
-      name(sgd.getGameDataVersion() < 2 ? sgd.PopLongString() : sgd.PopString()), curRouteIdx(sgd.PopUnsignedInt()),
-      route_(sgd.getGameDataVersion() < 7 ? sgd.PopUnsignedInt() : 0), lost(sgd.PopBool()),
-      remaining_sea_attackers(sgd.PopUnsignedInt()), homeHarbor(sgd.PopUnsignedInt()),
-      covered_distance(sgd.PopUnsignedInt())
+    : noMovable(sgd, obj_id), ownerId_(sgd.popUnsignedChar()), state(sgd.pop<State>()), seaId_(sgd.popUnsignedShort()),
+      goalHarbor(sgd.popUnsignedInt()), goal_dir(sgd.popUnsignedChar()),
+      name(sgd.getGameDataVersion() < 2 ? sgd.popLongString() : sgd.popString()), curRouteIdx(sgd.popUnsignedInt()),
+      route_(sgd.getGameDataVersion() < 7 ? sgd.popUnsignedInt() : 0), lost(sgd.popBool()),
+      remaining_sea_attackers(sgd.popUnsignedInt()), homeHarbor(sgd.popUnsignedInt()),
+      covered_distance(sgd.popUnsignedInt())
 {
     helpers::popContainer(sgd, route_, sgd.getGameDataVersion() < 7);
     sgd.popObjectContainer(figures);
@@ -110,7 +110,7 @@ void noShip::destroy()
 
 void noShip::draw(DrawPoint drawPt)
 {
-    unsigned flag_drawing_type = 1;
+    unsigned flagDrawingType = 1;
 
     // Sind wir verloren? Dann immer stehend zeichnen
     if(lost)
@@ -126,7 +126,7 @@ void noShip::draw(DrawPoint drawPt)
         case State::SeaattackWaiting:
         {
             drawFixed(drawPt, false);
-            flag_drawing_type = 0;
+            flagDrawingType = 0;
         }
         break;
 
@@ -172,23 +172,23 @@ void noShip::draw(DrawPoint drawPt)
     }
 
     LOADER.getPlayerImage("boot_z", 40 + GAMECLIENT.getGlobalAnimation(6, 1, 1, getObjId()))
-      ->drawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][getCurMoveDir()], COLOR_WHITE,
+      ->drawFull(drawPt + SHIPS_FLAG_POS[flagDrawingType][getCurMoveDir()], COLOR_WHITE,
                  world->getPlayer(ownerId_).color);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
     if(state >= State::ExpeditionLoading && state <= State::ExpeditionDriving)
         LOADER.getPlayerImage("boot_z", 40 + GAMECLIENT.getGlobalAnimation(6, 1, 1, getObjId() + 4))
-          ->drawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][getCurMoveDir()]);
+          ->drawFull(drawPt + SHIPS_FLAG_POS[flagDrawingType][getCurMoveDir()]);
 }
 
 /// Zeichnet das Schiff stehend mit oder ohne Waren
-void noShip::drawFixed(DrawPoint drawPt, const bool draw_wares)
+void noShip::drawFixed(DrawPoint drawPt, const bool drawWares)
 {
-    LOADER.getImageN("boot_z", rttr::enum_cast(getCurMoveDir() + 3u) * 2 + 1)->drawFull(drawPt, COLOR_SHADOW);
-    LOADER.getImageN("boot_z", rttr::enum_cast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt);
+    LOADER.getImageN("boot_z", rttr::enumCast(getCurMoveDir() + 3u) * 2 + 1)->drawFull(drawPt, COLOR_SHADOW);
+    LOADER.getImageN("boot_z", rttr::enumCast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt);
 
-    if(draw_wares)
+    if(drawWares)
         /// Waren zeichnen
-        LOADER.getImageN("boot_z", 30 + rttr::enum_cast(getCurMoveDir() + 3u))->drawFull(drawPt);
+        LOADER.getImageN("boot_z", 30 + rttr::enumCast(getCurMoveDir() + 3u))->drawFull(drawPt);
 }
 
 /// Zeichnet normales Fahren auf dem Meer ohne irgendwelche Güter
@@ -197,8 +197,8 @@ void noShip::drawDriving(DrawPoint& drawPt)
     // Interpolieren zwischen beiden Knotenpunkten
     drawPt += calcWalkingRelative();
 
-    LOADER.getImageN("boot_z", 13 + rttr::enum_cast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt, COLOR_SHADOW);
-    LOADER.getImageN("boot_z", 12 + rttr::enum_cast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt);
+    LOADER.getImageN("boot_z", 13 + rttr::enumCast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt, COLOR_SHADOW);
+    LOADER.getImageN("boot_z", 12 + rttr::enumCast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt);
 }
 
 /// Zeichnet normales Fahren auf dem Meer mit Gütern
@@ -206,7 +206,7 @@ void noShip::drawDrivingWithWares(DrawPoint& drawPt)
 {
     drawDriving(drawPt);
     /// Waren zeichnen
-    LOADER.getImageN("boot_z", 30 + rttr::enum_cast(getCurMoveDir() + 3u))->drawFull(drawPt);
+    LOADER.getImageN("boot_z", 30 + rttr::enumCast(getCurMoveDir() + 3u))->drawFull(drawPt);
 }
 
 void noShip::handleEvent(const unsigned id)
@@ -273,7 +273,7 @@ void noShip::handleEvent(const unsigned id)
                 // Hafen herausfinden
                 noBase* hb = goalHarbor ? world->getNO(world->getHarborPoint(goalHarbor)) : nullptr;
 
-                unsigned old_visual_range = getVisualRange();
+                unsigned oldVisualRange = getVisualRange();
 
                 if(hb && hb->getGOT() == GO_Type::NobHarborbuilding)
                 {
@@ -291,7 +291,7 @@ void noShip::handleEvent(const unsigned id)
                 }
 
                 // Sichtbarkeiten neu berechnen
-                world->recalcVisibilitiesAroundPoint(pos, old_visual_range, ownerId_, nullptr);
+                world->recalcVisibilitiesAroundPoint(pos, oldVisualRange, ownerId_, nullptr);
 
                 break;
             }
@@ -543,19 +543,19 @@ void noShip::continueExpedition(const ShipDirection dir)
         return;
 
     // Nächsten Hafenpunkt in dieser Richtung suchen
-    HarborId new_goal = world->getNextFreeHarborPoint(pos, goalHarbor, dir, ownerId_);
+    HarborId newGoal = world->getNextFreeHarborPoint(pos, goalHarbor, dir, ownerId_);
 
     // Auch ein Ziel gefunden?
-    if(!new_goal)
+    if(!newGoal)
         return;
 
     // Versuchen, Weg zu finden
-    if(!world->findShipPathToHarbor(pos, new_goal, seaId_, &route_, nullptr))
+    if(!world->findShipPathToHarbor(pos, newGoal, seaId_, &route_, nullptr))
         return;
 
     // Dann fahren wir da mal hin
     curRouteIdx = 0;
-    goalHarbor = new_goal;
+    goalHarbor = newGoal;
     state = State::ExpeditionDriving;
 
     handleStateExpeditionDriving();

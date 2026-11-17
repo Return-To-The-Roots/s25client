@@ -17,7 +17,7 @@
 
 namespace AIJH {
 namespace {
-    bool HasAnyInexhaustibleOreMine(const GlobalGameSettings& ggs)
+    bool hasAnyInexhaustibleOreMine(const GlobalGameSettings& ggs)
     {
         return !isMineResourceDepletable(ggs, BuildingType::CoalMine)
                || !isMineResourceDepletable(ggs, BuildingType::IronMine)
@@ -158,8 +158,8 @@ void BuildingPlanner::updateBuildingsWanted(const AIPlayerJH& aijh)
         const Inventory& inventory = aijh.player.getInventory();
 
         // foresters
-        unsigned max_available_forester = inventory[Job::Forester] + inventory[GoodType::Shovel];
-        unsigned additional_forester = getNumBuildings(BuildingType::Charburner);
+        unsigned maxAvailableForester = inventory[Job::Forester] + inventory[GoodType::Shovel];
+        unsigned additionalForester = getNumBuildings(BuildingType::Charburner);
 
         // 1 mil -> 1 forester, 2 mil -> 2 forester, 4 mil -> 3 forester, 8 mil -> 4 forester, 16 mil -> 5 forester, ...
         // wanted
@@ -168,16 +168,16 @@ void BuildingPlanner::updateBuildingsWanted(const AIPlayerJH& aijh)
         // If we are low on wood, we need more foresters
         if(aijh.player.getBuildingRegister().getBuildingSites().size()
            > (inventory[GoodType::Boards] + inventory[GoodType::Wood]) * 2)
-            additional_forester++;
+            additionalForester++;
 
-        buildingsWanted[BuildingType::Forester] += additional_forester;
+        buildingsWanted[BuildingType::Forester] += additionalForester;
         buildingsWanted[BuildingType::Forester] =
-          std::min(max_available_forester, buildingsWanted[BuildingType::Forester]);
+          std::min(maxAvailableForester, buildingsWanted[BuildingType::Forester]);
 
         // woodcutters
-        unsigned max_available_woodcutter = inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter];
+        unsigned maxAvailableWoodcutter = inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter];
         buildingsWanted[BuildingType::Woodcutter] =
-          std::min(max_available_woodcutter,
+          std::min(maxAvailableWoodcutter,
                    buildingsWanted[BuildingType::Forester] * 2 + 1); // two per forester + 1 for 'natural' forest
 
         ////on maps with many trees the ai will build woodcutters all over the place which means the foresters are not
@@ -234,7 +234,7 @@ void BuildingPlanner::updateBuildingsWanted(const AIPlayerJH& aijh)
         // brewery count = 1+(armory/5) if there is at least 1 armory or armory /6 for exhaustible mines
         if(getNumBuildings(BuildingType::Armory) > 0 && getNumBuildings(BuildingType::Farm) > 0)
         {
-            if(HasAnyInexhaustibleOreMine(aijh.ggs))
+            if(hasAnyInexhaustibleOreMine(aijh.ggs))
                 buildingsWanted[BuildingType::Brewery] = 1 + getNumBuildings(BuildingType::Armory) / 5;
             else
                 buildingsWanted[BuildingType::Brewery] = 1 + getNumBuildings(BuildingType::Armory) / 6;
@@ -302,7 +302,7 @@ void BuildingPlanner::updateBuildingsWanted(const AIPlayerJH& aijh)
                   (getNumBuildings(BuildingType::Farm) + getNumBuildings(BuildingType::Fishery)) / 2 + 2;
             if(getNumBuildings(BuildingType::Farm) > 7) // quite the empire just scale mines with farms
             {
-                if(HasAnyInexhaustibleOreMine(aijh.ggs)) // inexhaustible mines? -> more farms required for each mine
+                if(hasAnyInexhaustibleOreMine(aijh.ggs)) // inexhaustible mines? -> more farms required for each mine
                     buildingsWanted[BuildingType::IronMine] = std::min(getNumBuildings(BuildingType::Ironsmelter) + 1,
                                                                        getNumBuildings(BuildingType::Farm) * 2 / 5);
                 else

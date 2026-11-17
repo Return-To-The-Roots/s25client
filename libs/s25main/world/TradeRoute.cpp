@@ -14,14 +14,14 @@ TradeRoute::TradeRoute(const GameWorld& world, unsigned char player, const MapPo
 }
 
 TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorld& world, const unsigned char player)
-    : world(world), player(player), path(sgd), curPos(sgd.popMapPoint()), curRouteIdx(sgd.PopUnsignedInt())
+    : world(world), player(player), path(sgd), curPos(sgd.popMapPoint()), curRouteIdx(sgd.popUnsignedInt())
 {}
 
 void TradeRoute::serialize(SerializedGameData& sgd) const
 {
     path.serialize(sgd);
     helpers::pushPoint(sgd, curPos);
-    sgd.PushUnsignedInt(curRouteIdx);
+    sgd.pushUnsignedInt(curRouteIdx);
 }
 
 /// Gets the next direction the caravane has to take
@@ -50,7 +50,7 @@ helpers::OptionalEnum<TradeDirection> TradeRoute::getNextDir()
     RTTR_Assert(nextDir == path.route[curRouteIdx]);
     curRouteIdx++;
     curPos = world.getNeighbour(curPos, nextDir);
-    return TradeDirection(rttr::enum_cast(nextDir));
+    return TradeDirection(rttr::enumCast(nextDir));
 }
 
 /// Recalc local route and returns next direction
@@ -66,7 +66,7 @@ helpers::OptionalEnum<TradeDirection> TradeRoute::recalcRoute()
       world.findTradePath(path.start, path.goal, player, std::numeric_limits<unsigned>::max(), false, &path.route);
     curRouteIdx = 0;
     if(nextDir)
-        return TradeDirection(rttr::enum_cast(*nextDir));
+        return TradeDirection(rttr::enumCast(*nextDir));
     else
         return std::nullopt;
 }

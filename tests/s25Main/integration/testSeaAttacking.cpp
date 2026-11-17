@@ -99,7 +99,7 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         for(unsigned i = 1; i < 3; i++)
         {
             setCurPlayer(i);
-            BOOST_TEST_REQUIRE(gwv.GetBQ(harborPos[i]) == BuildingQuality::Harbor);
+            BOOST_TEST_REQUIRE(gwv.getBQ(harborPos[i]) == BuildingQuality::Harbor);
             const noBuilding* hb =
               BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, harborPos[i], i, Nation(i));
             BOOST_TEST_REQUIRE(hb);
@@ -115,21 +115,21 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
 
         milBld1NearPos = findBldPos(world.getHarborPoint(HarborId(3)) + MapPoint(3, 2), BuildingQuality::House, 1);
         BOOST_TEST_REQUIRE(milBld1NearPos.isValid());
-        BOOST_TEST_REQUIRE(world.GetBQ(milBld1NearPos, 1) >= BuildingQuality::House);
+        BOOST_TEST_REQUIRE(world.getBQ(milBld1NearPos, 1) >= BuildingQuality::House);
         milBld1Near = dynamic_cast<nobMilitary*>(
           BuildingFactory::createBuilding(world, BuildingType::Watchtower, milBld1NearPos, 1, Nation::Romans));
         BOOST_TEST_REQUIRE(milBld1Near);
 
         milBld1FarPos = findBldPos(world.getHarborPoint(HarborId(4)) - MapPoint(1, 4), BuildingQuality::House, 1);
         BOOST_TEST_REQUIRE(milBld1FarPos.isValid());
-        BOOST_TEST_REQUIRE(world.GetBQ(milBld1FarPos, 1) >= BuildingQuality::House);
+        BOOST_TEST_REQUIRE(world.getBQ(milBld1FarPos, 1) >= BuildingQuality::House);
         milBld1Far = dynamic_cast<nobMilitary*>(
           BuildingFactory::createBuilding(world, BuildingType::Watchtower, milBld1FarPos, 1, Nation::Romans));
         BOOST_TEST_REQUIRE(milBld1Far);
 
         milBld2Pos = findBldPos(world.getHarborPoint(HarborId(6)) - MapPoint(2, 2), BuildingQuality::House, 2);
         BOOST_TEST_REQUIRE(milBld2Pos.isValid());
-        BOOST_TEST_REQUIRE(world.GetBQ(milBld2Pos, 2) >= BuildingQuality::House);
+        BOOST_TEST_REQUIRE(world.getBQ(milBld2Pos, 2) >= BuildingQuality::House);
         milBld2 = dynamic_cast<nobMilitary*>(
           BuildingFactory::createBuilding(world, BuildingType::Watchtower, milBld2Pos, 2, Nation::Babylonians));
         BOOST_TEST_REQUIRE(milBld2);
@@ -151,13 +151,13 @@ struct SeaAttackFixture : public SeaWorldWithGCExecution<3, 62, 64>
         BuildingQuality bq;
         HasBQ(const World& world, unsigned player, BuildingQuality bq) : world(world), player(player), bq(bq) {}
 
-        bool operator()(const MapPoint& pt) const { return world.GetBQ(pt, player) >= bq; }
+        bool operator()(const MapPoint& pt) const { return world.getBQ(pt, player) >= bq; }
     };
 
     MapPoint findBldPos(const MapPoint& preferedPos, BuildingQuality reqBQ, unsigned player)
     {
         const std::vector<MapPoint> pts =
-          world.GetMatchingPointsInRadius<1>(preferedPos, 2, HasBQ(world, player, reqBQ), true);
+          world.getMatchingPointsInRadius<1>(preferedPos, 2, HasBQ(world, player, reqBQ), true);
         return pts.at(0);
     }
 
@@ -276,7 +276,7 @@ BOOST_FIXTURE_TEST_CASE(NoHarborBlock, SeaAttackFixture)
     testFailingSeaAttack(harborPos[0]);
 
     // Non-Military building
-    BOOST_TEST_REQUIRE(world.GetBQ(harborPos[0], 0) > BuildingQuality::Flag);
+    BOOST_TEST_REQUIRE(world.getBQ(harborPos[0], 0) > BuildingQuality::Flag);
     const noBuilding* usualBld =
       BuildingFactory::createBuilding(world, BuildingType::Woodcutter, harborPos[0], 0, Nation::Romans);
     BOOST_TEST_REQUIRE(usualBld);
@@ -333,7 +333,7 @@ BOOST_FIXTURE_TEST_CASE(HarborsBlock, SeaAttackFixture)
     // No building
     testFailingSeaAttack(harborPos[0]);
     // Non-Military building
-    BOOST_TEST_REQUIRE(world.GetBQ(harborPos[0], 0) > BuildingQuality::Flag);
+    BOOST_TEST_REQUIRE(world.getBQ(harborPos[0], 0) > BuildingQuality::Flag);
     const noBuilding* usualBld =
       BuildingFactory::createBuilding(world, BuildingType::Woodcutter, harborPos[0], 0, Nation::Romans);
     BOOST_TEST_REQUIRE(usualBld);
@@ -575,8 +575,8 @@ BOOST_FIXTURE_TEST_CASE(AttackHarbor, SeaAttackFixture)
 
 BOOST_FIXTURE_TEST_CASE(HarborBlocksSpots, SeaAttackFixture)
 {
-    const auto tWater = GetWaterTerrain(world.getDescription());
-    const auto tLand = GetLandTerrain(world.getDescription());
+    const auto tWater = getWaterTerrain(world.getDescription());
+    const auto tLand = getLandTerrain(world.getDescription());
 
     // Issue: A harbor is a castle-sized building and blocks the nodes W, NW, NE
     // If the NW node is selected as the corresponding seas coastal position, we cannot attack that harbor as the

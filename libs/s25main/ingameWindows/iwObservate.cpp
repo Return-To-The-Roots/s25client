@@ -201,7 +201,7 @@ bool iwObservate::moveToFollowedObj()
     // First look around the center (figure is normally still there)
     const GameWorldBase& world = view->getWorld();
     const MapPoint centerPt = world.makeMapPoint((view->getFirstPt() + view->getLastPt()) / 2);
-    const std::vector<MapPoint> centerPts = world.GetPointsInRadiusWithCenter(centerPt, 2);
+    const std::vector<MapPoint> centerPts = world.getPointsInRadiusWithCenter(centerPt, 2);
     for(const MapPoint& curPt : centerPts)
     {
         if(moveToFollowedObj(curPt))
@@ -260,11 +260,11 @@ bool iwObservate::msgMouseMove(const MouseCoords& mc)
 
 bool iwObservate::msgRightDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, Rect(view->getPos(), view->getSize()))
-       && !IsPointInRect(mc.pos, getCtrl<ctrlImageButton>(1)->getDrawRect())
-       && !IsPointInRect(mc.pos, getCtrl<ctrlImageButton>(2)->getDrawRect())
-       && !IsPointInRect(mc.pos, getCtrl<ctrlImageButton>(3)->getDrawRect())
-       && !IsPointInRect(mc.pos, getCtrl<ctrlImageButton>(4)->getDrawRect()))
+    if(isPointInRect(mc.pos, Rect(view->getPos(), view->getSize()))
+       && !isPointInRect(mc.pos, getCtrl<ctrlImageButton>(1)->getDrawRect())
+       && !isPointInRect(mc.pos, getCtrl<ctrlImageButton>(2)->getDrawRect())
+       && !isPointInRect(mc.pos, getCtrl<ctrlImageButton>(3)->getDrawRect())
+       && !isPointInRect(mc.pos, getCtrl<ctrlImageButton>(4)->getDrawRect()))
     {
         scrollOrigin = mc.pos;
 

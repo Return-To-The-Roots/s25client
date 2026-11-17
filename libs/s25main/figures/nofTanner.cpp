@@ -22,14 +22,14 @@ void nofTanner::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{28, -14}, {28, -8}, {-14, -22}, {-5, -25}, {17, -35}}};
 
-    const unsigned now_id = GAMECLIENT.interpolate(136, current_ev);
+    const unsigned nowId = GAMECLIENT.interpolate(136, current_ev);
 
     LOADER
       .getPlayerImage("leather_bobs",
-                      leatheraddon::bobIndex[leatheraddon::BobType::TanneryWorkWindowAnimation] + (now_id) % 8)
+                      leatheraddon::bobIndex[leatheraddon::BobType::TanneryWorkWindowAnimation] + (nowId) % 8)
       ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
-    last_id = now_id;
+    last_id = nowId;
 }
 
 #ifdef _MSC_VER

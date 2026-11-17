@@ -44,14 +44,14 @@ void noGrapefield::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(type);
+    sgd.pushUnsignedChar(type);
     sgd.pushEnum<uint8_t>(state);
-    sgd.PushUnsignedChar(size);
+    sgd.pushUnsignedChar(size);
     sgd.pushEvent(event);
 }
 
 noGrapefield::noGrapefield(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), state(sgd.pop<State>()), size(sgd.PopUnsignedChar()),
+    : noCoordBase(sgd, obj_id), type(sgd.popUnsignedChar()), state(sgd.pop<State>()), size(sgd.popUnsignedChar()),
       event(sgd.popEvent())
 {}
 
@@ -62,7 +62,7 @@ void noGrapefield::draw(DrawPoint drawPt)
         case State::GrowingWaiting:
         case State::Normal:
         {
-            grapefield_cache[type][size].draw(drawPt);
+            grapefieldCache[type][size].draw(drawPt);
         }
         break;
         case State::Growing:
@@ -70,10 +70,10 @@ void noGrapefield::draw(DrawPoint drawPt)
             unsigned alpha = GAMECLIENT.interpolate(0xFF, event);
 
             // hiding old field
-            grapefield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            grapefieldCache[type][size].draw(drawPt, setAlpha(COLOR_WHITE, 0xFF - alpha));
 
             // showing new field
-            grapefield_cache[type][size + 1].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+            grapefieldCache[type][size + 1].draw(drawPt, setAlpha(COLOR_WHITE, alpha));
         }
         break;
         case State::Withering:
@@ -81,7 +81,7 @@ void noGrapefield::draw(DrawPoint drawPt)
             unsigned alpha = GAMECLIENT.interpolate(0xFF, event);
 
             // hiding old field
-            grapefield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            grapefieldCache[type][size].draw(drawPt, setAlpha(COLOR_WHITE, 0xFF - alpha));
         }
         break;
     }
@@ -135,7 +135,7 @@ void noGrapefield::handleEvent(const unsigned /*id*/)
 
 unsigned noGrapefield::getHarvestID() const
 {
-    return bobIndex[BobTypes(rttr::enum_cast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE) + type)] + 4;
+    return bobIndex[BobTypes(rttr::enumCast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE) + type)] + 4;
 }
 
 void noGrapefield::beginHarvesting()

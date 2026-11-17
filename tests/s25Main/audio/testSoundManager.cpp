@@ -29,7 +29,7 @@ public:
     DummyEffect() : libsiedler2::ArchivItem(libsiedler2::BobType::Sound) {}
     RTTR_CLONEABLE(DummyEffect) // LCOV_EXCL_LINE
 protected:
-    SoundHandle Load() override { return AUDIODRIVER.loadEffect("foo.wav"); }
+    SoundHandle load() override { return AUDIODRIVER.loadEffect("foo.wav"); }
 };
 
 class DummyNO final : public noBase
@@ -55,7 +55,7 @@ struct LoadMockupAudioWithSounds : LoadMockupAudio
             boost::nowide::ofstream f(soundPath / "0.txt");
             f << "Test";
         }
-        BOOST_TEST_REQUIRE(LOADER.Load(soundPath));
+        BOOST_TEST_REQUIRE(LOADER.load(soundPath));
         libsiedler2::Archiv& sounds = LOADER.getArchive("sound");
         sounds.alloc(115);
         for(int i = 50; i < 115; ++i)
@@ -169,7 +169,7 @@ BOOST_FIXTURE_TEST_CASE(OceanSounds, LoadMockupAudioWithSounds)
         manager.playOceanBrawling(10);
         mock::verify();
 
-        // Trigger a known bug in SDL_mixer where IsEffectPlaying might wrongly return false but effect is still playing
+        // Trigger a known bug in SDL_mixer where isEffectPlaying might wrongly return false but effect is still playing
         MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(false);
         MOCK_EXPECT(audioDriverMock->doStopEffect).once(); // It should make sure the effect is actually stopped
         MOCK_EXPECT(audioDriverMock->doPlayEffect).once().returns(1);

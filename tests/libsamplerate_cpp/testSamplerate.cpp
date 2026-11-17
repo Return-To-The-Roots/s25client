@@ -13,16 +13,16 @@
 
 namespace {
 int test_data = 42;
-int callback_pos = 0;
+int callbackPos = 0;
 std::array<float, 512> callback_data{};
 } // namespace
 
 static long callback(void* cb_data, float** data)
 {
     BOOST_TEST(cb_data == &test_data);
-    *data = callback_data.data() + callback_pos;
-    const auto size = std::min(static_cast<int>(callback_data.size()) - callback_pos, 128);
-    callback_pos += size;
+    *data = callback_data.data() + callbackPos;
+    const auto size = std::min(static_cast<int>(callback_data.size()) - callbackPos, 128);
+    callbackPos += size;
     return size;
 }
 
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(SimpleCallback)
     samplerate::StateCallback state(samplerate::Converter::Linear, 1, callback, &test_data);
     auto const ratio = 2;
     std::vector<float> out(callback_data.size() * ratio);
-    callback_pos = 0;
+    callbackPos = 0;
     const auto written = state.read(ratio, out.size(), out.data());
     BOOST_TEST(written == out.size());
 }

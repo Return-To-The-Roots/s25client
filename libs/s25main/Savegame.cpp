@@ -37,7 +37,7 @@ bool Savegame::save(const boost::filesystem::path& filepath, const std::string& 
 {
     BinaryFile file;
 
-    return file.Open(filepath, OpenFileMode::Write) && save(file, mapName);
+    return file.open(filepath, OpenFileMode::Write) && save(file, mapName);
 }
 
 bool Savegame::save(BinaryFile& file, const std::string& mapName)
@@ -50,19 +50,19 @@ bool Savegame::save(BinaryFile& file, const std::string& mapName)
     return true;
 }
 
-bool Savegame::Load(const boost::filesystem::path& filePath, const SaveGameDataToLoad what)
+bool Savegame::load(const boost::filesystem::path& filePath, const SaveGameDataToLoad what)
 {
     BinaryFile file;
 
-    return file.Open(filePath, OpenFileMode::Read) && Load(file, what);
+    return file.open(filePath, OpenFileMode::Read) && load(file, what);
 }
 
-bool Savegame::Load(BinaryFile& file, const SaveGameDataToLoad what)
+bool Savegame::load(BinaryFile& file, const SaveGameDataToLoad what)
 {
     try
     {
         clearPlayers();
-        sgd.Clear();
+        sgd.clear();
         if(!readAllHeaderData(file))
             return false;
 
@@ -88,38 +88,38 @@ bool Savegame::Load(BinaryFile& file, const SaveGameDataToLoad what)
 void Savegame::writeExtHeader(BinaryFile& file, const std::string& mapName)
 {
     SavedFile::writeExtHeader(file, mapName);
-    file.WriteUnsignedInt(start_gf);
+    file.writeUnsignedInt(start_gf);
 }
 
 bool Savegame::readExtHeader(BinaryFile& file)
 {
     if(!SavedFile::readExtHeader(file))
         return false;
-    start_gf = file.ReadUnsignedInt();
+    start_gf = file.readUnsignedInt();
     return true;
 }
 
 void Savegame::writeGameData(BinaryFile& file)
 {
-    file.WriteUnsignedInt(1); // Compressed flag for compatibility
-    std::vector<char> data(sgd.GetData(), sgd.GetData() + sgd.GetLength());
+    file.writeUnsignedInt(1); // Compressed flag for compatibility
+    std::vector<char> data(sgd.getData(), sgd.getData() + sgd.getLength());
     const unsigned uncompressedLength = data.size();
     data = CompressedData::compress(data);
-    file.WriteUnsignedInt(uncompressedLength);
-    file.WriteUnsignedInt(data.size());
-    file.WriteRawData(data.data(), data.size());
+    file.writeUnsignedInt(uncompressedLength);
+    file.writeUnsignedInt(data.size());
+    file.writeRawData(data.data(), data.size());
 }
 
 bool Savegame::readGameData(BinaryFile& file)
 {
     std::vector<char> data;
-    const auto compressedFlagOrSize = file.ReadUnsignedInt();
+    const auto compressedFlagOrSize = file.readUnsignedInt();
     if(compressedFlagOrSize == 1u)
     {
-        const auto uncompressedLength = file.ReadUnsignedInt();
-        const auto compressedLength = file.ReadUnsignedInt();
+        const auto uncompressedLength = file.readUnsignedInt();
+        const auto compressedLength = file.readUnsignedInt();
         data.resize(compressedLength);
-        file.ReadRawData(data.data(), data.size());
+        file.readRawData(data.data(), data.size());
         data = CompressedData::decompress(data, uncompressedLength);
 #ifndef NDEBUG
         // In debug builds write uncompressed game data to temporary file
@@ -131,10 +131,10 @@ bool Savegame::readGameData(BinaryFile& file)
     { // Old savegames have a size here which is always bigger than 1
         RTTR_Assert(compressedFlagOrSize > 1u);
         data.resize(compressedFlagOrSize);
-        file.ReadRawData(data.data(), data.size());
+        file.readRawData(data.data(), data.size());
     }
 
-    sgd.Clear();
-    sgd.PushRawData(data.data(), data.size());
+    sgd.clear();
+    sgd.pushRawData(data.data(), data.size());
     return true;
 }

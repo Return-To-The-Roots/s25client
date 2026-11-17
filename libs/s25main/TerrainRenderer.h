@@ -33,7 +33,7 @@ public:
     ~TerrainRenderer();
 
     /// Generates data structures (uninitialized)
-    void Init(const MapExtent& size);
+    void init(const MapExtent& size);
     /// Generate OpenGL structs and init data (also calls Init)
     void generateOpenGL(const GameWorldViewer& gwv);
 
@@ -46,7 +46,7 @@ public:
     /// Get position of node in pixels (VertexPos)
     PointF getVertexPos(const MapPoint pt) const { return getVertex(pt).pos; }
     /// Get neighbour position of a node (VertexPos) potentially shifted so that the returned value is next to
-    /// GetNodePos(pt)
+    /// getNodePos(pt)
     PointF getNeighbourVertexPos(MapPoint pt, Direction dir) const;
 
     /// Callback function for altitude changes
@@ -183,7 +183,7 @@ private:
     /// liefert den Rand-Vertex an der Stelle X,Y
     PointF getBorderPos(const MapPoint pt, unsigned char triangle) const { return getVertex(pt).borderPos[triangle]; }
     /// Get neighbour border position of a node (VertexPos) potentially shifted so that the returned value is next to
-    /// GetBorderPos(pt)
+    /// getBorderPos(pt)
     PointF getNeighbourBorderPos(MapPoint pt, unsigned char triangle, Direction dir) const;
     /// liefert den Rand-Vertex-Farbwert an der Stelle X,Y
     float getBorderColor(const MapPoint pt, unsigned char triangle) const

@@ -35,9 +35,9 @@ bool CreateEmptyWorld::operator()(GameWorld& world) const
     initGameRNG(0);
 
     loadGameData(world.getDescriptionWriteable());
-    world.Init(size_);
+    world.init(size_);
     // Set everything to buildable land
-    DescIdx<TerrainDesc> t = GetLandTerrain(world.getDescription(), ETerrain::Buildable);
+    DescIdx<TerrainDesc> t = getLandTerrain(world.getDescription(), ETerrain::Buildable);
     RTTR_FOREACH_PT(MapPoint, size_)
     {
         MapNode& node = world.getNodeWriteable(pt);

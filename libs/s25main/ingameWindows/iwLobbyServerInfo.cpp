@@ -15,7 +15,7 @@
  */
 void iwLobbyServerInfo::updateServerInfo()
 {
-    const LobbyServerInfo& serverinfo = LOBBYCLIENT.GetServerInfo();
+    const LobbyServerInfo& serverinfo = LOBBYCLIENT.getServerInfo();
 
     setTitle(serverinfo.getName());
 
@@ -39,7 +39,7 @@ iwLobbyServerInfo::iwLobbyServerInfo(unsigned serverId)
     addText(7, DrawPoint(30, 190), _("Version:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     addEdit(8, DrawPoint(30, 210), Extent(200, 22), TextureColor::Green2, NormalFont, 0, false, true);
 
-    LOBBYCLIENT.SendServerInfoRequest(serverId_);
+    LOBBYCLIENT.sendServerInfoRequest(serverId_);
     using namespace std::chrono_literals;
     addTimer(9, 5s);
 }
@@ -49,7 +49,7 @@ void iwLobbyServerInfo::msgTimer(const unsigned ctrl_id)
     switch(ctrl_id)
     {
         case 9: // alle 5 Sek
-            LOBBYCLIENT.SendServerInfoRequest(serverId_);
+            LOBBYCLIENT.sendServerInfoRequest(serverId_);
             break;
     }
 }

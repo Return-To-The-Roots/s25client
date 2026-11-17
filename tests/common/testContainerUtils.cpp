@@ -96,9 +96,9 @@ BOOST_AUTO_TEST_CASE(IndexOf)
     BOOST_TEST(helpers::indexOf(ptrVec, (const int*)1337) == 1);  //-V566
 
     vec = {1, 3, 5, 6};
-    BOOST_TEST(helpers::indexOf_if(vec, [](int el) { return el % 2 == 0; }) == 3);
-    BOOST_TEST(helpers::indexOf_if(vec, [](int el) { return el > 2; }) == 1);
-    BOOST_TEST(helpers::indexOf_if(vec, [](int el) { return el > 6; }) == -1);
+    BOOST_TEST(helpers::indexOfIf(vec, [](int el) { return el % 2 == 0; }) == 3);
+    BOOST_TEST(helpers::indexOfIf(vec, [](int el) { return el > 2; }) == 1);
+    BOOST_TEST(helpers::indexOfIf(vec, [](int el) { return el > 6; }) == -1);
 }
 
 BOOST_AUTO_TEST_CASE(Reverse)
@@ -142,11 +142,11 @@ BOOST_AUTO_TEST_CASE(Erase)
 BOOST_AUTO_TEST_CASE(PopFront)
 {
     std::vector<int> vec{1, 2, 3};
-    helpers::pop_front(vec);
+    helpers::popFront(vec);
     BOOST_TEST(vec == (std::vector<int>{2, 3}));
 
     std::set<int> set{1, 2, 3};
-    helpers::pop_front(set);
+    helpers::popFront(set);
     BOOST_TEST(set == (std::set<int>{2, 3}));
 }
 
@@ -166,11 +166,11 @@ BOOST_AUTO_TEST_CASE(Find)
 BOOST_AUTO_TEST_CASE(RemoveIf)
 {
     std::vector<int> vecIn = {1, 2, 3, 4, 5, 6}, vecExp = {1, 3, 5};
-    helpers::erase_if(vecIn, [](int i) { return i % 2 == 0; });
+    helpers::eraseIf(vecIn, [](int i) { return i % 2 == 0; });
     BOOST_TEST(vecIn == vecExp, per_element);
 
     vecIn = {1, 2, 3, 4, 5, 6}, vecExp = {2, 4, 6};
-    helpers::erase_if(vecIn, [](int i) { return i % 2 != 0; });
+    helpers::eraseIf(vecIn, [](int i) { return i % 2 != 0; });
     BOOST_TEST(vecIn == vecExp, per_element);
 }
 
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE(CountIf)
 {
     std::vector<int> values = {1, 2, 3, 4, 5};
     const auto isEven = [](int i) { return i % 2 == 0; };
-    BOOST_TEST(helpers::count_if(values, isEven) == 2u);
+    BOOST_TEST(helpers::countIf(values, isEven) == 2u);
 }
 
 BOOST_AUTO_TEST_CASE(RangeStruct)

@@ -66,9 +66,9 @@ bool GameCommandFactory::ChangeMilitary(const MilitarySettings& data)
     return addGC(new gc::ChangeMilitary(data));
 }
 
-bool GameCommandFactory::ChangeTools(const ToolSettings& data, const int8_t* order_delta)
+bool GameCommandFactory::ChangeTools(const ToolSettings& data, const int8_t* orderDelta)
 {
-    return addGC(new gc::ChangeTools(data, order_delta));
+    return addGC(new gc::ChangeTools(data, orderDelta));
 }
 
 bool GameCommandFactory::CallSpecialist(const MapPoint pt, Job job)

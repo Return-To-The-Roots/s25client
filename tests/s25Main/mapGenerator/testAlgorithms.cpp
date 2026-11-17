@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(Smooth_keeps_homogenous_map_unchanged)
 
     nodes.resize(size, expectedValue);
 
-    Smooth(iterations, radius, nodes);
+    smooth(iterations, radius, nodes);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(Smooth_interpolates_values_around_peak)
     nodes.resize(size, defaultValue);
     nodes[peak] = peakValue;
 
-    Smooth(iterations, radius, nodes);
+    smooth(iterations, radius, nodes);
 
     BOOST_TEST_REQUIRE(nodes[peak] < peakValue);
 
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(Collect_returns_empty_for_negative_map_point)
     map.resize(size, 1);
     map[negative] = 0;
 
-    auto result = Collect(map, negative, [&map](const MapPoint& p) { return map[p]; });
+    auto result = collect(map, negative, [&map](const MapPoint& p) { return map[p]; });
 
     BOOST_TEST(result.empty());
 }
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(Collect_returns_all_map_points_for_entirely_positive_map)
 
     map.resize(size, 1);
 
-    auto result = Collect(map, point, [&map](const MapPoint& p) { return map[p]; });
+    auto result = collect(map, point, [&map](const MapPoint& p) { return map[p]; });
 
     const unsigned expectedResults = size.x * size.y;
 
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(Collect_returns_only_connected_positive_map_points)
     }
     map[other] = 1;
 
-    auto result = Collect(map, point, [&map](const MapPoint& p) { return map[p]; });
+    auto result = collect(map, point, [&map](const MapPoint& p) { return map[p]; });
 
     const unsigned expectedSize = neighbors.size() + 1u;
     const unsigned actualSize = result.size();
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(DistancesTo_with_predicate_returns_expected_distance_for_ea
       // clang-format on
     };
 
-    auto distances = DistancesTo(size, [](MapPoint pt) noexcept {
+    auto distances = distancesTo(size, [](MapPoint pt) noexcept {
         return pt == MapPoint(3, 5); // compute distance to P(4/3)
     });
 
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE(DistancesTo_returns_expected_distance_for_each_map_point)
     };
 
     std::set<MapPoint, MapPointLess> flaggedPoints{MapPoint(3, 5)};
-    auto distances = DistancesTo(flaggedPoints, size);
+    auto distances = distancesTo(flaggedPoints, size);
 
     BOOST_TEST_REQUIRE(distances.getSize() == size);
 
@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_outside_of_area)
     const double coverage = 0.5;
     const int minimum = 1;
 
-    int limit = LimitFor(values, area, coverage, minimum);
+    int limit = limitFor(values, area, coverage, minimum);
 
     auto expectedNodes = static_cast<unsigned>(area.size() * coverage);
     unsigned actualNodes = 0u;
@@ -295,7 +295,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_ignores_map_points_below_minimum_threshold)
     const double coverage = 0.11;
     const int minimum = 2;
 
-    int limit = LimitFor(values, coverage, minimum);
+    int limit = limitFor(values, coverage, minimum);
 
     auto expectedNodes = static_cast<unsigned>(size.x * size.y * coverage);
     unsigned actualNodes = 0u;
@@ -327,7 +327,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
         values[i] = 6;
     }
 
-    BOOST_TEST(LimitFor(values, coverage, minimum) == 5);
+    BOOST_TEST(limitFor(values, coverage, minimum) == 5);
 
     for(unsigned i = 0; i < exactNumberOfNodes + 5; i++)
     {
@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(LimitFor_always_chooses_closest_value)
         values[i] = 6;
     }
 
-    BOOST_TEST(LimitFor(values, coverage, minimum) == 5);
+    BOOST_TEST(limitFor(values, coverage, minimum) == 5);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

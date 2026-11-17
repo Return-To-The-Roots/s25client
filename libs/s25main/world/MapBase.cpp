@@ -79,7 +79,7 @@ MapPoint MapBase::getNeighbour(const MapPoint pt, const Direction dir) const
     }
 
     // This should be the same, but faster
-    // RTTR_Assert(res == MakeMapPoint(::GetNeighbour(Position(pt), dir)));
+    // RTTR_Assert(res == makeMapPoint(::getNeighbour(Position(pt), dir)));
     return res;
 }
 

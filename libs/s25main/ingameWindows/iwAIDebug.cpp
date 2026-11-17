@@ -41,7 +41,7 @@ public:
         // Cache images
         for(const auto i : helpers::enumRange<BuildingQuality>())
         {
-            bqImgs[i] = LOADER.getMapTexture(49 + rttr::enum_cast(i));
+            bqImgs[i] = LOADER.getMapTexture(49 + rttr::enumCast(i));
         }
         ticks[0] = LOADER.getTextureN("io", 40);
         ticks[1] = LOADER.getTextureN("io", 32);

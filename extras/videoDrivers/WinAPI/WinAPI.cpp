@@ -413,7 +413,7 @@ unsigned long VideoWinAPI::getTickCount() const
     return GetTickCount();
 }
 
-static void* wglGetProcAddress_Wrapper(const char* name)
+static void* wglGetProcAddressWrapper(const char* name)
 {
     auto* func = reinterpret_cast<void*>(wglGetProcAddress(name));
     if(!func)
@@ -426,7 +426,7 @@ static void* wglGetProcAddress_Wrapper(const char* name)
 
 OpenGL_Loader_Proc VideoWinAPI::getLoaderFunction() const
 {
-    return wglGetProcAddress_Wrapper;
+    return wglGetProcAddressWrapper;
 }
 
 std::vector<VideoMode> VideoWinAPI::listVideoModes() const
@@ -435,14 +435,14 @@ std::vector<VideoMode> VideoWinAPI::listVideoModes() const
     memset(&dm, 0, sizeof(dm));
     dm.dmSize = sizeof(dm);
     unsigned m = 0;
-    std::vector<VideoMode> video_modes;
+    std::vector<VideoMode> videoModes;
     while(EnumDisplaySettings(nullptr, m++, &dm))
     {
         VideoMode vm(static_cast<unsigned short>(dm.dmPelsWidth), static_cast<unsigned short>(dm.dmPelsHeight));
-        if(!helpers::contains(video_modes, vm))
-            video_modes.push_back(vm);
+        if(!helpers::contains(videoModes, vm))
+            videoModes.push_back(vm);
     }
-    return video_modes;
+    return videoModes;
 }
 
 void VideoWinAPI::setMousePos(Position pos)
@@ -506,7 +506,7 @@ void VideoWinAPI::onWMKeyDown(unsigned c, LPARAM lParam)
         {
             // Die 12 F-Tasten
             if(c >= VK_F1 && c <= VK_F12)
-                ke.kt = static_cast<KeyType>(rttr::enum_cast(KeyType::F1) + c - VK_F1);
+                ke.kt = static_cast<KeyType>(rttr::enumCast(KeyType::F1) + c - VK_F1);
         }
         break;
     }

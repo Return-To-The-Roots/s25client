@@ -53,7 +53,7 @@ void flattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos)
     }
 
     heightMap[pos] = lowestHeight;
-    SetValues(heightMap, neighbors, lowestHeight);
+    setValues(heightMap, neighbors, lowestHeight);
 }
 
 } // namespace rttr::mapGenerator

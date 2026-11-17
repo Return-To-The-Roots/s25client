@@ -11,9 +11,9 @@ namespace bfs = boost::filesystem;
 
 rttr::test::Fixture::Fixture()
 {
-    if(!RTTRCONFIG.Init())
+    if(!RTTRCONFIG.init())
         throw std::runtime_error("Could not init working directory. Misplaced binary?");
-    if(!bfs::is_directory(RTTRCONFIG.ExpandPath("<RTTR_RTTR>")))
-        throw std::runtime_error(RTTRCONFIG.ExpandPath("<RTTR_RTTR>").string()
+    if(!bfs::is_directory(RTTRCONFIG.expandPath("<RTTR_RTTR>")))
+        throw std::runtime_error(RTTRCONFIG.expandPath("<RTTR_RTTR>").string()
                                  + " not found. Binary misplaced or RTTR folder not copied?");
 }

@@ -23,7 +23,7 @@ public:
     Tree(uint8_t objectType, uint8_t objectIndex) : type(objectType), index(objectIndex) {}
 };
 
-std::vector<Tree> CreateTrees(const TextureMap& textures);
+std::vector<Tree> createTrees(const TextureMap& textures);
 
 void addObjects(Map& map, RandomUtility& rnd, const MapSettings& settings);
 

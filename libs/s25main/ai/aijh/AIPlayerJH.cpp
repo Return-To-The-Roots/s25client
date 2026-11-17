@@ -47,7 +47,7 @@
 #include <type_traits>
 
 namespace {
-void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
+void handleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
 {
     std::unique_ptr<AIEvent::Base> ev;
     using namespace AIEvent;
@@ -78,7 +78,7 @@ void HandleBuildingNote(AIEventManager& eventMgr, const BuildingNote& note)
     }
     eventMgr.addAIEvent(std::move(ev));
 }
-void HandleExpeditionNote(AIEventManager& eventMgr, const ExpeditionNote& note)
+void handleExpeditionNote(AIEventManager& eventMgr, const ExpeditionNote& note)
 {
     switch(note.type)
     {
@@ -90,11 +90,11 @@ void HandleExpeditionNote(AIEventManager& eventMgr, const ExpeditionNote& note)
             break;
     }
 }
-void HandleResourceNote(AIEventManager& eventMgr, const ResourceNote& note)
+void handleResourceNote(AIEventManager& eventMgr, const ResourceNote& note)
 {
     eventMgr.addAIEvent(std::make_unique<AIEvent::Resource>(AIEvent::EventType::ResourceFound, note.pos, note.res));
 }
-void HandleRoadNote(AIEventManager& eventMgr, const RoadNote& note)
+void handleRoadNote(AIEventManager& eventMgr, const RoadNote& note)
 {
     switch(note.type)
     {
@@ -108,7 +108,7 @@ void HandleRoadNote(AIEventManager& eventMgr, const RoadNote& note)
             break;
     }
 }
-void HandleShipNote(AIEventManager& eventMgr, const ShipNote& note)
+void handleShipNote(AIEventManager& eventMgr, const ShipNote& note)
 {
     if(note.type == ShipNote::Constructed)
         eventMgr.addAIEvent(std::make_unique<AIEvent::Location>(AIEvent::EventType::ShipBuilt, note.pos));
@@ -164,7 +164,7 @@ static auto createResourceMaps(const AIInterface& aii, const AIMap& aiMap)
 
 AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, const AI::Level level)
     : AIPlayer(playerId, gwb, level), UpgradeBldPos(MapPoint::invalid()), resourceMaps(createResourceMaps(aii, aiMap)),
-      isInitGfCompleted(false), defeated(player.IsDefeated()), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
+      isInitGfCompleted(false), defeated(player.isDefeated()), bldPlanner(std::make_unique<BuildingPlanner>(*this)),
       construction(std::make_unique<AIConstruction>(*this))
 {
     initNodes();
@@ -193,23 +193,23 @@ AIPlayerJH::AIPlayerJH(const unsigned char playerId, const GameWorldBase& gwb, c
     NotificationManager& notifications = gwb.getNotifications();
     subBuilding = notifications.subscribe<BuildingNote>([this, playerId](const BuildingNote& note) {
         if(note.player == playerId)
-            HandleBuildingNote(eventManager, note);
+            handleBuildingNote(eventManager, note);
     });
     subExpedition = notifications.subscribe<ExpeditionNote>([this, playerId](const ExpeditionNote& note) {
         if(note.player == playerId)
-            HandleExpeditionNote(eventManager, note);
+            handleExpeditionNote(eventManager, note);
     });
     subResource = notifications.subscribe<ResourceNote>([this, playerId](const ResourceNote& note) {
         if(note.player == playerId)
-            HandleResourceNote(eventManager, note);
+            handleResourceNote(eventManager, note);
     });
     subRoad = notifications.subscribe<RoadNote>([this, playerId](const RoadNote& note) {
         if(note.player == playerId)
-            HandleRoadNote(eventManager, note);
+            handleRoadNote(eventManager, note);
     });
     subShip = notifications.subscribe<ShipNote>([this, playerId](const ShipNote& note) {
         if(note.player == playerId)
-            HandleShipNote(eventManager, note);
+            handleShipNote(eventManager, note);
     });
     subBQ = recordBQsToUpdate(this->gwb, this->nodesWithOutdatedBQ);
 }
@@ -329,7 +329,7 @@ void AIPlayerJH::planNewBuildings(const unsigned gf)
     const unsigned numResGatherBlds = 14; /* The first n buildings in the above list, that gather resources */
 
     // LOG.write(("new buildorders %i whs and %i mil for player %i
-    // \n",aii.GetStorehouses().size(),aii.GetMilitaryBuildings().size(),playerId);
+    // \n",aii.getStorehouses().size(),aii.getMilitaryBuildings().size(),playerId);
 
     const std::list<nobBaseWarehouse*>& storehouses = aii.getStorehouses();
     if(!storehouses.empty())
@@ -710,14 +710,14 @@ void AIPlayerJH::executeAIJob()
     // if no current job available, take next one! events first, then constructions
     if (!currentJob)
     {
-        if (construction->BuildJobAvailable())
+        if (construction->buildJobAvailable())
         {
-            currentJob = construction->GetBuildJob();
+            currentJob = construction->getBuildJob();
         }
     }
     // Something to do? Do it!
     if (currentJob)
-        currentJob->ExecuteJob();
+        currentJob->executeJob();
         */
 }
 
@@ -1024,7 +1024,7 @@ unsigned AIPlayerJH::getDensity(MapPoint pt, AIResource res, int radius)
         // return aiMap[curPt].res == res;
         return calcResource(curPt) == res;
     };
-    const unsigned numGoodPts = helpers::count_if(pts, hasResource);
+    const unsigned numGoodPts = helpers::countIf(pts, hasResource);
     return (numGoodPts * 100) / numAllPTs;
 }
 
@@ -1505,7 +1505,7 @@ void AIPlayerJH::checkGranitMine()
 
 void AIPlayerJH::tryToAttack()
 {
-    unsigned hq_or_harbor_without_soldiers = 0;
+    unsigned hqOrHarborWithoutSoldiers = 0;
     std::vector<const nobBaseMilitary*> potentialTargets;
 
     // use own military buildings (except inland buildings) to search for enemy military buildings
@@ -1541,7 +1541,7 @@ void AIPlayerJH::tryToAttack()
                 if(target->getGOT() != GO_Type::NobMilitary && !target->defendersAvailable())
                 {
                     // headquarter or harbor without any troops :)
-                    hq_or_harbor_without_soldiers++;
+                    hqOrHarborWithoutSoldiers++;
                     potentialTargets.insert(potentialTargets.begin(), target);
                 } else
                     potentialTargets.push_back(target);
@@ -1550,7 +1550,7 @@ void AIPlayerJH::tryToAttack()
     }
 
     // shuffle everything but headquarters and harbors without any troops in them
-    std::shuffle(potentialTargets.begin() + hq_or_harbor_without_soldiers, potentialTargets.end(),
+    std::shuffle(potentialTargets.begin() + hqOrHarborWithoutSoldiers, potentialTargets.end(),
                  AI::getRandomGenerator());
 
     // check for each potential attacking target the number of available attacking soldiers
@@ -1647,7 +1647,7 @@ void AIPlayerJH::trySeaAttack()
                             undefendedTargets.push_back(hb);
                         else // todo: maybe only attack this when there is a fair win chance for the attackers?
                             potentialTargets.push_back(hb);
-                        // LOG.write(("found a defended harbor we can attack at %i,%i \n",hb->GetPos());
+                        // LOG.write(("found a defended harbor we can attack at %i,%i \n",hb->getPos());
                     }
                 } else // cant attack player owning the harbor -> add to list
                 {
@@ -1659,7 +1659,7 @@ void AIPlayerJH::trySeaAttack()
         {
             searcharoundharborspots.push_back(i);
             // LOG.write(("found an unused harborspot we have to look around of at %i,%i
-            // \n",gwb.GetHarborPoint(i).x,gwb.GetHarborPoint(i).y);
+            // \n",gwb.getHarborPoint(i).x,gwb.getHarborPoint(i).y);
         }
     }
     auto& prng = AI::getRandomGenerator();
@@ -2058,8 +2058,8 @@ void AIPlayerJH::initDistribution()
 
 bool AIPlayerJH::validTreeinRange(const MapPoint pt)
 {
-    unsigned max_radius = 6;
-    for(MapCoord tx = gwb.getXA(pt, Direction::West), r = 1; r <= max_radius;
+    unsigned maxRadius = 6;
+    for(MapCoord tx = gwb.getXA(pt, Direction::West), r = 1; r <= maxRadius;
         tx = gwb.getXA(MapPoint(tx, pt.y), Direction::West), ++r)
     {
         MapPoint t2(tx, pt.y);
@@ -2085,8 +2085,8 @@ bool AIPlayerJH::validTreeinRange(const MapPoint pt)
 
 bool AIPlayerJH::validStoneinRange(const MapPoint pt)
 {
-    unsigned max_radius = 8;
-    for(MapCoord tx = gwb.getXA(pt, Direction::West), r = 1; r <= max_radius;
+    unsigned maxRadius = 8;
+    for(MapCoord tx = gwb.getXA(pt, Direction::West), r = 1; r <= maxRadius;
         tx = gwb.getXA(MapPoint(tx, pt.y), Direction::West), ++r)
     {
         MapPoint t2(tx, pt.y);
@@ -2246,9 +2246,9 @@ unsigned AIPlayerJH::amountInStorage(::Job job) const
 
 bool AIPlayerJH::validFishInRange(const MapPoint pt)
 {
-    unsigned max_radius = 5;
+    unsigned maxRadius = 5;
     return gwb.checkPointsInRadius(
-      pt, max_radius,
+      pt, maxRadius,
       [this, pt](const MapPoint curPt, unsigned) {
           if(gwb.getNode(curPt).resources.has(ResourceType::Fish)) // fish on current spot?
           {

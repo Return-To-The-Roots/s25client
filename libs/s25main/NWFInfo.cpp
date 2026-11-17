@@ -26,20 +26,20 @@ void NWFInfo::init(unsigned nextNWF, unsigned cmdDelay)
 
 void NWFInfo::addPlayer(unsigned playerId)
 {
-    if(!helpers::contains_if(playerInfos_, [playerId](const auto& info) { return info.id == playerId; }))
+    if(!helpers::containsIf(playerInfos_, [playerId](const auto& info) { return info.id == playerId; }))
         playerInfos_.push_back(NWFPlayerInfo(playerId));
 }
 
 void NWFInfo::removePlayer(unsigned playerId)
 {
-    auto it = helpers::find_if(playerInfos_, [playerId](const auto& info) { return info.id == playerId; });
+    auto it = helpers::findIf(playerInfos_, [playerId](const auto& info) { return info.id == playerId; });
     if(it != playerInfos_.end())
         playerInfos_.erase(it);
 }
 
 bool NWFInfo::addPlayerCmds(unsigned playerId, const PlayerGameCommands& cmds)
 {
-    auto it = helpers::find_if(playerInfos_, [playerId](const auto& info) { return info.id == playerId; });
+    auto it = helpers::findIf(playerInfos_, [playerId](const auto& info) { return info.id == playerId; });
     if(it == playerInfos_.end())
         throw std::runtime_error("Player with given player id does not exist");
     // Commands in NWF n are sent for NWF n + cmdDelay. Clients can only execute an NWF (and send their cmds) when all
@@ -81,7 +81,7 @@ bool NWFInfo::isReady()
 
 const NWFPlayerInfo& NWFInfo::getPlayerInfo(unsigned playerId) const
 {
-    auto it = helpers::find_if(playerInfos_, [playerId](const auto& info) { return info.id == playerId; });
+    auto it = helpers::findIf(playerInfos_, [playerId](const auto& info) { return info.id == playerId; });
     if(it == playerInfos_.end())
         throw std::runtime_error("Player with given player id does not exist");
     else

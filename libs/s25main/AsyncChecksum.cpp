@@ -20,27 +20,27 @@ AsyncChecksum::AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned obj
 
 void AsyncChecksum::serialize(Serializer& ser) const
 {
-    ser.PushUnsignedInt(randChecksum);
-    ser.PushUnsignedInt(objCt);
-    ser.PushUnsignedInt(objIdCt);
-    ser.PushUnsignedInt(eventCt);
-    ser.PushUnsignedInt(evInstanceCt);
+    ser.pushUnsignedInt(randChecksum);
+    ser.pushUnsignedInt(objCt);
+    ser.pushUnsignedInt(objIdCt);
+    ser.pushUnsignedInt(eventCt);
+    ser.pushUnsignedInt(evInstanceCt);
 }
 
 void AsyncChecksum::deserialize(Serializer& ser)
 {
-    randChecksum = ser.PopUnsignedInt();
-    objCt = ser.PopUnsignedInt();
-    objIdCt = ser.PopUnsignedInt();
-    eventCt = ser.PopUnsignedInt();
-    evInstanceCt = ser.PopUnsignedInt();
+    randChecksum = ser.popUnsignedInt();
+    objCt = ser.popUnsignedInt();
+    objIdCt = ser.popUnsignedInt();
+    eventCt = ser.popUnsignedInt();
+    evInstanceCt = ser.popUnsignedInt();
 }
 
 unsigned AsyncChecksum::getHash() const
 {
     Serializer ser;
     serialize(ser);
-    return calcChecksumOfBuffer(ser.GetData(), ser.GetLength());
+    return calcChecksumOfBuffer(ser.getData(), ser.getLength());
 }
 
 AsyncChecksum AsyncChecksum::create(const Game& game)

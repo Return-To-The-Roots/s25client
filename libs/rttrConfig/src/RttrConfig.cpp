@@ -87,7 +87,7 @@ boost::filesystem::path RttrConfig::getSourceDir()
     return RTTR_SRCDIR;
 }
 
-boost::filesystem::path RttrConfig::ExpandPath(const std::string& path) const
+boost::filesystem::path RttrConfig::expandPath(const std::string& path) const
 {
     if(path.empty())
         return prefixPath_;
@@ -121,7 +121,7 @@ void RttrConfig::overridePathMapping(const std::string& id, const boost::filesys
     pathMappings[id] = path;
 }
 
-bool RttrConfig::Init()
+bool RttrConfig::init()
 {
     prefixPath_ = getPrefixPath();
     if(prefixPath_.empty())

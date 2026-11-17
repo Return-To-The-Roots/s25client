@@ -85,7 +85,7 @@ public:
     bool isWaitingForShip() const { return (state == State::WaitForShip); }
     bool isCarried() const { return (state == State::Carried); }
     /// Sagt dem Träger Bescheid, dass sie in die aktuelle (next_dir) Richtung nicht mehr getragen werden will
-    void removeWareJobForDir(RoadPathDirection last_next_dir);
+    void removeWareJobForDir(RoadPathDirection lastNextDir);
     /// Überprüft, ob es noch ein Weg zum Ziel gibt
     bool isRouteToGoal();
     /// Tells the ware that it should look for a warehouse to go to and notifies that (if found)

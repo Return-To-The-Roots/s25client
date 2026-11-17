@@ -19,10 +19,10 @@ void FoWNode::serialize(SerializedGameData& sgd) const
     // Only in FoW can be FoW objects
     if(visibility == Visibility::FogOfWar)
     {
-        sgd.PushUnsignedInt(last_update_time);
+        sgd.pushUnsignedInt(last_update_time);
         sgd.pushFOWObject(object.get());
         helpers::pushContainer(sgd, roads);
-        sgd.PushUnsignedChar(owner);
+        sgd.pushUnsignedChar(owner);
         helpers::pushContainer(sgd, boundary_stones);
     }
 }
@@ -33,10 +33,10 @@ void FoWNode::deserialize(SerializedGameData& sgd)
     // Only in FoW can be FoW objects
     if(visibility == Visibility::FogOfWar)
     {
-        last_update_time = sgd.PopUnsignedInt();
+        last_update_time = sgd.popUnsignedInt();
         object = sgd.popFOWObject();
         helpers::popContainer(sgd, roads);
-        owner = sgd.PopUnsignedChar();
+        owner = sgd.popUnsignedChar();
         helpers::popContainer(sgd, boundary_stones);
     } else
     {

@@ -35,7 +35,7 @@ void nofBuildingWorker::serialize(SerializedGameData& sgd) const
     {
         sgd.pushObject(workplace);
         sgd.pushOptionalEnum<uint8_t>(ware);
-        sgd.PushBool(was_sounding);
+        sgd.pushBool(was_sounding);
     }
 }
 
@@ -47,16 +47,16 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
         workplace = sgd.popObject<nobUsual>();
         if(sgd.getGameDataVersion() < 5)
         {
-            const auto iWare = sgd.PopUnsignedChar();
+            const auto iWare = sgd.popUnsignedChar();
             // GoodType::Nothing is moved because of adding new wares due addons
             // The old GoodType::Nothing is now GoodType::Grapes
-            if(iWare == rttr::enum_cast(GoodType::Grapes))
+            if(iWare == rttr::enumCast(GoodType::Grapes))
                 ware = std::nullopt;
             else
                 ware = GoodType(iWare);
         } else
             ware = sgd.popOptionalEnum<GoodType>();
-        was_sounding = sgd.PopBool();
+        was_sounding = sgd.popBool();
     } else
     {
         workplace = nullptr;
@@ -148,19 +148,19 @@ void nofBuildingWorker::workingReady()
         if(flag->hasSpaceForWare())
         {
             // Ware erzeugen
-            auto real_ware = std::make_unique<Ware>(*ware, nullptr, flag);
-            real_ware->waitAtFlag(*flag);
+            auto realWare = std::make_unique<Ware>(*ware, nullptr, flag);
+            realWare->waitAtFlag(*flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
-            GoodType ware_type = ConvertShields(real_ware->type);
-            world->getPlayer(player).increaseInventoryWare(ware_type, 1);
+            GoodType wareType = convertShields(realWare->type);
+            world->getPlayer(player).increaseInventoryWare(wareType, 1);
             // Abnehmer für Ware finden
-            real_ware->setGoal(world->getPlayer(player).findClientForWare(*real_ware));
+            realWare->setGoal(world->getPlayer(player).findClientForWare(*realWare));
             // Ware soll ihren weiteren Weg berechnen
-            real_ware->recalcRoute();
+            realWare->recalcRoute();
             // Ware ablegen
-            flag->addWare(std::move(real_ware));
+            flag->addWare(std::move(realWare));
             // Warenstatistik erhöhen
-            world->getPlayer(this->player).increaseMerchandiseStatistic(ware_type);
+            world->getPlayer(this->player).increaseMerchandiseStatistic(wareType);
             // Tragen nun keine Ware mehr
             ware = std::nullopt;
         }
@@ -197,7 +197,7 @@ void nofBuildingWorker::gotWareOrProductionAllowed()
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
     if(state == State::WaitingForWaresOrProductionStopped)
     {
-        // anfangen zu arbeiten
+        // Anfangen zu arbeiten
         tryToWork();
     }
 }

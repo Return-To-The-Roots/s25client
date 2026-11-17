@@ -178,7 +178,7 @@ GlobalGameSettings::AddonWithState* GlobalGameSettings::findAddon(AddonId id)
 
 const GlobalGameSettings::AddonWithState* GlobalGameSettings::findAddon(AddonId id) const
 {
-    auto it = helpers::find_if(addons, [id](const AddonWithState& cur) { return cur.addon->getId() == id; });
+    auto it = helpers::findIf(addons, [id](const AddonWithState& cur) { return cur.addon->getId() == id; });
     return it != addons.end() ? &*it : nullptr;
 }
 
@@ -254,16 +254,16 @@ void GlobalGameSettings::serialize(Serializer& ser) const
     helpers::pushEnum<uint8_t>(ser, speed);
     helpers::pushEnum<uint8_t>(ser, objective);
     helpers::pushEnum<uint8_t>(ser, startWares);
-    ser.PushBool(lockedTeams);
+    ser.pushBool(lockedTeams);
     helpers::pushEnum<uint8_t>(ser, exploration);
-    ser.PushBool(teamView);
-    ser.PushBool(randomStartPosition);
+    ser.pushBool(teamView);
+    ser.pushBool(randomStartPosition);
 
-    ser.PushUnsignedInt(addons.size());
+    ser.pushUnsignedInt(addons.size());
     for(const AddonWithState& addon : addons)
     {
-        ser.PushUnsignedInt(static_cast<unsigned>(addon.addon->getId()));
-        ser.PushUnsignedInt(addon.status);
+        ser.pushUnsignedInt(static_cast<unsigned>(addon.addon->getId()));
+        ser.pushUnsignedInt(addon.status);
 
         // LOG.writeToFile("\t0x%08X=%d\n") % AddonId::type_(it->addon->getId()) % it->status;
     }
@@ -277,20 +277,20 @@ void GlobalGameSettings::deserialize(Serializer& ser)
     speed = helpers::popEnum<GameSpeed>(ser);
     objective = helpers::popEnum<GameObjective>(ser);
     startWares = helpers::popEnum<StartWares>(ser);
-    lockedTeams = ser.PopBool();
+    lockedTeams = ser.popBool();
     exploration = helpers::popEnum<Exploration>(ser);
-    teamView = ser.PopBool();
-    randomStartPosition = ser.PopBool();
+    teamView = ser.popBool();
+    randomStartPosition = ser.popBool();
 
-    unsigned count = ser.PopUnsignedInt();
+    unsigned count = ser.popUnsignedInt();
 
     resetAddons();
 
     bool migrateLegacyInexhaustibleMines = false;
     for(unsigned i = 0; i < count; ++i)
     {
-        auto addon = static_cast<AddonId>(ser.PopUnsignedInt());
-        unsigned status = ser.PopUnsignedInt();
+        auto addon = static_cast<AddonId>(ser.popUnsignedInt());
+        unsigned status = ser.popUnsignedInt();
         if(addon == AddonId::INEXHAUSTIBLE_MINES)
         {
             migrateLegacyInexhaustibleMines = status != 0;
@@ -320,7 +320,7 @@ void GlobalGameSettings::setSelection(AddonId id, unsigned selection)
 {
     auto* addon = findAddon(id);
     if(!addon)
-        LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % rttr::enum_cast(id);
+        LOG.write(_("Addon %1$#x not found!\n"), LogTarget::FileAndStderr) % rttr::enumCast(id);
     else
         addon->status = selection;
 }

@@ -13,8 +13,8 @@ namespace helpers {
 template<typename T>
 void pushPoint(Serializer& ser, Point<T> pt)
 {
-    ser.Push(pt.x);
-    ser.Push(pt.y);
+    ser.push(pt.x);
+    ser.push(pt.y);
 }
 
 template<typename PointT>
@@ -22,8 +22,8 @@ auto popPoint(Serializer& ser)
 {
     using ElementType = typename PointT::ElementType;
     std::remove_const_t<PointT> pt;
-    pt.x = ser.Pop<ElementType>();
-    pt.y = ser.Pop<ElementType>();
+    pt.x = ser.pop<ElementType>();
+    pt.y = ser.pop<ElementType>();
     return pt;
 }
 

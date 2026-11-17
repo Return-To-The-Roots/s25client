@@ -68,21 +68,21 @@ nobBaseWarehouse::~nobBaseWarehouse() = default;
 void nobBaseWarehouse::DestroyBuilding()
 {
     // Den Waren und Figuren Bescheid sagen, die zu uns auf den Weg sind, dass wir nun nicht mehr existieren
-    for(noFigure* dependent_figure : dependent_figures)
+    for(noFigure* dependentFigure : dependent_figures)
     {
         // Only send figures home that are not already at this position.
-        if(dependent_figure->getPos() == getPos())
+        if(dependentFigure->getPos() == getPos())
         {
-            dependent_figure->setGoalTonullptr();
-            dependent_figure->cutCurrentRoad();
-            dependent_figure->startWandering();
+            dependentFigure->setGoalTonullptr();
+            dependentFigure->cutCurrentRoad();
+            dependentFigure->startWandering();
         } else
-            dependent_figure->goHome();
+            dependentFigure->goHome();
     }
     dependent_figures.clear();
 
-    for(Ware* dependent_ware : dependent_wares)
-        wareNotNeeded(dependent_ware);
+    for(Ware* dependentWare : dependent_wares)
+        wareNotNeeded(dependentWare);
     dependent_wares.clear();
 
     // ggf. Events abmelden
@@ -92,10 +92,10 @@ void nobBaseWarehouse::DestroyBuilding()
     getEvMgr().removeEvent(store_event);
 
     // Waiting Wares löschen
-    for(auto& waiting_ware : waiting_wares)
+    for(auto& waitingWare : waiting_wares)
     {
-        waiting_ware->wareLost(player);
-        waiting_ware->destroy();
+        waitingWare->wareLost(player);
+        waitingWare->destroy();
     }
     waiting_wares.clear();
 
@@ -124,7 +124,7 @@ void nobBaseWarehouse::serialize(SerializedGameData& sgd) const
     nobBaseMilitary::serialize(sgd);
 
     sgd.pushObjectContainer(waiting_wares, true);
-    sgd.PushBool(fetch_double_protection);
+    sgd.pushBool(fetch_double_protection);
     sgd.pushObjectContainer(dependent_figures);
     sgd.pushObjectContainer(dependent_wares, true);
     sgd.pushEvent(producinghelpers_event);
@@ -135,22 +135,22 @@ void nobBaseWarehouse::serialize(SerializedGameData& sgd) const
     for(unsigned i = 0; i < 5; ++i)
     {
         // Nur das Reale, nicht das visuelle speichern, das wäre sinnlos!, beim Laden ist das visuelle = realem
-        sgd.PushUnsignedInt(reserve_soldiers_available[i]);
-        sgd.PushUnsignedInt(reserve_soldiers_available_with_armor[i]);
-        sgd.PushUnsignedInt(reserve_soldiers_claimed_real[i]);
+        sgd.pushUnsignedInt(reserve_soldiers_available[i]);
+        sgd.pushUnsignedInt(reserve_soldiers_available_with_armor[i]);
+        sgd.pushUnsignedInt(reserve_soldiers_claimed_real[i]);
     }
 
     for(const auto i : helpers::enumRange<GoodType>())
     {
-        sgd.PushUnsignedInt(inventory.visual[i]);
-        sgd.PushUnsignedInt(inventory.real[i]);
-        sgd.PushUnsignedChar(static_cast<uint8_t>(inventorySettings[i]));
+        sgd.pushUnsignedInt(inventory.visual[i]);
+        sgd.pushUnsignedInt(inventory.real[i]);
+        sgd.pushUnsignedChar(static_cast<uint8_t>(inventorySettings[i]));
     }
     for(const auto i : helpers::enumRange<Job>())
     {
-        sgd.PushUnsignedInt(inventory.visual[i]);
-        sgd.PushUnsignedInt(inventory.real[i]);
-        sgd.PushUnsignedChar(static_cast<uint8_t>(inventorySettings[i]));
+        sgd.pushUnsignedInt(inventory.visual[i]);
+        sgd.pushUnsignedInt(inventory.real[i]);
+        sgd.pushUnsignedChar(static_cast<uint8_t>(inventorySettings[i]));
     }
 
     helpers::pushContainer(sgd, inventory.visual.armoredSoldiers);
@@ -160,7 +160,7 @@ void nobBaseWarehouse::serialize(SerializedGameData& sgd) const
 nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id)
 {
     sgd.popObjectContainer(waiting_wares, GO_Type::Ware);
-    fetch_double_protection = sgd.PopBool();
+    fetch_double_protection = sgd.popBool();
     sgd.popObjectContainer(dependent_figures);
     sgd.popObjectContainer(dependent_wares, GO_Type::Ware);
 
@@ -172,11 +172,11 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
     reserve_soldiers_available_with_armor.fill(0);
     for(unsigned i = 0; i < 5; ++i)
     {
-        reserve_soldiers_available[i] = sgd.PopUnsignedInt();
+        reserve_soldiers_available[i] = sgd.popUnsignedInt();
         if(sgd.getGameDataVersion() >= 12)
-            reserve_soldiers_available_with_armor[i] = sgd.PopUnsignedInt();
+            reserve_soldiers_available_with_armor[i] = sgd.popUnsignedInt();
 
-        reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = sgd.PopUnsignedInt();
+        reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = sgd.popUnsignedInt();
     }
 
     for(const auto i : helpers::enumRange<GoodType>())
@@ -187,9 +187,9 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
         if(sgd.getGameDataVersion() < 12 && leatheraddon::isLeatherAddonGoodType(i))
             continue;
 
-        inventory.visual.add(i, sgd.PopUnsignedInt());
-        inventory.real.add(i, sgd.PopUnsignedInt());
-        inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
+        inventory.visual.add(i, sgd.popUnsignedInt());
+        inventory.real.add(i, sgd.popUnsignedInt());
+        inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.popUnsignedChar());
     }
     for(const auto i : helpers::enumRange<Job>())
     {
@@ -199,9 +199,9 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
         if(sgd.getGameDataVersion() < 12 && leatheraddon::isLeatherAddonJobType(i))
             continue;
 
-        inventory.visual.add(i, sgd.PopUnsignedInt());
-        inventory.real.add(i, sgd.PopUnsignedInt());
-        inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
+        inventory.visual.add(i, sgd.popUnsignedInt());
+        inventory.real.add(i, sgd.popUnsignedInt());
+        inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.popUnsignedChar());
     }
     if(sgd.getGameDataVersion() >= 12)
     {
@@ -233,10 +233,10 @@ void nobBaseWarehouse::clear()
 
     inventory.clear();
 
-    for(auto& waiting_ware : waiting_wares)
+    for(auto& waitingWare : waiting_wares)
     {
-        waiting_ware->wareLost(player);
-        waiting_ware->destroy();
+        waitingWare->wareLost(player);
+        waitingWare->destroy();
     }
     waiting_wares.clear();
 }
@@ -345,9 +345,9 @@ void nobBaseWarehouse::handleBaseEvent(const unsigned id)
 void nobBaseWarehouse::handleCollectEvent()
 {
     // Storing wares done?
-    bool storing_done = false;
+    bool storingDone = false;
     // Is storing still wanted?
-    bool storing_wanted = false;
+    bool storingWanted = false;
 
     // Untersuchen, welche Waren und Figuren eingelagert werden sollen
     for(const auto i : helpers::enumRange<GoodType>())
@@ -356,7 +356,7 @@ void nobBaseWarehouse::handleCollectEvent()
         if(!getInventorySetting(i).isSet(EInventorySetting::Collect))
             continue;
 
-        storing_wanted = true;
+        storingWanted = true;
 
         // Lagerhaus suchen, das diese Ware enthält
         nobBaseWarehouse* wh = world->getPlayer(player).findWarehouse(*this, FW::HasWareButNoCollect(i), false, false);
@@ -368,14 +368,14 @@ void nobBaseWarehouse::handleCollectEvent()
             if(ware)
             {
                 RTTR_Assert(isWareDependent(*ware));
-                storing_done = true;
+                storingDone = true;
                 break;
             }
         }
     }
 
     // Menschen "bestellen" wenn noch keine Ware bestellt wurde
-    if(!storing_done)
+    if(!storingDone)
     {
         for(const auto i : helpers::enumRange<Job>())
         {
@@ -383,7 +383,7 @@ void nobBaseWarehouse::handleCollectEvent()
             if(!getInventorySetting(i).isSet(EInventorySetting::Collect))
                 continue;
 
-            storing_wanted = true;
+            storingWanted = true;
 
             // Lagerhaus suchen, das diesen Job enthält
             nobBaseWarehouse* wh =
@@ -400,7 +400,7 @@ void nobBaseWarehouse::handleCollectEvent()
 
     // Storing still wanted?
     // Then continue ordering new stuff
-    if(storing_wanted)
+    if(storingWanted)
         store_event = getEvMgr().addEvent(this, STORE_INTERVAL, 4);
 }
 
@@ -511,34 +511,34 @@ void nobBaseWarehouse::handleRecrutingEvent()
 
     GamePlayer& owner = world->getPlayer(player);
     const unsigned recruiting_ratio = owner.getMilitarySetting(0);
-    unsigned real_recruits = max_recruits * recruiting_ratio / MILITARY_SETTINGS_SCALE[0];
+    unsigned realRecruits = max_recruits * recruiting_ratio / MILITARY_SETTINGS_SCALE[0];
     // Wurde abgerundet?
-    unsigned remainingRecruits = real_recruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0];
+    unsigned remainingRecruits = realRecruits * recruiting_ratio % MILITARY_SETTINGS_SCALE[0];
     if(remainingRecruits != 0 && unsigned(RANDOM_RAND(MILITARY_SETTINGS_SCALE[0] - 1)) < remainingRecruits)
-        ++real_recruits;
-    else if(real_recruits == 0)
+        ++realRecruits;
+    else if(realRecruits == 0)
         return; // Nothing to do
 
-    inventory.add(Job::Private, real_recruits);
-    owner.increaseInventoryJob(Job::Private, real_recruits);
+    inventory.add(Job::Private, realRecruits);
+    owner.increaseInventoryJob(Job::Private, realRecruits);
 
-    inventory.remove(Job::Helper, real_recruits);
-    owner.decreaseInventoryJob(Job::Helper, real_recruits);
+    inventory.remove(Job::Helper, realRecruits);
+    owner.decreaseInventoryJob(Job::Helper, realRecruits);
 
-    inventory.remove(GoodType::Sword, real_recruits);
-    owner.decreaseInventoryWare(GoodType::Sword, real_recruits);
+    inventory.remove(GoodType::Sword, realRecruits);
+    owner.decreaseInventoryWare(GoodType::Sword, realRecruits);
 
-    inventory.remove(GoodType::ShieldRomans, real_recruits);
-    owner.decreaseInventoryWare(GoodType::ShieldRomans, real_recruits);
+    inventory.remove(GoodType::ShieldRomans, realRecruits);
+    owner.decreaseInventoryWare(GoodType::ShieldRomans, realRecruits);
 
-    inventory.remove(GoodType::Beer, real_recruits);
-    owner.decreaseInventoryWare(GoodType::Beer, real_recruits);
+    inventory.remove(GoodType::Beer, realRecruits);
+    owner.decreaseInventoryWare(GoodType::Beer, realRecruits);
 
     // Evtl. versuchen nächsten zu rekrutieren
     tryRecruiting();
 
     // If there were no soldiers before
-    if(inventory[Job::Private] == real_recruits)
+    if(inventory[Job::Private] == realRecruits)
     {
         // Check reserve
         this->refreshReserve(0);
@@ -618,7 +618,7 @@ void nobBaseWarehouse::handleLeaveEvent()
         // there's a fight
 
         // try to find a defender
-        const auto it = helpers::find_if(leave_house, [](const auto& sld) {
+        const auto it = helpers::findIf(leave_house, [](const auto& sld) {
             return sld->getGOT() == GO_Type::NofAggressivedefender || sld->getGOT() == GO_Type::NofDefender;
         });
         // no defender found? enqueue next leaving event
@@ -652,7 +652,7 @@ void nobBaseWarehouse::handleLeaveEvent()
             // Send first ware
             auto ware = std::move(waiting_wares.front());
             waiting_wares.pop_front();
-            inventory.visual.remove(ConvertShields(ware->type));
+            inventory.visual.remove(convertShields(ware->type));
             ware->carry(*getFlag());
             world->addFigure(pos, std::make_unique<nofWarehouseWorker>(pos, player, std::move(ware), false))
               .walkToGoal();
@@ -716,7 +716,7 @@ Ware* nobBaseWarehouse::orderWare(const GoodType good, noBaseBuilding& goal)
 
 void nobBaseWarehouse::addWaitingWare(std::unique_ptr<Ware> ware)
 {
-    inventory.visual.add(ConvertShields(ware->type));
+    inventory.visual.add(convertShields(ware->type));
     ware->waitInWarehouse(*this);
     waiting_wares.push_back(std::move(ware));
     addLeavingEvent();
@@ -751,7 +751,7 @@ void nobBaseWarehouse::addWare(std::unique_ptr<Ware> ware)
         RTTR_Assert(!isWareDependent(*ware));
 
     // Die Schilde der verschiedenen Nation in eine "Schild-Sorte" (den der Römer) umwandeln!
-    GoodType type = ConvertShields(ware->type);
+    GoodType type = convertShields(ware->type);
 
     world->getPlayer(player).removeWare(*ware);
 
@@ -826,13 +826,13 @@ void nobBaseWarehouse::checkJobsForNewFigure(const Job job)
     checkOuthousing(job);
 }
 
-void nobBaseWarehouse::addFigure(std::unique_ptr<noFigure> figure, const bool increase_visual_counts)
+void nobBaseWarehouse::addFigure(std::unique_ptr<noFigure> figure, const bool increaseVisualCounts)
 {
     // Warenhausarbeiter werden nicht gezählt!
     if(!figure->memberOfWarehouse())
     {
         addToRealInventory(*figure);
-        if(increase_visual_counts)
+        if(increaseVisualCounts)
             addToVisualInventory(*figure);
     }
 
@@ -901,7 +901,7 @@ void nobBaseWarehouse::wareLost(Ware& ware)
 
 void nobBaseWarehouse::cancelWare(Ware*& ware)
 {
-    inventory.real.add(ConvertShields(ware->type));
+    inventory.real.add(convertShields(ware->type));
     helpers::extractPtr(waiting_wares, ware);
     ware = nullptr;
 }
@@ -1031,18 +1031,18 @@ void nobBaseWarehouse::addActiveSoldier(std::unique_ptr<nofActiveSoldier> soldie
 std::unique_ptr<nofDefender> nobBaseWarehouse::provideDefender(nofAttacker& attacker)
 {
     // Ränge zählen
-    unsigned rank_count = 0;
+    unsigned rankCount = 0;
 
     for(unsigned i = 0; i < SOLDIER_JOBS.size(); ++i)
     {
         if(inventory[SOLDIER_JOBS[i]] || reserve_soldiers_available[i])
-            ++rank_count;
+            ++rankCount;
     }
 
-    if(rank_count)
+    if(rankCount)
     {
         // Gewünschten Rang an Hand der Militäreinstellungen ausrechnen, je nachdem wie stark verteidigt werden soll
-        unsigned rank = (rank_count - 1) * world->getPlayer(player).getMilitarySetting(1) / MILITARY_SETTINGS_SCALE[1];
+        unsigned rank = (rankCount - 1) * world->getPlayer(player).getMilitarySetting(1) / MILITARY_SETTINGS_SCALE[1];
 
         // Gewünschten Rang suchen
         unsigned r = 0;
@@ -1146,7 +1146,7 @@ void nobBaseWarehouse::addToInventory(const GoodCounts& goods, bool addToPlayer)
         if(!goods[i])
             continue;
         // Can only add canonical shields (romans)
-        RTTR_Assert(i == GoodType::ShieldRomans || ConvertShields(i) != GoodType::ShieldRomans);
+        RTTR_Assert(i == GoodType::ShieldRomans || convertShields(i) != GoodType::ShieldRomans);
 
         inventory.add(i, goods[i]);
         if(addToPlayer)
@@ -1201,7 +1201,7 @@ bool nobBaseWarehouse::tryRecruitJob(const Job job)
 
     auto& owner = world->getPlayer(player);
 
-    const GoodType requiredTool = *JOB_CONSTS[job].tool; // Validity checked in CanRecruit
+    const GoodType requiredTool = *JOB_CONSTS[job].tool; // Validity checked in canRecruit
     if(requiredTool != GoodType::Nothing)
     {
         inventory.remove(requiredTool);
@@ -1223,7 +1223,7 @@ InventorySetting nobBaseWarehouse::getInventorySettingVisual(const Job job) cons
 
 InventorySetting nobBaseWarehouse::getInventorySettingVisual(const GoodType ware) const
 {
-    return inventorySettingsVisual[ConvertShields(ware)];
+    return inventorySettingsVisual[convertShields(ware)];
 }
 
 InventorySetting nobBaseWarehouse::getInventorySetting(const Job job) const
@@ -1233,7 +1233,7 @@ InventorySetting nobBaseWarehouse::getInventorySetting(const Job job) const
 
 InventorySetting nobBaseWarehouse::getInventorySetting(const GoodType ware) const
 {
-    return inventorySettings[ConvertShields(ware)];
+    return inventorySettings[convertShields(ware)];
 }
 
 void nobBaseWarehouse::setInventorySettingVisual(const boost_variant2<GoodType, Job>& what, InventorySetting state)
@@ -1338,7 +1338,7 @@ bool nobBaseWarehouse::areWaresToEmpty() const
 bool nobBaseWarehouse::defendersAvailable() const
 {
     const auto isNonZero = [](const unsigned ct) { return ct != 0; };
-    if(helpers::contains_if(reserve_soldiers_available, isNonZero))
+    if(helpers::containsIf(reserve_soldiers_available, isNonZero))
         return true;
     for(Job job : SOLDIER_JOBS)
     {

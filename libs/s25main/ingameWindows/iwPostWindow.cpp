@@ -86,7 +86,7 @@ iwPostWindow::iwPostWindow(GameWorldView& gwv, PostBox& postBox)
     addImageButton(ID_DELETE, DrawPoint(211, 246), Extent(30, 26), TextureColor::Grey, LOADER.getImageN("io", 106))
       ->setVisible(false);
 
-    addText(ID_INFO, DrawPoint(127, 228), "", MakeColor(255, 188, 100, 88), FontStyle::CENTER | FontStyle::BOTTOM,
+    addText(ID_INFO, DrawPoint(127, 228), "", makeColor(255, 188, 100, 88), FontStyle::CENTER | FontStyle::BOTTOM,
             SmallFont)
       ->setVisible(false);
 

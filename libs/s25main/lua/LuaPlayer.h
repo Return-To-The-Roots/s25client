@@ -51,7 +51,7 @@ public:
     unsigned getStatisticsValue(lua::SafeEnum<StatisticType> stat) const;
     bool aIConstructionOrder(unsigned x, unsigned y, lua::SafeEnum<BuildingType> bld);
     void modifyHQ(bool isTent);
-    bool IsDefeated() const;
+    bool isDefeated() const;
     void Surrender(bool destroyBlds);
     std::pair<unsigned, unsigned> getHQPos() const;
     bool isAlly(unsigned char otherPlayerId);

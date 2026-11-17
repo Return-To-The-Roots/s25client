@@ -97,7 +97,7 @@ public:
     bool checkShipRoute(MapPoint start, const std::vector<Direction>& route, unsigned pos, MapPoint* dest) const;
     /// Find a route for trade caravanes
     helpers::OptionalEnum<Direction> findTradePath(MapPoint start, MapPoint dest, unsigned char player,
-                                                   unsigned max_route = 0xffffffff, bool random_route = false,
+                                                   unsigned maxRoute = 0xffffffff, bool randomRoute = false,
                                                    std::vector<Direction>* route = nullptr,
                                                    unsigned* length = nullptr) const;
     /// Check whether trade path (starting from point @param start and at index @param startRouteIdx) is still valid.
@@ -119,9 +119,9 @@ public:
     bool doesDestructionChangeTerritory(const noBaseBuilding& building) const;
 
     /// Greift ein Militärgebäude auf x,y an (entsendet dafür die Soldaten etc.)
-    void Attack(unsigned char player_attacker, MapPoint pt, unsigned short soldiers_count, bool strong_soldiers);
+    void Attack(unsigned char playerAttacker, MapPoint pt, unsigned short soldiers_count, bool strong_soldiers);
     /// Greift ein Militäregebäude mit Schiffen an
-    void attackViaSea(unsigned char player_attacker, MapPoint pt, unsigned short soldiers_count, bool strong_soldiers);
+    void attackViaSea(unsigned char playerAttacker, MapPoint pt, unsigned short soldiers_count, bool strong_soldiers);
 
     MilitarySquares& getMilitarySquares();
 
@@ -143,7 +143,7 @@ public:
     void makeVisibleAroundPoint(MapPoint pt, MapCoord radius, unsigned char player);
     /// Bestimmt bei der Bewegung eines spähenden Objekts die Sichtbarkeiten an den Rändern neu
     void recalcMovingVisibilities(MapPoint pt, unsigned char player, MapCoord radius, Direction moving_dir,
-                                  MapPoint* enemy_territory);
+                                  MapPoint* enemyTerritory);
 
     /// Return whether this is a border node (node belongs to player, but not all others around)
     bool isBorderNode(MapPoint pt, unsigned char owner) const;

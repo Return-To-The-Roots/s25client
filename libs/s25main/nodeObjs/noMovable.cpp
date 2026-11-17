@@ -13,7 +13,7 @@
 #include "gameData/MapConsts.h"
 #include "s25util/Log.h"
 
-EventState::EventState(SerializedGameData& sgd) : elapsed(sgd.PopUnsignedInt()), length(sgd.PopUnsignedInt()) {}
+EventState::EventState(SerializedGameData& sgd) : elapsed(sgd.popUnsignedInt()), length(sgd.popUnsignedInt()) {}
 
 noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
     : noCoordBase(nop, pos), curMoveDir(Direction::SouthEast), ascent(0), moving(false), current_ev(nullptr)
@@ -24,19 +24,19 @@ void noMovable::serialize(SerializedGameData& sgd) const
     noCoordBase::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(curMoveDir);
-    sgd.PushUnsignedChar(ascent);
+    sgd.pushUnsignedChar(ascent);
     sgd.pushEvent(current_ev);
-    sgd.PushUnsignedInt(pauseEv.elapsed);
-    sgd.PushUnsignedInt(pauseEv.length);
-    sgd.PushBool(moving);
+    sgd.pushUnsignedInt(pauseEv.elapsed);
+    sgd.pushUnsignedInt(pauseEv.length);
+    sgd.pushBool(moving);
 }
 
 noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), curMoveDir(sgd.pop<Direction>()), ascent(sgd.PopUnsignedChar())
+    : noCoordBase(sgd, obj_id), curMoveDir(sgd.pop<Direction>()), ascent(sgd.popUnsignedChar())
 {
     current_ev = sgd.popEvent();
     pauseEv = EventState(sgd);
-    moving = sgd.PopBool();
+    moving = sgd.popBool();
 }
 
 void noMovable::walk()
@@ -44,7 +44,7 @@ void noMovable::walk()
     moving = false;
     const MapPoint oldPos = pos;
     pos = world->getNeighbour(pos, curMoveDir);
-    world->addFigure(pos, world->RemoveFigure(oldPos, *this));
+    world->addFigure(pos, world->removeFigure(oldPos, *this));
 }
 
 void noMovable::faceDir(Direction newDir)
@@ -122,22 +122,22 @@ DrawPoint noMovable::calcRelative(DrawPoint curPt, DrawPoint nextPt) const
 
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
     EventState curState;
-    milliseconds_i32_t frame_time;
+    milliseconds_i32_t frameTime;
     if(current_ev)
     {
         curState.elapsed = getEvMgr().getCurrentGF() - current_ev->startGF;
         curState.length = current_ev->length;
-        frame_time = GAMECLIENT.getFrameTime();
+        frameTime = GAMECLIENT.getFrameTime();
     } else
     {
         curState = pauseEv;
-        frame_time = milliseconds_i32_t::zero();
+        frameTime = milliseconds_i32_t::zero();
     }
 
     // Convert to real world time
     const milliseconds_i32_t gfLength = GAMECLIENT.getGFLength();
     // Time since the start of the event
-    milliseconds_i32_t curTimePassed = curState.elapsed * gfLength + frame_time;
+    milliseconds_i32_t curTimePassed = curState.elapsed * gfLength + frameTime;
     // Duration of the event
     milliseconds_i32_t duration = curState.length * gfLength;
 

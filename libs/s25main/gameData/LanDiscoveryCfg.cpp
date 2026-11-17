@@ -7,8 +7,8 @@
 static LANDiscoveryBase::Config makeDiscoveryConfig()
 {
     LANDiscoveryBase::Config cfg;
-    cfg.magicQuery = LANDiscoveryBase::Config::MakeMagic("RTTRQRY");
-    cfg.magicResponse = LANDiscoveryBase::Config::MakeMagic("RTTRRES");
+    cfg.magicQuery = LANDiscoveryBase::Config::makeMagic("RTTRQRY");
+    cfg.magicResponse = LANDiscoveryBase::Config::makeMagic("RTTRRES");
     cfg.version = 4;
     cfg.portQuery = 3666;
     cfg.portResponse = 3667;

@@ -58,11 +58,11 @@ void Ware::serialize(SerializedGameData& sgd) const
     helpers::pushPoint(sgd, next_harbor);
 }
 
-static RoadPathDirection PopRoadPathDirection(SerializedGameData& sgd)
+static RoadPathDirection popRoadPathDirection(SerializedGameData& sgd)
 {
     if(sgd.getGameDataVersion() < 5)
     {
-        const auto iDir = sgd.PopUnsignedChar();
+        const auto iDir = sgd.popUnsignedChar();
         if(iDir == 100)
             return RoadPathDirection::Ship;
         if(iDir == 0xFF)
@@ -75,7 +75,7 @@ static RoadPathDirection PopRoadPathDirection(SerializedGameData& sgd)
 }
 
 Ware::Ware(SerializedGameData& sgd, const unsigned obj_id)
-    : GameObject(sgd, obj_id), next_dir(PopRoadPathDirection(sgd)), state(sgd.pop<State>()),
+    : GameObject(sgd, obj_id), next_dir(popRoadPathDirection(sgd)), state(sgd.pop<State>()),
       location(sgd.popObject<noRoadNode>()), type([&]() {
           // GoodType::Nothing is moved because of adding new wares due addons
           auto ware = sgd.pop<GoodType>();
@@ -148,7 +148,7 @@ void Ware::goalDestroyed()
     if(state == State::WaitInWarehouse)
     {
         // Ware ist noch im Lagerhaus auf der Warteliste
-        RTTR_Assert(false); // Should not happen. noBaseBuilding::WareNotNeeded handles this case!
+        RTTR_Assert(false); // Should not happen. noBaseBuilding::wareNotNeeded handles this case!
         goal = nullptr; // just in case: avoid corruption although the ware itself might be lost (won't ever be carried
                         // again)
     }
@@ -281,15 +281,15 @@ void Ware::wareLost(const unsigned char player)
     world->getPlayer(player).removeWare(*this);
 }
 
-void Ware::removeWareJobForDir(const RoadPathDirection last_next_dir)
+void Ware::removeWareJobForDir(const RoadPathDirection lastNextDir)
 {
-    // last_next_dir war die letzte Richtung, in die die Ware eigentlich wollte,
+    // lastNextDir war die letzte Richtung, in die die Ware eigentlich wollte,
     // aber nun nicht mehr will, deshalb muss dem Träger Bescheid gesagt werden
 
     // War's überhaupt ne richtige Richtung?
-    if(last_next_dir == RoadPathDirection::None || last_next_dir == RoadPathDirection::Ship)
+    if(lastNextDir == RoadPathDirection::None || lastNextDir == RoadPathDirection::Ship)
         return;
-    Direction lastDir = toDirection(last_next_dir);
+    Direction lastDir = toDirection(lastNextDir);
     // Existiert da noch ne Straße?
     if(!location->getRoute(lastDir))
         return;

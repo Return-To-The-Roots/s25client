@@ -113,7 +113,7 @@ public:
     // Make the window visible or hide it
     virtual void setVisible(bool visible) { visible_ = visible; }
     bool isVisible() const { return visible_; }
-    bool IsActive() const { return active_; }
+    bool isActive() const { return active_; }
     /// Get the parent window (containing this) or nullptr if this is a top-level window
     Window* getParent() const { return parent_; }
     unsigned getID() const { return id_; }
@@ -176,7 +176,7 @@ public:
     ctrlPercent* addPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
                             const glFont* font, const unsigned short* percentage);
     ctrlProgress* addProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-                              unsigned short button_minus, unsigned short button_plus, unsigned short maximum,
+                              unsigned short buttonMinus, unsigned short buttonPlus, unsigned short maximum,
                               const std::string& tooltip = "", const Extent& padding = Extent(0, 0),
                               unsigned force_color = 0, const std::string& button_minus_tooltip = "",
                               const std::string& button_plus_tooltip = "");
@@ -240,7 +240,7 @@ public:
     virtual void msgButtonClick(unsigned /*ctrl_id*/) {}
     virtual void msgEditEnter(unsigned /*ctrl_id*/) {}
     virtual void msgEditChange(unsigned /*ctrl_id*/) {}
-    virtual void msgTabChange(unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
+    virtual void msgTabChange(unsigned /*ctrl_id*/, unsigned short /*tabId*/) {}
     virtual void msgListSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
     virtual void msgListChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
     virtual void msgComboSelectItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
@@ -262,7 +262,7 @@ public:
     virtual void msgGroupButtonClick(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
     virtual void msgGroupEditEnter(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
     virtual void msgGroupEditChange(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void msgGroupTabChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
+    virtual void msgGroupTabChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*tabId*/) {}
     virtual void msgGroupListSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
     virtual void msgGroupComboSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
     virtual void msgGroupCheckboxChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*checked*/) {}

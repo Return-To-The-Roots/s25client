@@ -51,13 +51,13 @@ bool ctrlScrollBar::msgLeftUp(const MouseCoords& mc)
 
 bool ctrlScrollBar::msgLeftDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos,
+    if(isPointInRect(mc.pos,
                      Rect(getDrawPos().x, getDrawPos().y + button_height + sliderPos, getSize().x, sliderHeight)))
     {
         // Maus auf dem Scrollbutton
         isMouseScrolling = true;
         return true;
-    } else if(IsPointInRect(mc.pos, Rect(getDrawPos().x, getDrawPos().y + button_height, getSize().x, sliderPos)))
+    } else if(isPointInRect(mc.pos, Rect(getDrawPos().x, getDrawPos().y + button_height, getSize().x, sliderPos)))
     {
         // Clicked above slider -> Move half a slider height up
         if(sliderPos < sliderHeight / 2)
@@ -71,7 +71,7 @@ bool ctrlScrollBar::msgLeftDown(const MouseCoords& mc)
     {
         unsigned short bottomSliderPos = button_height + sliderPos + sliderHeight;
 
-        if(IsPointInRect(mc.pos, Rect(getDrawPos().x, getDrawPos().y + bottomSliderPos, getSize().x,
+        if(isPointInRect(mc.pos, Rect(getDrawPos().x, getDrawPos().y + bottomSliderPos, getSize().x,
                                       getSize().y - (bottomSliderPos + button_height))))
         {
             // Clicked below slider -> Move half a slider height down

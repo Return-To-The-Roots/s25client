@@ -40,7 +40,7 @@ void DriverWrapper::unload()
     dll.unload();
 }
 
-bool DriverWrapper::Load(const DriverType dt, std::string& preference)
+bool DriverWrapper::load(const DriverType dt, std::string& preference)
 {
     // ggf. aufräumen vorher
     unload();
@@ -55,7 +55,7 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
         return false;
 
     /// Suche, ob der Treiber dabei ist, den wir wünschen
-    const auto it = helpers::find_if(drivers, [preference](const auto& it) { return it.getName() == preference; });
+    const auto it = helpers::findIf(drivers, [preference](const auto& it) { return it.getName() == preference; });
     if(it != drivers.end())
     {
         // Dann den gleich nehmen
@@ -130,9 +130,9 @@ bool DriverWrapper::checkLibrary(const bfs::path& path, DriverType dt, std::stri
 
 std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const DriverType dt)
 {
-    std::vector<DriverItem> driver_list;
+    std::vector<DriverItem> driverList;
 
-    const auto driverDir = RTTRCONFIG.ExpandPath(s25::folders::driver) / getName(dt);
+    const auto driverDir = RTTRCONFIG.expandPath(s25::folders::driver) / getName(dt);
     std::string extension =
 #ifdef _WIN32
       "dll";
@@ -145,9 +145,9 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const Drive
 #endif     // !_WIN32
 
     LOG.write(_("Searching for drivers in %s\n")) % driverDir;
-    const std::vector<boost::filesystem::path> driver_files = ListDir(driverDir, extension, false);
+    const std::vector<boost::filesystem::path> driverFiles = listDir(driverDir, extension, false);
 
-    for(const auto& path : driver_files)
+    for(const auto& path : driverFiles)
     {
 #ifdef _WIN32
         // check filename for "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)
@@ -158,7 +158,7 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const Drive
 #    else
           {"dbg_", "Debug_"};
 #    endif
-        const bool isBlacklisted = helpers::contains_if(blacklistedPrefixes, [&filename](const std::string& prefix) {
+        const bool isBlacklisted = helpers::containsIf(blacklistedPrefixes, [&filename](const std::string& prefix) {
             return filename.substr(0, prefix.length()) == prefix;
         });
         if(isBlacklisted)
@@ -168,8 +168,8 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const Drive
         if(!checkLibrary(path, dt, nameOrError))
             LOG.write(_("Skipping %s: %s\n")) % path % nameOrError;
         else
-            driver_list.push_back(DriverItem(path, nameOrError));
+            driverList.push_back(DriverItem(path, nameOrError));
     }
-    return driver_list;
+    return driverList;
 }
 } // namespace drivers

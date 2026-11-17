@@ -26,7 +26,7 @@ RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
     : GameObject(sgd, obj_id), rt(sgd.pop<RoadType>()), f1(sgd.popObject<noRoadNode>()), f2(sgd.popObject<noRoadNode>())
 {
     if(sgd.getGameDataVersion() < 7)
-        route.resize(sgd.PopUnsignedShort());
+        route.resize(sgd.popUnsignedShort());
     else
         helpers::popContainer(sgd, route);
 
@@ -191,17 +191,17 @@ void RoadSegment::splitRoad(noFlag* splitflag)
  */
 bool RoadSegment::areWareJobs(const bool flag, CarrierType ct, const bool take_ware_immediately) const
 {
-    unsigned jobs_count;
+    unsigned jobsCount;
 
     // Anzahl der Waren, die getragen werden wollen, ermitteln
     if(flag)
-        jobs_count = static_cast<noFlag*>(f2)->getNumWaresForRoad((route.back() + 3u));
+        jobsCount = static_cast<noFlag*>(f2)->getNumWaresForRoad((route.back() + 3u));
     else
-        jobs_count = static_cast<noFlag*>(f1)->getNumWaresForRoad(route.front());
+        jobsCount = static_cast<noFlag*>(f1)->getNumWaresForRoad(route.front());
 
     // Nur eine Ware da --> evtl läuft schon ein anderer Träger/Esel hin, nur wo Esel und Träger da sind
     // Wenn der Träger nun natürlich schon da ist, kann er die mitnehmen
-    if(jobs_count == 1 && carriers_[0] && carriers_[1] && !take_ware_immediately)
+    if(jobsCount == 1 && carriers_[0] && carriers_[1] && !take_ware_immediately)
     {
         // anderen Esel ermitteln
         unsigned otherCarrier = (ct == CarrierType::Donkey) ? 0 : 1;
@@ -232,7 +232,7 @@ bool RoadSegment::areWareJobs(const bool flag, CarrierType ct, const bool take_w
         }
     }
 
-    return (jobs_count > 0);
+    return (jobsCount > 0);
 }
 /**
  *  Eine Ware sagt Bescheid, dass sie über dem Weg getragen werden will.

@@ -41,7 +41,7 @@ public:
     unsigned getNumPlayers() const { return gwb.getNumPlayers(); }
     const std::vector<HarborId>& getUsableHarbors() const { return usableHarbors_; }
 
-    bool IsDefeated() const { return player_.IsDefeated(); }
+    bool isDefeated() const { return player_.isDefeated(); }
     /// Return the resource buried on a given spot (gold, coal, iron ore, granite (sub), fish, nothing)
     AISubSurfaceResource getSubsurfaceResource(MapPoint pt) const;
     /// Return the resource on top on a given spot (wood, stones, nothing)
@@ -97,7 +97,7 @@ public:
     bool canBuildBuildingtype(BuildingType bt) const { return player_.isBuildingEnabled(bt); }
     /// Test whether a player is attackable or not (alliances, etc)
     bool isPlayerAttackable(unsigned char playerID) const { return player_.isAttackable(playerID); }
-    /// player.FindWarehouse
+    /// player.findWarehouse
     template<class T_IsWarehouseGood>
     nobBaseWarehouse* findWarehouse(const noRoadNode& start, const T_IsWarehouseGood& isWarehouseGood, bool to_wh,
                                     bool use_boat_roads, unsigned* length = nullptr,

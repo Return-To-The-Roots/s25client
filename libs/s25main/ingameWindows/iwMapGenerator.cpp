@@ -25,7 +25,7 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
 {
     WorldDescription desc;
     GameDataLoader gdLoader(desc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
     {
         close();
         return;

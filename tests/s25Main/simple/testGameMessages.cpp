@@ -37,7 +37,7 @@ BOOST_TEST_DONT_PRINT_LOG_VALUE(JoinPlayerInfo)
 template<typename T>
 static std::enable_if_t<std::is_enum_v<T>, std::ostream&> operator<<(std::ostream& os, T enumVal)
 {
-    return os << rttr::enum_cast(enumVal);
+    return os << rttr::enumCast(enumVal);
 }
 // LCOV_EXCL_STOP
 
@@ -47,15 +47,15 @@ template<class TMsg>
 auto serializeDeserializeMessage(const TMsg& msgIn)
 {
     static Serializer ser;
-    ser.Clear();
-    msgIn.Serialize(ser);
+    ser.clear();
+    msgIn.serialize(ser);
     Message* msgOut(GameMessage::createGame(msgIn.getId()));
     BOOST_TEST_REQUIRE(msgOut);
     std::unique_ptr<TMsg> msgResult(dynamic_cast<TMsg*>(msgOut));
     BOOST_TEST_REQUIRE(!!msgResult);
-    Serializer serOut(ser.GetData(), ser.GetLength());
-    msgOut->Deserialize(serOut);
-    BOOST_TEST(serOut.GetBytesLeft() == 0u);
+    Serializer serOut(ser.getData(), ser.getLength());
+    msgOut->deserialize(serOut);
+    BOOST_TEST(serOut.getBytesLeft() == 0u);
     return msgResult;
 }
 

@@ -30,7 +30,7 @@ public:
     /// Save playlist to file
     bool saveAs(const boost::filesystem::path& filepath) const;
     /// Load playlist from file
-    bool Load(Log& logger, const boost::filesystem::path& filepath);
+    bool load(Log& logger, const boost::filesystem::path& filepath);
 
     const auto& getSongs() const { return songs_; }
     unsigned getNumRepeats() const { return numRepeats_; }

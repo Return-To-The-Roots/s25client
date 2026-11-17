@@ -85,7 +85,7 @@ void nofHunter::drawWorking(DrawPoint drawPt)
             } else
             {
                 unsigned short id = GAMECLIENT.interpolate(8, current_ev);
-                LOADER.getPlayerImage("rom_bobs", 1686 + rttr::enum_cast(shooting_dir + 2u) * 8 + id)
+                LOADER.getPlayerImage("rom_bobs", 1686 + rttr::enumCast(shooting_dir + 2u) * 8 + id)
                   ->drawForPlayer(drawPt, owner.color);
 
                 if(id == 7)
@@ -101,16 +101,16 @@ void nofHunter::drawWorking(DrawPoint drawPt)
         case State::HunterEviscerating:
         {
             unsigned short id = GAMECLIENT.interpolate(45, current_ev);
-            unsigned short draw_id;
+            unsigned short drawId;
 
             if(id < 4)
-                draw_id = 232 + id;
+                drawId = 232 + id;
             else if(id < 36)
-                draw_id = 236 + (id - 4) % 8;
+                drawId = 236 + (id - 4) % 8;
             else
-                draw_id = 244 + id - 36;
+                drawId = 244 + id - 36;
 
-            LOADER.getPlayerImage("rom_bobs", draw_id)->drawForPlayer(drawPt, owner.color);
+            LOADER.getPlayerImage("rom_bobs", drawId)->drawForPlayer(drawPt, owner.color);
         }
         break;
     }
@@ -156,10 +156,10 @@ std::vector<noAnimal*> nofHunter::getHuntableAnimalsInRange(const GameWorldBase&
 
 void nofHunter::tryStartHunting()
 {
-    std::vector<noAnimal*> available_animals;
+    std::vector<noAnimal*> availableAnimals;
 
     if(world->getReplayCompatVersion() >= 4)
-        available_animals = getHuntableAnimalsInRange(*world, pos);
+        availableAnimals = getHuntableAnimalsInRange(*world, pos);
     else
     {
         // Legacy square search for replays recorded with old code
@@ -179,7 +179,7 @@ void nofHunter::tryStartHunting()
                         continue;
                     if(pos == animal.getPos() || world->findHumanPath(pos, animal.getPos(), MAX_HUNTING_DISTANCE))
                     {
-                        available_animals.push_back(&animal);
+                        availableAnimals.push_back(&animal);
                     }
                 }
             }
@@ -187,10 +187,10 @@ void nofHunter::tryStartHunting()
     }
 
     // Gibt es überhaupt ein Tier, das ich jagen kann?
-    if(!available_animals.empty())
+    if(!availableAnimals.empty())
     {
         // Ein Tier zufällig heraussuchen
-        animal = RANDOM_ELEMENT(available_animals);
+        animal = RANDOM_ELEMENT(availableAnimals);
 
         // Wir jagen es jetzt
         state = State::HunterChasing;
@@ -232,7 +232,7 @@ void nofHunter::walkedDerived()
 bool nofHunter::isShootingPointGood(const MapPoint pt)
 {
     // Punkt muss betretbar sein und man muss ihn erreichen können
-    return PathConditionHuman(*world).isNodeOk(pt) && world->findHumanPath(this->pos, pt, 6).has_value();
+    return PathConditionHuman(*world).isNodeOk(pt) && world->findHumanPath(this->pos, pt, 6).hasValue();
 }
 
 void nofHunter::handleStateChasing()
@@ -398,12 +398,12 @@ void nofHunter::handleStateEviscerating()
         was_sounding = false;
     }
 
-    // see comment at noAnimal::HandleEvent for explanation of ownership of animal
+    // see comment at noAnimal::handleEvent for explanation of ownership of animal
     animal->eviscerated();
     if(!animal->isGettingSkinned())
     {
         // Tier verschwinden lassen
-        auto ownedAnimal = world->RemoveFigure(pos, *animal);
+        auto ownedAnimal = world->removeFigure(pos, *animal);
         // Tier vernichten
         ownedAnimal->destroy();
     }

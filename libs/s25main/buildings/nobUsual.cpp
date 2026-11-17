@@ -52,11 +52,11 @@ nobUsual::nobUsual(BuildingType type, MapPoint pos, unsigned char player, Nation
 }
 
 nobUsual::nobUsual(SerializedGameData& sgd, const unsigned obj_id)
-    : noBuilding(sgd, obj_id), worker(sgd.popObject<nofBuildingWorker>()), productivity(sgd.PopUnsignedShort()),
-      disableProduction(sgd.PopBool()), disableProductionVirtual(disableProduction),
-      lastOrderedWare(sgd.PopUnsignedChar()), orderware_ev(sgd.popEvent()), productivity_ev(sgd.popEvent()),
-      numGfNotWorking(sgd.PopUnsignedShort()), sinceNotWorking(sgd.PopUnsignedInt()),
-      outOfRessourcesMsgSent(sgd.PopBool()), is_working(sgd.PopBool())
+    : noBuilding(sgd, obj_id), worker(sgd.popObject<nofBuildingWorker>()), productivity(sgd.popUnsignedShort()),
+      disableProduction(sgd.popBool()), disableProductionVirtual(disableProduction),
+      lastOrderedWare(sgd.popUnsignedChar()), orderware_ev(sgd.popEvent()), productivity_ev(sgd.popEvent()),
+      numGfNotWorking(sgd.popUnsignedShort()), sinceNotWorking(sgd.popUnsignedInt()),
+      outOfRessourcesMsgSent(sgd.popBool()), is_working(sgd.popBool())
 {
     helpers::popContainer(sgd, numWares);
 
@@ -72,15 +72,15 @@ void nobUsual::serialize(SerializedGameData& sgd) const
     noBuilding::serialize(sgd);
 
     sgd.pushObject(worker);
-    sgd.PushUnsignedShort(productivity);
-    sgd.PushBool(disableProduction);
-    sgd.PushUnsignedChar(lastOrderedWare);
+    sgd.pushUnsignedShort(productivity);
+    sgd.pushBool(disableProduction);
+    sgd.pushUnsignedChar(lastOrderedWare);
     sgd.pushEvent(orderware_ev);
     sgd.pushEvent(productivity_ev);
-    sgd.PushUnsignedShort(numGfNotWorking);
-    sgd.PushUnsignedInt(sinceNotWorking);
-    sgd.PushBool(outOfRessourcesMsgSent);
-    sgd.PushBool(is_working);
+    sgd.pushUnsignedShort(numGfNotWorking);
+    sgd.pushUnsignedInt(sinceNotWorking);
+    sgd.pushBool(outOfRessourcesMsgSent);
+    sgd.pushBool(is_working);
 
     helpers::pushContainer(sgd, numWares);
     for(const std::list<Ware*>& orderedWare : orderedWares)
@@ -485,7 +485,7 @@ void nobUsual::takeWare(Ware* ware)
 
 bool nobUsual::areThereAnyOrderedWares() const
 {
-    return helpers::contains_if(orderedWares, [](const auto& wareList) { return !wareList.empty(); });
+    return helpers::containsIf(orderedWares, [](const auto& wareList) { return !wareList.empty(); });
 }
 
 void nobUsual::workerArrived()

@@ -70,7 +70,7 @@ void nofDefender::walked()
                 {
                     nobBaseMilitary* bld = homeBld;
                     RTTR_Assert(bld->getDefender() == this); // I should be the defender
-                    bld->addActiveSoldier(world->RemoveFigure(pos, *this));
+                    bld->addActiveSoldier(world->removeFigure(pos, *this));
                     RTTR_Assert(!bld->getDefender()); // No defender anymore
                 }
             }

@@ -39,7 +39,7 @@ public:
     DriverWrapper();
     ~DriverWrapper();
     /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
-    bool Load(DriverType dt, std::string& preference);
+    bool load(DriverType dt, std::string& preference);
     /// Gibt eine Treiber-Handle wieder frei
     void unload();
     bool isLoaded() const;

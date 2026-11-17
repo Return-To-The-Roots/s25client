@@ -50,7 +50,7 @@ dskCredits::dskCredits() : Desktop(LOADER.getImageN("setup013", 0)), itCurEntry(
     pageTimer = addTimer(ID_tmrPage, PAGE_TIME);
     pageTimer->stop();
 
-    LOADER.Load(ResourceId("credits")); // Ignore failure
+    LOADER.load(ResourceId("credits")); // Ignore failure
 
     // order by last name (alphabetical)
     CreditsEntry entry = CreditsEntry("Alexander Grund (Flamefire):", getCreditsImgOrDefault("flamefire"));
@@ -272,7 +272,7 @@ dskCredits::dskCredits() : Desktop(LOADER.getImageN("setup013", 0)), itCurEntry(
 
     WorldDescription worldDesc;
     GameDataLoader gdLoader(worldDesc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
     {
         WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game data"), this, MsgboxButton::Ok,
                                                       MsgboxIcon::ExclamationRed, 0));
@@ -336,23 +336,23 @@ void dskCredits::drawCredit()
                                     helpers::interpolate(0u, 0xFFu, elapsedPageTime, FADING_TIME);
 
     // draw text
-    LargeFont->draw(DrawPoint(40, 100), itCurEntry->title, FontStyle{}, SetAlpha(COLOR_RED, transparency));
+    LargeFont->draw(DrawPoint(40, 100), itCurEntry->title, FontStyle{}, setAlpha(COLOR_RED, transparency));
 
     std::array<unsigned, 2> columnToY = {{150, 150}};
 
     for(const auto& line : itCurEntry->lines)
     {
         LargeFont->draw(DrawPoint(60 + line.column * 350, columnToY[line.column]), line.line, FontStyle{},
-                        SetAlpha(COLOR_YELLOW, transparency));
+                        setAlpha(COLOR_YELLOW, transparency));
         columnToY[line.column] += LargeFont->getHeight() + 5;
     }
 
     LargeFont->draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, FontStyle{},
-                    SetAlpha(COLOR_RED, transparency));
+                    setAlpha(COLOR_RED, transparency));
 
     if(itCurEntry->pic)
         itCurEntry->pic->drawFull(DrawPoint(VIDEODRIVER.getRenderSize().x - 300, 70),
-                                  SetAlpha(COLOR_WHITE, transparency));
+                                  setAlpha(COLOR_WHITE, transparency));
 }
 
 template<typename T>
@@ -435,7 +435,7 @@ void dskCredits::drawBobs()
             if(isWareDrawable(ware))
             {
                 // Japanese shield is missing
-                b.id = rttr::enum_cast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
+                b.id = rttr::enumCast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
                 b.hasWare = true;
                 b.pos.y = getCtrl<ctrlButton>(0)->getPos().y - 20 - rand() % 150;
                 bobs.push_back(b);

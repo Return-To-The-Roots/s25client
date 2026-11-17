@@ -32,12 +32,12 @@ void noSkeleton::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(type);
+    sgd.pushUnsignedChar(type);
     sgd.pushEvent(current_event);
 }
 
 noSkeleton::noSkeleton(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), current_event(sgd.popEvent())
+    : noCoordBase(sgd, obj_id), type(sgd.popUnsignedChar()), current_event(sgd.popEvent())
 {}
 
 void noSkeleton::draw(DrawPoint drawPt)

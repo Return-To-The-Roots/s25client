@@ -57,7 +57,7 @@ BOOST_FIXTURE_TEST_CASE(AddTextures_does_not_override_textures, TextureMapFixtur
 {
     const unsigned mountainLevel = 5;
     const unsigned coastline = 1;
-    auto water = textureMap.Find(isWater);
+    auto water = textureMap.find(isWater);
     textures.resize(textures.getSize(), TexturePair(water));
 
     RTTR_FOREACH_PT(MapPoint, z.getSize())
@@ -112,8 +112,8 @@ BOOST_FIXTURE_TEST_CASE(AddTextures_sets_mountain_textures_above_mountain_level,
 
 BOOST_FIXTURE_TEST_CASE(ReplaceTextureForPoint_replaces_all_textures, TextureMapFixture)
 {
-    auto source = textureMap.Find(isWater);
-    auto target = textureMap.Find(isSnowOrLava);
+    auto source = textureMap.find(isWater);
+    auto target = textureMap.find(isSnowOrLava);
     auto point = MapPoint(textures.getWidth() / 2, textures.getHeight() / 2);
     textures.resize(textures.getSize(), source);
 
@@ -124,8 +124,8 @@ BOOST_FIXTURE_TEST_CASE(ReplaceTextureForPoint_replaces_all_textures, TextureMap
 
 BOOST_FIXTURE_TEST_CASE(ReplaceTextureForPoint_does_not_replace_excluded_textures, TextureMapFixture)
 {
-    auto source = textureMap.Find(isWater);
-    auto target = textureMap.Find(isSnowOrLava);
+    auto source = textureMap.find(isWater);
+    auto target = textureMap.find(isSnowOrLava);
     auto point = MapPoint(textures.getWidth() / 2, textures.getHeight() / 2);
     textures.resize(textures.getSize(), source);
 
@@ -141,8 +141,8 @@ BOOST_FIXTURE_TEST_CASE(ReplaceTextures_replaces_textures_within_radius, Texture
       MapPoint(1, 0),
     };
 
-    const auto source = textureMap.Find(isWater);
-    const auto target = textureMap.Find(isSnowOrLava);
+    const auto source = textureMap.find(isWater);
+    const auto target = textureMap.find(isSnowOrLava);
     for(unsigned radius = 0; radius < 4; radius++)
     {
         textures.resize(textures.getSize(), source);
@@ -173,8 +173,8 @@ BOOST_FIXTURE_TEST_CASE(ReplaceTextures_does_not_replace_excluded_textures, Text
       MapPoint(3, 0),
     };
 
-    const auto source = textureMap.Find(isWater);
-    const auto target = textureMap.Find(isSnowOrLava);
+    const auto source = textureMap.find(isWater);
+    const auto target = textureMap.find(isSnowOrLava);
 
     for(unsigned radius = 0; radius < 4; radius++)
     {

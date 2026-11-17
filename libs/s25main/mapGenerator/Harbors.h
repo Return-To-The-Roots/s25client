@@ -25,7 +25,7 @@ void placeHarborPosition(Map& map, const MapPoint& position);
  * @param map reference to the map to look up coastlines for
  * @param rivers all rivers already placed on the map
  */
-std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vector<River>& rivers);
+std::vector<std::vector<MapPoint>> findCoastlines(const Map& map, const std::vector<River>& rivers);
 
 /**
  * Places harbors on the specified map in suitable positions based on the given parameters.

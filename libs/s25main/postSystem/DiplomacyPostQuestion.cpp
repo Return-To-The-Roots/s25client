@@ -4,7 +4,7 @@
 
 #include "DiplomacyPostQuestion.h"
 #include "GamePlayerInfo.h"
-// TODO: Remove this and add FormatGFTime somewhere else
+// TODO: Remove this and add formatGFTime somewhere else
 #include "network/GameClient.h"
 #include <boost/format.hpp>
 

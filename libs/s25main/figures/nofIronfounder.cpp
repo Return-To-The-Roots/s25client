@@ -22,18 +22,18 @@ void nofIronfounder::drawWorking(DrawPoint drawPt)
 {
     const helpers::EnumArray<DrawPoint, Nation> offsets = {{{-22, 12}, {-23, 3}, {-19, 8}, {-18, 4}, {-33, 7}}};
 
-    unsigned now_id = GAMECLIENT.interpolate(272, current_ev);
+    unsigned nowId = GAMECLIENT.interpolate(272, current_ev);
 
-    if(now_id < 182)
+    if(nowId < 182)
     {
-        LOADER.getPlayerImage("rom_bobs", 100 + (now_id % 8))
+        LOADER.getPlayerImage("rom_bobs", 100 + (nowId % 8))
           ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
                      world->getPlayer(workplace->getPlayer()).color);
 
         // Evtl Sound abspielen
-        if(now_id % 16 == 3)
+        if(nowId % 16 == 3)
         {
-            world->getSoundMgr().playNOSound(58, *this, now_id / 16);
+            world->getSoundMgr().playNOSound(58, *this, nowId / 16);
             was_sounding = true;
         }
     }

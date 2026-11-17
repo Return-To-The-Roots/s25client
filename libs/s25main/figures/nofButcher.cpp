@@ -21,18 +21,18 @@ void nofButcher::drawWorking(DrawPoint drawPt)
 {
     static constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{38, 2}, {-3, 5}, {21, -1}, {26, -5}, {-7, 2}}};
 
-    unsigned now_id;
+    unsigned nowId;
 
-    LOADER.getPlayerImage("rom_bobs", 160 + (now_id = GAMECLIENT.interpolate(136, current_ev)) % 6)
+    LOADER.getPlayerImage("rom_bobs", 160 + (nowId = GAMECLIENT.interpolate(136, current_ev)) % 6)
       ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
-    if(now_id % 6 == 5)
+    if(nowId % 6 == 5)
     {
-        world->getSoundMgr().playNOSound(66, *this, now_id / 6);
+        world->getSoundMgr().playNOSound(66, *this, nowId / 6);
         was_sounding = true;
     }
 
-    last_id = now_id;
+    last_id = nowId;
 }
 
 helpers::OptionalEnum<GoodType> nofButcher::produceWare()

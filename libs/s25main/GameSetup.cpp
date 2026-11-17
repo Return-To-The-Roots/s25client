@@ -87,7 +87,7 @@ void setupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGa
         }
 
         MapLoader loader(gameWorld);
-        if(!loader.Load(mapFilePath))
+        if(!loader.load(mapFilePath))
             throw GameSetupError("Could not load the map " + mapFilePath.string());
         if(!luaFilePath.empty() && !loader.loadLuaScript(game, localGameState, luaFilePath))
             throw GameSetupError("Could not load the Lua script " + luaFilePath.string());

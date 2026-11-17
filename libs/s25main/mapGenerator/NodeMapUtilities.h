@@ -40,7 +40,7 @@ struct ValueRange
  * @returns an index for a container which corresponds to the specified value within the specified range.
  */
 template<typename T_Value>
-unsigned MapValueToIndex(T_Value value, const ValueRange<T_Value>& range, size_t size)
+unsigned mapValueToIndex(T_Value value, const ValueRange<T_Value>& range, size_t size)
 {
     T_Value difference = range.getDifference();
 
@@ -61,7 +61,7 @@ unsigned MapValueToIndex(T_Value value, const ValueRange<T_Value>& range, size_t
  * @param value new value applied to the points
  */
 template<typename T_Value, class T_Container>
-void SetValues(NodeMapBase<T_Value>& values, const T_Container& points, const T_Value& value)
+void setValues(NodeMapBase<T_Value>& values, const T_Container& points, const T_Value& value)
 {
     for(const MapPoint& point : points)
     {
@@ -78,7 +78,7 @@ void SetValues(NodeMapBase<T_Value>& values, const T_Container& points, const T_
  * @returns the maximum value of the map within the area.
  */
 template<typename T_Value, class T_Container>
-const T_Value& GetMaximum(const NodeMapBase<T_Value>& values, const T_Container& area)
+const T_Value& getMaximum(const NodeMapBase<T_Value>& values, const T_Container& area)
 {
     const auto compare = [&values](const MapPoint& rhs, const MapPoint& lhs) { return values[rhs] < values[lhs]; };
     const auto maximum = std::max_element(area.begin(), area.end(), compare);
@@ -94,7 +94,7 @@ const T_Value& GetMaximum(const NodeMapBase<T_Value>& values, const T_Container&
  * @returns range of values covered by the map.
  */
 template<typename T_Value, class T_Container>
-ValueRange<T_Value> GetRange(const NodeMapBase<T_Value>& values, const T_Container& area)
+ValueRange<T_Value> getRange(const NodeMapBase<T_Value>& values, const T_Container& area)
 {
     auto compare = [&values](const MapPoint& rhs, const MapPoint& lhs) { return values[rhs] < values[lhs]; };
     auto range = std::minmax_element(area.begin(), area.end(), compare);
@@ -109,7 +109,7 @@ ValueRange<T_Value> GetRange(const NodeMapBase<T_Value>& values, const T_Contain
  * @returns the point which contains the maximum value.
  */
 template<typename T_Value>
-MapPoint GetMaximumPoint(const NodeMapBase<T_Value>& values)
+MapPoint getMaximumPoint(const NodeMapBase<T_Value>& values)
 {
     auto maximum = std::max_element(values.begin(), values.end());
     auto index = std::distance(values.begin(), maximum);
@@ -124,7 +124,7 @@ MapPoint GetMaximumPoint(const NodeMapBase<T_Value>& values)
  * @returns range of values covered by the map.
  */
 template<typename T_Value>
-ValueRange<T_Value> GetRange(const NodeMapBase<T_Value>& values)
+ValueRange<T_Value> getRange(const NodeMapBase<T_Value>& values)
 {
     auto range = std::minmax_element(values.begin(), values.end());
     return ValueRange<T_Value>(*range.first, *range.second);
@@ -133,6 +133,6 @@ ValueRange<T_Value> GetRange(const NodeMapBase<T_Value>& values)
 /**
  * Selects all points fulfilling the specified predicate.
  */
-std::vector<MapPoint> SelectPoints(const std::function<bool(const MapPoint&)>& predicate, const MapExtent& size);
+std::vector<MapPoint> selectPoints(const std::function<bool(const MapPoint&)>& predicate, const MapExtent& size);
 
 } // namespace rttr::mapGenerator

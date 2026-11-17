@@ -35,33 +35,33 @@ void nofTempleServant::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{26, -23}, {17, -40}, {4, 0}, {22, -25}, {20, -45}}};
 
-    const unsigned now_id = GAMECLIENT.interpolate(82, current_ev);
+    const unsigned nowId = GAMECLIENT.interpolate(82, current_ev);
 
-    if(now_id < 11) // servant pours wine into crucible(play once at start)
+    if(nowId < 11) // servant pours wine into crucible(play once at start)
     {
-        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_START_ANIMATION] + now_id)
+        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_START_ANIMATION] + nowId)
           ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
                      world->getPlayer(workplace->getPlayer()).color);
-    } else if(now_id < 77) // wine and food is burned (loop for duration)
+    } else if(nowId < 77) // wine and food is burned (loop for duration)
     {
-        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_MAIN_ANIMATION] + (now_id + 1) % 6)
+        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_MAIN_ANIMATION] + (nowId + 1) % 6)
           ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
                      world->getPlayer(workplace->getPlayer()).color);
 
         // Play sound burning
-        if((now_id + 1) % 6 == 3)
+        if((nowId + 1) % 6 == 3)
         {
-            world->getSoundMgr().playNOSound(93, *this, now_id);
+            world->getSoundMgr().playNOSound(93, *this, nowId);
             was_sounding = true;
         }
     } else // last loop of animation (play once at end)
     {
-        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_END_ANIMATION] + now_id - 77)
+        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::TEMPLE_WORK_WINDOW_END_ANIMATION] + nowId - 77)
           ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
                      world->getPlayer(workplace->getPlayer()).color);
     }
 
-    last_id = now_id;
+    last_id = nowId;
 }
 
 #ifdef _MSC_VER

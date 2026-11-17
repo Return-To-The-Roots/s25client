@@ -123,30 +123,30 @@ void nofPlaner::draw(DrawPoint drawPt)
             // 41
 
             /// Animation des Planierers
-            unsigned now_id = GAMECLIENT.interpolate(69, current_ev);
+            unsigned nowId = GAMECLIENT.interpolate(69, current_ev);
 
             // spezielle Animation am Ende
             const std::array<unsigned, 21> ANIMATION = {273, 273, 273, 273, 273, 274, 274, 275, 276, 276, 276,
                                                         276, 276, 276, 276, 276, 276, 276, 277, 277, 278};
 
             unsigned bobId;
-            if(now_id < 20)
-                bobId = 253 + now_id;
-            else if(now_id < 41)
-                bobId = ANIMATION[now_id - 20];
-            else if(now_id < 55)
-                bobId = 253 + now_id - 41;
+            if(nowId < 20)
+                bobId = 253 + nowId;
+            else if(nowId < 41)
+                bobId = ANIMATION[nowId - 20];
+            else if(nowId < 55)
+                bobId = 253 + nowId - 41;
             else
-                bobId = 253 + now_id - 55;
+                bobId = 253 + nowId - 55;
             LOADER.getPlayerImage("rom_bobs", bobId)
               ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(building_site->getPlayer()).color);
 
             // Schaufel-Sound
-            if(now_id == 5 || now_id == 46 || now_id == 60)
-                world->getSoundMgr().playNOSound(76, *this, now_id, 200);
+            if(nowId == 5 || nowId == 46 || nowId == 60)
+                world->getSoundMgr().playNOSound(76, *this, nowId, 200);
             // Tret-Sound
-            else if(now_id == 20 || now_id == 28)
-                world->getSoundMgr().playNOSound(66, *this, now_id, 200);
+            else if(nowId == 20 || nowId == 28)
+                world->getSoundMgr().playNOSound(66, *this, nowId, 200);
         }
         break;
     }

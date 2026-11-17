@@ -220,8 +220,8 @@ void GameWorldView::draw(const RoadBuildState& rb, const MapPoint selected, bool
         }
 
         // Draw objects that are between rows now
-        for(auto& between_line : objsBetweenRows)
-            between_line.obj.draw(between_line.pos);
+        for(auto& betweenLine : objsBetweenRows)
+            betweenLine.obj.draw(betweenLine.pos);
     }
 
     if(show_names || show_productivity)
@@ -237,11 +237,11 @@ void GameWorldView::draw(const RoadBuildState& rb, const MapPoint selected, bool
     drawGUI(rb, terrainRenderer, selected, drawMouse);
 
     // Draw catapult stones
-    for(auto* catapult_stone : world.catapult_stones)
+    for(auto* catapultStone : world.catapult_stones)
     {
-        if(gwv.getVisibility(catapult_stone->dest_building) == Visibility::Visible
-           || gwv.getVisibility(catapult_stone->dest_map) == Visibility::Visible)
-            catapult_stone->draw(offset);
+        if(gwv.getVisibility(catapultStone->dest_building) == Visibility::Visible
+           || gwv.getVisibility(catapultStone->dest_map) == Visibility::Visible)
+            catapultStone->draw(offset);
     }
 
     if(effectiveZoomFactor_ != 1.f) //-V550
@@ -259,13 +259,13 @@ void GameWorldView::drawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                             const MapPoint& selectedPt, bool drawMouse)
 {
     // Falls im Straßenbaumodus: Punkte um den aktuellen Straßenbaupunkt herum ermitteln
-    helpers::EnumArray<MapPoint, Direction> road_points;
+    helpers::EnumArray<MapPoint, Direction> roadPoints;
 
     unsigned maxWaterWayLen = 0;
     if(rb.mode != RoadBuildMode::Disabled)
     {
         for(const auto dir : helpers::EnumRange<Direction>{})
-            road_points[dir] = getWorld().getNeighbour(rb.point, dir);
+            roadPoints[dir] = getWorld().getNeighbour(rb.point, dir);
 
         const unsigned index = getWorld().getGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
         RTTR_Assert(index < waterwayLengths.size());
@@ -288,7 +288,7 @@ void GameWorldView::drawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 unsigned mid = 22;
                 if(rb.mode == RoadBuildMode::Disabled)
                 {
-                    switch(gwv.GetBQ(curPt))
+                    switch(gwv.getBQ(curPt))
                     {
                         case BuildingQuality::Flag: mid = 40; break;
                         case BuildingQuality::Mine: mid = 41; break;
@@ -323,7 +323,7 @@ void GameWorldView::drawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
             }
 
             // ensure that curPt is a neighbour of rb.point
-            if(!helpers::contains(road_points, curPt))
+            if(!helpers::contains(roadPoints, curPt))
             {
                 continue;
             }
@@ -333,7 +333,7 @@ void GameWorldView::drawGUI(const RoadBuildState& rb, const TerrainRenderer& ter
                 continue;
 
             // render special icon for route revert
-            if(!rb.route.empty() && road_points[rb.route.back() + 3u] == curPt)
+            if(!rb.route.empty() && roadPoints[rb.route.back() + 3u] == curPt)
             {
                 LOADER.getMapTexture(67)->drawFull(curPos);
                 continue;
@@ -527,7 +527,7 @@ constexpr auto getBqImgs()
 
 void GameWorldView::drawConstructionAid(const MapPoint& pt, const DrawPoint& curPos)
 {
-    BuildingQuality bq = gwv.GetBQ(pt);
+    BuildingQuality bq = gwv.getBQ(pt);
     if(bq != BuildingQuality::Nothing)
     {
         constexpr auto bqImgs = getBqImgs();

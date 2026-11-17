@@ -12,7 +12,7 @@ NetworkPlayer::NetworkPlayer(unsigned playerId)
 void NetworkPlayer::closeConnection()
 {
     // Close socket and clear queues
-    socket.Close();
+    socket.close();
     sendQueue.clear();
     recvQueue.clear();
 }

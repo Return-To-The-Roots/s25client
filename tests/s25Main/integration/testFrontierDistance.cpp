@@ -21,7 +21,7 @@
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const FrontierDistance e)
 {
-    return out << static_cast<unsigned>(rttr::enum_cast(e));
+    return out << static_cast<unsigned>(rttr::enumCast(e));
 }
 // LCOV_EXCL_STOP
 
@@ -66,7 +66,7 @@ using FrontierWorldStaticBlocker = WorldFixture<CreateEmptyWorld, 0, 20u, 12u>;
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceNear, FrontierWorldSmall)
 {
-    const auto tWater = GetWaterTerrain(world.getDescription());
+    const auto tWater = getWaterTerrain(world.getDescription());
 
     for(const auto y : helpers::range(1, +world.getHeight()))
     {
@@ -104,7 +104,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
     {
         TerrainKind searchedTerrain = terrain == 1 ? TerrainKind::Lava : TerrainKind::Snow;
         const auto tUnreachable = world.getDescription().terrain.find(
-          [searchedTerrain](const TerrainDesc& t) { return t.kind == searchedTerrain && t.Is(ETerrain::Unreachable); });
+          [searchedTerrain](const TerrainDesc& t) { return t.kind == searchedTerrain && t.is(ETerrain::Unreachable); });
 
         for(const auto y : helpers::range(1, +world.getHeight()))
         {
@@ -139,7 +139,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceNearOtherFields, FrontierWorldSmall)
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
 {
-    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.getDescription());
+    const DescIdx<TerrainDesc> tWater = getWaterTerrain(world.getDescription());
 
     for(const auto y : helpers::range(1, +world.getHeight()))
     {
@@ -175,7 +175,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceMiddle, FrontierWorldMiddle)
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceFar, FrontierWorldBig)
 {
-    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.getDescription());
+    const DescIdx<TerrainDesc> tWater = getWaterTerrain(world.getDescription());
 
     for(const auto y : helpers::range(1, +world.getHeight()))
     {
@@ -223,7 +223,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceHarbor, FrontierWorldSea)
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceIslandTest, FrontierWorldMiddle)
 {
-    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.getDescription());
+    const DescIdx<TerrainDesc> tWater = getWaterTerrain(world.getDescription());
 
     // Little bit, but walkable water between the 2 buildings (middle of map)
     // and around the border big water
@@ -290,7 +290,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
     GamePlayer& p0 = world.getPlayer(0);
     GamePlayer& p1 = world.getPlayer(1);
 
-    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.getDescription());
+    const DescIdx<TerrainDesc> tWater = getWaterTerrain(world.getDescription());
 
     unsigned middle = world.getWidth() / 2;
 
@@ -354,7 +354,7 @@ BOOST_FIXTURE_TEST_CASE(FrontierDistanceBug_815, WorldBig)
 
 BOOST_FIXTURE_TEST_CASE(FrontierDistanceReachabilityConsidersStaticObjectBlockers, FrontierWorldStaticBlocker)
 {
-    const DescIdx<TerrainDesc> tWater = GetWaterTerrain(world.getDescription());
+    const DescIdx<TerrainDesc> tWater = getWaterTerrain(world.getDescription());
     const unsigned corridorY = 6;
     const MapPoint startPt(2, corridorY);
     const MapPoint endPt(10, corridorY);

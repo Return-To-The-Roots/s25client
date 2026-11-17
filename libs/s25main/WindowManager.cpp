@@ -107,7 +107,7 @@ void WindowManager::draw()
 bool WindowManager::isDesktopActive() const
 {
     if(curDesktop)
-        return curDesktop->IsActive();
+        return curDesktop->isActive();
     return false;
 }
 
@@ -116,7 +116,7 @@ void WindowManager::relayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent&
     // When there is no desktop, don't check it or any window
     if(!curDesktop)
         return;
-    if(curDesktop->IsActive())
+    if(curDesktop->isActive())
     {
         // Desktop active -> relay msg to desktop
         CALL_MEMBER_FN(*curDesktop, msg)(ke);
@@ -178,7 +178,7 @@ IngameWindow& WindowManager::doShow(std::unique_ptr<IngameWindow> window, bool m
     // New modal window goes on top, non-modal window goes behind all modals
     const auto itInsert = window->isModal() ?
                             windows.end() :
-                            helpers::find_if(windows, [](const auto& curWnd) { return curWnd->isModal(); });
+                            helpers::findIf(windows, [](const auto& curWnd) { return curWnd->isModal(); });
     auto& result = **windows.emplace(itInsert, std::move(window));
 
     // Make the new window active (special cases handled in the function)
@@ -217,10 +217,10 @@ IngameWindow* WindowManager::findWindowAtPos(const Position& pos) const
     for(const auto& window : helpers::reverse(windows))
     {
         // FensterRect für Kollisionsabfrage
-        Rect window_rect = window->getDrawRect();
+        Rect windowRect = window->getDrawRect();
 
         // trifft die Maus auf ein Fenster?
-        if(IsPointInRect(pos, window_rect))
+        if(isPointInRect(pos, windowRect))
         {
             return window.get();
         }
@@ -233,7 +233,7 @@ IngameWindow* WindowManager::findWindowAtPos(const Position& pos) const
 
 IngameWindow* WindowManager::findNonModalWindow(unsigned id) const
 {
-    auto itWnd = helpers::find_if(
+    auto itWnd = helpers::findIf(
       windows, [id](const auto& wnd) { return !wnd->shouldBeClosed() && !wnd->isModal() && wnd->getID() == id; });
     return itWnd == windows.end() ? nullptr : itWnd->get();
 }
@@ -250,7 +250,7 @@ Window* WindowManager::findAndActivateWindow(const Position mousePos)
     }
     if(!activeWindow)
         activeWindow = curDesktop.get();
-    if(activeWindow && !activeWindow->IsActive())
+    if(activeWindow && !activeWindow->isActive())
         setActiveWindow(*activeWindow);
     return activeWindow;
 }
@@ -283,11 +283,11 @@ void WindowManager::msgLeftUp(MouseCoords mc)
     if(!curDesktop)
         return;
 
-    unsigned time_now = VIDEODRIVER.getTickCount();
+    unsigned timeNow = VIDEODRIVER.getTickCount();
 
     if(VIDEODRIVER.isTouch())
     {
-        if(time_now - lastLeftClickTime < TOUCH_DOUBLE_CLICK_INTERVAL)
+        if(timeNow - lastLeftClickTime < TOUCH_DOUBLE_CLICK_INTERVAL)
         {
             // Calculate distance between two points
             const Point<int> diff = mc.pos - lastLeftClickPos;
@@ -295,14 +295,14 @@ void WindowManager::msgLeftUp(MouseCoords mc)
                 mc.dbl_click = true;
         }
 
-    } else if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
+    } else if(timeNow - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
         mc.dbl_click = true;
 
     if(!mc.dbl_click)
     {
         // Save values for next potential dbl click
         lastLeftClickPos = mc.pos;
-        lastLeftClickTime = time_now;
+        lastLeftClickTime = timeNow;
     }
 
     // Don't relay message if mouse is disabled (e.g. right after desktop switch)
@@ -522,22 +522,22 @@ void WindowManager::doDesktopSwitch()
 void WindowManager::closeMarkedIngameWnds()
 {
     auto isWndMarkedForClose = [](const auto& wnd) { return wnd->shouldBeClosed(); };
-    auto it = helpers::find_if(windows, isWndMarkedForClose);
+    auto it = helpers::findIf(windows, isWndMarkedForClose);
     while(it != windows.end())
     {
         doClose(it->get());
-        it = helpers::find_if(windows, isWndMarkedForClose);
+        it = helpers::findIf(windows, isWndMarkedForClose);
     }
 }
 
 template<class T_Windows>
-void SetActiveWindowImpl(const Window& wnd, Desktop& desktop, T_Windows& windows)
+void setActiveWindowImpl(const Window& wnd, Desktop& desktop, T_Windows& windows)
 {
-    auto itWnd = helpers::find_if(windows, [&wnd](const auto& it) { return it.get() == &wnd; });
+    auto itWnd = helpers::findIf(windows, [&wnd](const auto& it) { return it.get() == &wnd; });
     if(itWnd != windows.end())
     {
         // If we have a modal window, don't make this active unless it is the top most one
-        if(&wnd != windows.back().get() && helpers::contains_if(windows, [](const auto& it) { return it->isModal(); }))
+        if(&wnd != windows.back().get() && helpers::containsIf(windows, [](const auto& it) { return it->isModal(); }))
         {
             return;
         }
@@ -555,9 +555,9 @@ void SetActiveWindowImpl(const Window& wnd, Desktop& desktop, T_Windows& windows
 void WindowManager::setActiveWindow(Window& wnd)
 {
     if(curDesktop)
-        SetActiveWindowImpl(wnd, *curDesktop, windows);
+        setActiveWindowImpl(wnd, *curDesktop, windows);
     if(nextdesktop) // NOLINTNEXTLINE(clang-analyzer-cplusplus.Move)
-        SetActiveWindowImpl(wnd, *nextdesktop, nextWnds);
+        setActiveWindowImpl(wnd, *nextdesktop, nextWnds);
 }
 
 void WindowManager::takeScreenshot() const
@@ -567,7 +567,7 @@ void WindowManager::takeScreenshot() const
     glReadPixels(0, 0, windowSize.width, windowSize.height, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     flipVertical(buffer);
     const bfs::path outFilepath =
-      RTTRCONFIG.ExpandPath(s25::folders::screenshots) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
+      RTTRCONFIG.expandPath(s25::folders::screenshots) / (s25util::Time::formatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
     try
     {
         saveBitmap(buffer, outFilepath);
@@ -650,10 +650,10 @@ void WindowManager::drawToolTip()
         constexpr unsigned rightSpacing = cursorWidth + cursorPadding;
         constexpr unsigned leftSpacing = cursorPadding;
         DrawPoint ttPos = DrawPoint(lastMousePos.x + rightSpacing, lastMousePos.y);
-        unsigned right_edge = ttPos.x + curTooltip->getWidth();
+        unsigned rightEdge = ttPos.x + curTooltip->getWidth();
 
         // links neben der Maus, wenn es über den Rand gehen würde
-        if(right_edge > curRenderSize.x)
+        if(rightEdge > curRenderSize.x)
             ttPos.x = lastMousePos.x - leftSpacing - curTooltip->getWidth();
         curTooltip->draw(ttPos);
     }

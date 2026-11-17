@@ -19,7 +19,7 @@ public:
     GameMessage_GameCommand(); //-V730
     GameMessage_GameCommand(uint8_t player, const AsyncChecksum& checksum, const std::vector<gc::GameCommandPtr>& gcs);
 
-    void Serialize(Serializer& ser) const override;
-    void Deserialize(Serializer& ser) override;
+    void serialize(Serializer& ser) const override;
+    void deserialize(Serializer& ser) override;
     bool runGame(GameMessageInterface* callback) const override;
 };

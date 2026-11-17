@@ -334,10 +334,10 @@ void nobHQ::DestroyBuilding()
 void nobHQ::serialize(SerializedGameData& sgd) const
 {
     nobBaseWarehouse::serialize(sgd);
-    sgd.PushBool(isTent_);
+    sgd.pushBool(isTent_);
 }
 
-nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id), isTent_(sgd.PopBool())
+nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id), isTent_(sgd.popBool())
 {
     world->getMilitarySquares().add(this);
 }

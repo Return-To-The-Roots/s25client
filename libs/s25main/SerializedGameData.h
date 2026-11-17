@@ -118,7 +118,7 @@ public:
     /// FoW-Objekt
     void pushFOWObject(const FOWObject* fowobj);
 
-    /// Serialize an enum as T_SavedType which must be the underlying type (as that is what is deserialized by Pop<T>)
+    /// Serialize an enum as T_SavedType which must be the underlying type (as that is what is deserialized by pop<T>)
     /// Requires MaxEnumValue<T> to be specialized and T_SavedType to be able to hold all enumerators (checked only for
     /// max value)
     template<typename T_SavedType, typename T>
@@ -132,7 +132,7 @@ public:
         if(val)
             pushEnum<T_SavedType>(*val);
         else
-            Push<T_SavedType>(helpers::OptionalEnum<T>::invalidValue);
+            push<T_SavedType>(helpers::OptionalEnum<T>::invalidValue);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -232,7 +232,7 @@ template<typename T>
 void SerializedGameData::pushObjectContainer(const T& gos, bool known)
 {
     // Anzahl
-    PushVarSize(gos.size());
+    pushVarSize(gos.size());
     // einzelne Objekte
     for(const auto& go : gos)
         pushObject(go, known);
@@ -244,7 +244,7 @@ void SerializedGameData::popObjectContainer(T& gos, helpers::OptionalEnum<GO_Typ
     using Elements = typename T::value_type;
     using Object = std::remove_reference_t<decltype(**gos.begin())>;
 
-    unsigned size = (getGameDataVersion() >= 2) ? PopVarSize() : PopUnsignedInt();
+    unsigned size = (getGameDataVersion() >= 2) ? popVarSize() : popUnsignedInt();
     gos.clear();
     if constexpr(detail::has_reserve_v<decltype(gos)>)
         gos.reserve(size);
@@ -262,7 +262,7 @@ void SerializedGameData::popContainer(T& result)
         helpers::popContainer(*this, result);
     else
     {
-        result.resize(PopUnsignedInt());
+        result.resize(popUnsignedInt());
         helpers::popContainer(*this, result, true);
     }
 }
@@ -271,7 +271,7 @@ template<typename T>
 helpers::OptionalEnum<T> SerializedGameData::popOptionalEnum()
 {
     using Integral = std::underlying_type_t<T>;
-    const auto value = Serializer::Pop<Integral>();
+    const auto value = Serializer::pop<Integral>();
     if(value > helpers::MaxEnumValue_v<T> && value != helpers::OptionalEnum<T>::invalidValue)
         throw makeOutOfRange(value, helpers::MaxEnumValue_v<T>);
     // We can now safely convert to the enum value
@@ -292,5 +292,5 @@ std::enable_if_t<std::is_enum_v<T>, T> SerializedGameData::pop()
 template<typename T>
 std::enable_if_t<!std::is_enum_v<T>, T> SerializedGameData::pop()
 {
-    return Serializer::Pop<T>();
+    return Serializer::pop<T>();
 }

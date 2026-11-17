@@ -19,9 +19,9 @@ struct PathConditionReachable
         for(const DescIdx<TerrainDesc> tIdx : world.getTerrainsAround(pt))
         {
             const TerrainDesc& t = world.getDescription().get(tIdx);
-            if(t.Is(ETerrain::Unreachable))
+            if(t.is(ETerrain::Unreachable))
                 return false;
-            else if(t.Is(ETerrain::Walkable))
+            else if(t.is(ETerrain::Walkable))
                 goodTerrainFound = true;
         }
         return goodTerrainFound;
@@ -34,6 +34,6 @@ struct PathConditionReachable
         const TerrainDesc& tLeft = world.getDescription().get(terrains.left);
         const TerrainDesc& tRight = world.getDescription().get(terrains.right);
         // Don't go next to danger terrain
-        return !tLeft.Is(ETerrain::Unreachable) && !tRight.Is(ETerrain::Unreachable);
+        return !tLeft.is(ETerrain::Unreachable) && !tRight.is(ETerrain::Unreachable);
     }
 };

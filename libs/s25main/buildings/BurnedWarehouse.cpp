@@ -27,7 +27,7 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
 }
 
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), go_out_phase(sgd.PopUnsignedInt())
+    : noCoordBase(sgd, obj_id), player(sgd.popUnsignedChar()), go_out_phase(sgd.popUnsignedInt())
 {
     helpers::popContainer(sgd, people.people);
     if(sgd.getGameDataVersion() >= 12)
@@ -47,8 +47,8 @@ void BurnedWarehouse::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(player);
-    sgd.PushUnsignedInt(go_out_phase);
+    sgd.pushUnsignedChar(player);
+    sgd.pushUnsignedInt(go_out_phase);
     helpers::pushContainer(sgd, people.people);
     helpers::pushContainer(sgd, people.armoredSoldiers);
 }
@@ -69,7 +69,7 @@ void BurnedWarehouse::handleEvent(const unsigned /*id*/)
     if(possibleDirs.empty())
     {
         // No way out for figures -> all die and we can remove this object
-        getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+        getEvMgr().addToKillList(world->removeFigure(pos, *this));
         auto& currentPlayer = world->getPlayer(player);
         for(const auto i : helpers::enumRange<Job>())
             currentPlayer.decreaseInventoryJob(i, people[i]);
@@ -129,7 +129,7 @@ void BurnedWarehouse::handleEvent(const unsigned /*id*/)
     if(go_out_phase == GO_OUT_PHASES)
     {
         // All done
-        getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+        getEvMgr().addToKillList(world->removeFigure(pos, *this));
         // There shouldn't be any more
         for(unsigned int num : people.people)
             RTTR_Assert(num == 0);

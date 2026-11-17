@@ -247,7 +247,7 @@ std::vector<TestIngameWnd*> TestIngameWnd::closed;
 #define REQUIRE_WINDOW_ALIVE(wnd) BOOST_TEST_REQUIRE(!helpers::contains(TestIngameWnd::closed, wnd))
 #define REQUIRE_WINDOW_ACTIVE(wnd) \
     REQUIRE_WINDOW_ALIVE(wnd);     \
-    BOOST_TEST_REQUIRE((wnd)->IsActive())
+    BOOST_TEST_REQUIRE((wnd)->isActive())
 #define REQUIRE_WINDOW_DESTROYED(wnd) BOOST_TEST_REQUIRE(helpers::contains(TestIngameWnd::closed, wnd))
 } // namespace
 
@@ -260,13 +260,13 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     MOCK_EXPECT(wnd->drawContent).once();
     WINDOWMANAGER.draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
-    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->isActive());
     // Closing the window removes it and calls delete
     wnd->close();
     WINDOWMANAGER.draw();
     REQUIRE_WINDOW_DESTROYED(wnd);
     // Desktop active again
-    BOOST_TEST(WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(WINDOWMANAGER.getCurrentDesktop()->isActive());
 
     // Opening a window with the same ID works. The last gets the focus
     wnd = &WINDOWMANAGER.show(std::make_unique<TestIngameWnd>(CGI_HELP));
@@ -278,7 +278,7 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     REQUIRE_WINDOW_ALIVE(wnd);
     REQUIRE_WINDOW_ACTIVE(wnd2);
     // Desktop inactive again
-    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->isActive());
 
     // Closing a window and immediately reopening works
     wnd->close();
@@ -289,13 +289,13 @@ BOOST_FIXTURE_TEST_CASE(ShowIngameWnd, uiHelper::Fixture)
     WINDOWMANAGER.draw();
     REQUIRE_WINDOW_DESTROYED(wnd);
     REQUIRE_WINDOW_ACTIVE(wnd2);
-    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->isActive());
 
     // Close by ID
     WINDOWMANAGER.close(wnd2->getID());
     WINDOWMANAGER.draw();
     REQUIRE_WINDOW_DESTROYED(wnd2);
-    BOOST_TEST(WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(WINDOWMANAGER.getCurrentDesktop()->isActive());
     mock::verify();
 }
 
@@ -307,7 +307,7 @@ BOOST_FIXTURE_TEST_CASE(ToggleIngameWnd, uiHelper::Fixture)
     MOCK_EXPECT(wnd->drawContent).once();
     WINDOWMANAGER.draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
-    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->isActive());
 
     // When window is about to be closed we can open a new one
     wnd->close();
@@ -317,7 +317,7 @@ BOOST_FIXTURE_TEST_CASE(ToggleIngameWnd, uiHelper::Fixture)
     WINDOWMANAGER.draw();
     REQUIRE_WINDOW_ACTIVE(wnd2);
     REQUIRE_WINDOW_DESTROYED(wnd);
-    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->isActive());
 
     // Opening a window with the same ID closes and frees both
     wnd = wnd2;
@@ -327,7 +327,7 @@ BOOST_FIXTURE_TEST_CASE(ToggleIngameWnd, uiHelper::Fixture)
     REQUIRE_WINDOW_DESTROYED(wnd);
     REQUIRE_WINDOW_DESTROYED(wnd2);
     // Desktop active again
-    BOOST_TEST(WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(WINDOWMANAGER.getCurrentDesktop()->isActive());
 
     // Windows with different IDs are fine
     wnd = WINDOWMANAGER.toggleWindow(std::make_unique<TestIngameWnd>(CGI_HELP));
@@ -350,7 +350,7 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
     MOCK_EXPECT(wnd->drawContent).once();
     WINDOWMANAGER.draw();
     REQUIRE_WINDOW_ACTIVE(wnd);
-    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->isActive());
 
     // When window is about to be closed we can open a new one
     wnd->close();
@@ -360,7 +360,7 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
     WINDOWMANAGER.draw();
     REQUIRE_WINDOW_ACTIVE(wnd2);
     REQUIRE_WINDOW_DESTROYED(wnd);
-    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->isActive());
 
     // Opening a window with the same ID closes and frees the first
     wnd = wnd2;
@@ -370,7 +370,7 @@ BOOST_FIXTURE_TEST_CASE(ReplaceIngameWnd, uiHelper::Fixture)
     WINDOWMANAGER.draw();
     REQUIRE_WINDOW_DESTROYED(wnd);
     REQUIRE_WINDOW_ACTIVE(wnd2);
-    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->IsActive());
+    BOOST_TEST(!WINDOWMANAGER.getCurrentDesktop()->isActive());
 
     // Windows with different IDs are fine
     wnd = wnd2;
@@ -489,7 +489,7 @@ BOOST_FIXTURE_TEST_CASE(ModalBlocksMouseActivation, uiHelper::Fixture)
     WINDOWMANAGER.msgLeftUp(MouseCoords(posInA));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
-    BOOST_TEST(!wndA->IsActive());
+    BOOST_TEST(!wndA->isActive());
     mock::verify();
 
     MOCK_EXPECT(wndB->msgMiddleDown).once().returns(true);
@@ -497,7 +497,7 @@ BOOST_FIXTURE_TEST_CASE(ModalBlocksMouseActivation, uiHelper::Fixture)
     mcMiddle.mdown = true;
     WINDOWMANAGER.msgMiddleDown(mcMiddle);
     BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
-    BOOST_TEST(!wndA->IsActive());
+    BOOST_TEST(!wndA->isActive());
     mock::verify();
 
     // Wheel events must respect modal blocking too; the stack/active state must stay unchanged regardless.
@@ -505,7 +505,7 @@ BOOST_FIXTURE_TEST_CASE(ModalBlocksMouseActivation, uiHelper::Fixture)
     WINDOWMANAGER.msgWheelDown(MouseCoords(posInA));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
-    BOOST_TEST(!wndA->IsActive());
+    BOOST_TEST(!wndA->isActive());
 }
 
 BOOST_FIXTURE_TEST_CASE(BuriedModalClosedByGame, uiHelper::Fixture)
@@ -543,7 +543,7 @@ BOOST_FIXTURE_TEST_CASE(ClickActivatesBackgroundNonModal, uiHelper::Fixture)
     WINDOWMANAGER.draw();
     BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
-    BOOST_TEST(!wndA->IsActive());
+    BOOST_TEST(!wndA->isActive());
 
     // B is topmost, click is over A which must become topmost/active
     MOCK_EXPECT(wndA->msgLeftDown).once().returns(true);
@@ -553,7 +553,7 @@ BOOST_FIXTURE_TEST_CASE(ClickActivatesBackgroundNonModal, uiHelper::Fixture)
     WINDOWMANAGER.msgLeftUp(MouseCoords(mcDownA.pos));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndA);
     REQUIRE_WINDOW_ACTIVE(wndA);
-    BOOST_TEST(!wndB->IsActive());
+    BOOST_TEST(!wndB->isActive());
     mock::verify();
 
     // A is topmost, click is over B which must become topmost/active again
@@ -564,7 +564,7 @@ BOOST_FIXTURE_TEST_CASE(ClickActivatesBackgroundNonModal, uiHelper::Fixture)
     WINDOWMANAGER.msgLeftUp(MouseCoords(mcDownB.pos));
     BOOST_TEST_REQUIRE(WINDOWMANAGER.getTopMostWindow() == wndB);
     REQUIRE_WINDOW_ACTIVE(wndB);
-    BOOST_TEST(!wndA->IsActive());
+    BOOST_TEST(!wndA->isActive());
     mock::verify();
 }
 

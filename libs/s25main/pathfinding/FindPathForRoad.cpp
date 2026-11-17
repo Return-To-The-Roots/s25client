@@ -30,7 +30,7 @@ const GameWorldBase& getWorld(const T_WorldOrViewer& world)
 namespace detail {
 
 template<class T_WorldOrViewer>
-std::vector<Direction> FindPathForRoad(const T_WorldOrViewer& world, const MapPoint startPt, const MapPoint endPt,
+std::vector<Direction> findPathForRoad(const T_WorldOrViewer& world, const MapPoint startPt, const MapPoint endPt,
                                        bool isBoatRoad, unsigned maxLen)
 {
     RTTR_Assert(startPt != endPt);
@@ -40,6 +40,6 @@ std::vector<Direction> FindPathForRoad(const T_WorldOrViewer& world, const MapPo
     return road;
 }
 
-template std::vector<Direction> FindPathForRoad(const GameWorldBase&, const MapPoint, const MapPoint, bool, unsigned);
-template std::vector<Direction> FindPathForRoad(const GameWorldViewer&, const MapPoint, const MapPoint, bool, unsigned);
+template std::vector<Direction> findPathForRoad(const GameWorldBase&, const MapPoint, const MapPoint, bool, unsigned);
+template std::vector<Direction> findPathForRoad(const GameWorldViewer&, const MapPoint, const MapPoint, bool, unsigned);
 } // namespace detail

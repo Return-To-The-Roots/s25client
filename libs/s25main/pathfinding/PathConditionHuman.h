@@ -39,9 +39,9 @@ struct PathConditionHuman : PathConditionReachable
         const TerrainDesc& tLeft = world.getDescription().get(terrains.left);
         const TerrainDesc& tRight = world.getDescription().get(terrains.right);
         // Don't go next to danger terrain
-        if(tLeft.Is(ETerrain::Unreachable) || tRight.Is(ETerrain::Unreachable))
+        if(tLeft.is(ETerrain::Unreachable) || tRight.is(ETerrain::Unreachable))
             return false;
         // If either terrain is walkable, then we can use this transition
-        return tLeft.Is(ETerrain::Walkable) || tRight.Is(ETerrain::Walkable);
+        return tLeft.is(ETerrain::Walkable) || tRight.is(ETerrain::Walkable);
     }
 };

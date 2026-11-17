@@ -48,7 +48,7 @@ static std::ostream& operator<<(std::ostream& out, const InventorySetting& setti
 }
 static std::ostream& operator<<(std::ostream& out, const NodalObjectType& e)
 {
-    return out << static_cast<unsigned>(rttr::enum_cast(e));
+    return out << static_cast<unsigned>(rttr::enumCast(e));
 }
 static void dummySuppressUnused(std::ostream& out)
 {
@@ -58,7 +58,7 @@ static void dummySuppressUnused(std::ostream& out)
 
 namespace {
 // Expose the protected constructors only to serialize the actual command format in this test,
-// rather than duplicating the production Serialize() implementation.
+// rather than duplicating the production serialize() implementation.
 class TestSetTroopLimit : public gc::SetTroopLimit
 {
 public:
@@ -562,7 +562,7 @@ BOOST_FIXTURE_TEST_CASE(SendSoldiersHomeTest, WorldWithGCExecution2P)
 }
 
 namespace {
-void FlagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodType toolType)
+void flagWorkerTest(WorldWithGCExecution2P& worldFixture, Job workerJob, GoodType toolType)
 {
     worldFixture.addStartResources();
     const MapPoint flagPt = worldFixture.world.getNeighbour(worldFixture.hqPos, Direction::SouthEast) + MapPoint(3, 0);
@@ -623,14 +623,14 @@ BOOST_FIXTURE_TEST_CASE(CallGeologist, WorldWithGCExecution2P)
 {
     initGameRNG();
 
-    FlagWorkerTest(*this, Job::Geologist, GoodType::Hammer);
+    flagWorkerTest(*this, Job::Geologist, GoodType::Hammer);
 }
 
 BOOST_FIXTURE_TEST_CASE(CallScout, WorldWithGCExecution2P)
 {
     initGameRNG();
 
-    FlagWorkerTest(*this, Job::Scout, GoodType::Bow);
+    flagWorkerTest(*this, Job::Scout, GoodType::Bow);
 }
 
 BOOST_FIXTURE_TEST_CASE(ChangeCoinAccept, WorldWithGCExecution2P)
@@ -721,7 +721,7 @@ BOOST_FIXTURE_TEST_CASE(DisableProduction, WorldWithGCExecution2P)
 }
 
 namespace {
-void InitPactsAndPost(GameWorldBase& world)
+void initPactsAndPost(GameWorldBase& world)
 {
     for(unsigned i = 0; i < world.getNumPlayers(); i++)
     {
@@ -753,7 +753,7 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
         BOOST_TEST_REQUIRE(postMgr.getPostBox(i)->getNumMsgs() == 0u); //-V807
     // Still no allies
     world.getPlayer(1).team = Team::Team1; //-V807
-    InitPactsAndPost(world);
+    initPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     for(unsigned i = 0; i < world.getNumPlayers(); i++)
         BOOST_TEST_REQUIRE(postMgr.getPostBox(i)->getNumMsgs() == 0u);
@@ -761,7 +761,7 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
     // First 2 players are allied -> Message received by player 0 only
     world.getPlayer(0).team = Team::Team1; //-V807
     world.getPlayer(1).team = Team::Team1;
-    InitPactsAndPost(world);
+    initPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     BOOST_TEST_REQUIRE(postMgr.getPostBox(0u)->getNumMsgs() == 1u); //-V807
     for(unsigned i = 1; i < world.getNumPlayers(); i++)
@@ -771,7 +771,7 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
     world.getPlayer(0).team = Team::Team1; //-V525
     world.getPlayer(1).team = Team::Team1;
     world.getPlayer(2).team = Team::Team2; //-V807
-    InitPactsAndPost(world);
+    initPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     BOOST_TEST_REQUIRE(postMgr.getPostBox(0u)->getNumMsgs() == 1u);
     for(unsigned i = 1; i < world.getNumPlayers(); i++)
@@ -781,7 +781,7 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
     world.getPlayer(0).team = Team::Team1; //-V525
     world.getPlayer(1).team = Team::Team2;
     world.getPlayer(2).team = Team::Team2;
-    InitPactsAndPost(world);
+    initPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     BOOST_TEST_REQUIRE(postMgr.getPostBox(2u)->getNumMsgs() == 1u);
     for(unsigned i = 0; i < 2; i++)
@@ -791,7 +791,7 @@ BOOST_FIXTURE_TEST_CASE(NotifyAllies, WorldWithGCExecution3P)
     world.getPlayer(0).team = Team::Team3;
     world.getPlayer(1).team = Team::Team3;
     world.getPlayer(2).team = Team::Team3;
-    InitPactsAndPost(world);
+    initPactsAndPost(world);
     this->NotifyAlliesOfLocation(hqPos);
     BOOST_TEST_REQUIRE(postMgr.getPostBox(0u)->getNumMsgs() == 1u);
     BOOST_TEST_REQUIRE(postMgr.getPostBox(1u)->getNumMsgs() == 0u);
@@ -892,7 +892,7 @@ BOOST_FIXTURE_TEST_CASE(SetInventorySettingTest, WorldWithGCExecution2P)
         goodSettings[i] = InventorySetting(rand() % 5);
     this->SetAllInventorySettings(hqPos, false, makeVector(goodSettings));
     for(const auto i : helpers::enumRange<GoodType>())
-        BOOST_TEST_REQUIRE(wh->getInventorySetting(i) == goodSettings[ConvertShields(i)]);
+        BOOST_TEST_REQUIRE(wh->getInventorySetting(i) == goodSettings[convertShields(i)]);
 
     std::fill(goodSettings.begin(), goodSettings.end(), InventorySetting(0));
     this->SetAllInventorySettings(hqPos, false, makeVector(goodSettings));
@@ -993,8 +993,8 @@ BOOST_FIXTURE_TEST_CASE(armageddon, WorldWithGCExecution2P)
     }
     BOOST_TEST_REQUIRE(world.getNO(hqPt1)->getGOT() != GO_Type::NobHq);
     BOOST_TEST_REQUIRE(world.getNO(hqPt2)->getGOT() != GO_Type::NobHq);
-    BOOST_TEST_REQUIRE(player1.IsDefeated());
-    BOOST_TEST_REQUIRE(player2.IsDefeated());
+    BOOST_TEST_REQUIRE(player1.isDefeated());
+    BOOST_TEST_REQUIRE(player2.isDefeated());
 }
 
 BOOST_FIXTURE_TEST_CASE(DestroyAllTest, WorldWithGCExecution2P)
@@ -1016,8 +1016,8 @@ BOOST_FIXTURE_TEST_CASE(DestroyAllTest, WorldWithGCExecution2P)
     }
     BOOST_TEST_REQUIRE(world.getNO(hqPt1)->getGOT() != GO_Type::NobHq);
     BOOST_TEST_REQUIRE(world.getNO(hqPt2)->getGOT() == GO_Type::NobHq);
-    BOOST_TEST_REQUIRE(player1.IsDefeated());
-    BOOST_TEST_REQUIRE(!player2.IsDefeated());
+    BOOST_TEST_REQUIRE(player1.isDefeated());
+    BOOST_TEST_REQUIRE(!player2.isDefeated());
 }
 
 BOOST_FIXTURE_TEST_CASE(SurrenderTest, WorldWithGCExecution2P)
@@ -1034,8 +1034,8 @@ BOOST_FIXTURE_TEST_CASE(SurrenderTest, WorldWithGCExecution2P)
     BOOST_TEST_REQUIRE(player2.getHQPos().isValid());
     BOOST_TEST_REQUIRE(world.getNode(hqPt1).obj != (const noBase*)nullptr);
     BOOST_TEST_REQUIRE(world.getNode(hqPt2).obj != (const noBase*)nullptr);
-    BOOST_TEST_REQUIRE(player1.IsDefeated());
-    BOOST_TEST_REQUIRE(!player2.IsDefeated());
+    BOOST_TEST_REQUIRE(player1.isDefeated());
+    BOOST_TEST_REQUIRE(!player2.isDefeated());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

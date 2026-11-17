@@ -130,7 +130,7 @@ void dskBenchmark::msgPaintAfter()
 
 void dskBenchmark::setActive(bool activate)
 {
-    if(!IsActive() && activate)
+    if(!isActive() && activate)
         VIDEODRIVER.resizeScreen(VideoMode(1600, 900), DisplayMode::Windowed);
     dskMenuBase::setActive(activate);
 }
@@ -185,7 +185,7 @@ void dskBenchmark::startTest(Benchmark test)
                 rect.rect.setSize(Extent(distSize(rng), distSize(rng)));
                 unsigned clr = distClr(rng);
                 unsigned alpha = std::min((distClr(rng) + 10u) * 10u, 0xFFu);
-                rect.clr = MakeColor(alpha, clr, clr, clr);
+                rect.clr = makeColor(alpha, clr, clr, clr);
                 rects_.push_back(rect);
                 pt.y += distrMove(rng);
                 if(pt.y >= static_cast<int>(screenSize.y) - 20)
@@ -199,7 +199,7 @@ void dskBenchmark::startTest(Benchmark test)
                 line.p1 = Position(distrPosX(rng), distrPosY(rng));
                 line.p2 = Position(distrPosX(rng), distrPosY(rng));
                 line.width = distrWidth(rng);
-                line.clr = MakeColor(alpha, clr, clr, clr);
+                line.clr = makeColor(alpha, clr, clr, clr);
                 lines_.push_back(line);
             }
             break;
@@ -275,7 +275,7 @@ void dskBenchmark::finishTest()
 {
     using namespace std::chrono;
     using helpers::withUnit;
-    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % rttr::enum_cast(curTest_)
+    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % rttr::enumCast(curTest_)
       % withUnit(duration_cast<duration<float>>(frameCtr_.getCurIntervalLength()))
       % withUnit(duration_cast<milliseconds>(frameCtr_.getCurIntervalLength() / frameCtr_.getCurNumFrames()));
     if(testDurations_[curTest_] == milliseconds::zero())
@@ -304,7 +304,7 @@ void dskBenchmark::finishTest()
             curTest_ = Benchmark::None;
         else
         {
-            curTest_ = Benchmark(rttr::enum_cast(curTest_) + 1);
+            curTest_ = Benchmark(rttr::enumCast(curTest_) + 1);
             startTest(curTest_);
         }
     }
@@ -312,7 +312,7 @@ void dskBenchmark::finishTest()
 
 void dskBenchmark::createGame()
 {
-    RANDOM.Init(42);
+    RANDOM.init(42);
     std::vector<PlayerInfo> players;
     PlayerInfo p;
     p.ps = PlayerState::Occupied;
@@ -327,7 +327,7 @@ void dskBenchmark::createGame()
     try
     {
         loadGameData(world.getDescriptionWriteable());
-        world.Init(MapExtent(128, 128));
+        world.init(MapExtent(128, 128));
         const WorldDescription& desc = world.getDescription();
         DescIdx<TerrainDesc> lastTerrain(0);
         int lastHeight = 10;
@@ -377,7 +377,7 @@ void dskBenchmark::printTimes() const
     {
         if(i == Benchmark::None)
             continue;
-        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % rttr::enum_cast(i)
+        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % rttr::enumCast(i)
           % helpers::withUnit(duration_cast<duration<float>>(testDurations_[i]))
           % helpers::withUnit(duration_cast<milliseconds>(testDurations_[i] / numTestFrames));
         total += testDurations_[i];

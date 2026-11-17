@@ -35,7 +35,7 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
 {
     // Einzelne Balken
     for(const auto tool : helpers::enumRange<Tool>())
-        addToolSettingSlider(rttr::enum_cast(tool), TOOL_TO_GOOD[tool]);
+        addToolSettingSlider(rttr::enumCast(tool), TOOL_TO_GOOD[tool]);
 
     const GlobalGameSettings& settings = gwv.getWorld().getGGS();
     if(settings.isEnabled(AddonId::TOOL_ORDERING))
@@ -43,7 +43,7 @@ iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
         // qx:tools
         for(const auto tool : helpers::enumRange<Tool>())
         {
-            const auto toolIdx = rttr::enum_cast(tool);
+            const auto toolIdx = rttr::enumCast(tool);
             constexpr Extent btSize(20, 13);
             auto* txt = static_cast<ctrlTextDeepening*>(
               addTextDeepening(200 + toolIdx, DrawPoint(151, 31 + toolIdx * 28), Extent(22, 18), TextureColor::Grey, "",
@@ -95,7 +95,7 @@ void iwTools::transmitSettings()
         // Einstellungen speichern
         ToolSettings newSettings;
         for(const auto tool : helpers::enumRange<Tool>())
-            newSettings[tool] = static_cast<uint8_t>(getCtrl<ctrlProgress>(rttr::enum_cast(tool))->getPosition());
+            newSettings[tool] = static_cast<uint8_t>(getCtrl<ctrlProgress>(rttr::enumCast(tool))->getPosition());
 
         int8_t* orderDelta = nullptr;
         if(ordersChanged)
@@ -132,7 +132,7 @@ void iwTools::updateTexts()
         const GamePlayer& localPlayer = gwv.getPlayer();
         for(const auto tool : helpers::enumRange<Tool>())
         {
-            auto* field = getCtrl<ctrlBaseText>(200 + rttr::enum_cast(tool));
+            auto* field = getCtrl<ctrlBaseText>(200 + rttr::enumCast(tool));
             int curOrders = isReplay ? localPlayer.getToolsOrdered(tool) :
                                        localPlayer.getToolsOrderedVisual(tool) + pendingOrderChanges[tool];
             field->setText(helpers::toString(curOrders));
@@ -175,7 +175,7 @@ void iwTools::msgButtonClick(const unsigned ctrl_id)
             ++curOrders;
         }
         ordersChanged = true;
-        getCtrl<ctrlBaseText>(200 + rttr::enum_cast(tool))->setText(helpers::toString(curOrders));
+        getCtrl<ctrlBaseText>(200 + rttr::enumCast(tool))->setText(helpers::toString(curOrders));
     } else
         switch(ctrl_id)
         {
@@ -208,7 +208,7 @@ void iwTools::updateSettings(const ToolSettings& tool_settings)
     if(isReplay)
         GAMECLIENT.resetVisualSettings();
     for(const auto tool : helpers::enumRange<Tool>())
-        getCtrl<ctrlProgress>(rttr::enum_cast(tool))->setPosition(tool_settings[tool]);
+        getCtrl<ctrlProgress>(rttr::enumCast(tool))->setPosition(tool_settings[tool]);
 }
 
 void iwTools::updateSettings()

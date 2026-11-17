@@ -25,10 +25,10 @@
 #include <iterator>
 
 // LCOV_EXCL_START
-#define RTTR_ENUM_OUTPUT(EnumName)                                                 \
-    static std::ostream& operator<<(std::ostream& out, const EnumName e)           \
-    {                                                                              \
-        return out << #EnumName "::" << static_cast<unsigned>(rttr::enum_cast(e)); \
+#define RTTR_ENUM_OUTPUT(EnumName)                                                \
+    static std::ostream& operator<<(std::ostream& out, const EnumName e)          \
+    {                                                                             \
+        return out << #EnumName "::" << static_cast<unsigned>(rttr::enumCast(e)); \
     }
 
 RTTR_ENUM_OUTPUT(nobShipYard::Mode)
@@ -38,9 +38,9 @@ namespace {
 
 using SmallSeaWorld = WorldFixture<CreateSeaWorld, 2, SmallSeaWorldDefault<2>::width, SmallSeaWorldDefault<2>::height>;
 
-std::vector<Direction> FindRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)
+std::vector<Direction> findRoadPath(const MapPoint fromPt, const MapPoint toPt, const GameWorldBase& world)
 {
-    return FindPathForRoad(world, fromPt, toPt, false);
+    return findPathForRoad(world, fromPt, toPt, false);
 }
 /// Helper to extract only the destinations(harbors) from the connections list
 std::set<const noRoadNode*> toHarbors(const std::vector<nobHarborBuilding::ShipConnection>& connections)
@@ -76,7 +76,7 @@ BOOST_FIXTURE_TEST_CASE(HarborPlacing, SeaWorldWithGCExecution<>)
     BOOST_TEST_REQUIRE(world.getNode(MapPoint(0, 0)).seaId == seaId);
     BOOST_TEST_REQUIRE(world.getSeaId(hbId, Direction::NorthEast) == seaId);
 
-    const std::vector<Direction> road = FindRoadPath(world.getNeighbour(hqPos, Direction::SouthEast),
+    const std::vector<Direction> road = findRoadPath(world.getNeighbour(hqPos, Direction::SouthEast),
                                                      world.getNeighbour(hbPos, Direction::SouthEast), world);
     BOOST_TEST_REQUIRE(!road.empty());
 }
@@ -149,7 +149,7 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
     auto* harbor = dynamic_cast<nobHarborBuilding*>(
       BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(harbor);
-    std::vector<Direction> road = FindRoadPath(hqFlagPos, world.getNeighbour(hbPos, Direction::SouthEast), world);
+    std::vector<Direction> road = findRoadPath(hqFlagPos, world.getNeighbour(hbPos, Direction::SouthEast), world);
     BOOST_TEST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
     MapPoint curPt = hqFlagPos;
@@ -158,11 +158,11 @@ BOOST_FIXTURE_TEST_CASE(ShipBuilding, SeaWorldWithGCExecution<>)
         curPt = world.getNeighbour(curPt, i);
         this->SetFlag(curPt);
     }
-    BOOST_TEST_REQUIRE(world.GetBQ(shipyardPos, curPlayer) == BuildingQuality::Castle);
+    BOOST_TEST_REQUIRE(world.getBQ(shipyardPos, curPlayer) == BuildingQuality::Castle);
     auto* shipYard = dynamic_cast<nobShipYard*>(
       BuildingFactory::createBuilding(world, BuildingType::Shipyard, shipyardPos, curPlayer, Nation::Romans));
     BOOST_TEST_REQUIRE(shipYard);
-    road = FindRoadPath(hqFlagPos, world.getNeighbour(shipyardPos, Direction::SouthEast), world);
+    road = findRoadPath(hqFlagPos, world.getNeighbour(shipyardPos, Direction::SouthEast), world);
     BOOST_TEST_REQUIRE(!road.empty());
     this->BuildRoad(hqFlagPos, false, road);
     BOOST_TEST_REQUIRE(shipYard->getMode() == nobShipYard::Mode::Boats); //-V522
@@ -215,7 +215,7 @@ struct ShipReadyFixture : public SeaWorldWithGCExecution<T_numPlayers, T_width, 
           BuildingFactory::createBuilding(world, BuildingType::HarborBuilding, hbPos, curPlayer, Nation::Romans));
         BOOST_TEST_REQUIRE(harbor);
         world.recalcBQAroundPointBig(hbPos);
-        std::vector<Direction> road = FindRoadPath(hqFlagPos, world.getNeighbour(hbPos, Direction::SouthEast), world);
+        std::vector<Direction> road = findRoadPath(hqFlagPos, world.getNeighbour(hbPos, Direction::SouthEast), world);
         BOOST_TEST_REQUIRE(!road.empty());
         this->BuildRoad(hqFlagPos, false, road);
         MapPoint curPt = hqFlagPos;
@@ -603,7 +603,7 @@ void destroyBldAndFire(GameWorldBase& world, const MapPoint& pos)
             // Remove go-out event (not automatically done as the burned wh is never removed)
             const GameEvent* ev = static_cast<TestEventManager&>(world.getEvMgr()).getObjEvents(fig).front();
             world.getEvMgr().removeEvent(ev);
-            world.RemoveFigure(pos, fig)->destroy();
+            world.removeFigure(pos, fig)->destroy();
             break;
         }
     }
@@ -744,7 +744,7 @@ BOOST_FIXTURE_TEST_CASE(IncreasedPathLengthWhenHarborDestroyed, ShipReadyFixture
     BOOST_TEST_REQUIRE(hbLeftPos.y < hbBottomPos.y);
     const unsigned yDiff = hbLeftPos.y - hbTopPos.y;
     BOOST_TEST_REQUIRE(yDiff >= 4u * 3u); // So divisions below yield noticeable difference
-    const auto t = GetLandTerrain(world.getDescription(), ETerrain::Buildable);
+    const auto t = getLandTerrain(world.getDescription(), ETerrain::Buildable);
     for(const auto y : helpers::range(hbLeftPos.y - yDiff * 3u / 4u, hbLeftPos.y + yDiff / 2u))
     {
         auto& node = world.getNodeWriteable(MapPoint(hbTopPos.x, y));
@@ -932,7 +932,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
         for([[maybe_unused]] auto i : helpers::range(2))
         {
             auto& node = world.getNodeWriteable(p);
-            node.t1 = node.t2 = GetLandTerrain(world.getDescription());
+            node.t1 = node.t2 = getLandTerrain(world.getDescription());
             p = world.getNeighbour(p, Direction::West);
         }
     }
@@ -940,7 +940,7 @@ BOOST_FIXTURE_TEST_CASE(GoToNeighborHarbor, ShipReadyFixture<1>)
     // And the coastal point
     {
         auto& node = world.getNodeWriteable(world.getNeighbour(coastPoint, Direction::NorthWest));
-        node.t1 = GetLandTerrain(world.getDescription());
+        node.t1 = getLandTerrain(world.getDescription());
     }
     MapLoader::initSeasAndHarbors(world, harborPoints);
 

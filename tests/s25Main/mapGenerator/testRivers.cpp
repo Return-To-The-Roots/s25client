@@ -51,14 +51,14 @@ BOOST_AUTO_TEST_CASE(CreateStream_returns_only_connected_nodes)
 
         for(const MapPoint& pt : river)
         {
-            BOOST_TEST_REQUIRE(helpers::contains_if(map.z.getNeighbours(pt), containedByRiver));
+            BOOST_TEST_REQUIRE(helpers::containsIf(map.z.getNeighbours(pt), containedByRiver));
         }
     }
 }
 
 BOOST_AUTO_TEST_CASE(CreateStream_returns_only_nodes_covered_by_water)
 {
-    auto land = map.textureMap.Find(isBuildableLand);
+    auto land = map.textureMap.find(isBuildableLand);
     map.getTextures().resize(map.size, land);
     const MapPoint source(3, 2);
     const int length = 7;
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(CreateStream_which_ends_at_minimum_height)
     map.z[source] = map.height.maximum;
 
     const auto river = createStream(rnd, map, source, Direction::East, 20);
-    const auto expectedRange = map.z.GetPointsInRadiusWithCenter(source, 2);
+    const auto expectedRange = map.z.getPointsInRadiusWithCenter(source, 2);
 
     for(const MapPoint& pt : river)
     {

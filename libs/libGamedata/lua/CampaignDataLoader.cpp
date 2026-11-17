@@ -49,7 +49,7 @@ bool CampaignDataLoader::checkScriptVersion()
     }
 }
 
-bool CampaignDataLoader::Load()
+bool CampaignDataLoader::load()
 {
     auto curFile_ = basePath_ / "campaign.lua";
     try

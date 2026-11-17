@@ -48,7 +48,7 @@ dskLAN::dskLAN() : dskMenuBase(LOADER.getImageN("setup013", 0)), discovery(LAN_D
                                 {_("Player"), 200, SRT::String},
                                 {_("Version"), 100, SRT::String}});
 
-    discovery.Start();
+    discovery.start();
 
     using namespace std::chrono_literals;
     addTimer(ID_tmrRefreshServers, 1min); // Servers broadcast changes, so force a full update only once a minute
@@ -58,7 +58,7 @@ dskLAN::dskLAN() : dskMenuBase(LOADER.getImageN("setup013", 0)), discovery(LAN_D
 void dskLAN::msgTimer(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_tmrRefreshServers)
-        discovery.Refresh();
+        discovery.refresh();
     else if(ctrl_id == ID_tmrRefreshList)
         updateServerList();
     else
@@ -68,7 +68,7 @@ void dskLAN::msgTimer(const unsigned ctrl_id)
 void dskLAN::msgPaintBefore()
 {
     dskMenuBase::msgPaintBefore();
-    discovery.Run();
+    discovery.run();
 }
 
 void dskLAN::msgButtonClick(const unsigned ctrl_id)
@@ -99,10 +99,10 @@ void dskLAN::msgTableChooseItem(const unsigned ctrl_id, const unsigned /*selecti
 void dskLAN::readOpenGames()
 {
     openGames.clear();
-    const LANDiscoveryClient::ServiceMap& services = discovery.GetServices();
+    const LANDiscoveryClient::ServiceMap& services = discovery.getServices();
     for(const auto& service : services)
     {
-        Serializer ser(&service.second.info.GetPayload().front(), service.second.info.GetPayload().size()); //-V807
+        Serializer ser(&service.second.info.getPayload().front(), service.second.info.getPayload().size()); //-V807
         GameInfo info;
         info.ip = service.second.ip;
         info.info.deserialize(ser);

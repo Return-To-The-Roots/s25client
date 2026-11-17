@@ -48,7 +48,7 @@ ctrlChat::~ctrlChat() = default;
  */
 void ctrlChat::resize(const Extent& newSize)
 {
-    const bool x_changed = (getSize().x != newSize.x && !chat_lines.empty());
+    const bool xChanged = (getSize().x != newSize.x && !chat_lines.empty());
     Window::resize(newSize);
 
     auto* scroll = getCtrl<ctrlScrollBar>(0);
@@ -56,7 +56,7 @@ void ctrlChat::resize(const Extent& newSize)
     scroll->resize(Extent(SCROLLBAR_WIDTH, newSize.y));
 
     // Remember some things
-    const bool was_on_bottom = (scroll->getScrollPos() + page_size == chat_lines.size());
+    const bool wasOnBottom = (scroll->getScrollPos() + page_size == chat_lines.size());
     unsigned short position = 0;
     // Remember the entry on top
     for(unsigned short i = 1; i <= scroll->getScrollPos(); ++i)
@@ -64,7 +64,7 @@ void ctrlChat::resize(const Extent& newSize)
             ++position;
 
     // Rewrap
-    if(x_changed)
+    if(xChanged)
     {
         chat_lines.clear();
         for(unsigned short i = 0; i < raw_chat_lines.size(); ++i)
@@ -77,10 +77,10 @@ void ctrlChat::resize(const Extent& newSize)
     scroll->setPageSize(page_size);
 
     // If we are were on the last line, keep
-    if(was_on_bottom)
+    if(wasOnBottom)
     {
         scroll->setScrollPos(((chat_lines.size() > page_size) ? chat_lines.size() - page_size : 0));
-    } else if(x_changed)
+    } else if(xChanged)
     {
         unsigned short i;
         for(i = 0; position > 0; ++i)
@@ -108,13 +108,13 @@ void ctrlChat::drawImpl()
     Window::drawImpl();
 
     // Wieviele Linien anzeigen?
-    unsigned show_lines = (page_size > unsigned(chat_lines.size()) ? unsigned(chat_lines.size()) : page_size);
+    unsigned showLines = (page_size > unsigned(chat_lines.size()) ? unsigned(chat_lines.size()) : page_size);
 
     // Listeneinträge zeichnen
     // Add margin
     DrawPoint textPos = getDrawPos() + DrawPoint(2, 2);
     unsigned pos = getCtrl<ctrlScrollBar>(0)->getScrollPos();
-    for(unsigned i = 0; i < show_lines; ++i)
+    for(unsigned i = 0; i < showLines; ++i)
     {
         DrawPoint curTextPos = textPos;
         if(auto* line = get_if<PrimaryChatLine>(&chat_lines[i + pos]))
@@ -153,12 +153,12 @@ void ctrlChat::wrapLine(unsigned short i)
     const RawChatLine& line = raw_chat_lines[i];
 
     // Breite von Zeitstring und Spielername berechnen (falls vorhanden)
-    unsigned short prefix_width =
+    unsigned short prefixWidth =
       (!line.time_string.empty() ? font->getWidth(line.time_string) : 0)
       + (!line.player.empty() ? (bracket1_size + bracket2_size + font->getWidth(line.player)) : 0);
 
     // Reicht die Breite des Textfeldes noch nichtmal dafür aus?
-    if(prefix_width > getSize().x - 2 - SCROLLBAR_WIDTH)
+    if(prefixWidth > getSize().x - 2 - SCROLLBAR_WIDTH)
     {
         // dann können wir das gleich vergessen
         return;
@@ -166,7 +166,7 @@ void ctrlChat::wrapLine(unsigned short i)
 
     // Zeilen ggf. wrappen, falls der Platz nich reicht und die Zeilenanfanänge in wi speichern
     glFont::WrapInfo wi =
-      font->getWrapInfo(line.msg, getSize().x - prefix_width - 2 - SCROLLBAR_WIDTH, getSize().x - 2 - SCROLLBAR_WIDTH);
+      font->getWrapInfo(line.msg, getSize().x - prefixWidth - 2 - SCROLLBAR_WIDTH, getSize().x - 2 - SCROLLBAR_WIDTH);
 
     // Message-Strings erzeugen aus den WrapInfo
     std::vector<std::string> strings = wi.createSingleStrings(line.msg);
@@ -176,9 +176,9 @@ void ctrlChat::wrapLine(unsigned short i)
     {
         if(i == 0)
         {
-            PrimaryChatLine wrap_line = line;
-            wrap_line.msg = strings[i];
-            chat_lines.emplace_back(std::move(wrap_line));
+            PrimaryChatLine chatLine = line;
+            chatLine.msg = strings[i];
+            chat_lines.emplace_back(std::move(chatLine));
         } else
         {
             chat_lines.emplace_back(SecondaryChatLine{strings[i], line.msg_color});
@@ -235,7 +235,7 @@ bool ctrlChat::msgLeftUp(const MouseCoords& mc)
 
 bool ctrlChat::msgWheelUp(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(2, 2), getSize() - Extent(2, 4))))
+    if(isPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(2, 2), getSize() - Extent(2, 4))))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(-3);
@@ -246,7 +246,7 @@ bool ctrlChat::msgWheelUp(const MouseCoords& mc)
 
 bool ctrlChat::msgWheelDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(2, 2), getSize() - Extent(2, 4))))
+    if(isPointInRect(mc.pos, Rect(getDrawPos() + DrawPoint(2, 2), getSize() - Extent(2, 4))))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(+3);

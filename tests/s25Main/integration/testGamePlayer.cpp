@@ -25,12 +25,12 @@ using WorldFixtureEmpty2P = WorldFixture<CreateEmptyWorld, 2>;
 
 BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
 {
-    BOOST_TEST_REQUIRE(!world.getPlayer(0).IsDefeated());
-    BOOST_TEST_REQUIRE(!world.getPlayer(1).IsDefeated());
+    BOOST_TEST_REQUIRE(!world.getPlayer(0).isDefeated());
+    BOOST_TEST_REQUIRE(!world.getPlayer(1).isDefeated());
     // Destroy HQ -> defeated
     world.destroyNO(world.getPlayer(1).getHQPos()); //-V522
-    BOOST_TEST_REQUIRE(!world.getPlayer(0).IsDefeated());
-    BOOST_TEST_REQUIRE(world.getPlayer(1).IsDefeated());
+    BOOST_TEST_REQUIRE(!world.getPlayer(0).isDefeated());
+    BOOST_TEST_REQUIRE(world.getPlayer(1).isDefeated());
     // Destroy HQ but leave a military bld
     MapPoint milBldPos = world.makeMapPoint(world.getPlayer(0).getFirstWH()->getPos() + Position(4, 0)); //-V522
     auto* milBld = dynamic_cast<nobMilitary*>(
@@ -39,10 +39,10 @@ BOOST_FIXTURE_TEST_CASE(Defeat, WorldFixtureEmpty2P)
     milBld->gotWorker(Job::Private, sld);
     sld.walkToGoal();
     world.destroyNO(world.getPlayer(0).getHQPos());
-    BOOST_TEST_REQUIRE(!world.getPlayer(0).IsDefeated());
+    BOOST_TEST_REQUIRE(!world.getPlayer(0).isDefeated());
     // Destroy this -> defeated
     world.destroyNO(milBldPos);
-    BOOST_TEST_REQUIRE(world.getPlayer(0).IsDefeated());
+    BOOST_TEST_REQUIRE(world.getPlayer(0).isDefeated());
 }
 
 namespace {
@@ -61,7 +61,7 @@ using WorldFixtureEmpty1P = WorldFixture<CreateEmptyWorld, 1, 2 * helpers::MaxEn
 
 namespace {
 // S4-like mine productivity reaches the mine's base productivity once this many matching resources remain in the
-// mine radius, degrading linearly below it (see GetS4LikeMineProductionChance).
+// mine radius, degrading linearly below it (see getS4LikeMineProductionChance).
 constexpr unsigned S4LIKE_FULL_PRODUCTIVITY_AMOUNT = 20;
 
 // Places a coal mine and drives its S4-like productivity purely through the resources in its radius.
@@ -78,7 +78,7 @@ struct MineProductivityFixture : WorldFixture<CreateEmptyWorld, 1, MINE_MAP_SIZE
         coalMine = static_cast<nobUsual*>(
           BuildingFactory::createBuilding(world, BuildingType::CoalMine, minePos, 0, Nation::Romans));
         // Clear resources in the radius explicitly.
-        for(const MapPoint pt : world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS))
+        for(const MapPoint pt : world.getPointsInRadiusWithCenter(minePos, MINER_RADIUS))
             world.setResource(pt, Resource());
     }
 
@@ -93,7 +93,7 @@ struct MineProductivityFixture : WorldFixture<CreateEmptyWorld, 1, MINE_MAP_SIZE
     // Only the summed amount in range matters, so the exact distribution is irrelevant.
     void spreadCoalInRadius(const unsigned total)
     {
-        const std::vector<MapPoint> pts = world.GetPointsInRadiusWithCenter(minePos, MINER_RADIUS);
+        const std::vector<MapPoint> pts = world.getPointsInRadiusWithCenter(minePos, MINER_RADIUS);
         unsigned remaining = total;
         for(unsigned i = 0; i < pts.size(); ++i)
         {
@@ -204,7 +204,7 @@ BOOST_FIXTURE_TEST_CASE(MineProductivityAccountsForS4LikeResourceChance, MinePro
 
 BOOST_FIXTURE_TEST_CASE(MineProductivityUsesAllMatchingResourcesWithinMineRadius, MineProductivityFixture)
 {
-    // Base productivity 100 so GetProductivity() directly mirrors the resource-based production chance.
+    // Base productivity 100 so getProductivity() directly mirrors the resource-based production chance.
     setProductivity(coalMine, 100);
     ggs.setSelection(AddonId::COALMINE_RESOURCE_BEHAVIOR,
                      static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));

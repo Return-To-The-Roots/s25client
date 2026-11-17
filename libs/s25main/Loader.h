@@ -89,22 +89,21 @@ public:
     void loadDummyMapFiles();
     void loadDummySoundFiles();
     /// Load a file and save it into the loader repo
-    bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
-    bool Load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     /// Load a file or directory and its overrides into the archive
-    bool Load(libsiedler2::Archiv& archive, const boost::filesystem::path& path,
+    bool load(libsiedler2::Archiv& archive, const boost::filesystem::path& path,
               const libsiedler2::ArchivItem_Palette* palette = nullptr);
-    bool Load(libsiedler2::Archiv& archive, const ResourceId& resId,
+    bool load(libsiedler2::Archiv& archive, const ResourceId& resId,
               const libsiedler2::ArchivItem_Palette* palette = nullptr);
 
     void fillCaches();
     static std::unique_ptr<glArchivItem_Bitmap> extractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
-    static std::unique_ptr<libsiedler2::Archiv> extractAnimatedTexture(const glArchivItem_Bitmap& srcImg,
-                                                                       const Rect& rect, uint8_t start_index,
-                                                                       uint8_t color_count);
+    static std::unique_ptr<libsiedler2::Archiv>
+    extractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect, uint8_t startIndex, uint8_t colorCount);
 
     glArchivItem_Bitmap* getImageN(const ResourceId& file, unsigned nr);
-    /// Same as GetImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
+    /// Same as getImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
     ITexture* getTextureN(const ResourceId& file, unsigned nr);
     glArchivItem_Bitmap* getImage(const ResourceId& file, const std::string& name);
     glArchivItem_Bitmap_Player* getPlayerImage(const ResourceId& file, unsigned nr);
@@ -121,7 +120,7 @@ public:
     glArchivItem_Bitmap_Player* getNationPlayerImage(Nation nation, unsigned nr);
     /// Return the map texture with the given number
     ITexture* getMapTexture(unsigned nr);
-    /// Return the more specialized map image. Note: Prefer GetMapTexture which also handles (pseudo) player bitmaps
+    /// Return the more specialized map image. Note: Prefer getMapTexture which also handles (pseudo) player bitmaps
     glArchivItem_Bitmap* getMapImage(unsigned nr);
     /// Get the ware symbol texture
     ITexture* getWareTex(GoodType ware);
@@ -201,13 +200,13 @@ public:
     std::array<AnimationSprites, 6> boat_cache;
     glSmartBitmap& getBoatCarrierSprite(Direction dir, unsigned aniFrame)
     {
-        return boat_cache[rttr::enum_cast(dir)][aniFrame];
+        return boat_cache[rttr::enumCast(dir)][aniFrame];
     }
     /// Donkey: Direction, AnimationFrame
     std::array<AnimationSprites, 6> donkey_cache;
     glSmartBitmap& getDonkeySprite(Direction dir, unsigned aniFrame)
     {
-        return donkey_cache[rttr::enum_cast(dir)][aniFrame];
+        return donkey_cache[rttr::enumCast(dir)][aniFrame];
     }
     /// Gateway: AnimationFrame
     std::array<glSmartBitmap, 5> gateway_cache;

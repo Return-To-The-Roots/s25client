@@ -50,7 +50,7 @@ public:
     /// Can we harvest it?
     bool isHarvestable() const { return size == 3 && state == State::Normal; }
 
-    /// Return the ID of the withered grape field in the wine_bobs
+    /// Return the ID of the withered grape field in the wineBobs
     unsigned getHarvestID() const;
 
     /// Winegrower starts harvesting the field

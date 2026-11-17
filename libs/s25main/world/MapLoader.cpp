@@ -42,16 +42,16 @@ class noBase;
 
 MapLoader::MapLoader(GameWorldBase& world) : world_(world) {}
 
-bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration exploration)
+bool MapLoader::load(const libsiedler2::ArchivItem_Map& map, Exploration exploration)
 {
     GameDataLoader gdLoader(world_.getDescriptionWriteable());
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
         return false;
 
     uint8_t gfxSet = map.getHeader().getGfxSet();
     DescIdx<LandscapeDesc> lt =
       world_.getDescription().landscapes.find([gfxSet](const LandscapeDesc& l) { return l.s2Id == gfxSet; });
-    world_.Init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), lt); //-V807
+    world_.init(MapExtent(map.getHeader().getWidth(), map.getHeader().getHeight()), lt); //-V807
 
     if(!initNodes(map, exploration))
         return false;
@@ -70,7 +70,7 @@ bool MapLoader::Load(const libsiedler2::ArchivItem_Map& map, Exploration explora
     return true;
 }
 
-bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
+bool MapLoader::load(const boost::filesystem::path& mapFilePath)
 {
     // Map laden
     libsiedler2::Archiv mapArchiv;
@@ -81,7 +81,7 @@ bool MapLoader::Load(const boost::filesystem::path& mapFilePath)
 
     const libsiedler2::ArchivItem_Map& map = *static_cast<libsiedler2::ArchivItem_Map*>(mapArchiv[0]);
 
-    if(!Load(map, world_.getGGS().exploration))
+    if(!load(map, world_.getGGS().exploration))
         return false;
     if(!placeHQs())
         return false;
@@ -197,7 +197,7 @@ void MapLoader::removeUnusableFishResources(GameWorldBase& world)
 
             if(world.getNode(pt).resources.has(ResourceType::Fish))
             {
-                if(isWaterPoint(pt) && (previousHasFish || helpers::contains_if(world.getNeighbours(pt), isWaterPoint)))
+                if(isWaterPoint(pt) && (previousHasFish || helpers::containsIf(world.getNeighbours(pt), isWaterPoint)))
                     hasFish = true;
                 else
                     world.setResource(pt, Resource(ResourceType::Nothing, 0));
@@ -229,7 +229,7 @@ void MapLoader::setMapExplored(World& world)
 
 DescIdx<TerrainDesc> MapLoader::getTerrainFromS2(uint8_t s2Id) const
 {
-    return world_.getDescription().terrain.find([s2Id, landscape = world_.GetLandscapeType()](const TerrainDesc& t) {
+    return world_.getDescription().terrain.find([s2Id, landscape = world_.getLandscapeType()](const TerrainDesc& t) {
         return t.s2Id == s2Id && t.landscape == landscape;
     });
 }
@@ -609,7 +609,7 @@ void MapLoader::calcHarborPosNeighbors(World& world)
     }
     PathConditionShip shipPathChecker(world);
 
-    // pre-calculate sea-points, as IsSeaPoint is rather expensive
+    // pre-calculate sea-points, as isSeaPoint is rather expensive
     std::vector<int8_t> ptIsSeaPt(world.nodes.size()); //-V656
 
     RTTR_FOREACH_PT(MapPoint, world.getSize())
@@ -619,11 +619,11 @@ void MapLoader::calcHarborPosNeighbors(World& world)
     }
 
     // FIFO queue used for a BFS
-    std::queue<CalcHarborPosNeighborsNode> todo_list;
+    std::queue<CalcHarborPosNeighborsNode> todoList;
 
     for(const auto startHbId : helpers::idRange<HarborId>(world.harborData.size()))
     {
-        RTTR_Assert(todo_list.empty());
+        RTTR_Assert(todoList.empty());
 
         // Copy sea points to working flags. Possible values are
         // -1 - sea point, not already visited
@@ -672,13 +672,13 @@ void MapLoader::calcHarborPosNeighbors(World& world)
                 world.harborData[startHbId].neighbors[shipDir].push_back(HarborPos::Neighbor(it->second, seaId, 0));
                 hbFound[it->second] = true;
             }
-            todo_list.push(CalcHarborPosNeighborsNode(ownCoastPt, 0));
+            todoList.push(CalcHarborPosNeighborsNode(ownCoastPt, 0));
         }
 
-        while(!todo_list.empty()) // as long as there are sea points on our todo list...
+        while(!todoList.empty()) // as long as there are sea points on our todo list...
         {
-            CalcHarborPosNeighborsNode curNode = todo_list.front();
-            todo_list.pop();
+            CalcHarborPosNeighborsNode curNode = todoList.front();
+            todoList.pop();
 
             for(const auto dir : helpers::EnumRange<Direction>{})
             {
@@ -718,7 +718,7 @@ void MapLoader::calcHarborPosNeighbors(World& world)
                         }
                     }
                 }
-                todo_list.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
+                todoList.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
                 ptToVisitOrHb[idx] = 0; // mark as visited, so we do not go here again
             }
         }

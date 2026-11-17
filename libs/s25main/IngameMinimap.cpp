@@ -32,7 +32,7 @@ unsigned IngameMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
         return 0xFF000000;
     } else
     {
-        DrawnObject drawn_object = DrawnObject::Invalid;
+        DrawnObject drawnObject = DrawnObject::Invalid;
 
         const bool fow = (visibility == Visibility::FogOfWar);
 
@@ -57,11 +57,11 @@ unsigned IngameMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
         if((!fow && noType == NodalObjectType::Tree) || (fow && fot == FoW_Type::Tree)) //-V807
         {
             color = varyBrightness(TREE_COLOR, VARY_TREE_COLOR);
-            drawn_object = DrawnObject::Terrain;
+            drawnObject = DrawnObject::Terrain;
             // Ggf. mit Spielerfarbe
             if(owner)
             {
-                drawn_object = DrawnObject::Player;
+                drawnObject = DrawnObject::Player;
                 if(territory)
                     color = combineWithPlayerColor(color, owner);
             }
@@ -70,11 +70,11 @@ unsigned IngameMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
         else if((!fow && noType == NodalObjectType::Granite) || (fow && fot == FoW_Type::Granite))
         {
             color = varyBrightness(GRANITE_COLOR, VARY_GRANITE_COLOR);
-            drawn_object = DrawnObject::Terrain;
+            drawnObject = DrawnObject::Terrain;
             // Ggf. mit Spielerfarbe
             if(owner)
             {
-                drawn_object = DrawnObject::Player;
+                drawnObject = DrawnObject::Player;
                 if(territory)
                     color = combineWithPlayerColor(color, owner);
             }
@@ -88,18 +88,18 @@ unsigned IngameMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
                 // Building?
                 if(((!fow && (noType == NodalObjectType::Building || noType == NodalObjectType::Buildingsite))
                     || (fow && (fot == FoW_Type::Building || fot == FoW_Type::Buildingsite))))
-                    drawn_object = DrawnObject::Buidling;
+                    drawnObject = DrawnObject::Buidling;
                 /// Roads?
                 else if(isRoad(pt, visibility))
-                    drawn_object = DrawnObject::Road;
+                    drawnObject = DrawnObject::Road;
                 // ansonsten normales Territorium?
                 else
-                    drawn_object = DrawnObject::Player;
+                    drawnObject = DrawnObject::Player;
 
-                if(drawn_object == DrawnObject::Buidling && houses)
+                if(drawnObject == DrawnObject::Buidling && houses)
                     color = BUILDING_COLOR;
                 /// Roads?
-                else if(drawn_object == DrawnObject::Road && roads)
+                else if(drawnObject == DrawnObject::Road && roads)
                     color = ROAD_COLOR;
                 // ansonsten normales Territorium?
                 else if(territory)
@@ -112,15 +112,15 @@ unsigned IngameMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
             {
                 // Normales Terrain berechnen
                 color = calcTerrainColor(pt, t);
-                drawn_object = DrawnObject::Terrain;
+                drawnObject = DrawnObject::Terrain;
             }
         }
 
         // Bei FOW die Farben abdunkeln
         if(fow)
-            color = MakeColor(0xFF, GetRed(color) / 2, GetGreen(color) / 2, GetBlue(color) / 2);
+            color = makeColor(0xFF, getRed(color) / 2, getGreen(color) / 2, getBlue(color) / 2);
 
-        dos[getMMIdx(pt)] = drawn_object;
+        dos[getMMIdx(pt)] = drawnObject;
     }
 
     return color;
@@ -136,9 +136,9 @@ unsigned IngameMinimap::calcTerrainColor(const MapPoint pt, const unsigned t)
 
     // Schattierung
     int shadow = gwv.getNode(pt).shadow;
-    int r = GetRed(color) + shadow - 0x40;
-    int g = GetGreen(color) + shadow - 0x40;
-    int b = GetBlue(color) + shadow - 0x40;
+    int r = getRed(color) + shadow - 0x40;
+    int g = getGreen(color) + shadow - 0x40;
+    int b = getBlue(color) + shadow - 0x40;
 
     if(r < 0)
         r = 0;
@@ -153,7 +153,7 @@ unsigned IngameMinimap::calcTerrainColor(const MapPoint pt, const unsigned t)
     else if(b > 255)
         b = 255;
 
-    return MakeColor(0xFF, unsigned(r), unsigned(g), unsigned(b));
+    return makeColor(0xFF, unsigned(r), unsigned(g), unsigned(b));
 }
 
 /**
@@ -179,8 +179,8 @@ unsigned IngameMinimap::combineWithPlayerColor(const unsigned color, const unsig
     // Spielerfarbe mit einberechnen
     unsigned player_color = gwv.getWorld().getPlayer(player - 1).color;
 
-    return MakeColor(0xFF, (GetRed(color) + GetRed(player_color)) / 2, (GetGreen(color) + GetGreen(player_color)) / 2,
-                     (GetBlue(color) + GetBlue(player_color)) / 2);
+    return makeColor(0xFF, (getRed(color) + getRed(player_color)) / 2, (getGreen(color) + getGreen(player_color)) / 2,
+                     (getBlue(color) + getBlue(player_color)) / 2);
 }
 
 void IngameMinimap::updateNode(const MapPoint pt)
@@ -241,7 +241,7 @@ void IngameMinimap::updateAll()
 /**
  *  Update all nodes with the given drawn object
  */
-void IngameMinimap::updateAll(const DrawnObject drawn_object)
+void IngameMinimap::updateAll(const DrawnObject drawnObject)
 {
     map.beginUpdate();
     // Gesamte Karte neu berechnen
@@ -249,9 +249,9 @@ void IngameMinimap::updateAll(const DrawnObject drawn_object)
     {
         for(unsigned t = 0; t < 2; ++t)
         {
-            if(dos[getMMIdx(pt)] == drawn_object
-               || (drawn_object == DrawnObject::Player && // for DrawnObject::Player check for not drawn buildings or
-                                                          // roads as there is only the player territory visible
+            if(dos[getMMIdx(pt)] == drawnObject
+               || (drawnObject == DrawnObject::Player && // for DrawnObject::Player check for not drawn buildings or
+                                                         // roads as there is only the player territory visible
                    ((dos[getMMIdx(pt)] == DrawnObject::Buidling && !houses)
                     || (dos[getMMIdx(pt)] == DrawnObject::Road && !roads))))
             {

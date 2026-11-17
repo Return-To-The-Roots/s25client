@@ -251,7 +251,7 @@ void glFont::draw(DrawPoint pos, const std::string& text, FontStyle format, unsi
     glVertexPointer(2, GL_FLOAT, 0, texList.vertices.data());
     glTexCoordPointer(2, GL_FLOAT, 0, texList.texCoords.data());
     VIDEODRIVER.bindTexture(texture);
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+    glColor4ub(getRed(color), getGreen(color), getBlue(color), getAlpha(color));
     glDrawArrays(GL_QUADS, 0, texList.vertices.size());
 }
 
@@ -332,9 +332,9 @@ glFont::WrapInfo glFont::getWrapInfo(const std::string& text, const unsigned sho
     RTTR_Assert(s25util::isValidUTF8(text)); // Can only handle UTF-8 strings!
 
     // Current line width
-    unsigned line_width = 0;
+    unsigned lineWidth = 0;
     // Width of current word
-    unsigned word_width = 0;
+    unsigned wordWidth = 0;
     unsigned curMaxLineWidth = primary_width;
 
     WrapInfo wi;
@@ -360,41 +360,41 @@ glFont::WrapInfo glFont::getWrapInfo(const std::string& text, const unsigned sho
         if(curChar == 0 || curChar == '\n' || curChar == ' ')
         {
             // Is the current word to long for the current line
-            if(word_width + line_width > curMaxLineWidth)
+            if(wordWidth + lineWidth > curMaxLineWidth)
             {
                 // Word does not fit -> Start new line
 
                 // Can we fit the word in one line?
-                if(word_width <= secondary_width)
+                if(wordWidth <= secondary_width)
                 {
                     // Break before word
                     wi.lines.emplace_back(makeLineRange(itWordStart));
                     // New line starts at index of word start
                     itLineStart = itWordStart;
-                    line_width = 0;
+                    lineWidth = 0;
                 } else
                 {
                     // Word does not even fit on one line -> Put as many letters in one line as possible
                     for(auto itWord = itWordStart; itWord != itCurChar;)
                     {
                         const auto itPotentialBreak = itWord;
-                        const utf::code_point letter_width = charWidth(utf8::decode(itWord, itEnd));
+                        const utf::code_point letterWidth = charWidth(utf8::decode(itWord, itEnd));
 
                         // Can we fit the letter onto current line?
-                        if(line_width + letter_width <= curMaxLineWidth)
-                            line_width += letter_width; // Add it
+                        if(lineWidth + letterWidth <= curMaxLineWidth)
+                            lineWidth += letterWidth; // Add it
                         else
                         {
                             // Create new line at this letter
                             wi.lines.emplace_back(makeLineRange(itPotentialBreak));
                             // New line starts at index of word start
                             itLineStart = itPotentialBreak;
-                            line_width = letter_width;
+                            lineWidth = letterWidth;
                         }
                     }
 
                     // Restart word
-                    word_width = 0;
+                    wordWidth = 0;
                 }
                 curMaxLineWidth = secondary_width;
             }
@@ -406,20 +406,20 @@ glFont::WrapInfo glFont::getWrapInfo(const std::string& text, const unsigned sho
             {
                 // Set up this line if we are going to continue it (not at line break or text end)
                 // Line contains word and whitespace
-                line_width += word_width + spaceWidth;
-                word_width = 0;
+                lineWidth += wordWidth + spaceWidth;
+                wordWidth = 0;
                 itWordStart = it;
             } else
             {
                 // If line break add new line (after all the word-breaking above)
                 wi.lines.emplace_back(makeLineRange(itCurChar));
                 itLineStart = itWordStart = it;
-                word_width = line_width = 0;
+                wordWidth = lineWidth = 0;
             }
         } else
         {
             // Some char -> Add its width
-            word_width += charWidth(curChar);
+            wordWidth += charWidth(curChar);
         }
     }
     for(auto& line : wi.lines)

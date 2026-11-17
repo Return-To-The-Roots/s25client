@@ -40,7 +40,7 @@ public:
     uint8_t getLandscapeId() const { return worldDesc_.get(landscape_).s2Id; }
 
     template<class T_Predicate>
-    DescIdx<TerrainDesc> Find(T_Predicate predicate) const
+    DescIdx<TerrainDesc> find(T_Predicate predicate) const
     {
         for(auto texture : terrains_)
         {
@@ -54,7 +54,7 @@ public:
     }
 
     template<class T_Predicate>
-    std::vector<DescIdx<TerrainDesc>> FindAll(T_Predicate predicate) const
+    std::vector<DescIdx<TerrainDesc>> findAll(T_Predicate predicate) const
     {
         auto condition = [&predicate, this](const auto& texture) { return predicate(worldDesc_.get(texture)); };
 
@@ -108,14 +108,14 @@ public:
     bool any(const MapPoint& point, T_Predicate predicate) const
     {
         auto condition = [this, &predicate](auto triangle) { return this->check(triangle, predicate); };
-        return helpers::contains_if(GetTriangles(point, textures_.getSize()), condition);
+        return helpers::containsIf(getTriangles(point, textures_.getSize()), condition);
     }
 
     template<class T_Predicate>
     bool all(const MapPoint& point, T_Predicate predicate) const
     {
         auto condition = [this, &predicate](auto triangle) { return !this->check(triangle, predicate); };
-        return !helpers::contains_if(GetTriangles(point, textures_.getSize()), condition);
+        return !helpers::containsIf(getTriangles(point, textures_.getSize()), condition);
     }
 
     /**
@@ -194,7 +194,7 @@ public:
     Texturizer(NodeMapBase<uint8_t>& z, NodeMapBase<TexturePair>& textures, TextureMap& textureMap)
         : z_(z), textures_(textures), textureMap_(textureMap)
     {
-        seaLevel_ = GetRange(z).minimum;
+        seaLevel_ = getRange(z).minimum;
     }
 
     /**

@@ -16,8 +16,8 @@ void placeHarborPosition(Map& map, const MapPoint& position)
 
     auto& textures = map.textureMap;
 
-    auto harborTexture = textures.Find(isBuildableCoast);
-    auto triangles = GetTriangles(position, map.size);
+    auto harborTexture = textures.find(isBuildableCoast);
+    auto triangles = getTriangles(position, map.size);
 
     auto isWaterTerrain = [&textures](const MapPoint& pt) { return textures.any(pt, isWater); };
 
@@ -28,14 +28,14 @@ void placeHarborPosition(Map& map, const MapPoint& position)
 
     for(const Triangle& triangle : triangles)
     {
-        if(helpers::contains_if(GetTriangleEdges(triangle, map.size), isWaterTerrain))
+        if(helpers::containsIf(getTriangleEdges(triangle, map.size), isWaterTerrain))
         {
             map.harbors.push_back(triangle);
         }
     }
 }
 
-std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vector<River>& rivers)
+std::vector<std::vector<MapPoint>> findCoastlines(const Map& map, const std::vector<River>& rivers)
 {
     std::vector<std::vector<MapPoint>> coasts;
     std::set<MapPoint, MapPointLess> visited;
@@ -43,7 +43,7 @@ std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vec
     const auto isCoast = [&map](const MapPoint& pt) {
         const auto allWater = [&map](const MapPoint& p) { return map.textureMap.all(p, isWater); };
         return map.textureMap.any(pt, isLand) && map.textureMap.any(pt, isWater)
-               && helpers::contains_if(map.getTextures().getNeighbours(pt), allWater);
+               && helpers::containsIf(map.getTextures().getNeighbours(pt), allWater);
     };
 
     RTTR_FOREACH_PT(MapPoint, map.size)
@@ -52,19 +52,19 @@ std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vec
         {
             if(isCoast(pt))
             {
-                const auto coast = Collect(map.getTextures(), pt, isCoast);
+                const auto coast = collect(map.getTextures(), pt, isCoast);
                 coasts.push_back(coast);
                 visited.insert(coast.begin(), coast.end());
             }
         }
     }
 
-    const auto distanceToRiver = DistancesTo(join(rivers), map.size);
+    const auto distanceToRiver = distancesTo(join(rivers), map.size);
     const auto closeToRiver = [&distanceToRiver](const MapPoint& pt) { return distanceToRiver[pt] < 5; };
 
     for(std::vector<MapPoint>& coast : coasts)
     {
-        helpers::erase_if(coast, closeToRiver);
+        helpers::eraseIf(coast, closeToRiver);
     }
 
     return coasts;
@@ -72,7 +72,7 @@ std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vec
 
 void placeHarbors(Map& map, const std::vector<River>& rivers, int coastSize, int nodesPerHarbor)
 {
-    const auto coasts = FindCoastlines(map, rivers);
+    const auto coasts = findCoastlines(map, rivers);
     std::vector<MapPoint> harbors;
     for(const std::vector<MapPoint>& coast : coasts)
     {

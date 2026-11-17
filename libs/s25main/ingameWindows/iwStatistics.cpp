@@ -39,7 +39,7 @@ constexpr int stepX = diagramSize.x / NUM_STAT_STEPS;
 
 std::string getPlayerStatus(const GamePlayer& player)
 {
-    if(player.IsDefeated())
+    if(player.isDefeated())
         return "---";
     else if(player.isHuman())
         return "#" + std::to_string(player.getPlayerId() + 1);
@@ -157,7 +157,7 @@ iwStatistics::iwStatistics(const GameWorldViewer& gwv)
     addImageButton(ID_btHelp, DrawPoint(18, 288), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225),
                    _("Help"));
 
-    const auto labelColor = MakeColor(255, 136, 96, 52);
+    const auto labelColor = makeColor(255, 136, 96, 52);
     // Current header
     headline = addText(ID_txtHeader, DrawPoint(130, 120), _("Size of country"), labelColor,
                        FontStyle::CENTER | FontStyle::BOTTOM | FontStyle::NO_OUTLINE, NormalFont);
@@ -380,7 +380,7 @@ void iwStatistics::drawStatistic(StatisticType type)
 void iwStatistics::drawAxis()
 {
     const DrawPoint topLeft = getPos() + topLeftRel;
-    const auto axisColor = MakeColor(255, 88, 44, 16);
+    const auto axisColor = makeColor(255, 88, 44, 16);
 
     // X-axis, horizontal
     // slightly lower to see zero line, offset so it starts with last (leftmost) value of right-aligned graph

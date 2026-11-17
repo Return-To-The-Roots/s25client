@@ -217,13 +217,13 @@ std::vector<const noFlag*> AIConstruction::findFlags(const MapPoint pt, unsigned
     if (radius > 10)
     {
         list<nobBaseMilitary*> military;
-        gwb->LookForMilitaryBuildings(military, pt, 2);
+        gwb->lookForMilitaryBuildings(military, pt, 2);
         for(const nobBaseMilitary* milBld: military)
         {
-            unsigned distance = gwb->CalcDistance(milBld->GetPos(), pt);
-            if (distance < radius && milBld->GetPlayer() == player->getPlayerId())
+            unsigned distance = gwb->calcDistance(milBld->getPos(), pt);
+            if (distance < radius && milBld->getPlayer() == player->getPlayerId())
             {
-                FindFlags(flags, milBld->GetPos(), 10, pt, radius, false);
+                findFlags(flags, milBld->getPos(), 10, pt, radius, false);
             }
         }
     }
@@ -262,7 +262,7 @@ bool AIConstruction::connectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
             return false;
     }
     // Ziel, das möglichst schnell erreichbar sein soll
-    // noFlag *targetFlag = gwb->GetSpecObj<nobHQ>(player->hqPos)->GetFlag();
+    // noFlag *targetFlag = gwb->getSpecObj<nobHQ>(player->hqPos)->getFlag();
     noFlag* targetFlag = findTargetStoreHouseFlag(flag->getPos());
 
     // Falls kein Lager mehr vorhanden ist, brauchen wir auch keinen Weg suchen
@@ -339,7 +339,7 @@ bool AIConstruction::connectFlagToRoadSytem(const noFlag* flag, std::vector<Dire
 
     if(shortest)
     {
-        // LOG.write(("ai build main road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
+        // LOG.write(("ai build main road player %i at %i %i\n", flag->getPlayer(), flag->getPos());
         if(!minorRoadImprovements(flag, shortest, route))
             return false;
         // add new construction area to the list of active orders in the current nwf
@@ -373,7 +373,7 @@ bool AIConstruction::minorRoadImprovements(const noRoadNode* start, const noRoad
                 if(aii.calcBQSumDifference(pStart, t))
                 {
                     // LOG.write(("AIConstruction::road improvements p%i from %i,%i moved node %i,%i to %i,%i i:%i,
-                    // i+1:%i\n",playerID, start->GetX(), start->GetY(), ptx, pt.y, t.x, t.y,route[i],route[i+1]);
+                    // i+1:%i\n",playerID, start->getX(), start->getY(), ptx, pt.y, t.x, t.y,route[i],route[i+1]);
                     pStart = t; // we move the alternative path so move x&y and switch the route entries
                     std::swap(route[i], route[i + 1]);
                 }
@@ -408,8 +408,8 @@ bool AIConstruction::BuildRoad(const noRoadNode* start, const noRoadNode* target
         /*MapCoord tx=x,ty=y;
         for(unsigned i=0;i<route.size()-2;i++)
         {
-            x=aii.GetXA(tx,ty,route[i]);
-            y=aii.GetXA(tx,ty,route[i]);
+            x=aii.getXA(tx,ty,route[i]);
+            y=aii.getXA(tx,ty,route[i]);
             tx=x;
             ty=y;
             if(i>0 && i%2==0)
@@ -569,7 +569,7 @@ bool AIConstruction::wanted(BuildingType type) const
 
 bool AIConstruction::buildAlternativeRoad(const noFlag* flag, std::vector<Direction>& route)
 {
-    // LOG.write(("ai build alt road player %i at %i %i\n", flag->GetPlayer(), flag->GetPos());
+    // LOG.write(("ai build alt road player %i at %i %i\n", flag->getPlayer(), flag->getPos());
     // Radius in dem nach würdigen Fahnen gesucht wird
     const unsigned short maxRoadLength = 10;
     // Faktor um den der Weg kürzer sein muss als ein vorhander Pfad, um gebaut zu werden

@@ -95,7 +95,7 @@ void OpenGLRenderer::drawRect(const Rect& rect, unsigned color)
 {
     glDisable(GL_TEXTURE_2D);
 
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+    glColor4ub(getRed(color), getGreen(color), getBlue(color), getAlpha(color));
 
     glBegin(GL_QUADS);
     glVertex2i(rect.left, rect.top);
@@ -110,7 +110,7 @@ void OpenGLRenderer::drawRect(const Rect& rect, unsigned color)
 void OpenGLRenderer::drawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsigned color)
 {
     glDisable(GL_TEXTURE_2D);
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+    glColor4ub(getRed(color), getGreen(color), getBlue(color), getAlpha(color));
 
     glLineWidth(VIDEODRIVER.getGuiScale().viewToScreen<GLfloat>(static_cast<float>(width)));
     glBegin(GL_LINES);

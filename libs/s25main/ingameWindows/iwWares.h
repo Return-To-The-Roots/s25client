@@ -19,7 +19,7 @@ protected:
 
 public:
     iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, const std::string& title,
-            bool allow_outhousing, const glFont* font, const Inventory& inventory, const GamePlayer& player);
+            bool allowOuthousing, const glFont* font, const Inventory& inventory, const GamePlayer& player);
 
 protected:
     /// bestimmte Inventurseite zeigen.

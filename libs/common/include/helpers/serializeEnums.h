@@ -24,13 +24,13 @@ void pushEnum(Serializer& ser, const T val)
 
     const auto iVal = static_cast<T_SavedType>(val);
     RTTR_Assert(iVal <= maxValue);
-    ser.Push(iVal);
+    ser.push(iVal);
 }
 
 template<typename T>
 T popEnum(Serializer& ser)
 {
-    const auto value = ser.Pop<std::underlying_type_t<T>>();
+    const auto value = ser.pop<std::underlying_type_t<T>>();
     if(value > helpers::MaxEnumValue_v<T>)
         throw makeOutOfRange(value, helpers::MaxEnumValue_v<T>);
     return static_cast<T>(value);

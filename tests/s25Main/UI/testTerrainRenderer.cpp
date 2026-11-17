@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_CASE(TR_ConvertCoords)
     TerrainRenderer tr;
     const int w = 23;
     const int h = 32;
-    tr.Init(MapExtent(w, h));
+    tr.init(MapExtent(w, h));
 
     Position offset;
     // Test border cases

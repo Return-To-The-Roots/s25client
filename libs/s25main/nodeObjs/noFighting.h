@@ -45,7 +45,7 @@ public:
     void handleEvent(unsigned id) override;
 
     /// Dürfen andern Figuren diesen Kampf schon durchqueren?
-    bool IsActive() const;
+    bool isActive() const;
     bool isFighter(const nofActiveSoldier& as) const { return &as == soldiers[0].get() || &as == soldiers[1].get(); }
 
     /// Prüfen, ob ein Soldat von einem bestimmten Spieler in den Kampf verwickelt ist

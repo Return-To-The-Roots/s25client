@@ -52,12 +52,12 @@
 #include "nodeObjs/noFlag.h"
 #include <stdexcept>
 
-std::unique_ptr<noFigure> JobFactory::createJob(const Job job_id, const MapPoint pt, const unsigned char player,
+std::unique_ptr<noFigure> JobFactory::createJob(const Job jobId, const MapPoint pt, const unsigned char player,
                                                 noRoadNode& goal)
 {
     if(nobBaseWarehouse::isStorehouseGOT(goal.getGOT()))
-        return std::make_unique<nofPassiveWorker>(job_id, pt, player, &goal);
-    switch(job_id)
+        return std::make_unique<nofPassiveWorker>(jobId, pt, player, &goal);
+    switch(jobId)
     {
         case Job::Builder:
             if(goal.getGOT() != GO_Type::Buildingsite)
@@ -85,7 +85,7 @@ std::unique_ptr<noFigure> JobFactory::createJob(const Job job_id, const MapPoint
                     return std::make_unique<nofCatapultMan>(pt, player, goalBld);
             }
             throw std::runtime_error("Invalid goal type: " + helpers::toString(goal.getGOT()) + " for job "
-                                     + helpers::toString(job_id));
+                                     + helpers::toString(jobId));
         case Job::Geologist: return std::make_unique<nofGeologist>(pt, player, &checkedCast<noFlag>(goal));
         case Job::Scout:
             // Different scout for lookout towers and free scouts
@@ -95,7 +95,7 @@ std::unique_ptr<noFigure> JobFactory::createJob(const Job job_id, const MapPoint
             } else if(goal.getGOT() == GO_Type::Flag)
                 return std::make_unique<nofScout_Free>(pt, player, &goal);
             throw std::runtime_error("Invalid goal type: " + helpers::toString(goal.getGOT()) + " for job "
-                                     + helpers::toString(job_id));
+                                     + helpers::toString(jobId));
         case Job::Miner: return std::make_unique<nofMiner>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::Farmer: return std::make_unique<nofFarmer>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::Forester: return std::make_unique<nofForester>(pt, player, &checkedCast<nobUsual>(goal));
@@ -111,7 +111,7 @@ std::unique_ptr<noFigure> JobFactory::createJob(const Job job_id, const MapPoint
         case Job::General:
             // TODO: Is this ever called? If yes, then why is the home here set to nullptr?
             return std::make_unique<nofPassiveSoldier>(pt, player, &checkedCast<nobBaseMilitary>(goal), nullptr,
-                                                       getSoldierRank(job_id));
+                                                       getSoldierRank(jobId));
         case Job::PackDonkey: return std::make_unique<nofCarrier>(CarrierType::Donkey, pt, player, nullptr, &goal);
         case Job::Shipwright: return std::make_unique<nofShipWright>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::CharBurner: return std::make_unique<nofCharburner>(pt, player, &checkedCast<nobUsual>(goal));
@@ -125,5 +125,5 @@ std::unique_ptr<noFigure> JobFactory::createJob(const Job job_id, const MapPoint
             throw std::logic_error("Cannot create a boat carrier job (try creating Job::Helper).");
             break;
     }
-    throw std::logic_error("Invalid job type " + helpers::toString(job_id));
+    throw std::logic_error("Invalid job type " + helpers::toString(jobId));
 }

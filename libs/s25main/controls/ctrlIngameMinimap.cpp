@@ -77,7 +77,7 @@ bool ctrlIngameMinimap::msgMouseMove(const MouseCoords& mc)
     if(mc.ldown)
     {
         // Mauszeiger auf der Karte?
-        if(IsPointInRect(mc.pos, getMapDrawArea()))
+        if(isPointInRect(mc.pos, getMapDrawArea()))
         {
             // Koordinate feststellen
             DrawPoint mapCoord = (mc.pos - DrawPoint(getMapDrawArea().getOrigin())) * DrawPoint(minimap.getMapSize())

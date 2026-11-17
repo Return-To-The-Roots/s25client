@@ -60,9 +60,9 @@ public:
     bool stopRecording();
 
     /// Is the replay in the state for accepting commands to record
-    bool isRecording() const { return isRecording_ && file_.IsOpen(); }
+    bool isRecording() const { return isRecording_ && file_.isOpen(); }
     /// Is the replay open for reading commands
-    bool isReplaying() const { return !isRecording_ && file_.IsOpen(); }
+    bool isReplaying() const { return !isRecording_ && file_.isOpen(); }
     const boost::filesystem::path& getPath() const;
 
     /// Load the header (containing map and player names)

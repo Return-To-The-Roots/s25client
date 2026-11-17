@@ -142,7 +142,7 @@ void nofAggressiveDefender::missionAggressiveDefendingLookForNewAggressor()
         return;
     }
 
-    // Vermeiden, dass in FindAggressor nochmal der Soldat zum Loslaufen gezwungen wird, weil er als state
+    // Vermeiden, dass in findAggressor nochmal der Soldat zum Loslaufen gezwungen wird, weil er als state
     // noch drinstehen hat, dass er auf einen Kampf wartet
     state = SoldierState::AggressivedefendingWalkingToAggressor;
 
@@ -166,7 +166,7 @@ void nofAggressiveDefender::attackedGoalDestroyed()
 
     /*// Stehen wir? Dann losgehen
     if(state == Waitingforfight)
-        ReturnHome();*/
+        returnHome();*/
 }
 
 void nofAggressiveDefender::missAggressiveDefendingContinueWalking()

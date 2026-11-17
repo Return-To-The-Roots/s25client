@@ -40,7 +40,7 @@ void PreviewMinimap::setMap(const libsiedler2::ArchivItem_Map& s2map)
 
     WorldDescription worldDesc;
     GameDataLoader gdLoader(worldDesc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
         LOG.write(_("Failed to load game data!"));
     else
     {
@@ -59,11 +59,11 @@ unsigned PreviewMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
 {
     unsigned color = 0;
     // Baum an dieser Stelle?
-    unsigned char landscape_obj = objects[getMMIdx(pt)];
-    if(landscape_obj >= 0xC4 && landscape_obj <= 0xC6)
+    unsigned char landscapeObj = objects[getMMIdx(pt)];
+    if(landscapeObj >= 0xC4 && landscapeObj <= 0xC6)
         color = varyBrightness(TREE_COLOR, VARY_TREE_COLOR);
     // Granit an dieser Stelle?
-    else if(landscape_obj == 0xCC || landscape_obj == 0xCD)
+    else if(landscapeObj == 0xCC || landscapeObj == 0xCD)
         color = varyBrightness(GRANITE_COLOR, VARY_GRANITE_COLOR);
     // Ansonsten die jeweilige Terrainfarbe nehmen
     else
@@ -74,11 +74,11 @@ unsigned PreviewMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
         const int shading = shadows[getMMIdx(pt)] - 0x40;
         if(shading != 0)
         {
-            const auto r = static_cast<int>(GetRed(color)) + shading;
-            const auto g = static_cast<int>(GetGreen(color)) + shading;
-            const auto b = static_cast<int>(GetBlue(color)) + shading;
+            const auto r = static_cast<int>(getRed(color)) + shading;
+            const auto g = static_cast<int>(getGreen(color)) + shading;
+            const auto b = static_cast<int>(getBlue(color)) + shading;
             using helpers::clamp;
-            color = MakeColor(0xFF, clamp(r, 0u, 255u), clamp(g, 0u, 255u), clamp(b, 0u, 255u));
+            color = makeColor(0xFF, clamp(r, 0u, 255u), clamp(g, 0u, 255u), clamp(b, 0u, 255u));
         }
     }
 

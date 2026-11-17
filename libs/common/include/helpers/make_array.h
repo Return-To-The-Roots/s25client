@@ -8,7 +8,7 @@
 namespace helpers {
 
 template<class D = void, class... Types>
-constexpr auto make_array(Types&&... t)
+constexpr auto makeArray(Types&&... t)
 {
     using ResultType = std::conditional_t<std::is_same_v<D, void>, std::common_type_t<Types...>, D>;
     return std::array<ResultType, sizeof...(Types)>{{ResultType(std::forward<Types>(t))...}};

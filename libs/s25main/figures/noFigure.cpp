@@ -80,47 +80,47 @@ void noFigure::serialize(SerializedGameData& sgd) const
 
     sgd.pushEnum<uint8_t>(fs);
     sgd.pushEnum<uint8_t>(job_);
-    sgd.PushUnsignedChar(player);
+    sgd.pushUnsignedChar(player);
     sgd.pushObject(cur_rs, true);
-    sgd.PushUnsignedShort(rs_pos);
-    sgd.PushBool(rs_dir);
-    sgd.PushBool(on_ship);
-    sgd.PushBool(hasArmor_);
+    sgd.pushUnsignedShort(rs_pos);
+    sgd.pushBool(rs_dir);
+    sgd.pushBool(on_ship);
+    sgd.pushBool(hasArmor_);
 
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         sgd.pushObject(goal_);
 
-    sgd.PushBool(waiting_for_free_node);
+    sgd.pushBool(waiting_for_free_node);
 
     if(fs == FigureState::Wander)
     {
-        sgd.PushUnsignedShort(wander_way);
-        sgd.PushUnsignedShort(wander_tryings);
+        sgd.pushUnsignedShort(wander_way);
+        sgd.pushUnsignedShort(wander_tryings);
         helpers::pushPoint(sgd, flagPos_);
-        sgd.PushUnsignedInt(flag_obj_id);
-        sgd.PushUnsignedInt(burned_wh_id);
+        sgd.pushUnsignedInt(flag_obj_id);
+        sgd.pushUnsignedInt(burned_wh_id);
     }
 }
 
 noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), fs(sgd.pop<FigureState>()), job_(sgd.pop<Job>()), player(sgd.PopUnsignedChar()),
-      cur_rs(sgd.popObject<RoadSegment>(GO_Type::Roadsegment)), rs_pos(sgd.PopUnsignedShort()), rs_dir(sgd.PopBool()),
-      on_ship(sgd.PopBool()), last_id(0xFFFFFFFF), hasArmor_(sgd.getGameDataVersion() >= 12 ? sgd.PopBool() : false)
+    : noMovable(sgd, obj_id), fs(sgd.pop<FigureState>()), job_(sgd.pop<Job>()), player(sgd.popUnsignedChar()),
+      cur_rs(sgd.popObject<RoadSegment>(GO_Type::Roadsegment)), rs_pos(sgd.popUnsignedShort()), rs_dir(sgd.popBool()),
+      on_ship(sgd.popBool()), last_id(0xFFFFFFFF), hasArmor_(sgd.getGameDataVersion() >= 12 ? sgd.popBool() : false)
 {
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         goal_ = sgd.popObject<noRoadNode>();
     else
         goal_ = nullptr;
 
-    waiting_for_free_node = sgd.PopBool();
+    waiting_for_free_node = sgd.popBool();
 
     if(fs == FigureState::Wander)
     {
-        wander_way = sgd.PopUnsignedShort();
-        wander_tryings = sgd.PopUnsignedShort();
+        wander_way = sgd.popUnsignedShort();
+        wander_tryings = sgd.popUnsignedShort();
         flagPos_ = sgd.popMapPoint();
-        flag_obj_id = sgd.PopUnsignedInt();
-        burned_wh_id = sgd.PopUnsignedInt();
+        flag_obj_id = sgd.popUnsignedInt();
+        burned_wh_id = sgd.popUnsignedInt();
     }
 }
 
@@ -149,7 +149,7 @@ void noFigure::actAtFirst()
                 auto* wh = checkedCast<nobBaseWarehouse*>(goal_);
                 goal_ = nullptr;
                 cur_rs = nullptr;
-                wh->addFigure(world->RemoveFigure(pos, *this));
+                wh->addFigure(world->removeFigure(pos, *this));
             } else
                 // ansonsten ganz normal rausgehen
                 walkToGoal();
@@ -296,7 +296,7 @@ void noFigure::walkToGoal()
             if(fs == FigureState::GoHome)
             {
                 // Mann im Lagerhaus angekommen
-                static_cast<nobBaseWarehouse*>(goal)->addFigure(world->RemoveFigure(pos, *this));
+                static_cast<nobBaseWarehouse*>(goal)->addFigure(world->removeFigure(pos, *this));
             } else
             {
                 // abgeleiteter Klasse sagen, dass das Ziel erreicht wurde
@@ -347,7 +347,7 @@ void noFigure::walkToGoal()
                 {
                     // Uns in den Hafen einquartieren
                     cur_rs = nullptr; // wir laufen nicht mehr auf einer Straße
-                    static_cast<nobHarborBuilding*>(hb)->addFigureForShip(world->RemoveFigure(pos, *this), next_harbor);
+                    static_cast<nobHarborBuilding*>(hb)->addFigureForShip(world->removeFigure(pos, *this), next_harbor);
                 }
             } else
             {
@@ -378,7 +378,7 @@ void noFigure::handleEvent(const unsigned id)
         walkFigure();
 
         // Alte Richtung und Position für die Berechnung der Sichtbarkeiten merken
-        const Direction old_dir = getCurMoveDir();
+        const Direction oldDir = getCurMoveDir();
 
         const MapPoint old_pos(pos);
 
@@ -397,7 +397,7 @@ void noFigure::handleEvent(const unsigned id)
         {
             // Use old position (don't use this->pos because it might be different now
             // Figure could be in a ship etc.)
-            world->recalcMovingVisibilities(old_pos, player, visualRange, old_dir, nullptr);
+            world->recalcMovingVisibilities(old_pos, player, visualRange, oldDir, nullptr);
 
             // Wenn Figur verschwunden ist, muss ihr ehemaliger gesamter Sichtbereich noch einmal
             // neue berechnet werden
@@ -545,15 +545,15 @@ void noFigure::wander()
     if(!wander_way)
     {
         // Soldaten sind härter im Nehmen
-        const unsigned short wander_radius =
+        const unsigned short wanderRadius =
           isSoldier() ? getStrandedSoldierReturnSearchRadius(world->getGGS(), wander_tryings) : WANDER_RADIUS;
 
         // Flaggen sammeln und dann zufällig eine auswählen
         const std::vector<noFlag*> flags =
-          world->getPointsInRadius(pos, wander_radius, Point2Flag(*world), IsValidFlag(player));
+          world->getPointsInRadius(pos, wanderRadius, Point2Flag(*world), IsValidFlag(player));
 
-        unsigned best_way = 0xFFFFFFFF;
-        const noFlag* best_flag = nullptr;
+        unsigned bestWay = 0xFFFFFFFF;
+        const noFlag* bestFlag = nullptr;
 
         for(auto* flag : flags)
         {
@@ -570,17 +570,17 @@ void noFigure::wander()
 
             // würde die die bisher beste an Weg unterbieten?
             unsigned way = world->calcDistance(pos, flag->getPos());
-            if(way < best_way)
+            if(way < bestWay)
             {
                 // Are we at that flag or is there a path to it?
-                if(way == 0 || world->findHumanPath(pos, flag->getPos(), wander_radius, false, &way))
+                if(way == 0 || world->findHumanPath(pos, flag->getPos(), wanderRadius, false, &way))
                 {
                     // gucken, ob ein Weg zu einem Warenhaus führt
                     if(world->getPlayer(player).findWarehouse(*flag, FW::AcceptsFigure(job_), true, false))
                     {
                         // dann nehmen wir die doch glatt
-                        best_way = way;
-                        best_flag = flag;
+                        bestWay = way;
+                        bestFlag = flag;
                         if(way == 0)
                             break; // Can't get better
                     }
@@ -591,18 +591,18 @@ void noFigure::wander()
                     // dieser Flagge suchen
 
                     // TODO: Actually it is possible! E.g. between us and the flag is a river, so we won't find a path
-                    // within the radius but others (on the other side) could --> Remove ImpossibleForBWU?
+                    // within the radius but others (on the other side) could --> Remove impossibleForBWU?
                     flag->impossibleForBWU(burned_wh_id);
                 }
             }
         }
 
-        if(best_flag)
+        if(bestFlag)
         {
             // bestmögliche schließlich nehmen
             wander_way = 0xFFFF;
-            flagPos_ = best_flag->getPos();
-            flag_obj_id = best_flag->getObjId();
+            flagPos_ = bestFlag->getPos();
+            flag_obj_id = bestFlag->getObjId();
             wanderToFlag();
             return;
         }
@@ -771,7 +771,7 @@ unsigned noFigure::calcWalkAnimationFrame() const
 unsigned noFigure::calcWalkFrameIndex(const unsigned imgSetIndex, const Direction dir, const unsigned animationStep)
 {
     RTTR_Assert(animationStep < 8);
-    return imgSetIndex + rttr::enum_cast(toImgDir(dir)) * 8 + animationStep;
+    return imgSetIndex + rttr::enumCast(toImgDir(dir)) * 8 + animationStep;
 }
 
 DrawPoint noFigure::interpolateWalkDrawPos(DrawPoint drawPt) const
@@ -785,18 +785,18 @@ DrawPoint noFigure::interpolateWalkDrawPos(DrawPoint drawPt) const
 
 void noFigure::drawWalkingCarrier(DrawPoint drawPt, helpers::OptionalEnum<GoodType> ware, bool fat)
 {
-    const unsigned ani_step = calcWalkAnimationFrame();
+    const unsigned aniStep = calcWalkAnimationFrame();
     const GamePlayer& owner = world->getPlayer(player);
-    auto& sprite = ware ? LOADER.getCarrierSprite(*ware, fat, getCurMoveDir(), ani_step) :
-                          LOADER.getCarrierBobSprite(owner.nation, fat, getCurMoveDir(), ani_step);
+    auto& sprite = ware ? LOADER.getCarrierSprite(*ware, fat, getCurMoveDir(), aniStep) :
+                          LOADER.getCarrierBobSprite(owner.nation, fat, getCurMoveDir(), aniStep);
     sprite.drawForPlayer(interpolateWalkDrawPos(drawPt), owner.color);
 }
 
 void noFigure::drawWalkingBobJobs(DrawPoint drawPt, Job job)
 {
-    const unsigned ani_step = calcWalkAnimationFrame();
+    const unsigned aniStep = calcWalkAnimationFrame();
     const GamePlayer& owner = world->getPlayer(player);
-    LOADER.getBobSprite(owner.nation, job, getCurMoveDir(), ani_step)
+    LOADER.getBobSprite(owner.nation, job, getCurMoveDir(), aniStep)
       .drawForPlayer(interpolateWalkDrawPos(drawPt), owner.color);
 
     if(hasArmor_)
@@ -805,22 +805,22 @@ void noFigure::drawWalkingBobJobs(DrawPoint drawPt, Job job)
 
 void noFigure::drawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat)
 {
-    const unsigned ani_step = calcWalkAnimationFrame();
+    const unsigned aniStep = calcWalkAnimationFrame();
     drawPt = interpolateWalkDrawPos(drawPt);
 
     if(file)
-        file->draw(id, toImgDir(getCurMoveDir()), fat, ani_step, drawPt, world->getPlayer(player).color);
-    drawShadow(drawPt, ani_step, getCurMoveDir());
+        file->draw(id, toImgDir(getCurMoveDir()), fat, aniStep, drawPt, world->getPlayer(player).color);
+    drawShadow(drawPt, aniStep, getCurMoveDir());
 }
 
 void noFigure::drawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id)
 {
-    const unsigned ani_step = calcWalkAnimationFrame();
+    const unsigned aniStep = calcWalkAnimationFrame();
     drawPt = interpolateWalkDrawPos(drawPt);
 
-    LOADER.getPlayerImage(file, calcWalkFrameIndex(id, getCurMoveDir(), ani_step))
+    LOADER.getPlayerImage(file, calcWalkFrameIndex(id, getCurMoveDir(), aniStep))
       ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
-    drawShadow(drawPt, ani_step, getCurMoveDir());
+    drawShadow(drawPt, aniStep, getCurMoveDir());
 }
 
 void noFigure::drawWalking(DrawPoint drawPt)
@@ -829,12 +829,12 @@ void noFigure::drawWalking(DrawPoint drawPt)
     {
         case Job::PackDonkey:
         {
-            const unsigned ani_step = calcWalkAnimationFrame();
+            const unsigned aniStep = calcWalkAnimationFrame();
             drawPt = interpolateWalkDrawPos(drawPt);
 
-            LOADER.getMapTexture(calcWalkFrameIndex(2000, getCurMoveDir(), ani_step))->drawFull(drawPt);
+            LOADER.getMapTexture(calcWalkFrameIndex(2000, getCurMoveDir(), aniStep))->drawFull(drawPt);
             // donkey shadow
-            LOADER.getMapTexture(2048 + rttr::enum_cast(getCurMoveDir()) % 3)->drawFull(drawPt, COLOR_SHADOW);
+            LOADER.getMapTexture(2048 + rttr::enumCast(getCurMoveDir()) % 3)->drawFull(drawPt, COLOR_SHADOW);
         }
         break;
         case Job::CharBurner: drawWalking(drawPt, "charburner_bobs", 53); break;
@@ -875,7 +875,7 @@ void noFigure::drawArmor(DrawPoint drawPt)
 void noFigure::die()
 {
     // Weg mit mir
-    getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+    getEvMgr().addToKillList(world->removeFigure(pos, *this));
     // ggf. Leiche hinlegen, falls da nix ist
     if(!world->getSpecObj<noBase>(pos))
         world->setNO(pos, new noSkeleton(pos));
@@ -904,7 +904,7 @@ void noFigure::removeFromInventory()
 void noFigure::dieFailedTrade()
 {
     // Weg mit mir
-    getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+    getEvMgr().addToKillList(world->removeFigure(pos, *this));
     // ggf. Leiche hinlegen, falls da nix ist
     if(!world->getSpecObj<noBase>(pos))
         world->setNO(pos, new noSkeleton(pos));
@@ -950,7 +950,7 @@ void noFigure::abrogate()
             {
                 LOG.write("noFigure::Abrogate - GOHOME figure has no goal and is not on a ship - player %i state %i "
                           "pos %u,%u \n")
-                  % player % rttr::enum_cast(fs) % pos.x % pos.y;
+                  % player % rttr::enumCast(fs) % pos.x % pos.y;
                 // RTTR_Assert(false);
             }
         }

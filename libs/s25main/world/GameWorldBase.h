@@ -33,20 +33,20 @@ class SoundManager;
 
 constexpr Direction getOppositeDir(const RoadDir roadDir) noexcept
 {
-    static_assert(rttr::enum_cast(Direction::West) == rttr::enum_cast(RoadDir::East)
-                    && rttr::enum_cast(Direction::NorthWest) == rttr::enum_cast(RoadDir::SouthEast)
-                    && rttr::enum_cast(Direction::NorthEast) == rttr::enum_cast(RoadDir::SouthWest),
+    static_assert(rttr::enumCast(Direction::West) == rttr::enumCast(RoadDir::East)
+                    && rttr::enumCast(Direction::NorthWest) == rttr::enumCast(RoadDir::SouthEast)
+                    && rttr::enumCast(Direction::NorthEast) == rttr::enumCast(RoadDir::SouthWest),
                   "Opposite directions don't match");
-    return Direction(rttr::enum_cast(roadDir));
+    return Direction(rttr::enumCast(roadDir));
 }
 
 constexpr Direction toDirection(const RoadDir roadDir) noexcept
 {
-    static_assert(rttr::enum_cast(Direction::East) == rttr::enum_cast(RoadDir::East) + 3u
-                    && rttr::enum_cast(Direction::SouthEast) == rttr::enum_cast(RoadDir::SouthEast) + 3u
-                    && rttr::enum_cast(Direction::SouthWest) == rttr::enum_cast(RoadDir::SouthWest) + 3u,
+    static_assert(rttr::enumCast(Direction::East) == rttr::enumCast(RoadDir::East) + 3u
+                    && rttr::enumCast(Direction::SouthEast) == rttr::enumCast(RoadDir::SouthEast) + 3u
+                    && rttr::enumCast(Direction::SouthWest) == rttr::enumCast(RoadDir::SouthWest) + 3u,
                   "Directions don't match");
-    return Direction(rttr::enum_cast(roadDir) + 3u);
+    return Direction(rttr::enumCast(roadDir) + 3u);
 }
 
 /// Grundlegende Klasse, die die Gamewelt darstellt, enth�lt nur deren Daten
@@ -77,7 +77,7 @@ public:
     ~GameWorldBase() override;
 
     // Grundlegende Initialisierungen
-    void Init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>(0)) override;
+    void init(const MapExtent& mapSize, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>(0)) override;
     // Remaining initialization after loading (BQ...)
     void initAfterLoad();
 
@@ -86,7 +86,7 @@ public:
     void setGameInterface(GameInterface* const gi) { this->gi = gi; }
 
     /// Get the economy mode handler if set.
-    /// TODO: Add const correct version, but iwEconomicProgress still needs to be able to call UpdateAmounts
+    /// TODO: Add const correct version, but iwEconomicProgress still needs to be able to call updateAmounts
     EconomyModeHandler* getEconHandler() const { return econHandler.get(); }
 
     /// Can a node be used for a road (no flag/bld, no other road, no danger...)
@@ -114,8 +114,8 @@ public:
     sortedMilitaryBlds lookForMilitaryBuildings(MapPoint pt, unsigned short radius) const;
 
     /// Finds a path for figures. Returns first direction to walk in if found
-    helpers::OptionalEnum<Direction> findHumanPath(MapPoint start, MapPoint dest, unsigned max_route = 0xFFFFFFFF,
-                                                   bool random_route = false, unsigned* length = nullptr,
+    helpers::OptionalEnum<Direction> findHumanPath(MapPoint start, MapPoint dest, unsigned maxRoute = 0xFFFFFFFF,
+                                                   bool randomRoute = false, unsigned* length = nullptr,
                                                    std::vector<Direction>* route = nullptr) const;
     /// Find path for ships to a specific harbor and see. Return true on success
     /// If starting point equals the coastal point of target harbor, set length 0, clear route and return true.
@@ -211,15 +211,15 @@ public:
     /// Sets all entries in @param use_seas to true, if the given sea can be used for attacking (seaId=1 -> Index 0 as
     /// seaId=0 is invalid sea)
     std::vector<HarborId> getUsableTargetHarborsForAttack(MapPoint targetPt, std::vector<bool>& use_seas,
-                                                          unsigned char player_attacker) const;
+                                                          unsigned char playerAttacker) const;
     /// Return all sea Ids from @param usableSeas that can be used for attacking the given point
     std::vector<SeaId> getFilteredSeaIDsForAttack(MapPoint targetPt, const std::vector<SeaId>& usableSeas,
-                                                  unsigned char player_attacker) const;
+                                                  unsigned char playerAttacker) const;
     /// Return all soldiers (in no specific order) that can be used to attack the given point via a sea.
     /// Checks all preconditions for a sea attack (addon, attackable...)
-    std::vector<PotentialSeaAttacker> getSoldiersForSeaAttack(unsigned char player_attacker, MapPoint pt) const;
+    std::vector<PotentialSeaAttacker> getSoldiersForSeaAttack(unsigned char playerAttacker, MapPoint pt) const;
     /// Return number or strength (summed ranks) of soldiers that can attack via the given sea
-    unsigned getNumSoldiersForSeaAttackAtSea(unsigned char player_attacker, SeaId sea, bool returnCount = true) const;
+    unsigned getNumSoldiersForSeaAttackAtSea(unsigned char playerAttacker, SeaId sea, bool returnCount = true) const;
 
     /// Recalculates the BQ for the given point
     void recalcBQ(MapPoint pt);

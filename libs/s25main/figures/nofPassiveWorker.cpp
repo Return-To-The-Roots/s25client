@@ -24,7 +24,7 @@ void nofPassiveWorker::goalReached()
     // Mich hier einquartieren
     auto* wh = world->getSpecObj<nobBaseWarehouse>(pos);
     RTTR_Assert(wh);
-    wh->addFigure(world->RemoveFigure(pos, *this));
+    wh->addFigure(world->removeFigure(pos, *this));
 }
 
 void nofPassiveWorker::abrogateWorkplace() {}

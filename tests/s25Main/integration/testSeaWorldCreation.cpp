@@ -13,7 +13,7 @@
 // LCOV_EXCL_START
 static std::ostream& operator<<(std::ostream& out, const ShipDirection& dir)
 {
-    return out << static_cast<int>(rttr::enum_cast(dir));
+    return out << static_cast<int>(rttr::enumCast(dir));
 }
 // LCOV_EXCL_STOP
 

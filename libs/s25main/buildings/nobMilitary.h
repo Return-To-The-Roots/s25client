@@ -175,7 +175,7 @@ public:
     /// Soldat konnte nicht kommen
     void soldierLost(nofSoldier* soldier) override;
     /// Send the given passive soldier from this building to attack the goal, optionally via the given harbor
-    void sendAttacker(nofPassiveSoldier*& passive_soldier, nobBaseMilitary& goal,
+    void sendAttacker(nofPassiveSoldier*& passiveSoldier, nobBaseMilitary& goal,
                       const nobHarborBuilding* harbor = nullptr);
 
     /// Schickt einen Verteidiger raus, der einem Angreifer in den Weg rennt

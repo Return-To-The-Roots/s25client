@@ -42,7 +42,7 @@ bool AcceptsWare::operator()(const nobBaseWarehouse& wh) const
 {
     // Einlagern darf nicht verboten sein
     // Schilder beachten!
-    const GoodType good = ConvertShields(type);
+    const GoodType good = convertShields(type);
     return !wh.getInventorySetting(good).isSet(EInventorySetting::Stop);
 }
 
@@ -60,7 +60,7 @@ bool CollectsWare::operator()(const nobBaseWarehouse& wh) const
 {
     // Einlagern muss gewollt sein
     // Schilder beachten!
-    GoodType gt = ConvertShields(type);
+    GoodType gt = convertShields(type);
     return (wh.getInventorySetting(gt).isSet(EInventorySetting::Collect));
 }
 
@@ -85,7 +85,7 @@ bool HasFigureButNoCollect::operator()(const nobBaseWarehouse& wh) const
 
 bool AcceptsWareButNoSend::operator()(const nobBaseWarehouse& wh) const
 {
-    const GoodType good = ConvertShields(type);
+    const GoodType good = convertShields(type);
     return AcceptsWare::operator()(wh) && !wh.getInventorySetting(good).isSet(EInventorySetting::Send);
 }
 

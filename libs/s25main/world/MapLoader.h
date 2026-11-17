@@ -43,9 +43,9 @@ public:
     /// Construct a loader for the given world.
     explicit MapLoader(GameWorldBase& world);
     /// Load the map from the given archive, resetting previous state. Return false on error
-    bool Load(const libsiedler2::ArchivItem_Map& map, Exploration exploration);
+    bool load(const libsiedler2::ArchivItem_Map& map, Exploration exploration);
     /// Load the map from the given filepath
-    bool Load(const boost::filesystem::path& mapFilePath);
+    bool load(const boost::filesystem::path& mapFilePath);
     bool loadLuaScript(Game& game, ILocalGameState& localgameState, const boost::filesystem::path& luaFilePath);
     /// Place the HQs on a loaded map (must be loaded first as hqPositions etc. are used)
     /// Optionally add the starting wares to the HQs.

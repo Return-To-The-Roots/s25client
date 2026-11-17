@@ -88,11 +88,11 @@ iwMusicPlayer::iwMusicPlayer()
     addComboBox(ID_cbPlaylist, DrawPoint(20, 260), Extent(330, 22), TextureColor::Green1, NormalFont, 200);
 
     // Playlist buttons
-    const unsigned short button_distance = 10;
-    const Extent buttonSize((330 - button_distance) / 2, 22);
+    const unsigned short buttonDistance = 10;
+    const Extent buttonSize((330 - buttonDistance) / 2, 22);
     ctrlButton* b1 =
       addTextButton(ID_btAddPlaylist, DrawPoint(20, 288), buttonSize, TextureColor::Green2, _("Add"), NormalFont);
-    addTextButton(ID_btRemovePlaylist, b1->getPos() + DrawPoint(buttonSize.x + button_distance, 0), buttonSize,
+    addTextButton(ID_btRemovePlaylist, b1->getPos() + DrawPoint(buttonSize.x + buttonDistance, 0), buttonSize,
                   TextureColor::Green2, _("Remove"), NormalFont);
 
     // Track buttons
@@ -162,7 +162,7 @@ void iwMusicPlayer::msgComboSelectItem(const unsigned ctrl_id, const unsigned se
     RTTR_Assert(ctrl_id == ID_cbPlaylist);
     Playlist pl;
     const std::string playlistName = getCtrl<ctrlComboBox>(ID_cbPlaylist)->getText(selection);
-    if(pl.Load(LOG, getFullPlaylistPath(playlistName)))
+    if(pl.load(LOG, getFullPlaylistPath(playlistName)))
     {
         updateFromPlaylist(pl);
         changed = true;
@@ -189,7 +189,7 @@ void iwMusicPlayer::msgListChooseItem(const unsigned /*ctrl_id*/, const unsigned
 boost::filesystem::path iwMusicPlayer::getFullPlaylistPath(const std::string& name)
 {
     const boost::filesystem::path folder =
-      RTTRCONFIG.ExpandPath(isReadonlyPlaylist(name) ? s25::folders::music : s25::folders::playlists);
+      RTTRCONFIG.expandPath(isReadonlyPlaylist(name) ? s25::folders::music : s25::folders::playlists);
     return folder / (name + ".pll");
 }
 
@@ -275,7 +275,7 @@ void iwMusicPlayer::msgButtonClick(const unsigned ctrl_id)
 
                 boost::system::error_code ec;
                 boost::filesystem::remove(getFullPlaylistPath(*playlistName), ec);
-                SETTINGS.sound.playlist = RTTRCONFIG.ExpandPath(s25::files::defaultPlaylist).string();
+                SETTINGS.sound.playlist = RTTRCONFIG.expandPath(s25::files::defaultPlaylist).string();
                 updatePlaylistCombo(SETTINGS.sound.playlist);
             }
         }
@@ -395,7 +395,7 @@ void iwMusicPlayer::msgInput(const unsigned win_id, const std::string& msg)
         break;
         case ID_wndAddTrackDir:
         {
-            std::vector<boost::filesystem::path> oggFiles = ListDir(msg, "ogg");
+            std::vector<boost::filesystem::path> oggFiles = listDir(msg, "ogg");
 
             for(const auto& oggFile : oggFiles)
                 getCtrl<ctrlList>(ID_lstSongs)->addItem(oggFile.string());
@@ -434,9 +434,9 @@ void iwMusicPlayer::updatePlaylistCombo(const std::string& highlight_entry)
     auto* cbPlaylist = getCtrl<ctrlComboBox>(ID_cbPlaylist);
     cbPlaylist->deleteAllItems();
 
-    std::vector<boost::filesystem::path> playlists = ListDir(RTTRCONFIG.ExpandPath(s25::folders::playlists), "pll");
-    playlists.insert(playlists.begin(), RTTRCONFIG.ExpandPath(s25::files::defaultPlaylist));
-    const auto currentPath = RTTRCONFIG.ExpandPath(highlight_entry);
+    std::vector<boost::filesystem::path> playlists = listDir(RTTRCONFIG.expandPath(s25::folders::playlists), "pll");
+    playlists.insert(playlists.begin(), RTTRCONFIG.expandPath(s25::files::defaultPlaylist));
+    const auto currentPath = RTTRCONFIG.expandPath(highlight_entry);
 
     unsigned i = 0;
     for(const auto& playlistPath : playlists)

@@ -38,26 +38,26 @@ void SavedFile::writeFileHeader(BinaryFile& file) const
 {
     // Signature
     const std::string signature = getSignature();
-    file.WriteRawData(signature.c_str(), signature.length());
+    file.writeRawData(signature.c_str(), signature.length());
     // Format version
-    file.WriteUnsignedChar(getLatestMajorVersion());
-    file.WriteUnsignedChar(getLatestMinorVersion());
+    file.writeUnsignedChar(getLatestMajorVersion());
+    file.writeUnsignedChar(getLatestMinorVersion());
 }
 
 void SavedFile::writeExtHeader(BinaryFile& file, const std::string& mapName)
 {
     // Store data in struct
-    saveTime_ = s25util::Time::CurrentTime();
+    saveTime_ = s25util::Time::currentTime();
     mapName_ = mapName;
 
     // Program version
-    file.WriteRawData(revision.data(), revision.size());
+    file.writeRawData(revision.data(), revision.size());
     s25util::time64_t tmpTime = libendian::ConvertEndianess<false>::fromNative(saveTime_);
-    file.WriteRawData(&tmpTime, sizeof(tmpTime));
-    file.WriteShortString(mapName);
-    file.WriteUnsignedInt(playerNames_.size());
+    file.writeRawData(&tmpTime, sizeof(tmpTime));
+    file.writeShortString(mapName);
+    file.writeUnsignedInt(playerNames_.size());
     for(const std::string& name : playerNames_)
-        file.WriteShortString(name);
+        file.writeShortString(name);
 }
 
 bool SavedFile::readFileHeader(BinaryFile& file)
@@ -70,7 +70,7 @@ bool SavedFile::readFileHeader(BinaryFile& file)
         throw std::range_error("Program signature is to long!");
     try
     {
-        file.ReadRawData(read_signature.data(), signature.size());
+        file.readRawData(read_signature.data(), signature.size());
 
         // Signatur überprüfen
         if(!std::equal(signature.begin(), signature.end(), read_signature.begin()))
@@ -80,8 +80,8 @@ bool SavedFile::readFileHeader(BinaryFile& file)
         }
 
         // Version überprüfen
-        majorVersion_ = file.ReadUnsignedChar();
-        minorVersion_ = file.ReadUnsignedChar();
+        majorVersion_ = file.readUnsignedChar();
+        minorVersion_ = file.readUnsignedChar();
         if(majorVersion_ != getLatestMajorVersion() || minorVersion_ > getLatestMinorVersion())
         {
             boost::format fmt =
@@ -105,13 +105,13 @@ bool SavedFile::readFileHeader(BinaryFile& file)
 
 bool SavedFile::readExtHeader(BinaryFile& file)
 {
-    file.ReadRawData(revision.data(), revision.size());
-    file.ReadRawData(&saveTime_, sizeof(saveTime_));
+    file.readRawData(revision.data(), revision.size());
+    file.readRawData(&saveTime_, sizeof(saveTime_));
     saveTime_ = libendian::ConvertEndianess<false>::toNative(saveTime_);
-    mapName_ = file.ReadShortString();
-    playerNames_.resize(file.ReadUnsignedInt());
+    mapName_ = file.readShortString();
+    playerNames_.resize(file.readUnsignedInt());
     for(std::string& name : playerNames_)
-        name = file.ReadShortString();
+        name = file.readShortString();
     return true;
 }
 
@@ -134,19 +134,19 @@ bool SavedFile::readAllHeaderData(BinaryFile& file)
 void SavedFile::writePlayerData(BinaryFile& file)
 {
     Serializer ser;
-    ser.PushUnsignedChar(players.size());
+    ser.pushUnsignedChar(players.size());
     for(const auto& player : players)
         player.serialize(ser, true);
 
-    ser.WriteToFile(file);
+    ser.writeToFile(file);
 }
 
 void SavedFile::readPlayerData(BinaryFile& file)
 {
     clearPlayers();
     Serializer ser;
-    ser.ReadFromFile(file);
-    const unsigned playerCt = ser.PopUnsignedChar();
+    ser.readFromFile(file);
+    const unsigned playerCt = ser.popUnsignedChar();
     if(playerCt > MAX_PLAYERS)
     {
         throw std::length_error(
@@ -159,7 +159,7 @@ void SavedFile::readPlayerData(BinaryFile& file)
         BasePlayerInfo player(ser, getMinorVersion() >= 1 ? 1 : 0, true);
         // Temporary workaround: The random team was stored in the file but should not anymore, see PR #1331
         if(player.team > Team::Team4)
-            player.team = Team(rttr::enum_cast(player.team) - 3); // Was random team 2-4
+            player.team = Team(rttr::enumCast(player.team) - 3); // Was random team 2-4
         else if(player.team == Team::Random)
             player.team = Team::Team1; // Was random team 1
         addPlayer(player);
@@ -173,7 +173,7 @@ void SavedFile::writeGGS(BinaryFile& file) const
 {
     Serializer ser;
     ggs.serialize(ser);
-    ser.WriteToFile(file);
+    ser.writeToFile(file);
 }
 
 /**
@@ -182,7 +182,7 @@ void SavedFile::writeGGS(BinaryFile& file) const
 void SavedFile::readGGS(BinaryFile& file)
 {
     Serializer ser;
-    ser.ReadFromFile(file);
+    ser.readFromFile(file);
     ggs.deserialize(ser);
 }
 

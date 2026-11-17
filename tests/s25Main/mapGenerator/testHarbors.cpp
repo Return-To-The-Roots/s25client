@@ -16,7 +16,7 @@ BOOST_FIXTURE_TEST_SUITE(HarborsTests, MapGenFixture)
 BOOST_AUTO_TEST_CASE(PlaceHarborPosition_flattens_ground_around_harbor_position)
 {
     Map map = createMap(MapExtent(6, 8));
-    auto land = TexturePair(map.textureMap.Find(isBuildableLand));
+    auto land = TexturePair(map.textureMap.find(isBuildableLand));
 
     map.getTextures().resize(map.size, land);
 
@@ -46,8 +46,8 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_applies_buildable_terrain_around_positi
 {
     Map map = createMap(MapExtent(6, 8));
 
-    auto coast = TexturePair(map.textureMap.Find(isCoastTerrain));
-    auto buildable = map.textureMap.Find(isBuildableCoast);
+    auto coast = TexturePair(map.textureMap.find(isCoastTerrain));
+    auto buildable = map.textureMap.find(isBuildableCoast);
 
     map.getTextures().resize(map.size, coast);
 
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_applies_buildable_terrain_around_positi
 
     placeHarborPosition(map, position);
 
-    auto triangles = GetTriangles(position, map.size);
+    auto triangles = getTriangles(position, map.size);
     const auto& textureTriangles = map.getTextures();
     for(const rttr::mapGenerator::Triangle& triangle : triangles)
     {
@@ -71,11 +71,11 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbors_on_coast_below_minimum_size)
     Map map = createMap(MapExtent(6, 8));
     MapPoint island(3, 3);
 
-    auto water = TexturePair(map.textureMap.Find(isWater));
+    auto water = TexturePair(map.textureMap.find(isWater));
 
     map.getTextures().resize(map.size, water);
 
-    auto coast = map.textureMap.Find(isCoastTerrain);
+    auto coast = map.textureMap.find(isCoastTerrain);
     map.textureMap.set(island, coast);
 
     placeHarbors(map, {}, 100);
@@ -88,11 +88,11 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_harbor_on_suitable_island)
     Map map = createMap(MapExtent(6, 8));
     MapPoint island(3, 3);
 
-    auto water = TexturePair(map.textureMap.Find(isWater));
+    auto water = TexturePair(map.textureMap.find(isWater));
 
     map.getTextures().resize(map.size, water);
 
-    auto coast = map.textureMap.Find(isCoastTerrain);
+    auto coast = map.textureMap.find(isCoastTerrain);
     map.textureMap.set(island, coast);
 
     placeHarbors(map, {}, 5);
@@ -105,11 +105,11 @@ BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbor_near_river)
     Map map = createMap(MapExtent(6, 8));
     MapPoint island(3, 3);
 
-    auto water = TexturePair(map.textureMap.Find(isWater));
+    auto water = TexturePair(map.textureMap.find(isWater));
 
     map.getTextures().resize(map.size, water);
 
-    auto coast = map.textureMap.Find(isCoastTerrain);
+    auto coast = map.textureMap.find(isCoastTerrain);
     map.textureMap.set(island, coast);
 
     River river{island};

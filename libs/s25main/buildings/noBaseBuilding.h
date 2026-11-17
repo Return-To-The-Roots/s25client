@@ -55,7 +55,7 @@ public:
 
     /// Ermittelt die Flagge, die vor dem Gebäude steht
     noFlag* getFlag() const;
-    /// Same as GetFlag()->GetPos()
+    /// Same as getFlag()->getPos()
     MapPoint getFlagPos() const;
     /// Is the building (flag) connected to anything?
     bool isConnected() const;
@@ -67,7 +67,7 @@ public:
     int getDoorPointY() const { return door_point_y; }
 
     /*/// Gibt die Warenverteilungspunkte zurück (bei 0 wurde kein Weg gefunden)
-    virtual unsigned CalcDistributionPoints(noRoadNode * start,const GoodType type) = 0;*/
+    virtual unsigned calcDistributionPoints(noRoadNode * start,const GoodType type) = 0;*/
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
     virtual void takeWare(Ware* ware) = 0;
     /// Wird aufgerufen, wenn ein bestimmter Arbeiter für das hier gerufen wurde

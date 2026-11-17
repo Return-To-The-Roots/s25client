@@ -55,7 +55,7 @@ iwSaveLoad::iwSaveLoad(const std::string& window_title, ITexture* btImg, const u
                                 {_("Game Time"), 115, SRT::Time},
                                 {}});
 
-    addText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.ExpandPath(s25::folders::save).string(), COLOR_YELLOW,
+    addText(ID_txtSaveFolder, DrawPoint(20, 333), RTTRCONFIG.expandPath(s25::folders::save).string(), COLOR_YELLOW,
             FontStyle::TOP, SmallFont)
       ->setMaxWidth(510);
     // maxLength 251 = 255 filename limit - 4 chars for ".sav"; just discourages absurdly long
@@ -92,11 +92,11 @@ void iwSaveLoad::refreshTable()
 
     table->deleteAllItems();
 
-    std::vector<boost::filesystem::path> saveFiles = ListDir(RTTRCONFIG.ExpandPath(s25::folders::save), "sav");
+    std::vector<boost::filesystem::path> saveFiles = listDir(RTTRCONFIG.expandPath(s25::folders::save), "sav");
     for(const auto& saveFile : saveFiles)
     {
         Savegame save;
-        if(!save.Load(saveFile, SaveGameDataToLoad::Header))
+        if(!save.load(saveFile, SaveGameDataToLoad::Header))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
@@ -108,7 +108,7 @@ void iwSaveLoad::refreshTable()
         }
 
         const auto fileName = saveFile.stem().string();
-        const std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.getSaveTime());
+        const std::string dateStr = s25util::Time::formatTime("%d.%m.%Y - %H:%i", save.getSaveTime());
         const std::string gameTime = GAMECLIENT.formatGFTime(save.start_gf);
 
         table->addRow({fileName, save.getMapName(), dateStr, gameTime, saveFile.string()});
@@ -134,7 +134,7 @@ void iwSave::saveLoad()
             return;
         case FileNameStatus::Valid: break;
     }
-    GAMECLIENT.saveToFile(RTTRCONFIG.ExpandPath(s25::folders::save) / fileNameResult.name);
+    GAMECLIENT.saveToFile(RTTRCONFIG.expandPath(s25::folders::save) / fileNameResult.name);
 
     refreshTable();
     getCtrl<ctrlEdit>(ID_edtFilename)->setText("");
@@ -168,7 +168,7 @@ iwSave::iwSave() : iwSaveLoad(_("Save game!"), LOADER.getTextureN("io", 47), 30)
         // Start selection index at 1, 0 is "disabled"
         for(const auto& i : AUTO_SAVE_INTERVALS | boost::adaptors::indexed(1))
         {
-            if(SETTINGS.interface.autosaveInterval == duration_to_gfs(i.value()))
+            if(SETTINGS.interface.autosaveInterval == durationToGfs(i.value()))
             {
                 combo->setSelection(static_cast<unsigned>(i.index()));
                 break;
@@ -187,7 +187,7 @@ void iwSave::msgComboSelectItem(const unsigned /*ctrl_id*/, const unsigned selec
     {
         // selection is the index into the array ignoring the first ("disabled") entry
         RTTR_Assert(selection >= 1 && selection <= AUTO_SAVE_INTERVALS.size());
-        SETTINGS.interface.autosaveInterval = duration_to_gfs(AUTO_SAVE_INTERVALS[selection - 1]);
+        SETTINGS.interface.autosaveInterval = durationToGfs(AUTO_SAVE_INTERVALS[selection - 1]);
     }
 }
 
@@ -207,7 +207,7 @@ void iwLoad::saveLoad()
         WINDOWMANAGER.show(std::make_unique<iwConnecting>(csi.type, std::move(lobbyClient)));
     } else
     {
-        if(LOBBYCLIENT.IsLoggedIn())
+        if(LOBBYCLIENT.isLoggedIn())
             WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
         else
             close();

@@ -29,12 +29,12 @@ GameDataLoader::GameDataLoader(WorldDescription& worldDesc, const boost::filesys
 }
 
 GameDataLoader::GameDataLoader(WorldDescription& worldDesc)
-    : GameDataLoader(worldDesc, RTTRCONFIG.ExpandPath(s25::folders::gamedata) / "world")
+    : GameDataLoader(worldDesc, RTTRCONFIG.expandPath(s25::folders::gamedata) / "world")
 {}
 
 GameDataLoader::~GameDataLoader() = default;
 
-bool GameDataLoader::Load()
+bool GameDataLoader::load()
 {
     curFile_ = basePath_ / "default.lua";
     curIncludeDepth_ = 0;
@@ -67,7 +67,7 @@ void GameDataLoader::include(const std::string& filepath)
             return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_' || c == '/'
                    || c == '.';
         };
-        if(helpers::contains_if(filepath, [isAllowedChar](const char c) { return !isAllowedChar(c); }))
+        if(helpers::containsIf(filepath, [isAllowedChar](const char c) { return !isAllowedChar(c); }))
             throw LuaIncludeError("It contains disallowed chars. Allowed: alpha-numeric, underscore, slash and dot.");
         if(bfs::path(filepath).is_absolute())
             throw LuaIncludeError("Path to file must be relative to current file");
@@ -115,6 +115,6 @@ void loadGameData(WorldDescription& worldDesc)
 
 {
     GameDataLoader gdLoader(worldDesc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
         throw std::runtime_error("Failed to load game data");
 }

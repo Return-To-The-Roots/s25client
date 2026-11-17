@@ -14,8 +14,8 @@ GameEvent::GameEvent(unsigned instanceId, GameObject* obj, unsigned startGF, uns
 }
 
 GameEvent::GameEvent(SerializedGameData& sgd, const unsigned instanceId)
-    : instanceId(sgd.addEvent(instanceId, this)), obj(sgd.popObject<GameObject>()), startGF(sgd.PopUnsignedInt()),
-      length(sgd.PopUnsignedInt()), id(sgd.PopUnsignedInt())
+    : instanceId(sgd.addEvent(instanceId, this)), obj(sgd.popObject<GameObject>()), startGF(sgd.popUnsignedInt()),
+      length(sgd.popUnsignedInt()), id(sgd.popUnsignedInt())
 {
     RTTR_Assert(obj);
 }
@@ -23,7 +23,7 @@ GameEvent::GameEvent(SerializedGameData& sgd, const unsigned instanceId)
 void GameEvent::serialize(SerializedGameData& sgd) const
 {
     sgd.pushObject(obj);
-    sgd.PushUnsignedInt(startGF);
-    sgd.PushUnsignedInt(length);
-    sgd.PushUnsignedInt(id);
+    sgd.pushUnsignedInt(startGF);
+    sgd.pushUnsignedInt(length);
+    sgd.pushUnsignedInt(id);
 }

@@ -73,7 +73,7 @@ void printDesync(const ReplayDesync& desync, bool verbose)
               << "  stored:  " << desync.expected << "\n";
     if(verbose)
     {
-        for(const auto& entry : RANDOM.GetAsyncLog())
+        for(const auto& entry : RANDOM.getAsyncLog())
             bnw::cerr << "  " << entry << "\n";
     }
     bnw::cerr << "FAIL: Desync detected.\n";

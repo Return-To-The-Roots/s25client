@@ -22,26 +22,26 @@ void nofFarmer::serialize(SerializedGameData& sgd) const
 {
     nofFarmhand::serialize(sgd);
 
-    sgd.PushBool(harvest);
+    sgd.pushBool(harvest);
 }
 
-nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool())
+nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id), harvest(sgd.popBool())
 {}
 
 /// Malt den Arbeiter beim Arbeiten
 void nofFarmer::drawWorking(DrawPoint drawPt)
 {
-    unsigned now_id;
+    unsigned nowId;
 
     if(harvest)
     {
-        LOADER.getPlayerImage("rom_bobs", 140 + (now_id = GAMECLIENT.interpolate(88, current_ev)) % 8)
+        LOADER.getPlayerImage("rom_bobs", 140 + (nowId = GAMECLIENT.interpolate(88, current_ev)) % 8)
           ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
 
         // Evtl Sound abspielen
-        if(now_id % 8 == 3)
+        if(nowId % 8 == 3)
         {
-            world->getSoundMgr().playNOSound(64, *this, now_id / 8);
+            world->getSoundMgr().playNOSound(64, *this, nowId / 8);
             was_sounding = true;
         }
 

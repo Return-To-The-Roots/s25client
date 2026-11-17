@@ -117,7 +117,7 @@ public:
     /// Legt eine Ware im Lagerhaus ab
     void addWare(std::unique_ptr<Ware> ware) override;
     /// Eine Figur geht ins Lagerhaus
-    void addFigure(std::unique_ptr<noFigure> figure, bool increase_visual_counts) override;
+    void addFigure(std::unique_ptr<noFigure> figure, bool increaseVisualCounts) override;
     /// Berechnet Wichtigkeit einer neuen Ware für den Hafen (Waren werden für Expeditionen
     /// benötigt!)
     unsigned calcDistributionPoints(GoodType type) const;
@@ -170,7 +170,7 @@ public:
     /// Gibt Anzahl der Schiffe zurück, die noch für ausstehende Aufgaben benötigt werden
     unsigned getNumNeededShips() const;
     /// Gibt die Wichtigkeit an, dass ein Schiff kommen muss (0 -> keine Bedürftigkeit)
-    int getNeedForShip(unsigned ships_coming) const;
+    int getNeedForShip(unsigned shipsComing) const;
 
     /// Erhält die Waren von einem Schiff und nimmt diese in den Warenbestand auf
     void receiveGoodsFromShip(std::list<std::unique_ptr<noFigure>>& figures, std::list<std::unique_ptr<Ware>>& wares);
@@ -197,8 +197,8 @@ public:
     };
 
     /// Gibt die Angreifer zurück, die dieser Hafen für einen Seeangriff zur Verfügung stellen kann
-    /// defender_harbors sind dabei mögliche Zielhäfen
-    std::vector<SeaAttackerBuilding> getAttackerBuildingsForSeaAttack(const std::vector<HarborId>& defender_harbors);
+    /// defenderHarbors sind dabei mögliche Zielhäfen
+    std::vector<SeaAttackerBuilding> getAttackerBuildingsForSeaAttack(const std::vector<HarborId>& defenderHarbors);
     /// Gibt verfügbare Angreifer zurück
     std::vector<SeaAttackerBuilding> getAttackerBuildingsForSeaIdAttack();
 

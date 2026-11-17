@@ -15,11 +15,11 @@ bool TestServer::run(bool waitForConnection)
         return false;
 
     SocketSet set;
-    set.Add(socket);
-    if(set.Select(waitForConnection ? 2 * 60 * 1000 : 0, 0) > 0)
+    set.add(socket);
+    if(set.select(waitForConnection ? 2 * 60 * 1000 : 0, 0) > 0)
     {
-        RTTR_Assert(set.InSet(socket));
-        Socket newSocket = socket.Accept();
+        RTTR_Assert(set.inSet(socket));
+        Socket newSocket = socket.accept();
 
         if(newSocket.isValid())
         {
@@ -33,14 +33,14 @@ bool TestServer::run(bool waitForConnection)
     do
     {
         msgReceived = true;
-        set.Clear();
+        set.clear();
         for(Connection& con : connections)
-            set.Add(con.so);
-        if(set.Select(0, 0) <= 0)
+            set.add(con.so);
+        if(set.select(0, 0) <= 0)
             break;
         for(unsigned id = 0; id < connections.size();)
         {
-            if(set.InSet(connections[id].so))
+            if(set.inSet(connections[id].so))
             {
                 if(connections[id].recvQueue.recv(connections[id].so) < 0)
                     connections.erase(connections.begin() + id);
@@ -74,7 +74,7 @@ bool TestServer::run(bool waitForConnection)
 bool TestServer::stop()
 {
     connections.clear();
-    socket.Close();
+    socket.close();
     return true;
 }
 
@@ -85,7 +85,7 @@ Connection TestServer::acceptConnection(unsigned /*id*/, const Socket& so)
 
 bool TestServer::listen(int16_t port)
 {
-    return socket.Listen(port, false, false);
+    return socket.listen(port, false, false);
 }
 
 int TestServer::tryListen(const unsigned maxTries)

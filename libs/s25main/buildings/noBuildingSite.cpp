@@ -90,11 +90,11 @@ void noBuildingSite::destroy()
     RTTR_Assert(!planer);
 
     // Bestellte Waren Bescheid sagen
-    for(Ware* ordered_board : ordered_boards)
-        wareNotNeeded(ordered_board);
+    for(Ware* orderedBoard : ordered_boards)
+        wareNotNeeded(orderedBoard);
     ordered_boards.clear();
-    for(Ware* ordered_stone : ordered_stones)
-        wareNotNeeded(ordered_stone);
+    for(Ware* orderedStone : ordered_stones)
+        wareNotNeeded(orderedStone);
     ordered_stones.clear();
 
     // und Feld wird leer
@@ -123,11 +123,11 @@ void noBuildingSite::serialize(SerializedGameData& sgd) const
     sgd.pushEnum<uint8_t>(state);
     sgd.pushObject(planer, true);
     sgd.pushObject(builder, true);
-    sgd.PushUnsignedChar(boards);
-    sgd.PushUnsignedChar(stones);
-    sgd.PushUnsignedChar(used_boards);
-    sgd.PushUnsignedChar(used_stones);
-    sgd.PushUnsignedChar(build_progress);
+    sgd.pushUnsignedChar(boards);
+    sgd.pushUnsignedChar(stones);
+    sgd.pushUnsignedChar(used_boards);
+    sgd.pushUnsignedChar(used_stones);
+    sgd.pushUnsignedChar(build_progress);
     sgd.pushObjectContainer(ordered_boards, true);
     sgd.pushObjectContainer(ordered_stones, true);
 }
@@ -135,8 +135,8 @@ void noBuildingSite::serialize(SerializedGameData& sgd) const
 noBuildingSite::noBuildingSite(SerializedGameData& sgd, const unsigned obj_id)
     : noBaseBuilding(sgd, obj_id), state(sgd.pop<BuildingSiteState>()),
       planer(sgd.popObject<nofPlaner>(GO_Type::NofPlaner)), builder(sgd.popObject<nofBuilder>(GO_Type::NofBuilder)),
-      boards(sgd.PopUnsignedChar()), stones(sgd.PopUnsignedChar()), used_boards(sgd.PopUnsignedChar()),
-      used_stones(sgd.PopUnsignedChar()), build_progress(sgd.PopUnsignedChar())
+      boards(sgd.popUnsignedChar()), stones(sgd.popUnsignedChar()), used_boards(sgd.popUnsignedChar()),
+      used_stones(sgd.popUnsignedChar()), build_progress(sgd.popUnsignedChar())
 {
     sgd.popObjectContainer(ordered_boards, GO_Type::Ware);
     sgd.popObjectContainer(ordered_stones, GO_Type::Ware);

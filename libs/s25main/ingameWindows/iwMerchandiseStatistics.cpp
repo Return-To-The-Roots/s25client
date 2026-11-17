@@ -92,12 +92,12 @@ iwMerchandiseStatistics::iwMerchandiseStatistics(const GamePlayer& player)
     timeAnnotations = std::vector<ctrlText*>(7);
     for(unsigned i = 0; i < 7; ++i)
     {
-        timeAnnotations[i] = addText(32 + i, DrawPoint(211 + i, 125 + i), "", MakeColor(255, 136, 96, 52),
+        timeAnnotations[i] = addText(32 + i, DrawPoint(211 + i, 125 + i), "", makeColor(255, 136, 96, 52),
                                      FontStyle::CENTER | FontStyle::TOP | FontStyle::NO_OUTLINE, NormalFont);
     }
 
     // Aktueller Maximalwert an der y-Achse
-    maxValue = addText(31, DrawPoint(211, 55), "1", MakeColor(255, 136, 96, 52),
+    maxValue = addText(31, DrawPoint(211, 55), "1", makeColor(255, 136, 96, 52),
                        FontStyle::RIGHT | FontStyle::VCENTER | FontStyle::NO_OUTLINE, NormalFont);
 }
 
@@ -186,7 +186,7 @@ void iwMerchandiseStatistics::drawStatistic()
     for(unsigned short it : active)
     {
         // Testing only:
-        // DrawLine(topLeft.x, topLeft.y + 3 * (*it), topLeft + DrawPoint(sizeX, 3 * (*it)), 2, BarColors[(*it) - 1]);
+        // drawLine(topLeft.x, topLeft.y + 3 * (*it), topLeft + DrawPoint(sizeX, 3 * (*it)), 2, BarColors[(*it) - 1]);
 
         for(unsigned i = 0; i < NUM_STAT_STEPS; ++i)
         {
@@ -237,15 +237,15 @@ void iwMerchandiseStatistics::drawAxis()
 
     // X-Achse, horizontal, war irgendwie zu lang links :S
     drawLine(topLeft + DrawPoint(6, sizeY + 2), // bisschen tiefer, damit man nulllinien noch sieht
-             topLeft + DrawPoint(sizeX, sizeY + 1), 1, MakeColor(255, 88, 44, 16));
+             topLeft + DrawPoint(sizeX, sizeY + 1), 1, makeColor(255, 88, 44, 16));
 
     // Y-Achse, vertikal
-    drawLine(topLeft + DrawPoint(sizeX, 0), topLeft + DrawPoint(sizeX, sizeY + 5), 1, MakeColor(255, 88, 44, 16));
+    drawLine(topLeft + DrawPoint(sizeX, 0), topLeft + DrawPoint(sizeX, sizeY + 5), 1, makeColor(255, 88, 44, 16));
 
     // Striche an der Y-Achse
-    drawLine(topLeft + DrawPoint(sizeX - 3, 0), topLeft + DrawPoint(sizeX + 4, 0), 1, MakeColor(255, 88, 44, 16));
+    drawLine(topLeft + DrawPoint(sizeX - 3, 0), topLeft + DrawPoint(sizeX + 4, 0), 1, makeColor(255, 88, 44, 16));
     drawLine(topLeft + DrawPoint(sizeX - 3, sizeY / 2), topLeft + DrawPoint(sizeX + 4, sizeY / 2), 1,
-             MakeColor(255, 88, 44, 16));
+             makeColor(255, 88, 44, 16));
 
     // Striche an der X-Achse + Beschriftung
     // Zunächst die 0, die haben alle
@@ -258,35 +258,35 @@ void iwMerchandiseStatistics::drawAxis()
         case StatisticTime::T15Minutes:
             // -15
             drawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[0]->setPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->setText("-15");
             timeAnnotations[0]->setVisible(true);
 
             // -12
             drawLine(topLeft + DrawPoint(40, sizeY + 2), topLeft + DrawPoint(40, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[1]->setPos(topLeftRel + DrawPoint(40, sizeY + 6));
             timeAnnotations[1]->setText("-12");
             timeAnnotations[1]->setVisible(true);
 
             // -9
             drawLine(topLeft + DrawPoint(75, sizeY + 2), topLeft + DrawPoint(75, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[2]->setPos(topLeftRel + DrawPoint(75, sizeY + 6));
             timeAnnotations[2]->setText("-9");
             timeAnnotations[2]->setVisible(true);
 
             // -6
             drawLine(topLeft + DrawPoint(110, sizeY + 2), topLeft + DrawPoint(110, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[3]->setPos(topLeftRel + DrawPoint(110, sizeY + 6));
             timeAnnotations[3]->setText("-6");
             timeAnnotations[3]->setVisible(true);
 
             // -3
             drawLine(topLeft + DrawPoint(145, sizeY + 2), topLeft + DrawPoint(145, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[4]->setPos(topLeftRel + DrawPoint(145, sizeY + 6));
             timeAnnotations[4]->setText("-3");
             timeAnnotations[4]->setVisible(true);
@@ -296,42 +296,42 @@ void iwMerchandiseStatistics::drawAxis()
         case StatisticTime::T1Hour:
             // -60
             drawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[0]->setPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->setText("-60");
             timeAnnotations[0]->setVisible(true);
 
             // -50
             drawLine(topLeft + DrawPoint(35, sizeY + 2), topLeft + DrawPoint(35, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[1]->setPos(topLeftRel + DrawPoint(35, sizeY + 6));
             timeAnnotations[1]->setText("-50");
             timeAnnotations[1]->setVisible(true);
 
             // -40
             drawLine(topLeft + DrawPoint(64, sizeY + 2), topLeft + DrawPoint(64, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[2]->setPos(topLeftRel + DrawPoint(64, sizeY + 6));
             timeAnnotations[2]->setText("-40");
             timeAnnotations[2]->setVisible(true);
 
             // -30
             drawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[3]->setPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[3]->setText("-30");
             timeAnnotations[3]->setVisible(true);
 
             // -20
             drawLine(topLeft + DrawPoint(122, sizeY + 2), topLeft + DrawPoint(122, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[4]->setPos(topLeftRel + DrawPoint(122, sizeY + 6));
             timeAnnotations[4]->setText("-20");
             timeAnnotations[4]->setVisible(true);
 
             // -10
             drawLine(topLeft + DrawPoint(151, sizeY + 2), topLeft + DrawPoint(151, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[5]->setPos(topLeftRel + DrawPoint(151, sizeY + 6));
             timeAnnotations[5]->setText("-10");
             timeAnnotations[5]->setVisible(true);
@@ -339,28 +339,28 @@ void iwMerchandiseStatistics::drawAxis()
         case StatisticTime::T4Hours:
             // -240
             drawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[0]->setPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->setText("-240");
             timeAnnotations[0]->setVisible(true);
 
             // -180
             drawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[1]->setPos(topLeftRel + DrawPoint(49, sizeY + 6));
             timeAnnotations[1]->setText("-180");
             timeAnnotations[1]->setVisible(true);
 
             // -120
             drawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[2]->setPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[2]->setText("-120");
             timeAnnotations[2]->setVisible(true);
 
             // -60
             drawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[3]->setPos(topLeftRel + DrawPoint(136, sizeY + 6));
             timeAnnotations[3]->setText("-60");
             timeAnnotations[3]->setVisible(true);
@@ -371,28 +371,28 @@ void iwMerchandiseStatistics::drawAxis()
         case StatisticTime::T16Hours:
             // -960
             drawLine(topLeft + DrawPoint(6, sizeY + 2), topLeft + DrawPoint(6, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[0]->setPos(topLeftRel + DrawPoint(6, sizeY + 6));
             timeAnnotations[0]->setText("-960");
             timeAnnotations[0]->setVisible(true);
 
             // -720
             drawLine(topLeft + DrawPoint(49, sizeY + 2), topLeft + DrawPoint(49, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[1]->setPos(topLeftRel + DrawPoint(49, sizeY + 6));
             timeAnnotations[1]->setText("-720");
             timeAnnotations[1]->setVisible(true);
 
             // -480
             drawLine(topLeft + DrawPoint(93, sizeY + 2), topLeft + DrawPoint(93, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[2]->setPos(topLeftRel + DrawPoint(93, sizeY + 6));
             timeAnnotations[2]->setText("-480");
             timeAnnotations[2]->setVisible(true);
 
             // -240
             drawLine(topLeft + DrawPoint(136, sizeY + 2), topLeft + DrawPoint(136, sizeY + 4), 1,
-                     MakeColor(255, 88, 44, 16));
+                     makeColor(255, 88, 44, 16));
             timeAnnotations[3]->setPos(topLeftRel + DrawPoint(136, sizeY + 6));
             timeAnnotations[3]->setText("-240");
             timeAnnotations[3]->setVisible(true);

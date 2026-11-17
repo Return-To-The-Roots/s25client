@@ -59,6 +59,6 @@ void iwMissionStatement::msgButtonClick(const unsigned /*ctrl_id*/)
 void iwMissionStatement::setActive(bool activate)
 {
     IngameWindow::setActive(activate);
-    if(IsActive() && pauseGame_ && GAMECLIENT.getState() != ClientState::Stopped)
+    if(isActive() && pauseGame_ && GAMECLIENT.getState() != ClientState::Stopped)
         GAMECLIENT.setPause(true);
 }

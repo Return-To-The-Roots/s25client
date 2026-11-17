@@ -21,19 +21,19 @@ void nofCarpenter::drawWorking(DrawPoint drawPt)
 {
     static constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{30, 3}, {38, 3}, {30, 8}, {17, -2}, {38, 3}}};
 
-    unsigned now_id;
+    unsigned nowId;
 
-    LOADER.getPlayerImage("rom_bobs", 32 + ((now_id = GAMECLIENT.interpolate(136, current_ev)) % 8))
+    LOADER.getPlayerImage("rom_bobs", 32 + ((nowId = GAMECLIENT.interpolate(136, current_ev)) % 8))
       ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     // Evtl Sound abspielen
-    if(now_id % 8 == 3 || now_id % 8 == 7)
+    if(nowId % 8 == 3 || nowId % 8 == 7)
     {
-        world->getSoundMgr().playNOSound(54 + ((now_id) % 8) / 4, *this, now_id / 4);
+        world->getSoundMgr().playNOSound(54 + ((nowId) % 8) / 4, *this, nowId / 4);
         was_sounding = true;
     }
 
-    last_id = now_id;
+    last_id = nowId;
 }
 
 helpers::OptionalEnum<GoodType> nofCarpenter::produceWare()

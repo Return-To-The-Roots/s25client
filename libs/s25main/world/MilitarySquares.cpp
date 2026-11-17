@@ -9,7 +9,7 @@
 
 MilitarySquares::MilitarySquares() : size_(MapExtent::all(0)) {}
 
-void MilitarySquares::Init(const MapExtent& mapSize)
+void MilitarySquares::init(const MapExtent& mapSize)
 {
     RTTR_Assert(size_ == MapExtent::all(0));     // Already initialized
     RTTR_Assert(mapSize.x > 0 && mapSize.y > 0); // No empty map

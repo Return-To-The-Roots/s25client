@@ -63,18 +63,18 @@ constexpr bool DEBUG_MODE =
 #else
   false;
 #endif
-void copyFileIfPathDifferent(const boost::filesystem::path& src_path, const boost::filesystem::path& dst_path)
+void copyFileIfPathDifferent(const boost::filesystem::path& src_path, const boost::filesystem::path& dstPath)
 {
-    if(src_path != dst_path)
+    if(src_path != dstPath)
     {
         boost::system::error_code ignoredEc;
-        constexpr auto overwrite_existing =
+        constexpr auto overwriteExisting =
 #if BOOST_VERSION >= 107400
           boost::filesystem::copy_options::overwrite_existing;
 #else
           boost::filesystem::copy_option::overwrite_if_exists;
 #endif
-        copy_file(src_path, dst_path, overwrite_existing, ignoredEc);
+        copy_file(src_path, dstPath, overwriteExisting, ignoredEc);
     }
 }
 } // namespace
@@ -121,7 +121,7 @@ bool GameClient::connect(const std::string& server, const std::string& password,
     clientconfig.isHost = host;
 
     // Verbinden
-    if(!mainPlayer.socket.Connect(server, port, use_ipv6, SETTINGS.proxy))
+    if(!mainPlayer.socket.connect(server, port, use_ipv6, SETTINGS.proxy))
     {
         LOG.write("GameClient::Connect: ERROR: Connect failed!\n");
         if(host)
@@ -142,11 +142,11 @@ bool GameClient::hostGame(const CreateServerInfo& csi, const MapDescription& map
 {
     std::string hostPw = createRandString(20);
     // Copy the map and lua to the played map folders to avoid having to transmit it from the (local) server
-    const auto playedMapPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / map.map_path.filename();
+    const auto playedMapPath = RTTRCONFIG.expandPath(s25::folders::mapsPlayed) / map.map_path.filename();
     copyFileIfPathDifferent(map.map_path, playedMapPath);
     if(map.lua_path)
     {
-        const auto playedMapLuaPath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / map.lua_path->filename();
+        const auto playedMapLuaPath = RTTRCONFIG.expandPath(s25::folders::mapsPlayed) / map.lua_path->filename();
         copyFileIfPathDifferent(*map.lua_path, playedMapLuaPath);
     }
     return GAMESERVER.start(csi, map, hostPw) && connect("localhost", hostPw, csi.type, csi.port, true, csi.ipv6);
@@ -163,11 +163,11 @@ void GameClient::run()
     SocketSet set;
 
     // erstmal auf Daten überprüfen
-    set.Clear();
+    set.clear();
 
     // zum set hinzufügen
-    set.Add(mainPlayer.socket);
-    if(set.Select(0, 0) > 0)
+    set.add(mainPlayer.socket);
+    if(set.select(0, 0) > 0)
     {
         // nachricht empfangen
         if(!mainPlayer.receiveMsgs())
@@ -178,15 +178,15 @@ void GameClient::run()
     }
 
     // nun auf Fehler prüfen
-    set.Clear();
+    set.clear();
 
     // zum set hinzufügen
-    set.Add(mainPlayer.socket);
+    set.add(mainPlayer.socket);
 
     // auf fehler prüfen
-    if(set.Select(0, 2) > 0)
+    if(set.select(0, 2) > 0)
     {
-        if(set.InSet(mainPlayer.socket))
+        if(set.inSet(mainPlayer.socket))
         {
             // Server ist weg
             LOG.write("Error on socket to server\n");
@@ -287,10 +287,10 @@ void GameClient::startGame(const unsigned random_init)
     framesinfo.gfLengthReq = framesinfo.gf_length;
 
     // Random-Generator initialisieren
-    RANDOM.Init(random_init);
+    RANDOM.init(random_init);
     AI::getRandomGenerator().seed(random_init);
 
-    if(!isReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->Load(mapinfo.filepath, SaveGameDataToLoad::All))
+    if(!isReplayModeOn() && mapinfo.savegame && !mapinfo.savegame->load(mapinfo.filepath, SaveGameDataToLoad::All))
     {
         onError(ClientError::InvalidMap);
         return;
@@ -795,7 +795,7 @@ bool GameClient::onGameMessage(const GameMessage_Chat& msg)
         const GamePlayer& player = game->world_.getPlayer(msg.player);
 
         // Besiegte dürfen nicht mehr heimlich mit Verbüdeten oder Feinden reden
-        if(player.IsDefeated() && msg.destination != ChatDestination::All)
+        if(player.isDefeated() && msg.destination != ChatDestination::All)
             return true;
 
         const auto isValidRecipient = [&msg, &player](const unsigned playerId) {
@@ -841,30 +841,30 @@ bool GameClient::onGameMessage(const GameMessage_Server_Async& msg)
         return true;
 
     // Liste mit Namen und Checksummen erzeugen
-    std::stringstream checksum_list;
+    std::stringstream checksumList;
     for(unsigned i = 0; i < msg.checksums.size(); ++i)
     {
-        checksum_list << getPlayer(i).name << ": " << msg.checksums[i];
+        checksumList << getPlayer(i).name << ": " << msg.checksums[i];
         if(i + 1 < msg.checksums.size())
-            checksum_list << ", ";
+            checksumList << ", ";
     }
 
     // Fehler ausgeben (Konsole)!
     LOG.write(_("The Game is not in sync. Checksums of some players don't match."));
-    LOG.write("\n%1%\n") % checksum_list.str();
+    LOG.write("\n%1%\n") % checksumList.str();
 
     // Messenger im Game
     if(ci)
-        ci->CI_Async(checksum_list.str());
+        ci->CI_Async(checksumList.str());
 
-    std::string fileName = s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s");
+    std::string fileName = s25util::Time::formatTime("async_%Y-%m-%d_%H-%i-%s");
     fileName += "_" + s25util::toStringClassic(getPlayerId()) + "_";
     fileName += getPlayer(getPlayerId()).name;
 
-    const bfs::path filePathSave = RTTRCONFIG.ExpandPath(s25::folders::save) / makePortableFileName(fileName + ".sav");
+    const bfs::path filePathSave = RTTRCONFIG.expandPath(s25::folders::save) / makePortableFileName(fileName + ".sav");
     const bfs::path filePathLog =
-      RTTRCONFIG.ExpandPath(s25::folders::logs) / makePortableFileName(fileName + "Player.log");
-    saveRandomLog(filePathLog, RANDOM.GetAsyncLog());
+      RTTRCONFIG.expandPath(s25::folders::logs) / makePortableFileName(fileName + "Player.log");
+    saveRandomLog(filePathLog, RANDOM.getAsyncLog());
     saveToFile(filePathSave);
     LOG.write(_("Async log saved at %1%,\ngame saved at %2%\n")) % filePathLog % filePathSave;
     return true;
@@ -923,7 +923,7 @@ bool GameClient::onGameMessage(const GameMessage_Map_Info& msg)
         return true;
     }
     const auto targetPath =
-      RTTRCONFIG.ExpandPath((msg.mt == MapType::Savegame) ? s25::folders::save : s25::folders::mapsPlayed);
+      RTTRCONFIG.expandPath((msg.mt == MapType::Savegame) ? s25::folders::save : s25::folders::mapsPlayed);
     bfs::create_directories(targetPath);
     mapinfo.filepath = targetPath / portFilename;
     mapinfo.type = msg.mt;
@@ -1080,7 +1080,7 @@ bool GameClient::createLobby()
         break;
         case MapType::Savegame:
             mapinfo.savegame = std::make_unique<Savegame>();
-            if(!mapinfo.savegame->Load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
+            if(!mapinfo.savegame->load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
                 return false;
 
             numPlayers = mapinfo.savegame->getNumPlayers();
@@ -1252,7 +1252,7 @@ bool GameClient::onGameMessage(const GameMessage_GetAsyncLog& /*msg*/)
 
     // AsyncLog an den Server senden
 
-    std::vector<RandomEntry> async_log = RANDOM.GetAsyncLog();
+    std::vector<RandomEntry> async_log = RANDOM.getAsyncLog();
 
     // stückeln...
     std::vector<RandomEntry> part;
@@ -1399,7 +1399,7 @@ void GameClient::handleAutosave()
         else
             filename = mapinfo.title + " (" + _("Auto-Save") + ").sav";
 
-        saveToFile(RTTRCONFIG.ExpandPath(s25::folders::save) / filename);
+        saveToFile(RTTRCONFIG.expandPath(s25::folders::save) / filename);
     }
 }
 
@@ -1450,12 +1450,12 @@ void GameClient::onGameStart()
 void GameClient::startReplayRecording(const unsigned random_init)
 {
     replayinfo = std::make_unique<ReplayInfo>();
-    replayinfo->filename = s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
+    replayinfo->filename = s25util::Time::formatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
 
     writePlayerInfo(replayinfo->replay);
     replayinfo->replay.ggs = game->ggs_;
 
-    if(!replayinfo->replay.startRecording(RTTRCONFIG.ExpandPath(s25::folders::replays) / replayinfo->filename, mapinfo,
+    if(!replayinfo->replay.startRecording(RTTRCONFIG.expandPath(s25::folders::replays) / replayinfo->filename, mapinfo,
                                           random_init))
     {
         LOG.write(_("Replayfile couldn't be opened. No replay will be recorded\n"));
@@ -1518,7 +1518,7 @@ bool GameClient::startReplay(const boost::filesystem::path& path)
         case MapType::OldMap:
         {
             // Richtigen Pfad zur Map erstellen
-            bfs::path mapFilePath = RTTRCONFIG.ExpandPath(s25::folders::mapsPlayed) / mapinfo.filepath.filename();
+            bfs::path mapFilePath = RTTRCONFIG.expandPath(s25::folders::mapsPlayed) / mapinfo.filepath.filename();
             mapinfo.filepath = mapFilePath;
             if(!mapinfo.mapData.decompressToFile(mapinfo.filepath))
             {
@@ -1614,7 +1614,7 @@ void GameClient::skipGF(unsigned gf, GameWorldView& gwv)
     if(gf <= getGFNumber())
         return;
 
-    unsigned start_ticks = VIDEODRIVER.getTickCount();
+    unsigned startTicks = VIDEODRIVER.getTickCount();
 
     if(!replayMode)
     {
@@ -1654,7 +1654,7 @@ void GameClient::skipGF(unsigned gf, GameWorldView& gwv)
     RTTR_Assert(skiptogf == 0u || getGFNumber() == gf);
 
     // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat
-    unsigned ticks = VIDEODRIVER.getTickCount() - start_ticks;
+    unsigned ticks = VIDEODRIVER.getTickCount() - startTicks;
     boost::format text(_("Jump finished (%1$.3g seconds)."));
     text % (ticks / 1000.0);
     systemChat(text.str());
@@ -1755,7 +1755,7 @@ unsigned GameClient::getLastReplayGF() const
 bool GameClient::addGC(gc::GameCommandPtr gc)
 {
     // Nicht in der Pause oder wenn er besiegt wurde
-    if(framesinfo.isPaused || getPlayer(getPlayerId()).IsDefeated() || isReplayModeOn())
+    if(framesinfo.isPaused || getPlayer(getPlayerId()).isDefeated() || isReplayModeOn())
         return false;
 
     gameCommands_.push_back(gc);
@@ -1788,7 +1788,7 @@ std::string GameClient::formatGFTime(const unsigned gf) const
     using minutes = std::chrono::duration<uint32_t, std::chrono::minutes::period>;
     using std::chrono::duration_cast;
 
-    seconds numSeconds = duration_cast<seconds>(gfs_to_duration(gf));
+    seconds numSeconds = duration_cast<seconds>(gfsToDuration(gf));
 
     hours numHours = duration_cast<hours>(numSeconds);
     numSeconds -= numHours;
@@ -1822,12 +1822,12 @@ std::shared_ptr<const NWFInfo> GameClient::getNWFInfo() const
 unsigned GameClient::getTournamentModeDuration() const
 {
     using namespace std::chrono;
-    if(game && rttr::enum_cast(game->ggs_.objective) >= rttr::enum_cast(GameObjective::Tournament1)
-       && static_cast<unsigned>(rttr::enum_cast(game->ggs_.objective))
-            < rttr::enum_cast(GameObjective::Tournament1) + NUM_TOURNAMENT_MODES)
+    if(game && rttr::enumCast(game->ggs_.objective) >= rttr::enumCast(GameObjective::Tournament1)
+       && static_cast<unsigned>(rttr::enumCast(game->ggs_.objective))
+            < rttr::enumCast(GameObjective::Tournament1) + NUM_TOURNAMENT_MODES)
     {
-        const auto turnamentMode = rttr::enum_cast(game->ggs_.objective) - rttr::enum_cast(GameObjective::Tournament1);
-        return duration_to_gfs(TOURNAMENT_MODES_DURATION[turnamentMode]);
+        const auto turnamentMode = rttr::enumCast(game->ggs_.objective) - rttr::enumCast(GameObjective::Tournament1);
+        return durationToGfs(TOURNAMENT_MODES_DURATION[turnamentMode]);
     } else
         return 0;
 }
@@ -1835,8 +1835,8 @@ unsigned GameClient::getTournamentModeDuration() const
 void GameClient::toggleHumanAIPlayer(const AI::Info& aiInfo)
 {
     RTTR_Assert(!isReplayModeOn());
-    auto it = helpers::find_if(game->aiPlayers_,
-                               [id = this->getPlayerId()](const auto& player) { return player.getPlayerId() == id; });
+    auto it = helpers::findIf(game->aiPlayers_,
+                              [id = this->getPlayerId()](const auto& player) { return player.getPlayerId() == id; });
     if(it != game->aiPlayers_.end())
     {
         game->aiPlayers_.erase(it);

@@ -32,22 +32,22 @@ struct Param_RoadPath
     bool boat_road;
 };
 
-bool IsPointOK_RoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction, const void* param)
+bool isPointOKRoadPath(const GameWorldBase& gwb, const MapPoint pt, const Direction, const void* param)
 {
     const auto* prp = static_cast<const Param_RoadPath*>(param);
     return makePathConditionRoad(gwb, prp->boat_road).isNodeOk(pt);
 }
 
 /// Condition for comfort road construction with a possible flag every 2 steps
-bool IsPointOK_RoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param)
+bool isPointOKRoadPathEvenStep(const GameWorldBase& gwb, const MapPoint pt, const Direction dir, const void* param)
 {
-    if(!IsPointOK_RoadPath(gwb, pt, dir, param))
+    if(!isPointOKRoadPath(gwb, pt, dir, param))
         return false;
     const auto* prp = static_cast<const Param_RoadPath*>(param);
-    return prp->boat_road || gwb.GetBQ(pt, gwb.getNode(pt).owner - 1) != BuildingQuality::Nothing;
+    return prp->boat_road || gwb.getBQ(pt, gwb.getNode(pt).owner - 1) != BuildingQuality::Nothing;
 }
 
-int GetS4LikeMineResourceRating(const Resource resource, const unsigned defaultRating)
+int getS4LikeMineResourceRating(const Resource resource, const unsigned defaultRating)
 {
     if(resource.getAmount() == 0u)
         return 0;
@@ -108,7 +108,7 @@ AISurfaceResource AIInterface::getSurfaceResource(const MapPoint pt) const
     NodalObjectType no = node.obj ? node.obj->getType() : NodalObjectType::Nothing;
     DescIdx<TerrainDesc> t1 = node.t1;
     // valid terrain?
-    if(gwb.getDescription().get(t1).Is(ETerrain::Walkable))
+    if(gwb.getDescription().get(t1).is(ETerrain::Walkable))
     {
         if(no == NodalObjectType::Tree)
         {
@@ -159,7 +159,7 @@ int AIInterface::getResourceRating(const MapPoint pt, AIResource res) const
             {
                 const auto& desc = gwb.getDescription();
                 const auto& node = gwb.getNode(pt);
-                if(desc.get(node.t1).Is(ETerrain::Walkable) || desc.get(node.t2).Is(ETerrain::Walkable))
+                if(desc.get(node.t1).is(ETerrain::Walkable) || desc.get(node.t2).is(ETerrain::Walkable))
                     return RES_RADIUS[res];
             }
             break;
@@ -171,16 +171,16 @@ int AIInterface::getResourceRating(const MapPoint pt, AIResource res) const
             const Resource subres = gwb.getNode(pt).resources;
             if(convertToNodeResource(getSubsurfaceResource(pt)) == res)
             {
-                const auto mineBuildingType = GetMineBuildingType(subres.getType());
+                const auto mineBuildingType = getMineBuildingType(subres.getType());
                 if(mineBuildingType
                    && getMineResourceBehavior(gwb.getGGS(), *mineBuildingType)
                         == MineResourceBehavior::S4LikeExhaustion)
-                    return GetS4LikeMineResourceRating(subres, RES_RADIUS[res]);
+                    return getS4LikeMineResourceRating(subres, RES_RADIUS[res]);
 
                 return RES_RADIUS[res];
             }
             if(isMineResourceWorkEverywhere(res)
-               && gwb.isOfTerrain(pt, [](const TerrainDesc& desc) { return desc.Is(ETerrain::Mineable); }))
+               && gwb.isOfTerrain(pt, [](const TerrainDesc& desc) { return desc.is(ETerrain::Mineable); }))
                 return RES_RADIUS[res];
             break;
         }
@@ -198,7 +198,7 @@ bool AIInterface::isMineResourceWorkEverywhere(const AIResource res) const
     if(!resourceType)
         return false;
 
-    const auto mineBuildingType = GetMineBuildingType(*resourceType);
+    const auto mineBuildingType = getMineBuildingType(*resourceType);
     return mineBuildingType
            && getMineResourceBehavior(gwb.getGGS(), *mineBuildingType) == MineResourceBehavior::WorkEverywhere;
 }
@@ -209,13 +209,13 @@ int AIInterface::calcResourceValue(const MapPoint pt, AIResource res, helpers::O
     const unsigned resRadius = RES_RADIUS[res];
     if(!direction) // calculate complete value from scratch (3n^2+3n+1)
     {
-        std::vector<MapPoint> pts = gwb.GetPointsInRadiusWithCenter(pt, resRadius);
+        std::vector<MapPoint> pts = gwb.getPointsInRadiusWithCenter(pt, resRadius);
         return std::accumulate(pts.begin(), pts.end(), 0, [this, res](int lhs, const auto& curPt) {
             return lhs + this->getResourceRating(curPt, res);
         });
     } else // calculate different nodes only (4n+2 ?anyways much faster)
     {
-        const auto iDirection = rttr::enum_cast(*direction);
+        const auto iDirection = rttr::enumCast(*direction);
         int returnVal = lastval;
         // add new points
         // first: go radius steps towards direction-1
@@ -266,8 +266,8 @@ bool AIInterface::findFreePathForNewRoad(MapPoint start, MapPoint target, std::v
 {
     bool boat = false;
     return gwb.getFreePathFinder().findPathAlternatingConditions(start, target, false, 100, route, length, nullptr,
-                                                                 IsPointOK_RoadPath, IsPointOK_RoadPathEvenStep,
-                                                                 nullptr, (void*)&boat);
+                                                                 isPointOKRoadPath, isPointOKRoadPathEvenStep, nullptr,
+                                                                 (void*)&boat);
 }
 
 bool AIInterface::calcBQSumDifference(const MapPoint pt1, const MapPoint pt2) const
@@ -277,7 +277,7 @@ bool AIInterface::calcBQSumDifference(const MapPoint pt1, const MapPoint pt2) co
 
 BuildingQuality AIInterface::getBuildingQuality(const MapPoint pt) const
 {
-    return gwb.GetBQ(pt, playerID_);
+    return gwb.getBQ(pt, playerID_);
 }
 
 BuildingQuality AIInterface::getBuildingQualityAnyOwner(const MapPoint pt) const

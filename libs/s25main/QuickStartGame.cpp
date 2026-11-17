@@ -32,18 +32,18 @@ public:
     }
 };
 
-std::vector<AI::Info> ParseAIOptions(const std::vector<std::string>& aiOptions)
+std::vector<AI::Info> parseAIOptions(const std::vector<std::string>& aiOptions)
 {
     std::vector<AI::Info> aiInfos;
 
     for(const std::string& aiOption : aiOptions)
     {
-        const auto aiOption_lower = s25util::toLower(aiOption);
+        const auto aiOptionLower = s25util::toLower(aiOption);
         AI::Type type = AI::Type::Dummy;
-        if(aiOption_lower == "aijh")
+        if(aiOptionLower == "aijh")
             type = AI::Type::Default;
-        else if(aiOption_lower != "dummy")
-            throw std::invalid_argument("Invalid AI player name: " + aiOption_lower);
+        else if(aiOptionLower != "dummy")
+            throw std::invalid_argument("Invalid AI player name: " + aiOptionLower);
 
         aiInfos.push_back({type, AI::Level::Hard});
     }
@@ -72,7 +72,7 @@ bool quickStartGame(const boost::filesystem::path& mapOrReplayPath, const std::v
     std::vector<AI::Info> aiInfos;
     try
     {
-        aiInfos = ParseAIOptions(ais);
+        aiInfos = parseAIOptions(ais);
     } catch(const std::invalid_argument& e)
     {
         LOG.write(e.what());

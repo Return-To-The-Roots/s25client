@@ -125,8 +125,8 @@ void nobMilitary::DestroyBuilding()
     troops.clear();
 
     // Inform far-away capturers
-    for(auto* far_away_capturer : far_away_capturers)
-        far_away_capturer->attackedGoalDestroyed();
+    for(auto* farAwayCapturer : far_away_capturers)
+        farAwayCapturer->attackedGoalDestroyed();
     far_away_capturers.clear();
 
     // Events ggf. entfernen
@@ -150,13 +150,13 @@ void nobMilitary::DestroyBuilding()
 void nobMilitary::serialize(SerializedGameData& sgd) const
 {
     nobBaseMilitary::serialize(sgd);
-    sgd.PushBool(new_built);
-    sgd.PushUnsignedChar(numCoins);
-    sgd.PushBool(coinsDisabled);
+    sgd.pushBool(new_built);
+    sgd.pushUnsignedChar(numCoins);
+    sgd.pushBool(coinsDisabled);
     sgd.pushEnum<uint8_t>(frontier_distance);
-    sgd.PushUnsignedChar(size);
-    sgd.PushBool(capturing);
-    sgd.PushUnsignedInt(capturing_soldiers);
+    sgd.pushUnsignedChar(size);
+    sgd.pushBool(capturing);
+    sgd.pushUnsignedInt(capturing_soldiers);
     sgd.pushEvent(gold_order_event);
     sgd.pushEvent(upgrade_event);
 
@@ -166,17 +166,17 @@ void nobMilitary::serialize(SerializedGameData& sgd) const
     sgd.pushObjectContainer(far_away_capturers, true);
     helpers::pushContainer(sgd, troop_limits);
 
-    sgd.PushUnsignedChar(numArmor);
-    sgd.PushBool(armorAllowed);
+    sgd.pushUnsignedChar(numArmor);
+    sgd.pushBool(armorAllowed);
     sgd.pushEvent(armor_order_event);
     sgd.pushEvent(armor_upgrade_event);
     sgd.pushObjectContainer(ordered_armor, true);
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
-    : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()),
-      coinsDisabled(sgd.PopBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.pop<FrontierDistance>()),
-      size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()),
+    : nobBaseMilitary(sgd, obj_id), new_built(sgd.popBool()), numCoins(sgd.popUnsignedChar()),
+      coinsDisabled(sgd.popBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.pop<FrontierDistance>()),
+      size(sgd.popUnsignedChar()), capturing(sgd.popBool()), capturing_soldiers(sgd.popUnsignedInt()),
       gold_order_event(sgd.popEvent()), upgrade_event(sgd.popEvent()), is_regulating_troops(false)
 {
     sgd.popObjectContainer(ordered_troops, GO_Type::NofPassivesoldier);
@@ -191,8 +191,8 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
 
     if(sgd.getGameDataVersion() >= 12)
     {
-        numArmor = sgd.PopUnsignedChar();
-        armorAllowedVirtual = armorAllowed = sgd.PopBool();
+        numArmor = sgd.popUnsignedChar();
+        armorAllowedVirtual = armorAllowed = sgd.popBool();
         armor_order_event = sgd.popEvent();
         armor_upgrade_event = sgd.popEvent();
         sgd.popObjectContainer(ordered_armor, GO_Type::Ware);
@@ -247,7 +247,7 @@ void nobMilitary::draw(DrawPoint drawPt)
     {
         if(frontier_distance_tmp == FrontierDistance::Near)
             frontier_distance_tmp = FrontierDistance::Harbor;
-        bitmap = LOADER.getMapTexture(3150 + rttr::enum_cast(frontier_distance_tmp) * 4 + animationFrame);
+        bitmap = LOADER.getMapTexture(3150 + rttr::enumCast(frontier_distance_tmp) * 4 + animationFrame);
     }
     if(bitmap)
         bitmap->drawFull(drawPt + BORDER_FLAG_OFFSET[nation][size]);
@@ -333,19 +333,19 @@ void nobMilitary::handleEvent(const unsigned id)
                 // Von hinten durchgehen
                 // Wenn der nachfolgende (schwächere) Soldat einen niedrigeren Rang hat,
                 // wird dieser ebenfalls befördert usw.!
-                uint8_t last_rank = maxRank;
+                uint8_t lastRank = maxRank;
                 for(auto it = troops.rbegin(); it != troops.rend();)
                 {
                     auto& soldier = *it;
                     // Es wurde schon einer befördert, dieser Soldat muss nun einen niedrigeren Rang
                     // als der letzte haben, damit er auch noch befördert werden kann
-                    if(soldier->getRank() < last_rank)
+                    if(soldier->getRank() < lastRank)
                     {
                         // Rang merken
-                        last_rank = soldier->getRank();
+                        lastRank = soldier->getRank();
                         // Remove from sorted container as changing it breaks sorting
                         soldiersToUpgrade.push_back(std::move(soldier));
-                        it = helpers::erase_reverse(troops, it);
+                        it = helpers::eraseReverse(troops, it);
                     } else
                         ++it;
                 }
@@ -613,7 +613,7 @@ void nobMilitary::regulateTroops()
                 if(canReturnHome(**it))
                 {
                     notNeededSoldiers.push_back(*it);
-                    it = helpers::erase_reverse(ordered_troops, it);
+                    it = helpers::eraseReverse(ordered_troops, it);
                     ++diff;
                 } else
                 {
@@ -655,7 +655,7 @@ void nobMilitary::regulateTroops()
                 {
                     (*it)->leaveBuilding();
                     addLeavingFigure(std::move(*it));
-                    it = helpers::erase_reverse(troops, it);
+                    it = helpers::eraseReverse(troops, it);
                     ++diff;
                 } else
                 {
@@ -697,12 +697,12 @@ void nobMilitary::regulateTroops()
 unsigned nobMilitary::calcRequiredNumTroops() const
 {
     return calcRequiredNumTroops(frontier_distance,
-                                 world->getPlayer(player).getMilitarySetting(4 + rttr::enum_cast(frontier_distance)));
+                                 world->getPlayer(player).getMilitarySetting(4 + rttr::enumCast(frontier_distance)));
 }
 
 unsigned nobMilitary::calcRequiredNumTroops(FrontierDistance assumedFrontierDistance, unsigned settingValue) const
 {
-    return (getMaxTroopsCt() - 1) * settingValue / MILITARY_SETTINGS_SCALE[4 + rttr::enum_cast(assumedFrontierDistance)]
+    return (getMaxTroopsCt() - 1) * settingValue / MILITARY_SETTINGS_SCALE[4 + rttr::enumCast(assumedFrontierDistance)]
            + 1;
 }
 
@@ -804,14 +804,14 @@ void nobMilitary::gotWorker(Job /*job*/, noFigure& worker)
 void nobMilitary::cancelOrders()
 {
     // Soldaten zurückschicken
-    for(auto* ordered_troop : ordered_troops)
-        ordered_troop->notNeeded();
+    for(auto* orderedTroop : ordered_troops)
+        orderedTroop->notNeeded();
 
     ordered_troops.clear();
 
     // Goldmünzen zurückschicken
-    for(auto* ordered_coin : ordered_coins)
-        wareNotNeeded(ordered_coin);
+    for(auto* orderedCoin : ordered_coins)
+        wareNotNeeded(orderedCoin);
 
     ordered_coins.clear();
 
@@ -901,13 +901,13 @@ void nobMilitary::soldierLost(nofSoldier* soldier)
     regulateTroops();
 }
 
-void nobMilitary::sendAttacker(nofPassiveSoldier*& passive_soldier, nobBaseMilitary& goal,
+void nobMilitary::sendAttacker(nofPassiveSoldier*& passiveSoldier, nobBaseMilitary& goal,
                                const nobHarborBuilding* harbor)
 {
-    auto attacker = std::make_unique<nofAttacker>(*passive_soldier, goal, harbor);
-    passive_soldier->leftBuilding();
-    helpers::extractPtr(troops, passive_soldier)->destroy();
-    passive_soldier = nullptr;
+    auto attacker = std::make_unique<nofAttacker>(*passiveSoldier, goal, harbor);
+    passiveSoldier->leftBuilding();
+    helpers::extractPtr(troops, passiveSoldier)->destroy();
+    passiveSoldier = nullptr;
     troops_on_mission.push_back(attacker.get());
     addLeavingFigure(std::move(attacker));
 }
@@ -920,19 +920,19 @@ nofPassiveSoldier* nobMilitary::chooseSoldier()
     std::array<nofPassiveSoldier*, 5> candidates = {nullptr, nullptr, nullptr, nullptr, nullptr}; // candidates per rank
 
     // how many ranks
-    unsigned rank_count = 0;
+    unsigned rankCount = 0;
 
     for(auto& troop : troops)
     {
         if(!candidates[troop->getRank()])
         {
-            ++rank_count;
+            ++rankCount;
             candidates[troop->getRank()] = troop.get();
         }
     }
 
     // ID ausrechnen
-    unsigned rank = ((rank_count - 1) * world->getPlayer(player).getMilitarySetting(1)) / MILITARY_SETTINGS_SCALE[1];
+    unsigned rank = ((rankCount - 1) * world->getPlayer(player).getMilitarySetting(1)) / MILITARY_SETTINGS_SCALE[1];
 
     unsigned r = 0;
 
@@ -1053,8 +1053,8 @@ unsigned nobMilitary::getSoldiersStrength() const
 bool nobMilitary::hasMaxRankSoldier() const
 {
     const unsigned maxRank = world->getGGS().getMaxMilitaryRank();
-    return helpers::contains_if(helpers::reverse(troops),
-                                [maxRank](const auto& it) { return it->getRank() >= maxRank; });
+    return helpers::containsIf(helpers::reverse(troops),
+                               [maxRank](const auto& it) { return it->getRank() >= maxRank; });
 }
 
 std::unique_ptr<nofDefender> nobMilitary::provideDefender(nofAttacker& attacker)
@@ -1209,8 +1209,8 @@ void nobMilitary::needOccupyingTroops()
     // Check if we need more soldiers from the attacking soldiers
     // Choose the closest ones first to avoid having them walk a long way
 
-    nofAttacker* best_attacker = nullptr;
-    unsigned best_radius = std::numeric_limits<unsigned>::max();
+    nofAttacker* bestAttacker = nullptr;
+    unsigned bestRadius = std::numeric_limits<unsigned>::max();
 
     unsigned needed_soldiers = calcRequiredNumTroops();
     unsigned currentSoldiers = troops.size() + capturing_soldiers + troops_on_mission.size();
@@ -1224,23 +1224,23 @@ void nobMilitary::needOccupyingTroops()
             if(!aggressor->isAttackerReady() || aggressor->getPlayer() != player)
                 continue;
             // Näher als der bisher beste?
-            if(aggressor->getRadius() >= best_radius)
+            if(aggressor->getRadius() >= bestRadius)
                 continue;
             // Und kommt er überhaupt zur Flagge (könnte ja in der 2. Reihe stehen, sodass die vor ihm ihn den Weg
             // versperren)?
             if(world->findHumanPath(aggressor->getPos(), world->getNeighbour(pos, Direction::SouthEast), 10, false))
             {
                 // Dann is das der bisher beste
-                best_attacker = aggressor;
-                best_radius = best_attacker->getRadius();
+                bestAttacker = aggressor;
+                bestRadius = bestAttacker->getRadius();
             }
         }
 
         // Einen gefunden?
-        if(best_attacker)
+        if(bestAttacker)
         {
             // Dann soll der hingehen
-            best_attacker->captureBuilding();
+            bestAttacker->captureBuilding();
             ++capturing_soldiers;
             // und raus hier
             return;
@@ -1380,7 +1380,7 @@ unsigned nobMilitary::calcArmorPoints() const
     points -= (numArmor + ordered_armor.size()) * 30;
 
     auto numberOfUpgradeSoldier =
-      helpers::count_if(troops, [](OwnedSortedTroops::value_type const& troop) { return !troop->hasArmor(); });
+      helpers::countIf(troops, [](OwnedSortedTroops::value_type const& troop) { return !troop->hasArmor(); });
 
     points += static_cast<int>(numberOfUpgradeSoldier * 20);
 
@@ -1470,7 +1470,7 @@ void nobMilitary::prepareUpgrading()
         return;
 
     // Noch Soldaten, die befördert werden können?
-    bool soldiers_available = false;
+    bool soldiersAvailable = false;
 
     const unsigned maxRank = world->getGGS().getMaxMilitaryRank();
     for(auto& troop : troops)
@@ -1478,12 +1478,12 @@ void nobMilitary::prepareUpgrading()
         if(troop->getRank() < maxRank)
         {
             // es wurde ein Soldat gefunden, der befördert werden kann
-            soldiers_available = true;
+            soldiersAvailable = true;
             break;
         }
     }
 
-    if(!soldiers_available)
+    if(!soldiersAvailable)
         return;
 
     // Alles da --> Beförderungsevent anmelden
@@ -1512,13 +1512,13 @@ void nobMilitary::hitOfCatapultStone()
     if(!troops.empty())
     {
         std::unique_ptr<nofPassiveSoldier> soldier = std::move(*troops.begin());
-        helpers::pop_front(troops);
+        helpers::popFront(troops);
 
         // 30 percent chance to survive if the soldier has an armor
         const bool survived = soldier->hasArmor() && (RANDOM_RAND(100) < 30);
         if(!survived)
         {
-            // Shortcut for Die(): No need to remove from world as it is inside and we can delete it right away
+            // Shortcut for die(): No need to remove from world as it is inside and we can delete it right away
             soldier->removeFromInventory();
             soldier->leftBuilding();
             soldier->destroy();
@@ -1624,21 +1624,21 @@ void nobMilitary::callNextFarAwayCapturer(nofAttacker& attacker)
     const MapPoint flagPos = getFlagPos();
     unsigned minLength = std::numeric_limits<unsigned>::max();
     nofAttacker* bestAttacker = nullptr;
-    for(auto* far_away_capturer : far_away_capturers)
+    for(auto* farAwayCapturer : far_away_capturers)
     {
         // Skip us and possible capturers at the building
-        if(far_away_capturer == &attacker || far_away_capturer->getPos() == pos)
+        if(farAwayCapturer == &attacker || farAwayCapturer->getPos() == pos)
             continue;
-        if(!far_away_capturer->isAttackerReady())
+        if(!farAwayCapturer->isAttackerReady())
             continue;
-        RTTR_Assert(far_away_capturer->getPos() != flagPos); // Impossible. This should be the current attacker
+        RTTR_Assert(farAwayCapturer->getPos() != flagPos); // Impossible. This should be the current attacker
         unsigned length;
-        if(!world->findHumanPath(far_away_capturer->getPos(), flagPos, MAX_FAR_AWAY_CAPTURING_DISTANCE, false, &length))
+        if(!world->findHumanPath(farAwayCapturer->getPos(), flagPos, MAX_FAR_AWAY_CAPTURING_DISTANCE, false, &length))
             continue;
         if(length < minLength)
         {
             minLength = length;
-            bestAttacker = far_away_capturer;
+            bestAttacker = farAwayCapturer;
         }
     }
     if(bestAttacker)

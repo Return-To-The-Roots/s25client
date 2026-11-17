@@ -57,17 +57,17 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(EmptyContainsNoValue, T, EnumsToTest)
 {
     helpers::OptionalEnum<T> defConstruct;
     BOOST_TEST(!defConstruct);
-    BOOST_TEST(!defConstruct.has_value());
+    BOOST_TEST(!defConstruct.hasValue());
     BOOST_CHECK_THROW(defConstruct.value(), std::bad_optional_access);
-    BOOST_TEST(defConstruct.value_or(T::Value1) == T::Value1);
-    BOOST_TEST(defConstruct.value_or(T::Value2) == T::Value2);
+    BOOST_TEST(defConstruct.valueOr(T::Value1) == T::Value1);
+    BOOST_TEST(defConstruct.valueOr(T::Value2) == T::Value2);
 
     helpers::OptionalEnum<T> noneConstruct(std::nullopt);
     BOOST_TEST(!noneConstruct);
-    BOOST_TEST(!noneConstruct.has_value());
+    BOOST_TEST(!noneConstruct.hasValue());
     BOOST_CHECK_THROW(noneConstruct.value(), std::bad_optional_access);
-    BOOST_TEST(noneConstruct.value_or(T::Value1) == T::Value1);
-    BOOST_TEST(noneConstruct.value_or(T::Value2) == T::Value2);
+    BOOST_TEST(noneConstruct.valueOr(T::Value1) == T::Value1);
+    BOOST_TEST(noneConstruct.valueOr(T::Value2) == T::Value2);
 }
 
 BOOST_AUTO_TEST_CASE_TEMPLATE(ContainsValue, T, EnumsToTest)
@@ -76,16 +76,16 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(ContainsValue, T, EnumsToTest)
     {
         helpers::OptionalEnum<T> construct(val);
         BOOST_TEST(construct);
-        BOOST_TEST(construct.has_value());
+        BOOST_TEST(construct.hasValue());
         BOOST_TEST(construct.value() == val);
-        BOOST_TEST(construct.value_or(T::Value1) == val);
+        BOOST_TEST(construct.valueOr(T::Value1) == val);
 
         helpers::OptionalEnum<T> assign;
         assign = val;
         BOOST_TEST(assign);
-        BOOST_TEST(assign.has_value());
+        BOOST_TEST(assign.hasValue());
         BOOST_TEST(assign.value() == val);
-        BOOST_TEST(assign.value_or(T::Value1) == val);
+        BOOST_TEST(assign.valueOr(T::Value1) == val);
     }
 }
 
@@ -94,11 +94,11 @@ BOOST_AUTO_TEST_CASE_TEMPLATE(NoValueAfterReset, T, EnumsToTest)
     for(const auto val : {T::Value1, T::Value2})
     {
         helpers::OptionalEnum<T> optVal = val; // Deliberately test = construct
-        BOOST_TEST(optVal.has_value());
+        BOOST_TEST(optVal.hasValue());
         BOOST_TEST(optVal.value() == val);
 
         optVal.reset();
-        BOOST_TEST(!optVal.has_value());
+        BOOST_TEST(!optVal.hasValue());
     }
 }
 

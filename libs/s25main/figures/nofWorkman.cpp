@@ -50,7 +50,7 @@ void nofWorkman::handleStateWaiting2()
 {
     current_ev = nullptr;
     // Ware erzeugen... (noch nicht "richtig"!, sondern nur viruell erstmal)
-    if(!(ware = produceWare()).has_value())
+    if(!(ware = produceWare()).hasValue())
     {
         // Soll keine erzeugt werden --> wieder anfangen zu arbeiten
         tryToWork();
@@ -97,7 +97,7 @@ MapPoint nofWorkman::findPointWithResource(ResourceType type) const
 {
     // Alle Punkte durchgehen, bis man einen findet, wo man graben kann
     const std::vector<MapPoint> pts =
-      world->GetMatchingPointsInRadius<1>(pos, MINER_RADIUS, NodeHasResource(*world, type), true);
+      world->getMatchingPointsInRadius<1>(pos, MINER_RADIUS, NodeHasResource(*world, type), true);
     if(!pts.empty())
         return pts.front();
 

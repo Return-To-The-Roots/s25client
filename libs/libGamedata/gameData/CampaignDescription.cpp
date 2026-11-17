@@ -30,7 +30,7 @@ CampaignDescription::CampaignDescription(const boost::filesystem::path& campaign
                         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
                     };
                     const auto isNonAlNum = [isAlNum](const char c) { return !isAlNum(c); };
-                    lua::assertTrue(!helpers::contains_if(parentPath.string(), isNonAlNum),
+                    lua::assertTrue(!helpers::containsIf(parentPath.string(), isNonAlNum),
                                     helpers::format(_("Invalid path '%1%': Must be alpha-numeric"), path));
                     return (campaignPath / tmpPath).string();
                 }
@@ -62,9 +62,9 @@ CampaignDescription::CampaignDescription(const boost::filesystem::path& campaign
         throw std::invalid_argument(helpers::format(_("Invalid difficulty: %1%"), difficulty));
 
     const auto mapFolder = luaData.getOrDefault("mapFolder", std::string{});
-    mapFolder_ = RTTRCONFIG.ExpandPath(resolveCampaignPath(mapFolder, true));
+    mapFolder_ = RTTRCONFIG.expandPath(resolveCampaignPath(mapFolder, true));
     // Default lua folder to map folder, i.e. LUA files are side by side with the maps
-    luaFolder_ = RTTRCONFIG.ExpandPath(resolveCampaignPath(luaData.getOrDefault("luaFolder", mapFolder), true));
+    luaFolder_ = RTTRCONFIG.expandPath(resolveCampaignPath(luaData.getOrDefault("luaFolder", mapFolder), true));
     mapNames_ = luaData.getOrDefault("maps", std::vector<std::string>());
     selectionMapData = luaData.getOptional<SelectionMapInputData>("selectionMap");
     if(selectionMapData)

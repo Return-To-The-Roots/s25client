@@ -38,7 +38,7 @@ void GameClient::executeNWF()
     // First for all potential AIs as we need to combine the AI cmds of the local player with our own ones
     for(AIPlayer& ai : game->aiPlayers_)
     {
-        const std::vector<gc::GameCommandPtr> aiGCs = ai.FetchGameCommands();
+        const std::vector<gc::GameCommandPtr> aiGCs = ai.fetchGameCommands();
         /// Cmds from own AI get added to our gcs
         if(ai.getPlayerId() == getPlayerId())
             gameCommands_.insert(gameCommands_.end(), aiGCs.begin(), aiGCs.end());

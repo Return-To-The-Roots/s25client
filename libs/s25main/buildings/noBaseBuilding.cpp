@@ -156,13 +156,13 @@ void noBaseBuilding::serialize(SerializedGameData& sgd) const
 
     sgd.pushEnum<uint8_t>(bldType_);
     sgd.pushEnum<uint8_t>(nation);
-    sgd.PushSignedInt(door_point_x);
-    sgd.PushSignedInt(door_point_y);
+    sgd.pushSignedInt(door_point_x);
+    sgd.pushSignedInt(door_point_y);
 }
 
 noBaseBuilding::noBaseBuilding(SerializedGameData& sgd, const unsigned obj_id)
     : noRoadNode(sgd, obj_id), bldType_(sgd.pop<BuildingType>()), nation(sgd.pop<Nation>()),
-      door_point_x(sgd.PopSignedInt()), door_point_y(sgd.PopSignedInt())
+      door_point_x(sgd.popSignedInt()), door_point_y(sgd.popSignedInt())
 {}
 
 int noBaseBuilding::getDoorPointX()

@@ -25,14 +25,14 @@ public:
     /// Gibt ID des aktuell gewählten Tabs zurück
     unsigned getCurrentTab() const { return tabs[tab_selection]; }
     /// Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen werden können
-    ctrlGroup* getGroup(unsigned tab_id);
+    ctrlGroup* getGroup(unsigned tabId);
     /// Gibt aktuell ausgewählte Tab-Gruppe zürck
     ctrlGroup* getCurrentGroup() { return getGroup(getCurrentTab()); }
 
     void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void msgGroupEditEnter(unsigned group_id, unsigned ctrl_id) override;
     void msgGroupEditChange(unsigned group_id, unsigned ctrl_id) override;
-    void msgGroupTabChange(unsigned group_id, unsigned ctrl_id, unsigned short tab_id) override;
+    void msgGroupTabChange(unsigned group_id, unsigned ctrl_id, unsigned short tabId) override;
     void msgGroupListSelectItem(unsigned group_id, unsigned ctrl_id, int selection) override;
     void msgGroupComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
     void msgGroupCheckboxChange(unsigned group_id, unsigned ctrl_id, bool checked) override;

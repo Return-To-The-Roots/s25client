@@ -31,7 +31,7 @@ nofWarehouseWorker::~nofWarehouseWorker() = default;
 
 void nofWarehouseWorker::destroy()
 {
-    RTTR_Assert(!carried_ware); // TODO Check if this holds true and remove the LooseWare below
+    RTTR_Assert(!carried_ware); // TODO Check if this holds true and remove the looseWare below
     looseWare();
 }
 
@@ -40,13 +40,13 @@ void nofWarehouseWorker::serialize(SerializedGameData& sgd) const
     noFigure::serialize(sgd);
 
     sgd.pushObject(carried_ware, true);
-    sgd.PushBool(shouldBringWareIn);
-    sgd.PushBool(fat);
+    sgd.pushBool(shouldBringWareIn);
+    sgd.pushBool(fat);
 }
 
 nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), carried_ware(sgd.popObject<Ware>(GO_Type::Ware)), shouldBringWareIn(sgd.PopBool()),
-      fat(sgd.PopBool())
+    : noFigure(sgd, obj_id), carried_ware(sgd.popObject<Ware>(GO_Type::Ware)), shouldBringWareIn(sgd.popBool()),
+      fat(sgd.popBool())
 {}
 
 void nofWarehouseWorker::draw(DrawPoint drawPt)
@@ -132,7 +132,7 @@ void nofWarehouseWorker::walked()
     }
 
     // Remove myself
-    getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+    getEvMgr().addToKillList(world->removeFigure(pos, *this));
     world->getPlayer(player).decreaseInventoryJob(Job::Helper, 1);
 }
 

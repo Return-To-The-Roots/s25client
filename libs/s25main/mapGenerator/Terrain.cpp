@@ -15,7 +15,7 @@ void restructure(Map& map, const std::function<bool(const MapPoint&)>& predicate
 {
     auto& z = map.z;
     const MapExtent& size = map.size;
-    const auto distances = DistancesTo(size, predicate);
+    const auto distances = distancesTo(size, predicate);
     const auto maximum = *std::max_element(distances.begin(), distances.end());
 
     RTTR_FOREACH_PT(MapPoint, size)
@@ -46,7 +46,7 @@ void resetSeaLevel(Map& map, RandomUtility& rnd, unsigned seaLevel)
     }
 
     const auto isCoast = [&z, &map](const MapPoint& pt) { return z[pt] == map.height.minimum; };
-    auto coastDistance = DistancesTo(map.size, isCoast);
+    auto coastDistance = distancesTo(map.size, isCoast);
     auto minimum = static_cast<unsigned>(map.height.minimum);
     auto maximum = *std::max_element(coastDistance.begin(), coastDistance.end());
 

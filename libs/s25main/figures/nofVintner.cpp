@@ -24,23 +24,23 @@ void nofVintner::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{13, -22}, {19, 6}, {-14, 16}, {4, -20}, {-19, 12}}};
 
-    unsigned now_id = GAMECLIENT.interpolate(136, current_ev);
+    unsigned nowId = GAMECLIENT.interpolate(136, current_ev);
 
-    if(now_id < 91)
+    if(nowId < 91)
     {
-        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::VINTNER_WORK_WINDOW] + (now_id) % 8)
+        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::VINTNER_WORK_WINDOW] + (nowId) % 8)
           ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
                      world->getPlayer(workplace->getPlayer()).color);
 
         // Play rowing boat sound
-        if(now_id % 8 == 3)
+        if(nowId % 8 == 3)
         {
-            world->getSoundMgr().playNOSound(81, *this, now_id);
+            world->getSoundMgr().playNOSound(81, *this, nowId);
             was_sounding = true;
         }
     }
 
-    last_id = now_id;
+    last_id = nowId;
 }
 
 #ifdef _MSC_VER

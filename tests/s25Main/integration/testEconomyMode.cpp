@@ -53,7 +53,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyMode3Players, EconModeFixture)
     game->start(false);
     BOOST_TEST(world.getEconHandler()); // Just test that we have any
 
-    constexpr auto amountsToAdd = helpers::make_array(63, 100, 85);
+    constexpr auto amountsToAdd = helpers::makeArray(63, 100, 85);
 
     EconomyModeHandler econHandler(4);
     const auto& goodsToCollect = econHandler.getGoodTypesToCollect();
@@ -126,7 +126,7 @@ BOOST_FIXTURE_TEST_CASE(EconomyModeSerialization, EconModeFixture)
     TmpFile tmpFile;
     BOOST_TEST_REQUIRE(save.save(tmpFile.filePath, "MapTitle"));
     Savegame loadSave;
-    BOOST_TEST_REQUIRE(loadSave.Load(tmpFile.filePath, SaveGameDataToLoad::All));
+    BOOST_TEST_REQUIRE(loadSave.load(tmpFile.filePath, SaveGameDataToLoad::All));
     BOOST_TEST_REQUIRE(loadSave.getNumPlayers() == 3u);
     std::vector<PlayerInfo> players;
     for(unsigned j = 0; j < 3; j++)

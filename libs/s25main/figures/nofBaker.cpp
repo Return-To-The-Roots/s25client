@@ -41,76 +41,76 @@ void nofBaker::drawWorking(DrawPoint drawPt)
        {Direction::SouthEast, Direction::SouthWest, Direction::West, Direction::East, Direction::NorthEast,
         Direction::NorthWest}}};
 
-    unsigned max_id = 120;
-    unsigned now_id = GAMECLIENT.interpolate(max_id, current_ev);
+    unsigned maxId = 120;
+    unsigned nowId = GAMECLIENT.interpolate(maxId, current_ev);
     const Nation wpNation = workplace->getNation();
     unsigned plColor = world->getPlayer(player).color;
 
     // position zum rauslaufen berechnen
-    DrawPoint walkOutPos = drawPt + walkOffsets[wpNation][now_id % 8];
+    DrawPoint walkOutPos = drawPt + walkOffsets[wpNation][nowId % 8];
     // position zum reinlaufen berechnen
-    DrawPoint walkInPos = drawPt + walkOffsets[wpNation][7 - (now_id % 8)];
+    DrawPoint walkInPos = drawPt + walkOffsets[wpNation][7 - (nowId % 8)];
 
-    if(now_id < 2) // hinauslaufen teil 1
+    if(nowId < 2) // hinauslaufen teil 1
     {
         LOADER.building_cache[wpNation][BuildingType::Bakery].door.drawFull(drawPt);
-        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][0], now_id)
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][0], nowId)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     }
-    if((now_id >= 2) && (now_id < 4)) // hinauslaufen teil 2
+    if((nowId >= 2) && (nowId < 4)) // hinauslaufen teil 2
     {
         LOADER.building_cache[wpNation][BuildingType::Bakery].door.drawFull(drawPt);
-        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][1], now_id)
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][1], nowId)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     }
-    if((now_id >= 4) && (now_id < 8)) // hinauslaufen teil 3
+    if((nowId >= 4) && (nowId < 8)) // hinauslaufen teil 3
     {
-        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][2], now_id)
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][2], nowId)
           .draw(walkOutPos, COLOR_WHITE, plColor);
     }
-    if((now_id >= 8) && (now_id < 16)) // brot in den ofen schieben
+    if((nowId >= 8) && (nowId < 16)) // brot in den ofen schieben
     {
-        LOADER.getPlayerImage("rom_bobs", 182 + (now_id - 8))
+        LOADER.getPlayerImage("rom_bobs", 182 + (nowId - 8))
           ->drawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
 
         // "Brot-rein/raus"-Sound
-        if((now_id % 8) == 4)
+        if((nowId % 8) == 4)
         {
-            world->getSoundMgr().playNOSound(68, *this, now_id);
+            world->getSoundMgr().playNOSound(68, *this, nowId);
             was_sounding = true;
         }
     }
-    if((now_id >= 16) && (now_id < max_id - 16)) // warten
+    if((nowId >= 16) && (nowId < maxId - 16)) // warten
     {
         LOADER.getPlayerImage("rom_bobs", 189)->drawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
     }
-    if((now_id >= max_id - 16) && (now_id < max_id - 8)) // brot aus dem ofen holen
+    if((nowId >= maxId - 16) && (nowId < maxId - 8)) // brot aus dem ofen holen
     {
-        LOADER.getPlayerImage("rom_bobs", 182 + 7 - (now_id % 8))
+        LOADER.getPlayerImage("rom_bobs", 182 + 7 - (nowId % 8))
           ->drawFull(drawPt + workOffset[wpNation], COLOR_WHITE, plColor);
 
         // "Brot-rein/raus"-Sound
-        if((now_id % 8) == 4)
+        if((nowId % 8) == 4)
         {
-            world->getSoundMgr().playNOSound(68, *this, now_id);
+            world->getSoundMgr().playNOSound(68, *this, nowId);
             was_sounding = true;
         }
     }
-    if((now_id >= max_id - 8) && (now_id < max_id - 4)) // reingehn teil 1
+    if((nowId >= maxId - 8) && (nowId < maxId - 4)) // reingehn teil 1
     {
-        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][3], now_id % 8)
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][3], nowId % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     }
-    if((now_id >= max_id - 4) && (now_id < max_id - 2)) // reingehn teil 1
+    if((nowId >= maxId - 4) && (nowId < maxId - 2)) // reingehn teil 1
     {
         LOADER.building_cache[wpNation][BuildingType::Bakery].door.drawFull(drawPt);
-        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][4], now_id % 8)
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][4], nowId % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     }
-    if((now_id >= max_id - 2) && (now_id < max_id)) // reingehn teil 2
+    if((nowId >= maxId - 2) && (nowId < maxId)) // reingehn teil 2
     {
         LOADER.building_cache[wpNation][BuildingType::Bakery].door.drawFull(drawPt);
-        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][5], now_id % 8)
+        LOADER.getBobSprite(wpNation, Job::Baker, walkdirection[wpNation][5], nowId % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     }
 }

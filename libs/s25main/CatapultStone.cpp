@@ -27,7 +27,7 @@ CatapultStone::CatapultStone(const MapPoint dest_building, const MapPoint dest_m
 
 CatapultStone::CatapultStone(SerializedGameData& sgd, const unsigned obj_id)
     : GameObject(sgd, obj_id), dest_building(sgd.popMapPoint()), dest_map(sgd.popMapPoint()),
-      startPos(helpers::popPoint<Position>(sgd)), destPos(helpers::popPoint<Position>(sgd)), explode(sgd.PopBool()),
+      startPos(helpers::popPoint<Position>(sgd)), destPos(helpers::popPoint<Position>(sgd)), explode(sgd.popBool()),
       event(sgd.popEvent())
 {}
 
@@ -38,7 +38,7 @@ void CatapultStone::serialize(SerializedGameData& sgd) const
     helpers::pushPoint(sgd, dest_map);
     helpers::pushPoint(sgd, startPos);
     helpers::pushPoint(sgd, destPos);
-    sgd.PushBool(explode);
+    sgd.pushBool(explode);
     sgd.pushEvent(event);
 }
 
@@ -73,10 +73,10 @@ void CatapultStone::draw(DrawPoint drawOffset)
         double dx = double(s) / whole - 0.5;
 
         // Y-Verschiebung ausrechnen, damit die Nullpunkte beim Start- und Endpunkt liegen
-        double y_diff = 0.5 * 0.5;
+        double yDiff = 0.5 * 0.5;
 
         // Verschiebung ausrechnen von Y
-        auto diff = int((dx * dx - y_diff) * 200);
+        auto diff = int((dx * dx - yDiff) * 200);
 
         // Stein auf Parabel zeichnen
         drawPos.y = (drawPos.y + diff) % worldSize.y;

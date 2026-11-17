@@ -12,7 +12,7 @@ class ctrlProgress : public Window, public ctrlBaseTooltip
 {
 public:
     ctrlProgress(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-                 unsigned short button_minus, unsigned short button_plus, unsigned short maximum, const Extent& padding,
+                 unsigned short buttonMinus, unsigned short buttonPlus, unsigned short maximum, const Extent& padding,
                  unsigned force_color, const std::string& tooltip, const std::string& button_minus_tooltip = "",
                  const std::string& button_plus_tooltip = "", unsigned short* write_val = nullptr);
 

@@ -25,30 +25,29 @@ void nofArmorer::serialize(SerializedGameData& sgd) const
 {
     nofWorkman::serialize(sgd);
 
-    sgd.PushBool(sword_shield);
+    sgd.pushBool(sword_shield);
 }
 
 nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id)
-    : nofWorkman(sgd, obj_id), sword_shield(sgd.PopBool())
+    : nofWorkman(sgd, obj_id), sword_shield(sgd.popBool())
 {}
 
 void nofArmorer::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{-10, 15}, {-11, 9}, {-14, 16}, {-19, 1}, {-11, 9}}};
 
-    constexpr unsigned max_id = 280;
-    const unsigned now_id = GAMECLIENT.interpolate(max_id, current_ev);
-    if(now_id < 200)
+    constexpr unsigned maxId = 280;
+    const unsigned nowId = GAMECLIENT.interpolate(maxId, current_ev);
+    if(nowId < 200)
     {
         const Nation wpNation = workplace->getNation();
         const unsigned plColor = world->getPlayer(player).color;
 
-        LOADER.getPlayerImage("rom_bobs", 16 + (now_id % 8))
-          ->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
+        LOADER.getPlayerImage("rom_bobs", 16 + (nowId % 8))->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
 
-        if((now_id % 8) == 5)
+        if((nowId % 8) == 5)
         {
-            world->getSoundMgr().playNOSound(52, *this, now_id / 8);
+            world->getSoundMgr().playNOSound(52, *this, nowId / 8);
             was_sounding = true;
         }
     }

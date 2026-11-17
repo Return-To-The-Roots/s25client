@@ -29,7 +29,7 @@ HeadlessReplay::HeadlessReplay(const boost::filesystem::path& replayPath)
         players.emplace_back(replay_.getPlayer(i));
 
     startGF_ = mapInfo_.savegame ? mapInfo_.savegame->start_gf : 0;
-    RANDOM.Init(replay_.getSeed());
+    RANDOM.init(replay_.getSeed());
     AI::getRandomGenerator().seed(replay_.getSeed());
 
     game_ = std::make_unique<Game>(replay_.ggs, startGF_, players);
@@ -66,7 +66,7 @@ bool HeadlessReplay::runGF()
                                  + " but the game is already at GF " + std::to_string(curGF));
     }
 
-    desync_ = ExecuteReplayCommands(replay_, nextGF_, *game_).desync;
+    desync_ = executeReplayCommands(replay_, nextGF_, *game_).desync;
 
     // Stop at a desync so the world and the RNG log still show the state that produced it
     if(desync_)

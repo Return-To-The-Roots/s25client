@@ -64,6 +64,6 @@ protected:
     /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
     /// in dem Falle: Karte aktualisieren
     void beforeDrawing() override;
-    /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem übergebenen drawn_object ist
-    void updateAll(DrawnObject drawn_object);
+    /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem übergebenen drawnObject ist
+    void updateAll(DrawnObject drawnObject);
 };

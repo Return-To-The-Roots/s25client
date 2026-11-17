@@ -39,13 +39,13 @@ void noAnimal::serialize(SerializedGameData& sgd) const
 
     sgd.pushEnum<uint8_t>(species);
     sgd.pushEnum<uint8_t>(state);
-    sgd.PushUnsignedShort(pause_way);
+    sgd.pushUnsignedShort(pause_way);
     sgd.pushObject(hunter, true);
     sgd.pushObject(skinner, true);
 }
 
 noAnimal::noAnimal(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), species(sgd.pop<Species>()), state(sgd.pop<State>()), pause_way(sgd.PopUnsignedShort()),
+    : noMovable(sgd, obj_id), species(sgd.pop<Species>()), state(sgd.pop<State>()), pause_way(sgd.popUnsignedShort()),
       hunter(sgd.popObject<nofHunter>(GO_Type::NofHunter)), skinner(nullptr), sound_moment(0)
 {
     if(sgd.getGameDataVersion() >= 12)
@@ -73,11 +73,11 @@ void noAnimal::draw(DrawPoint drawPt)
             // Interpolieren zwischen beiden Knotenpunkten
             drawPt += calcWalkingRelative();
 
-            unsigned ani_step = GAMECLIENT.interpolate(ASCENT_ANIMATION_STEPS[getAscent()], current_ev)
-                                % ANIMALCONSTS[species].animation_steps;
+            unsigned aniStep = GAMECLIENT.interpolate(ASCENT_ANIMATION_STEPS[getAscent()], current_ev)
+                               % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
-            LOADER.getAnimalSprite(species, getCurMoveDir(), ani_step).draw(drawPt);
+            LOADER.getAnimalSprite(species, getCurMoveDir(), aniStep).draw(drawPt);
 
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == Species::Duck || species == Species::Sheep)
@@ -119,11 +119,11 @@ void noAnimal::draw(DrawPoint drawPt)
             // Gibts ein Leichenbild?
             if(!LOADER.getDeadAnimalSprite(species).empty())
             {
-                LOADER.getDeadAnimalSprite(species).draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+                LOADER.getDeadAnimalSprite(species).draw(drawPt, setAlpha(COLOR_WHITE, alpha));
             } else
             {
                 // Stehend zeichnen
-                LOADER.getAnimalSprite(species, getCurMoveDir(), 0).draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+                LOADER.getAnimalSprite(species, getCurMoveDir(), 0).draw(drawPt, setAlpha(COLOR_WHITE, alpha));
             }
         }
         break;
@@ -136,8 +136,8 @@ void noAnimal::draw(DrawPoint drawPt)
     - Both do not reach the dead animal in time. It disappears and the noAnimal
       class is responsible for removing and deleting itself afterwards.
     - Both reach the dead animal in time. However finishes last is responsible for removing
-      and deleting the dead animal (see nofSkinner::HandleStateSkinningCarcass and
-      nofHunter::HandleStateEviscerating). No disappearing of the animal.
+      and deleting the dead animal (see nofSkinner::handleStateSkinningCarcass and
+      nofHunter::handleStateEviscerating). No disappearing of the animal.
     - Either doesn't arrive soon enough. If the hunter was first the skin remains there
       and if the skinner was first the meat remains there. The animal disappears and the noAnimal
       class is responsible for removing and deleting itself afterwards.
@@ -192,7 +192,7 @@ void noAnimal::handleEvent(const unsigned id)
         case 3:
         {
             // von der Karte tilgen
-            getEvMgr().addToKillList(world->RemoveFigure(pos, *this));
+            getEvMgr().addToKillList(world->removeFigure(pos, *this));
         }
         break;
     }

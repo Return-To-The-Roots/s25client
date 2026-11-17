@@ -31,7 +31,7 @@ public:
     unsigned char getPlayerId() const { return playerId; }
 
     /// Get the game commands and mark them as processed
-    std::vector<gc::GameCommandPtr> FetchGameCommands()
+    std::vector<gc::GameCommandPtr> fetchGameCommands()
     {
         std::vector<gc::GameCommandPtr> tmp;
         std::swap(tmp, gcs);

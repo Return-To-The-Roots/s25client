@@ -38,7 +38,7 @@ void Game::start(bool startFromSave)
         {
             unsigned int selection = ggs_.getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH);
             world_.setEconHandler(
-              std::make_unique<EconomyModeHandler>(duration_to_gfs(AddonEconomyModeGameLengthList[selection])));
+              std::make_unique<EconomyModeHandler>(durationToGfs(AddonEconomyModeGameLengthList[selection])));
         }
         statisticStep();
     }
@@ -63,7 +63,7 @@ unsigned getNumAlivePlayers(const GameWorldBase& world)
     unsigned numPlayersAlive = 0;
     for(const auto& player : world.getPlayers())
     {
-        if(!player.IsDefeated())
+        if(!player.isDefeated())
             ++numPlayersAlive;
     }
     return numPlayersAlive;
@@ -89,7 +89,7 @@ void Game::runGF()
     if(world_.hasLua())
         world_.getLua().eventGameFrame(em_->getCurrentGF());
     // Update statistic every 30 seconds
-    constexpr auto GFsIn30s = static_cast<unsigned>(duration_to_gfs(30s));
+    constexpr auto GFsIn30s = static_cast<unsigned>(durationToGfs(30s));
     if(em_->getCurrentGF() % GFsIn30s == 0)
         statisticStep();
     // If some players got defeated check objective
@@ -120,7 +120,7 @@ void Game::checkObjective()
     for(unsigned i = 0; i < world_.getNumPlayers(); ++i)
     {
         const GamePlayer& player = world_.getPlayer(i);
-        if(player.IsDefeated())
+        if(player.isDefeated())
             continue;
         const unsigned points = player.getStatisticCurrentValue(StatisticType::Country);
         if(points > maxPoints)
@@ -140,7 +140,7 @@ void Game::checkObjective()
                     continue;
                 curTeam = curTeam | getPlayerMask(j);
                 const GamePlayer& teamPlayer = world_.getPlayer(j);
-                if(!teamPlayer.IsDefeated())
+                if(!teamPlayer.isDefeated())
                     teamPoints += teamPlayer.getStatisticCurrentValue(StatisticType::Country);
             }
             if(teamPoints > maxTeamPoints)

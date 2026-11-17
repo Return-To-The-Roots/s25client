@@ -21,11 +21,11 @@ void nofScout_Free::serialize(SerializedGameData& sgd) const
 {
     nofFlagWorker::serialize(sgd);
     helpers::pushPoint(sgd, nextPos);
-    sgd.PushUnsignedInt(rest_way);
+    sgd.pushUnsignedInt(rest_way);
 }
 
 nofScout_Free::nofScout_Free(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFlagWorker(sgd, obj_id), nextPos(sgd.popMapPoint()), rest_way(sgd.PopUnsignedInt())
+    : nofFlagWorker(sgd, obj_id), nextPos(sgd.popMapPoint()), rest_way(sgd.popUnsignedInt())
 {}
 
 void nofScout_Free::draw(DrawPoint drawPt)
@@ -134,10 +134,10 @@ struct IsScoutable
 
 void nofScout_Free::goToNewNode()
 {
-    std::vector<MapPoint> available_points =
-      world->GetMatchingPointsInRadius<-1>(flag->getPos(), SCOUT_RANGE, IsScoutable(player, *world));
-    RANDOM_SHUFFLE(available_points);
-    for(MapPoint pt : available_points)
+    std::vector<MapPoint> availablePoints =
+      world->getMatchingPointsInRadius<-1>(flag->getPos(), SCOUT_RANGE, IsScoutable(player, *world));
+    RANDOM_SHUFFLE(availablePoints);
+    for(MapPoint pt : availablePoints)
     {
         // Is there a path to this point and is the point also not to far away from the flag?
         // (Second check avoids running around mountains with a very far way back)

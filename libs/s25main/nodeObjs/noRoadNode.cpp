@@ -28,7 +28,7 @@ void noRoadNode::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(player);
+    sgd.pushUnsignedChar(player);
 
     // the trick only seems to work for flags
     if(this->getGOT() == GO_Type::Flag)
@@ -46,7 +46,7 @@ void noRoadNode::serialize(SerializedGameData& sgd) const
 }
 
 noRoadNode::noRoadNode(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar())
+    : noCoordBase(sgd, obj_id), player(sgd.popUnsignedChar())
 {
     for(const auto dir : helpers::EnumRange<Direction>{})
     {

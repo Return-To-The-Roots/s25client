@@ -26,7 +26,7 @@ std::vector<Direction> ShipPathData::getHarborConnection(HarborId startHarbor, H
 {
     if(harborConnections_.empty())
         initHarborConnections();
-    const auto it = helpers::find_if(harborConnections_[startHarbor], HarborConnection::Matcher{destHarbor, seaId});
+    const auto it = helpers::findIf(harborConnections_[startHarbor], HarborConnection::Matcher{destHarbor, seaId});
     RTTR_Assert(it != harborConnections_[startHarbor].end());
     return it->route;
 }
@@ -82,7 +82,7 @@ void ShipPathData::initHarborConnections()
             RTTR_Assert(startHbId != nb.id);
             RTTR_Assert(nb.sea);
             // Connections are unique
-            RTTR_Assert(!helpers::contains_if(curConnections, HarborConnection::Matcher{nb.id, nb.sea}));
+            RTTR_Assert(!helpers::containsIf(curConnections, HarborConnection::Matcher{nb.id, nb.sea}));
             curConnections.push_back(HarborConnection{nb.id, nb.sea, {}});
             unsigned len = 0;
             const auto startPoint = world_.getCoastalPoint(startHbId, nb.sea);

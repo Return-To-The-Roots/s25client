@@ -54,10 +54,10 @@ void nofShipWright::handleDerivedEvent(const unsigned /*id*/)
                 // Wege müssen immer von der Flagge aus berechnet werden
                 MapPoint flagPos = world->getNeighbour(pos, Direction::SouthEast);
                 const std::vector<MapPoint> possiblePts =
-                  world->GetMatchingPointsInRadius(flagPos, SHIPWRIGHT_RADIUS, IsNotReserved(*world));
+                  world->getMatchingPointsInRadius(flagPos, SHIPWRIGHT_RADIUS, IsNotReserved(*world));
 
                 // Verfügbare Punkte, die geeignete Plätze darstellen würden
-                std::vector<MapPoint> available_points;
+                std::vector<MapPoint> availablePoints;
 
                 // Besitze ich noch ein Schiff, was gebaut werden muss?
                 for(const auto& pt : possiblePts)
@@ -72,26 +72,26 @@ void nofShipWright::handleDerivedEvent(const unsigned /*id*/)
                        && static_cast<noShipBuildingSite*>(obj)->getPlayer() == player)
                     {
                         if(world->findHumanPath(flagPos, pt, SHIPWRIGHT_WALKING_DISTANCE))
-                            available_points.push_back(pt);
+                            availablePoints.push_back(pt);
                     }
                 }
 
                 // Kein Schiff im Bau gefunden? Dann Plätzchen für ein neues Schiff suchen
-                if(available_points.empty())
+                if(availablePoints.empty())
                 {
                     for(const auto& pt : possiblePts)
                     {
                         // Dieser Punkt geeignet?
                         if(isPointGood(pt) && world->findHumanPath(flagPos, pt, SHIPWRIGHT_WALKING_DISTANCE))
-                            available_points.push_back(pt);
+                            availablePoints.push_back(pt);
                     }
                 }
 
                 // Punkte gefunden?
-                if(!available_points.empty())
+                if(!availablePoints.empty())
                 {
                     // Einen Punkt zufällig auswählen und dorthin laufen
-                    curShipBuildPos = RANDOM_ELEMENT(available_points);
+                    curShipBuildPos = RANDOM_ELEMENT(availablePoints);
                     startWalkingToShip();
                 } else
                 {
@@ -245,7 +245,7 @@ void nofShipWright::workAborted()
 {
     // Platz freigeben, falls man gerade arbeitet
     if((state == State::Work && workplace->getPos() != pos)
-       || state == State::WalkToWorkpoint) //&& static_cast<nobShipYard*>(workplace)->GetMode() == nobShipYard::SHIPS)
+       || state == State::WalkToWorkpoint) //&& static_cast<nobShipYard*>(workplace)->getMode() == nobShipYard::SHIPS)
         world->setReserved(curShipBuildPos, false);
 }
 
@@ -302,16 +302,16 @@ void nofShipWright::drawWorking(DrawPoint drawPt)
         case State::Work:
         {
             unsigned id = GAMECLIENT.interpolate(42, current_ev);
-            unsigned graphics_id = ANIMATION[id];
-            LOADER.getPlayerImage("rom_bobs", graphics_id)
+            unsigned graphicsId = ANIMATION[id];
+            LOADER.getPlayerImage("rom_bobs", graphicsId)
               ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
 
             // Steh-Hammer-Sound
-            if(graphics_id == 300)
+            if(graphicsId == 300)
             {
                 world->getSoundMgr().playNOSound(78, *this, id, 160 - rand() % 60);
                 was_sounding = true;
-            } else if(graphics_id == 303 || graphics_id == 307)
+            } else if(graphicsId == 303 || graphicsId == 307)
             {
                 world->getSoundMgr().playNOSound(72, *this, id - id % 2, 160 - rand() % 60);
                 was_sounding = true;

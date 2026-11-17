@@ -108,7 +108,7 @@ BOOST_FIXTURE_TEST_CASE(JumpWindow, SmallWorldFixture)
     // At least 4 buttons for "jump by x" and at least 1 extra for "jump to"
     const auto bts = wnd.getCtrls<ctrlTextButton>();
     BOOST_TEST(bts.size() > 4);
-    const auto numIncBts = helpers::count_if(bts, [](const ctrlTextButton* bt) { return bt->getText().at(0) == '+'; });
+    const auto numIncBts = helpers::countIf(bts, [](const ctrlTextButton* bt) { return bt->getText().at(0) == '+'; });
     BOOST_TEST(numIncBts >= 4);
 }
 
@@ -119,7 +119,7 @@ struct AddonPresetFixture : uiHelper::Fixture
     rttr::test::ConfigOverride userDataOverride{"USERDATA", tmp};
 
     // Stand in for the game start, which creates all user folders
-    AddonPresetFixture() { boost::filesystem::create_directories(RTTRCONFIG.ExpandPath(s25::folders::addonPresets)); }
+    AddonPresetFixture() { boost::filesystem::create_directories(RTTRCONFIG.expandPath(s25::folders::addonPresets)); }
 
     // Selects the named preset, false if there is no such preset
     static bool select(Window& wnd, const std::string& name)
@@ -259,7 +259,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetLoadCorrupt, AddonPresetFixture)
 {
     save({{1, 2}}, "valid");
     {
-        std::ofstream corrupt((RTTRCONFIG.ExpandPath(s25::folders::addonPresets) / "corrupt.ini").string());
+        std::ofstream corrupt((RTTRCONFIG.expandPath(s25::folders::addonPresets) / "corrupt.ini").string());
         corrupt << "[addons]\nnotAnAddonId=1\n";
     }
 
@@ -283,7 +283,7 @@ BOOST_FIXTURE_TEST_CASE(AddonPresetLoadCorrupt, AddonPresetFixture)
 BOOST_FIXTURE_TEST_CASE(AddonPresetSaveUnwritable, AddonPresetFixture)
 {
     // A folder in the file's place stands in for a presets folder we may not write to
-    boost::filesystem::create_directories(RTTRCONFIG.ExpandPath(s25::folders::addonPresets) / "blocked.ini");
+    boost::filesystem::create_directories(RTTRCONFIG.expandPath(s25::folders::addonPresets) / "blocked.ini");
 
     const std::map<unsigned, unsigned> states{{1, 2}};
     iwSaveAddonPreset wnd(states);

@@ -54,7 +54,7 @@ BOOST_FIXTURE_TEST_CASE(PrefixPath, rttr::test::BaseFixture)
         ResetWorkDir resetWorkDir;
         // Just change it in case we would not change it back
         fs::current_path(fs::current_path().parent_path());
-        BOOST_TEST_REQUIRE(RTTRCONFIG.Init());
+        BOOST_TEST_REQUIRE(RTTRCONFIG.init());
         BOOST_TEST(prefixPath == fs::current_path());
     }
 }

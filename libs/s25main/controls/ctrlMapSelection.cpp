@@ -68,7 +68,7 @@ void ctrlMapSelection::updateEnabledMask()
     RTTR_FOREACH_PT(Point<uint16_t>, mapImages.enabledMask->getSize())
     {
         const auto pixelColor = mapImages.missionMapMask->getPixel(pt.x, pt.y).asValue();
-        const auto matchingMissionIdx = helpers::indexOf_if(
+        const auto matchingMissionIdx = helpers::indexOfIf(
           inputData.missionSelectionInfos, [pixelColor](const auto& val) { return val.maskAreaColor == pixelColor; });
 
         libsiedler2::ColorBGRA newColor;
@@ -104,10 +104,10 @@ std::optional<unsigned> ctrlMapSelection::getSelection() const
 {
     if(!currentSelectionPos.isValid())
         return std::nullopt;
-    const auto result = helpers::indexOf_if(inputData.missionSelectionInfos,
-                                            [currentSelectionPos = this->currentSelectionPos](const auto& val) {
-                                                return val.ankerPos == currentSelectionPos;
-                                            });
+    const auto result = helpers::indexOfIf(inputData.missionSelectionInfos,
+                                           [currentSelectionPos = this->currentSelectionPos](const auto& val) {
+                                               return val.ankerPos == currentSelectionPos;
+                                           });
     RTTR_Assert(result >= 0);
     return static_cast<unsigned>(result);
 }
@@ -128,7 +128,7 @@ bool ctrlMapSelection::msgLeftUp(const MouseCoords& mc)
                                              helpers::clamp(pickPos.y, 0u, mapImages.map->getSize().y - 1))
                                   .asValue();
 
-        const auto matchingMissionIdx = helpers::indexOf_if(
+        const auto matchingMissionIdx = helpers::indexOfIf(
           inputData.missionSelectionInfos, [pixelColor](const auto& val) { return val.maskAreaColor == pixelColor; });
 
         if(matchingMissionIdx >= 0)

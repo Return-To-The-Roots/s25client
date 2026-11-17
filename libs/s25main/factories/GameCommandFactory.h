@@ -45,7 +45,7 @@ public:
     /// Sets new military settings for the player (8 values)
     bool ChangeMilitary(const MilitarySettings& data);
     /// Sets new tool production settings
-    bool ChangeTools(const ToolSettings& data, const int8_t* order_delta = nullptr);
+    bool ChangeTools(const ToolSettings& data, const int8_t* orderDelta = nullptr);
     /// Calls a specialist to a flag
     bool CallSpecialist(MapPoint pt, Job job);
     /// Attacks an enemy building

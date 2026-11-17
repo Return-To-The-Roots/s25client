@@ -39,7 +39,7 @@ GameManager::GameManager(Log& log, Settings& settings, VideoDriverWrapper& video
 bool GameManager::start()
 {
     // Einstellungen laden
-    settings_.Load();
+    settings_.load();
 
     /// Videotreiber laden
     if(!videoDriver_.loadDriver(settings_.driver.video))
@@ -82,7 +82,7 @@ void GameManager::stop()
 {
     GAMECLIENT.stop();
     GAMESERVER.stop();
-    LOBBYCLIENT.Stop();
+    LOBBYCLIENT.stop();
     // Global Einstellungen speichern
     settings_.save();
 
@@ -99,7 +99,7 @@ bool GameManager::run()
     if(!videoDriver_.run())
         GLOBALVARS.notdone = false;
 
-    LOBBYCLIENT.Run();
+    LOBBYCLIENT.run();
 
     // Get this before the run so we know if we are currently skipping
     const unsigned targetSkipGF = GAMECLIENT.skiptogf;
@@ -109,7 +109,7 @@ bool GameManager::run()
     if(targetSkipGF)
     {
         // if we skip drawing write a comment every 5k gf
-        unsigned current_time = videoDriver_.getTickCount();
+        unsigned currentTime = videoDriver_.getTickCount();
         const unsigned curGF = GAMECLIENT.getGFNumber();
         if(targetSkipGF > curGF)
         {
@@ -118,22 +118,22 @@ bool GameManager::run()
                 if(lastSkipReport)
                 {
                     // Elapsed time in ms
-                    const auto timeDiff = static_cast<double>(current_time - lastSkipReport->time);
+                    const auto timeDiff = static_cast<double>(currentTime - lastSkipReport->time);
                     const unsigned numGFPassed = curGF - lastSkipReport->gf;
                     log_.write(_("jumping to gf %i, now at gf %i, time for last 5k gf: %.3f s, avg gf time %.3f ms \n"))
                       % targetSkipGF % curGF % (timeDiff / 1000) % (timeDiff / numGFPassed);
                 } else
                     log_.write(_("jumping to gf %i, now at gf %i \n")) % targetSkipGF % curGF;
-                lastSkipReport = SkipReport{current_time, curGF};
+                lastSkipReport = SkipReport{currentTime, curGF};
             } else if(!lastSkipReport)
-                lastSkipReport = SkipReport{current_time, curGF};
+                lastSkipReport = SkipReport{currentTime, curGF};
         } else
         {
             // Jump just completed
             RTTR_Assert(!GAMECLIENT.skiptogf);
             if(lastSkipReport)
             {
-                const auto timeDiff = static_cast<double>(current_time - lastSkipReport->time);
+                const auto timeDiff = static_cast<double>(currentTime - lastSkipReport->time);
                 const unsigned numGFPassed = curGF - lastSkipReport->gf;
                 log_.write(_("jump to gf %i complete, time for last %i gf: %.3f s, avg gf time %.3f ms \n"))
                   % targetSkipGF % numGFPassed % (timeDiff / 1000) % (timeDiff / numGFPassed);
@@ -161,7 +161,7 @@ bool GameManager::run()
 bool GameManager::showSplashscreen()
 {
     libsiedler2::Archiv arSplash;
-    if(!LOADER.Load(arSplash, RTTRCONFIG.ExpandPath(s25::files::splash)))
+    if(!LOADER.load(arSplash, RTTRCONFIG.expandPath(s25::files::splash)))
         return false;
     auto image = boost::dynamic_pointer_cast<glArchivItem_Bitmap>(arSplash.release(0));
     if(!image)
@@ -181,7 +181,7 @@ bool GameManager::showMenu()
     GAMECLIENT.stop();
     GAMESERVER.stop();
 
-    if(LOBBYCLIENT.IsLoggedIn())
+    if(LOBBYCLIENT.isLoggedIn())
         // Lobby zeigen
         windowManager_.switchTo(std::make_unique<dskLobby>());
     else

@@ -67,23 +67,23 @@ void GameServer::ServerConfig::clear()
     ipv6 = false;
 }
 
-GameServer::CountDown::CountDown() : isActive(false), remainingSecs(0) {}
+GameServer::CountDown::CountDown() : isActive_(false), remainingSecs(0) {}
 
 void GameServer::CountDown::start(unsigned timeInSec)
 {
-    isActive = true;
+    isActive_ = true;
     remainingSecs = timeInSec;
     lasttime = SteadyClock::now();
 }
 
 void GameServer::CountDown::stop()
 {
-    isActive = false;
+    isActive_ = false;
 }
 
 bool GameServer::CountDown::update()
 {
-    RTTR_Assert(isActive);
+    RTTR_Assert(isActive_);
     SteadyClock::time_point curTime = SteadyClock::now();
 
     // Check if 1s has passed
@@ -151,7 +151,7 @@ bool GameServer::start(const CreateServerInfo& csi, const MapDescription& map, c
         {
             Savegame save;
 
-            if(!save.Load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
+            if(!save.load(mapinfo.filepath, SaveGameDataToLoad::HeaderAndSettings))
                 return false;
 
             // Spieleranzahl
@@ -207,7 +207,7 @@ bool GameServer::start(const CreateServerInfo& csi, const MapDescription& map, c
     state = ServerState::Config;
 
     // und das socket in listen-modus schicken
-    if(!serversocket.Listen(config.port, config.ipv6, csi.use_upnp))
+    if(!serversocket.listen(config.port, config.ipv6, csi.use_upnp))
     {
         LOG.write("GameServer::Start: ERROR: Listening on port %d failed!\n") % config.port;
         LOG.writeLastError("Fehler");
@@ -215,11 +215,11 @@ bool GameServer::start(const CreateServerInfo& csi, const MapDescription& map, c
     }
 
     if(config.servertype == ServerType::LAN)
-        lanAnnouncer.Start();
+        lanAnnouncer.start();
     else if(config.servertype == ServerType::Lobby)
     {
-        LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (!config.password.empty()), config.port);
-        LOBBYCLIENT.AddListener(this);
+        LOBBYCLIENT.addServer(config.gamename, mapinfo.title, (!config.password.empty()), config.port);
+        LOBBYCLIENT.addListener(this);
     }
     announceStatusChange();
 
@@ -253,11 +253,11 @@ void GameServer::announceStatusChange()
         info.revision = rttr::version::getRevision();
         Serializer ser;
         info.serialize(ser);
-        lanAnnouncer.SetPayload(ser.GetData(), ser.GetLength());
+        lanAnnouncer.setPayload(ser.getData(), ser.getLength());
     } else if(config.servertype == ServerType::Lobby)
     {
-        if(LOBBYCLIENT.IsIngame())
-            LOBBYCLIENT.UpdateServerNumPlayers(getNumFilledSlots(), playerInfos.size());
+        if(LOBBYCLIENT.isIngame())
+            LOBBYCLIENT.updateServerNumPlayers(getNumFilledSlots(), playerInfos.size());
     }
 }
 
@@ -270,7 +270,7 @@ void GameServer::LC_Status_Error(const std::string& /*error*/)
 void GameServer::LC_Created()
 {
     // All good -> Don't listen anymore
-    LOBBYCLIENT.RemoveListener(this);
+    LOBBYCLIENT.removeListener(this);
     announceStatusChange();
 }
 
@@ -309,18 +309,18 @@ void GameServer::run()
             continue;
         player.sendMsgs(10);
     }
-    helpers::erase_if(networkPlayers, [](const auto& player) { return !player.socket.isValid(); });
+    helpers::eraseIf(networkPlayers, [](const auto& player) { return !player.socket.isValid(); });
 
-    lanAnnouncer.Run();
+    lanAnnouncer.run();
 }
 
 void GameServer::runStateConfig()
 {
     waitForClients();
-    if(countdown.IsActive() && countdown.update())
+    if(countdown.isActive() && countdown.update())
     {
         // nun echt starten
-        if(!countdown.IsActive())
+        if(!countdown.isActive())
         {
             if(!startGame())
             {
@@ -405,18 +405,18 @@ void GameServer::stop()
     countdown.stop();
 
     // laden dicht machen
-    serversocket.Close();
+    serversocket.close();
     // clear jump target
     skiptogf = 0;
 
     // clear async logs
     asyncLogs.clear();
 
-    lanAnnouncer.Stop();
+    lanAnnouncer.stop();
 
-    if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
-        LOBBYCLIENT.DeleteServer();
-    LOBBYCLIENT.RemoveListener(this);
+    if(LOBBYCLIENT.isLoggedIn()) // steht die Lobbyverbindung noch?
+        LOBBYCLIENT.deleteServer();
+    LOBBYCLIENT.removeListener(this);
 
     // status
     state = ServerState::Stopped;
@@ -526,7 +526,7 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
 
 bool GameServer::startGame()
 {
-    lanAnnouncer.Stop();
+    lanAnnouncer.stop();
 
     // Finalize the team selection for unassigned players.
     if(assignPlayersOfRandomTeams(playerInfos))
@@ -546,20 +546,20 @@ bool GameServer::startGame()
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_START(%d)\n") % random_init;
 
     // Höchsten Ping ermitteln
-    unsigned highest_ping = 0;
+    unsigned highestPing = 0;
     for(const JoinPlayerInfo& player : playerInfos)
     {
         if(player.ps == PlayerState::Occupied)
         {
-            if(player.ping > highest_ping)
-                highest_ping = player.ping;
+            if(player.ping > highestPing)
+                highestPing = player.ping;
         }
     }
 
     framesinfo.gfLengthReq = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs_.speed];
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
-    framesinfo.nwf_length = calcNWFLength(std::chrono::milliseconds(highest_ping));
+    framesinfo.nwf_length = calcNWFLength(std::chrono::milliseconds(highestPing));
 
     LOG.write("SERVER: Using gameframe length of %1%\n") % helpers::withUnit(framesinfo.gf_length);
     LOG.write("SERVER: Using networkframe length of %1% GFs (%2%)\n") % framesinfo.nwf_length
@@ -640,18 +640,18 @@ void GameServer::kickPlayer(uint8_t playerId, KickReason cause, uint32_t param)
 void GameServer::clientWatchDog()
 {
     SocketSet set;
-    set.Clear();
+    set.clear();
 
     // sockets zum set hinzufügen
     for(GameServerPlayer& player : networkPlayers)
-        set.Add(player.socket);
+        set.add(player.socket);
 
     // auf fehler prüfen
-    if(set.Select(0, 2) > 0)
+    if(set.select(0, 2) > 0)
     {
         for(const GameServerPlayer& player : networkPlayers)
         {
-            if(set.InSet(player.socket))
+            if(set.inSet(player.socket))
             {
                 LOG.write(_("SERVER: Error on socket of player %1%, bye bye!\n")) % player.playerId;
                 kickPlayer(player.playerId, KickReason::ConnectionLost, __LINE__);
@@ -822,11 +822,11 @@ void GameServer::waitForClients()
 {
     SocketSet set;
 
-    set.Add(serversocket);
-    if(set.Select(0, 0) > 0)
+    set.add(serversocket);
+    if(set.select(0, 0) > 0)
     {
-        RTTR_Assert(set.InSet(serversocket));
-        Socket socket = serversocket.Accept();
+        RTTR_Assert(set.inSet(serversocket));
+        Socket socket = serversocket.accept();
 
         // Verbindung annehmen
         if(!socket.isValid())
@@ -849,7 +849,7 @@ void GameServer::waitForClients()
 
         // war kein platz mehr frei, wenn ja dann verbindung trennen?
         if(newPlayerId == 0xFFFFFFFF)
-            socket.Close();
+            socket.close();
     }
 }
 
@@ -864,16 +864,16 @@ void GameServer::fillPlayerQueues()
     {
         // sockets zum set hinzufügen
         for(const GameServerPlayer& player : networkPlayers)
-            set.Add(player.socket);
+            set.add(player.socket);
 
         msgReceived = false;
 
         // ist eines der Sockets im Set lesbar?
-        if(set.Select(0, 0) > 0)
+        if(set.select(0, 0) > 0)
         {
             for(GameServerPlayer& player : networkPlayers)
             {
-                if(set.InSet(player.socket))
+                if(set.inSet(player.socket))
                 {
                     // nachricht empfangen
                     if(!player.receiveMsgs())
@@ -1138,7 +1138,7 @@ bool GameServer::onGameMessage(const GameMessage_Player_Ready& msg)
     player.isReady = msg.ready;
 
     // countdown ggf abbrechen
-    if(!player.isReady && countdown.IsActive())
+    if(!player.isReady && countdown.isActive())
         cancelCountdown();
 
     sendToAll(GameMessage_Player_Ready(playerID, msg.ready));
@@ -1372,7 +1372,7 @@ bool GameServer::onGameMessage(const GameMessage_Countdown& msg)
     }
 
     NetworkPlayer* nwPlayer = getNetworkPlayer(msg.senderPlayerID);
-    if(!nwPlayer || countdown.IsActive())
+    if(!nwPlayer || countdown.isActive())
         return true;
 
     if(!arePlayersReady())
@@ -1438,7 +1438,7 @@ bool GameServer::onGameMessage(const GameMessage_GGSChange& msg)
 
 void GameServer::cancelCountdown()
 {
-    if(!countdown.IsActive())
+    if(!countdown.isActive())
         return;
     // Countdown-Stop allen mitteilen
     countdown.stop();
@@ -1496,7 +1496,7 @@ bfs::path GameServer::saveAsyncLog()
     unsigned numEntries = 0;
     for(AsyncLog& log : asyncLogs)
     {
-        auto it = helpers::find_if(log.randEntries, [maxCtr](const auto& e) { return e.counter == maxCtr; });
+        auto it = helpers::findIf(log.randEntries, [maxCtr](const auto& e) { return e.counter == maxCtr; });
         log.randEntries.erase(log.randEntries.begin(), it);
         if(numEntries < log.randEntries.size())
             numEntries = log.randEntries.size();
@@ -1537,7 +1537,7 @@ bfs::path GameServer::saveAsyncLog()
     LOG.write(_("There are %1% identical async log entries.\n")) % numIdentical;
 
     bfs::path filePath =
-      RTTRCONFIG.ExpandPath(s25::folders::logs) / (s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log");
+      RTTRCONFIG.expandPath(s25::folders::logs) / (s25util::Time::formatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log");
 
     // open async log
     bnw::ofstream file(filePath);

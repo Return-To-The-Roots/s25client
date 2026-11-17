@@ -111,9 +111,9 @@ void ctrlTab::setSelection(unsigned short nr, bool /*notify*/)
  *  Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen
  *  werden können
  */
-ctrlGroup* ctrlTab::getGroup(const unsigned tab_id)
+ctrlGroup* ctrlTab::getGroup(const unsigned tabId)
 {
-    return getCtrl<ctrlGroup>(tabs.size() + 1 + tab_id);
+    return getCtrl<ctrlGroup>(tabs.size() + 1 + tabId);
 }
 
 /**
@@ -152,9 +152,9 @@ void ctrlTab::msgGroupEditChange(const unsigned /*group_id*/, const unsigned ctr
     getParent()->msgGroupEditChange(this->getID(), ctrl_id);
 }
 
-void ctrlTab::msgGroupTabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
+void ctrlTab::msgGroupTabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tabId)
 {
-    getParent()->msgGroupTabChange(this->getID(), ctrl_id, tab_id);
+    getParent()->msgGroupTabChange(this->getID(), ctrl_id, tabId);
 }
 
 void ctrlTab::msgGroupListSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)

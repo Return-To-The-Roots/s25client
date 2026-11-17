@@ -18,7 +18,7 @@
 #include <sstream>
 
 /// Return <0 for a < b; >0 for a>b and 0 for a==b
-static int Compare(const std::string& a, const std::string& b, ctrlTable::SortType sortType)
+static int compare(const std::string& a, const std::string& b, ctrlTable::SortType sortType)
 {
     using SRT = ctrlTable::SortType;
     switch(sortType)
@@ -31,12 +31,12 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
             s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
             s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
             char x;
-            int x_a, y_a, x_b, y_b;
-            ss_a >> x_a >> x >> y_a;
-            ss_b >> x_b >> x >> y_b;
+            int x_a, yA, x_b, yB;
+            ss_a >> x_a >> x >> yA;
+            ss_b >> x_b >> x >> yB;
             RTTR_Assert(ss_a);
             RTTR_Assert(ss_b);
-            const int result = x_a * y_a - x_b * y_b;
+            const int result = x_a * yA - x_b * yB;
             // In case of same number of nodes sort by first value
             return (result == 0) ? x_a - x_b : result;
         }
@@ -45,12 +45,12 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
         {
             s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
             s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
-            int num_a, num_b;
-            ss_a >> num_a;
-            ss_b >> num_b;
+            int numA, numB;
+            ss_a >> numA;
+            ss_b >> numB;
             RTTR_Assert(ss_a);
             RTTR_Assert(ss_b);
-            return num_a - num_b;
+            return numA - numB;
         }
         break;
         case SRT::Date:
@@ -58,39 +58,39 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
             // Nach Datum im Format dd.mm.yyyy - hh:mm sortieren
             s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
             s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
-            int d_a, d_b, m_a, m_b, y_a, y_b;
+            int dA, d_b, mA, m_b, yA, yB;
             char c;
 
             // "dd.mm.yyyy"
-            ss_a >> d_a >> c >> m_a >> c >> y_a;
-            ss_b >> d_b >> c >> m_b >> c >> y_b;
+            ss_a >> dA >> c >> mA >> c >> yA;
+            ss_b >> d_b >> c >> m_b >> c >> yB;
 
             RTTR_Assert(ss_a);
             RTTR_Assert(ss_b);
-            if(y_a != y_b)
-                return y_a - y_b;
+            if(yA != yB)
+                return yA - yB;
 
-            if(m_a != m_b)
-                return m_a - m_b;
+            if(mA != m_b)
+                return mA - m_b;
 
-            if(d_a != d_b)
-                return d_a - d_b;
+            if(dA != d_b)
+                return dA - d_b;
 
             // " - "
             ss_a >> c;
             ss_b >> c;
 
-            int h_a, h_b, min_a, min_b;
+            int hA, h_b, minA, minB;
 
             // "hh:mm"
-            ss_a >> h_a >> c >> min_a;
-            ss_b >> h_b >> c >> min_b;
+            ss_a >> hA >> c >> minA;
+            ss_b >> h_b >> c >> minB;
 
             RTTR_Assert(ss_a);
             RTTR_Assert(ss_b);
-            if(h_a != h_b)
-                return h_a - h_b;
-            return min_a - min_b;
+            if(hA != h_b)
+                return hA - h_b;
+            return minA - minB;
         }
         case SRT::Time:
         {
@@ -98,26 +98,26 @@ static int Compare(const std::string& a, const std::string& b, ctrlTable::SortTy
             s25util::ClassicImbuedStream<std::istringstream> ss_a(a);
             s25util::ClassicImbuedStream<std::istringstream> ss_b(b);
 
-            int seconds_a = 0;
-            int seconds_b = 0;
+            int secondsA = 0;
+            int secondsB = 0;
             char c;
 
             // "h:mm:ss" or "mm:ss"
             int tmp;
             while(ss_a >> tmp)
             {
-                seconds_a *= 60;
-                seconds_a += tmp;
+                secondsA *= 60;
+                secondsA += tmp;
                 ss_a >> c;
             }
             while(ss_b >> tmp)
             {
-                seconds_b *= 60;
-                seconds_b += tmp;
+                secondsB *= 60;
+                secondsB += tmp;
                 ss_b >> c;
             }
 
-            return seconds_a - seconds_b;
+            return secondsA - secondsB;
         }
         break;
     }
@@ -293,7 +293,7 @@ void ctrlTable::sortRows(unsigned column, const TableSortDir sortDir)
     const auto compareFunc = [sortType, sortDir, column](const Row& lhs, const Row& rhs) {
         const std::string a = s25util::toLower(lhs.columns[column]);
         const std::string b = s25util::toLower(rhs.columns[column]);
-        const int cmpResult = Compare(a, b, sortType);
+        const int cmpResult = compare(a, b, sortType);
         return (sortDir == TableSortDir::Ascending) ? cmpResult < 0 : cmpResult > 0;
     };
     helpers::sort(rows_, compareFunc);
@@ -367,7 +367,7 @@ Rect ctrlTable::getFullDrawArea() const
 
 bool ctrlTable::msgLeftDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, getContentDrawArea()))
+    if(isPointInRect(mc.pos, getContentDrawArea()))
     {
         setSelection(getSelectionFromMouse(mc));
         if(getParent())
@@ -380,7 +380,7 @@ bool ctrlTable::msgLeftDown(const MouseCoords& mc)
 
 bool ctrlTable::msgRightDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, getContentDrawArea()))
+    if(isPointInRect(mc.pos, getContentDrawArea()))
     {
         setSelection(getSelectionFromMouse(mc));
         if(getParent())
@@ -405,7 +405,7 @@ std::optional<unsigned> ctrlTable::getSelectionFromMouse(const MouseCoords& mc) 
 bool ctrlTable::msgWheelUp(const MouseCoords& mc)
 {
     // If mouse in list or scrollbar
-    if(IsPointInRect(mc.pos, getFullDrawArea()))
+    if(isPointInRect(mc.pos, getFullDrawArea()))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(-1);
@@ -416,7 +416,7 @@ bool ctrlTable::msgWheelUp(const MouseCoords& mc)
 
 bool ctrlTable::msgWheelDown(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, getFullDrawArea()))
+    if(isPointInRect(mc.pos, getFullDrawArea()))
     {
         auto* scrollbar = getCtrl<ctrlScrollBar>(0);
         scrollbar->scroll(+1);
@@ -427,7 +427,7 @@ bool ctrlTable::msgWheelDown(const MouseCoords& mc)
 
 bool ctrlTable::msgLeftUp(const MouseCoords& mc)
 {
-    if(IsPointInRect(mc.pos, getContentDrawArea()))
+    if(isPointInRect(mc.pos, getContentDrawArea()))
     {
         if(mc.dbl_click && getParent())
         {

@@ -11,7 +11,7 @@
 #include "ogl/glFont.h"
 
 ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size,
-                           const TextureColor tc, unsigned short button_minus, unsigned short button_plus,
+                           const TextureColor tc, unsigned short buttonMinus, unsigned short buttonPlus,
                            const unsigned short maximum, const Extent& padding, const unsigned force_color,
                            const std::string& tooltip, const std::string& button_minus_tooltip,
                            const std::string& button_plus_tooltip, unsigned short* const /*write_val*/)
@@ -19,21 +19,21 @@ ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& p
       force_color(force_color)
 {
     ResourceId btMinusRes = "io", btPlusRes = "io";
-    if(button_minus >= 1000)
+    if(buttonMinus >= 1000)
     {
         btMinusRes = "io_new";
-        button_minus -= 1000;
+        buttonMinus -= 1000;
     }
-    if(button_plus >= 1000)
+    if(buttonPlus >= 1000)
     {
         btPlusRes = "io_new";
-        button_plus -= 1000;
+        buttonPlus -= 1000;
     }
 
     Extent btSize = Extent::all(size.y);
-    addImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.getImageN(btMinusRes, button_minus),
+    addImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.getImageN(btMinusRes, buttonMinus),
                    (!button_minus_tooltip.empty() ? button_minus_tooltip : _("Less")));
-    addImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.getImageN(btPlusRes, button_plus),
+    addImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.getImageN(btPlusRes, buttonPlus),
                    (!button_plus_tooltip.empty() ? button_plus_tooltip : _("More")));
 
     // Hide left and right 3D border by making the buttons overlap the bar
@@ -138,7 +138,7 @@ bool ctrlProgress::msgLeftDown(const MouseCoords& mc)
     // Test if clicked on progress bar
     DrawPoint progressOrigin = getDrawPos() + DrawPoint(padding_) + DrawPoint(getSize().y + 2, 4);
     Extent progressSize = getSize() - Extent((getSize().y + 1) * 2, 8) - padding_ * 2u;
-    if(IsPointInRect(mc.pos, Rect(progressOrigin, progressSize)))
+    if(isPointInRect(mc.pos, Rect(progressOrigin, progressSize)))
     {
         position =
           helpers::iround<uint16_t>(static_cast<double>((mc.pos.x - progressOrigin.x) * maximum) / progressSize.x);
@@ -158,7 +158,7 @@ bool ctrlProgress::msgLeftUp(const MouseCoords& mc)
 bool ctrlProgress::msgWheelUp(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(IsPointInRect(mc.pos, getDrawRect()))
+    if(isPointInRect(mc.pos, getDrawRect()))
     {
         msgButtonClick(1);
         return true;
@@ -169,7 +169,7 @@ bool ctrlProgress::msgWheelUp(const MouseCoords& mc)
 bool ctrlProgress::msgWheelDown(const MouseCoords& mc)
 {
     // If mouse is over the controls, simulate button click
-    if(IsPointInRect(mc.pos, getDrawRect()))
+    if(isPointInRect(mc.pos, getDrawRect()))
     {
         msgButtonClick(0);
         return true;
@@ -185,7 +185,7 @@ bool ctrlProgress::msgMouseMove(const MouseCoords& mc)
     Extent offset(getSize().y + padding_.x, 0);
     DrawPoint rectOrig = getDrawPos() + DrawPoint(offset);
     Extent rectSize = getSize() - offset * 2u;
-    if(IsPointInRect(mc.pos, Rect(rectOrig, rectSize)))
+    if(isPointInRect(mc.pos, Rect(rectOrig, rectSize)))
     {
         WINDOWMANAGER.setToolTip(this, tooltip_);
         return true;

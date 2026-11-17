@@ -81,7 +81,7 @@ IngameWindow::IngameWindow(unsigned id, const DrawPoint& pos, const Extent& size
     else if(pos == posAtMouse)
         moveNextToMouse();
     else
-        setPos(pos); // always call SetPos() to update restorePos
+        setPos(pos); // always call setPos() to update restorePos
 }
 
 void IngameWindow::resize(const Extent& newSize)
@@ -195,7 +195,7 @@ bool IngameWindow::msgLeftDown(const MouseCoords& mc)
 {
     for(const auto btn : helpers::enumRange<IwButton>())
     {
-        if(IsPointInRect(mc.pos, getButtonBounds(btn)))
+        if(isPointInRect(mc.pos, getButtonBounds(btn)))
         {
             buttonStates_[btn] = ButtonState::Pressed;
             if(btn == IwButton::Title)
@@ -225,7 +225,7 @@ bool IngameWindow::msgLeftUp(const MouseCoords& mc)
                && (btn == IwButton::Title || btn == IwButton::PinOrMinimize)))
             continue;
 
-        if(IsPointInRect(mc.pos, getButtonBounds(btn)))
+        if(isPointInRect(mc.pos, getButtonBounds(btn)))
         {
             switch(btn)
             {
@@ -306,7 +306,7 @@ bool IngameWindow::msgMouseMove(const MouseCoords& mc)
         // Check the buttons
         for(const auto btn : helpers::enumRange<IwButton>())
         {
-            if(IsPointInRect(mc.pos, getButtonBounds(btn)))
+            if(isPointInRect(mc.pos, getButtonBounds(btn)))
             {
                 if(!mc.ldown)
                     buttonStates_[btn] = ButtonState::Hover;
@@ -319,7 +319,7 @@ bool IngameWindow::msgMouseMove(const MouseCoords& mc)
 
 void IngameWindow::drawImpl()
 {
-    if(isModal_ && !IsActive())
+    if(isModal_ && !isActive())
         setActive(true);
     if(!isMinimized_)
         drawBackground();
@@ -330,7 +330,7 @@ void IngameWindow::drawImpl()
     // Solution 1: Use contentOffset for adding controls
     //
     // Solution 2: Define that all controls added to an ingame window have positions relative to the contentOffset.
-    //  This needs a change in GetDrawPos to add this offset and also change all control-add-calls but would be much
+    //  This needs a change in getDrawPos to add this offset and also change all control-add-calls but would be much
     //  cleaner (no more hard coded offsets and we could restyle the ingame windows easily)
     //
     const Rect drawRect = getDrawRect();
@@ -379,7 +379,7 @@ void IngameWindow::drawImpl()
 
     // The title bar
     unsigned titleIndex;
-    if(IsActive())
+    if(isActive())
         titleIndex = isMoving ? 44 : 43;
     else
         titleIndex = 42;

@@ -7,7 +7,7 @@
 
 TradePath::TradePath(SerializedGameData& sgd) : start(sgd.popMapPoint()), goal(sgd.popMapPoint())
 {
-    route.resize(sgd.PopUnsignedInt());
+    route.resize(sgd.popUnsignedInt());
     for(Direction& dir : route)
     {
         dir = sgd.pop<Direction>();
@@ -18,7 +18,7 @@ void TradePath::serialize(SerializedGameData& sgd) const
 {
     helpers::pushPoint(sgd, start);
     helpers::pushPoint(sgd, goal);
-    sgd.PushUnsignedInt(route.size());
+    sgd.pushUnsignedInt(route.size());
     for(const Direction& dir : route)
     {
         sgd.pushEnum<uint8_t>(dir);

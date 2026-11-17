@@ -18,9 +18,9 @@ struct ResourceTestFixture : MapGenFixture
 
     ResourceTestFixture() : map(createMap(size))
     {
-        auto mountain = map.textureMap.Find(isMinableMountain);
-        auto water = map.textureMap.Find(isWater);
-        auto land = map.textureMap.Find(isBuildableCoast);
+        auto mountain = map.textureMap.find(isMinableMountain);
+        auto water = map.textureMap.find(isWater);
+        auto land = map.textureMap.find(isBuildableCoast);
 
         /*
          * ========== Test Map ===========
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_adds_objects_to_the_map)
     MapSettings settings;
 
     auto countObjects = [this]() {
-        return helpers::count_if(map.objectTypes, [](const auto o) { return o != OT_Empty; });
+        return helpers::countIf(map.objectTypes, [](const auto o) { return o != OT_Empty; });
     };
 
     const unsigned objectsBefore = countObjects();

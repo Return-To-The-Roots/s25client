@@ -182,12 +182,12 @@ BOOST_FIXTURE_TEST_CASE(GeologistPlacesSigns, EmptyWorldFixture1P)
     // All discovered
     BOOST_TEST(notes.size() >= 5u);
     // All from this player
-    BOOST_TEST(!helpers::contains_if(notes, [](const ResourceNote& note) { return note.player != 0; }));
-    BOOST_TEST(helpers::contains_if(notes, [&](const ResourceNote& note) { return note.pos == waterPos; }));
-    BOOST_TEST(helpers::contains_if(notes, [&](const ResourceNote& note) { return note.pos == coalPos; }));
-    BOOST_TEST(helpers::contains_if(notes, [&](const ResourceNote& note) { return note.pos == ironPos; }));
-    BOOST_TEST(helpers::contains_if(notes, [&](const ResourceNote& note) { return note.pos == goldPos; }));
-    BOOST_TEST(helpers::contains_if(notes, [&](const ResourceNote& note) { return note.pos == granitePos; }));
+    BOOST_TEST(!helpers::containsIf(notes, [](const ResourceNote& note) { return note.player != 0; }));
+    BOOST_TEST(helpers::containsIf(notes, [&](const ResourceNote& note) { return note.pos == waterPos; }));
+    BOOST_TEST(helpers::containsIf(notes, [&](const ResourceNote& note) { return note.pos == coalPos; }));
+    BOOST_TEST(helpers::containsIf(notes, [&](const ResourceNote& note) { return note.pos == ironPos; }));
+    BOOST_TEST(helpers::containsIf(notes, [&](const ResourceNote& note) { return note.pos == goldPos; }));
+    BOOST_TEST(helpers::containsIf(notes, [&](const ResourceNote& note) { return note.pos == granitePos; }));
     for(const ResourceNote& note : notes)
     {
         BOOST_TEST(note.res == world.getNode(note.pos).resources);

@@ -58,7 +58,7 @@ namespace files {
 } // namespace files
 namespace resources {
     constexpr auto boat = "<RTTR_GAME>/DATA/BOBS/BOAT.LST";
-    constexpr auto boot_z = "<RTTR_GAME>/DATA/BOOT_Z.LST";
+    constexpr auto bootZ = "<RTTR_GAME>/DATA/BOOT_Z.LST";
     constexpr auto carrier = "<RTTR_GAME>/DATA/BOBS/CARRIER.BOB";
     constexpr auto config = "<RTTR_USERDATA>/CONFIG.INI"; // main config file
     constexpr auto ingameOptions = "<RTTR_USERDATA>/IngameOptions.ini";
@@ -77,7 +77,7 @@ namespace resources {
     constexpr auto paletti1 = "<RTTR_GAME>/GFX/PALETTE/PALETTI1.BBM";
     constexpr auto paletti8 = "<RTTR_GAME>/GFX/PALETTE/PALETTI8.BBM";
     constexpr auto resource = "<RTTR_GAME>/DATA/RESOURCE.DAT";
-    constexpr auto rom_bobs = "<RTTR_GAME>/DATA/CBOB/ROM_BOBS.LST";
+    constexpr auto romBobs = "<RTTR_GAME>/DATA/CBOB/ROM_BOBS.LST";
     constexpr auto setup013 = "<RTTR_GAME>/GFX/PICS/SETUP013.LBM"; // option backgrond
     constexpr auto setup015 = "<RTTR_GAME>/GFX/PICS/SETUP015.LBM"; // free play background
 } // namespace resources
