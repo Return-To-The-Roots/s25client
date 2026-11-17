@@ -346,7 +346,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     for(const auto what : {SaveGameDataToLoad::Header, SaveGameDataToLoad::HeaderAndSettings, SaveGameDataToLoad::All})
     {
         Savegame loadSave;
-        BOOST_TEST_REQUIRE(loadSave.Load(tmpFile.filePath, what));
+        BOOST_TEST_REQUIRE(loadSave.load(tmpFile.filePath, what));
         BOOST_TEST(loadSave.getSaveTime() == save.getSaveTime());
         BOOST_TEST(loadSave.getMapName() == "MapTitle");
         BOOST_TEST(loadSave.getPlayerNames().size() == 3u);
@@ -760,7 +760,7 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
     BOOST_TEST_REQUIRE(deserializedHunter2);
     BOOST_TEST(deserializedHunter1->getState() != deserializedHunter2->getState());
 
-    // Serialize again and compare data
+    // serialize again and compare data
     SerializedGameData sgd2;
     sgd2.makeSnapshot(*game);
     BOOST_CHECK_EQUAL_COLLECTIONS(sgd.GetData(), sgd.GetData() + sgd.GetLength(), sgd2.GetData(),
@@ -771,10 +771,10 @@ BOOST_AUTO_TEST_CASE(SerializeGameMessageChat)
 {
     const GameMessage_Chat msg(rttr::test::randomValue(0u, 10u), rttr::test::randomEnum<ChatDestination>(), "Hello");
     Serializer ser;
-    msg.Serialize(ser);
+    msg.serialize(ser);
     std::unique_ptr<Message> newMsg(GameMessage::createGame(msg.getId()));
     BOOST_TEST_REQUIRE(!!newMsg);
-    newMsg->Deserialize(ser);
+    newMsg->deserialize(ser);
     const auto* newMsgChat = dynamic_cast<GameMessage_Chat*>(newMsg.get());
     BOOST_TEST_REQUIRE(newMsgChat);
     BOOST_TEST(newMsgChat->player == msg.player);

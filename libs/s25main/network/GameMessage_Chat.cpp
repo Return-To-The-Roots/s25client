@@ -7,16 +7,16 @@
 #include "helpers/serializeEnums.h"
 #include "s25util/Serializer.h"
 
-void GameMessage_Chat::Serialize(Serializer& ser) const
+void GameMessage_Chat::serialize(Serializer& ser) const
 {
-    GameMessageWithPlayer::Serialize(ser);
+    GameMessageWithPlayer::serialize(ser);
     helpers::pushEnum<uint8_t>(ser, destination);
     ser.PushString(text);
 }
 
-void GameMessage_Chat::Deserialize(Serializer& ser)
+void GameMessage_Chat::deserialize(Serializer& ser)
 {
-    GameMessageWithPlayer::Deserialize(ser);
+    GameMessageWithPlayer::deserialize(ser);
     destination = helpers::popEnum<ChatDestination>(ser);
     text = ser.PopString();
 }

@@ -18,17 +18,17 @@ GameMessage_Player_List::GameMessage_Player_List(const std::vector<JoinPlayerInf
 
 GameMessage_Player_List::~GameMessage_Player_List() = default;
 
-void GameMessage_Player_List::Serialize(Serializer& ser) const
+void GameMessage_Player_List::serialize(Serializer& ser) const
 {
-    GameMessage::Serialize(ser);
+    GameMessage::serialize(ser);
     ser.PushUnsignedInt(playerInfos.size());
     for(const auto& playerInfo : playerInfos)
         playerInfo.serialize(ser);
 }
 
-void GameMessage_Player_List::Deserialize(Serializer& ser)
+void GameMessage_Player_List::deserialize(Serializer& ser)
 {
-    GameMessage::Deserialize(ser);
+    GameMessage::deserialize(ser);
     unsigned numPlayers = ser.PopUnsignedInt();
     playerInfos.clear();
     playerInfos.reserve(numPlayers);
@@ -42,35 +42,35 @@ bool GameMessage_Player_List::runGame(GameMessageInterface* callback) const
     for(unsigned i = 0; i < playerInfos.size(); ++i)
     {
         const JoinPlayerInfo& playerInfo = playerInfos[i];
-        LOG.writeToFile("    %d: %s %d %d %d %d %d %s\n") % i % playerInfo.name % rttr::enum_cast(playerInfo.ps)
-          % playerInfo.ping % rttr::enum_cast(playerInfo.nation) % playerInfo.color % rttr::enum_cast(playerInfo.team)
+        LOG.writeToFile("    %d: %s %d %d %d %d %d %s\n") % i % playerInfo.name % rttr::enumCast(playerInfo.ps)
+          % playerInfo.ping % rttr::enumCast(playerInfo.nation) % playerInfo.color % rttr::enumCast(playerInfo.team)
           % (playerInfo.isReady ? "true" : "false");
     }
     return callback->onGameMessage(*this);
 }
 
-void GameMessage_Server_Async::Serialize(Serializer& ser) const
+void GameMessage_Server_Async::serialize(Serializer& ser) const
 {
-    GameMessage::Serialize(ser);
+    GameMessage::serialize(ser);
     helpers::pushContainer(ser, checksums);
 }
 
-void GameMessage_Server_Async::Deserialize(Serializer& ser)
+void GameMessage_Server_Async::deserialize(Serializer& ser)
 {
-    GameMessage::Deserialize(ser);
+    GameMessage::deserialize(ser);
     helpers::popContainer(ser, checksums);
 }
 
-void GameMessage_Server_TypeOK::Serialize(Serializer& ser) const
+void GameMessage_Server_TypeOK::serialize(Serializer& ser) const
 {
-    GameMessage::Serialize(ser);
+    GameMessage::serialize(ser);
     helpers::pushEnum<uint32_t>(ser, err_code);
     ser.PushString(version);
 }
 
-void GameMessage_Server_TypeOK::Deserialize(Serializer& ser)
+void GameMessage_Server_TypeOK::deserialize(Serializer& ser)
 {
-    GameMessage::Deserialize(ser);
+    GameMessage::deserialize(ser);
     err_code = helpers::popEnum<StatusCode>(ser);
     version = ser.PopString();
 }

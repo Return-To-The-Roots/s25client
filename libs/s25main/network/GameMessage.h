@@ -37,6 +37,6 @@ public:
 
     GameMessageWithPlayer(uint16_t id, uint8_t player = NO_PLAYER_ID) : GameMessage(id), player(player) {}
 
-    void Serialize(Serializer& ser) const override;
-    void Deserialize(Serializer& ser) override;
+    void serialize(Serializer& ser) const override;
+    void deserialize(Serializer& ser) override;
 };
