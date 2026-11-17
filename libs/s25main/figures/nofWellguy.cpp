@@ -44,68 +44,68 @@ void nofWellguy::drawWorking(DrawPoint drawPt)
        Direction::NorthWest},
     }};
 
-    unsigned max_id = 112;
-    unsigned now_id = GAMECLIENT.interpolate(max_id, current_ev);
+    unsigned maxId = 112;
+    unsigned nowId = GAMECLIENT.interpolate(maxId, current_ev);
     const Nation wpNation = workplace->getNation();
     unsigned plColor = world->getPlayer(player).color;
 
     // position zum rauslaufen berechnen
-    DrawPoint walkOutPos = drawPt + walkoffsets[wpNation][now_id % 8];
+    DrawPoint walkOutPos = drawPt + walkoffsets[wpNation][nowId % 8];
     // position zum reinlaufen berechnen
-    DrawPoint walkInPos = drawPt + walkoffsets[wpNation][7 - (now_id % 8)];
+    DrawPoint walkInPos = drawPt + walkoffsets[wpNation][7 - (nowId % 8)];
 
-    if(now_id < 2) // laufen 1
+    if(nowId < 2) // laufen 1
     {
         if(wpNation == Nation::Romans)
             LOADER.building_cache[wpNation][BuildingType::Well].door.drawFull(drawPt);
-        LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][0], now_id % 8)
+        LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][0], nowId % 8)
           .draw(walkOutPos, COLOR_WHITE, plColor);
-    } else if(now_id < 4) // laufen 2
+    } else if(nowId < 4) // laufen 2
     {
         if(wpNation == Nation::Romans)
             LOADER.building_cache[wpNation][BuildingType::Well].door.drawFull(drawPt);
-        LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][1], now_id % 8)
+        LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][1], nowId % 8)
           .draw(walkOutPos, COLOR_WHITE, plColor);
-    } else if(now_id < 8) // laufen 3
+    } else if(nowId < 8) // laufen 3
     {
-        LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][2], now_id % 8)
+        LOADER.getCarrierSprite(GoodType::WaterEmpty, false, walkdirection[wpNation][2], nowId % 8)
           .draw(walkOutPos, COLOR_WHITE, plColor);
-    } else if(now_id < 16) // eimer runter lassen
+    } else if(nowId < 16) // eimer runter lassen
     {
-        if(now_id == 8)
+        if(nowId == 8)
             LOADER.getPlayerImage("rom_bobs", 346)->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
         else
-            LOADER.getPlayerImage("rom_bobs", 346 + (now_id % 8) - 1)
+            LOADER.getPlayerImage("rom_bobs", 346 + (nowId % 8) - 1)
               ->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
-    } else if(now_id < max_id - 16) // kurbeln
+    } else if(nowId < maxId - 16) // kurbeln
     {
-        LOADER.getPlayerImage("rom_bobs", 330 + (now_id % 8))
+        LOADER.getPlayerImage("rom_bobs", 330 + (nowId % 8))
           ->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
-    } else if(now_id < max_id - 8) // eimer rauf kurbeln
+    } else if(nowId < maxId - 8) // eimer rauf kurbeln
     {
-        LOADER.getPlayerImage("rom_bobs", 338 + (now_id % 8))
+        LOADER.getPlayerImage("rom_bobs", 338 + (nowId % 8))
           ->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
-    } else if(now_id < max_id - 4) // laufen 3
+    } else if(nowId < maxId - 4) // laufen 3
     {
-        LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][3], now_id % 8)
+        LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][3], nowId % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
-    } else if(now_id < max_id - 2) // laufen 2
+    } else if(nowId < maxId - 2) // laufen 2
     {
         if(wpNation == Nation::Romans)
             LOADER.building_cache[wpNation][BuildingType::Well].door.drawFull(drawPt);
-        LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][4], now_id % 8)
+        LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][4], nowId % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     } else // laufen 1
     {
         if(wpNation == Nation::Romans)
             LOADER.building_cache[wpNation][BuildingType::Well].door.drawFull(drawPt);
-        LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][5], now_id % 8)
+        LOADER.getCarrierSprite(GoodType::Water, false, walkdirection[wpNation][5], nowId % 8)
           .draw(walkInPos, COLOR_WHITE, plColor);
     }
 
-    if((now_id >= 8) && (now_id < max_id - 8) && now_id % 8 == 4)
+    if((nowId >= 8) && (nowId < maxId - 8) && nowId % 8 == 4)
     {
-        world->getSoundMgr().playNOSound(82, *this, now_id);
+        world->getSoundMgr().playNOSound(82, *this, nowId);
         was_sounding = true;
     }
 }

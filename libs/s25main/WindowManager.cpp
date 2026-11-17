@@ -217,10 +217,10 @@ IngameWindow* WindowManager::findWindowAtPos(const Position& pos) const
     for(const auto& window : helpers::reverse(windows))
     {
         // FensterRect für Kollisionsabfrage
-        Rect window_rect = window->getDrawRect();
+        Rect windowRect = window->getDrawRect();
 
         // trifft die Maus auf ein Fenster?
-        if(isPointInRect(pos, window_rect))
+        if(isPointInRect(pos, windowRect))
         {
             return window.get();
         }
@@ -283,11 +283,11 @@ void WindowManager::msgLeftUp(MouseCoords mc)
     if(!curDesktop)
         return;
 
-    unsigned time_now = VIDEODRIVER.getTickCount();
+    unsigned timeNow = VIDEODRIVER.getTickCount();
 
     if(VIDEODRIVER.isTouch())
     {
-        if(time_now - lastLeftClickTime < TOUCH_DOUBLE_CLICK_INTERVAL)
+        if(timeNow - lastLeftClickTime < TOUCH_DOUBLE_CLICK_INTERVAL)
         {
             // Calculate distance between two points
             const Point<int> diff = mc.pos - lastLeftClickPos;
@@ -295,14 +295,14 @@ void WindowManager::msgLeftUp(MouseCoords mc)
                 mc.dbl_click = true;
         }
 
-    } else if(time_now - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
+    } else if(timeNow - lastLeftClickTime < DOUBLE_CLICK_INTERVAL && mc.pos == lastLeftClickPos)
         mc.dbl_click = true;
 
     if(!mc.dbl_click)
     {
         // Save values for next potential dbl click
         lastLeftClickPos = mc.pos;
-        lastLeftClickTime = time_now;
+        lastLeftClickTime = timeNow;
     }
 
     // Don't relay message if mouse is disabled (e.g. right after desktop switch)
@@ -650,10 +650,10 @@ void WindowManager::drawToolTip()
         constexpr unsigned rightSpacing = cursorWidth + cursorPadding;
         constexpr unsigned leftSpacing = cursorPadding;
         DrawPoint ttPos = DrawPoint(lastMousePos.x + rightSpacing, lastMousePos.y);
-        unsigned right_edge = ttPos.x + curTooltip->getWidth();
+        unsigned rightEdge = ttPos.x + curTooltip->getWidth();
 
         // links neben der Maus, wenn es über den Rand gehen würde
-        if(right_edge > curRenderSize.x)
+        if(rightEdge > curRenderSize.x)
             ttPos.x = lastMousePos.x - leftSpacing - curTooltip->getWidth();
         curTooltip->draw(ttPos);
     }

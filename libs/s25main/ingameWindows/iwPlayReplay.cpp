@@ -102,13 +102,13 @@ void iwPlayReplay::populateTable()
         std::string dateStr = s25util::Time::formatTime("%d.%m.%Y - %H:%i", replay.getSaveTime());
 
         // Spielernamen auslesen
-        std::string tmp_players;
+        std::string tmpPlayers;
         for(const std::string& playerName : replay.getPlayerNames())
         {
-            if(!tmp_players.empty())
-                tmp_players += ", ";
+            if(!tmpPlayers.empty())
+                tmpPlayers += ", ";
 
-            tmp_players += playerName;
+            tmpPlayers += playerName;
         }
 
         // Dateiname noch rausextrahieren aus dem Pfad
@@ -118,7 +118,7 @@ void iwPlayReplay::populateTable()
         std::string length = GAMECLIENT.formatGFTime(replay.getLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
-        table->addRow({fileName, dateStr, tmp_players, length, path.string()});
+        table->addRow({fileName, dateStr, tmpPlayers, length, path.string()});
     }
 
     // Erst einmal nach Dateiname sortieren

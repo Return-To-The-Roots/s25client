@@ -215,11 +215,11 @@ void ChangeMilitary::execute(GameWorld& world, uint8_t playerId)
     world.getPlayer(playerId).changeMilitarySettings(data);
 }
 
-ChangeTools::ChangeTools(const ToolSettings& data, const int8_t* order_delta)
+ChangeTools::ChangeTools(const ToolSettings& data, const int8_t* orderDelta)
     : GameCommand(GCType::ChangeTools), data(data), orders()
 {
-    if(order_delta != nullptr)
-        std::copy_n(order_delta, orders.size(), orders.begin());
+    if(orderDelta != nullptr)
+        std::copy_n(orderDelta, orders.size(), orders.begin());
 }
 
 void ChangeTools::execute(GameWorld& world, uint8_t playerId)

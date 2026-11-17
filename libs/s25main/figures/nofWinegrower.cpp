@@ -37,27 +37,27 @@ void nofWinegrower::drawWorking(DrawPoint drawPt)
 {
     if(harvest)
     {
-        const unsigned now_id = GAMECLIENT.interpolate(44, current_ev);
-        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::WINEGROWER_PICKING_GRAPES_ANIMATION] + now_id % 4)
+        const unsigned nowId = GAMECLIENT.interpolate(44, current_ev);
+        LOADER.getPlayerImage("wine_bobs", bobIndex[BobTypes::WINEGROWER_PICKING_GRAPES_ANIMATION] + nowId % 4)
           ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
     } else
     {
-        const unsigned now_id = GAMECLIENT.interpolate(3 * 16 + 8 * 4, current_ev);
-        unsigned draw_id;
-        if(now_id < 48)
+        const unsigned nowId = GAMECLIENT.interpolate(3 * 16 + 8 * 4, current_ev);
+        unsigned drawId;
+        if(nowId < 48)
         {
-            draw_id = bobIndex[BobTypes::WINEGROWER_DIGGING_ANIMATION] + now_id % 15;
+            drawId = bobIndex[BobTypes::WINEGROWER_DIGGING_ANIMATION] + nowId % 15;
 
             // Shovel-Sound
-            if(now_id % 16 == 5)
+            if(nowId % 16 == 5)
             {
-                world->getSoundMgr().playNOSound(76, *this, now_id, 200);
+                world->getSoundMgr().playNOSound(76, *this, nowId, 200);
                 was_sounding = true;
             }
         } else
-            draw_id = bobIndex[BobTypes::WINEGROWER_PLANTING_ANIMATION] + now_id % 4;
+            drawId = bobIndex[BobTypes::WINEGROWER_PLANTING_ANIMATION] + nowId % 4;
 
-        LOADER.getPlayerImage("wine_bobs", draw_id)->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+        LOADER.getPlayerImage("wine_bobs", drawId)->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
     }
 }
 
@@ -92,9 +92,9 @@ void nofWinegrower::workFinished()
         // Check if there is still a grapes field at this position
         if(nob->getGOT() != GO_Type::Grapefield)
             return;
-        const unsigned wine_bobs = static_cast<noGrapefield*>(nob)->getHarvestID();
+        const unsigned wineBobs = static_cast<noGrapefield*>(nob)->getHarvestID();
         world->destroyNO(pos);
-        world->setNO(pos, new noEnvObject(pos, wine_bobs, 7));
+        world->setNO(pos, new noEnvObject(pos, wineBobs, 7));
 
         // Take harvested grapes into hands
         ware = GoodType::Grapes;

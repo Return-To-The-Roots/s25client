@@ -210,7 +210,7 @@ public:
     /// Legt eine Ware im Lagerhaus ab
     void addWare(std::unique_ptr<Ware> ware) override;
     /// Eine Figur geht ins Lagerhaus
-    virtual void addFigure(std::unique_ptr<noFigure> figure, bool increase_visual_counts = true);
+    virtual void addFigure(std::unique_ptr<noFigure> figure, bool increaseVisualCounts = true);
 
     /// Eine bestellte Ware konnte doch nicht kommen
     void wareLost(Ware& ware) override;

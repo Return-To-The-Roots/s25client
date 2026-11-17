@@ -223,13 +223,13 @@ void addResources(Map& map, RandomUtility& rnd, const MapSettings& settings)
             {
                 for(int yd = -4; yd <= 4; ++yd)
                 {
-                    const MapPoint pt_d = resources.makeMapPoint(pt + Position(xd, yd));
+                    const MapPoint ptD = resources.makeMapPoint(pt + Position(xd, yd));
                     // Only place it on mines that have no resource yet, adjust the budget for each placed
                     // resource.
-                    if(!resources[pt_d] && textures.all(pt_d, isMinableMountain))
+                    if(!resources[ptD] && textures.all(ptD, isMinableMountain))
                     {
                         --mRI.budget;
-                        resources[pt_d] = mRI.resource + rnd.randomValue(1, 8);
+                        resources[ptD] = mRI.resource + rnd.randomValue(1, 8);
                     }
                 }
             }

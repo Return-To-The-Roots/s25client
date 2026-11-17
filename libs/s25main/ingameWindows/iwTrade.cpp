@@ -33,16 +33,16 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
     // Gebäudebild und dessen Schatten
     addImage(0, DrawPoint(100, 144), &wh.getBuildingImage());
 
-    const unsigned left_column = 200;
+    const unsigned leftColumn = 200;
 
-    addComboBox(4, DrawPoint(left_column, 84), Extent(160, 18), TextureColor::Grey, NormalFont,
+    addComboBox(4, DrawPoint(leftColumn, 84), Extent(160, 18), TextureColor::Grey, NormalFont,
                 90); // Ware/Figure names
-    addText(1, DrawPoint(left_column, 30), "Deal in:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
-    ctrlComboBox* box = this->addComboBox(2, DrawPoint(left_column, 44), Extent(160, 18), TextureColor::Grey,
-                                          NormalFont, 200); // Ware or figure?
+    addText(1, DrawPoint(leftColumn, 30), "Deal in:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+    ctrlComboBox* box = this->addComboBox(2, DrawPoint(leftColumn, 44), Extent(160, 18), TextureColor::Grey, NormalFont,
+                                          200); // Ware or figure?
     box->addItem(_("Wares"));
     box->addItem(_("Settlers"));
-    addText(3, DrawPoint(left_column, 70), "Type:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+    addText(3, DrawPoint(leftColumn, 70), "Type:", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
     // Create possible wares, figures
     for(const auto i : helpers::enumRange<GoodType>())
@@ -63,12 +63,12 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
         jobs.push_back(i);
     }
 
-    addImage(5, DrawPoint(left_column + 20, 130), static_cast<ITexture*>(nullptr), _("Ware you like to trade"));
-    addEdit(6, DrawPoint(left_column + 34, 120), Extent(39, 20), TextureColor::Grey, NormalFont)
+    addImage(5, DrawPoint(leftColumn + 20, 130), static_cast<ITexture*>(nullptr), _("Ware you like to trade"));
+    addEdit(6, DrawPoint(leftColumn + 34, 120), Extent(39, 20), TextureColor::Grey, NormalFont)
       ->setType(EditType::Number);
-    addText(7, DrawPoint(left_column + 75, 125), "/ 20", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
+    addText(7, DrawPoint(leftColumn + 75, 125), "/ 20", COLOR_YELLOW, FontStyle::LEFT, NormalFont);
 
-    addTextButton(8, DrawPoint(left_column, 150), Extent(150, 22), TextureColor::Green2, _("Send"), NormalFont);
+    addTextButton(8, DrawPoint(leftColumn, 150), Extent(150, 22), TextureColor::Green2, _("Send"), NormalFont);
 
     // Choose wares at first
     box->setSelection(0);
@@ -78,20 +78,20 @@ iwTrade::iwTrade(const nobBaseWarehouse& wh, const GameWorldViewer& gwv, GameCom
 void iwTrade::msgButtonClick(const unsigned /*ctrl_id*/)
 {
     // pressed the send button
-    const unsigned ware_figure_selection = getCtrl<ctrlComboBox>(4)->getSelection().value();
+    const unsigned wareFigureSelection = getCtrl<ctrlComboBox>(4)->getSelection().value();
     const bool isJob = this->getCtrl<ctrlComboBox>(2)->getSelection() == 1u;
     boost_variant2<GoodType, Job> what;
     if(isJob)
-        what = jobs[ware_figure_selection];
+        what = jobs[wareFigureSelection];
     else
-        what = wares[ware_figure_selection];
+        what = wares[wareFigureSelection];
 
-    const std::string number_str = getCtrl<ctrlEdit>(6)->getText();
+    const std::string numberStr = getCtrl<ctrlEdit>(6)->getText();
 
     // Start trading
-    if(!getCtrl<ctrlComboBox>(4)->getCtrl<ctrlList>(0)->isVisible() && helpers::fromString(number_str, 0) > 0)
+    if(!getCtrl<ctrlComboBox>(4)->getCtrl<ctrlList>(0)->isVisible() && helpers::fromString(numberStr, 0) > 0)
     {
-        if(gcFactory.TradeOverLand(wh.getPos(), what, helpers::fromString(number_str, 0)))
+        if(gcFactory.TradeOverLand(wh.getPos(), what, helpers::fromString(numberStr, 0)))
             this->close();
     }
 }

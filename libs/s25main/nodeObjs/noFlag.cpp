@@ -109,10 +109,10 @@ void noFlag::draw(DrawPoint drawPt)
     static constexpr std::array<DrawPoint, 8> WARES_POS = {
       {{0, 0}, {-4, 0}, {3, -1}, {-7, -1}, {6, -2}, {-10, -2}, {9, -5}, {-13, -5}}};
 
-    unsigned ani_step = GAMECLIENT.getGlobalAnimation(8, 2, 1, ani_offset);
+    unsigned aniStep = GAMECLIENT.getGlobalAnimation(8, 2, 1, ani_offset);
 
-    LOADER.flag_cache[world->getPlayer(player).nation][flagtype][ani_step].draw(drawPt, 0xFFFFFFFF,
-                                                                                world->getPlayer(player).color);
+    LOADER.flag_cache[world->getPlayer(player).nation][flagtype][aniStep].draw(drawPt, 0xFFFFFFFF,
+                                                                               world->getPlayer(player).color);
 
     // Waren (von hinten anfangen zu zeichnen)
     for(unsigned i = wares.size(); i > 0; --i)
@@ -154,31 +154,31 @@ void noFlag::addWare(std::unique_ptr<Ware> ware)
 std::unique_ptr<Ware> noFlag::selectWare(const Direction roadDir, const bool swap_wares, const noFigure* const carrier)
 {
     // Index merken, damit wir die enstprechende Ware dann entfernen können
-    int best_ware_index = -1;
+    int bestWareIndex = -1;
 
     // Die mit der niedrigsten, d.h. höchsten Priorität wird als erstes transportiert
     for(unsigned i = 0; i < wares.size(); ++i)
     {
         if(wares[i]->getNextDir() == toRoadPathDirection(roadDir))
         {
-            if(best_ware_index >= 0)
+            if(bestWareIndex >= 0)
             {
                 if(world->getPlayer(player).getTransportPriority(wares[i]->type)
-                   < world->getPlayer(player).getTransportPriority(wares[best_ware_index]->type))
+                   < world->getPlayer(player).getTransportPriority(wares[bestWareIndex]->type))
                 {
-                    best_ware_index = i;
+                    bestWareIndex = i;
                 }
             } else
-                best_ware_index = i;
+                bestWareIndex = i;
         }
     }
 
     // Ware von der Flagge entfernen
     std::unique_ptr<Ware> bestWare;
-    if(best_ware_index >= 0)
+    if(bestWareIndex >= 0)
     {
-        bestWare = std::move(wares[best_ware_index]);
-        wares.erase(wares.begin() + best_ware_index);
+        bestWare = std::move(wares[bestWareIndex]);
+        wares.erase(wares.begin() + bestWareIndex);
     }
 
     // ggf. anderen Trägern Bescheid sagen, aber nicht dem, der die Ware aufgehoben hat!
@@ -347,20 +347,20 @@ void noFlag::impossibleForBWU(const unsigned bwu_id)
     }
 
     // Gibts noch nicht, dann den ältesten BWU-Account raussuchen und den überschreiben
-    unsigned oldest_gf = 0xFFFFFFFF;
-    unsigned oldest_account_id = 0;
+    unsigned oldestGf = 0xFFFFFFFF;
+    unsigned oldestAccountId = 0;
 
     for(unsigned i = 0; i < bwus.size(); ++i)
     {
-        if(bwus[i].last_gf < oldest_gf)
+        if(bwus[i].last_gf < oldestGf)
         {
             // Neuer ältester
-            oldest_gf = bwus[i].last_gf;
-            oldest_account_id = i;
+            oldestGf = bwus[i].last_gf;
+            oldestAccountId = i;
         }
     }
 
     // Den ältesten dann schließlich überschreiben
-    bwus[oldest_account_id].id = bwu_id;
-    bwus[oldest_account_id].last_gf = oldest_gf;
+    bwus[oldestAccountId].id = bwu_id;
+    bwus[oldestAccountId].last_gf = oldestGf;
 }

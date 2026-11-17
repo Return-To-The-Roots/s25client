@@ -225,9 +225,9 @@ void nofAttacker::walked()
                                     std::make_unique<PostMsgWithBuilding>(getEvMgr().getCurrentGF(), msg,
                                                                           PostCategory::Military, *attacked_goal));
 
-                    nobBaseMilitary* tmp_goal = attacked_goal; // Store in a temporary in case it gets reset by Destroy
-                    tmp_goal->destroy();
-                    delete tmp_goal;
+                    nobBaseMilitary* tmpGoal = attacked_goal; // Store in a temporary in case it gets reset by Destroy
+                    tmpGoal->destroy();
+                    delete tmpGoal;
                     attacked_goal = nullptr;
                     returnHomeMissionAttacking();
                 }
@@ -240,10 +240,10 @@ void nofAttacker::walked()
         {
             // Abort if the harbor doesn't exist, belongs to another player or the attacked building is gone
             const noBase* hb = world->getNO(harborPos);
-            const bool valid_harbor = hb->getGOT() == GO_Type::NobHarborbuilding
-                                      && static_cast<const nobHarborBuilding*>(hb)->getPlayer() == player;
+            const bool validHarbor = hb->getGOT() == GO_Type::NobHarborbuilding
+                                     && static_cast<const nobHarborBuilding*>(hb)->getPlayer() == player;
 
-            if(!valid_harbor || !attacked_goal)
+            if(!validHarbor || !attacked_goal)
             {
                 returnHomeMissionAttacking();
                 return;
@@ -587,13 +587,13 @@ void nofAttacker::attackedGoalDestroyed()
         harbor->cancelSeaAttacker(this);
     } else
     {
-        const bool was_waiting_for_defender = (state == SoldierState::AttackingWaitingForDefender);
+        const bool wasWaitingForDefender = (state == SoldierState::AttackingWaitingForDefender);
 
         // If waiting start moving
         if(state == SoldierState::AttackingWaitingForDefender || state == SoldierState::AttackingWaitingAroundBuilding
            || state == SoldierState::WaitingForFight)
             returnHomeMissionAttacking();
-        if(was_waiting_for_defender)
+        if(wasWaitingForDefender)
         {
             getEvMgr().removeEvent(blocking_event);
             world->roadNodeAvailable(pos);
@@ -607,10 +607,10 @@ bool nofAttacker::attackDefenderAtFlag()
     const auto dir = world->findHumanPath(pos, attacked_goal->getFlagPos(), 3, true);
     if(dir)
     {
-        const bool waiting_around_building = (state == SoldierState::AttackingWaitingAroundBuilding);
+        const bool waitingAroundBuilding = (state == SoldierState::AttackingWaitingAroundBuilding);
         state = SoldierState::AttackingAttackingFlag;
 
-        if(waiting_around_building)
+        if(waitingAroundBuilding)
         {
             startWalking(*dir);
             attacked_goal->sendSuccessor(pos, radius);

@@ -320,7 +320,7 @@ void nofActiveSoldier::meetingEnemy()
 void nofActiveSoldier::abortFreeFight()
 {
     const bool enemyWasWaiting = enemy && enemy->state == SoldierState::WaitingForFight;
-    auto* old_enemy = enemy;
+    auto* oldEnemy = enemy;
     // First clean up as much as possible: Reset enemies and set new state for both
     if(enemy)
     {
@@ -329,14 +329,14 @@ void nofActiveSoldier::abortFreeFight()
         enemy = nullptr;
     }
     state = freeFightAborted();
-    if(old_enemy)
-        old_enemy->state = old_enemy->freeFightAborted();
+    if(oldEnemy)
+        oldEnemy->state = oldEnemy->freeFightAborted();
     // Now the (possibly) 2 soldiers are in a state where they could even engage in another fight with each other
     if(enemyWasWaiting)
     {
         // Act as-if the enemy just arrived at his position so he'll start moving again if required
-        RTTR_Assert(!old_enemy->isMoving());
-        old_enemy->walked();
+        RTTR_Assert(!oldEnemy->isMoving());
+        oldEnemy->walked();
     }
 }
 
@@ -376,11 +376,11 @@ void nofActiveSoldier::meetEnemy(nofActiveSoldier& other, const MapPoint figh_sp
     enemy = &other;
     fightSpot_ = figh_spot;
 
-    SoldierState old_state = state;
+    SoldierState oldState = state;
     state = SoldierState::MeetEnemy;
 
     // In some cases we have to start walking
-    if(old_state == SoldierState::AttackingWaitingAroundBuilding)
+    if(oldState == SoldierState::AttackingWaitingAroundBuilding)
         meetingEnemy();
 }
 

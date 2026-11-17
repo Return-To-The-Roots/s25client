@@ -67,14 +67,14 @@ bool Playlist::load(Log& logger, const boost::filesystem::path& filepath)
     if(!in)
         return false;
 
-    std::string line, random_str;
+    std::string line, randomStr;
     if(!std::getline(in, line))
         return false;
     s25util::ClassicImbuedStream<std::istringstream> sline(line);
-    if(!(sline >> numRepeats_ >> random_str))
+    if(!(sline >> numRepeats_ >> randomStr))
         return false;
 
-    random_ = (random_str == "random_playback" || random_str == "random");
+    random_ = (randomStr == "random_playback" || randomStr == "random");
 
     while(std::getline(in, line))
     {

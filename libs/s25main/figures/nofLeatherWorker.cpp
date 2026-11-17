@@ -24,27 +24,27 @@ void nofLeatherWorker::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{11, -41}, {21, -20}, {21, -17}, {24, -13}, {22, -14}}};
 
-    const unsigned now_id = GAMECLIENT.interpolate(230, current_ev);
+    const unsigned nowId = GAMECLIENT.interpolate(230, current_ev);
 
-    LOADER.getPlayerImage("leather_bobs", bobIndex[BobType::LeatherworksWorkWindowAnimation] + (now_id % 23))
+    LOADER.getPlayerImage("leather_bobs", bobIndex[BobType::LeatherworksWorkWindowAnimation] + (nowId % 23))
       ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     // hammer sound
-    if(now_id % 23 == 3 || now_id % 23 == 7)
+    if(nowId % 23 == 3 || nowId % 23 == 7)
     {
-        world->getSoundMgr().playNOSound(72, *this, now_id, 100);
+        world->getSoundMgr().playNOSound(72, *this, nowId, 100);
         was_sounding = true;
-    } else if(now_id % 23 == 9) // saw sound 1
+    } else if(nowId % 23 == 9) // saw sound 1
     {
-        world->getSoundMgr().playNOSound(54, *this, now_id);
+        world->getSoundMgr().playNOSound(54, *this, nowId);
         was_sounding = true;
-    } else if(now_id % 23 == 17) // saw sound 2
+    } else if(nowId % 23 == 17) // saw sound 2
     {
-        world->getSoundMgr().playNOSound(55, *this, now_id);
+        world->getSoundMgr().playNOSound(55, *this, nowId);
         was_sounding = true;
     }
 
-    last_id = now_id;
+    last_id = nowId;
 }
 
 #ifdef _MSC_VER

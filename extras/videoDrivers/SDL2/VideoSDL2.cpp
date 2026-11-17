@@ -543,7 +543,7 @@ std::vector<VideoMode> VideoSDL2::listVideoModes() const
     int display = SDL_GetWindowDisplayIndex(window);
     if(display < 0)
         display = 0;
-    std::vector<VideoMode> video_modes;
+    std::vector<VideoMode> videoModes;
     for(int i = SDL_GetNumDisplayModes(display) - 1; i >= 0; --i)
     {
         SDL_DisplayMode mode;
@@ -552,11 +552,11 @@ std::vector<VideoMode> VideoSDL2::listVideoModes() const
         else
         {
             VideoMode vm(mode.w, mode.h);
-            if(!helpers::contains(video_modes, vm))
-                video_modes.push_back(vm);
+            if(!helpers::contains(videoModes, vm))
+                videoModes.push_back(vm);
         }
     }
-    return video_modes;
+    return videoModes;
 }
 
 OpenGL_Loader_Proc VideoSDL2::getLoaderFunction() const

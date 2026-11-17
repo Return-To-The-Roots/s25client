@@ -37,23 +37,22 @@ void nofCharburner::drawWorking(DrawPoint drawPt)
 {
     if(harvest)
     {
-        unsigned short now_id = GAMECLIENT.interpolate(39, current_ev);
+        unsigned short nowId = GAMECLIENT.interpolate(39, current_ev);
 
         // Schaufel-Sound
-        if(now_id == 6 || now_id == 18 || now_id == 30)
+        if(nowId == 6 || nowId == 18 || nowId == 30)
         {
-            world->getSoundMgr().playNOSound(76, *this, now_id / 12, 200);
+            world->getSoundMgr().playNOSound(76, *this, nowId / 12, 200);
             was_sounding = true;
         }
 
-        unsigned draw_id;
-        if(now_id < 36)
-            draw_id = 9 + now_id % 12;
+        unsigned drawId;
+        if(nowId < 36)
+            drawId = 9 + nowId % 12;
         else
-            draw_id = 9 + 12 + (now_id - 36);
+            drawId = 9 + 12 + (nowId - 36);
 
-        LOADER.getPlayerImage("charburner_bobs", draw_id)
-          ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+        LOADER.getPlayerImage("charburner_bobs", drawId)->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
     } else
         LOADER.getPlayerImage("charburner_bobs", 1 + GAMECLIENT.interpolate(18, current_ev) % 6)
           ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);

@@ -84,8 +84,8 @@ public:
 
 private:
     void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
-    void msgTabChange(unsigned ctrl_id, unsigned short tab_id) override;
-    void msgGroupTabChange(unsigned group_id, unsigned ctrl_id, unsigned short tab_id) override;
+    void msgTabChange(unsigned ctrl_id, unsigned short tabId) override;
+    void msgGroupTabChange(unsigned group_id, unsigned ctrl_id, unsigned short tabId) override;
     void msgPaintAfter() override;
 
     inline void msgButtonClickTabBuild(unsigned ctrl_id);
@@ -100,7 +100,7 @@ private:
     void disableMousePosResetOnClose();
 
     /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
-    void addAttackControls(ctrlGroup* group, unsigned attackers_count);
+    void addAttackControls(ctrlGroup* group, unsigned attackersCount);
     void addUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);
     bool doUpgradeRoad();
 };

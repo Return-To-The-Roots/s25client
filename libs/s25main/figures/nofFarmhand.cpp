@@ -96,7 +96,7 @@ void nofFarmhand::handleDerivedEvent(const unsigned /*id*/)
         {
             // Start working after the initial wait period
             // Work radius
-            const unsigned max_radius = getWorkRadius(job_);
+            const unsigned maxRadius = getWorkRadius(job_);
             // Number of additional radii in which points should be found
             // I.e. 0 => Don't search for points further away than ones already found
             const unsigned additionalRadiiToFind = [](Job job) {
@@ -119,9 +119,9 @@ void nofFarmhand::handleDerivedEvent(const unsigned /*id*/)
             // Number of radii in which points have been found
             unsigned numFoundRadii = 0;
 
-            helpers::EnumArray<std::vector<MapPoint>, PointQuality> available_points;
+            helpers::EnumArray<std::vector<MapPoint>, PointQuality> availablePoints;
 
-            for(MapCoord tx = world->getXA(pos, Direction::West), r = 1; r <= max_radius;
+            for(MapCoord tx = world->getXA(pos, Direction::West), r = 1; r <= maxRadius;
                 tx = world->getXA(MapPoint(tx, pos.y), Direction::West), ++r)
             {
                 bool pointFound = false;
@@ -136,7 +136,7 @@ void nofFarmhand::handleDerivedEvent(const unsigned /*id*/)
                         {
                             if(!world->getNode(pt).reserved)
                             {
-                                available_points[quality].push_back(pt);
+                                availablePoints[quality].push_back(pt);
                                 pointFound = true;
                             } else if(job_ == Job::Stonemason)
                                 wait = true;
@@ -155,11 +155,11 @@ void nofFarmhand::handleDerivedEvent(const unsigned /*id*/)
             if(numFoundRadii > 0)
             {
                 // Prefer points with lower class (better)
-                for(auto& available_point : available_points)
+                for(auto& availablePoint : availablePoints)
                 {
-                    if(!available_point.empty())
+                    if(!availablePoint.empty())
                     {
-                        dest = RANDOM_ELEMENT(available_point);
+                        dest = RANDOM_ELEMENT(availablePoint);
                         break;
                     }
                 }

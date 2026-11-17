@@ -11,7 +11,7 @@
 #include "ogl/glFont.h"
 
 ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& pos, const Extent& size,
-                           const TextureColor tc, unsigned short button_minus, unsigned short button_plus,
+                           const TextureColor tc, unsigned short buttonMinus, unsigned short buttonPlus,
                            const unsigned short maximum, const Extent& padding, const unsigned force_color,
                            const std::string& tooltip, const std::string& button_minus_tooltip,
                            const std::string& button_plus_tooltip, unsigned short* const /*write_val*/)
@@ -19,21 +19,21 @@ ctrlProgress::ctrlProgress(Window* parent, const unsigned id, const DrawPoint& p
       force_color(force_color)
 {
     ResourceId btMinusRes = "io", btPlusRes = "io";
-    if(button_minus >= 1000)
+    if(buttonMinus >= 1000)
     {
         btMinusRes = "io_new";
-        button_minus -= 1000;
+        buttonMinus -= 1000;
     }
-    if(button_plus >= 1000)
+    if(buttonPlus >= 1000)
     {
         btPlusRes = "io_new";
-        button_plus -= 1000;
+        buttonPlus -= 1000;
     }
 
     Extent btSize = Extent::all(size.y);
-    addImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.getImageN(btMinusRes, button_minus),
+    addImageButton(0, DrawPoint(0, 0), btSize, tc, LOADER.getImageN(btMinusRes, buttonMinus),
                    (!button_minus_tooltip.empty() ? button_minus_tooltip : _("Less")));
-    addImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.getImageN(btPlusRes, button_plus),
+    addImageButton(1, DrawPoint(size.x - btSize.x, 0), btSize, tc, LOADER.getImageN(btPlusRes, buttonPlus),
                    (!button_plus_tooltip.empty() ? button_plus_tooltip : _("More")));
 
     // Hide left and right 3D border by making the buttons overlap the bar

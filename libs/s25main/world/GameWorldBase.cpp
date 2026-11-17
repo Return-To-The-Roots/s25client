@@ -314,10 +314,10 @@ void GameWorldBase::recalcBQAroundPointBig(const MapPoint pt)
 Visibility GameWorldBase::calcVisiblityWithAllies(const MapPoint pt, const unsigned char player) const
 {
     const MapNode& node = getNode(pt);
-    Visibility best_visibility = node.fow[player].visibility;
+    Visibility bestVisibility = node.fow[player].visibility;
 
-    if(best_visibility == Visibility::Visible)
-        return best_visibility;
+    if(bestVisibility == Visibility::Visible)
+        return bestVisibility;
 
     /// Teamsicht aktiviert?
     if(getGGS().teamView)
@@ -328,13 +328,13 @@ Visibility GameWorldBase::calcVisiblityWithAllies(const MapPoint pt, const unsig
         {
             if(i != player && curPlayer.isAlly(i))
             {
-                if(node.fow[i].visibility > best_visibility)
-                    best_visibility = node.fow[i].visibility;
+                if(node.fow[i].visibility > bestVisibility)
+                    bestVisibility = node.fow[i].visibility;
             }
         }
     }
 
-    return best_visibility;
+    return bestVisibility;
 }
 
 bool GameWorldBase::isCoastalPointToSeaWithHarbor(const MapPoint pt) const
@@ -427,11 +427,11 @@ HarborId GameWorldBase::getNextFreeHarborPoint(const MapPoint pt, const HarborId
 /// Bestimmt für einen beliebigen Punkt auf der Karte die Entfernung zum nächsten Hafenpunkt
 unsigned GameWorldBase::calcDistanceToNearestHarbor(const MapPoint pos) const
 {
-    unsigned min_distance = std::numeric_limits<unsigned>::max();
+    unsigned minDistance = std::numeric_limits<unsigned>::max();
     for(const auto i : helpers::idRange<HarborId>(getNumHarborPoints()))
-        min_distance = std::min(min_distance, this->calcDistance(pos, getHarborPoint(i)));
+        minDistance = std::min(minDistance, this->calcDistance(pos, getHarborPoint(i)));
 
-    return min_distance;
+    return minDistance;
 }
 
 /// returns true when a harborpoint is in SEAATTACK_DISTANCE for figures!
@@ -450,12 +450,12 @@ bool GameWorldBase::isAHarborInSeaAttackDistance(const MapPoint pos) const
 
 std::vector<HarborId> GameWorldBase::getUsableTargetHarborsForAttack(const MapPoint targetPt,
                                                                      std::vector<bool>& use_seas,
-                                                                     const unsigned char player_attacker) const
+                                                                     const unsigned char playerAttacker) const
 {
     // Walk to the flag of the bld/harbor. Important to check because in some locations where the coast is north of the
     // harbor this might be blocked
     const MapPoint flagPt = getNeighbour(targetPt, Direction::SouthEast);
-    std::vector<HarborId> harbor_points;
+    std::vector<HarborId> harborPoints;
     // Check each possible harbor
     for(const auto curHbId : helpers::idRange<HarborId>(getNumHarborPoints()))
     {
@@ -469,7 +469,7 @@ std::vector<HarborId> GameWorldBase::getUsableTargetHarborsForAttack(const MapPo
         {
             // Does an enemy harbor exist at current harbor spot? -> Can't attack through this harbor spot
             const auto* hb = getSpecObj<nobHarborBuilding>(harborPt);
-            if(hb && getPlayer(player_attacker).isAttackable(hb->getPlayer()))
+            if(hb && getPlayer(playerAttacker).isAttackable(hb->getPlayer()))
                 continue;
         }
 
@@ -500,18 +500,18 @@ std::vector<HarborId> GameWorldBase::getUsableTargetHarborsForAttack(const MapPo
                 use_seas.at(seaId.value() - 1) = true;
                 if(!harborinlist)
                 {
-                    harbor_points.push_back(curHbId);
+                    harborPoints.push_back(curHbId);
                     harborinlist = true;
                 }
             }
         }
     }
-    return harbor_points;
+    return harborPoints;
 }
 
 std::vector<SeaId> GameWorldBase::getFilteredSeaIDsForAttack(const MapPoint targetPt,
                                                              const std::vector<SeaId>& usableSeas,
-                                                             const unsigned char player_attacker) const
+                                                             const unsigned char playerAttacker) const
 {
     // Walk to the flag of the bld/harbor. Important to check because in some locations where the coast is north of the
     // harbor this might be blocked
@@ -530,7 +530,7 @@ std::vector<SeaId> GameWorldBase::getFilteredSeaIDsForAttack(const MapPoint targ
         {
             // Does an enemy harbor exist at current harbor spot? -> Can't attack through this harbor spot
             const auto* hb = getSpecObj<nobHarborBuilding>(harborPt);
-            if(hb && getPlayer(player_attacker).isAttackable(hb->getPlayer()))
+            if(hb && getPlayer(playerAttacker).isAttackable(hb->getPlayer()))
                 continue;
         }
 
@@ -573,7 +573,7 @@ std::vector<SeaId> GameWorldBase::getFilteredSeaIDsForAttack(const MapPoint targ
 /// Liefert Hafenpunkte im Umkreis von einem bestimmten Militärgebäude
 std::vector<HarborId> GameWorldBase::getHarborPointsAroundMilitaryBuilding(const MapPoint pt) const
 {
-    std::vector<HarborId> harbor_points;
+    std::vector<HarborId> harborPoints;
     // Nach Hafenpunkten in der Nähe des angegriffenen Gebäudes suchen
     // Alle unsere Häfen durchgehen
     for(const auto i : helpers::idRange<HarborId>(getNumHarborPoints()))
@@ -584,22 +584,22 @@ std::vector<HarborId> GameWorldBase::getHarborPointsAroundMilitaryBuilding(const
         {
             // Wird ein Weg vom Militärgebäude zum Hafen gefunden bzw. Ziel = Hafen?
             if(pt == harborPt || findHumanPath(pt, harborPt, SEAATTACK_DISTANCE))
-                harbor_points.push_back(i);
+                harborPoints.push_back(i);
         }
     }
-    return harbor_points;
+    return harborPoints;
 }
 
 /// Gibt Anzahl oder geschätzte Stärke(rang summe + anzahl) der verfügbaren Soldaten die zu einem Schiffsangriff starten
 /// können von einer bestimmten sea id aus
-unsigned GameWorldBase::getNumSoldiersForSeaAttackAtSea(const unsigned char player_attacker, SeaId sea,
+unsigned GameWorldBase::getNumSoldiersForSeaAttackAtSea(const unsigned char playerAttacker, SeaId sea,
                                                         bool returnCount) const
 {
     // Liste alle Militärgebäude des Angreifers, die Soldaten liefern
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
     unsigned attackercount = 0;
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
-    const std::list<nobHarborBuilding*>& harbors = getPlayer(player_attacker).getBuildingRegister().getHarbors();
+    const std::list<nobHarborBuilding*>& harbors = getPlayer(playerAttacker).getBuildingRegister().getHarbors();
     for(auto* harbor : harbors)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
@@ -623,12 +623,12 @@ unsigned GameWorldBase::getNumSoldiersForSeaAttackAtSea(const unsigned char play
             continue;
 
         // Soldaten hinzufügen
-        for(auto& tmp_soldier : tmp_soldiers)
+        for(auto& tmpSoldier : tmp_soldiers)
         {
             if(returnCount)
                 attackercount++;
             else
-                attackercount += (tmp_soldier->getRank() + 1); // private is rank 0 -> increase by 1-5
+                attackercount += (tmpSoldier->getRank() + 1); // private is rank 0 -> increase by 1-5
         }
     }
     return attackercount;
@@ -636,7 +636,7 @@ unsigned GameWorldBase::getNumSoldiersForSeaAttackAtSea(const unsigned char play
 
 /// Sucht verfügbare Soldaten, um dieses Militärgebäude mit einem Seeangriff anzugreifen
 std::vector<GameWorldBase::PotentialSeaAttacker>
-GameWorldBase::getSoldiersForSeaAttack(const unsigned char player_attacker, const MapPoint pt) const
+GameWorldBase::getSoldiersForSeaAttack(const unsigned char playerAttacker, const MapPoint pt) const
 {
     std::vector<GameWorldBase::PotentialSeaAttacker> attackers;
     // sea attack abgeschaltet per addon?
@@ -644,38 +644,38 @@ GameWorldBase::getSoldiersForSeaAttack(const unsigned char player_attacker, cons
         return attackers;
     // Do we have an attackble military building?
     const auto* milBld = getSpecObj<nobBaseMilitary>(pt);
-    if(!milBld || !milBld->isAttackable(player_attacker))
+    if(!milBld || !milBld->isAttackable(playerAttacker))
         return attackers;
     std::vector<bool> use_seas(getNumSeas());
 
     // Mögliche Hafenpunkte in der Nähe des Gebäudes
-    std::vector<HarborId> defender_harbors = getUsableTargetHarborsForAttack(pt, use_seas, player_attacker);
+    std::vector<HarborId> defenderHarbors = getUsableTargetHarborsForAttack(pt, use_seas, playerAttacker);
 
     // Liste alle Militärgebäude des Angreifers, die Soldaten liefern
     std::vector<nobHarborBuilding::SeaAttackerBuilding> buildings;
 
     // Angrenzende Häfen des Angreifers an den entsprechenden Meeren herausfinden
-    const std::list<nobHarborBuilding*>& harbors = getPlayer(player_attacker).getBuildingRegister().getHarbors();
+    const std::list<nobHarborBuilding*>& harbors = getPlayer(playerAttacker).getBuildingRegister().getHarbors();
     for(auto* harbor : harbors)
     {
         // Bestimmen, ob Hafen an einem der Meere liegt, über die sich auch die gegnerischen
         // Hafenpunkte erreichen lassen
-        bool is_at_sea = false;
+        bool isAtSea = false;
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
             const SeaId seaId = getSeaId(harbor->getHarborPosID(), dir);
             if(seaId && use_seas[seaId.value() - 1])
             {
-                is_at_sea = true;
+                isAtSea = true;
                 break;
             }
         }
 
-        if(!is_at_sea)
+        if(!isAtSea)
             continue;
 
         std::vector<nobHarborBuilding::SeaAttackerBuilding> tmp =
-          harbor->getAttackerBuildingsForSeaAttack(defender_harbors);
+          harbor->getAttackerBuildingsForSeaAttack(defenderHarbors);
         for(auto& itBld : tmp)
         {
             // Check if the building was already inserted

@@ -238,9 +238,9 @@ void GamePlayer::deserialize(SerializedGameData& sgd)
     std::fill(building_enabled.begin(), building_enabled.end(), true);
 
     // Ehemaligen PS auslesen
-    auto origin_ps = sgd.pop<PlayerState>();
+    auto originPs = sgd.pop<PlayerState>();
     // Nur richtige Spieler serialisieren
-    if(origin_ps != PlayerState::Occupied && origin_ps != PlayerState::AI)
+    if(originPs != PlayerState::Occupied && originPs != PlayerState::AI)
         return;
 
     isDefeated_ = sgd.popBool();
@@ -400,7 +400,7 @@ nobBaseWarehouse* GamePlayer::findWarehouse(const noRoadNode& start, const T_IsW
 {
     nobBaseWarehouse* best = nullptr;
 
-    unsigned best_length = std::numeric_limits<unsigned>::max();
+    unsigned bestLength = std::numeric_limits<unsigned>::max();
 
     for(nobBaseWarehouse* wh : buildings.getStorehouses())
     {
@@ -418,24 +418,24 @@ nobBaseWarehouse* GamePlayer::findWarehouse(const noRoadNode& start, const T_IsW
 
         // now check if there is at least a chance that the next wh is closer than current best because pathfinding
         // takes time
-        if(world.calcDistance(start.getPos(), wh->getPos()) > best_length)
+        if(world.calcDistance(start.getPos(), wh->getPos()) > bestLength)
             continue;
         // Bei der erlaubten Benutzung von Bootsstraßen Waren-Pathfinding benutzen wenns zu nem Lagerhaus gehn soll
         // start <-> ziel tauschen bei der wegfindung
         unsigned tlength;
-        if(world.getRoadPathFinder().findPath(to_wh ? start : *wh, to_wh ? *wh : start, use_boat_roads, best_length,
+        if(world.getRoadPathFinder().findPath(to_wh ? start : *wh, to_wh ? *wh : start, use_boat_roads, bestLength,
                                               forbidden, &tlength))
         {
-            if(tlength < best_length || !best)
+            if(tlength < bestLength || !best)
             {
-                best_length = tlength;
+                bestLength = tlength;
                 best = wh;
             }
         }
     }
 
     if(length)
-        *length = best_length;
+        *length = bestLength;
 
     return best;
 }
@@ -586,7 +586,7 @@ void GamePlayer::roadDestroyed()
         Ware* ware = *it;
         if(ware->isWaitingAtFlag()) // Liegt die Flagge an einer Flagge, muss ihr Weg neu berechnet werden
         {
-            RoadPathDirection last_next_dir = ware->getNextDir();
+            RoadPathDirection lastNextDir = ware->getNextDir();
             ware->recalcRoute();
             // special case: ware was lost some time ago and the new goal is at this flag and not a warehouse,hq,harbor
             // and the "flip-route" picked so a carrier would pick up the ware carry it away from goal then back and
@@ -624,10 +624,10 @@ void GamePlayer::roadDestroyed()
             // end of special case
 
             // notify carriers/flags about news if there are any
-            if(ware->getNextDir() != last_next_dir)
+            if(ware->getNextDir() != lastNextDir)
             {
                 // notify current flag that transport in the old direction might not longer be required
-                ware->removeWareJobForDir(last_next_dir);
+                ware->removeWareJobForDir(lastNextDir);
                 if(ware->getNextDir() != RoadPathDirection::None)
                     ware->callCarrier();
             }
@@ -721,7 +721,7 @@ void GamePlayer::recalcDistributionOfWare(const GoodType ware)
     using BldEntry = std::pair<BuildingType, uint8_t>;
     std::vector<BldEntry> bldPercentageMap;
 
-    unsigned goal_count = 0;
+    unsigned goalCount = 0;
 
     for(const auto bld : helpers::enumRange<BuildingType>())
     {
@@ -729,7 +729,7 @@ void GamePlayer::recalcDistributionOfWare(const GoodType ware)
         if(percentForCurBld)
         {
             distribution[ware].client_buildings.push_back(bld);
-            goal_count += percentForCurBld;
+            goalCount += percentForCurBld;
             bldPercentageMap.emplace_back(bld, percentForCurBld);
         }
     }
@@ -740,7 +740,7 @@ void GamePlayer::recalcDistributionOfWare(const GoodType ware)
 
     std::vector<BuildingType>& wareGoals = distribution[ware].goals;
     wareGoals.clear();
-    wareGoals.reserve(goal_count);
+    wareGoals.reserve(goalCount);
 
     // just drop them in the list, the distribution will be handled by going through this list using a prime as step
     // (see GameClientPlayer::FindClientForWare)
@@ -961,8 +961,8 @@ nofCarrier* GamePlayer::orderDonkey(RoadSegment& road) const
 RoadSegment* GamePlayer::findRoadForDonkey(noRoadNode& start, noRoadNode** goal)
 {
     // Bisher höchste Trägerproduktivität und die entsprechende Straße dazu
-    unsigned best_productivity = 0;
-    RoadSegment* best_road = nullptr;
+    unsigned bestProductivity = 0;
+    RoadSegment* bestRoad = nullptr;
     // Beste Flagge dieser Straße
     *goal = nullptr;
 
@@ -972,7 +972,7 @@ RoadSegment* GamePlayer::findRoadForDonkey(noRoadNode& start, noRoadNode** goal)
         if(roadSeg->needDonkey())
         {
             // Beste Flagge von diesem Weg, und beste Wegstrecke
-            noRoadNode* current_best_goal = nullptr;
+            noRoadNode* currentBestGoal = nullptr;
             // Weg zu beiden Flaggen berechnen
             unsigned length1, length2;
             bool isF1Reachable = world.findHumanPathOnRoads(start, *roadSeg->getF1(), &length1, nullptr, roadSeg)
@@ -982,38 +982,38 @@ RoadSegment* GamePlayer::findRoadForDonkey(noRoadNode& start, noRoadNode** goal)
 
             // Wenn man zu einer Flagge nich kommt, die jeweils andere nehmen
             if(!isF1Reachable)
-                current_best_goal = (isF2Reachable) ? roadSeg->getF2() : nullptr;
+                currentBestGoal = (isF2Reachable) ? roadSeg->getF2() : nullptr;
             else if(!isF2Reachable)
-                current_best_goal = roadSeg->getF1();
+                currentBestGoal = roadSeg->getF1();
             else
             {
                 // ansonsten die kürzeste von beiden
-                current_best_goal = (length1 < length2) ? roadSeg->getF1() : roadSeg->getF2();
+                currentBestGoal = (length1 < length2) ? roadSeg->getF1() : roadSeg->getF2();
             }
 
             // Kein Weg führt hin, nächste Straße bitte
-            if(!current_best_goal)
+            if(!currentBestGoal)
                 continue;
 
             // Jeweiligen Weg bestimmen
-            unsigned current_best_way = (roadSeg->getF1() == current_best_goal) ? length1 : length2;
+            unsigned currentBestWay = (roadSeg->getF1() == currentBestGoal) ? length1 : length2;
 
             // Produktivität ausrechnen, *10 die Produktivität + die Wegstrecke, damit die
             // auch noch mit einberechnet wird
-            unsigned current_productivity = 10 * roadSeg->getCarrier(0)->getProductivity() + current_best_way;
+            unsigned currentProductivity = 10 * roadSeg->getCarrier(0)->getProductivity() + currentBestWay;
 
             // Besser als der bisher beste?
-            if(current_productivity > best_productivity)
+            if(currentProductivity > bestProductivity)
             {
                 // Dann wird der vom Thron gestoßen
-                best_productivity = current_productivity;
-                best_road = roadSeg;
-                *goal = current_best_goal;
+                bestProductivity = currentProductivity;
+                bestRoad = roadSeg;
+                *goal = currentBestGoal;
             }
         }
     }
 
-    return best_road;
+    return bestRoad;
 }
 
 struct ClientForWare
@@ -1126,14 +1126,14 @@ noBaseBuilding* GamePlayer::findClientForWare(const Ware& ware)
 
     noBaseBuilding* lastBld = nullptr;
     noBaseBuilding* bestBld = nullptr;
-    unsigned best_points = 0;
+    unsigned bestPoints = 0;
     for(auto& possibleClient : possibleClients)
     {
-        unsigned path_length;
+        unsigned pathLength;
 
         // If our estimate is worse (or equal) best_points, the real value cannot be better.
         // As our list is sorted, further entries cannot be better either, so stop searching.
-        if(possibleClient.estimate <= best_points)
+        if(possibleClient.estimate <= bestPoints)
             break;
 
         // get rid of double building entries. TODO: why are there double entries!?
@@ -1143,24 +1143,24 @@ noBaseBuilding* GamePlayer::findClientForWare(const Ware& ware)
         lastBld = possibleClient.bld;
 
         // Just to be sure no underflow happens...
-        if(possibleClient.points < best_points + 1)
+        if(possibleClient.points < bestPoints + 1)
             continue;
 
         // Find path ONLY if it may be better. Pathfinding is limited to the worst path score that would lead to a
         // better score. This eliminates the worst case scenario where all nodes in a split road network would be hit by
         // the pathfinding only to conclude that there is no possible path.
-        if(world.findPathForWareOnRoads(*start, *possibleClient.bld, &path_length, nullptr,
-                                        (possibleClient.points - best_points) * 2 - 1)
+        if(world.findPathForWareOnRoads(*start, *possibleClient.bld, &pathLength, nullptr,
+                                        (possibleClient.points - bestPoints) * 2 - 1)
            != RoadPathDirection::None)
         {
-            unsigned score = possibleClient.points - (path_length / 2);
+            unsigned score = possibleClient.points - (pathLength / 2);
 
             // As we have limited our pathfinding to take a maximum of (points - best_points) * 2 - 1 steps,
             // path_length / 2 can at most be points - best_points - 1, so the score will be greater than best_points.
             // :)
-            RTTR_Assert(score > best_points);
+            RTTR_Assert(score > bestPoints);
 
-            best_points = score;
+            bestPoints = score;
             bestBld = possibleClient.bld;
         }
     }
@@ -1342,9 +1342,9 @@ void GamePlayer::recalcMilitaryFlags()
         milBld->lookForEnemyBuildings(nullptr);
 }
 
-void GamePlayer::newSoldiersAvailable(const unsigned& soldier_count)
+void GamePlayer::newSoldiersAvailable(const unsigned& soldierCount)
 {
-    RTTR_Assert(soldier_count > 0);
+    RTTR_Assert(soldierCount > 0);
     // solange laufen lassen, bis soldier_count = 0, d.h. der Soldat irgendwohin geschickt wurde
     // Zuerst nach unbesetzten Militärgebäude schauen
     for(nobMilitary* milBld : buildings.getMilitaryBuildings())
@@ -1353,7 +1353,7 @@ void GamePlayer::newSoldiersAvailable(const unsigned& soldier_count)
         {
             milBld->regulateTroops();
             // Used that soldier? Go out
-            if(!soldier_count)
+            if(!soldierCount)
                 return;
         }
     }
@@ -1365,7 +1365,7 @@ void GamePlayer::newSoldiersAvailable(const unsigned& soldier_count)
         {
             milBld->regulateTroops();
             // Used that soldier? Go out
-            if(!soldier_count)
+            if(!soldierCount)
                 return;
         }
     }
@@ -1377,7 +1377,7 @@ void GamePlayer::newSoldiersAvailable(const unsigned& soldier_count)
         if(milBld->getFrontierDistance() == FrontierDistance::Near || milBld->isNewBuilt())
             continue;
         milBld->regulateTroops();
-        if(!soldier_count) // used the soldier?
+        if(!soldierCount) // used the soldier?
             return;
     }
 }
@@ -1924,9 +1924,9 @@ bool GamePlayer::orderShip(nobHarborBuilding& hb)
 
     helpers::sort(sfh);
 
-    noShip* best_ship = nullptr;
-    uint32_t best_distance = std::numeric_limits<uint32_t>::max();
-    std::vector<Direction> best_route;
+    noShip* bestShip = nullptr;
+    uint32_t bestDistance = std::numeric_limits<uint32_t>::max();
+    std::vector<Direction> bestRoute;
 
     for(auto& it : sfh)
     {
@@ -1935,7 +1935,7 @@ bool GamePlayer::orderShip(nobHarborBuilding& hb)
 
         // the estimate (air-line distance) for this and all other ships in the list is already worse than what we
         // found? disregard the rest
-        if(it.estimate >= best_distance)
+        if(it.estimate >= bestDistance)
             break;
 
         noShip& ship = *it.ship;
@@ -1949,19 +1949,19 @@ bool GamePlayer::orderShip(nobHarborBuilding& hb)
                 return true;
             }
 
-            if(distance < best_distance)
+            if(distance < bestDistance)
             {
-                best_ship = &ship;
-                best_distance = distance;
-                best_route = route;
+                bestShip = &ship;
+                bestDistance = distance;
+                bestRoute = route;
             }
         }
     }
 
     // only order ships not already on their way
-    if(best_ship && best_ship->isIdling())
+    if(bestShip && bestShip->isIdling())
     {
-        best_ship->goToHarbor(hb, best_route);
+        bestShip->goToHarbor(hb, bestRoute);
 
         return true;
     }
@@ -1979,8 +1979,8 @@ void GamePlayer::removeShip(noShip* ship)
 void GamePlayer::getJobForShip(noShip& ship)
 {
     nobHarborBuilding* best = nullptr;
-    int best_points = 0;
-    std::vector<Direction> best_route;
+    int bestPoints = 0;
+    std::vector<Direction> bestRoute;
 
     // Beste Weglänge, die ein Schiff zurücklegen muss, welches gerade nichts zu tun hat
     for(nobHarborBuilding* harbor : buildings.getHarbors())
@@ -1990,10 +1990,10 @@ void GamePlayer::getJobForShip(noShip& ship)
             continue;
 
         // Anzahl der Schiffe ermitteln, die diesen Hafen bereits anfahren
-        unsigned ships_coming = getShipsToHarbor(*harbor);
+        unsigned shipsComing = getShipsToHarbor(*harbor);
 
         // Evtl. kommen schon genug?
-        if(harbor->getNumNeededShips() <= ships_coming)
+        if(harbor->getNumNeededShips() <= shipsComing)
             continue;
 
         // liegen wir am gleichen Meer?
@@ -2012,12 +2012,12 @@ void GamePlayer::getJobForShip(noShip& ship)
                 }
 
                 // Punkte ausrechnen
-                int points = harbor->getNeedForShip(ships_coming) - length;
-                if(points > best_points || !best)
+                int points = harbor->getNeedForShip(shipsComing) - length;
+                if(points > bestPoints || !best)
                 {
                     best = harbor;
-                    best_points = points;
-                    best_route = route;
+                    bestPoints = points;
+                    bestRoute = route;
                 }
             }
         }
@@ -2025,7 +2025,7 @@ void GamePlayer::getJobForShip(noShip& ship)
 
     // Einen Hafen gefunden?
     if(best)
-        ship.goToHarbor(*best, best_route);
+        ship.goToHarbor(*best, bestRoute);
 }
 
 unsigned GamePlayer::getShipID(const noShip& ship) const
@@ -2057,7 +2057,7 @@ bool GamePlayer::findHarborForUnloading(noShip* ship, const MapPoint start, Harb
                                         std::vector<Direction>* route, nobHarborBuilding* exception)
 {
     nobHarborBuilding* best = nullptr;
-    unsigned best_distance = 0xffffffff;
+    unsigned bestDistance = 0xffffffff;
 
     for(nobHarborBuilding* hb : buildings.getHarbors())
     {
@@ -2073,9 +2073,9 @@ bool GamePlayer::findHarborForUnloading(noShip* ship, const MapPoint start, Harb
         unsigned distance = world.calcDistance(ship->getPos(), hb->getPos());
 
         // Kürzerer Weg als bisher bestes Ziel?
-        if(distance < best_distance)
+        if(distance < bestDistance)
         {
-            best_distance = distance;
+            bestDistance = distance;
             best = hb;
         }
     }
@@ -2214,9 +2214,9 @@ bool GamePlayer::canBuildCatapult() const
 bool GamePlayer::shipDiscoveredHostileTerritory(const MapPoint location)
 {
     // Prüfen, ob Abstand zu bisherigen Punkten nicht zu klein
-    for(const auto& enemies_discovered_by_ship : enemies_discovered_by_ships)
+    for(const auto& enemiesDiscoveredByShip : enemies_discovered_by_ships)
     {
-        if(world.calcDistance(enemies_discovered_by_ship, location) < 30)
+        if(world.calcDistance(enemiesDiscoveredByShip, location) < 30)
             return false;
     }
 

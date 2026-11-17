@@ -130,7 +130,7 @@ bool DriverWrapper::checkLibrary(const bfs::path& path, DriverType dt, std::stri
 
 std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const DriverType dt)
 {
-    std::vector<DriverItem> driver_list;
+    std::vector<DriverItem> driverList;
 
     const auto driverDir = RTTRCONFIG.expandPath(s25::folders::driver) / getName(dt);
     std::string extension =
@@ -145,9 +145,9 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const Drive
 #endif     // !_WIN32
 
     LOG.write(_("Searching for drivers in %s\n")) % driverDir;
-    const std::vector<boost::filesystem::path> driver_files = listDir(driverDir, extension, false);
+    const std::vector<boost::filesystem::path> driverFiles = listDir(driverDir, extension, false);
 
-    for(const auto& path : driver_files)
+    for(const auto& path : driverFiles)
     {
 #ifdef _WIN32
         // check filename for "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)
@@ -168,8 +168,8 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const Drive
         if(!checkLibrary(path, dt, nameOrError))
             LOG.write(_("Skipping %s: %s\n")) % path % nameOrError;
         else
-            driver_list.push_back(DriverItem(path, nameOrError));
+            driverList.push_back(DriverItem(path, nameOrError));
     }
-    return driver_list;
+    return driverList;
 }
 } // namespace drivers

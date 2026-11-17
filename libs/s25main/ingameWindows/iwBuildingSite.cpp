@@ -69,38 +69,38 @@ void iwBuildingSite::msgPaintAfter()
     DrawPoint curPos = getDrawPos() + DrawPoint(getSize().x / 2, 60);
     for(unsigned char i = 0; i < 2; ++i)
     {
-        unsigned wares_count = 0;
-        unsigned wares_delivered = 0;
-        unsigned wares_used = 0;
+        unsigned waresCount = 0;
+        unsigned waresDelivered = 0;
+        unsigned waresUsed = 0;
 
         if(i == 0)
         {
-            wares_count = BUILDING_COSTS[buildingsite->getBuildingType()].boards;
-            wares_used = buildingsite->getUsedBoards();
-            wares_delivered = buildingsite->getBoards() + wares_used;
+            waresCount = BUILDING_COSTS[buildingsite->getBuildingType()].boards;
+            waresUsed = buildingsite->getUsedBoards();
+            waresDelivered = buildingsite->getBoards() + waresUsed;
         } else
         {
-            wares_count = BUILDING_COSTS[buildingsite->getBuildingType()].stones;
-            wares_used = buildingsite->getUsedStones();
-            wares_delivered = buildingsite->getStones() + wares_used;
+            waresCount = BUILDING_COSTS[buildingsite->getBuildingType()].stones;
+            waresUsed = buildingsite->getUsedStones();
+            waresDelivered = buildingsite->getStones() + waresUsed;
         }
 
-        if(wares_count == 0)
+        if(waresCount == 0)
             break;
 
         // "Schwarzer Rahmen"
-        DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
-        drawRectangle(Rect(waresPos, Extent(24 * wares_count, 24)), 0x80000000);
+        DrawPoint waresPos = curPos - DrawPoint(24 * waresCount / 2, 0);
+        drawRectangle(Rect(waresPos, Extent(24 * waresCount, 24)), 0x80000000);
         waresPos += DrawPoint(12, 12);
 
         // Die Waren
-        for(unsigned char z = 0; z < wares_count; ++z)
+        for(unsigned char z = 0; z < waresCount; ++z)
         {
             LOADER.getWareTex(i == 0 ? GoodType::Boards : GoodType::Stones)
-              ->drawFull(waresPos, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040));
+              ->drawFull(waresPos, (z < waresDelivered ? 0xFFFFFFFF : 0xFF404040));
 
             // Hammer wenn Ware verbaut
-            if(z < wares_used)
+            if(z < waresUsed)
                 LOADER.getWareTex(GoodType::Hammer)->drawFull(waresPos);
             waresPos.x += 24;
         }

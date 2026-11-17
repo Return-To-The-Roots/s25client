@@ -29,9 +29,9 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
     //////////////////////////////////////////////////////////////////////////
     // 1. Check maximum allowed BQ on terrain
 
-    unsigned building_hits = 0;
-    unsigned mine_hits = 0;
-    unsigned flag_hits = 0;
+    unsigned buildingHits = 0;
+    unsigned mineHits = 0;
+    unsigned flagHits = 0;
 
     const WorldDescription& desc = world.getDescription();
     BuildingQuality curBQ;
@@ -56,20 +56,20 @@ BuildingQuality BQCalculator::operator()(const MapPoint pt, T_IsOnRoad isOnRoad,
         {
             TerrainBQ bq = desc.get(tIdx).getBQ();
             if(bq == TerrainBQ::Castle)
-                ++building_hits;
+                ++buildingHits;
             else if(bq == TerrainBQ::Mine)
-                ++mine_hits;
+                ++mineHits;
             else if(bq == TerrainBQ::Flag)
-                ++flag_hits;
+                ++flagHits;
             else if(bq == TerrainBQ::Danger)
                 return BuildingQuality::Nothing;
         }
 
-        if(mine_hits == 6)
+        if(mineHits == 6)
             curBQ = BuildingQuality::Mine;
-        else if(building_hits == 6)
+        else if(buildingHits == 6)
             curBQ = BuildingQuality::Castle;
-        else if(flag_hits || mine_hits || building_hits)
+        else if(flagHits || mineHits || buildingHits)
             curBQ = BuildingQuality::Flag;
         else
             return BuildingQuality::Nothing;

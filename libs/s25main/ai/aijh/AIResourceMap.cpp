@@ -77,13 +77,13 @@ void AIResourceMap::updateAround(const MapPoint& pt, int radius)
 MapPoint AIResourceMap::findBestPosition(const MapPoint& pt, BuildingQuality size, unsigned radius, int minimum) const
 {
     MapPoint best = MapPoint::invalid();
-    int best_value = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
+    int bestValue = (minimum == std::numeric_limits<int>::min()) ? minimum : minimum - 1;
 
     std::vector<MapPoint> pts = aii.gwb.getPointsInRadiusWithCenter(pt, radius);
     for(const MapPoint& curPt : pts)
     {
         const unsigned idx = map.getIdx(curPt);
-        if(map[idx] > best_value)
+        if(map[idx] > bestValue)
         {
             if(!aiMap[idx].reachable || !aiMap[idx].owned || aiMap[idx].farmed)
                 continue;
@@ -102,7 +102,7 @@ MapPoint AIResourceMap::findBestPosition(const MapPoint& pt, BuildingQuality siz
             if(aii.isHarborPosClose(curPt, 2, true))
                 continue;
             best = curPt;
-            best_value = map[idx];
+            bestValue = map[idx];
             // TODO: calculate "perfect" rating and instantly return if we got that already
         }
     }

@@ -323,9 +323,9 @@ void iwShip::drawCargo()
             }
             orderedWares[ware]--;
 
-            const auto draw_id = convertShieldToNation(ware, owner.nation);
+            const auto drawId = convertShieldToNation(ware, owner.nation);
 
-            LOADER.getWareStackTex(draw_id)->drawFull(drawPt);
+            LOADER.getWareStackTex(drawId)->drawFull(drawPt);
             drawPt.x += xStep;
             lineCounter++;
         }

@@ -36,9 +36,9 @@ void nofGeologist::serialize(SerializedGameData& sgd) const
     sgd.pushUnsignedShort(signs);
 
     sgd.pushUnsignedInt(available_nodes.size());
-    for(const auto& available_node : available_nodes)
+    for(const auto& availableNode : available_nodes)
     {
-        helpers::pushPoint(sgd, available_node);
+        helpers::pushPoint(sgd, availableNode);
     }
 
     helpers::pushPoint(sgd, node_goal);
@@ -48,8 +48,8 @@ void nofGeologist::serialize(SerializedGameData& sgd) const
 nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id)
     : nofFlagWorker(sgd, obj_id), signs(sgd.popUnsignedShort())
 {
-    unsigned available_nodes_count = sgd.popUnsignedInt();
-    for(unsigned i = 0; i < available_nodes_count; ++i)
+    unsigned availableNodesCount = sgd.popUnsignedInt();
+    for(unsigned i = 0; i < availableNodesCount; ++i)
     {
         MapPoint p = sgd.popMapPoint();
         available_nodes.push_back(p);
@@ -85,7 +85,7 @@ void nofGeologist::draw(DrawPoint drawPt)
         {
             // 1x grab, 1x "spring-grab", 2x grab, 1x "spring-grab", 2x grab, 1x "spring-grab", 4x grab
             unsigned short i = GAMECLIENT.interpolate(84, current_ev);
-            unsigned sound = 0, sound_id;
+            unsigned sound = 0, soundId;
 
             if(i < 6)
             {
@@ -94,7 +94,7 @@ void nofGeologist::draw(DrawPoint drawPt)
                 if(i == 4)
                 {
                     sound = 1;
-                    sound_id = 0;
+                    soundId = 0;
                 }
             } else if(i < 16)
             {
@@ -103,7 +103,7 @@ void nofGeologist::draw(DrawPoint drawPt)
                 if(i == 14)
                 {
                     sound = 2;
-                    sound_id = 1;
+                    soundId = 1;
                 }
             } else if(i < 28)
             {
@@ -112,11 +112,11 @@ void nofGeologist::draw(DrawPoint drawPt)
                 if(i == 20)
                 {
                     sound = 1;
-                    sound_id = 2;
+                    soundId = 2;
                 } else if(i == 26)
                 {
                     sound = 1;
-                    sound_id = 3;
+                    soundId = 3;
                 }
             } else if(i < 38)
             {
@@ -125,7 +125,7 @@ void nofGeologist::draw(DrawPoint drawPt)
                 if(i == 36)
                 {
                     sound = 2;
-                    sound_id = 4;
+                    soundId = 4;
                 }
             } else if(i < 50)
             {
@@ -134,11 +134,11 @@ void nofGeologist::draw(DrawPoint drawPt)
                 if(i == 42)
                 {
                     sound = 1;
-                    sound_id = 5;
+                    soundId = 5;
                 } else if(i == 48)
                 {
                     sound = 1;
-                    sound_id = 6;
+                    soundId = 6;
                 }
             } else if(i < 60)
             {
@@ -147,7 +147,7 @@ void nofGeologist::draw(DrawPoint drawPt)
                 if(i == 58)
                 {
                     sound = 2;
-                    sound_id = 7;
+                    soundId = 7;
                 }
             } else
             {
@@ -156,24 +156,24 @@ void nofGeologist::draw(DrawPoint drawPt)
                 if(i == 64)
                 {
                     sound = 1;
-                    sound_id = 8;
+                    soundId = 8;
                 } else if(i == 70)
                 {
                     sound = 1;
-                    sound_id = 9;
+                    soundId = 9;
                 } else if(i == 76)
                 {
                     sound = 1;
-                    sound_id = 10;
+                    soundId = 10;
                 } else if(i == 82)
                 {
                     sound = 1;
-                    sound_id = 11;
+                    soundId = 11;
                 }
             }
 
             if(sound)
-                world->getSoundMgr().playNOSound((sound == 1) ? 81 : 56, *this, sound_id);
+                world->getSoundMgr().playNOSound((sound == 1) ? 81 : 56, *this, soundId);
         }
         break;
         case State::GeologistCheer:
@@ -355,16 +355,16 @@ helpers::OptionalEnum<Direction> nofGeologist::getNextNode()
             if(!isNodeGood(node_goal) || world->getNode(node_goal).reserved)
                 continue;
 
-            helpers::OptionalEnum<Direction> ret_dir;
+            helpers::OptionalEnum<Direction> retDir;
             if(pos != node_goal)
             {
-                ret_dir = world->findHumanPath(pos, node_goal, 20);
-                if(!ret_dir)
+                retDir = world->findHumanPath(pos, node_goal, 20);
+                if(!retDir)
                     continue;
             }
             // Reservieren
             world->setReserved(node_goal, true);
-            return ret_dir;
+            return retDir;
         }
 
         // Nach neuen Punkten sucehn

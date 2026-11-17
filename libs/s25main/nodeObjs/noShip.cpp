@@ -110,7 +110,7 @@ void noShip::destroy()
 
 void noShip::draw(DrawPoint drawPt)
 {
-    unsigned flag_drawing_type = 1;
+    unsigned flagDrawingType = 1;
 
     // Sind wir verloren? Dann immer stehend zeichnen
     if(lost)
@@ -126,7 +126,7 @@ void noShip::draw(DrawPoint drawPt)
         case State::SeaattackWaiting:
         {
             drawFixed(drawPt, false);
-            flag_drawing_type = 0;
+            flagDrawingType = 0;
         }
         break;
 
@@ -172,21 +172,21 @@ void noShip::draw(DrawPoint drawPt)
     }
 
     LOADER.getPlayerImage("boot_z", 40 + GAMECLIENT.getGlobalAnimation(6, 1, 1, getObjId()))
-      ->drawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][getCurMoveDir()], COLOR_WHITE,
+      ->drawFull(drawPt + SHIPS_FLAG_POS[flagDrawingType][getCurMoveDir()], COLOR_WHITE,
                  world->getPlayer(ownerId_).color);
     // Second, white flag, only when on expedition, always swinging in the opposite direction
     if(state >= State::ExpeditionLoading && state <= State::ExpeditionDriving)
         LOADER.getPlayerImage("boot_z", 40 + GAMECLIENT.getGlobalAnimation(6, 1, 1, getObjId() + 4))
-          ->drawFull(drawPt + SHIPS_FLAG_POS[flag_drawing_type][getCurMoveDir()]);
+          ->drawFull(drawPt + SHIPS_FLAG_POS[flagDrawingType][getCurMoveDir()]);
 }
 
 /// Zeichnet das Schiff stehend mit oder ohne Waren
-void noShip::drawFixed(DrawPoint drawPt, const bool draw_wares)
+void noShip::drawFixed(DrawPoint drawPt, const bool drawWares)
 {
     LOADER.getImageN("boot_z", rttr::enumCast(getCurMoveDir() + 3u) * 2 + 1)->drawFull(drawPt, COLOR_SHADOW);
     LOADER.getImageN("boot_z", rttr::enumCast(getCurMoveDir() + 3u) * 2)->drawFull(drawPt);
 
-    if(draw_wares)
+    if(drawWares)
         /// Waren zeichnen
         LOADER.getImageN("boot_z", 30 + rttr::enumCast(getCurMoveDir() + 3u))->drawFull(drawPt);
 }
@@ -273,7 +273,7 @@ void noShip::handleEvent(const unsigned id)
                 // Hafen herausfinden
                 noBase* hb = goalHarbor ? world->getNO(world->getHarborPoint(goalHarbor)) : nullptr;
 
-                unsigned old_visual_range = getVisualRange();
+                unsigned oldVisualRange = getVisualRange();
 
                 if(hb && hb->getGOT() == GO_Type::NobHarborbuilding)
                 {
@@ -291,7 +291,7 @@ void noShip::handleEvent(const unsigned id)
                 }
 
                 // Sichtbarkeiten neu berechnen
-                world->recalcVisibilitiesAroundPoint(pos, old_visual_range, ownerId_, nullptr);
+                world->recalcVisibilitiesAroundPoint(pos, oldVisualRange, ownerId_, nullptr);
 
                 break;
             }
@@ -543,19 +543,19 @@ void noShip::continueExpedition(const ShipDirection dir)
         return;
 
     // Nächsten Hafenpunkt in dieser Richtung suchen
-    HarborId new_goal = world->getNextFreeHarborPoint(pos, goalHarbor, dir, ownerId_);
+    HarborId newGoal = world->getNextFreeHarborPoint(pos, goalHarbor, dir, ownerId_);
 
     // Auch ein Ziel gefunden?
-    if(!new_goal)
+    if(!newGoal)
         return;
 
     // Versuchen, Weg zu finden
-    if(!world->findShipPathToHarbor(pos, new_goal, seaId_, &route_, nullptr))
+    if(!world->findShipPathToHarbor(pos, newGoal, seaId_, &route_, nullptr))
         return;
 
     // Dann fahren wir da mal hin
     curRouteIdx = 0;
-    goalHarbor = new_goal;
+    goalHarbor = newGoal;
     state = State::ExpeditionDriving;
 
     handleStateExpeditionDriving();

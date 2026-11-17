@@ -80,7 +80,7 @@ bool isAddonActive(const GameWorldBase& gwb)
     return gwb.getGGS().isEnabled(AddonId::WINE);
 }
 
-helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
+helpers::MultiArray<glSmartBitmap, 2, 5> grapefieldCache;
 
 void fillCache(glTexturePacker& stp)
 {
@@ -90,7 +90,7 @@ void fillCache(glTexturePacker& stp)
         const auto shadow = bobIndex[BobTypes(rttr::enumCast(BobTypes::WINEGROWER_GRAPEFIELDS_ONE_SHADOW) + type)];
         for(unsigned size = 0; size < 5; ++size)
         {
-            glSmartBitmap& bmp = grapefield_cache[type][size];
+            glSmartBitmap& bmp = grapefieldCache[type][size];
             bmp.reset();
             bmp.add(LOADER.getImageN("wine_bobs", field + size));
             bmp.addShadow(LOADER.getImageN("wine_bobs", shadow + size));

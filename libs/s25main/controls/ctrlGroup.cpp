@@ -24,9 +24,9 @@ void ctrlGroup::msgEditChange(const unsigned ctrl_id)
     getParent()->msgGroupEditChange(this->getID(), ctrl_id);
 }
 
-void ctrlGroup::msgTabChange(const unsigned ctrl_id, const unsigned short tab_id)
+void ctrlGroup::msgTabChange(const unsigned ctrl_id, const unsigned short tabId)
 {
-    getParent()->msgGroupTabChange(this->getID(), ctrl_id, tab_id);
+    getParent()->msgGroupTabChange(this->getID(), ctrl_id, tabId);
 }
 
 void ctrlGroup::msgListSelectItem(const unsigned ctrl_id, const int selection)
@@ -134,9 +134,9 @@ void ctrlGroup::msgGroupEditChange(const unsigned /*group_id*/, const unsigned c
     getParent()->msgGroupEditChange(this->getID(), ctrl_id);
 }
 
-void ctrlGroup::msgGroupTabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
+void ctrlGroup::msgGroupTabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tabId)
 {
-    getParent()->msgGroupTabChange(this->getID(), ctrl_id, tab_id);
+    getParent()->msgGroupTabChange(this->getID(), ctrl_id, tabId);
 }
 
 void ctrlGroup::msgGroupListSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)

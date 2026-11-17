@@ -67,7 +67,7 @@ constexpr auto maxEnumValue(BobTypes)
 }
 
 extern helpers::EnumArray<unsigned, BobTypes> bobIndex;
-extern helpers::MultiArray<glSmartBitmap, 2, 5> grapefield_cache;
+extern helpers::MultiArray<glSmartBitmap, 2, 5> grapefieldCache;
 
 ITexture* getWareTex(GoodType good);
 ITexture* getWareStackTex(GoodType good);

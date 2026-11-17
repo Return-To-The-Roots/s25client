@@ -148,19 +148,19 @@ void nofBuildingWorker::workingReady()
         if(flag->hasSpaceForWare())
         {
             // Ware erzeugen
-            auto real_ware = std::make_unique<Ware>(*ware, nullptr, flag);
-            real_ware->waitAtFlag(*flag);
+            auto realWare = std::make_unique<Ware>(*ware, nullptr, flag);
+            realWare->waitAtFlag(*flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
-            GoodType ware_type = convertShields(real_ware->type);
-            world->getPlayer(player).increaseInventoryWare(ware_type, 1);
+            GoodType wareType = convertShields(realWare->type);
+            world->getPlayer(player).increaseInventoryWare(wareType, 1);
             // Abnehmer für Ware finden
-            real_ware->setGoal(world->getPlayer(player).findClientForWare(*real_ware));
+            realWare->setGoal(world->getPlayer(player).findClientForWare(*realWare));
             // Ware soll ihren weiteren Weg berechnen
-            real_ware->recalcRoute();
+            realWare->recalcRoute();
             // Ware ablegen
-            flag->addWare(std::move(real_ware));
+            flag->addWare(std::move(realWare));
             // Warenstatistik erhöhen
-            world->getPlayer(this->player).increaseMerchandiseStatistic(ware_type);
+            world->getPlayer(this->player).increaseMerchandiseStatistic(wareType);
             // Tragen nun keine Ware mehr
             ware = std::nullopt;
         }

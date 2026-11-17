@@ -134,10 +134,10 @@ struct IsScoutable
 
 void nofScout_Free::goToNewNode()
 {
-    std::vector<MapPoint> available_points =
+    std::vector<MapPoint> availablePoints =
       world->getMatchingPointsInRadius<-1>(flag->getPos(), SCOUT_RANGE, IsScoutable(player, *world));
-    RANDOM_SHUFFLE(available_points);
-    for(MapPoint pt : available_points)
+    RANDOM_SHUFFLE(availablePoints);
+    for(MapPoint pt : availablePoints)
     {
         // Is there a path to this point and is the point also not to far away from the flag?
         // (Second check avoids running around mountains with a very far way back)

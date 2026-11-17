@@ -57,15 +57,15 @@ void ctrlPreviewMinimap::setMap(const libsiedler2::ArchivItem_Map* const s2map)
         return;
     }
 
-    const unsigned short map_width = s2map->getHeader().getWidth();
-    const unsigned short map_height = s2map->getHeader().getHeight();
-    setMapSize(Extent(map_width, map_height));
+    const unsigned short mapWidth = s2map->getHeader().getWidth();
+    const unsigned short mapHeight = s2map->getHeader().getHeight();
+    setMapSize(Extent(mapWidth, mapHeight));
     minimap.setMap(*s2map);
 
     // Startpositionen merken
-    for(unsigned short y = 0; y < map_height; ++y)
+    for(unsigned short y = 0; y < mapHeight; ++y)
     {
-        for(unsigned short x = 0; x < map_width; ++x)
+        for(unsigned short x = 0; x < mapWidth; ++x)
         {
             using libsiedler2::MapLayer;
             // Startposition eines Spielers an dieser Stelle?

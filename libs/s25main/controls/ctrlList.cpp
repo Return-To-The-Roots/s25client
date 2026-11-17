@@ -139,12 +139,12 @@ void ctrlList::drawImpl()
     Window::drawImpl();
 
     // Wieviele Linien anzeigen?
-    const unsigned show_lines = (pagesize > lines.size() ? unsigned(lines.size()) : pagesize);
+    const unsigned showLines = (pagesize > lines.size() ? unsigned(lines.size()) : pagesize);
 
     const unsigned scrollbarPos = getCtrl<ctrlScrollBar>(0)->getScrollPos();
     DrawPoint curPos = getDrawPos() + DrawPoint(2, 2);
     // Listeneinträge zeichnen
-    for(unsigned i = 0; i < show_lines; ++i)
+    for(unsigned i = 0; i < showLines; ++i)
     {
         // Schwarze Markierung, wenn die Maus drauf ist
         if(i + scrollbarPos == mouseover_)

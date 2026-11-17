@@ -33,16 +33,16 @@ BOOST_AUTO_TEST_CASE(isPointValid)
                                      MapPoint(14, 14)};
 
     // Reverse it...
-    std::vector<MapPoint> hole_reversed = hole;
-    std::reverse(hole_reversed.begin(), hole_reversed.end());
+    std::vector<MapPoint> holeReversed = hole;
+    std::reverse(holeReversed.begin(), holeReversed.end());
 
     // Outer polygon
     const std::vector<MapPoint> outer{MapPoint(10, 10), MapPoint(20, 10), MapPoint(20, 20), MapPoint(10, 20),
                                       MapPoint(10, 10)};
 
     // Reverse it...
-    std::vector<MapPoint> outer_reversed = outer;
-    std::reverse(outer_reversed.begin(), outer_reversed.end());
+    std::vector<MapPoint> outerReversed = outer;
+    std::reverse(outerReversed.begin(), outerReversed.end());
 
     // Set of MapPoints that should return true
     // Auto-generated data (from different implementation with tests)
@@ -75,11 +75,11 @@ BOOST_AUTO_TEST_CASE(isPointValid)
         // i = 4, 5, 6, 7 -> outer reversed
 
         polygon[i].emplace_back(0, 0);
-        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 1)) ? hole : hole_reversed) :
-                                                      ((i & (1 << 2)) ? outer : outer_reversed));
+        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 1)) ? hole : holeReversed) :
+                                                      ((i & (1 << 2)) ? outer : outerReversed));
         polygon[i].emplace_back(0, 0);
-        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 2)) ? outer : outer_reversed) :
-                                                      ((i & (1 << 1)) ? hole : hole_reversed));
+        boost::push_back(polygon[i], (i & (1 << 0)) ? ((i & (1 << 2)) ? outer : outerReversed) :
+                                                      ((i & (1 << 1)) ? hole : holeReversed));
         polygon[i].emplace_back(0, 0);
     }
 

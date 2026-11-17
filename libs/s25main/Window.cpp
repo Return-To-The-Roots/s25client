@@ -311,11 +311,11 @@ ctrlPercent* Window::addPercent(unsigned id, const DrawPoint& pos, const Extent&
 }
 
 ctrlProgress* Window::addProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-                                  unsigned short button_minus, unsigned short button_plus, unsigned short maximum,
+                                  unsigned short buttonMinus, unsigned short buttonPlus, unsigned short maximum,
                                   const std::string& tooltip, const Extent& padding, unsigned force_color,
                                   const std::string& button_minus_tooltip, const std::string& button_plus_tooltip)
 {
-    return addCtrl(std::make_unique<ctrlProgress>(this, id, scaleIf(pos), scaleIf(size), tc, button_minus, button_plus,
+    return addCtrl(std::make_unique<ctrlProgress>(this, id, scaleIf(pos), scaleIf(size), tc, buttonMinus, buttonPlus,
                                                   maximum, padding, force_color, tooltip, button_minus_tooltip,
                                                   button_plus_tooltip));
 }

@@ -54,20 +54,20 @@ void ctrlMinimap::setMapSize(const Extent& newMapSize)
     else
     {
         // Rescale width due to geometry using triangles
-        double scaled_map_width = mapSize.x * MINIMAP_SCALE_X;
+        double scaledMapWidth = mapSize.x * MINIMAP_SCALE_X;
 
         // Find out scale factors to due a box fit while retaining aspect ratio
         RTTR_Assert(mapSize.y != 0);
-        RTTR_Assert(scaled_map_width != 0.); //-V550
-        double x_scale = double(drawnMapSize.x) / scaled_map_width;
-        double y_scale = double(drawnMapSize.y) / double(mapSize.y);
+        RTTR_Assert(scaledMapWidth != 0.); //-V550
+        double xScale = double(drawnMapSize.x) / scaledMapWidth;
+        double yScale = double(drawnMapSize.y) / double(mapSize.y);
 
         // Scale by the smaller factor
         // Note: Only 1 coord needs to be scaled. The other is already the max size
-        if(y_scale <= x_scale)
-            drawnMapSize.x = static_cast<unsigned>(scaled_map_width * y_scale);
+        if(yScale <= xScale)
+            drawnMapSize.x = static_cast<unsigned>(scaledMapWidth * yScale);
         else
-            drawnMapSize.y = static_cast<unsigned>(mapSize.y * x_scale);
+            drawnMapSize.y = static_cast<unsigned>(mapSize.y * xScale);
     }
 }
 

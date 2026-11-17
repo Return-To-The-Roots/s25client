@@ -88,11 +88,11 @@ iwMusicPlayer::iwMusicPlayer()
     addComboBox(ID_cbPlaylist, DrawPoint(20, 260), Extent(330, 22), TextureColor::Green1, NormalFont, 200);
 
     // Playlist buttons
-    const unsigned short button_distance = 10;
-    const Extent buttonSize((330 - button_distance) / 2, 22);
+    const unsigned short buttonDistance = 10;
+    const Extent buttonSize((330 - buttonDistance) / 2, 22);
     ctrlButton* b1 =
       addTextButton(ID_btAddPlaylist, DrawPoint(20, 288), buttonSize, TextureColor::Green2, _("Add"), NormalFont);
-    addTextButton(ID_btRemovePlaylist, b1->getPos() + DrawPoint(buttonSize.x + button_distance, 0), buttonSize,
+    addTextButton(ID_btRemovePlaylist, b1->getPos() + DrawPoint(buttonSize.x + buttonDistance, 0), buttonSize,
                   TextureColor::Green2, _("Remove"), NormalFont);
 
     // Track buttons

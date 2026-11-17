@@ -483,8 +483,8 @@ void dskGameInterface::msgPaintAfter()
 
         magnifierImg->drawFull(iconPos);
 
-        std::string zoom_percent = helpers::toString((int)(gwv.getCurrentTargetZoomFactor() * 100)) + "%";
-        NormalFont->draw(iconPos - magnifierImg->getOrigin() + DrawPoint(9, 7), zoom_percent, FontStyle::CENTER,
+        std::string zoomPercent = helpers::toString((int)(gwv.getCurrentTargetZoomFactor() * 100)) + "%";
+        NormalFont->draw(iconPos - magnifierImg->getOrigin() + DrawPoint(9, 7), zoomPercent, FontStyle::CENTER,
                          COLOR_YELLOW);
         iconPos -= DrawPoint(magnifierImg->getWidth() + 4, 0);
     }
@@ -554,9 +554,9 @@ bool dskGameInterface::contextClick(const MouseCoords& mc)
         }
     } else // Not in road building mode
     {
-        bool enable_military_buildings = false;
+        bool enableMilitaryBuildings = false;
 
-        iwAction::Tabs action_tabs;
+        iwAction::Tabs actionTabs;
 
         const MapPoint cSel = gwv.getSelectedPt();
 
@@ -610,7 +610,7 @@ bool dskGameInterface::contextClick(const MouseCoords& mc)
             return true;
         }
 
-        action_tabs.watch = true;
+        actionTabs.watch = true;
         // Unser Land
         if(worldViewer.isOwner(cSel))
         {
@@ -618,30 +618,30 @@ bool dskGameInterface::contextClick(const MouseCoords& mc)
             // Kann hier was gebaut werden?
             if(bq >= BuildingQuality::Mine)
             {
-                action_tabs.build = true;
+                actionTabs.build = true;
 
                 // Welches Gebäude kann gebaut werden?
                 switch(bq)
                 {
-                    case BuildingQuality::Mine: action_tabs.build_tabs = iwAction::BuildTab::Mine; break;
-                    case BuildingQuality::Hut: action_tabs.build_tabs = iwAction::BuildTab::Hut; break;
-                    case BuildingQuality::House: action_tabs.build_tabs = iwAction::BuildTab::House; break;
-                    case BuildingQuality::Castle: action_tabs.build_tabs = iwAction::BuildTab::Castle; break;
-                    case BuildingQuality::Harbor: action_tabs.build_tabs = iwAction::BuildTab::Harbor; break;
+                    case BuildingQuality::Mine: actionTabs.build_tabs = iwAction::BuildTab::Mine; break;
+                    case BuildingQuality::Hut: actionTabs.build_tabs = iwAction::BuildTab::Hut; break;
+                    case BuildingQuality::House: actionTabs.build_tabs = iwAction::BuildTab::House; break;
+                    case BuildingQuality::Castle: actionTabs.build_tabs = iwAction::BuildTab::Castle; break;
+                    case BuildingQuality::Harbor: actionTabs.build_tabs = iwAction::BuildTab::Harbor; break;
                     default: break;
                 }
 
                 if(!worldViewer.getWorld().isFlagAround(cSel))
-                    action_tabs.setflag = true;
+                    actionTabs.setflag = true;
 
                 // Prüfen, ob sich Militärgebäude in der Nähe befinden, wenn nein, können auch eigene
                 // Militärgebäude gebaut werden
-                enable_military_buildings =
+                enableMilitaryBuildings =
                   !worldViewer.getWorld().isMilitaryBuildingNearNode(cSel, worldViewer.getPlayerId());
             } else if(bq == BuildingQuality::Flag)
-                action_tabs.setflag = true;
+                actionTabs.setflag = true;
             else if(selObj.getType() == NodalObjectType::Flag)
-                action_tabs.flag = true;
+                actionTabs.flag = true;
 
             if(selObj.getType() != NodalObjectType::Flag && selObj.getType() != NodalObjectType::Building)
             {
@@ -651,8 +651,8 @@ bool dskGameInterface::contextClick(const MouseCoords& mc)
                     const PointRoad curRoad = worldViewer.getVisiblePointRoad(cSel, dir);
                     if(curRoad != PointRoad::None)
                     {
-                        action_tabs.cutroad = true;
-                        action_tabs.upgradeRoad |= (curRoad == PointRoad::Normal);
+                        actionTabs.cutroad = true;
+                        actionTabs.upgradeRoad |= (curRoad == PointRoad::Normal);
                     }
                 }
             }
@@ -682,13 +682,13 @@ bool dskGameInterface::contextClick(const MouseCoords& mc)
                 {
                     // Dann darf es nicht neu gebaut sein!
                     if(!static_cast<const nobMilitary*>(building)->isNewBuilt())
-                        action_tabs.attack = true;
+                        actionTabs.attack = true;
                 }
                 // oder ein HQ oder Hafen?
                 else if(bt == BuildingType::Headquarters || bt == BuildingType::HarborBuilding)
-                    action_tabs.attack = true;
-                action_tabs.sea_attack =
-                  action_tabs.attack && worldViewer.getWorld().getGGS().isEnabled(AddonId::SEA_ATTACK);
+                    actionTabs.attack = true;
+                actionTabs.sea_attack =
+                  actionTabs.attack && worldViewer.getWorld().getGGS().isEnabled(AddonId::SEA_ATTACK);
             }
         }
 
@@ -698,7 +698,7 @@ bool dskGameInterface::contextClick(const MouseCoords& mc)
             actionwindow->close();
         VIDEODRIVER.setMousePos(mc.pos);
 
-        showActionWindow(action_tabs, cSel, mc.pos, enable_military_buildings);
+        showActionWindow(actionTabs, cSel, mc.pos, enableMilitaryBuildings);
     }
 
     return true;
@@ -996,11 +996,11 @@ void dskGameInterface::run()
     // Reset draw counter of the trees before drawing
     noTree::resetDrawCounter();
 
-    unsigned water_percent;
+    unsigned waterPercent;
     // Draw mouse only if not on window
     bool drawMouse = WINDOWMANAGER.findWindowAtPos(VIDEODRIVER.getMousePos()) == nullptr;
     gwv.draw(road, actionwindow != nullptr ? actionwindow->getSelectedPt() : MapPoint::invalid(), drawMouse,
-             &water_percent);
+             &waterPercent);
 
     // Indicate that the game is paused by darkening the screen (dark semi-transparent overlay)
     if(GAMECLIENT.isPaused())
@@ -1008,7 +1008,7 @@ void dskGameInterface::run()
     else
     {
         // Play ambient sounds if game is not paused
-        worldViewer.getSoundMgr().playOceanBrawling(water_percent);
+        worldViewer.getSoundMgr().playOceanBrawling(waterPercent);
         worldViewer.getSoundMgr().playBirdSounds(noTree::queryDrawCounter());
     }
 
@@ -1038,10 +1038,10 @@ void dskGameInterface::GI_CancelRoadBuilding()
 
 bool dskGameInterface::buildRoadPart(MapPoint& cSel)
 {
-    std::vector<Direction> new_route =
+    std::vector<Direction> newRoute =
       findPathForRoad(worldViewer, road.point, cSel, road.mode == RoadBuildMode::Boat, 100);
     // Weg gefunden?
-    if(new_route.empty())
+    if(newRoute.empty())
         return false;
 
     // Test on water way length
@@ -1050,24 +1050,24 @@ bool dskGameInterface::buildRoadPart(MapPoint& cSel)
         unsigned char index = worldViewer.getWorld().getGGS().getSelection(AddonId::MAX_WATERWAY_LENGTH);
 
         RTTR_Assert(index < waterwayLengths.size());
-        const unsigned max_length = waterwayLengths[index];
+        const unsigned maxLength = waterwayLengths[index];
 
-        unsigned length = road.route.size() + new_route.size();
+        unsigned length = road.route.size() + newRoute.size();
 
         // max_length == 0 heißt beliebig lang, ansonsten
         // Weg zurechtstutzen.
-        if(max_length > 0)
+        if(maxLength > 0)
         {
-            while(length > max_length)
+            while(length > maxLength)
             {
-                new_route.pop_back();
+                newRoute.pop_back();
                 --length;
             }
         }
     }
 
     // Weg (visuell) bauen
-    for(const auto dir : new_route)
+    for(const auto dir : newRoute)
     {
         worldViewer.setVisiblePointRoad(road.point, dir,
                                         (road.mode == RoadBuildMode::Boat) ? PointRoad::Boat : PointRoad::Normal);
@@ -1079,7 +1079,7 @@ bool dskGameInterface::buildRoadPart(MapPoint& cSel)
     // Zielpunkt updaten (für Wasserweg)
     cSel = road.point;
 
-    road.route.insert(road.route.end(), new_route.begin(), new_route.end());
+    road.route.insert(road.route.end(), newRoute.begin(), newRoute.end());
 
     return true;
 }
@@ -1103,15 +1103,15 @@ void dskGameInterface::showRoadWindow(const Position& mousePos)
       std::make_unique<iwRoadWindow>(*this, worldViewer.getBQ(road.point) != BuildingQuality::Nothing, mousePos), true);
 }
 
-void dskGameInterface::showActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
-                                        const bool enable_military_buildings)
+void dskGameInterface::showActionWindow(const iwAction::Tabs& actionTabs, MapPoint cSel, const DrawPoint& mousePos,
+                                        const bool enableMilitaryBuildings)
 {
     const GameWorldBase& world = worldViewer.getWorld();
 
     iwAction::Params params;
 
     // Sind wir am Wasser?
-    if(action_tabs.setflag)
+    if(actionTabs.setflag)
     {
         auto isWater = [](const auto& desc) { return desc.kind == TerrainKind::Water; };
         if(world.hasTerrain(cSel, isWater))
@@ -1119,7 +1119,7 @@ void dskGameInterface::showActionWindow(const iwAction::Tabs& action_tabs, MapPo
     }
 
     // Wenn es einen Flaggen-Tab gibt, dann den Flaggentyp herausfinden und die Art des Fensters entsprechende setzen
-    if(action_tabs.flag)
+    if(actionTabs.flag)
     {
         if(world.getNO(world.getNeighbour(cSel, Direction::NorthWest))->getGOT() == GO_Type::NobHq)
             params = iwAction::FlagType::HQ;
@@ -1131,13 +1131,13 @@ void dskGameInterface::showActionWindow(const iwAction::Tabs& action_tabs, MapPo
     }
 
     // Angriffstab muss wissen, wieviel Soldaten maximal entsendet werden können
-    if(action_tabs.attack)
+    if(actionTabs.attack)
     {
         params = worldViewer.getNumSoldiersForAttack(cSel);
     }
 
     actionwindow = &WINDOWMANAGER.show(
-      std::make_unique<iwAction>(*this, gwv, action_tabs, cSel, mousePos, params, enable_military_buildings), true);
+      std::make_unique<iwAction>(*this, gwv, actionTabs, cSel, mousePos, params, enableMilitaryBuildings), true);
 }
 
 void dskGameInterface::onChatCommand(const std::string& cmd)
@@ -1358,18 +1358,18 @@ void dskGameInterface::demolishRoad(const unsigned start_id)
 /**
  *  Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
  */
-void dskGameInterface::updatePostIcon(const unsigned postmessages_count, bool showPigeon)
+void dskGameInterface::updatePostIcon(const unsigned postmessagesCount, bool showPigeon)
 {
     // Taube setzen oder nicht (Post)
-    if(postmessages_count == 0 || !showPigeon)
+    if(postmessagesCount == 0 || !showPigeon)
         getCtrl<ctrlImageButton>(3)->setImage(LOADER.getImageN("io", 62));
     else
         getCtrl<ctrlImageButton>(3)->setImage(LOADER.getImageN("io", 59));
 
     // und Anzahl der Postnachrichten aktualisieren
-    if(postmessages_count > 0)
+    if(postmessagesCount > 0)
     {
-        getCtrl<ctrlText>(ID_txtNumMsg)->setText(std::to_string(postmessages_count));
+        getCtrl<ctrlText>(ID_txtNumMsg)->setText(std::to_string(postmessagesCount));
     } else
         getCtrl<ctrlText>(ID_txtNumMsg)->setText("");
 }

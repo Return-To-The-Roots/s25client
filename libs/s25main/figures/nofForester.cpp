@@ -47,18 +47,18 @@ nofForester::nofForester(SerializedGameData& sgd, const unsigned obj_id) : nofFa
 /// Malt den Arbeiter beim Arbeiten
 void nofForester::drawWorking(DrawPoint drawPt)
 {
-    unsigned short now_id = GAMECLIENT.interpolate(36, current_ev);
+    unsigned short nowId = GAMECLIENT.interpolate(36, current_ev);
     // Baum pflanzen
-    LOADER.getPlayerImage("rom_bobs", 48 + now_id)->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+    LOADER.getPlayerImage("rom_bobs", 48 + nowId)->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
 
     // Schaufel-Sound
-    if(now_id == 7 || now_id == 18)
+    if(nowId == 7 || nowId == 18)
     {
-        world->getSoundMgr().playNOSound(76, *this, (now_id == 7) ? 0 : 1, 200);
+        world->getSoundMgr().playNOSound(76, *this, (nowId == 7) ? 0 : 1, 200);
         was_sounding = true;
     }
     // Baum-Einpflanz-Sound
-    else if(now_id == 35)
+    else if(nowId == 35)
     {
         world->getSoundMgr().playNOSound(57, *this, 2);
         was_sounding = true;

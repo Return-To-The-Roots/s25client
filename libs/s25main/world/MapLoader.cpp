@@ -619,11 +619,11 @@ void MapLoader::calcHarborPosNeighbors(World& world)
     }
 
     // FIFO queue used for a BFS
-    std::queue<CalcHarborPosNeighborsNode> todo_list;
+    std::queue<CalcHarborPosNeighborsNode> todoList;
 
     for(const auto startHbId : helpers::idRange<HarborId>(world.harborData.size()))
     {
-        RTTR_Assert(todo_list.empty());
+        RTTR_Assert(todoList.empty());
 
         // Copy sea points to working flags. Possible values are
         // -1 - sea point, not already visited
@@ -672,13 +672,13 @@ void MapLoader::calcHarborPosNeighbors(World& world)
                 world.harborData[startHbId].neighbors[shipDir].push_back(HarborPos::Neighbor(it->second, seaId, 0));
                 hbFound[it->second] = true;
             }
-            todo_list.push(CalcHarborPosNeighborsNode(ownCoastPt, 0));
+            todoList.push(CalcHarborPosNeighborsNode(ownCoastPt, 0));
         }
 
-        while(!todo_list.empty()) // as long as there are sea points on our todo list...
+        while(!todoList.empty()) // as long as there are sea points on our todo list...
         {
-            CalcHarborPosNeighborsNode curNode = todo_list.front();
-            todo_list.pop();
+            CalcHarborPosNeighborsNode curNode = todoList.front();
+            todoList.pop();
 
             for(const auto dir : helpers::EnumRange<Direction>{})
             {
@@ -718,7 +718,7 @@ void MapLoader::calcHarborPosNeighbors(World& world)
                         }
                     }
                 }
-                todo_list.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
+                todoList.push(CalcHarborPosNeighborsNode(curPt, curNode.distance + 1));
                 ptToVisitOrHb[idx] = 0; // mark as visited, so we do not go here again
             }
         }

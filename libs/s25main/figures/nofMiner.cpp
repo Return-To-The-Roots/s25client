@@ -115,17 +115,17 @@ void nofMiner::drawWorking(DrawPoint drawPt)
     const unsigned mineIdx = rttr::enumCast(workplace->getBuildingType()) - rttr::enumCast(BuildingType::GraniteMine);
     RTTR_Assert(mineIdx < offsets.size());
 
-    unsigned now_id = GAMECLIENT.interpolate(160, current_ev);
+    unsigned nowId = GAMECLIENT.interpolate(160, current_ev);
     unsigned texture;
     if(workplace->getNation() == Nation::Romans)
-        texture = 92 + now_id % 8;
+        texture = 92 + nowId % 8;
     else
-        texture = 1799 + now_id % 4;
+        texture = 1799 + nowId % 4;
     LOADER.getPlayerImage("rom_bobs", texture)->drawFull(drawPt + offsets[workplace->getNation()][mineIdx]);
 
-    if(now_id % 8 == 3)
+    if(nowId % 8 == 3)
     {
-        world->getSoundMgr().playNOSound(59, *this, now_id);
+        world->getSoundMgr().playNOSound(59, *this, nowId);
         was_sounding = true;
     }
 }

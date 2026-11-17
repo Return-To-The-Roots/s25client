@@ -95,17 +95,17 @@ unsigned GameWorldViewer::getNumSoldiersForAttack(const MapPoint pt) const
         return 0;
 
     // Militärgebäude in der Nähe finden
-    unsigned total_count = 0;
+    unsigned totalCount = 0;
 
     sortedMilitaryBlds buildings = getWorld().lookForMilitaryBuildings(pt, 3);
     for(auto& building : buildings)
     {
         // Muss ein Gebäude von uns sein und darf nur ein "normales Militärgebäude" sein (kein HQ etc.)
         if(building->getPlayer() == playerId_ && BuildingProperties::isMilitary(building->getBuildingType()))
-            total_count += static_cast<nobMilitary*>(building)->getNumSoldiersForAttack(pt);
+            totalCount += static_cast<nobMilitary*>(building)->getNumSoldiersForAttack(pt);
     }
 
-    return total_count;
+    return totalCount;
 }
 
 BuildingQuality GameWorldViewer::getBQ(const MapPoint& pt) const
@@ -319,7 +319,7 @@ const FoWNode& GameWorldViewer::getYoungestFOWNode(const MapPoint pos) const
 {
     const MapNode& node = getWorld().getNode(pos);
     const FoWNode* bestNode = &node.fow[playerId_];
-    unsigned youngest_time = bestNode->last_update_time;
+    unsigned youngestTime = bestNode->last_update_time;
 
     // Shared team view enabled?
     if(getWorld().getGGS().teamView)
@@ -335,10 +335,10 @@ const FoWNode& GameWorldViewer::getYoungestFOWNode(const MapPoint pos) const
             if(curNode->visibility == Visibility::FogOfWar)
             {
                 // Younger than the youngest or no object at all?
-                if(curNode->last_update_time > youngest_time)
+                if(curNode->last_update_time > youngestTime)
                 {
                     // Then take it
-                    youngest_time = curNode->last_update_time;
+                    youngestTime = curNode->last_update_time;
                     // And remember its owner
                     bestNode = curNode;
                 }

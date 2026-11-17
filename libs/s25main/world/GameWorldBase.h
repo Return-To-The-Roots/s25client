@@ -114,8 +114,8 @@ public:
     sortedMilitaryBlds lookForMilitaryBuildings(MapPoint pt, unsigned short radius) const;
 
     /// Finds a path for figures. Returns first direction to walk in if found
-    helpers::OptionalEnum<Direction> findHumanPath(MapPoint start, MapPoint dest, unsigned max_route = 0xFFFFFFFF,
-                                                   bool random_route = false, unsigned* length = nullptr,
+    helpers::OptionalEnum<Direction> findHumanPath(MapPoint start, MapPoint dest, unsigned maxRoute = 0xFFFFFFFF,
+                                                   bool randomRoute = false, unsigned* length = nullptr,
                                                    std::vector<Direction>* route = nullptr) const;
     /// Find path for ships to a specific harbor and see. Return true on success
     /// If starting point equals the coastal point of target harbor, set length 0, clear route and return true.
@@ -211,15 +211,15 @@ public:
     /// Sets all entries in @param use_seas to true, if the given sea can be used for attacking (seaId=1 -> Index 0 as
     /// seaId=0 is invalid sea)
     std::vector<HarborId> getUsableTargetHarborsForAttack(MapPoint targetPt, std::vector<bool>& use_seas,
-                                                          unsigned char player_attacker) const;
+                                                          unsigned char playerAttacker) const;
     /// Return all sea Ids from @param usableSeas that can be used for attacking the given point
     std::vector<SeaId> getFilteredSeaIDsForAttack(MapPoint targetPt, const std::vector<SeaId>& usableSeas,
-                                                  unsigned char player_attacker) const;
+                                                  unsigned char playerAttacker) const;
     /// Return all soldiers (in no specific order) that can be used to attack the given point via a sea.
     /// Checks all preconditions for a sea attack (addon, attackable...)
-    std::vector<PotentialSeaAttacker> getSoldiersForSeaAttack(unsigned char player_attacker, MapPoint pt) const;
+    std::vector<PotentialSeaAttacker> getSoldiersForSeaAttack(unsigned char playerAttacker, MapPoint pt) const;
     /// Return number or strength (summed ranks) of soldiers that can attack via the given sea
-    unsigned getNumSoldiersForSeaAttackAtSea(unsigned char player_attacker, SeaId sea, bool returnCount = true) const;
+    unsigned getNumSoldiersForSeaAttackAtSea(unsigned char playerAttacker, SeaId sea, bool returnCount = true) const;
 
     /// Recalculates the BQ for the given point
     void recalcBQ(MapPoint pt);

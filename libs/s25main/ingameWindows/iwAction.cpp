@@ -115,49 +115,49 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
            {BuildingType::GoldMine, BuildingType::IronMine, BuildingType::CoalMine, BuildingType::GraniteMine}}};
 
         /// Flexible what-buildings-are-available handling
-        helpers::EnumArray<bool, BuildingType> building_available;
+        helpers::EnumArray<bool, BuildingType> buildingAvailable;
 
         // First enable all buildings
         for(const auto bld : helpers::enumRange<BuildingType>())
-            building_available[bld] = player.isBuildingEnabled(bld);
+            buildingAvailable[bld] = player.isBuildingEnabled(bld);
 
         // Now deactivate those we don't want
 
         if(tabs.build_tabs != BuildTab::Harbor)
-            building_available[BuildingType::HarborBuilding] = false;
+            buildingAvailable[BuildingType::HarborBuilding] = false;
 
         if(!military_buildings)
         {
-            building_available[BuildingType::Barracks] = false;
-            building_available[BuildingType::Guardhouse] = false;
-            building_available[BuildingType::Watchtower] = false;
-            building_available[BuildingType::Fortress] = false;
+            buildingAvailable[BuildingType::Barracks] = false;
+            buildingAvailable[BuildingType::Guardhouse] = false;
+            buildingAvailable[BuildingType::Watchtower] = false;
+            buildingAvailable[BuildingType::Fortress] = false;
         }
 
         if(gwv.getWorld().getGGS().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS))
         {
-            building_available[BuildingType::GoldMine] = false;
-            building_available[BuildingType::Mint] = false;
+            buildingAvailable[BuildingType::GoldMine] = false;
+            buildingAvailable[BuildingType::Mint] = false;
         }
 
         if(!player.canBuildCatapult())
-            building_available[BuildingType::Catapult] = false;
+            buildingAvailable[BuildingType::Catapult] = false;
 
         if(!gwv.getWorld().getGGS().isEnabled(AddonId::CHARBURNER))
-            building_available[BuildingType::Charburner] = false;
+            buildingAvailable[BuildingType::Charburner] = false;
 
         if(!gwv.getWorld().getGGS().isEnabled(AddonId::WINE))
         {
-            building_available[BuildingType::Vineyard] = false;
-            building_available[BuildingType::Winery] = false;
-            building_available[BuildingType::Temple] = false;
+            buildingAvailable[BuildingType::Vineyard] = false;
+            buildingAvailable[BuildingType::Winery] = false;
+            buildingAvailable[BuildingType::Temple] = false;
         }
 
         if(!gwv.getWorld().getGGS().isEnabled(AddonId::LEATHER))
         {
-            building_available[BuildingType::Skinner] = false;
-            building_available[BuildingType::Tannery] = false;
-            building_available[BuildingType::LeatherWorks] = false;
+            buildingAvailable[BuildingType::Skinner] = false;
+            buildingAvailable[BuildingType::Tannery] = false;
+            buildingAvailable[BuildingType::LeatherWorks] = false;
         }
 
         const bool showBuildingRadius = gwv.getWorld().getGGS().isEnabled(AddonId::BUILDING_RADIUS);
@@ -170,7 +170,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
 
             for(const BuildingType bld : building_icons[bt])
             {
-                if(!building_available[bld])
+                if(!buildingAvailable[bld])
                     continue;
 
                 // Baukosten im Tooltip mit anzeigen
@@ -377,19 +377,19 @@ void iwAction::addUpgradeRoad(ctrlGroup* group, unsigned& /*x*/, unsigned& width
 
 bool iwAction::doUpgradeRoad()
 {
-    Direction flag_dir;
-    const noFlag* flag = gwv.getWorld().getRoadFlag(selectedPt, flag_dir);
+    Direction flagDir;
+    const noFlag* flag = gwv.getWorld().getRoadFlag(selectedPt, flagDir);
     if(flag)
-        return GAMECLIENT.UpgradeRoad(flag->getPos(), flag_dir);
+        return GAMECLIENT.UpgradeRoad(flag->getPos(), flagDir);
     else
         return true;
 }
 
 /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
-void iwAction::addAttackControls(ctrlGroup* group, const unsigned attackers_count)
+void iwAction::addAttackControls(ctrlGroup* group, const unsigned attackersCount)
 {
     // Verfügbare Soldatenzahl steht in params, wenns keine gibt, einfach Meldung anzeigen: "Angriff nicht möglich!"
-    if(attackers_count == 0)
+    if(attackersCount == 0)
     {
         // Angriff nicht  möglich!
         group->addText(1, DrawPoint(90, 56), _("Attack not possible."), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
@@ -413,11 +413,11 @@ void iwAction::addAttackControls(ctrlGroup* group, const unsigned attackers_coun
         ogroup->setSelection(1);
 
         // Schnellauswahl-Buttons
-        unsigned buttons_count = (attackers_count > 3) ? 4 : attackers_count;
-        unsigned short button_width = 112 / buttons_count;
+        unsigned buttonsCount = (attackersCount > 3) ? 4 : attackersCount;
+        unsigned short buttonWidth = 112 / buttonsCount;
 
-        for(unsigned i = 0; i < buttons_count; ++i)
-            group->addImageButton(10 + i, DrawPoint(3 + i * button_width, 83), Extent(button_width, 32),
+        for(unsigned i = 0; i < buttonsCount; ++i)
+            group->addImageButton(10 + i, DrawPoint(3 + i * buttonWidth, 83), Extent(buttonWidth, 32),
                                   TextureColor::Grey, LOADER.getImageN("io", 204 + i), _("Number of attackers"));
 
         // Angriffsbutton
@@ -492,14 +492,14 @@ void iwAction::msgGroupButtonClick(const unsigned /*group_id*/, const unsigned c
     }
 }
 
-void iwAction::msgTabChange(const unsigned ctrl_id, const unsigned short tab_id)
+void iwAction::msgTabChange(const unsigned ctrl_id, const unsigned short tabId)
 {
     switch(ctrl_id)
     {
         case 0: // Haupttabs
         {
             unsigned short height = 0;
-            switch(tab_id)
+            switch(tabId)
             {
                 case TAB_FLAG:
                 case TAB_CUTROAD:
@@ -536,13 +536,13 @@ void iwAction::msgTabChange(const unsigned ctrl_id, const unsigned short tab_id)
     }
 }
 
-void iwAction::msgGroupTabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
+void iwAction::msgGroupTabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tabId)
 {
     switch(ctrl_id)
     {
         case 1: // Gebäudetabs
         {
-            setHeight(building_tab_heights[tab_id]);
+            setHeight(building_tab_heights[tabId]);
         }
         break;
     }
@@ -746,10 +746,10 @@ void iwAction::msgButtonClickTabCutRoad(const unsigned ctrl_id)
     {
         case 1: // Straße abreißen
         {
-            Direction flag_dir;
-            const noFlag* flag = gwv.getWorld().getRoadFlag(selectedPt, flag_dir);
+            Direction flagDir;
+            const noFlag* flag = gwv.getWorld().getRoadFlag(selectedPt, flagDir);
             if(flag)
-                success = GAMECLIENT.DestroyRoad(flag->getPos(), flag_dir);
+                success = GAMECLIENT.DestroyRoad(flag->getPos(), flagDir);
         }
         break;
         case 2: // Straße aufwerten

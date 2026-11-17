@@ -243,8 +243,8 @@ iwSuggestPact::iwSuggestPact(const PactType pt, const GamePlayer& player, GameCo
 void iwSuggestPact::msgButtonClick(const unsigned /*ctrl_id*/)
 {
     /// Dauer auswählen (wenn id == NUM_DURATIONS, dann "für alle Ewigkeit" ausgewählt)
-    const unsigned selected_id = getCtrl<ctrlComboBox>(6)->getSelection().value();
-    const unsigned duration = (selected_id == NUM_DURATIONS) ? DURATION_INFINITE : DURATIONS[selected_id];
+    const unsigned selectedId = getCtrl<ctrlComboBox>(6)->getSelection().value();
+    const unsigned duration = (selectedId == NUM_DURATIONS) ? DURATION_INFINITE : DURATIONS[selectedId];
     if(gcFactory.SuggestPact(player.getPlayerId(), this->pt, duration))
         close();
 }

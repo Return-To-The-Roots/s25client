@@ -424,9 +424,9 @@ const GameEvent* SerializedGameData::popEvent()
         return foundObj->second;
     std::unique_ptr<GameEvent> ev = std::make_unique<GameEvent>(*this, instanceId);
 
-    unsigned short safety_code = popUnsignedShort();
+    unsigned short safetyCode = popUnsignedShort();
 
-    if(safety_code != getSafetyCode(*ev))
+    if(safetyCode != getSafetyCode(*ev))
     {
         LOG.write("SerializedGameData::PopEvent: ERROR: After loading Event(instanceId = %1%); Code is wrong!\n")
           % instanceId;
@@ -487,9 +487,9 @@ GameObject* SerializedGameData::popObjectImpl(helpers::OptionalEnum<GO_Type> got
     std::unique_ptr<GameObject> go = createGameObject(*got, objId);
 
     // Sicherheitscode auslesen
-    unsigned short safety_code = popUnsignedShort();
+    unsigned short safetyCode = popUnsignedShort();
 
-    if(safety_code != getSafetyCode(*go))
+    if(safetyCode != getSafetyCode(*go))
     {
         LOG.write(
           "SerializedGameData::PopObject_: ERROR: After loading Object(obj_id = %u, got = %u); Code is wrong!\n")

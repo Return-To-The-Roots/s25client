@@ -176,7 +176,7 @@ public:
     ctrlPercent* addPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
                             const glFont* font, const unsigned short* percentage);
     ctrlProgress* addProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-                              unsigned short button_minus, unsigned short button_plus, unsigned short maximum,
+                              unsigned short buttonMinus, unsigned short buttonPlus, unsigned short maximum,
                               const std::string& tooltip = "", const Extent& padding = Extent(0, 0),
                               unsigned force_color = 0, const std::string& button_minus_tooltip = "",
                               const std::string& button_plus_tooltip = "");

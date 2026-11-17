@@ -63,18 +63,18 @@ constexpr bool DEBUG_MODE =
 #else
   false;
 #endif
-void copyFileIfPathDifferent(const boost::filesystem::path& src_path, const boost::filesystem::path& dst_path)
+void copyFileIfPathDifferent(const boost::filesystem::path& src_path, const boost::filesystem::path& dstPath)
 {
-    if(src_path != dst_path)
+    if(src_path != dstPath)
     {
         boost::system::error_code ignoredEc;
-        constexpr auto overwrite_existing =
+        constexpr auto overwriteExisting =
 #if BOOST_VERSION >= 107400
           boost::filesystem::copy_options::overwrite_existing;
 #else
           boost::filesystem::copy_option::overwrite_if_exists;
 #endif
-        copy_file(src_path, dst_path, overwrite_existing, ignoredEc);
+        copy_file(src_path, dstPath, overwriteExisting, ignoredEc);
     }
 }
 } // namespace
@@ -841,21 +841,21 @@ bool GameClient::onGameMessage(const GameMessage_Server_Async& msg)
         return true;
 
     // Liste mit Namen und Checksummen erzeugen
-    std::stringstream checksum_list;
+    std::stringstream checksumList;
     for(unsigned i = 0; i < msg.checksums.size(); ++i)
     {
-        checksum_list << getPlayer(i).name << ": " << msg.checksums[i];
+        checksumList << getPlayer(i).name << ": " << msg.checksums[i];
         if(i + 1 < msg.checksums.size())
-            checksum_list << ", ";
+            checksumList << ", ";
     }
 
     // Fehler ausgeben (Konsole)!
     LOG.write(_("The Game is not in sync. Checksums of some players don't match."));
-    LOG.write("\n%1%\n") % checksum_list.str();
+    LOG.write("\n%1%\n") % checksumList.str();
 
     // Messenger im Game
     if(ci)
-        ci->CI_Async(checksum_list.str());
+        ci->CI_Async(checksumList.str());
 
     std::string fileName = s25util::Time::formatTime("async_%Y-%m-%d_%H-%i-%s");
     fileName += "_" + s25util::toStringClassic(getPlayerId()) + "_";
@@ -1614,7 +1614,7 @@ void GameClient::skipGF(unsigned gf, GameWorldView& gwv)
     if(gf <= getGFNumber())
         return;
 
-    unsigned start_ticks = VIDEODRIVER.getTickCount();
+    unsigned startTicks = VIDEODRIVER.getTickCount();
 
     if(!replayMode)
     {
@@ -1654,7 +1654,7 @@ void GameClient::skipGF(unsigned gf, GameWorldView& gwv)
     RTTR_Assert(skiptogf == 0u || getGFNumber() == gf);
 
     // Spiel pausieren & text ausgabe wie lang das jetzt gedauert hat
-    unsigned ticks = VIDEODRIVER.getTickCount() - start_ticks;
+    unsigned ticks = VIDEODRIVER.getTickCount() - startTicks;
     boost::format text(_("Jump finished (%1$.3g seconds)."));
     text % (ticks / 1000.0);
     systemChat(text.str());

@@ -73,10 +73,10 @@ void CatapultStone::draw(DrawPoint drawOffset)
         double dx = double(s) / whole - 0.5;
 
         // Y-Verschiebung ausrechnen, damit die Nullpunkte beim Start- und Endpunkt liegen
-        double y_diff = 0.5 * 0.5;
+        double yDiff = 0.5 * 0.5;
 
         // Verschiebung ausrechnen von Y
-        auto diff = int((dx * dx - y_diff) * 200);
+        auto diff = int((dx * dx - yDiff) * 200);
 
         // Stein auf Parabel zeichnen
         drawPos.y = (drawPos.y + diff) % worldSize.y;

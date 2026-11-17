@@ -59,11 +59,11 @@ unsigned PreviewMinimap::calcPixelColor(const MapPoint pt, const unsigned t)
 {
     unsigned color = 0;
     // Baum an dieser Stelle?
-    unsigned char landscape_obj = objects[getMMIdx(pt)];
-    if(landscape_obj >= 0xC4 && landscape_obj <= 0xC6)
+    unsigned char landscapeObj = objects[getMMIdx(pt)];
+    if(landscapeObj >= 0xC4 && landscapeObj <= 0xC6)
         color = varyBrightness(TREE_COLOR, VARY_TREE_COLOR);
     // Granit an dieser Stelle?
-    else if(landscape_obj == 0xCC || landscape_obj == 0xCD)
+    else if(landscapeObj == 0xCC || landscapeObj == 0xCD)
         color = varyBrightness(GRANITE_COLOR, VARY_GRANITE_COLOR);
     // Ansonsten die jeweilige Terrainfarbe nehmen
     else

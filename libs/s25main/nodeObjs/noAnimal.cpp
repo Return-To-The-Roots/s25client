@@ -73,11 +73,11 @@ void noAnimal::draw(DrawPoint drawPt)
             // Interpolieren zwischen beiden Knotenpunkten
             drawPt += calcWalkingRelative();
 
-            unsigned ani_step = GAMECLIENT.interpolate(ASCENT_ANIMATION_STEPS[getAscent()], current_ev)
-                                % ANIMALCONSTS[species].animation_steps;
+            unsigned aniStep = GAMECLIENT.interpolate(ASCENT_ANIMATION_STEPS[getAscent()], current_ev)
+                               % ANIMALCONSTS[species].animation_steps;
 
             // Zeichnen
-            LOADER.getAnimalSprite(species, getCurMoveDir(), ani_step).draw(drawPt);
+            LOADER.getAnimalSprite(species, getCurMoveDir(), aniStep).draw(drawPt);
 
             // Bei Enten und Schafen: Soll ein Sound gespielt werden?
             if(species == Species::Duck || species == Species::Sheep)

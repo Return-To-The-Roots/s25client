@@ -22,19 +22,19 @@ void nofBrewer::drawWorking(DrawPoint drawPt)
     static constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {
       {{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}}};
 
-    unsigned now_id = GAMECLIENT.interpolate(128, current_ev);
+    unsigned nowId = GAMECLIENT.interpolate(128, current_ev);
 
-    if(now_id < 16)
-        LOADER.getPlayerImage("rom_bobs", now_id)
+    if(nowId < 16)
+        LOADER.getPlayerImage("rom_bobs", nowId)
           ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
                      world->getPlayer(workplace->getPlayer()).color);
 
-    if(now_id == 5)
+    if(nowId == 5)
     {
         world->getSoundMgr().playNOSound(51, *this, 0);
         was_sounding = true;
     }
-    last_id = now_id;
+    last_id = nowId;
 }
 
 helpers::OptionalEnum<GoodType> nofBrewer::produceWare()

@@ -25,41 +25,41 @@ void nofPigbreeder::drawWorking(DrawPoint drawPt)
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{10, 2}, {10, 2}, {10, 2}, {10, 2}, {10, 2}}};
     constexpr helpers::EnumArray<DrawPoint, Nation> walkstart = {{{-6, -6}, {-6, -6}, {-6, -6}, {-6, -6}, {-6, -6}}};
 
-    unsigned max_id = 240;
-    int now_id = GAMECLIENT.interpolate(max_id, current_ev);
+    unsigned maxId = 240;
+    int nowId = GAMECLIENT.interpolate(maxId, current_ev);
     const Nation wpNation = workplace->getNation();
     unsigned plColor = world->getPlayer(player).color;
     int walksteps = 16;
 
-    if(now_id < 16)
+    if(nowId < 16)
     {
-        if(now_id < 8)
+        if(nowId < 8)
             LOADER.building_cache[wpNation][BuildingType::PigFarm].door.drawFull(drawPt);
         // TODO: Use GlobalAnimation?
         DrawPoint walkPos =
-          drawPt + walkstart[wpNation] + (offsets[wpNation] - walkstart[wpNation]) * now_id / walksteps;
+          drawPt + walkstart[wpNation] + (offsets[wpNation] - walkstart[wpNation]) * nowId / walksteps;
 
-        LOADER.getBobSprite(wpNation, Job::PigBreeder, Direction::SouthEast, now_id % 8)
+        LOADER.getBobSprite(wpNation, Job::PigBreeder, Direction::SouthEast, nowId % 8)
           .draw(walkPos, COLOR_WHITE, plColor);
-    } else if(now_id < 40)
+    } else if(nowId < 40)
     {
-        LOADER.getPlayerImage("rom_bobs", 148 + (now_id - 16) / 2)
+        LOADER.getPlayerImage("rom_bobs", 148 + (nowId - 16) / 2)
           ->drawFull(drawPt + offsets[wpNation], COLOR_WHITE, plColor);
 
         // Evtl Sound abspielen
-        if((now_id - 16) == 10)
+        if((nowId - 16) == 10)
         {
             world->getSoundMgr().playNOSound(65, *this, 0);
             was_sounding = true;
         }
-    } else if(now_id < 56)
+    } else if(nowId < 56)
     {
-        if(now_id > 46)
+        if(nowId > 46)
             LOADER.building_cache[wpNation][BuildingType::PigFarm].door.drawFull(drawPt);
         // TODO: Use GlobalAnimation?
         DrawPoint walkPos =
-          drawPt + walkstart[wpNation] + (walkstart[wpNation] - offsets[wpNation]) * (now_id - 40) / walksteps;
-        LOADER.getBobSprite(wpNation, Job::PigBreeder, Direction::NorthWest, (now_id - 40) % 8)
+          drawPt + walkstart[wpNation] + (walkstart[wpNation] - offsets[wpNation]) * (nowId - 40) / walksteps;
+        LOADER.getBobSprite(wpNation, Job::PigBreeder, Direction::NorthWest, (nowId - 40) % 8)
           .draw(walkPos, COLOR_WHITE, plColor);
     }
 }

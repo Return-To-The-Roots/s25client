@@ -100,8 +100,8 @@ public:
     // ansonsten gibt's nur nen Button zum Abbrechen
     void showRoadWindow(const Position& mousePos);
     /// Zeigt das Actionwindow an, bei Flaggen werden z.B. noch berücksichtigt, obs ne besondere Flagge ist usw
-    void showActionWindow(const iwAction::Tabs& action_tabs, MapPoint cSel, const DrawPoint& mousePos,
-                          bool enable_military_buildings);
+    void showActionWindow(const iwAction::Tabs& actionTabs, MapPoint cSel, const DrawPoint& mousePos,
+                          bool enableMilitaryBuildings);
 
     const GameWorldView& getView() const { return gwv; }
 
@@ -115,7 +115,7 @@ protected:
     void run();
 
     /// Updatet das Post-Icon mit der Nachrichtenanzahl und der Taube
-    void updatePostIcon(unsigned postmessages_count, bool showPigeon);
+    void updatePostIcon(unsigned postmessagesCount, bool showPigeon);
 
     /// Executed during left click. Checks click pos for buildings/roads
     bool contextClick(const MouseCoords& mc);

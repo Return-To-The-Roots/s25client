@@ -435,14 +435,14 @@ std::vector<VideoMode> VideoWinAPI::listVideoModes() const
     memset(&dm, 0, sizeof(dm));
     dm.dmSize = sizeof(dm);
     unsigned m = 0;
-    std::vector<VideoMode> video_modes;
+    std::vector<VideoMode> videoModes;
     while(EnumDisplaySettings(nullptr, m++, &dm))
     {
         VideoMode vm(static_cast<unsigned short>(dm.dmPelsWidth), static_cast<unsigned short>(dm.dmPelsHeight));
-        if(!helpers::contains(video_modes, vm))
-            video_modes.push_back(vm);
+        if(!helpers::contains(videoModes, vm))
+            videoModes.push_back(vm);
     }
-    return video_modes;
+    return videoModes;
 }
 
 void VideoWinAPI::setMousePos(Position pos)

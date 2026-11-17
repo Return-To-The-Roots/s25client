@@ -114,23 +114,23 @@ void ctrlEdit::updateInternalText()
         std::u32string dtext = (isPassword_) ? std::u32string(text_.size(), '*') : text_;
         viewStart_ = std::min<unsigned>(viewStart_, dtext.length() - 1);
         const auto* font = txtCtrl->getFont();
-        const unsigned max_width = getSize().x - ctrlTextDeepening::borderSize.x * 2;
+        const unsigned maxWidth = getSize().x - ctrlTextDeepening::borderSize.x * 2;
         unsigned max;
         std::string curText = s25util::utf32to8(dtext.substr(viewStart_));
-        font->getWidth(curText, max_width, &max);
+        font->getWidth(curText, maxWidth, &max);
         // Add chars at front as long as full text is shown
         while(viewStart_ > 0 && curText.length() <= max)
         {
             --viewStart_;
             curText = s25util::utf32to8(dtext.substr(viewStart_));
-            font->getWidth(curText, max_width, &max);
+            font->getWidth(curText, maxWidth, &max);
         }
         // Remove chars from front until remaining string can be fully shown
         while(curText.length() > max)
         {
             ++viewStart_;
             removeFirstCharFromString(curText);
-            font->getWidth(curText, max_width, &max);
+            font->getWidth(curText, maxWidth, &max);
         }
 
         // Show (up to) 5 chars before the cursor

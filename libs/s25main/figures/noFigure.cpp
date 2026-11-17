@@ -378,7 +378,7 @@ void noFigure::handleEvent(const unsigned id)
         walkFigure();
 
         // Alte Richtung und Position für die Berechnung der Sichtbarkeiten merken
-        const Direction old_dir = getCurMoveDir();
+        const Direction oldDir = getCurMoveDir();
 
         const MapPoint old_pos(pos);
 
@@ -397,7 +397,7 @@ void noFigure::handleEvent(const unsigned id)
         {
             // Use old position (don't use this->pos because it might be different now
             // Figure could be in a ship etc.)
-            world->recalcMovingVisibilities(old_pos, player, visualRange, old_dir, nullptr);
+            world->recalcMovingVisibilities(old_pos, player, visualRange, oldDir, nullptr);
 
             // Wenn Figur verschwunden ist, muss ihr ehemaliger gesamter Sichtbereich noch einmal
             // neue berechnet werden
@@ -545,15 +545,15 @@ void noFigure::wander()
     if(!wander_way)
     {
         // Soldaten sind härter im Nehmen
-        const unsigned short wander_radius =
+        const unsigned short wanderRadius =
           isSoldier() ? getStrandedSoldierReturnSearchRadius(world->getGGS(), wander_tryings) : WANDER_RADIUS;
 
         // Flaggen sammeln und dann zufällig eine auswählen
         const std::vector<noFlag*> flags =
-          world->getPointsInRadius(pos, wander_radius, Point2Flag(*world), IsValidFlag(player));
+          world->getPointsInRadius(pos, wanderRadius, Point2Flag(*world), IsValidFlag(player));
 
-        unsigned best_way = 0xFFFFFFFF;
-        const noFlag* best_flag = nullptr;
+        unsigned bestWay = 0xFFFFFFFF;
+        const noFlag* bestFlag = nullptr;
 
         for(auto* flag : flags)
         {
@@ -570,17 +570,17 @@ void noFigure::wander()
 
             // würde die die bisher beste an Weg unterbieten?
             unsigned way = world->calcDistance(pos, flag->getPos());
-            if(way < best_way)
+            if(way < bestWay)
             {
                 // Are we at that flag or is there a path to it?
-                if(way == 0 || world->findHumanPath(pos, flag->getPos(), wander_radius, false, &way))
+                if(way == 0 || world->findHumanPath(pos, flag->getPos(), wanderRadius, false, &way))
                 {
                     // gucken, ob ein Weg zu einem Warenhaus führt
                     if(world->getPlayer(player).findWarehouse(*flag, FW::AcceptsFigure(job_), true, false))
                     {
                         // dann nehmen wir die doch glatt
-                        best_way = way;
-                        best_flag = flag;
+                        bestWay = way;
+                        bestFlag = flag;
                         if(way == 0)
                             break; // Can't get better
                     }
@@ -597,12 +597,12 @@ void noFigure::wander()
             }
         }
 
-        if(best_flag)
+        if(bestFlag)
         {
             // bestmögliche schließlich nehmen
             wander_way = 0xFFFF;
-            flagPos_ = best_flag->getPos();
-            flag_obj_id = best_flag->getObjId();
+            flagPos_ = bestFlag->getPos();
+            flag_obj_id = bestFlag->getObjId();
             wanderToFlag();
             return;
         }
@@ -785,18 +785,18 @@ DrawPoint noFigure::interpolateWalkDrawPos(DrawPoint drawPt) const
 
 void noFigure::drawWalkingCarrier(DrawPoint drawPt, helpers::OptionalEnum<GoodType> ware, bool fat)
 {
-    const unsigned ani_step = calcWalkAnimationFrame();
+    const unsigned aniStep = calcWalkAnimationFrame();
     const GamePlayer& owner = world->getPlayer(player);
-    auto& sprite = ware ? LOADER.getCarrierSprite(*ware, fat, getCurMoveDir(), ani_step) :
-                          LOADER.getCarrierBobSprite(owner.nation, fat, getCurMoveDir(), ani_step);
+    auto& sprite = ware ? LOADER.getCarrierSprite(*ware, fat, getCurMoveDir(), aniStep) :
+                          LOADER.getCarrierBobSprite(owner.nation, fat, getCurMoveDir(), aniStep);
     sprite.drawForPlayer(interpolateWalkDrawPos(drawPt), owner.color);
 }
 
 void noFigure::drawWalkingBobJobs(DrawPoint drawPt, Job job)
 {
-    const unsigned ani_step = calcWalkAnimationFrame();
+    const unsigned aniStep = calcWalkAnimationFrame();
     const GamePlayer& owner = world->getPlayer(player);
-    LOADER.getBobSprite(owner.nation, job, getCurMoveDir(), ani_step)
+    LOADER.getBobSprite(owner.nation, job, getCurMoveDir(), aniStep)
       .drawForPlayer(interpolateWalkDrawPos(drawPt), owner.color);
 
     if(hasArmor_)
@@ -805,22 +805,22 @@ void noFigure::drawWalkingBobJobs(DrawPoint drawPt, Job job)
 
 void noFigure::drawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat)
 {
-    const unsigned ani_step = calcWalkAnimationFrame();
+    const unsigned aniStep = calcWalkAnimationFrame();
     drawPt = interpolateWalkDrawPos(drawPt);
 
     if(file)
-        file->draw(id, toImgDir(getCurMoveDir()), fat, ani_step, drawPt, world->getPlayer(player).color);
-    drawShadow(drawPt, ani_step, getCurMoveDir());
+        file->draw(id, toImgDir(getCurMoveDir()), fat, aniStep, drawPt, world->getPlayer(player).color);
+    drawShadow(drawPt, aniStep, getCurMoveDir());
 }
 
 void noFigure::drawWalking(DrawPoint drawPt, const ResourceId& file, unsigned id)
 {
-    const unsigned ani_step = calcWalkAnimationFrame();
+    const unsigned aniStep = calcWalkAnimationFrame();
     drawPt = interpolateWalkDrawPos(drawPt);
 
-    LOADER.getPlayerImage(file, calcWalkFrameIndex(id, getCurMoveDir(), ani_step))
+    LOADER.getPlayerImage(file, calcWalkFrameIndex(id, getCurMoveDir(), aniStep))
       ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
-    drawShadow(drawPt, ani_step, getCurMoveDir());
+    drawShadow(drawPt, aniStep, getCurMoveDir());
 }
 
 void noFigure::drawWalking(DrawPoint drawPt)
@@ -829,10 +829,10 @@ void noFigure::drawWalking(DrawPoint drawPt)
     {
         case Job::PackDonkey:
         {
-            const unsigned ani_step = calcWalkAnimationFrame();
+            const unsigned aniStep = calcWalkAnimationFrame();
             drawPt = interpolateWalkDrawPos(drawPt);
 
-            LOADER.getMapTexture(calcWalkFrameIndex(2000, getCurMoveDir(), ani_step))->drawFull(drawPt);
+            LOADER.getMapTexture(calcWalkFrameIndex(2000, getCurMoveDir(), aniStep))->drawFull(drawPt);
             // donkey shadow
             LOADER.getMapTexture(2048 + rttr::enumCast(getCurMoveDir()) % 3)->drawFull(drawPt, COLOR_SHADOW);
         }

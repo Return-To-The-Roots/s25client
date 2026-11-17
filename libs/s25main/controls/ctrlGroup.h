@@ -23,7 +23,7 @@ public:
     void msgButtonClick(unsigned ctrl_id) override;
     void msgEditEnter(unsigned ctrl_id) override;
     void msgEditChange(unsigned ctrl_id) override;
-    void msgTabChange(unsigned ctrl_id, unsigned short tab_id) override;
+    void msgTabChange(unsigned ctrl_id, unsigned short tabId) override;
     void msgListSelectItem(unsigned ctrl_id, int selection) override;
     void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
     void msgCheckboxChange(unsigned ctrl_id, bool checked) override;
@@ -38,7 +38,7 @@ public:
     void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
     void msgGroupEditEnter(unsigned group_id, unsigned ctrl_id) override;
     void msgGroupEditChange(unsigned group_id, unsigned ctrl_id) override;
-    void msgGroupTabChange(unsigned group_id, unsigned ctrl_id, unsigned short tab_id) override;
+    void msgGroupTabChange(unsigned group_id, unsigned ctrl_id, unsigned short tabId) override;
     void msgGroupListSelectItem(unsigned group_id, unsigned ctrl_id, int selection) override;
     void msgGroupComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
     void msgGroupCheckboxChange(unsigned group_id, unsigned ctrl_id, bool checked) override;

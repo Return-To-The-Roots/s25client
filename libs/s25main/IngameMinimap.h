@@ -65,5 +65,5 @@ protected:
     /// in dem Falle: Karte aktualisieren
     void beforeDrawing() override;
     /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem übergebenen drawn_object ist
-    void updateAll(DrawnObject drawn_object);
+    void updateAll(DrawnObject drawnObject);
 };

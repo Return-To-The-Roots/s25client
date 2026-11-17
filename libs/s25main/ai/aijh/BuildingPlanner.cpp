@@ -158,8 +158,8 @@ void BuildingPlanner::updateBuildingsWanted(const AIPlayerJH& aijh)
         const Inventory& inventory = aijh.player.getInventory();
 
         // foresters
-        unsigned max_available_forester = inventory[Job::Forester] + inventory[GoodType::Shovel];
-        unsigned additional_forester = getNumBuildings(BuildingType::Charburner);
+        unsigned maxAvailableForester = inventory[Job::Forester] + inventory[GoodType::Shovel];
+        unsigned additionalForester = getNumBuildings(BuildingType::Charburner);
 
         // 1 mil -> 1 forester, 2 mil -> 2 forester, 4 mil -> 3 forester, 8 mil -> 4 forester, 16 mil -> 5 forester, ...
         // wanted
@@ -168,16 +168,16 @@ void BuildingPlanner::updateBuildingsWanted(const AIPlayerJH& aijh)
         // If we are low on wood, we need more foresters
         if(aijh.player.getBuildingRegister().getBuildingSites().size()
            > (inventory[GoodType::Boards] + inventory[GoodType::Wood]) * 2)
-            additional_forester++;
+            additionalForester++;
 
-        buildingsWanted[BuildingType::Forester] += additional_forester;
+        buildingsWanted[BuildingType::Forester] += additionalForester;
         buildingsWanted[BuildingType::Forester] =
-          std::min(max_available_forester, buildingsWanted[BuildingType::Forester]);
+          std::min(maxAvailableForester, buildingsWanted[BuildingType::Forester]);
 
         // woodcutters
-        unsigned max_available_woodcutter = inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter];
+        unsigned maxAvailableWoodcutter = inventory.goods[GoodType::Axe] + inventory.people[Job::Woodcutter];
         buildingsWanted[BuildingType::Woodcutter] =
-          std::min(max_available_woodcutter,
+          std::min(maxAvailableWoodcutter,
                    buildingsWanted[BuildingType::Forester] * 2 + 1); // two per forester + 1 for 'natural' forest
 
         ////on maps with many trees the ai will build woodcutters all over the place which means the foresters are not

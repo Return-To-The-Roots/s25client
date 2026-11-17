@@ -281,15 +281,15 @@ void Ware::wareLost(const unsigned char player)
     world->getPlayer(player).removeWare(*this);
 }
 
-void Ware::removeWareJobForDir(const RoadPathDirection last_next_dir)
+void Ware::removeWareJobForDir(const RoadPathDirection lastNextDir)
 {
     // last_next_dir war die letzte Richtung, in die die Ware eigentlich wollte,
     // aber nun nicht mehr will, deshalb muss dem Träger Bescheid gesagt werden
 
     // War's überhaupt ne richtige Richtung?
-    if(last_next_dir == RoadPathDirection::None || last_next_dir == RoadPathDirection::Ship)
+    if(lastNextDir == RoadPathDirection::None || lastNextDir == RoadPathDirection::Ship)
         return;
-    Direction lastDir = toDirection(last_next_dir);
+    Direction lastDir = toDirection(lastNextDir);
     // Existiert da noch ne Straße?
     if(!location->getRoute(lastDir))
         return;

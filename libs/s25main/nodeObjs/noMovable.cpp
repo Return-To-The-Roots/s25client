@@ -122,22 +122,22 @@ DrawPoint noMovable::calcRelative(DrawPoint curPt, DrawPoint nextPt) const
 
     // Wenn wir mittem aufm Weg stehen geblieben sind, die gemerkten Werte jeweils nehmen
     EventState curState;
-    milliseconds_i32_t frame_time;
+    milliseconds_i32_t frameTime;
     if(current_ev)
     {
         curState.elapsed = getEvMgr().getCurrentGF() - current_ev->startGF;
         curState.length = current_ev->length;
-        frame_time = GAMECLIENT.getFrameTime();
+        frameTime = GAMECLIENT.getFrameTime();
     } else
     {
         curState = pauseEv;
-        frame_time = milliseconds_i32_t::zero();
+        frameTime = milliseconds_i32_t::zero();
     }
 
     // Convert to real world time
     const milliseconds_i32_t gfLength = GAMECLIENT.getGFLength();
     // Time since the start of the event
-    milliseconds_i32_t curTimePassed = curState.elapsed * gfLength + frame_time;
+    milliseconds_i32_t curTimePassed = curState.elapsed * gfLength + frameTime;
     // Duration of the event
     milliseconds_i32_t duration = curState.length * gfLength;
 

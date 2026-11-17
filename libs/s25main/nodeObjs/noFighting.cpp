@@ -110,8 +110,8 @@ void noFighting::draw(DrawPoint drawPt)
         case 2:
         {
             // Erste Phase des Kampfes, die Soldaten gehen jeweils nach links bzw. rechts
-            auto x_diff = int(GAMECLIENT.interpolate(12, current_ev));
-            drawPt.x -= x_diff;
+            auto xDiff = int(GAMECLIENT.interpolate(12, current_ev));
+            drawPt.x -= xDiff;
             for(unsigned i : {0, 1})
             {
                 const GamePlayer& owner = world->getPlayer(soldiers[i]->getPlayer());
@@ -121,7 +121,7 @@ void noFighting::draw(DrawPoint drawPt)
                 bmp.draw(drawPt, COLOR_WHITE, owner.color);
                 if(soldiers[i]->hasArmor())
                     soldiers[i]->drawArmor(drawPt);
-                drawPt.x += 2 * x_diff;
+                drawPt.x += 2 * xDiff;
             }
         }
         break;
@@ -243,8 +243,8 @@ void noFighting::handleEvent(const unsigned id)
             case 3:
             case 4:
             {
-                unsigned player_lost = turn - 3;
-                MapPoint pt = soldiers[player_lost]->getPos();
+                unsigned playerLost = turn - 3;
+                MapPoint pt = soldiers[playerLost]->getPos();
 
                 // Sounds löschen vom Sterben
                 world->getSoundMgr().stopSounds(*this);
@@ -262,15 +262,15 @@ void noFighting::handleEvent(const unsigned id)
 
                 // Sichtradius ausblenden am Ende des Kampfes, an jeweiligen Soldaten dann übergeben, welcher überlebt
                 // hat
-                world->recalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[player_lost]->getPlayer(),
+                world->recalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, soldiers[playerLost]->getPlayer(),
                                                      nullptr);
                 world->recalcVisibilitiesAroundPoint(pt, VISUALRANGE_SOLDIER, player_won, nullptr);
 
                 // Soldaten endgültig umbringen
-                world->getPlayer(soldiers[player_lost]->getPlayer())
-                  .decreaseInventoryJob(soldiers[player_lost]->getJobType(), 1);
-                soldiers[player_lost]->destroy();
-                soldiers[player_lost].reset();
+                world->getPlayer(soldiers[playerLost]->getPlayer())
+                  .decreaseInventoryJob(soldiers[playerLost]->getJobType(), 1);
+                soldiers[playerLost]->destroy();
+                soldiers[playerLost].reset();
             }
             break;
         }

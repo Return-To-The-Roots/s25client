@@ -1505,7 +1505,7 @@ void AIPlayerJH::checkGranitMine()
 
 void AIPlayerJH::tryToAttack()
 {
-    unsigned hq_or_harbor_without_soldiers = 0;
+    unsigned hqOrHarborWithoutSoldiers = 0;
     std::vector<const nobBaseMilitary*> potentialTargets;
 
     // use own military buildings (except inland buildings) to search for enemy military buildings
@@ -1541,7 +1541,7 @@ void AIPlayerJH::tryToAttack()
                 if(target->getGOT() != GO_Type::NobMilitary && !target->defendersAvailable())
                 {
                     // headquarter or harbor without any troops :)
-                    hq_or_harbor_without_soldiers++;
+                    hqOrHarborWithoutSoldiers++;
                     potentialTargets.insert(potentialTargets.begin(), target);
                 } else
                     potentialTargets.push_back(target);
@@ -1550,7 +1550,7 @@ void AIPlayerJH::tryToAttack()
     }
 
     // shuffle everything but headquarters and harbors without any troops in them
-    std::shuffle(potentialTargets.begin() + hq_or_harbor_without_soldiers, potentialTargets.end(),
+    std::shuffle(potentialTargets.begin() + hqOrHarborWithoutSoldiers, potentialTargets.end(),
                  AI::getRandomGenerator());
 
     // check for each potential attacking target the number of available attacking soldiers
@@ -2058,8 +2058,8 @@ void AIPlayerJH::initDistribution()
 
 bool AIPlayerJH::validTreeinRange(const MapPoint pt)
 {
-    unsigned max_radius = 6;
-    for(MapCoord tx = gwb.getXA(pt, Direction::West), r = 1; r <= max_radius;
+    unsigned maxRadius = 6;
+    for(MapCoord tx = gwb.getXA(pt, Direction::West), r = 1; r <= maxRadius;
         tx = gwb.getXA(MapPoint(tx, pt.y), Direction::West), ++r)
     {
         MapPoint t2(tx, pt.y);
@@ -2085,8 +2085,8 @@ bool AIPlayerJH::validTreeinRange(const MapPoint pt)
 
 bool AIPlayerJH::validStoneinRange(const MapPoint pt)
 {
-    unsigned max_radius = 8;
-    for(MapCoord tx = gwb.getXA(pt, Direction::West), r = 1; r <= max_radius;
+    unsigned maxRadius = 8;
+    for(MapCoord tx = gwb.getXA(pt, Direction::West), r = 1; r <= maxRadius;
         tx = gwb.getXA(MapPoint(tx, pt.y), Direction::West), ++r)
     {
         MapPoint t2(tx, pt.y);
@@ -2246,9 +2246,9 @@ unsigned AIPlayerJH::amountInStorage(::Job job) const
 
 bool AIPlayerJH::validFishInRange(const MapPoint pt)
 {
-    unsigned max_radius = 5;
+    unsigned maxRadius = 5;
     return gwb.checkPointsInRadius(
-      pt, max_radius,
+      pt, maxRadius,
       [this, pt](const MapPoint curPt, unsigned) {
           if(gwb.getNode(curPt).resources.has(ResourceType::Fish)) // fish on current spot?
           {

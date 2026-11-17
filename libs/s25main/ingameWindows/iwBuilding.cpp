@@ -72,10 +72,10 @@ iwBuilding::iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsu
     if(building->getBuildingType() == BuildingType::Shipyard)
     {
         // Jenachdem Boot oder Schiff anzeigen
-        unsigned io_dat_id =
+        unsigned ioDatId =
           (static_cast<nobShipYard*>(building)->getMode() == nobShipYard::Mode::Boats) ? IODAT_BOAT_ID : IODAT_SHIP_ID;
         addImageButton(11, DrawPoint(130, extent.y - 47), Extent(43, 32), TextureColor::Grey,
-                       LOADER.getImageN("io", io_dat_id), _("Ships/Boats"));
+                       LOADER.getImageN("io", ioDatId), _("Ships/Boats"));
     }
 
     // "Gehe Zum Ort"
@@ -130,14 +130,14 @@ void iwBuilding::msgPaintAfter()
         DrawPoint curPos = getDrawPos() + DrawPoint(getSize().x / 2, 60);
         for(unsigned char i = 0; i < bldWorkDesk.waresNeeded.size(); ++i)
         {
-            const unsigned wares_count = bldWorkDesk.numSpacesPerWare;
+            const unsigned waresCount = bldWorkDesk.numSpacesPerWare;
 
             // "Schwarzer Rahmen"
-            DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
-            drawRectangle(Rect(waresPos, Extent(24 * wares_count, 24)), 0x80000000);
+            DrawPoint waresPos = curPos - DrawPoint(24 * waresCount / 2, 0);
+            drawRectangle(Rect(waresPos, Extent(24 * waresCount, 24)), 0x80000000);
             waresPos += DrawPoint(12, 12);
 
-            for(unsigned char z = 0; z < wares_count; ++z)
+            for(unsigned char z = 0; z < waresCount; ++z)
             {
                 LOADER.getWareTex(bldWorkDesk.waresNeeded[i])
                   ->drawFull(waresPos, (z < building->getNumWares(i) ? COLOR_WHITE : 0xFF404040));
@@ -145,7 +145,7 @@ void iwBuilding::msgPaintAfter()
             }
 
             std::stringstream text;
-            text << (unsigned)building->getNumWares(i) << "/" << wares_count;
+            text << (unsigned)building->getNumWares(i) << "/" << waresCount;
             NormalFont->draw(curPos + DrawPoint(0, 12), text.str(), FontStyle::CENTER | FontStyle::VCENTER);
             curPos.y += 29;
         }

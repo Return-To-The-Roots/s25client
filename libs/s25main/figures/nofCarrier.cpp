@@ -142,12 +142,12 @@ void nofCarrier::draw(DrawPoint drawPt)
                 bool animation = false;
 
                 // Ist es schon Zeit für eine Animation?
-                unsigned current_gf = getEvMgr().getCurrentGF();
+                unsigned currentGf = getEvMgr().getCurrentGF();
 
-                if(current_gf >= next_animation)
+                if(currentGf >= next_animation)
                 {
                     // Animationstype bestimmen
-                    unsigned animation_id = next_animation % ANIMATIONS[fat ? 1 : 0].size();
+                    unsigned animationId = next_animation % ANIMATIONS[fat ? 1 : 0].size();
                     bool useNewyearsEgg = false;
 
                     // <Silvesteregg>
@@ -164,8 +164,8 @@ void nofCarrier::draw(DrawPoint drawPt)
 
                     // Ist die Animation schon vorbei?
                     if((!useNewyearsEgg
-                        && (current_gf >= next_animation + ANIMATIONS[fat ? 1 : 0][animation_id].size() * FRAME_GF))
-                       || (useNewyearsEgg && (current_gf >= next_animation + 32 * 3)))
+                        && (currentGf >= next_animation + ANIMATIONS[fat ? 1 : 0][animationId].size() * FRAME_GF))
+                       || (useNewyearsEgg && (currentGf >= next_animation + 32 * 3)))
                     {
                         // Neuen nächsten Animationszeitpunkt bestimmen
                         setNewAnimationMoment();
@@ -179,12 +179,12 @@ void nofCarrier::draw(DrawPoint drawPt)
                             LOADER
                               .getPlayerImage(
                                 "rom_bobs",
-                                ANIMATIONS[fat ? 1 : 0][animation_id][(current_gf - next_animation) / FRAME_GF])
+                                ANIMATIONS[fat ? 1 : 0][animationId][(currentGf - next_animation) / FRAME_GF])
                               ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
                         } else // Silvesteregg
                         {
                             glArchivItem_Bitmap_Player* bmp =
-                              LOADER.getPlayerImage("firework", (current_gf - next_animation) / 3 + 1);
+                              LOADER.getPlayerImage("firework", (currentGf - next_animation) / 3 + 1);
 
                             if(bmp)
                                 bmp->drawFull(drawPt - DrawPoint(26, 104), COLOR_WHITE, world->getPlayer(player).color);
@@ -241,20 +241,20 @@ void nofCarrier::draw(DrawPoint drawPt)
                 LOADER.getWareDonkeyTex(carried_ware->type)->drawFull(drawPt + WARE_POS_DONKEY[getCurMoveDir()][0]);
             } else
             {
-                const unsigned ani_step = calcWalkAnimationFrame();
+                const unsigned aniStep = calcWalkAnimationFrame();
 
                 drawPt += calcFigurRelative();
 
                 // Läuft normal mit oder ohne Ware
 
                 // Esel
-                LOADER.getDonkeySprite(getCurMoveDir(), ani_step).draw(drawPt);
+                LOADER.getDonkeySprite(getCurMoveDir(), aniStep).draw(drawPt);
 
                 if(carried_ware)
                 {
                     // Ware im Korb zeichnen
                     LOADER.getWareDonkeyTex(carried_ware->type)
-                      ->drawFull(drawPt + WARE_POS_DONKEY[getCurMoveDir()][ani_step]);
+                      ->drawFull(drawPt + WARE_POS_DONKEY[getCurMoveDir()][aniStep]);
                 }
             }
         }
@@ -280,12 +280,12 @@ void nofCarrier::draw(DrawPoint drawPt)
                 LOADER.getWareDonkeyTex(carried_ware->type)->drawFull(drawPt + WARE_POS_BOAT[getCurMoveDir()]);
             } else
             {
-                const unsigned ani_step = calcWalkAnimationFrame();
+                const unsigned aniStep = calcWalkAnimationFrame();
 
                 drawPt += calcFigurRelative();
 
                 // ruderndes Boot zeichnen
-                LOADER.getBoatCarrierSprite(getCurMoveDir(), ani_step)
+                LOADER.getBoatCarrierSprite(getCurMoveDir(), aniStep)
                   .draw(drawPt, 0xFFFFFFFF, world->getPlayer(player).color);
 
                 // Läuft normal mit oder ohne Ware
@@ -294,10 +294,10 @@ void nofCarrier::draw(DrawPoint drawPt)
                     LOADER.getWareDonkeyTex(carried_ware->type)->drawFull(drawPt + WARE_POS_BOAT[getCurMoveDir()]);
 
                 // Sound ggf. abspielen
-                if(ani_step == 2)
+                if(aniStep == 2)
                     world->getSoundMgr().playNOSound(84, *this, 0);
 
-                last_id = ani_step;
+                last_id = aniStep;
             }
         }
         break;
@@ -416,13 +416,13 @@ void nofCarrier::walked()
 
                         // Temporary store carried ware, so we can fetch another one before putting down the old one
                         // which triggers a search for an available carrier which must not be us
-                        auto tmp_ware = std::move(carried_ware);
+                        auto tmpWare = std::move(carried_ware);
                         fetchWare(true);
 
-                        tmp_ware->waitAtFlag(this_flag);
+                        tmpWare->waitAtFlag(this_flag);
                         if(!calculated)
-                            tmp_ware->recalcRoute();
-                        this_flag.addWare(std::move(tmp_ware));
+                            tmpWare->recalcRoute();
+                        this_flag.addWare(std::move(tmpWare));
                     } else
                     {
                         // No space at flag, go back and try again later

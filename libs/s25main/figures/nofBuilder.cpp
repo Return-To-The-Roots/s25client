@@ -134,8 +134,8 @@ void nofBuilder::handleDerivedEvent(const unsigned id)
                 // Baustelle abreißen und Gebäude hinsetzen
 
                 // Gebäudetyp merken und das Volk des Gebäudes
-                BuildingType building_type = building_site->getBuildingType();
-                Nation building_nation = building_site->getNation();
+                BuildingType buildingType = building_site->getBuildingType();
+                Nation buildingNation = building_site->getNation();
 
                 state = BuilderState::FigureWork;
 
@@ -149,11 +149,11 @@ void nofBuilder::handleDerivedEvent(const unsigned id)
                 world->setNO(building_site->getPos(), nullptr);
                 deletePtr(building_site);
 
-                noBuilding* bld = BuildingFactory::createBuilding(*world, building_type, pos, player, building_nation);
-                world->getNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, building_type));
+                noBuilding* bld = BuildingFactory::createBuilding(*world, buildingType, pos, player, buildingNation);
+                world->getNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, buildingType));
 
                 // Special handling for warehouses
-                if(BuildingProperties::isWareHouse(building_type))
+                if(BuildingProperties::isWareHouse(buildingType))
                 {
                     auto* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen
@@ -211,38 +211,38 @@ const std::array<short, 2> FREEWALK_LENGTH_SLANTWISE = {14, 7}; // schräg
 
 void nofBuilder::startFreewalk()
 {
-    std::vector<Direction> possible_directions;
+    std::vector<Direction> possibleDirections;
 
-    unsigned char waiting_walk = ((state == BuilderState::WaitingFreewalk) ? 0 : 1);
+    unsigned char waitingWalk = ((state == BuilderState::WaitingFreewalk) ? 0 : 1);
 
     // Wohin kann der Bauarbeiter noch laufen?
 
     // Nach links
-    if(offsetSite.x - FREEWALK_LENGTH[waiting_walk] >= LEFT_MAX)
-        possible_directions.push_back(Direction::West);
+    if(offsetSite.x - FREEWALK_LENGTH[waitingWalk] >= LEFT_MAX)
+        possibleDirections.push_back(Direction::West);
     // Nach rechts
-    if(offsetSite.x + FREEWALK_LENGTH[waiting_walk] <= RIGHT_MAX)
-        possible_directions.push_back(Direction::East);
+    if(offsetSite.x + FREEWALK_LENGTH[waitingWalk] <= RIGHT_MAX)
+        possibleDirections.push_back(Direction::East);
     // Nach links/oben
-    if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= LEFT_MAX
-       && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= UP_MAX)
-        possible_directions.push_back(Direction::NorthWest);
+    if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waitingWalk] >= LEFT_MAX
+       && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waitingWalk] >= UP_MAX)
+        possibleDirections.push_back(Direction::NorthWest);
     // Nach links/unten
-    if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= LEFT_MAX
-       && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
-        possible_directions.push_back(Direction::SouthWest);
+    if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waitingWalk] >= LEFT_MAX
+       && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waitingWalk] <= DOWN_MAX)
+        possibleDirections.push_back(Direction::SouthWest);
     // Nach rechts/oben
-    if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX
-       && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= UP_MAX)
-        possible_directions.push_back(Direction::NorthEast);
+    if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waitingWalk] <= RIGHT_MAX
+       && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waitingWalk] >= UP_MAX)
+        possibleDirections.push_back(Direction::NorthEast);
     // Nach rechts/unten
-    if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX
-       && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
-        possible_directions.push_back(Direction::SouthEast);
+    if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waitingWalk] <= RIGHT_MAX
+       && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waitingWalk] <= DOWN_MAX)
+        possibleDirections.push_back(Direction::SouthEast);
 
-    RTTR_Assert(!possible_directions.empty());
+    RTTR_Assert(!possibleDirections.empty());
     // Zufällige Richtung von diesen auswählen
-    faceDir(RANDOM_ELEMENT(possible_directions));
+    faceDir(RANDOM_ELEMENT(possibleDirections));
 
     // Und dort auch hinlaufen
     current_ev = getEvMgr().addEvent(this, (state == BuilderState::WaitingFreewalk) ? 24 : 17, 1);
@@ -252,23 +252,23 @@ void nofBuilder::startFreewalk()
 
     switch(getCurMoveDir())
     {
-        case Direction::West: nextOffsetSite.x -= FREEWALK_LENGTH[waiting_walk]; break;
+        case Direction::West: nextOffsetSite.x -= FREEWALK_LENGTH[waitingWalk]; break;
         case Direction::NorthWest:
-            nextOffsetSite.x -= FREEWALK_LENGTH_SLANTWISE[waiting_walk];
-            nextOffsetSite.y -= FREEWALK_LENGTH_SLANTWISE[waiting_walk];
+            nextOffsetSite.x -= FREEWALK_LENGTH_SLANTWISE[waitingWalk];
+            nextOffsetSite.y -= FREEWALK_LENGTH_SLANTWISE[waitingWalk];
             break;
         case Direction::NorthEast:
-            nextOffsetSite.x += FREEWALK_LENGTH_SLANTWISE[waiting_walk];
-            nextOffsetSite.y -= FREEWALK_LENGTH_SLANTWISE[waiting_walk];
+            nextOffsetSite.x += FREEWALK_LENGTH_SLANTWISE[waitingWalk];
+            nextOffsetSite.y -= FREEWALK_LENGTH_SLANTWISE[waitingWalk];
             break;
-        case Direction::East: nextOffsetSite.x += FREEWALK_LENGTH[waiting_walk]; break;
+        case Direction::East: nextOffsetSite.x += FREEWALK_LENGTH[waitingWalk]; break;
         case Direction::SouthEast:
-            nextOffsetSite.x += FREEWALK_LENGTH_SLANTWISE[waiting_walk];
-            nextOffsetSite.y += FREEWALK_LENGTH_SLANTWISE[waiting_walk];
+            nextOffsetSite.x += FREEWALK_LENGTH_SLANTWISE[waitingWalk];
+            nextOffsetSite.y += FREEWALK_LENGTH_SLANTWISE[waitingWalk];
             break;
         case Direction::SouthWest:
-            nextOffsetSite.x -= FREEWALK_LENGTH_SLANTWISE[waiting_walk];
-            nextOffsetSite.y += FREEWALK_LENGTH_SLANTWISE[waiting_walk];
+            nextOffsetSite.x -= FREEWALK_LENGTH_SLANTWISE[waitingWalk];
+            nextOffsetSite.y += FREEWALK_LENGTH_SLANTWISE[waitingWalk];
             break;
     }
 }

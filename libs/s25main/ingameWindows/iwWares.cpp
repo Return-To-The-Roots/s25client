@@ -32,10 +32,10 @@ constexpr unsigned spacingBetweenLastRowAndButtonRow = 16;
 } // namespace
 
 static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPos, const Extent btSize,
-                       const unsigned idOffset, const std::string& name, ITexture* img, const bool allow_outhousing)
+                       const unsigned idOffset, const std::string& name, ITexture* img, const bool allowOuthousing)
 {
     // Background image, only a button when outhousing is allowed
-    if(allow_outhousing)
+    if(allowOuthousing)
     {
         ctrlButton* b =
           page.addImageButton(100 + idOffset, btPos, btSize, TextureColor::Grey, LOADER.getMapTexture(2298), name);
@@ -71,7 +71,7 @@ static void addElement(ctrlGroup& page, const glFont* font, const DrawPoint btPo
 }
 
 iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, const std::string& title,
-                 bool allow_outhousing, const glFont* font, const Inventory& inventory, const GamePlayer& player)
+                 bool allowOuthousing, const glFont* font, const Inventory& inventory, const GamePlayer& player)
     : IngameWindow(id, pos, Extent(167, 416), title, LOADER.getImageN("io", 5)), inventory(inventory), player(player),
       numPages(0)
 {
@@ -146,14 +146,14 @@ iwWares::iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, c
             const GoodType rawWare = WARE_DISPLAY_ORDER[idx];
             const GoodType ware = convertShieldToNation(rawWare, player.nation);
             addElement(waresPage, font, btPos, btSize, rttr::enumCast(rawWare), _(WARE_NAMES[rawWare]),
-                       LOADER.getWareTex(ware), allow_outhousing);
+                       LOADER.getWareTex(ware), allowOuthousing);
         }
 
         if(idx < JOB_DISPLAY_ORDER.size())
         {
             const Job job = JOB_DISPLAY_ORDER[idx];
             addElement(figuresPage, font, btPos, btSize, rttr::enumCast(job), _(JOB_NAMES[job]), LOADER.getJobTex(job),
-                       allow_outhousing);
+                       allowOuthousing);
         }
     }
 

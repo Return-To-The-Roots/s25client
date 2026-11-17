@@ -27,9 +27,9 @@ nofTradeDonkey::nofTradeDonkey(SerializedGameData& sgd, const unsigned obj_id)
 {
     if(sgd.getGameDataVersion() < 6)
     {
-        std::vector<uint8_t> next_dirs_raw;
-        sgd.popContainer(next_dirs_raw);
-        for(const auto dir : next_dirs_raw)
+        std::vector<uint8_t> nextDirsRaw;
+        sgd.popContainer(nextDirsRaw);
+        for(const auto dir : nextDirsRaw)
             next_dirs.push_back(dir == 0xDD ? TradeDirection::ReachedGoal : TradeDirection(dir));
     } else
         helpers::popContainer(sgd, next_dirs);
@@ -96,19 +96,19 @@ void nofTradeDonkey::draw(DrawPoint drawPt)
 {
     if(job_ == Job::PackDonkey)
     {
-        const unsigned ani_step = calcWalkAnimationFrame();
+        const unsigned aniStep = calcWalkAnimationFrame();
 
         drawPt += calcFigurRelative();
 
         // Läuft normal mit oder ohne Ware
 
         // Esel
-        LOADER.getDonkeySprite(getCurMoveDir(), ani_step).draw(drawPt);
+        LOADER.getDonkeySprite(getCurMoveDir(), aniStep).draw(drawPt);
 
         if(gt)
         {
             // Ware im Korb zeichnen
-            LOADER.getWareDonkeyTex(*gt)->drawFull(drawPt + WARE_POS_DONKEY[getCurMoveDir()][ani_step]);
+            LOADER.getWareDonkeyTex(*gt)->drawFull(drawPt + WARE_POS_DONKEY[getCurMoveDir()][aniStep]);
         }
     } else
         drawWalking(drawPt);

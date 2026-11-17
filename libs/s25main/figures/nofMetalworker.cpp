@@ -71,29 +71,29 @@ void nofMetalworker::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{-11, -13}, {31, 5}, {32, 6}, {30, 10}, {28, 5}}};
 
-    const unsigned now_id = GAMECLIENT.interpolate(230, current_ev);
+    const unsigned nowId = GAMECLIENT.interpolate(230, current_ev);
 
-    LOADER.getPlayerImage("rom_bobs", 190 + (now_id % 23))
+    LOADER.getPlayerImage("rom_bobs", 190 + (nowId % 23))
       ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     // Hämmer-Sound
-    if(now_id % 23 == 3 || now_id % 23 == 7)
+    if(nowId % 23 == 3 || nowId % 23 == 7)
     {
-        world->getSoundMgr().playNOSound(72, *this, now_id, 100);
+        world->getSoundMgr().playNOSound(72, *this, nowId, 100);
         was_sounding = true;
     }
     // Säge-Sound 1
-    else if(now_id % 23 == 9)
+    else if(nowId % 23 == 9)
     {
-        world->getSoundMgr().playNOSound(54, *this, now_id);
+        world->getSoundMgr().playNOSound(54, *this, nowId);
         was_sounding = true;
-    } else if(now_id % 23 == 17)
+    } else if(nowId % 23 == 17)
     {
-        world->getSoundMgr().playNOSound(55, *this, now_id);
+        world->getSoundMgr().playNOSound(55, *this, nowId);
         was_sounding = true;
     }
 
-    last_id = now_id;
+    last_id = nowId;
 }
 
 // Mapping of indices in TOOLS to IDs in JOBS.BOB
@@ -155,18 +155,18 @@ void nofMetalworker::checkForOrders()
 helpers::OptionalEnum<GoodType> nofMetalworker::getOrderedTool()
 {
     GamePlayer& owner = world->getPlayer(player);
-    std::vector<Tool> random_array;
+    std::vector<Tool> randomArray;
     for(const auto tool : helpers::enumRange<Tool>())
     {
         if(owner.getToolsOrdered(tool) == 0)
             continue;
         unsigned toolPriority = std::max(owner.getToolPriority(tool), 1u);
-        random_array.insert(random_array.end(), toolPriority, tool);
+        randomArray.insert(randomArray.end(), toolPriority, tool);
     }
-    if(random_array.empty())
+    if(randomArray.empty())
         return std::nullopt;
 
-    const Tool tool = RANDOM_ELEMENT(random_array);
+    const Tool tool = RANDOM_ELEMENT(randomArray);
 
     owner.toolOrderProcessed(tool);
 
@@ -186,15 +186,15 @@ helpers::OptionalEnum<GoodType> nofMetalworker::getRandomTool()
 
     // Fill array where the # of occurrences of a tool is its priority
     // Drawing a random entry will make higher priority items more likely
-    std::vector<Tool> random_array;
-    random_array.reserve(helpers::NumEnumValues_v<Tool>);
+    std::vector<Tool> randomArray;
+    randomArray.reserve(helpers::NumEnumValues_v<Tool>);
     for(const auto tool : helpers::enumRange<Tool>())
     {
-        random_array.insert(random_array.end(), owner.getToolPriority(tool), tool);
+        randomArray.insert(randomArray.end(), owner.getToolPriority(tool), tool);
     }
 
     // if they're all zero
-    if(random_array.empty())
+    if(randomArray.empty())
     {
         // do nothing if addon is enabled, otherwise produce random ware (orig S2 behavior)
         if(world->getGGS().getSelection(AddonId::METALWORKSBEHAVIORONZERO) == 1)
@@ -203,7 +203,7 @@ helpers::OptionalEnum<GoodType> nofMetalworker::getRandomTool()
             return RANDOM_ELEMENT(TOOL_TO_GOOD);
     }
 
-    return TOOL_TO_GOOD[RANDOM_ELEMENT(random_array)];
+    return TOOL_TO_GOOD[RANDOM_ELEMENT(randomArray)];
 }
 
 helpers::OptionalEnum<GoodType> nofMetalworker::produceWare()

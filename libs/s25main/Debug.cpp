@@ -135,8 +135,8 @@ bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, LPCONTEXT ctx) noexce
 bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, void*) noexcept(false)
 {
 #    if RTTR_BACKTRACE_HAS_FUNCTION
-    const auto num_frames = backtrace(stacktrace.data(), stacktrace.size());
-    stacktrace.resize(num_frames);
+    const auto numFrames = backtrace(stacktrace.data(), stacktrace.size());
+    stacktrace.resize(numFrames);
     return true;
 #    else
     boost::ignore_unused(stacktrace);
@@ -327,18 +327,18 @@ bool DebugInfo::sendFile(BinaryFile& file)
     LOG.write("- File size: %u\n") % fileSize;
 
     auto fileData = std::unique_ptr<char[]>(new char[fileSize]);
-    unsigned compressed_len = fileSize * 2 + 600;
-    auto compressed = std::unique_ptr<char[]>(new char[compressed_len]);
+    unsigned compressedLen = fileSize * 2 + 600;
+    auto compressed = std::unique_ptr<char[]>(new char[compressedLen]);
 
     file.seek(0, SEEK_SET);
     file.readRawData(fileData.get(), fileSize);
 
     LOG.write("- Compressing...\n");
-    if(BZ2_bzBuffToBuffCompress(compressed.get(), &compressed_len, fileData.get(), fileSize, 9, 0, 250) == BZ_OK)
+    if(BZ2_bzBuffToBuffCompress(compressed.get(), &compressedLen, fileData.get(), fileSize, 9, 0, 250) == BZ_OK)
     {
         LOG.write("- Sending...\n");
 
-        if(sendString(compressed.get(), compressed_len))
+        if(sendString(compressed.get(), compressedLen))
         {
             LOG.write("-> success\n");
             return true;

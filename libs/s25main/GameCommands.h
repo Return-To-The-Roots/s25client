@@ -298,7 +298,7 @@ class ChangeTools : public GameCommand
     helpers::EnumArray<int8_t, Tool> orders;
 
 protected:
-    ChangeTools(const ToolSettings& data, const int8_t* order_delta = nullptr);
+    ChangeTools(const ToolSettings& data, const int8_t* orderDelta = nullptr);
     ChangeTools(Serializer& ser) : GameCommand(GCType::ChangeTools)
     {
         helpers::popContainer(ser, data);

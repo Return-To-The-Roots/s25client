@@ -546,20 +546,20 @@ bool GameServer::startGame()
     LOG.writeToFile("SERVER >>> BROADCAST: NMS_SERVER_START(%d)\n") % random_init;
 
     // Höchsten Ping ermitteln
-    unsigned highest_ping = 0;
+    unsigned highestPing = 0;
     for(const JoinPlayerInfo& player : playerInfos)
     {
         if(player.ps == PlayerState::Occupied)
         {
-            if(player.ping > highest_ping)
-                highest_ping = player.ping;
+            if(player.ping > highestPing)
+                highestPing = player.ping;
         }
     }
 
     framesinfo.gfLengthReq = framesinfo.gf_length = SPEED_GF_LENGTHS[ggs_.speed];
 
     // NetworkFrame-Länge bestimmen, je schlechter (also höher) die Pings, desto länger auch die Framelänge
-    framesinfo.nwf_length = calcNWFLength(std::chrono::milliseconds(highest_ping));
+    framesinfo.nwf_length = calcNWFLength(std::chrono::milliseconds(highestPing));
 
     LOG.write("SERVER: Using gameframe length of %1%\n") % helpers::withUnit(framesinfo.gf_length);
     LOG.write("SERVER: Using networkframe length of %1% GFs (%2%)\n") % framesinfo.nwf_length

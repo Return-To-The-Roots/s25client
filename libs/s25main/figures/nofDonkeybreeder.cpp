@@ -30,28 +30,28 @@ void nofDonkeybreeder::drawWorking(DrawPoint drawPt)
     const helpers::EnumArray<int8_t, Nation> walk_length = {22, 19, 19, 23, 19};
     const unsigned color = world->getPlayer(player).color;
 
-    unsigned now_id = GAMECLIENT.interpolate(9600, current_ev);
+    unsigned nowId = GAMECLIENT.interpolate(9600, current_ev);
     DrawPoint walkBasePos = drawPt + walk_start[nation];
 
-    if(now_id < 400)
+    if(nowId < 400)
     {
         LOADER.building_cache[nation][BuildingType::DonkeyBreeder].door.drawFull(drawPt);
-        LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::SouthEast, (now_id / 70) % 8)
-          .draw(walkBasePos + DrawPoint(now_id / 100, now_id / 100), COLOR_WHITE, color);
-    } else if(now_id < 1200)
-        LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::East, ((now_id - 400) / 70) % 8)
-          .draw(walkBasePos + DrawPoint((now_id - 400) / 800, 4), COLOR_WHITE, color);
-    else if(now_id < 2000)
-        LOADER.getPlayerImage("rom_bobs", 291 + (now_id - 1200) / 100)
+        LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::SouthEast, (nowId / 70) % 8)
+          .draw(walkBasePos + DrawPoint(nowId / 100, nowId / 100), COLOR_WHITE, color);
+    } else if(nowId < 1200)
+        LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::East, ((nowId - 400) / 70) % 8)
+          .draw(walkBasePos + DrawPoint((nowId - 400) / 800, 4), COLOR_WHITE, color);
+    else if(nowId < 2000)
+        LOADER.getPlayerImage("rom_bobs", 291 + (nowId - 1200) / 100)
           ->drawFull(walkBasePos + DrawPoint(walk_length[nation] + 4, 4), COLOR_WHITE, color);
-    else if(now_id < 2800)
-        LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::West, ((now_id - 2000) / 70) % 8)
-          .draw(walkBasePos + DrawPoint(4 + walk_length[nation] * (2800 - now_id) / 800, 4), COLOR_WHITE, color);
-    else if(now_id < 3200)
+    else if(nowId < 2800)
+        LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::West, ((nowId - 2000) / 70) % 8)
+          .draw(walkBasePos + DrawPoint(4 + walk_length[nation] * (2800 - nowId) / 800, 4), COLOR_WHITE, color);
+    else if(nowId < 3200)
     {
         LOADER.building_cache[nation][BuildingType::DonkeyBreeder].door.drawFull(drawPt);
-        LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::NorthWest, ((now_id - 2800) / 70) % 8)
-          .draw(walkBasePos + DrawPoint((3200 - now_id) / 100, (3200 - now_id) / 100), COLOR_WHITE, color);
+        LOADER.getBobSprite(nation, Job::DonkeyBreeder, Direction::NorthWest, ((nowId - 2800) / 70) % 8)
+          .draw(walkBasePos + DrawPoint((3200 - nowId) / 100, (3200 - nowId) / 100), COLOR_WHITE, color);
     }
 }
 

@@ -99,9 +99,8 @@ public:
 
     void fillCaches();
     static std::unique_ptr<glArchivItem_Bitmap> extractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
-    static std::unique_ptr<libsiedler2::Archiv> extractAnimatedTexture(const glArchivItem_Bitmap& srcImg,
-                                                                       const Rect& rect, uint8_t start_index,
-                                                                       uint8_t color_count);
+    static std::unique_ptr<libsiedler2::Archiv>
+    extractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect, uint8_t startIndex, uint8_t colorCount);
 
     glArchivItem_Bitmap* getImageN(const ResourceId& file, unsigned nr);
     /// Same as GetImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture

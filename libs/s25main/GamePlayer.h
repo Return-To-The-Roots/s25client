@@ -216,7 +216,7 @@ public:
     void recalcMilitaryFlags();
     /// Sucht für Soldaten ein neues Militärgebäude, als Argument wird Referenz auf die
     /// entsprechende Soldatenanzahl im Lagerhaus verlangt
-    void newSoldiersAvailable(const unsigned& soldier_count);
+    void newSoldiersAvailable(const unsigned& soldierCount);
     /// Aktualisiert die Verteidiger-Liste
     void refreshDefenderList();
     /// Prüft, ob für einen angreifenden Soldaten ein Verteidger geschickt werden soll
