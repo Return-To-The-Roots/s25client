@@ -21,11 +21,11 @@ void nofScout_Free::serialize(SerializedGameData& sgd) const
 {
     nofFlagWorker::serialize(sgd);
     helpers::pushPoint(sgd, nextPos);
-    sgd.PushUnsignedInt(rest_way);
+    sgd.pushUnsignedInt(rest_way);
 }
 
 nofScout_Free::nofScout_Free(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFlagWorker(sgd, obj_id), nextPos(sgd.popMapPoint()), rest_way(sgd.PopUnsignedInt())
+    : nofFlagWorker(sgd, obj_id), nextPos(sgd.popMapPoint()), rest_way(sgd.popUnsignedInt())
 {}
 
 void nofScout_Free::draw(DrawPoint drawPt)

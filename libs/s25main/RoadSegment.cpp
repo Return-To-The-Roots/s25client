@@ -26,7 +26,7 @@ RoadSegment::RoadSegment(SerializedGameData& sgd, const unsigned obj_id)
     : GameObject(sgd, obj_id), rt(sgd.pop<RoadType>()), f1(sgd.popObject<noRoadNode>()), f2(sgd.popObject<noRoadNode>())
 {
     if(sgd.getGameDataVersion() < 7)
-        route.resize(sgd.PopUnsignedShort());
+        route.resize(sgd.popUnsignedShort());
     else
         helpers::popContainer(sgd, route);
 

@@ -14,14 +14,14 @@ TradeRoute::TradeRoute(const GameWorld& world, unsigned char player, const MapPo
 }
 
 TradeRoute::TradeRoute(SerializedGameData& sgd, const GameWorld& world, const unsigned char player)
-    : world(world), player(player), path(sgd), curPos(sgd.popMapPoint()), curRouteIdx(sgd.PopUnsignedInt())
+    : world(world), player(player), path(sgd), curPos(sgd.popMapPoint()), curRouteIdx(sgd.popUnsignedInt())
 {}
 
 void TradeRoute::serialize(SerializedGameData& sgd) const
 {
     path.serialize(sgd);
     helpers::pushPoint(sgd, curPos);
-    sgd.PushUnsignedInt(curRouteIdx);
+    sgd.pushUnsignedInt(curRouteIdx);
 }
 
 /// Gets the next direction the caravane has to take

@@ -22,12 +22,12 @@ void noDisappearingEnvObject::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushBool(disappearing);
+    sgd.pushBool(disappearing);
     sgd.pushEvent(dead_event);
 }
 
 noDisappearingEnvObject::noDisappearingEnvObject(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), disappearing(sgd.PopBool()), dead_event(sgd.popEvent())
+    : noCoordBase(sgd, obj_id), disappearing(sgd.popBool()), dead_event(sgd.popEvent())
 {}
 
 unsigned noDisappearingEnvObject::getDrawColor() const

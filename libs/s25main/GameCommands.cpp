@@ -35,7 +35,7 @@ void DestroyFlag::execute(GameWorld& world, uint8_t playerId)
 }
 
 BuildRoad::BuildRoad(Serializer& ser)
-    : Coords(GCType::BuildRoad, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
+    : Coords(GCType::BuildRoad, ser), boat_road(ser.popBool()), route(ser.popUnsignedInt())
 {
     for(Direction& i : route)
         i = helpers::popEnum<Direction>(ser);
@@ -45,8 +45,8 @@ void BuildRoad::serialize(Serializer& ser) const
 {
     Coords::serialize(ser);
 
-    ser.PushBool(boat_road);
-    ser.PushUnsignedInt(route.size());
+    ser.pushBool(boat_road);
+    ser.pushUnsignedInt(route.size());
     for(auto i : route)
         helpers::pushEnum<uint8_t>(ser, i);
 }
@@ -141,7 +141,7 @@ void ChangeDistribution::execute(GameWorld& world, uint8_t playerId)
 }
 
 ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
-    : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.PopBool())
+    : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.popBool())
 {
     if(ser.getDataVersion() >= 2)
     {
@@ -278,13 +278,13 @@ void SetInventorySetting::execute(GameWorld& world, uint8_t playerId)
 }
 
 SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
-    : Coords(GCType::SetAllInventorySettings, ser), isJob(ser.PopBool())
+    : Coords(GCType::SetAllInventorySettings, ser), isJob(ser.popBool())
 {
     const uint32_t numStates = (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>);
     if(ser.getDataVersion() >= 2)
     {
         for(unsigned i = 0; i < numStates; i++)
-            states.push_back(InventorySetting(ser.PopUnsignedChar()));
+            states.push_back(InventorySetting(ser.popUnsignedChar()));
     } else
     {
         states.resize(numStates);
@@ -300,7 +300,7 @@ SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
             {
                 // skip over not stored jobs
                 if(!isJobSkipped(job))
-                    states[tgtIdx] = InventorySetting(ser.PopUnsignedChar());
+                    states[tgtIdx] = InventorySetting(ser.popUnsignedChar());
                 tgtIdx++;
             }
         } else
@@ -315,7 +315,7 @@ SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
             {
                 // skip over not stored wares
                 if(!isWareSkipped(ware))
-                    states[tgtIdx] = InventorySetting(ser.PopUnsignedChar());
+                    states[tgtIdx] = InventorySetting(ser.popUnsignedChar());
                 tgtIdx++;
             }
         }

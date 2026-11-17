@@ -27,11 +27,11 @@ void noSign::serialize(SerializedGameData& sgd) const
 {
     noDisappearingEnvObject::serialize(sgd);
 
-    sgd.PushUnsignedChar(resource.getValue());
+    sgd.pushUnsignedChar(resource.getValue());
 }
 
 noSign::noSign(SerializedGameData& sgd, const unsigned obj_id)
-    : noDisappearingEnvObject(sgd, obj_id), resource(sgd.PopUnsignedChar())
+    : noDisappearingEnvObject(sgd, obj_id), resource(sgd.popUnsignedChar())
 {}
 
 void noSign::draw(DrawPoint drawPt)

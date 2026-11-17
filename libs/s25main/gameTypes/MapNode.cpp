@@ -20,21 +20,21 @@ MapNode::MapNode()
 void MapNode::serialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc) const
 {
     helpers::pushContainer(sgd, roads);
-    sgd.PushUnsignedChar(altitude);
-    sgd.PushUnsignedChar(shadow);
-    sgd.PushString(desc.get(t1).name);
-    sgd.PushString(desc.get(t2).name);
-    sgd.PushUnsignedChar(resources.getValue());
-    sgd.PushBool(reserved);
-    sgd.PushUnsignedChar(owner);
+    sgd.pushUnsignedChar(altitude);
+    sgd.pushUnsignedChar(shadow);
+    sgd.pushString(desc.get(t1).name);
+    sgd.pushString(desc.get(t2).name);
+    sgd.pushUnsignedChar(resources.getValue());
+    sgd.pushBool(reserved);
+    sgd.pushUnsignedChar(owner);
     helpers::pushContainer(sgd, boundary_stones);
     RTTR_Assert(numPlayers <= fow.size());
     for(unsigned z = 0; z < numPlayers; ++z)
         fow[z].serialize(sgd);
     sgd.pushObject(obj);
     sgd.pushObjectContainer(figures);
-    sgd.PushUnsignedShort(seaId.value());
-    sgd.PushUnsignedInt(harborId.value());
+    sgd.pushUnsignedShort(seaId.value());
+    sgd.pushUnsignedInt(harborId.value());
 }
 
 void MapNode::deserialize(SerializedGameData& sgd, const unsigned numPlayers, const WorldDescription& desc,
@@ -42,28 +42,28 @@ void MapNode::deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
 {
     helpers::popContainer(sgd, roads);
 
-    altitude = sgd.PopUnsignedChar();
-    shadow = sgd.PopUnsignedChar();
+    altitude = sgd.popUnsignedChar();
+    shadow = sgd.popUnsignedChar();
 
     if(sgd.getGameDataVersion() < 3)
     {
         // TODO: Remove this and lt param
-        t1 = landscapeTerrains[sgd.PopUnsignedChar()];
-        t2 = landscapeTerrains[sgd.PopUnsignedChar()];
+        t1 = landscapeTerrains[sgd.popUnsignedChar()];
+        t2 = landscapeTerrains[sgd.popUnsignedChar()];
     } else
     {
-        std::string sName = sgd.PopString();
+        std::string sName = sgd.popString();
         t1 = desc.terrain.getIndex(sName);
         if(!t1)
             throw SerializedGameData::Error("Terrain with name '" + sName + "' not found");
-        sName = sgd.PopString();
+        sName = sgd.popString();
         t2 = desc.terrain.getIndex(sName);
         if(!t2)
             throw SerializedGameData::Error("Terrain with name '" + sName + "' not found");
     }
-    resources = Resource(sgd.PopUnsignedChar());
-    reserved = sgd.PopBool();
-    owner = sgd.PopUnsignedChar();
+    resources = Resource(sgd.popUnsignedChar());
+    reserved = sgd.popBool();
+    owner = sgd.popUnsignedChar();
     helpers::popContainer(sgd, boundary_stones);
     if(sgd.getGameDataVersion() < 9)
         bq = sgd.pop<BuildingQuality>();
@@ -72,6 +72,6 @@ void MapNode::deserialize(SerializedGameData& sgd, const unsigned numPlayers, co
         fow[z].deserialize(sgd);
     obj = sgd.popObject<noBase>();
     sgd.popObjectContainer(figures);
-    seaId = SeaId(sgd.PopUnsignedShort());
-    harborId = HarborId(sgd.PopUnsignedInt());
+    seaId = SeaId(sgd.popUnsignedShort());
+    harborId = HarborId(sgd.popUnsignedInt());
 }

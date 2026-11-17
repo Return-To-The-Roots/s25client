@@ -40,13 +40,13 @@ void nofWarehouseWorker::serialize(SerializedGameData& sgd) const
     noFigure::serialize(sgd);
 
     sgd.pushObject(carried_ware, true);
-    sgd.PushBool(shouldBringWareIn);
-    sgd.PushBool(fat);
+    sgd.pushBool(shouldBringWareIn);
+    sgd.pushBool(fat);
 }
 
 nofWarehouseWorker::nofWarehouseWorker(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), carried_ware(sgd.popObject<Ware>(GO_Type::Ware)), shouldBringWareIn(sgd.PopBool()),
-      fat(sgd.PopBool())
+    : noFigure(sgd, obj_id), carried_ware(sgd.popObject<Ware>(GO_Type::Ware)), shouldBringWareIn(sgd.popBool()),
+      fat(sgd.popBool())
 {}
 
 void nofWarehouseWorker::draw(DrawPoint drawPt)

@@ -27,7 +27,7 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
 }
 
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), go_out_phase(sgd.PopUnsignedInt())
+    : noCoordBase(sgd, obj_id), player(sgd.popUnsignedChar()), go_out_phase(sgd.popUnsignedInt())
 {
     helpers::popContainer(sgd, people.people);
     if(sgd.getGameDataVersion() >= 12)
@@ -47,8 +47,8 @@ void BurnedWarehouse::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(player);
-    sgd.PushUnsignedInt(go_out_phase);
+    sgd.pushUnsignedChar(player);
+    sgd.pushUnsignedInt(go_out_phase);
     helpers::pushContainer(sgd, people.people);
     helpers::pushContainer(sgd, people.armoredSoldiers);
 }

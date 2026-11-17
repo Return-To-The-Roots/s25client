@@ -55,17 +55,17 @@ void noTree::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(type);
-    sgd.PushUnsignedChar(size);
+    sgd.pushUnsignedChar(type);
+    sgd.pushUnsignedChar(size);
     sgd.pushEnum<uint8_t>(state);
     sgd.pushEvent(event);
     sgd.pushEvent(produce_animal_event);
-    sgd.PushBool(produce_animals);
+    sgd.pushBool(produce_animals);
 }
 
 noTree::noTree(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()), state(sgd.pop<State>()),
-      event(sgd.popEvent()), produce_animal_event(sgd.popEvent()), produce_animals(sgd.PopBool())
+    : noCoordBase(sgd, obj_id), type(sgd.popUnsignedChar()), size(sgd.popUnsignedChar()), state(sgd.pop<State>()),
+      event(sgd.popEvent()), produce_animal_event(sgd.popEvent()), produce_animals(sgd.popBool())
 {}
 
 void noTree::draw(DrawPoint drawPt)

@@ -687,7 +687,7 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     lua.eventStart(true);
     Serializer serData;
     BOOST_TEST_REQUIRE(lua.serialize(serData));
-    BOOST_TEST_REQUIRE(serData.GetLength() == 0u);
+    BOOST_TEST_REQUIRE(serData.getLength() == 0u);
     BOOST_TEST_REQUIRE(lua.deserialize(serData));
     lua.eventOccupied(1, pt1);
     lua.eventAttack(0, 1, 5);
@@ -710,9 +710,9 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
     // Returning false should not save anything
     executeLua("function onSave(serializer)\n"
                "serializer:PushInt(42)\n  return false\nend");
-    serData.Clear();
+    serData.clear();
     BOOST_TEST_REQUIRE(!lua.serialize(serData));
-    BOOST_TEST_REQUIRE(serData.GetLength() == 0u);
+    BOOST_TEST_REQUIRE(serData.getLength() == 0u);
 
     executeLua("function onSave(serializer)\n"
                "serializer:PushInt(42)\n"
@@ -720,10 +720,10 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
                "serializer:PushBool(false)\n"
                "serializer:PushString('Hello World!')\n"
                "rttr:Log('saved')\n  return true\nend");
-    serData.Clear();
+    serData.clear();
     BOOST_TEST_REQUIRE(lua.serialize(serData));
     BOOST_TEST_REQUIRE(getLog() == "saved\n");
-    BOOST_TEST_REQUIRE(serData.GetLength() > 0u);
+    BOOST_TEST_REQUIRE(serData.getLength() > 0u);
 
     executeLua("function onLoad(serializer)\n"
                "assert(serializer:PopInt() == 42)\n"
@@ -733,20 +733,20 @@ BOOST_AUTO_TEST_CASE(WorldEvents)
                "rttr:Log('loaded')\n  return true\nend");
     BOOST_TEST_REQUIRE(lua.deserialize(serData));
     BOOST_TEST_REQUIRE(getLog() == "loaded\n");
-    BOOST_TEST_REQUIRE(serData.GetBytesLeft() == 0u);
+    BOOST_TEST_REQUIRE(serData.getBytesLeft() == 0u);
 
     // Errors in onSave/onLoad should result in false returned even with throw disabled
     executeLua("function onSave(serializer)\n  serializer:PushInt(42)\n  assert(false)\nend");
-    serData.Clear();
+    serData.clear();
     BOOST_REQUIRE_THROW(lua.serialize(serData), LuaExecutionError);
     BOOST_TEST_REQUIRE(getLog() != "");
 
     lua.setThrowOnError(false);
 
     executeLua("function onSave(serializer)\n  serializer:PushInt(42)\n  assert(false)\nend");
-    serData.Clear();
+    serData.clear();
     BOOST_TEST_REQUIRE(!lua.serialize(serData));
-    BOOST_TEST_REQUIRE(serData.GetLength() == 0u);
+    BOOST_TEST_REQUIRE(serData.getLength() == 0u);
     BOOST_TEST_REQUIRE(getLog() != "");
 
     // Error from C++

@@ -150,13 +150,13 @@ void nobMilitary::DestroyBuilding()
 void nobMilitary::serialize(SerializedGameData& sgd) const
 {
     nobBaseMilitary::serialize(sgd);
-    sgd.PushBool(new_built);
-    sgd.PushUnsignedChar(numCoins);
-    sgd.PushBool(coinsDisabled);
+    sgd.pushBool(new_built);
+    sgd.pushUnsignedChar(numCoins);
+    sgd.pushBool(coinsDisabled);
     sgd.pushEnum<uint8_t>(frontier_distance);
-    sgd.PushUnsignedChar(size);
-    sgd.PushBool(capturing);
-    sgd.PushUnsignedInt(capturing_soldiers);
+    sgd.pushUnsignedChar(size);
+    sgd.pushBool(capturing);
+    sgd.pushUnsignedInt(capturing_soldiers);
     sgd.pushEvent(gold_order_event);
     sgd.pushEvent(upgrade_event);
 
@@ -166,17 +166,17 @@ void nobMilitary::serialize(SerializedGameData& sgd) const
     sgd.pushObjectContainer(far_away_capturers, true);
     helpers::pushContainer(sgd, troop_limits);
 
-    sgd.PushUnsignedChar(numArmor);
-    sgd.PushBool(armorAllowed);
+    sgd.pushUnsignedChar(numArmor);
+    sgd.pushBool(armorAllowed);
     sgd.pushEvent(armor_order_event);
     sgd.pushEvent(armor_upgrade_event);
     sgd.pushObjectContainer(ordered_armor, true);
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
-    : nobBaseMilitary(sgd, obj_id), new_built(sgd.PopBool()), numCoins(sgd.PopUnsignedChar()),
-      coinsDisabled(sgd.PopBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.pop<FrontierDistance>()),
-      size(sgd.PopUnsignedChar()), capturing(sgd.PopBool()), capturing_soldiers(sgd.PopUnsignedInt()),
+    : nobBaseMilitary(sgd, obj_id), new_built(sgd.popBool()), numCoins(sgd.popUnsignedChar()),
+      coinsDisabled(sgd.popBool()), coinsDisabledVirtual(coinsDisabled), frontier_distance(sgd.pop<FrontierDistance>()),
+      size(sgd.popUnsignedChar()), capturing(sgd.popBool()), capturing_soldiers(sgd.popUnsignedInt()),
       gold_order_event(sgd.popEvent()), upgrade_event(sgd.popEvent()), is_regulating_troops(false)
 {
     sgd.popObjectContainer(ordered_troops, GO_Type::NofPassivesoldier);
@@ -191,8 +191,8 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
 
     if(sgd.getGameDataVersion() >= 12)
     {
-        numArmor = sgd.PopUnsignedChar();
-        armorAllowedVirtual = armorAllowed = sgd.PopBool();
+        numArmor = sgd.popUnsignedChar();
+        armorAllowedVirtual = armorAllowed = sgd.popBool();
         armor_order_event = sgd.popEvent();
         armor_upgrade_event = sgd.popEvent();
         sgd.popObjectContainer(ordered_armor, GO_Type::Ware);

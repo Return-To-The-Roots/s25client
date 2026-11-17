@@ -47,15 +47,15 @@ template<class TMsg>
 auto serializeDeserializeMessage(const TMsg& msgIn)
 {
     static Serializer ser;
-    ser.Clear();
+    ser.clear();
     msgIn.serialize(ser);
     Message* msgOut(GameMessage::createGame(msgIn.getId()));
     BOOST_TEST_REQUIRE(msgOut);
     std::unique_ptr<TMsg> msgResult(dynamic_cast<TMsg*>(msgOut));
     BOOST_TEST_REQUIRE(!!msgResult);
-    Serializer serOut(ser.GetData(), ser.GetLength());
+    Serializer serOut(ser.getData(), ser.getLength());
     msgOut->deserialize(serOut);
-    BOOST_TEST(serOut.GetBytesLeft() == 0u);
+    BOOST_TEST(serOut.getBytesLeft() == 0u);
     return msgResult;
 }
 

@@ -47,18 +47,18 @@ void noFighting::serialize(SerializedGameData& sgd) const
 {
     noBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(turn);
-    sgd.PushUnsignedChar(defending_animation);
+    sgd.pushUnsignedChar(turn);
+    sgd.pushUnsignedChar(defending_animation);
     sgd.pushEvent(current_ev);
-    sgd.PushUnsignedChar(player_won);
+    sgd.pushUnsignedChar(player_won);
 
     for(const auto& soldier : soldiers)
         sgd.pushObject(soldier);
 }
 
 noFighting::noFighting(SerializedGameData& sgd, const unsigned obj_id)
-    : noBase(sgd, obj_id), turn(sgd.PopUnsignedChar()), defending_animation(sgd.PopUnsignedChar()),
-      current_ev(sgd.popEvent()), player_won(sgd.PopUnsignedChar())
+    : noBase(sgd, obj_id), turn(sgd.popUnsignedChar()), defending_animation(sgd.popUnsignedChar()),
+      current_ev(sgd.popEvent()), player_won(sgd.popUnsignedChar())
 
 {
     for(auto& soldier : soldiers)

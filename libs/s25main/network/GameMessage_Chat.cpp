@@ -11,14 +11,14 @@ void GameMessage_Chat::serialize(Serializer& ser) const
 {
     GameMessageWithPlayer::serialize(ser);
     helpers::pushEnum<uint8_t>(ser, destination);
-    ser.PushString(text);
+    ser.pushString(text);
 }
 
 void GameMessage_Chat::deserialize(Serializer& ser)
 {
     GameMessageWithPlayer::deserialize(ser);
     destination = helpers::popEnum<ChatDestination>(ser);
-    text = ser.PopString();
+    text = ser.popString();
 }
 
 bool GameMessage_Chat::runGame(GameMessageInterface* callback) const

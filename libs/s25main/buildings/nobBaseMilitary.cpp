@@ -91,7 +91,7 @@ void nobBaseMilitary::serialize(SerializedGameData& sgd) const
 
     sgd.pushObjectContainer(leave_house);
     sgd.pushEvent(leaving_event);
-    sgd.PushBool(go_out);
+    sgd.pushBool(go_out);
     sgd.pushObjectContainer(troops_on_mission);
     sgd.pushObjectContainer(aggressors, true);
     sgd.pushObjectContainer(aggressive_defenders, true);
@@ -102,9 +102,9 @@ nobBaseMilitary::nobBaseMilitary(SerializedGameData& sgd, const unsigned obj_id)
 {
     sgd.popObjectContainer(leave_house);
     leaving_event = sgd.popEvent();
-    go_out = sgd.PopBool();
+    go_out = sgd.popBool();
     if(sgd.getGameDataVersion() < 14)
-        sgd.PopUnsignedInt(); // former age
+        sgd.popUnsignedInt(); // former age
     sgd.popObjectContainer(troops_on_mission);
     sgd.popObjectContainer(aggressors, GO_Type::NofAttacker);
     sgd.popObjectContainer(aggressive_defenders, GO_Type::NofAggressivedefender);

@@ -62,7 +62,7 @@ bool Savegame::load(BinaryFile& file, const SaveGameDataToLoad what)
     try
     {
         clearPlayers();
-        sgd.Clear();
+        sgd.clear();
         if(!readAllHeaderData(file))
             return false;
 
@@ -102,7 +102,7 @@ bool Savegame::readExtHeader(BinaryFile& file)
 void Savegame::writeGameData(BinaryFile& file)
 {
     file.WriteUnsignedInt(1); // Compressed flag for compatibility
-    std::vector<char> data(sgd.GetData(), sgd.GetData() + sgd.GetLength());
+    std::vector<char> data(sgd.getData(), sgd.getData() + sgd.getLength());
     const unsigned uncompressedLength = data.size();
     data = CompressedData::compress(data);
     file.WriteUnsignedInt(uncompressedLength);
@@ -134,7 +134,7 @@ bool Savegame::readGameData(BinaryFile& file)
         file.ReadRawData(data.data(), data.size());
     }
 
-    sgd.Clear();
-    sgd.PushRawData(data.data(), data.size());
+    sgd.clear();
+    sgd.pushRawData(data.data(), data.size());
     return true;
 }

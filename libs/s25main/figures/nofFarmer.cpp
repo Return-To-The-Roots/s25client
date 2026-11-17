@@ -22,10 +22,10 @@ void nofFarmer::serialize(SerializedGameData& sgd) const
 {
     nofFarmhand::serialize(sgd);
 
-    sgd.PushBool(harvest);
+    sgd.pushBool(harvest);
 }
 
-nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool())
+nofFarmer::nofFarmer(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id), harvest(sgd.popBool())
 {}
 
 /// Malt den Arbeiter beim Arbeiten

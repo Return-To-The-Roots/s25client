@@ -45,14 +45,14 @@ void nofBuilder::serialize(SerializedGameData& sgd) const
     sgd.pushObject(building_site, true);
     helpers::pushPoint(sgd, offsetSite);
     helpers::pushPoint(sgd, nextOffsetSite);
-    sgd.PushUnsignedChar(building_steps_available);
+    sgd.pushUnsignedChar(building_steps_available);
 }
 
 nofBuilder::nofBuilder(SerializedGameData& sgd, const unsigned obj_id)
     : noFigure(sgd, obj_id), state(sgd.pop<BuilderState>()),
       building_site(sgd.popObject<noBuildingSite>(GO_Type::Buildingsite)),
       offsetSite(helpers::popPoint<Point<int16_t>>(sgd)), nextOffsetSite(helpers::popPoint<Point<int16_t>>(sgd)),
-      building_steps_available(sgd.PopUnsignedChar())
+      building_steps_available(sgd.popUnsignedChar())
 {}
 
 void nofBuilder::goalReached()

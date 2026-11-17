@@ -29,7 +29,7 @@ namespace gc {
 namespace detail {
     inline uint8_t popSoldierRank(Serializer& ser)
     {
-        const auto rank = ser.PopUnsignedChar();
+        const auto rank = ser.popUnsignedChar();
         if(rank > MAX_MILITARY_RANK)
             throw helpers::makeOutOfRange(rank, MAX_MILITARY_RANK);
         return rank;
@@ -176,7 +176,7 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameCommand::serialize(ser);
-        ser.PushBool(useCustomBuildOrder);
+        ser.pushBool(useCustomBuildOrder);
         for(auto i : data)
             helpers::pushEnum<uint8_t>(ser, i);
     }
@@ -231,7 +231,7 @@ protected:
         : Coords(GCType::SetTroopLimit, pt), rank(rank), count(count)
     {}
     SetTroopLimit(Serializer& ser)
-        : Coords(GCType::SetTroopLimit, ser), rank(detail::popSoldierRank(ser)), count(ser.PopUnsignedInt())
+        : Coords(GCType::SetTroopLimit, ser), rank(detail::popSoldierRank(ser)), count(ser.popUnsignedInt())
     {}
 
 public:
@@ -239,8 +239,8 @@ public:
     {
         Coords::serialize(ser);
 
-        ser.PushUnsignedChar(rank);
-        ser.PushUnsignedInt(count);
+        ser.pushUnsignedChar(rank);
+        ser.pushUnsignedInt(count);
     }
 
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -350,7 +350,7 @@ protected:
         : Coords(gst, pt), soldiers_count(soldiers_count), strong_soldiers(strong_soldiers)
     {}
     BaseAttack(const GCType gst, Serializer& ser)
-        : Coords(gst, ser), soldiers_count(ser.PopUnsignedInt()), strong_soldiers(ser.PopBool())
+        : Coords(gst, ser), soldiers_count(ser.popUnsignedInt()), strong_soldiers(ser.popBool())
     {}
 
 public:
@@ -358,8 +358,8 @@ public:
     {
         Coords::serialize(ser);
 
-        ser.PushUnsignedInt(soldiers_count);
-        ser.PushBool(strong_soldiers);
+        ser.pushUnsignedInt(soldiers_count);
+        ser.pushBool(strong_soldiers);
     }
 };
 
@@ -401,13 +401,13 @@ class SetCoinsAllowed : public Coords
 
 protected:
     SetCoinsAllowed(const MapPoint pt, bool enabled) : Coords(GCType::SetCoinsAllowed, pt), enabled(enabled) {}
-    SetCoinsAllowed(Serializer& ser) : Coords(GCType::SetCoinsAllowed, ser), enabled(ser.PopBool()) {}
+    SetCoinsAllowed(Serializer& ser) : Coords(GCType::SetCoinsAllowed, ser), enabled(ser.popBool()) {}
 
 public:
     void serialize(Serializer& ser) const override
     {
         Coords::serialize(ser);
-        ser.PushBool(enabled);
+        ser.pushBool(enabled);
     }
     void execute(GameWorld& world, uint8_t playerId) override;
 };
@@ -420,13 +420,13 @@ class SetArmorAllowed : public Coords
 
 protected:
     SetArmorAllowed(const MapPoint pt, bool enabled) : Coords(GCType::SetArmorAllowed, pt), enabled(enabled) {}
-    SetArmorAllowed(Serializer& ser) : Coords(GCType::SetArmorAllowed, ser), enabled(ser.PopBool()) {}
+    SetArmorAllowed(Serializer& ser) : Coords(GCType::SetArmorAllowed, ser), enabled(ser.popBool()) {}
 
 public:
     void serialize(Serializer& ser) const override
     {
         Coords::serialize(ser);
-        ser.PushBool(enabled);
+        ser.pushBool(enabled);
     }
     void execute(GameWorld& world, uint8_t playerId) override;
 };
@@ -440,13 +440,13 @@ class SetProductionEnabled : public Coords
 protected:
     SetProductionEnabled(const MapPoint pt, bool enabled) : Coords(GCType::SetProductionEnabled, pt), enabled(enabled)
     {}
-    SetProductionEnabled(Serializer& ser) : Coords(GCType::SetProductionEnabled, ser), enabled(ser.PopBool()) {}
+    SetProductionEnabled(Serializer& ser) : Coords(GCType::SetProductionEnabled, ser), enabled(ser.popBool()) {}
 
 public:
     void serialize(Serializer& ser) const override
     {
         Coords::serialize(ser);
-        ser.PushBool(enabled);
+        ser.pushBool(enabled);
     }
     void execute(GameWorld& world, uint8_t playerId) override;
 };
@@ -478,11 +478,11 @@ protected:
     SetInventorySetting(Serializer& ser) : Coords(GCType::SetInventorySetting, ser)
 
     {
-        if(ser.PopBool())
+        if(ser.popBool())
             what = helpers::popEnum<Job>(ser);
         else
             what = helpers::popEnum<GoodType>(ser);
-        state = static_cast<InventorySetting>(ser.PopUnsignedChar());
+        state = static_cast<InventorySetting>(ser.popUnsignedChar());
     }
 
 public:
@@ -490,9 +490,9 @@ public:
     {
         Coords::serialize(ser);
 
-        ser.PushBool(holds_alternative<Job>(what));
+        ser.pushBool(holds_alternative<Job>(what));
         visit([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
-        ser.PushUnsignedChar(static_cast<uint8_t>(state));
+        ser.pushUnsignedChar(static_cast<uint8_t>(state));
     }
 
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -517,10 +517,10 @@ public:
     {
         Coords::serialize(ser);
 
-        ser.PushBool(isJob);
+        ser.pushBool(isJob);
         RTTR_Assert(states.size() == (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>));
         for(auto state : states)
-            ser.PushUnsignedChar(static_cast<uint8_t>(state));
+            ser.pushUnsignedChar(static_cast<uint8_t>(state));
     }
 
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -540,7 +540,7 @@ protected:
         : Coords(GCType::ChangeReserve, pt), rank(rank), count(count)
     {}
     ChangeReserve(Serializer& ser)
-        : Coords(GCType::ChangeReserve, ser), rank(detail::popSoldierRank(ser)), count(ser.PopUnsignedInt())
+        : Coords(GCType::ChangeReserve, ser), rank(detail::popSoldierRank(ser)), count(ser.popUnsignedInt())
     {}
 
 public:
@@ -548,8 +548,8 @@ public:
     {
         Coords::serialize(ser);
 
-        ser.PushUnsignedChar(rank);
-        ser.PushUnsignedInt(count);
+        ser.pushUnsignedChar(rank);
+        ser.pushUnsignedInt(count);
     }
 
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -610,17 +610,17 @@ protected:
         : GameCommand(GCType::SuggestPact), targetPlayer(targetPlayer), pt(pt), duration(duration)
     {}
     SuggestPact(Serializer& ser)
-        : GameCommand(GCType::SuggestPact), targetPlayer(ser.PopUnsignedChar()), pt(helpers::popEnum<PactType>(ser)),
-          duration(ser.PopUnsignedInt())
+        : GameCommand(GCType::SuggestPact), targetPlayer(ser.popUnsignedChar()), pt(helpers::popEnum<PactType>(ser)),
+          duration(ser.popUnsignedInt())
     {}
 
 public:
     void serialize(Serializer& ser) const override
     {
         GameCommand::serialize(ser);
-        ser.PushUnsignedChar(targetPlayer);
+        ser.pushUnsignedChar(targetPlayer);
         helpers::pushEnum<uint8_t>(ser, pt);
-        ser.PushUnsignedInt(duration);
+        ser.pushUnsignedInt(duration);
     }
 
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -642,17 +642,17 @@ protected:
         : GameCommand(GCType::AcceptPact), id(id), pt(pt), fromPlayer(fromPlayer)
     {}
     AcceptPact(Serializer& ser)
-        : GameCommand(GCType::AcceptPact), id(ser.PopUnsignedInt()), pt(helpers::popEnum<PactType>(ser)),
-          fromPlayer(ser.PopUnsignedChar())
+        : GameCommand(GCType::AcceptPact), id(ser.popUnsignedInt()), pt(helpers::popEnum<PactType>(ser)),
+          fromPlayer(ser.popUnsignedChar())
     {}
 
 public:
     void serialize(Serializer& ser) const override
     {
         GameCommand::serialize(ser);
-        ser.PushUnsignedInt(id);
+        ser.pushUnsignedInt(id);
         helpers::pushEnum<uint8_t>(ser, pt);
-        ser.PushUnsignedChar(fromPlayer);
+        ser.pushUnsignedChar(fromPlayer);
     }
 
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -672,7 +672,7 @@ protected:
         : GameCommand(GCType::CancelPact), pt(pt), otherPlayer(otherPlayer)
     {}
     CancelPact(Serializer& ser)
-        : GameCommand(GCType::CancelPact), pt(helpers::popEnum<PactType>(ser)), otherPlayer(ser.PopUnsignedChar())
+        : GameCommand(GCType::CancelPact), pt(helpers::popEnum<PactType>(ser)), otherPlayer(ser.popUnsignedChar())
     {}
 
 public:
@@ -680,7 +680,7 @@ public:
     {
         GameCommand::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, pt);
-        ser.PushUnsignedChar(otherPlayer);
+        ser.pushUnsignedChar(otherPlayer);
     }
 
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -694,14 +694,14 @@ class SetShipYardMode : public Coords
 
 protected:
     SetShipYardMode(const MapPoint pt, bool buildShips) : Coords(GCType::SetShipyardMode, pt), buildShips(buildShips) {}
-    SetShipYardMode(Serializer& ser) : Coords(GCType::SetShipyardMode, ser), buildShips(ser.PopBool()) {}
+    SetShipYardMode(Serializer& ser) : Coords(GCType::SetShipyardMode, ser), buildShips(ser.popBool()) {}
 
 public:
     void execute(GameWorld& world, uint8_t playerId) override;
     void serialize(Serializer& ser) const override
     {
         Coords::serialize(ser);
-        ser.PushBool(buildShips);
+        ser.pushBool(buildShips);
     }
 };
 
@@ -736,14 +736,14 @@ class StartStopExpedition : public Coords
 
 protected:
     StartStopExpedition(const MapPoint pt, bool start) : Coords(GCType::StartStopExpedition, pt), start(start) {}
-    StartStopExpedition(Serializer& ser) : Coords(GCType::StartStopExpedition, ser), start(ser.PopBool()) {}
+    StartStopExpedition(Serializer& ser) : Coords(GCType::StartStopExpedition, ser), start(ser.popBool()) {}
 
 public:
     void execute(GameWorld& world, uint8_t playerId) override;
     void serialize(Serializer& ser) const override
     {
         Coords::serialize(ser);
-        ser.PushBool(start);
+        ser.pushBool(start);
     }
 };
 
@@ -758,7 +758,7 @@ protected:
         : Coords(GCType::StartStopExplorationExpedition, pt), start(start)
     {}
     StartStopExplorationExpedition(Serializer& ser)
-        : Coords(GCType::StartStopExplorationExpedition, ser), start(ser.PopBool())
+        : Coords(GCType::StartStopExplorationExpedition, ser), start(ser.popBool())
     {}
 
 public:
@@ -766,7 +766,7 @@ public:
     void serialize(Serializer& ser) const override
     {
         Coords::serialize(ser);
-        ser.PushBool(start);
+        ser.pushBool(start);
     }
 };
 
@@ -795,7 +795,7 @@ protected:
     {}
 
     ExpeditionCommand(Serializer& ser)
-        : GameCommand(GCType::ExpeditionCommand), action(helpers::popEnum<Action>(ser)), ship_id(ser.PopUnsignedInt())
+        : GameCommand(GCType::ExpeditionCommand), action(helpers::popEnum<Action>(ser)), ship_id(ser.popUnsignedInt())
     {}
 
 public:
@@ -803,7 +803,7 @@ public:
     {
         GameCommand::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, action);
-        ser.PushUnsignedInt(ship_id);
+        ser.pushUnsignedInt(ship_id);
     }
 
     void execute(GameWorld& world, uint8_t playerId) override;
@@ -830,11 +830,11 @@ protected:
     {}
     TradeOverLand(Serializer& ser) : Coords(GCType::Trade, ser)
     {
-        if(ser.PopBool())
+        if(ser.popBool())
             what = helpers::popEnum<Job>(ser);
         else
             what = helpers::popEnum<GoodType>(ser);
-        count = ser.PopUnsignedInt();
+        count = ser.popUnsignedInt();
     }
 
 public:
@@ -842,9 +842,9 @@ public:
     {
         Coords::serialize(ser);
 
-        ser.PushBool(holds_alternative<Job>(what));
+        ser.pushBool(holds_alternative<Job>(what));
         visit([&ser](auto type) { helpers::pushEnum<uint8_t>(ser, type); }, what);
-        ser.PushUnsignedInt(count);
+        ser.pushUnsignedInt(count);
     }
 
     void execute(GameWorld& world, uint8_t playerId) override;

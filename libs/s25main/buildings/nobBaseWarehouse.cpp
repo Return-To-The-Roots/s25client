@@ -124,7 +124,7 @@ void nobBaseWarehouse::serialize(SerializedGameData& sgd) const
     nobBaseMilitary::serialize(sgd);
 
     sgd.pushObjectContainer(waiting_wares, true);
-    sgd.PushBool(fetch_double_protection);
+    sgd.pushBool(fetch_double_protection);
     sgd.pushObjectContainer(dependent_figures);
     sgd.pushObjectContainer(dependent_wares, true);
     sgd.pushEvent(producinghelpers_event);
@@ -135,22 +135,22 @@ void nobBaseWarehouse::serialize(SerializedGameData& sgd) const
     for(unsigned i = 0; i < 5; ++i)
     {
         // Nur das Reale, nicht das visuelle speichern, das wäre sinnlos!, beim Laden ist das visuelle = realem
-        sgd.PushUnsignedInt(reserve_soldiers_available[i]);
-        sgd.PushUnsignedInt(reserve_soldiers_available_with_armor[i]);
-        sgd.PushUnsignedInt(reserve_soldiers_claimed_real[i]);
+        sgd.pushUnsignedInt(reserve_soldiers_available[i]);
+        sgd.pushUnsignedInt(reserve_soldiers_available_with_armor[i]);
+        sgd.pushUnsignedInt(reserve_soldiers_claimed_real[i]);
     }
 
     for(const auto i : helpers::enumRange<GoodType>())
     {
-        sgd.PushUnsignedInt(inventory.visual[i]);
-        sgd.PushUnsignedInt(inventory.real[i]);
-        sgd.PushUnsignedChar(static_cast<uint8_t>(inventorySettings[i]));
+        sgd.pushUnsignedInt(inventory.visual[i]);
+        sgd.pushUnsignedInt(inventory.real[i]);
+        sgd.pushUnsignedChar(static_cast<uint8_t>(inventorySettings[i]));
     }
     for(const auto i : helpers::enumRange<Job>())
     {
-        sgd.PushUnsignedInt(inventory.visual[i]);
-        sgd.PushUnsignedInt(inventory.real[i]);
-        sgd.PushUnsignedChar(static_cast<uint8_t>(inventorySettings[i]));
+        sgd.pushUnsignedInt(inventory.visual[i]);
+        sgd.pushUnsignedInt(inventory.real[i]);
+        sgd.pushUnsignedChar(static_cast<uint8_t>(inventorySettings[i]));
     }
 
     helpers::pushContainer(sgd, inventory.visual.armoredSoldiers);
@@ -160,7 +160,7 @@ void nobBaseWarehouse::serialize(SerializedGameData& sgd) const
 nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id)
 {
     sgd.popObjectContainer(waiting_wares, GO_Type::Ware);
-    fetch_double_protection = sgd.PopBool();
+    fetch_double_protection = sgd.popBool();
     sgd.popObjectContainer(dependent_figures);
     sgd.popObjectContainer(dependent_wares, GO_Type::Ware);
 
@@ -172,11 +172,11 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
     reserve_soldiers_available_with_armor.fill(0);
     for(unsigned i = 0; i < 5; ++i)
     {
-        reserve_soldiers_available[i] = sgd.PopUnsignedInt();
+        reserve_soldiers_available[i] = sgd.popUnsignedInt();
         if(sgd.getGameDataVersion() >= 12)
-            reserve_soldiers_available_with_armor[i] = sgd.PopUnsignedInt();
+            reserve_soldiers_available_with_armor[i] = sgd.popUnsignedInt();
 
-        reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = sgd.PopUnsignedInt();
+        reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = sgd.popUnsignedInt();
     }
 
     for(const auto i : helpers::enumRange<GoodType>())
@@ -187,9 +187,9 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
         if(sgd.getGameDataVersion() < 12 && leatheraddon::isLeatherAddonGoodType(i))
             continue;
 
-        inventory.visual.add(i, sgd.PopUnsignedInt());
-        inventory.real.add(i, sgd.PopUnsignedInt());
-        inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
+        inventory.visual.add(i, sgd.popUnsignedInt());
+        inventory.real.add(i, sgd.popUnsignedInt());
+        inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.popUnsignedChar());
     }
     for(const auto i : helpers::enumRange<Job>())
     {
@@ -199,9 +199,9 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
         if(sgd.getGameDataVersion() < 12 && leatheraddon::isLeatherAddonJobType(i))
             continue;
 
-        inventory.visual.add(i, sgd.PopUnsignedInt());
-        inventory.real.add(i, sgd.PopUnsignedInt());
-        inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.PopUnsignedChar());
+        inventory.visual.add(i, sgd.popUnsignedInt());
+        inventory.real.add(i, sgd.popUnsignedInt());
+        inventorySettings[i] = inventorySettingsVisual[i] = static_cast<InventorySetting>(sgd.popUnsignedChar());
     }
     if(sgd.getGameDataVersion() >= 12)
     {

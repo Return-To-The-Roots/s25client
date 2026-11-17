@@ -38,16 +38,16 @@ noStaticObject::noStaticObject(const MapPoint pos, unsigned short id, unsigned s
 }
 
 noStaticObject::noStaticObject(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), id(sgd.PopUnsignedShort()), file(sgd.PopUnsignedShort()), size(sgd.PopUnsignedChar())
+    : noCoordBase(sgd, obj_id), id(sgd.popUnsignedShort()), file(sgd.popUnsignedShort()), size(sgd.popUnsignedChar())
 {}
 
 void noStaticObject::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedShort(id);
-    sgd.PushUnsignedShort(file);
-    sgd.PushUnsignedChar(size);
+    sgd.pushUnsignedShort(id);
+    sgd.pushUnsignedShort(file);
+    sgd.pushUnsignedChar(size);
 }
 
 void noStaticObject::destroy()

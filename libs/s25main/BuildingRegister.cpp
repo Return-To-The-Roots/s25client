@@ -56,7 +56,7 @@ void BuildingRegister::deserialize(SerializedGameData& sgd)
 
 void BuildingRegister::deserialize2(SerializedGameData& sgd)
 {
-    // Pop all buildings starting at the first usual building
+    // pop all buildings starting at the first usual building
     for(unsigned i = static_cast<uint8_t>(BuildingType::GraniteMine); i < helpers::NumEnumValues_v<BuildingType>; ++i)
         sgd.popObjectContainer(buildings[BuildingType(i)], GO_Type::NobUsual);
     sgd.popObjectContainer(building_sites, GO_Type::Buildingsite);

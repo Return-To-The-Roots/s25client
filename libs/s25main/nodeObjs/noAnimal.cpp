@@ -39,13 +39,13 @@ void noAnimal::serialize(SerializedGameData& sgd) const
 
     sgd.pushEnum<uint8_t>(species);
     sgd.pushEnum<uint8_t>(state);
-    sgd.PushUnsignedShort(pause_way);
+    sgd.pushUnsignedShort(pause_way);
     sgd.pushObject(hunter, true);
     sgd.pushObject(skinner, true);
 }
 
 noAnimal::noAnimal(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), species(sgd.pop<Species>()), state(sgd.pop<State>()), pause_way(sgd.PopUnsignedShort()),
+    : noMovable(sgd, obj_id), species(sgd.pop<Species>()), state(sgd.pop<State>()), pause_way(sgd.popUnsignedShort()),
       hunter(sgd.popObject<nofHunter>(GO_Type::NofHunter)), skinner(nullptr), sound_moment(0)
 {
     if(sgd.getGameDataVersion() >= 12)

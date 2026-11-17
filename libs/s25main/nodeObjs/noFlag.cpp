@@ -61,8 +61,8 @@ noFlag::noFlag(SerializedGameData& sgd, const unsigned obj_id)
     // BWUs laden
     for(auto& bwu : bwus)
     {
-        bwu.id = sgd.PopUnsignedInt();
-        bwu.last_gf = sgd.PopUnsignedInt();
+        bwu.id = sgd.popUnsignedInt();
+        bwu.last_gf = sgd.popUnsignedInt();
     }
 }
 
@@ -98,8 +98,8 @@ void noFlag::serialize(SerializedGameData& sgd) const
     // BWUs speichern
     for(const auto& bwu : bwus)
     {
-        sgd.PushUnsignedInt(bwu.id);
-        sgd.PushUnsignedInt(bwu.last_gf);
+        sgd.pushUnsignedInt(bwu.id);
+        sgd.pushUnsignedInt(bwu.last_gf);
     }
 }
 

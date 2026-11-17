@@ -160,10 +160,10 @@ void EventManager::serialize(SerializedGameData& sgd) const
         throw SerializedGameData::Error((eventCtError % saveEvents.size() % numActiveEvents).str());
     }
 
-    sgd.PushUnsignedInt(saveEvents.size());
+    sgd.pushUnsignedInt(saveEvents.size());
     for(const GameEvent* ev : saveEvents)
         sgd.pushEvent(ev);
-    sgd.PushUnsignedInt(eventInstanceCtr);
+    sgd.pushUnsignedInt(eventInstanceCtr);
 }
 
 void EventManager::deserialize(SerializedGameData& sgd)
@@ -171,11 +171,11 @@ void EventManager::deserialize(SerializedGameData& sgd)
     if(numActiveEvents != 0)
         throw SerializedGameData::Error(_("Cannot deserialize event manager when there are still events active!"));
 
-    unsigned numEvents = sgd.PopUnsignedInt();
+    unsigned numEvents = sgd.popUnsignedInt();
     for(unsigned i = 0; i < numEvents; ++i)
         addEventToQueue(sgd.popEvent());
 
-    eventInstanceCtr = sgd.PopUnsignedInt();
+    eventInstanceCtr = sgd.popUnsignedInt();
 
     // Validation
     if(numEvents != numActiveEvents)

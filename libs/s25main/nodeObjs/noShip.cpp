@@ -70,29 +70,29 @@ void noShip::serialize(SerializedGameData& sgd) const
 {
     noMovable::serialize(sgd);
 
-    sgd.PushUnsignedChar(ownerId_);
+    sgd.pushUnsignedChar(ownerId_);
     sgd.pushEnum<uint8_t>(state);
-    sgd.PushUnsignedShort(seaId_.value());
-    sgd.PushUnsignedInt(goalHarbor.value());
-    sgd.PushUnsignedChar(goal_dir);
-    sgd.PushString(name);
-    sgd.PushUnsignedInt(curRouteIdx);
-    sgd.PushBool(lost);
-    sgd.PushUnsignedInt(remaining_sea_attackers);
-    sgd.PushUnsignedInt(homeHarbor.value());
-    sgd.PushUnsignedInt(covered_distance);
+    sgd.pushUnsignedShort(seaId_.value());
+    sgd.pushUnsignedInt(goalHarbor.value());
+    sgd.pushUnsignedChar(goal_dir);
+    sgd.pushString(name);
+    sgd.pushUnsignedInt(curRouteIdx);
+    sgd.pushBool(lost);
+    sgd.pushUnsignedInt(remaining_sea_attackers);
+    sgd.pushUnsignedInt(homeHarbor.value());
+    sgd.pushUnsignedInt(covered_distance);
     helpers::pushContainer(sgd, route_);
     sgd.pushObjectContainer(figures);
     sgd.pushObjectContainer(wares, true);
 }
 
 noShip::noShip(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), ownerId_(sgd.PopUnsignedChar()), state(sgd.pop<State>()), seaId_(sgd.PopUnsignedShort()),
-      goalHarbor(sgd.PopUnsignedInt()), goal_dir(sgd.PopUnsignedChar()),
-      name(sgd.getGameDataVersion() < 2 ? sgd.PopLongString() : sgd.PopString()), curRouteIdx(sgd.PopUnsignedInt()),
-      route_(sgd.getGameDataVersion() < 7 ? sgd.PopUnsignedInt() : 0), lost(sgd.PopBool()),
-      remaining_sea_attackers(sgd.PopUnsignedInt()), homeHarbor(sgd.PopUnsignedInt()),
-      covered_distance(sgd.PopUnsignedInt())
+    : noMovable(sgd, obj_id), ownerId_(sgd.popUnsignedChar()), state(sgd.pop<State>()), seaId_(sgd.popUnsignedShort()),
+      goalHarbor(sgd.popUnsignedInt()), goal_dir(sgd.popUnsignedChar()),
+      name(sgd.getGameDataVersion() < 2 ? sgd.popLongString() : sgd.popString()), curRouteIdx(sgd.popUnsignedInt()),
+      route_(sgd.getGameDataVersion() < 7 ? sgd.popUnsignedInt() : 0), lost(sgd.popBool()),
+      remaining_sea_attackers(sgd.popUnsignedInt()), homeHarbor(sgd.popUnsignedInt()),
+      covered_distance(sgd.popUnsignedInt())
 {
     helpers::popContainer(sgd, route_, sgd.getGameDataVersion() < 7);
     sgd.popObjectContainer(figures);

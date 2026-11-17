@@ -35,7 +35,7 @@ void nofBuildingWorker::serialize(SerializedGameData& sgd) const
     {
         sgd.pushObject(workplace);
         sgd.pushOptionalEnum<uint8_t>(ware);
-        sgd.PushBool(was_sounding);
+        sgd.pushBool(was_sounding);
     }
 }
 
@@ -47,7 +47,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
         workplace = sgd.popObject<nobUsual>();
         if(sgd.getGameDataVersion() < 5)
         {
-            const auto iWare = sgd.PopUnsignedChar();
+            const auto iWare = sgd.popUnsignedChar();
             // GoodType::Nothing is moved because of adding new wares due addons
             // The old GoodType::Nothing is now GoodType::Grapes
             if(iWare == rttr::enumCast(GoodType::Grapes))
@@ -56,7 +56,7 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
                 ware = GoodType(iWare);
         } else
             ware = sgd.popOptionalEnum<GoodType>();
-        was_sounding = sgd.PopBool();
+        was_sounding = sgd.popBool();
     } else
     {
         workplace = nullptr;

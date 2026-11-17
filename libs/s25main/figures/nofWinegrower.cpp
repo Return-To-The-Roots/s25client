@@ -24,13 +24,13 @@ nofWinegrower::nofWinegrower(const MapPoint pos, const unsigned char player, nob
 {}
 
 nofWinegrower::nofWinegrower(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool())
+    : nofFarmhand(sgd, obj_id), harvest(sgd.popBool())
 {}
 
 void nofWinegrower::serialize(SerializedGameData& sgd) const
 {
     nofFarmhand::serialize(sgd);
-    sgd.PushBool(harvest);
+    sgd.pushBool(harvest);
 }
 
 void nofWinegrower::drawWorking(DrawPoint drawPt)

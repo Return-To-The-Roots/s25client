@@ -36,7 +36,7 @@ nofMetalworker::nofMetalworker(SerializedGameData& sgd, const unsigned obj_id) :
 {
     if(sgd.getGameDataVersion() < 5)
     {
-        const auto iWare = sgd.PopUnsignedChar();
+        const auto iWare = sgd.popUnsignedChar();
         // GoodType::Nothing is moved because of adding new wares due addons
         // The old GoodType::Nothing is now GoodType::Grapes
         if(iWare == rttr::enumCast(GoodType::Grapes))

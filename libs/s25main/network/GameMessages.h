@@ -76,14 +76,14 @@ public:
     {
         GameMessage::serialize(ser);
         helpers::pushEnum<uint16_t>(ser, type);
-        ser.PushLongString(revision);
+        ser.pushLongString(revision);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
         type = helpers::popEnum<ServerType>(ser);
-        revision = ser.PopLongString();
+        revision = ser.popLongString();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -132,13 +132,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushString(password);
+        ser.pushString(password);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        password = ser.PopString();
+        password = ser.popString();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -161,13 +161,13 @@ public:
     {
         LOG.writeToFile(">>> NMS_SERVER_NAME(%s)\n") % name;
         GameMessage::serialize(ser);
-        ser.PushString(name);
+        ser.pushString(name);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        name = ser.PopString();
+        name = ser.popString();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -192,17 +192,17 @@ public:
     {
         LOG.writeToFile(">>> NMS_SERVER_START(%d, %d, %d)\n") % random_init % firstNwf % cmdDelay;
         GameMessage::serialize(ser);
-        ser.PushUnsignedInt(random_init);
-        ser.PushUnsignedInt(firstNwf);
-        ser.PushUnsignedInt(cmdDelay);
+        ser.pushUnsignedInt(random_init);
+        ser.pushUnsignedInt(firstNwf);
+        ser.pushUnsignedInt(cmdDelay);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        random_init = ser.PopUnsignedInt();
-        firstNwf = ser.PopUnsignedInt();
-        cmdDelay = ser.PopUnsignedInt();
+        random_init = ser.popUnsignedInt();
+        firstNwf = ser.popUnsignedInt();
+        cmdDelay = ser.popUnsignedInt();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -226,13 +226,13 @@ public:
     {
         LOG.writeToFile(">>> NMS_SERVERCOUNTDOWN(%d)\n") % countdown;
         GameMessage::serialize(ser);
-        ser.PushUnsignedInt(countdown);
+        ser.pushUnsignedInt(countdown);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        countdown = ser.PopUnsignedInt();
+        countdown = ser.popUnsignedInt();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -252,13 +252,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushBool(error);
+        ser.pushBool(error);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        error = ser.PopBool();
+        error = ser.popBool();
     }
     bool runGame(GameMessageInterface* callback) const override { return callback->onGameMessage(*this); }
 };
@@ -321,13 +321,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::serialize(ser);
-        ser.PushString(playername);
+        ser.pushString(playername);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::deserialize(ser);
-        playername = ser.PopString();
+        playername = ser.popString();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -350,13 +350,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::serialize(ser);
-        ser.PushUnsignedInt(playerPortraitIndex);
+        ser.pushUnsignedInt(playerPortraitIndex);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::deserialize(ser);
-        playerPortraitIndex = ser.PopUnsignedInt();
+        playerPortraitIndex = ser.popUnsignedInt();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -498,13 +498,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::serialize(ser);
-        ser.PushUnsignedInt(color);
+        ser.pushUnsignedInt(color);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::deserialize(ser);
-        color = ser.PopUnsignedInt();
+        color = ser.popUnsignedInt();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -530,14 +530,14 @@ public:
     {
         GameMessageWithPlayer::serialize(ser);
         helpers::pushEnum<uint8_t>(ser, cause);
-        ser.PushUnsignedInt(param);
+        ser.pushUnsignedInt(param);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::deserialize(ser);
         cause = helpers::popEnum<KickReason>(ser);
-        param = ser.PopUnsignedInt();
+        param = ser.popUnsignedInt();
     }
 
     bool runGame(GameMessageInterface* callback) const override { return callback->onGameMessage(*this); }
@@ -556,13 +556,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::serialize(ser);
-        ser.PushUnsignedShort(ping);
+        ser.pushUnsignedShort(ping);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::deserialize(ser);
-        ping = ser.PopUnsignedShort();
+        ping = ser.popUnsignedShort();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -589,13 +589,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::serialize(ser);
-        ser.PushString(name);
+        ser.pushString(name);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::deserialize(ser);
-        name = ser.PopString();
+        name = ser.popString();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -621,13 +621,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::serialize(ser);
-        ser.PushBool(ready);
+        ser.pushBool(ready);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::deserialize(ser);
-        ready = ser.PopBool();
+        ready = ser.popBool();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -653,13 +653,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::serialize(ser);
-        ser.PushUnsignedChar(player2);
+        ser.pushUnsignedChar(player2);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::deserialize(ser);
-        player2 = ser.PopUnsignedChar();
+        player2 = ser.popUnsignedChar();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -683,13 +683,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessageWithPlayer::serialize(ser);
-        ser.PushUnsignedChar(player2);
+        ser.pushUnsignedChar(player2);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessageWithPlayer::deserialize(ser);
-        player2 = ser.PopUnsignedChar();
+        player2 = ser.popUnsignedChar();
     }
 
     bool runGame(GameMessageInterface* callback) const override { return callback->onGameMessage(*this); }
@@ -717,23 +717,23 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushString(filename);
+        ser.pushString(filename);
         helpers::pushEnum<uint8_t>(ser, mt);
-        ser.PushUnsignedInt(mapLen);
-        ser.PushUnsignedInt(mapCompressedLen);
-        ser.PushUnsignedInt(luaLen);
-        ser.PushUnsignedInt(luaCompressedLen);
+        ser.pushUnsignedInt(mapLen);
+        ser.pushUnsignedInt(mapCompressedLen);
+        ser.pushUnsignedInt(luaLen);
+        ser.pushUnsignedInt(luaCompressedLen);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        filename = ser.PopString();
-        mt = MapType(ser.PopUnsignedChar());
-        mapLen = ser.PopUnsignedInt();
-        mapCompressedLen = ser.PopUnsignedInt();
-        luaLen = ser.PopUnsignedInt();
-        luaCompressedLen = ser.PopUnsignedInt();
+        filename = ser.popString();
+        mt = MapType(ser.popUnsignedChar());
+        mapLen = ser.popUnsignedInt();
+        mapCompressedLen = ser.popUnsignedInt();
+        luaLen = ser.popUnsignedInt();
+        luaCompressedLen = ser.popUnsignedInt();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -754,13 +754,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushBool(requestInfo);
+        ser.pushBool(requestInfo);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        requestInfo = ser.PopBool();
+        requestInfo = ser.popBool();
     }
 
     bool runGame(GameMessageInterface* callback) const override { return callback->onGameMessage(*this); }
@@ -786,19 +786,19 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushBool(isMapData);
-        ser.PushUnsignedInt(offset);
-        ser.PushUnsignedInt(data.size());
-        ser.PushRawData(&data.front(), data.size());
+        ser.pushBool(isMapData);
+        ser.pushUnsignedInt(offset);
+        ser.pushUnsignedInt(data.size());
+        ser.pushRawData(&data.front(), data.size());
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        isMapData = ser.PopBool();
-        offset = ser.PopUnsignedInt();
-        data.resize(ser.PopUnsignedInt());
-        ser.PopRawData(&data.front(), data.size());
+        isMapData = ser.popBool();
+        offset = ser.popUnsignedInt();
+        data.resize(ser.popUnsignedInt());
+        ser.popRawData(&data.front(), data.size());
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -824,15 +824,15 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushUnsignedInt(mapChecksum);
-        ser.PushUnsignedInt(luaChecksum);
+        ser.pushUnsignedInt(mapChecksum);
+        ser.pushUnsignedInt(luaChecksum);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        mapChecksum = ser.PopUnsignedInt();
-        luaChecksum = ser.PopUnsignedInt();
+        mapChecksum = ser.popUnsignedInt();
+        luaChecksum = ser.popUnsignedInt();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -857,15 +857,15 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushBool(correct);
-        ser.PushBool(retryAllowed);
+        ser.pushBool(correct);
+        ser.pushBool(retryAllowed);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        correct = ser.PopBool();
-        retryAllowed = ser.PopBool();
+        correct = ser.popBool();
+        retryAllowed = ser.popBool();
     }
 
     bool runGame(GameMessageInterface* callback) const override { return callback->onGameMessage(*this); }
@@ -924,13 +924,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushUnsignedInt(static_cast<uint32_t>(gf_length.count()));
+        ser.pushUnsignedInt(static_cast<uint32_t>(gf_length.count()));
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        gf_length = decltype(gf_length)(ser.PopUnsignedInt());
+        gf_length = decltype(gf_length)(ser.popUnsignedInt());
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -955,17 +955,17 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushUnsignedInt(gf);
-        ser.PushUnsignedInt(gf_length);
-        ser.PushUnsignedInt(nextNWF);
+        ser.pushUnsignedInt(gf);
+        ser.pushUnsignedInt(gf_length);
+        ser.pushUnsignedInt(nextNWF);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        gf = ser.PopUnsignedInt();
-        gf_length = ser.PopUnsignedInt();
-        nextNWF = ser.PopUnsignedInt();
+        gf = ser.popUnsignedInt();
+        gf_length = ser.popUnsignedInt();
+        nextNWF = ser.popUnsignedInt();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -990,13 +990,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushBool(paused);
+        ser.pushBool(paused);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        paused = ser.PopBool();
+        paused = ser.popBool();
     }
 
     bool runGame(GameMessageInterface* callback) const override
@@ -1017,13 +1017,13 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushUnsignedInt(targetGF);
+        ser.pushUnsignedInt(targetGF);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        targetGF = ser.PopUnsignedInt();
+        targetGF = ser.popUnsignedInt();
     }
 
     bool runGame(GameMessageInterface* callback) const override { return callback->onGameMessage(*this); }
@@ -1061,27 +1061,27 @@ public:
     void serialize(Serializer& ser) const override
     {
         GameMessage::serialize(ser);
-        ser.PushString(addData);
+        ser.pushString(addData);
 
-        ser.PushUnsignedInt(entries.size());
+        ser.pushUnsignedInt(entries.size());
         for(const RandomEntry& entry : entries)
             entry.serialize(ser);
 
-        ser.PushBool(last);
+        ser.pushBool(last);
     }
 
     void deserialize(Serializer& ser) override
     {
         GameMessage::deserialize(ser);
-        addData += ser.PopString();
+        addData += ser.popString();
 
-        unsigned cnt = ser.PopUnsignedInt();
+        unsigned cnt = ser.popUnsignedInt();
         entries.clear();
         entries.resize(cnt);
         for(RandomEntry& entry : entries)
             entry.deserialize(ser);
 
-        last = ser.PopBool();
+        last = ser.popBool();
     }
 
     bool runGame(GameMessageInterface* callback) const override

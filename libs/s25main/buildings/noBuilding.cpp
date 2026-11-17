@@ -32,11 +32,11 @@ void noBuilding::serialize(SerializedGameData& sgd) const
 {
     noBaseBuilding::serialize(sgd);
 
-    sgd.PushSignedChar(opendoor);
+    sgd.pushSignedChar(opendoor);
 }
 
 noBuilding::noBuilding(SerializedGameData& sgd, const unsigned obj_id)
-    : noBaseBuilding(sgd, obj_id), opendoor(sgd.PopSignedChar())
+    : noBaseBuilding(sgd, obj_id), opendoor(sgd.popSignedChar())
 {
     if(opendoor < 0)
     {

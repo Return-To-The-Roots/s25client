@@ -80,47 +80,47 @@ void noFigure::serialize(SerializedGameData& sgd) const
 
     sgd.pushEnum<uint8_t>(fs);
     sgd.pushEnum<uint8_t>(job_);
-    sgd.PushUnsignedChar(player);
+    sgd.pushUnsignedChar(player);
     sgd.pushObject(cur_rs, true);
-    sgd.PushUnsignedShort(rs_pos);
-    sgd.PushBool(rs_dir);
-    sgd.PushBool(on_ship);
-    sgd.PushBool(hasArmor_);
+    sgd.pushUnsignedShort(rs_pos);
+    sgd.pushBool(rs_dir);
+    sgd.pushBool(on_ship);
+    sgd.pushBool(hasArmor_);
 
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         sgd.pushObject(goal_);
 
-    sgd.PushBool(waiting_for_free_node);
+    sgd.pushBool(waiting_for_free_node);
 
     if(fs == FigureState::Wander)
     {
-        sgd.PushUnsignedShort(wander_way);
-        sgd.PushUnsignedShort(wander_tryings);
+        sgd.pushUnsignedShort(wander_way);
+        sgd.pushUnsignedShort(wander_tryings);
         helpers::pushPoint(sgd, flagPos_);
-        sgd.PushUnsignedInt(flag_obj_id);
-        sgd.PushUnsignedInt(burned_wh_id);
+        sgd.pushUnsignedInt(flag_obj_id);
+        sgd.pushUnsignedInt(burned_wh_id);
     }
 }
 
 noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
-    : noMovable(sgd, obj_id), fs(sgd.pop<FigureState>()), job_(sgd.pop<Job>()), player(sgd.PopUnsignedChar()),
-      cur_rs(sgd.popObject<RoadSegment>(GO_Type::Roadsegment)), rs_pos(sgd.PopUnsignedShort()), rs_dir(sgd.PopBool()),
-      on_ship(sgd.PopBool()), last_id(0xFFFFFFFF), hasArmor_(sgd.getGameDataVersion() >= 12 ? sgd.PopBool() : false)
+    : noMovable(sgd, obj_id), fs(sgd.pop<FigureState>()), job_(sgd.pop<Job>()), player(sgd.popUnsignedChar()),
+      cur_rs(sgd.popObject<RoadSegment>(GO_Type::Roadsegment)), rs_pos(sgd.popUnsignedShort()), rs_dir(sgd.popBool()),
+      on_ship(sgd.popBool()), last_id(0xFFFFFFFF), hasArmor_(sgd.getGameDataVersion() >= 12 ? sgd.popBool() : false)
 {
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         goal_ = sgd.popObject<noRoadNode>();
     else
         goal_ = nullptr;
 
-    waiting_for_free_node = sgd.PopBool();
+    waiting_for_free_node = sgd.popBool();
 
     if(fs == FigureState::Wander)
     {
-        wander_way = sgd.PopUnsignedShort();
-        wander_tryings = sgd.PopUnsignedShort();
+        wander_way = sgd.popUnsignedShort();
+        wander_tryings = sgd.popUnsignedShort();
         flagPos_ = sgd.popMapPoint();
-        flag_obj_id = sgd.PopUnsignedInt();
-        burned_wh_id = sgd.PopUnsignedInt();
+        flag_obj_id = sgd.popUnsignedInt();
+        burned_wh_id = sgd.popUnsignedInt();
     }
 }
 

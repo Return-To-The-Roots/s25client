@@ -32,12 +32,12 @@ void noShipBuildingSite::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(player);
-    sgd.PushUnsignedChar(progress);
+    sgd.pushUnsignedChar(player);
+    sgd.pushUnsignedChar(progress);
 }
 
 noShipBuildingSite::noShipBuildingSite(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), progress(sgd.PopUnsignedChar())
+    : noCoordBase(sgd, obj_id), player(sgd.popUnsignedChar()), progress(sgd.popUnsignedChar())
 {}
 
 /// Progress-Anteile für die 3 Baustufen

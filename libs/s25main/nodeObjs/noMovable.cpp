@@ -13,7 +13,7 @@
 #include "gameData/MapConsts.h"
 #include "s25util/Log.h"
 
-EventState::EventState(SerializedGameData& sgd) : elapsed(sgd.PopUnsignedInt()), length(sgd.PopUnsignedInt()) {}
+EventState::EventState(SerializedGameData& sgd) : elapsed(sgd.popUnsignedInt()), length(sgd.popUnsignedInt()) {}
 
 noMovable::noMovable(const NodalObjectType nop, const MapPoint pos)
     : noCoordBase(nop, pos), curMoveDir(Direction::SouthEast), ascent(0), moving(false), current_ev(nullptr)
@@ -24,19 +24,19 @@ void noMovable::serialize(SerializedGameData& sgd) const
     noCoordBase::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(curMoveDir);
-    sgd.PushUnsignedChar(ascent);
+    sgd.pushUnsignedChar(ascent);
     sgd.pushEvent(current_ev);
-    sgd.PushUnsignedInt(pauseEv.elapsed);
-    sgd.PushUnsignedInt(pauseEv.length);
-    sgd.PushBool(moving);
+    sgd.pushUnsignedInt(pauseEv.elapsed);
+    sgd.pushUnsignedInt(pauseEv.length);
+    sgd.pushBool(moving);
 }
 
 noMovable::noMovable(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), curMoveDir(sgd.pop<Direction>()), ascent(sgd.PopUnsignedChar())
+    : noCoordBase(sgd, obj_id), curMoveDir(sgd.pop<Direction>()), ascent(sgd.popUnsignedChar())
 {
     current_ev = sgd.popEvent();
     pauseEv = EventState(sgd);
-    moving = sgd.PopBool();
+    moving = sgd.popBool();
 }
 
 void noMovable::walk()

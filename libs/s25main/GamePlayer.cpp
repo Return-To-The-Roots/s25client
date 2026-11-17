@@ -168,13 +168,13 @@ void GamePlayer::serialize(SerializedGameData& sgd) const
     if(ps != PlayerState::Occupied && ps != PlayerState::AI)
         return;
 
-    sgd.PushBool(isDefeated_);
+    sgd.pushBool(isDefeated_);
 
     buildings.serialize(sgd);
 
     sgd.pushObjectContainer(roads, true);
 
-    sgd.PushUnsignedInt(jobs_wanted.size());
+    sgd.pushUnsignedInt(jobs_wanted.size());
     for(const JobNeeded& job : jobs_wanted)
     {
         sgd.pushEnum<uint8_t>(job.job);
@@ -193,10 +193,10 @@ void GamePlayer::serialize(SerializedGameData& sgd) const
         helpers::pushContainer(sgd, dist.percent_buildings);
         helpers::pushContainer(sgd, dist.client_buildings);
         helpers::pushContainer(sgd, dist.goals);
-        sgd.PushUnsignedInt(dist.selected_goal);
+        sgd.pushUnsignedInt(dist.selected_goal);
     }
 
-    sgd.PushBool(useCustomBuildOrder_);
+    sgd.pushBool(useCustomBuildOrder_);
     helpers::pushContainer(sgd, build_order);
     helpers::pushContainer(sgd, transportPrio);
     helpers::pushContainer(sgd, militarySettings_);
@@ -217,8 +217,8 @@ void GamePlayer::serialize(SerializedGameData& sgd) const
         for(unsigned j = 0; j < NUM_STAT_MERCHANDISE_TYPES; ++j)
             helpers::pushContainer(sgd, curStatistic.merchandiseData[j]);
 
-        sgd.PushUnsignedShort(curStatistic.currentIndex);
-        sgd.PushUnsignedShort(curStatistic.counter);
+        sgd.pushUnsignedShort(curStatistic.currentIndex);
+        sgd.pushUnsignedShort(curStatistic.counter);
     }
     helpers::pushContainer(sgd, statisticCurrentData);
     helpers::pushContainer(sgd, statisticCurrentMerchandiseData);
@@ -230,7 +230,7 @@ void GamePlayer::serialize(SerializedGameData& sgd) const
             pact.serialize(sgd);
     }
 
-    sgd.PushBool(emergency);
+    sgd.pushBool(emergency);
 }
 
 void GamePlayer::deserialize(SerializedGameData& sgd)
@@ -243,12 +243,12 @@ void GamePlayer::deserialize(SerializedGameData& sgd)
     if(origin_ps != PlayerState::Occupied && origin_ps != PlayerState::AI)
         return;
 
-    isDefeated_ = sgd.PopBool();
+    isDefeated_ = sgd.popBool();
     buildings.deserialize(sgd);
 
     sgd.popObjectContainer(roads, GO_Type::Roadsegment);
 
-    jobs_wanted.resize(sgd.PopUnsignedInt());
+    jobs_wanted.resize(sgd.popUnsignedInt());
     for(JobNeeded& job : jobs_wanted)
     {
         job.job = sgd.pop<Job>();
@@ -283,19 +283,19 @@ void GamePlayer::deserialize(SerializedGameData& sgd)
 
         if(sgd.getGameDataVersion() < 7)
         {
-            dist.client_buildings.resize(sgd.PopUnsignedInt());
+            dist.client_buildings.resize(sgd.popUnsignedInt());
             helpers::popContainer(sgd, dist.client_buildings, true);
-            dist.goals.resize(sgd.PopUnsignedInt());
+            dist.goals.resize(sgd.popUnsignedInt());
             helpers::popContainer(sgd, dist.goals, true);
         } else
         {
             helpers::popContainer(sgd, dist.client_buildings);
             helpers::popContainer(sgd, dist.goals);
         }
-        dist.selected_goal = sgd.PopUnsignedInt();
+        dist.selected_goal = sgd.popUnsignedInt();
     }
 
-    useCustomBuildOrder_ = sgd.PopBool();
+    useCustomBuildOrder_ = sgd.popBool();
 
     if(sgd.getGameDataVersion() < 12)
     {
@@ -377,8 +377,8 @@ void GamePlayer::deserialize(SerializedGameData& sgd)
         for(unsigned j = 0; j < NUM_STAT_MERCHANDISE_TYPES; ++j)
             helpers::popContainer(sgd, curStatistic.merchandiseData[j]);
 
-        curStatistic.currentIndex = sgd.PopUnsignedShort();
-        curStatistic.counter = sgd.PopUnsignedShort();
+        curStatistic.currentIndex = sgd.popUnsignedShort();
+        curStatistic.counter = sgd.popUnsignedShort();
     }
     helpers::popContainer(sgd, statisticCurrentData);
     helpers::popContainer(sgd, statisticCurrentMerchandiseData);
@@ -390,7 +390,7 @@ void GamePlayer::deserialize(SerializedGameData& sgd)
             pact = GamePlayer::Pact(sgd);
     }
 
-    emergency = sgd.PopBool();
+    emergency = sgd.popBool();
 }
 
 template<class T_IsWarehouseGood>
@@ -1651,15 +1651,15 @@ void GamePlayer::statisticStep()
 }
 
 GamePlayer::Pact::Pact(SerializedGameData& sgd)
-    : duration(sgd.PopUnsignedInt()), start(sgd.PopUnsignedInt()), accepted(sgd.PopBool()), want_cancel(sgd.PopBool())
+    : duration(sgd.popUnsignedInt()), start(sgd.popUnsignedInt()), accepted(sgd.popBool()), want_cancel(sgd.popBool())
 {}
 
 void GamePlayer::Pact::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushUnsignedInt(duration);
-    sgd.PushUnsignedInt(start);
-    sgd.PushBool(accepted);
-    sgd.PushBool(want_cancel);
+    sgd.pushUnsignedInt(duration);
+    sgd.pushUnsignedInt(start);
+    sgd.pushBool(accepted);
+    sgd.pushBool(want_cancel);
 }
 
 void GamePlayer::pactChanged(const PactType pt)

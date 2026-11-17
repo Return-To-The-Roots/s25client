@@ -26,11 +26,11 @@ void nofFisher::serialize(SerializedGameData& sgd) const
     nofFarmhand::serialize(sgd);
 
     sgd.pushEnum<uint8_t>(fishing_dir);
-    sgd.PushBool(successful);
+    sgd.pushBool(successful);
 }
 
 nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFarmhand(sgd, obj_id), fishing_dir(sgd.pop<Direction>()), successful(sgd.PopBool())
+    : nofFarmhand(sgd, obj_id), fishing_dir(sgd.pop<Direction>()), successful(sgd.popBool())
 {}
 
 /// Malt den Arbeiter beim Arbeiten

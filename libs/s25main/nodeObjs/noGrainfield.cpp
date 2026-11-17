@@ -40,14 +40,14 @@ void noGrainfield::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(type);
+    sgd.pushUnsignedChar(type);
     sgd.pushEnum<uint8_t>(state);
-    sgd.PushUnsignedChar(size);
+    sgd.pushUnsignedChar(size);
     sgd.pushEvent(event);
 }
 
 noGrainfield::noGrainfield(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), state(sgd.pop<State>()), size(sgd.PopUnsignedChar()),
+    : noCoordBase(sgd, obj_id), type(sgd.popUnsignedChar()), state(sgd.pop<State>()), size(sgd.popUnsignedChar()),
       event(sgd.popEvent())
 {}
 

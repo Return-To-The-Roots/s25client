@@ -223,12 +223,12 @@ void LuaInterfaceGame::registerClasses(kaguya::State& state)
                                  // Old name
                                  .addFunction("GetPlayerCount", &LuaInterfaceGame::getNumPlayers));
     state["RTTR_Serializer"].setClass(kaguya::UserdataMetatable<Serializer>()
-                                        .addFunction("PushInt", &Serializer::PushSignedInt)
-                                        .addFunction("PopInt", &Serializer::PopSignedInt)
-                                        .addFunction("PushBool", &Serializer::PushBool)
-                                        .addFunction("PopBool", &Serializer::PopBool)
-                                        .addFunction("PushString", &Serializer::PushString)
-                                        .addFunction("PopString", &Serializer::PopString));
+                                        .addFunction("PushInt", &Serializer::pushSignedInt)
+                                        .addFunction("PopInt", &Serializer::popSignedInt)
+                                        .addFunction("PushBool", &Serializer::pushBool)
+                                        .addFunction("PopBool", &Serializer::popBool)
+                                        .addFunction("PushString", &Serializer::pushString)
+                                        .addFunction("PopString", &Serializer::popString));
 }
 
 bool LuaInterfaceGame::serialize(Serializer& luaSaveState)
@@ -241,7 +241,7 @@ bool LuaInterfaceGame::serialize(Serializer& luaSaveState)
             return true;
         else
         {
-            luaSaveState.Clear();
+            luaSaveState.clear();
             return false;
         }
     } else

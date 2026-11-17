@@ -15,14 +15,14 @@ JoinPlayerInfo::JoinPlayerInfo(const BasePlayerInfo& baseInfo) : PlayerInfo(base
 JoinPlayerInfo::JoinPlayerInfo(const PlayerInfo& playerInfo) : PlayerInfo(playerInfo), originName(name) {}
 
 JoinPlayerInfo::JoinPlayerInfo(Serializer& ser)
-    : PlayerInfo(ser, BasePlayerInfo::getCurrentVersion()), originName(ser.PopLongString()), isReady(ser.PopBool())
+    : PlayerInfo(ser, BasePlayerInfo::getCurrentVersion()), originName(ser.popLongString()), isReady(ser.popBool())
 {}
 
 void JoinPlayerInfo::serialize(Serializer& ser) const
 {
     PlayerInfo::serialize(ser);
-    ser.PushLongString(originName);
-    ser.PushBool(isReady);
+    ser.pushLongString(originName);
+    ser.pushBool(isReady);
 }
 
 void JoinPlayerInfo::fixSwappedSaveSlot(JoinPlayerInfo& other)

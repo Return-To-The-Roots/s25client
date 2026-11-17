@@ -33,9 +33,9 @@ void nofGeologist::serialize(SerializedGameData& sgd) const
 {
     nofFlagWorker::serialize(sgd);
 
-    sgd.PushUnsignedShort(signs);
+    sgd.pushUnsignedShort(signs);
 
-    sgd.PushUnsignedInt(available_nodes.size());
+    sgd.pushUnsignedInt(available_nodes.size());
     for(const auto& available_node : available_nodes)
     {
         helpers::pushPoint(sgd, available_node);
@@ -46,9 +46,9 @@ void nofGeologist::serialize(SerializedGameData& sgd) const
 }
 
 nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFlagWorker(sgd, obj_id), signs(sgd.PopUnsignedShort())
+    : nofFlagWorker(sgd, obj_id), signs(sgd.popUnsignedShort())
 {
-    unsigned available_nodes_count = sgd.PopUnsignedInt();
+    unsigned available_nodes_count = sgd.popUnsignedInt();
     for(unsigned i = 0; i < available_nodes_count; ++i)
     {
         MapPoint p = sgd.popMapPoint();
@@ -62,7 +62,7 @@ nofGeologist::nofGeologist(SerializedGameData& sgd, const unsigned obj_id)
         for(const auto res : helpers::enumRange<ResourceType>())
         {
             if(res != ResourceType::Fish && res != ResourceType::Water)
-                resAlreadyFound[res] = sgd.PopBool();
+                resAlreadyFound[res] = sgd.popBool();
         }
     } else
         helpers::popContainer(sgd, resAlreadyFound);

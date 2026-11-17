@@ -33,7 +33,7 @@ void nofSoldier::serialize(SerializedGameData& sgd) const
     if(fs != FigureState::Wander && fs != FigureState::GoHome)
         sgd.pushObject(homeBld);
 
-    sgd.PushUnsignedChar(hitpoints);
+    sgd.pushUnsignedChar(hitpoints);
 }
 
 nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigure(sgd, obj_id)
@@ -45,7 +45,7 @@ nofSoldier::nofSoldier(SerializedGameData& sgd, const unsigned obj_id) : noFigur
     else
         homeBld = nullptr;
 
-    hitpoints = sgd.PopUnsignedChar();
+    hitpoints = sgd.popUnsignedChar();
 }
 
 void nofSoldier::drawSoldierWaiting(DrawPoint drawPt)

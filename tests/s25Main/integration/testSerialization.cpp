@@ -169,10 +169,10 @@ void pushSerializedGGSHeader(Serializer& ser)
     helpers::pushEnum<uint8_t>(ser, GameSpeed::Normal);
     helpers::pushEnum<uint8_t>(ser, GameObjective::None);
     helpers::pushEnum<uint8_t>(ser, StartWares::Normal);
-    ser.PushBool(false);
+    ser.pushBool(false);
     helpers::pushEnum<uint8_t>(ser, Exploration::FogOfWar);
-    ser.PushBool(true);
-    ser.PushBool(false);
+    ser.pushBool(true);
+    ser.pushBool(false);
 }
 } // namespace
 
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(SerializeGGS)
     }
     ::Serializer ser;
     ggs.serialize(ser);
-    ::Serializer loader(ser.GetData(), ser.GetLength());
+    ::Serializer loader(ser.getData(), ser.getLength());
     GlobalGameSettings ggsLoaded;
     ggsLoaded.deserialize(loader);
     BOOST_TEST(ggs.speed == ggsLoaded.speed);
@@ -220,11 +220,11 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeMigratesToPerMineBehavio
 {
     Serializer ser;
     pushSerializedGGSHeader(ser);
-    ser.PushUnsignedInt(1);
-    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
-    ser.PushUnsignedInt(1);
+    ser.pushUnsignedInt(1);
+    ser.pushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
+    ser.pushUnsignedInt(1);
 
-    Serializer loader(ser.GetData(), ser.GetLength());
+    Serializer loader(ser.getData(), ser.getLength());
     GlobalGameSettings ggsLoaded;
     ggsLoaded.deserialize(loader);
 
@@ -242,13 +242,13 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeAlsoMigratesLegacyGranit
     // must not let a disabled granite value suppress that: granite still becomes Inexhaustible here.
     Serializer ser;
     pushSerializedGGSHeader(ser);
-    ser.PushUnsignedInt(2);
-    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
-    ser.PushUnsignedInt(1);
-    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR));
-    ser.PushUnsignedInt(0);
+    ser.pushUnsignedInt(2);
+    ser.pushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
+    ser.pushUnsignedInt(1);
+    ser.pushUnsignedInt(static_cast<unsigned>(AddonId::GRANITEMINE_RESOURCE_BEHAVIOR));
+    ser.pushUnsignedInt(0);
 
-    Serializer loader(ser.GetData(), ser.GetLength());
+    Serializer loader(ser.getData(), ser.getLength());
     GlobalGameSettings ggsLoaded;
     ggsLoaded.deserialize(loader);
 
@@ -261,13 +261,13 @@ BOOST_AUTO_TEST_CASE(LegacyInexhaustibleMinesDeserializeDoesNotOverridePerMineBe
 {
     Serializer ser;
     pushSerializedGGSHeader(ser);
-    ser.PushUnsignedInt(2);
-    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
-    ser.PushUnsignedInt(1);
-    ser.PushUnsignedInt(static_cast<unsigned>(AddonId::COALMINE_RESOURCE_BEHAVIOR));
-    ser.PushUnsignedInt(static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
+    ser.pushUnsignedInt(2);
+    ser.pushUnsignedInt(static_cast<unsigned>(AddonId::INEXHAUSTIBLE_MINES));
+    ser.pushUnsignedInt(1);
+    ser.pushUnsignedInt(static_cast<unsigned>(AddonId::COALMINE_RESOURCE_BEHAVIOR));
+    ser.pushUnsignedInt(static_cast<unsigned>(MineResourceBehavior::S4LikeExhaustion));
 
-    Serializer loader(ser.GetData(), ser.GetLength());
+    Serializer loader(ser.getData(), ser.getLength());
     GlobalGameSettings ggsLoaded;
     ggsLoaded.deserialize(loader);
 
@@ -378,7 +378,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
             BOOST_TEST(loadSave.ggs.speed == ggs.speed);
         }
         if(what != SaveGameDataToLoad::All)
-            BOOST_TEST(loadSave.sgd.GetLength() == 0u);
+            BOOST_TEST(loadSave.sgd.getLength() == 0u);
         else
         {
             std::vector<PlayerInfo> players;
@@ -440,8 +440,8 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
 
             SerializedGameData loadedSgd;
             loadedSgd.makeSnapshot(game);
-            BOOST_REQUIRE_EQUAL_COLLECTIONS(loadedSgd.GetData(), loadedSgd.GetData() + loadedSgd.GetLength(),
-                                            save.sgd.GetData(), save.sgd.GetData() + save.sgd.GetLength());
+            BOOST_REQUIRE_EQUAL_COLLECTIONS(loadedSgd.getData(), loadedSgd.getData() + loadedSgd.getLength(),
+                                            save.sgd.getData(), save.sgd.getData() + save.sgd.getLength());
         }
     }
 }
@@ -721,10 +721,10 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
         BOOST_TEST(newMap.title == map.title);
         BOOST_TEST(newMap.filepath == map.filepath);
 
-        BOOST_REQUIRE_EQUAL_COLLECTIONS(newMap.savegame->sgd.GetData(),                                    //-V807
-                                        newMap.savegame->sgd.GetData() + newMap.savegame->sgd.GetLength(), //-V807
-                                        map.savegame->sgd.GetData(),
-                                        map.savegame->sgd.GetData() + map.savegame->sgd.GetLength());
+        BOOST_REQUIRE_EQUAL_COLLECTIONS(newMap.savegame->sgd.getData(),                                    //-V807
+                                        newMap.savegame->sgd.getData() + newMap.savegame->sgd.getLength(), //-V807
+                                        map.savegame->sgd.getData(),
+                                        map.savegame->sgd.getData() + map.savegame->sgd.getLength());
 
         checkReplayCmds(loadReplay, cmds);
     }
@@ -763,8 +763,8 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
     // serialize again and compare data
     SerializedGameData sgd2;
     sgd2.makeSnapshot(*game);
-    BOOST_CHECK_EQUAL_COLLECTIONS(sgd.GetData(), sgd.GetData() + sgd.GetLength(), sgd2.GetData(),
-                                  sgd2.GetData() + sgd2.GetLength());
+    BOOST_CHECK_EQUAL_COLLECTIONS(sgd.getData(), sgd.getData() + sgd.getLength(), sgd2.getData(),
+                                  sgd2.getData() + sgd2.getLength());
 }
 
 BOOST_AUTO_TEST_CASE(SerializeGameMessageChat)

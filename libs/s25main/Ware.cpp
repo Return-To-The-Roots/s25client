@@ -62,7 +62,7 @@ static RoadPathDirection popRoadPathDirection(SerializedGameData& sgd)
 {
     if(sgd.getGameDataVersion() < 5)
     {
-        const auto iDir = sgd.PopUnsignedChar();
+        const auto iDir = sgd.popUnsignedChar();
         if(iDir == 100)
             return RoadPathDirection::Ship;
         if(iDir == 0xFF)

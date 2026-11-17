@@ -134,19 +134,19 @@ bool SavedFile::readAllHeaderData(BinaryFile& file)
 void SavedFile::writePlayerData(BinaryFile& file)
 {
     Serializer ser;
-    ser.PushUnsignedChar(players.size());
+    ser.pushUnsignedChar(players.size());
     for(const auto& player : players)
         player.serialize(ser, true);
 
-    ser.WriteToFile(file);
+    ser.writeToFile(file);
 }
 
 void SavedFile::readPlayerData(BinaryFile& file)
 {
     clearPlayers();
     Serializer ser;
-    ser.ReadFromFile(file);
-    const unsigned playerCt = ser.PopUnsignedChar();
+    ser.readFromFile(file);
+    const unsigned playerCt = ser.popUnsignedChar();
     if(playerCt > MAX_PLAYERS)
     {
         throw std::length_error(
@@ -173,7 +173,7 @@ void SavedFile::writeGGS(BinaryFile& file) const
 {
     Serializer ser;
     ggs.serialize(ser);
-    ser.WriteToFile(file);
+    ser.writeToFile(file);
 }
 
 /**
@@ -182,7 +182,7 @@ void SavedFile::writeGGS(BinaryFile& file) const
 void SavedFile::readGGS(BinaryFile& file)
 {
     Serializer ser;
-    ser.ReadFromFile(file);
+    ser.readFromFile(file);
     ggs.deserialize(ser);
 }
 

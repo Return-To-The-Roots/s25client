@@ -31,25 +31,25 @@
 #include <limits>
 
 nobHarborBuilding::ExpeditionInfo::ExpeditionInfo(SerializedGameData& sgd)
-    : boards(sgd.PopUnsignedInt()), stones(sgd.PopUnsignedInt()), active(sgd.PopBool()), builder(sgd.PopBool())
+    : boards(sgd.popUnsignedInt()), stones(sgd.popUnsignedInt()), active(sgd.popBool()), builder(sgd.popBool())
 {}
 
 void nobHarborBuilding::ExpeditionInfo::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushUnsignedInt(boards);
-    sgd.PushUnsignedInt(stones);
-    sgd.PushBool(active);
-    sgd.PushBool(builder);
+    sgd.pushUnsignedInt(boards);
+    sgd.pushUnsignedInt(stones);
+    sgd.pushBool(active);
+    sgd.pushBool(builder);
 }
 
 nobHarborBuilding::ExplorationExpeditionInfo::ExplorationExpeditionInfo(SerializedGameData& sgd)
-    : active(sgd.PopBool()), scouts(sgd.PopUnsignedInt())
+    : active(sgd.popBool()), scouts(sgd.popUnsignedInt())
 {}
 
 void nobHarborBuilding::ExplorationExpeditionInfo::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushBool(active);
-    sgd.PushUnsignedInt(scouts);
+    sgd.pushBool(active);
+    sgd.pushUnsignedInt(scouts);
 }
 
 nobHarborBuilding::nobHarborBuilding(const MapPoint pos, const unsigned char player, const Nation nation)
@@ -151,13 +151,13 @@ void nobHarborBuilding::serialize(SerializedGameData& sgd) const
     sgd.pushEvent(orderware_ev);
     helpers::pushContainer(sgd, seaIds);
     sgd.pushObjectContainer(wares_for_ships, true);
-    sgd.PushUnsignedInt(figures_for_ships.size());
+    sgd.pushUnsignedInt(figures_for_ships.size());
     for(const auto& figures_for_ship : figures_for_ships)
     {
         helpers::pushPoint(sgd, figures_for_ship.dest);
         sgd.pushObject(figures_for_ship.fig);
     }
-    sgd.PushUnsignedInt(soldiers_for_ships.size());
+    sgd.pushUnsignedInt(soldiers_for_ships.size());
     for(const auto& soldiers_for_ship : soldiers_for_ships)
     {
         helpers::pushPoint(sgd, soldiers_for_ship.dest);
@@ -175,7 +175,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
 
     sgd.popObjectContainer(wares_for_ships, GO_Type::Ware);
 
-    unsigned count = sgd.PopUnsignedInt();
+    unsigned count = sgd.popUnsignedInt();
     for(unsigned i = 0; i < count; ++i)
     {
         const MapPoint dest = sgd.popMapPoint();
@@ -183,7 +183,7 @@ nobHarborBuilding::nobHarborBuilding(SerializedGameData& sgd, const unsigned obj
         figures_for_ships.emplace_back(FigureForShip{std::unique_ptr<noFigure>(fig), dest});
     }
 
-    count = sgd.PopUnsignedInt();
+    count = sgd.popUnsignedInt();
     for(unsigned i = 0; i < count; ++i)
     {
         const MapPoint dest = sgd.popMapPoint();

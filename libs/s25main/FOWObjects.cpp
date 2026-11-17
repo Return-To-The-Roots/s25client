@@ -52,16 +52,16 @@ fowBuildingSite::fowBuildingSite(const bool planing, const BuildingType type, co
 {}
 
 fowBuildingSite::fowBuildingSite(SerializedGameData& sgd)
-    : planing(sgd.PopBool()), type(sgd.pop<BuildingType>()), nation(sgd.pop<Nation>()),
-      build_progress(sgd.PopUnsignedChar())
+    : planing(sgd.popBool()), type(sgd.pop<BuildingType>()), nation(sgd.pop<Nation>()),
+      build_progress(sgd.popUnsignedChar())
 {}
 
 void fowBuildingSite::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushBool(planing);
+    sgd.pushBool(planing);
     sgd.pushEnum<uint8_t>(type);
     sgd.pushEnum<uint8_t>(nation);
-    sgd.PushUnsignedChar(build_progress);
+    sgd.pushUnsignedChar(build_progress);
 }
 
 void fowBuildingSite::draw(DrawPoint drawPt) const
@@ -111,12 +111,12 @@ fowFlag::fowFlag(const unsigned playerColor, const Nation nation, const FlagType
 {}
 
 fowFlag::fowFlag(SerializedGameData& sgd)
-    : color(sgd.PopUnsignedInt()), nation(sgd.pop<Nation>()), flag_type(sgd.pop<FlagType>())
+    : color(sgd.popUnsignedInt()), nation(sgd.pop<Nation>()), flag_type(sgd.pop<FlagType>())
 {}
 
 void fowFlag::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushUnsignedInt(color);
+    sgd.pushUnsignedInt(color);
     sgd.pushEnum<uint8_t>(nation);
     sgd.pushEnum<uint8_t>(flag_type);
 }
@@ -131,12 +131,12 @@ void fowFlag::draw(DrawPoint drawPt) const
 
 fowTree::fowTree(const unsigned char type, const unsigned char size) : type(type), size(size) {}
 
-fowTree::fowTree(SerializedGameData& sgd) : type(sgd.PopUnsignedChar()), size(sgd.PopUnsignedChar()) {}
+fowTree::fowTree(SerializedGameData& sgd) : type(sgd.popUnsignedChar()), size(sgd.popUnsignedChar()) {}
 
 void fowTree::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushUnsignedChar(type);
-    sgd.PushUnsignedChar(size);
+    sgd.pushUnsignedChar(type);
+    sgd.pushUnsignedChar(size);
 }
 
 void fowTree::draw(DrawPoint drawPt) const
@@ -158,12 +158,12 @@ void fowTree::draw(DrawPoint drawPt) const
 
 fowGranite::fowGranite(const GraniteType type, const unsigned char state) : type(type), state(state) {}
 
-fowGranite::fowGranite(SerializedGameData& sgd) : type(sgd.pop<GraniteType>()), state(sgd.PopUnsignedChar()) {}
+fowGranite::fowGranite(SerializedGameData& sgd) : type(sgd.pop<GraniteType>()), state(sgd.popUnsignedChar()) {}
 
 void fowGranite::serialize(SerializedGameData& sgd) const
 {
     sgd.pushEnum<uint8_t>(type);
-    sgd.PushUnsignedChar(state);
+    sgd.pushUnsignedChar(state);
 }
 
 void fowGranite::draw(DrawPoint drawPt) const

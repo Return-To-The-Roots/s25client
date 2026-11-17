@@ -57,17 +57,17 @@ void nofAttacker::serialize(SerializedGameData& sgd) const
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {
         sgd.pushObject(attacked_goal);
-        sgd.PushBool(mayBeHunted);
+        sgd.pushBool(mayBeHunted);
         helpers::pushContainer(sgd, canPlayerSendAggDefender);
         sgd.pushObject(huntingDefender, true);
-        sgd.PushUnsignedShort(radius);
+        sgd.pushUnsignedShort(radius);
 
         if(state == SoldierState::AttackingWaitingForDefender)
             sgd.pushEvent(blocking_event);
 
         helpers::pushPoint(sgd, harborPos);
         helpers::pushPoint(sgd, shipPos);
-        sgd.PushUnsignedInt(ship_obj_id);
+        sgd.pushUnsignedInt(ship_obj_id);
     } else
     {
         RTTR_Assert(!attacked_goal);
@@ -81,12 +81,12 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
     if(state != SoldierState::WalkingHome && state != SoldierState::FigureWork)
     {
         attacked_goal = sgd.popObject<nobBaseMilitary>();
-        mayBeHunted = sgd.PopBool();
+        mayBeHunted = sgd.popBool();
         sgd.popContainer(canPlayerSendAggDefender);
         RTTR_Assert(canPlayerSendAggDefender.size() == world->getNumPlayers());
         huntingDefender = sgd.popObject<nofAggressiveDefender>(GO_Type::NofAggressivedefender);
 
-        radius = sgd.PopUnsignedShort();
+        radius = sgd.popUnsignedShort();
 
         if(state == SoldierState::AttackingWaitingForDefender)
             blocking_event = sgd.popEvent();
@@ -95,7 +95,7 @@ nofAttacker::nofAttacker(SerializedGameData& sgd, const unsigned obj_id) : nofAc
 
         harborPos = sgd.popMapPoint();
         shipPos = sgd.popMapPoint();
-        ship_obj_id = sgd.PopUnsignedInt();
+        ship_obj_id = sgd.popUnsignedInt();
     } else
     {
         attacked_goal = nullptr;

@@ -80,16 +80,16 @@ nofCarrier::nofCarrier(const CarrierType ct, const MapPoint pos, unsigned char p
 {}
 
 nofCarrier::nofCarrier(SerializedGameData& sgd, unsigned obj_id)
-    : noFigure(sgd, obj_id), ct(sgd.pop<CarrierType>()), state(sgd.pop<CarrierState>()), fat(sgd.PopBool()),
+    : noFigure(sgd, obj_id), ct(sgd.pop<CarrierType>()), state(sgd.pop<CarrierState>()), fat(sgd.popBool()),
       workplace(sgd.popObject<RoadSegment>(GO_Type::Roadsegment)), carried_ware(sgd.popObject<Ware>(GO_Type::Ware)),
-      productivity_ev(sgd.popEvent()), productivity(sgd.PopUnsignedInt()), worked_gf(sgd.PopUnsignedInt()),
-      since_working_gf(sgd.PopUnsignedInt()), next_animation(0)
+      productivity_ev(sgd.popEvent()), productivity(sgd.popUnsignedInt()), worked_gf(sgd.popUnsignedInt()),
+      since_working_gf(sgd.popUnsignedInt()), next_animation(0)
 {
     if(state == CarrierState::BoatcarrierWanderOnWater)
     {
         if(sgd.getGameDataVersion() < 7)
         {
-            shore_path.resize(sgd.PopUnsignedInt());
+            shore_path.resize(sgd.popUnsignedInt());
             helpers::popContainer(sgd, shore_path, true);
         } else
             helpers::popContainer(sgd, shore_path);
@@ -102,13 +102,13 @@ void nofCarrier::serialize(SerializedGameData& sgd) const
 
     sgd.pushEnum<uint8_t>(ct);
     sgd.pushEnum<uint8_t>(state);
-    sgd.PushBool(fat);
+    sgd.pushBool(fat);
     sgd.pushObject(workplace, true);
     sgd.pushObject(carried_ware, true);
     sgd.pushEvent(productivity_ev);
-    sgd.PushUnsignedInt(productivity);
-    sgd.PushUnsignedInt(worked_gf);
-    sgd.PushUnsignedInt(since_working_gf);
+    sgd.pushUnsignedInt(productivity);
+    sgd.pushUnsignedInt(worked_gf);
+    sgd.pushUnsignedInt(since_working_gf);
 
     if(state == CarrierState::BoatcarrierWanderOnWater)
     {

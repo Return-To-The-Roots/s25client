@@ -21,13 +21,13 @@
 const std::array<DrawPoint, 6> STONE_STARTS = {{{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}}};
 
 nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd)
-    : pos(sgd.popMapPoint()), distance(sgd.PopUnsignedInt())
+    : pos(sgd.popMapPoint()), distance(sgd.popUnsignedInt())
 {}
 
 void nofCatapultMan::PossibleTarget::serialize(SerializedGameData& sgd) const
 {
     helpers::pushPoint(sgd, pos);
-    sgd.PushUnsignedInt(distance);
+    sgd.pushUnsignedInt(distance);
 }
 
 nofCatapultMan::nofCatapultMan(const MapPoint pos, const unsigned char player, nobUsual* workplace)
@@ -35,14 +35,14 @@ nofCatapultMan::nofCatapultMan(const MapPoint pos, const unsigned char player, n
 {}
 
 nofCatapultMan::nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id)
-    : nofBuildingWorker(sgd, obj_id), wheel_steps(sgd.PopSignedInt()), target(sgd)
+    : nofBuildingWorker(sgd, obj_id), wheel_steps(sgd.popSignedInt()), target(sgd)
 {}
 
 void nofCatapultMan::serialize(SerializedGameData& sgd) const
 {
     nofBuildingWorker::serialize(sgd);
 
-    sgd.PushSignedInt(wheel_steps);
+    sgd.pushSignedInt(wheel_steps);
     target.PossibleTarget::serialize(sgd);
 }
 

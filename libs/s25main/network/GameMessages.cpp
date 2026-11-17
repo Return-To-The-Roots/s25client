@@ -21,7 +21,7 @@ GameMessage_Player_List::~GameMessage_Player_List() = default;
 void GameMessage_Player_List::serialize(Serializer& ser) const
 {
     GameMessage::serialize(ser);
-    ser.PushUnsignedInt(playerInfos.size());
+    ser.pushUnsignedInt(playerInfos.size());
     for(const auto& playerInfo : playerInfos)
         playerInfo.serialize(ser);
 }
@@ -29,7 +29,7 @@ void GameMessage_Player_List::serialize(Serializer& ser) const
 void GameMessage_Player_List::deserialize(Serializer& ser)
 {
     GameMessage::deserialize(ser);
-    unsigned numPlayers = ser.PopUnsignedInt();
+    unsigned numPlayers = ser.popUnsignedInt();
     playerInfos.clear();
     playerInfos.reserve(numPlayers);
     for(unsigned i = 0; i < numPlayers; ++i)
@@ -65,12 +65,12 @@ void GameMessage_Server_TypeOK::serialize(Serializer& ser) const
 {
     GameMessage::serialize(ser);
     helpers::pushEnum<uint32_t>(ser, err_code);
-    ser.PushString(version);
+    ser.pushString(version);
 }
 
 void GameMessage_Server_TypeOK::deserialize(Serializer& ser)
 {
     GameMessage::deserialize(ser);
     err_code = helpers::popEnum<StatusCode>(ser);
-    version = ser.PopString();
+    version = ser.popString();
 }

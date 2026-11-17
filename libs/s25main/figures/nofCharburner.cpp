@@ -21,14 +21,14 @@ nofCharburner::nofCharburner(const MapPoint pos, const unsigned char player, nob
 {}
 
 nofCharburner::nofCharburner(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFarmhand(sgd, obj_id), harvest(sgd.PopBool()), wt(sgd.pop<WareType>())
+    : nofFarmhand(sgd, obj_id), harvest(sgd.popBool()), wt(sgd.pop<WareType>())
 {}
 
 void nofCharburner::serialize(SerializedGameData& sgd) const
 {
     nofFarmhand::serialize(sgd);
 
-    sgd.PushBool(harvest);
+    sgd.pushBool(harvest);
     sgd.pushEnum<uint8_t>(wt);
 }
 

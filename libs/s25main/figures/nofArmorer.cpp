@@ -25,11 +25,11 @@ void nofArmorer::serialize(SerializedGameData& sgd) const
 {
     nofWorkman::serialize(sgd);
 
-    sgd.PushBool(sword_shield);
+    sgd.pushBool(sword_shield);
 }
 
 nofArmorer::nofArmorer(SerializedGameData& sgd, const unsigned obj_id)
-    : nofWorkman(sgd, obj_id), sword_shield(sgd.PopBool())
+    : nofWorkman(sgd, obj_id), sword_shield(sgd.popBool())
 {}
 
 void nofArmorer::drawWorking(DrawPoint drawPt)

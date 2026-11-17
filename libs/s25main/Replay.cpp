@@ -338,9 +338,9 @@ void Replay::addGameCommand(unsigned gf, uint8_t player, const PlayerGameCommand
 
     file_.WriteUnsignedChar(rttr::enumCast(CommandType::Game));
     Serializer ser;
-    ser.PushUnsignedChar(player);
+    ser.pushUnsignedChar(player);
     cmds.serialize(ser);
-    ser.WriteToFile(file_);
+    ser.writeToFile(file_);
 
     // Prevent loss in case of crash
     file_.Flush();
@@ -392,7 +392,7 @@ Replay::ChatCommand::ChatCommand(BinaryFile& file)
 Replay::GameCommand::GameCommand(BinaryFile& file, const unsigned version)
 {
     gc::Deserializer ser{version};
-    ser.ReadFromFile(file);
-    player = ser.PopUnsignedChar();
+    ser.readFromFile(file);
+    player = ser.popUnsignedChar();
     cmds.deserialize(ser);
 }

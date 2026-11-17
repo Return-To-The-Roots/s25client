@@ -68,11 +68,11 @@ Message* GameMessage::createGame(unsigned short id)
 void GameMessageWithPlayer::serialize(Serializer& ser) const
 {
     Message::serialize(ser);
-    ser.PushUnsignedChar(player);
+    ser.pushUnsignedChar(player);
 }
 
 void GameMessageWithPlayer::deserialize(Serializer& ser)
 {
     Message::deserialize(ser);
-    player = ser.PopUnsignedChar();
+    player = ser.popUnsignedChar();
 }

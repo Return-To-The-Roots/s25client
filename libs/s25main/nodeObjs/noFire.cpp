@@ -43,12 +43,12 @@ void noFire::serialize(SerializedGameData& sgd) const
 {
     noCoordBase::serialize(sgd);
 
-    sgd.PushBool(isBig);
+    sgd.pushBool(isBig);
     sgd.pushEvent(dead_event);
 }
 
 noFire::noFire(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), isBig(sgd.PopBool()), dead_event(sgd.popEvent()), was_sounding(false), last_sound(0),
+    : noCoordBase(sgd, obj_id), isBig(sgd.popBool()), dead_event(sgd.popEvent()), was_sounding(false), last_sound(0),
       next_interval(0)
 {}
 
