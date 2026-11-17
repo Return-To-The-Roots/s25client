@@ -19,27 +19,27 @@ public:
     ~ctrlChat() override;
 
     /// Größe ändern
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
     /// Fügt eine Chatnachricht hinzu.
-    void AddMessage(const std::string& time_string, const std::string& player, unsigned player_color,
+    void addMessage(const std::string& time_string, const std::string& player, unsigned player_color,
                     const std::string& msg, unsigned msg_color);
     /// Setzt Farbe der Zeitangaben.
-    void SetTimeColor(unsigned color) { time_color = color; }
+    void setTimeColor(unsigned color) { time_color = color; }
 
-    bool Msg_MouseMove(const MouseCoords& mc) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
 
     /// Create a (almost) unique color for the given name
-    static unsigned CalcUniqueColor(const std::string& name);
+    static unsigned calcUniqueColor(const std::string& name);
 
 protected:
     /// Zeichnet das Chat-Control.
-    void Draw_() override;
+    void drawImpl() override;
     /// Converts an unwrapped line into a wrapped one and appends it
-    void WrapLine(unsigned short i);
+    void wrapLine(unsigned short i);
 
 private:
     // Struktur für eine Chatzeile.

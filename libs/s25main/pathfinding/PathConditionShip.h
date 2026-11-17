@@ -15,15 +15,15 @@ struct PathConditionShip
     PathConditionShip(const World& world) : world(world) {}
 
     // Called for every node but the start & goal and should return true, if this point is usable
-    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const { return world.IsSeaPoint(pt); }
+    BOOST_FORCEINLINE bool isNodeOk(const MapPoint& pt) const { return world.isSeaPoint(pt); }
 
     // Called for every node
-    BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
+    BOOST_FORCEINLINE bool isEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // We must have shippable water on both sides
-        const auto terrains = world.GetTerrain(fromPt, dir);
-        const TerrainDesc& tLeft = world.GetDescription().get(terrains.left);
-        const TerrainDesc& tRight = world.GetDescription().get(terrains.right);
-        return tLeft.Is(ETerrain::Shippable) && tRight.Is(ETerrain::Shippable);
+        const auto terrains = world.getTerrain(fromPt, dir);
+        const TerrainDesc& tLeft = world.getDescription().get(terrains.left);
+        const TerrainDesc& tRight = world.getDescription().get(terrains.right);
+        return tLeft.is(ETerrain::Shippable) && tRight.is(ETerrain::Shippable);
     }
 };

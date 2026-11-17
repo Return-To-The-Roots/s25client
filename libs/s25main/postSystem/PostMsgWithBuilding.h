@@ -20,9 +20,9 @@ public:
     PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, const noBaseBuilding& bld,
                         SoundEffect soundEffect = SoundEffect::Pidgeon);
     PostMsgWithBuilding(unsigned sendFrame, const std::string& text, PostCategory cat, BuildingType bld, Nation nation,
-                        const MapPoint& pos = MapPoint::Invalid());
+                        const MapPoint& pos = MapPoint::invalid());
 
-    ITexture* GetImage_() const override;
+    ITexture* getImage() const override;
 
 private:
     const BuildingType bldType;

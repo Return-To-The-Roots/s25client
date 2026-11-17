@@ -77,30 +77,30 @@ public:
     iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt, const DrawPoint& mousePos,
              Params params, bool military_buildings);
 
-    void Close() override;
+    void close() override;
 
     /// Gibt zurück, auf welchen Punkt es sich bezieht
-    const MapPoint& GetSelectedPt() const { return selectedPt; }
+    const MapPoint& getSelectedPt() const { return selectedPt; }
 
 private:
-    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
-    void Msg_TabChange(unsigned ctrl_id, unsigned short tab_id) override;
-    void Msg_Group_TabChange(unsigned group_id, unsigned ctrl_id, unsigned short tab_id) override;
-    void Msg_PaintAfter() override;
+    void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void msgTabChange(unsigned ctrl_id, unsigned short tabId) override;
+    void msgGroupTabChange(unsigned group_id, unsigned ctrl_id, unsigned short tabId) override;
+    void msgPaintAfter() override;
 
-    inline void Msg_ButtonClick_TabBuild(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabCutRoad(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabFlag(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabAttack(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabSeaAttack(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabSetFlag(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabWatch(unsigned ctrl_id);
-    inline void Msg_ButtonClick_TabCheat(unsigned ctrl_id);
+    inline void msgButtonClickTabBuild(unsigned ctrl_id);
+    inline void msgButtonClickTabCutRoad(unsigned ctrl_id);
+    inline void msgButtonClickTabFlag(unsigned ctrl_id);
+    inline void msgButtonClickTabAttack(unsigned ctrl_id);
+    inline void msgButtonClickTabSeaAttack(unsigned ctrl_id);
+    inline void msgButtonClickTabSetFlag(unsigned ctrl_id);
+    inline void msgButtonClickTabWatch(unsigned ctrl_id);
+    inline void msgButtonClickTabCheat(unsigned ctrl_id);
 
-    void DisableMousePosResetOnClose();
+    void disableMousePosResetOnClose();
 
     /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
-    void AddAttackControls(ctrlGroup* group, unsigned attackers_count);
-    void AddUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);
-    bool DoUpgradeRoad();
+    void addAttackControls(ctrlGroup* group, unsigned attackersCount);
+    void addUpgradeRoad(ctrlGroup* group, unsigned& x, unsigned& width);
+    bool doUpgradeRoad();
 };

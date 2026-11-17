@@ -17,10 +17,10 @@ nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned c
     // Lagerhaus abgerissen wurde oder ausgelagert wurde etc., dann auch den nicht als Flag-Worker registrieren
     if(goal)
     {
-        if(goal->GetGOT() == GO_Type::Flag)
+        if(goal->getGOT() == GO_Type::Flag)
         {
             this->flag = static_cast<noFlag*>(goal);
-            world->GetPlayer(player).RegisterFlagWorker(this);
+            world->getPlayer(player).registerFlagWorker(this);
         } else
             this->flag = nullptr;
     } else
@@ -28,78 +28,78 @@ nofFlagWorker::nofFlagWorker(const Job job, const MapPoint pos, const unsigned c
 }
 
 nofFlagWorker::nofFlagWorker(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), flag(sgd.PopObject<noFlag>(GO_Type::Flag)), state(sgd.Pop<State>())
+    : noFigure(sgd, obj_id), flag(sgd.popObject<noFlag>(GO_Type::Flag)), state(sgd.pop<State>())
 {}
 
-void nofFlagWorker::Serialize(SerializedGameData& sgd) const
+void nofFlagWorker::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
-    sgd.PushObject(flag, true);
-    sgd.PushEnum<uint8_t>(state);
+    sgd.pushObject(flag, true);
+    sgd.pushEnum<uint8_t>(state);
 }
 
-void nofFlagWorker::Destroy()
+void nofFlagWorker::destroy()
 {
     RTTR_Assert(!flag);
-    RTTR_Assert(!world->GetPlayer(player).IsFlagWorker(this));
-    noFigure::Destroy();
+    RTTR_Assert(!world->getPlayer(player).isFlagWorker(this));
+    noFigure::destroy();
 }
 
-void nofFlagWorker::AbrogateWorkplace()
+void nofFlagWorker::abrogateWorkplace()
 {
     if(flag)
     {
         /// uns entfernen, da wir wieder umdrehen müssen
-        world->GetPlayer(player).RemoveFlagWorker(this);
+        world->getPlayer(player).removeFlagWorker(this);
         flag = nullptr;
     } else
-        RTTR_Assert(!world->GetPlayer(player).IsFlagWorker(this));
+        RTTR_Assert(!world->getPlayer(player).isFlagWorker(this));
 }
 
 /// Geht wieder zurück zur Flagge und dann nach Hause
-void nofFlagWorker::GoToFlag()
+void nofFlagWorker::goToFlag()
 {
     // Zur Flagge zurücklaufen
 
     // Bin ich an der Fahne?
-    if(pos == flag->GetPos())
+    if(pos == flag->getPos())
     {
         // nach Hause gehen
-        nobBaseWarehouse* wh = world->GetPlayer(player).FindWarehouse(*flag, FW::AcceptsFigure(job_), true, false);
+        nobBaseWarehouse* wh = world->getPlayer(player).findWarehouse(*flag, FW::AcceptsFigure(job_), true, false);
         if(wh)
         {
-            GoHome(wh);
+            goHome(wh);
             // Vorgaukeln, dass wir ein Stück Straße bereits geschafft haben
-            // damit wir mit WalkToGoal weiter bis zum Ziel laufen können
+            // damit wir mit walkToGoal weiter bis zum Ziel laufen können
             cur_rs = &emulated_wanderroad;
             rs_pos = 0;
-            WalkToGoal();
+            walkToGoal();
         } else
         {
             // Weg führt nicht mehr zum Lagerhaus, dann rumirren
-            StartWandering();
-            Wander();
+            startWandering();
+            wander();
         }
 
         // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
         // "abmelden"
-        world->GetPlayer(player).RemoveFlagWorker(this);
+        world->getPlayer(player).removeFlagWorker(this);
         state = State::FigureWork;
         flag = nullptr;
     } else
     {
         // Weg suchen
-        const auto dir = world->FindHumanPath(pos, flag->GetPos(), 40);
+        const auto dir = world->findHumanPath(pos, flag->getPos(), 40);
 
         // Wenns keinen gibt, rumirren, ansonsten hinlaufen
         if(dir)
-            StartWalking(*dir);
+            startWalking(*dir);
         else
         {
-            Abrogate();
-            StartWandering();
-            Wander();
+            abrogate();
+            startWandering();
+            wander();
             state = State::FigureWork;
 
             flag = nullptr;

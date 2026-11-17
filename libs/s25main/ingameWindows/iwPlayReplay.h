@@ -12,13 +12,13 @@ class iwPlayReplay : public IngameWindow
 public:
     iwPlayReplay();
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
-    void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgTableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
 private:
-    void PopulateTable();
+    void populateTable();
 
     /// Startet das Replay (aktuell ausgewählter Eintrag)
-    void StartReplay();
+    void startReplay();
 };

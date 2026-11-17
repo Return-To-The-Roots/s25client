@@ -12,5 +12,6 @@ class glArchivItem_Sound_Midi : public libsiedler2::ArchivItem_Sound_Midi, publi
 public:
     RTTR_CLONEABLE(glArchivItem_Sound_Midi)
 protected:
-    SoundHandle Load() override;
+    using libsiedler2::ArchivItem_Sound_Midi::load;
+    SoundHandle load() override;
 };

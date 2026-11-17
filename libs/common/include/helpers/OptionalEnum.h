@@ -35,15 +35,15 @@ public:
     // Copy and conversion not required, copy/move are default and conversion between enums is not possible
 
     constexpr T operator*() const noexcept { return static_cast<T>(value_); }
-    constexpr explicit operator bool() const noexcept { return has_value(); }
-    constexpr bool has_value() const noexcept { return value_ != invalidValue; }
+    constexpr explicit operator bool() const noexcept { return hasValue(); }
+    constexpr bool hasValue() const noexcept { return value_ != invalidValue; }
     constexpr T value() const
     {
-        if(!has_value())
+        if(!hasValue())
             throw std::bad_optional_access();
         return **this;
     }
-    constexpr T value_or(T default_value) const { return bool(*this) ? **this : default_value; }
+    constexpr T valueOr(T default_value) const { return bool(*this) ? **this : default_value; }
 
     constexpr void reset() noexcept { value_ = invalidValue; }
 

@@ -20,15 +20,15 @@ public:
     GameDataLoader(WorldDescription& worldDesc);
     ~GameDataLoader() override;
 
-    bool Load();
+    bool load();
 
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
 private:
-    void Include(const std::string& filepath);
-    void AddLandscape(const kaguya::LuaTable& data);
-    void AddTerrainEdge(const kaguya::LuaTable& data);
-    void AddTerrain(const kaguya::LuaTable& data);
+    void include(const std::string& filepath);
+    void addLandscape(const kaguya::LuaTable& data);
+    void addTerrainEdge(const kaguya::LuaTable& data);
+    void addTerrain(const kaguya::LuaTable& data);
 
     WorldDescription& worldDesc_;
     boost::filesystem::path basePath_, curFile_;

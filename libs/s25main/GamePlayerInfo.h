@@ -11,12 +11,12 @@ struct GamePlayerInfo : public PlayerInfo
 {
     GamePlayerInfo(unsigned playerId, const PlayerInfo& playerInfo);
 
-    unsigned GetPlayerId() const { return id; }
-    bool IsDefeated() const { return isDefeated; }
+    unsigned getPlayerId() const { return id; }
+    bool isDefeated() const { return isDefeated_; }
 
 private:
     unsigned id;
 
 protected:
-    bool isDefeated;
+    bool isDefeated_;
 };

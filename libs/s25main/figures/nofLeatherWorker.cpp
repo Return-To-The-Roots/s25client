@@ -20,31 +20,31 @@ nofLeatherWorker::nofLeatherWorker(const MapPoint pos, const unsigned char playe
 
 nofLeatherWorker::nofLeatherWorker(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofLeatherWorker::DrawWorking(DrawPoint drawPt)
+void nofLeatherWorker::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{11, -41}, {21, -20}, {21, -17}, {24, -13}, {22, -14}}};
 
-    const unsigned now_id = GAMECLIENT.Interpolate(230, current_ev);
+    const unsigned nowId = GAMECLIENT.interpolate(230, current_ev);
 
-    LOADER.GetPlayerImage("leather_bobs", bobIndex[BobType::LeatherworksWorkWindowAnimation] + (now_id % 23))
-      ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE, world->GetPlayer(workplace->GetPlayer()).color);
+    LOADER.getPlayerImage("leather_bobs", bobIndex[BobType::LeatherworksWorkWindowAnimation] + (nowId % 23))
+      ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE, world->getPlayer(workplace->getPlayer()).color);
 
     // hammer sound
-    if(now_id % 23 == 3 || now_id % 23 == 7)
+    if(nowId % 23 == 3 || nowId % 23 == 7)
     {
-        world->GetSoundMgr().playNOSound(72, *this, now_id, 100);
+        world->getSoundMgr().playNOSound(72, *this, nowId, 100);
         was_sounding = true;
-    } else if(now_id % 23 == 9) // saw sound 1
+    } else if(nowId % 23 == 9) // saw sound 1
     {
-        world->GetSoundMgr().playNOSound(54, *this, now_id);
+        world->getSoundMgr().playNOSound(54, *this, nowId);
         was_sounding = true;
-    } else if(now_id % 23 == 17) // saw sound 2
+    } else if(nowId % 23 == 17) // saw sound 2
     {
-        world->GetSoundMgr().playNOSound(55, *this, now_id);
+        world->getSoundMgr().playNOSound(55, *this, nowId);
         was_sounding = true;
     }
 
-    last_id = now_id;
+    last_id = nowId;
 }
 
 #ifdef _MSC_VER
@@ -52,7 +52,7 @@ void nofLeatherWorker::DrawWorking(DrawPoint drawPt)
 #    pragma warning(disable : 4646) // function declared with [[noreturn]] has non-void return type
 #endif
 
-unsigned short nofLeatherWorker::GetCarryID() const
+unsigned short nofLeatherWorker::getCarryID() const
 {
     throw std::logic_error("Must not be called. Handled by custom DrawWalkingWithWare");
 }
@@ -61,12 +61,12 @@ unsigned short nofLeatherWorker::GetCarryID() const
 #    pragma warning(pop)
 #endif
 
-void nofLeatherWorker::DrawWalkingWithWare(DrawPoint drawPt)
+void nofLeatherWorker::drawWalkingWithWare(DrawPoint drawPt)
 {
-    DrawWalking(drawPt, "leather_bobs", bobIndex[BobType::LeatherworkerCarryingArmorInOut]);
+    drawWalking(drawPt, "leather_bobs", bobIndex[BobType::LeatherworkerCarryingArmorInOut]);
 }
 
-helpers::OptionalEnum<GoodType> nofLeatherWorker::ProduceWare()
+helpers::OptionalEnum<GoodType> nofLeatherWorker::produceWare()
 {
     return GoodType::Armor;
 }

@@ -8,9 +8,9 @@
 
 Minimap::Minimap(const MapExtent& mapSize) : mapSize(mapSize) {}
 
-void Minimap::CreateMapTexture()
+void Minimap::createMapTexture()
 {
-    map.DeleteTexture();
+    map.deleteTexture();
 
     /// Buffer für die Daten erzeugen
     libsiedler2::PixelBufferBGRA buffer(mapSize.x * 2, mapSize.y);
@@ -20,7 +20,7 @@ void Minimap::CreateMapTexture()
         // Die 2. Terraindreiecke durchgehen
         for(unsigned t = 0; t < 2; ++t)
         {
-            libsiedler2::ColorBGRA color(CalcPixelColor(pt, t));
+            libsiedler2::ColorBGRA color(calcPixelColor(pt, t));
             unsigned xCoord = (pt.x * 2 + t + (pt.y & 1)) % buffer.getWidth();
             buffer.set(xCoord, pt.y, color);
         }
@@ -30,37 +30,37 @@ void Minimap::CreateMapTexture()
     map.create(buffer);
 }
 
-void Minimap::Draw(const Rect& rect)
+void Minimap::draw(const Rect& rect)
 {
-    BeforeDrawing();
+    beforeDrawing();
     if(rect.getSize().x > 0u && rect.getSize().y > 0)
-        map.DrawFull(rect);
+        map.drawFull(rect);
 }
 
-void Minimap::BeforeDrawing() {}
+void Minimap::beforeDrawing() {}
 
 /**
  *  Variiert die übergebene Farbe zufällig in der Helligkeit
  */
-unsigned Minimap::VaryBrightness(const unsigned color, const int range)
+unsigned Minimap::varyBrightness(const unsigned color, const int range)
 {
     int add = 100 - rand() % (2 * range);
 
-    int red = GetRed(color) * add / 100;
+    int red = getRed(color) * add / 100;
     if(red < 0)
         red = 0;
     else if(red > 0xFF)
         red = 0xFF;
-    int green = GetGreen(color) * add / 100;
+    int green = getGreen(color) * add / 100;
     if(green < 0)
         green = 0;
     else if(green > 0xFF)
         green = 0xFF;
-    int blue = GetBlue(color) * add / 100;
+    int blue = getBlue(color) * add / 100;
     if(blue < 0)
         blue = 0;
     else if(blue > 0xFF)
         blue = 0xFF;
 
-    return MakeColor(GetAlpha(color), red, green, blue);
+    return makeColor(getAlpha(color), red, green, blue);
 }

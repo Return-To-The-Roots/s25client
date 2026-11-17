@@ -25,31 +25,31 @@ enum
 
 iwConnecting::iwConnecting(ServerType serverType, std::unique_ptr<ILobbyClient> lobbyClient)
     : IngameWindow(CGI_CONNECTING, IngameWindow::posCenter, Extent(300, 120), _("Connecting"),
-                   LOADER.GetImageN("resource", 41), true, CloseBehavior::Custom),
+                   LOADER.getImageN("resource", 41), true, CloseBehavior::Custom),
       serverType_(serverType), lobbyClient_(std::move(lobbyClient))
 {
-    WINDOWMANAGER.SetCursor(Cursor::Moon);
+    WINDOWMANAGER.setCursor(Cursor::Moon);
 
-    AddText(ID_txtStatus, DrawPoint(150, 30), _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
-    AddPercent(ID_prgLoad, DrawPoint(20, 50), Extent(260, 26), TextureColor::Grey, COLOR_YELLOW, SmallFont,
+    addText(ID_txtStatus, DrawPoint(150, 30), _("Please wait..."), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    addPercent(ID_prgLoad, DrawPoint(20, 50), Extent(260, 26), TextureColor::Grey, COLOR_YELLOW, SmallFont,
                &downloadProgress_)
-      ->SetVisible(false);
-    AddTextButton(ID_btAbort, DrawPoint(87, 80), Extent(125, 22), TextureColor::Red1, _("Abort"), NormalFont);
+      ->setVisible(false);
+    addTextButton(ID_btAbort, DrawPoint(87, 80), Extent(125, 22), TextureColor::Red1, _("Abort"), NormalFont);
 
-    GAMECLIENT.SetInterface(this);
+    GAMECLIENT.setInterface(this);
 }
 
-void iwConnecting::Close()
+void iwConnecting::close()
 {
-    IngameWindow::Close();
-    WINDOWMANAGER.SetCursor();
-    GAMECLIENT.RemoveInterface(this);
+    IngameWindow::close();
+    WINDOWMANAGER.setCursor();
+    GAMECLIENT.removeInterface(this);
 }
 
-void iwConnecting::Msg_ButtonClick(unsigned ctrlId)
+void iwConnecting::msgButtonClick(unsigned ctrlId)
 {
     RTTR_Assert(ctrlId == ID_btAbort);
-    GAMECLIENT.Stop();
+    GAMECLIENT.stop();
     CI_Error(ClientError::ConnectionLost);
 }
 
@@ -57,17 +57,17 @@ void iwConnecting::CI_Error(const ClientError ce)
 {
     if(onError.empty())
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), ClientErrorToStr(ce), nullptr, MsgboxButton::Ok,
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), clientErrorToStr(ce), nullptr, MsgboxButton::Ok,
                                                       MsgboxIcon::ExclamationRed, 0));
     } else
         onError(ce);
-    Close();
+    close();
 }
 
 void iwConnecting::CI_NextConnectState(const ConnectState cs)
 {
-    auto* prgLoad = GetCtrl<ctrlPercent>(ID_prgLoad);
-    prgLoad->SetVisible(false);
+    auto* prgLoad = getCtrl<ctrlPercent>(ID_prgLoad);
+    prgLoad->setVisible(false);
     switch(cs)
     {
         case ConnectState::Initiated: setStatus(_("Waiting for Reply...")); break;
@@ -76,16 +76,16 @@ void iwConnecting::CI_NextConnectState(const ConnectState cs)
         case ConnectState::QueryMapInfo: setStatus(_("Checking Map...")); break;
         case ConnectState::ReceiveMap:
             setStatus(_("Receiving Map..."));
-            prgLoad->SetVisible(true);
+            prgLoad->setVisible(true);
             break;
         case ConnectState::VerifyMap: setStatus(_("Checking Map...")); break;
         case ConnectState::QueryServerName: setStatus(_("Waiting for server info...")); break;
         case ConnectState::QueryPlayerList: setStatus(_("Waiting for Playerinfo...")); break;
         case ConnectState::QuerySettings: setStatus(_("Waiting for server info...")); break;
         case ConnectState::Finished:
-            WINDOWMANAGER.Switch(std::make_unique<dskGameLobby>(serverType_, GAMECLIENT.GetGameLobby(),
-                                                                GAMECLIENT.GetPlayerId(), std::move(lobbyClient_)));
-            Close();
+            WINDOWMANAGER.switchTo(std::make_unique<dskGameLobby>(serverType_, GAMECLIENT.getGameLobby(),
+                                                                  GAMECLIENT.getPlayerId(), std::move(lobbyClient_)));
+            close();
             break;
     }
 }
@@ -97,5 +97,5 @@ void iwConnecting::CI_MapPartReceived(uint32_t bytesReceived, uint32_t bytesTota
 
 void iwConnecting::setStatus(const std::string& status)
 {
-    GetCtrl<ctrlText>(ID_txtStatus)->SetText(status);
+    getCtrl<ctrlText>(ID_txtStatus)->setText(status);
 }

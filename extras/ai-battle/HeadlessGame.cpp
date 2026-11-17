@@ -19,7 +19,7 @@
 #include <boost/nowide/iostream.hpp>
 #include <chrono>
 
-std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams);
+std::vector<PlayerInfo> generatePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams);
 
 namespace bfs = boost::filesystem;
 namespace bnw = boost::nowide;
@@ -28,97 +28,97 @@ using bfs::canonical;
 
 HeadlessGame::HeadlessGame(const GlobalGameSettings& ggs, const bfs::path& map, const std::vector<AI::Info>& ais,
                            const bfs::path& luaPath, const std::vector<Team>& teams)
-    : map_(map), game_(ggs, std::make_unique<EventManager>(0), GeneratePlayerInfo(ais, teams)), world_(game_.world_),
+    : map_(map), game_(ggs, std::make_unique<EventManager>(0), generatePlayerInfo(ais, teams)), world_(game_.world_),
       em_(*static_cast<EventManager*>(game_.em_.get()))
 {
     MapInfo mapInfo;
     mapInfo.type = MapType::OldMap;
     mapInfo.filepath = map;
     mapInfo.luaFilepath = luaPath;
-    SetupGameWorld(game_, mapInfo, localState_, nullptr);
+    setupGameWorld(game_, mapInfo, localState_, nullptr);
 
-    if(world_.HasLua())
+    if(world_.hasLua())
     {
-        world_.GetLua().setSuppressStdout(true);
+        world_.getLua().setSuppressStdout(true);
         luaPath_ = luaPath;
         bnw::cout << "Lua script loaded: " << luaPath << '\n';
     }
 
-    for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
-        players_.push_back(AIFactory::Create(world_.GetPlayer(playerId).aiInfo, playerId, world_));
+    for(unsigned playerId = 0; playerId < world_.getNumPlayers(); ++playerId)
+        players_.push_back(AIFactory::create(world_.getPlayer(playerId).aiInfo, playerId, world_));
 }
 
 HeadlessGame::~HeadlessGame()
 {
-    Close();
+    close();
 }
 
-void HeadlessGame::Run(unsigned maxGF)
+void HeadlessGame::run(unsigned maxGF)
 {
     AsyncChecksum checksum;
     gameStartTime_ = std::chrono::steady_clock::now();
     auto nextReport = gameStartTime_ + std::chrono::seconds(1);
 
-    game_.Start(false);
+    game_.start(false);
 
-    while(em_.GetCurrentGF() < maxGF && !game_.IsGameFinished())
+    while(em_.getCurrentGF() < maxGF && !game_.isGameFinished())
     {
-        // In the actual game, the network frame intervall is based on ping (highest_ping < NFW-length < 20*gf_length).
-        bool isnfw = em_.GetCurrentGF() % 20 == 0;
+        // In the actual game, the network frame intervall is based on ping (highestPing < NFW-length < 20*gf_length).
+        bool isnfw = em_.getCurrentGF() % 20 == 0;
 
         if(isnfw)
         {
-            if(replay_.IsRecording())
+            if(replay_.isRecording())
                 checksum = AsyncChecksum::create(game_);
-            for(unsigned playerId = 0; playerId < world_.GetNumPlayers(); ++playerId)
+            for(unsigned playerId = 0; playerId < world_.getNumPlayers(); ++playerId)
             {
-                world_.GetPlayer(playerId);
+                world_.getPlayer(playerId);
                 AIPlayer* player = players_[playerId].get();
                 PlayerGameCommands cmds;
-                cmds.gcs = player->FetchGameCommands();
+                cmds.gcs = player->fetchGameCommands();
 
-                if(replay_.IsRecording() && !cmds.gcs.empty())
+                if(replay_.isRecording() && !cmds.gcs.empty())
                 {
                     cmds.checksum = checksum;
-                    replay_.AddGameCommand(em_.GetCurrentGF(), playerId, cmds);
+                    replay_.addGameCommand(em_.getCurrentGF(), playerId, cmds);
                 }
 
                 for(const gc::GameCommandPtr& gc : cmds.gcs)
-                    gc->Execute(world_, player->GetPlayerId());
+                    gc->execute(world_, player->getPlayerId());
             }
         }
 
         for(auto& player : players_)
-            player->RunGF(em_.GetCurrentGF(), isnfw);
+            player->runGF(em_.getCurrentGF(), isnfw);
 
-        game_.RunGF();
+        game_.runGF();
 
-        if(replay_.IsRecording())
-            replay_.UpdateLastGF(em_.GetCurrentGF());
+        if(replay_.isRecording())
+            replay_.updateLastGF(em_.getCurrentGF());
 
         if(std::chrono::steady_clock::now() > nextReport)
         {
             nextReport += std::chrono::seconds(1);
-            PrintState();
+            printState();
         }
     }
-    PrintState();
+    printState();
 }
 
-void HeadlessGame::Close()
+void HeadlessGame::close()
 {
     bnw::cout << '\n';
 
-    if(replay_.IsRecording())
+    if(replay_.isRecording())
     {
-        replay_.StopRecording();
+        replay_.stopRecording();
         bnw::cout << "Replay written to " << canonical(replayPath_) << '\n';
     }
 
-    replay_.Close();
+    replay_.close();
 }
 
-void HeadlessGame::RecordReplay(const bfs::path& path, unsigned random_init)
+void HeadlessGame::recordReplay(const bfs::path& path, unsigned random_init)
 {
     // Remove old replay
     bfs::remove(path);
@@ -127,53 +127,53 @@ void HeadlessGame::RecordReplay(const bfs::path& path, unsigned random_init)
 
     MapInfo mapInfo;
     mapInfo.filepath = map_;
-    mapInfo.mapData.CompressFromFile(mapInfo.filepath, &mapInfo.mapChecksum);
+    mapInfo.mapData.compressFromFile(mapInfo.filepath, &mapInfo.mapChecksum);
     mapInfo.type = MapType::OldMap;
 
     if(!luaPath_.empty() && bfs::exists(luaPath_))
     {
         mapInfo.luaFilepath = luaPath_;
-        mapInfo.luaData.CompressFromFile(luaPath_, &mapInfo.luaChecksum);
+        mapInfo.luaData.compressFromFile(luaPath_, &mapInfo.luaChecksum);
     }
 
     for(auto& player : world_.getPlayers())
-        replay_.AddPlayer(player);
+        replay_.addPlayer(player);
     replay_.ggs = game_.ggs_;
-    if(!replay_.StartRecording(path, mapInfo, random_init))
+    if(!replay_.startRecording(path, mapInfo, random_init))
         throw std::runtime_error("Replayfile could not be opened!");
 }
 
-void HeadlessGame::SaveGame(const bfs::path& path) const
+void HeadlessGame::saveGame(const bfs::path& path) const
 {
     // Remove old savegame
     bfs::remove(path);
 
     Savegame save;
     for(auto& player : world_.getPlayers())
-        save.AddPlayer(player);
+        save.addPlayer(player);
     save.ggs = game_.ggs_;
     save.ggs.exploration = Exploration::Disabled; // no FOW
-    save.start_gf = em_.GetCurrentGF();
-    save.sgd.MakeSnapshot(game_);
-    save.Save(path, "AI Battle");
+    save.start_gf = em_.getCurrentGF();
+    save.sgd.makeSnapshot(game_);
+    save.save(path, "AI Battle");
 
     bnw::cout << "Savegame written to " << canonical(path) << '\n';
 }
 
-void HeadlessGame::PrintState()
+void HeadlessGame::printState()
 {
     HeadlessStats stats;
-    stats.currentGF = em_.GetCurrentGF();
+    stats.currentGF = em_.getCurrentGF();
     stats.gameTime =
-      std::chrono::duration_cast<std::chrono::milliseconds>(SPEED_GF_LENGTHS[GameSpeed::Normal] * em_.GetCurrentGF());
+      std::chrono::duration_cast<std::chrono::milliseconds>(SPEED_GF_LENGTHS[GameSpeed::Normal] * em_.getCurrentGF());
     stats.wallTime =
       std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - gameStartTime_);
-    stats.gfPerSecond = em_.GetCurrentGF() - lastReportGf_;
+    stats.gfPerSecond = em_.getCurrentGF() - lastReportGf_;
     statsPrinter_.print(stats, world_);
-    lastReportGf_ = em_.GetCurrentGF();
+    lastReportGf_ = em_.getCurrentGF();
 }
 
-std::vector<PlayerInfo> GeneratePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams)
+std::vector<PlayerInfo> generatePlayerInfo(const std::vector<AI::Info>& ais, const std::vector<Team>& teams)
 {
     std::vector<PlayerInfo> ret;
     for(const AI::Info& ai : ais)

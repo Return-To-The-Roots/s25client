@@ -23,7 +23,7 @@ struct MountainFixture : MapGenFixture
     Map createLandMap(const MapExtent size) const
     {
         Map map = createMap(size);
-        map.z.Resize(size, landHeight);
+        map.z.resize(size, landHeight);
         RTTR_FOREACH_PT(MapPoint, size)
         {
             if(pt.y == 0)
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(getFreeLandDistances_is_zero_for_textured_nodes)
 {
     Map map = createLandMap(MapExtent(16, 16));
     const MapPoint river(8, 8);
-    map.textureMap.Set(river, map.textureMap.Find(IsWater));
+    map.textureMap.set(river, map.textureMap.find(isWater));
 
     const auto distances = getFreeLandDistances(map, mountainLevel);
 
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(findMountains_finds_nothing_without_enough_free_land)
 BOOST_AUTO_TEST_CASE(findMountains_finds_nothing_on_water_only)
 {
     Map map = createMap(MapExtent(16, 16));
-    map.z.Resize(map.size, map.height.minimum);
+    map.z.resize(map.size, map.height.minimum);
     RandomUtility rnd(0);
 
     BOOST_TEST(findMountains(map, rnd, mountainLevel, settings).empty());
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(findMountains_finds_nothing_on_water_only)
 BOOST_AUTO_TEST_CASE(findMountains_covers_map_without_any_obstacles)
 {
     Map map = createMap(MapExtent(32, 32));
-    map.z.Resize(map.size, landHeight);
+    map.z.resize(map.size, landHeight);
     RandomUtility rnd(0);
 
     BOOST_TEST(!findMountains(map, rnd, mountainLevel, settings).empty());
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(raiseMountain_elevates_center_above_foot_and_keeps_surround
 {
     Map map = createLandMap(MapExtent(32, 32));
     const MapPoint center(16, 16);
-    const auto points = map.z.GetPointsInRadiusWithCenter(center, 4);
+    const auto points = map.z.getPointsInRadiusWithCenter(center, 4);
     const Mountain mountain(points.begin(), points.end());
     const MapPoint outside(16, 26);
     RandomUtility rnd(0);
@@ -243,9 +243,9 @@ BOOST_AUTO_TEST_CASE(raiseMountain_elevates_center_above_foot_and_keeps_surround
 BOOST_AUTO_TEST_CASE(raiseMountain_applies_minable_textures_to_all_nodes)
 {
     Map map = createLandMap(MapExtent(32, 32));
-    const auto points = map.z.GetPointsInRadiusWithCenter(MapPoint(16, 16), 4);
+    const auto points = map.z.getPointsInRadiusWithCenter(MapPoint(16, 16), 4);
     const Mountain mountain(points.begin(), points.end());
-    const auto minable = map.textureMap.FindAll(IsMinableMountain);
+    const auto minable = map.textureMap.findAll(isMinableMountain);
     RandomUtility rnd(0);
 
     raiseMountain(map, rnd, mountain);
@@ -261,8 +261,8 @@ BOOST_AUTO_TEST_CASE(raiseMountain_applies_minable_textures_to_all_nodes)
 BOOST_AUTO_TEST_CASE(raiseMountain_does_not_exceed_maximum_height)
 {
     Map map = createMap(MapExtent(32, 32));
-    map.z.Resize(map.size, map.height.maximum - 1);
-    const auto points = map.z.GetPointsInRadiusWithCenter(MapPoint(16, 16), 6);
+    map.z.resize(map.size, map.height.maximum - 1);
+    const auto points = map.z.getPointsInRadiusWithCenter(MapPoint(16, 16), 6);
     RandomUtility rnd(0);
 
     raiseMountain(map, rnd, Mountain(points.begin(), points.end()));

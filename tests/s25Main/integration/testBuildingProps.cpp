@@ -21,24 +21,24 @@ BOOST_FIXTURE_TEST_CASE(IsType, EmptyWorldFixture1P)
     const MapPoint bldPos(0, 0);
     for(const auto bldType : helpers::enumRange<BuildingType>())
     {
-        if(!BuildingProperties::IsValid(bldType))
+        if(!BuildingProperties::isValid(bldType))
             continue;
-        noBuilding* bld = BuildingFactory::CreateBuilding(world, bldType, bldPos, 0, Nation::Romans);
+        noBuilding* bld = BuildingFactory::createBuilding(world, bldType, bldPos, 0, Nation::Romans);
         BOOST_TEST_REQUIRE(bld);
-        if(BuildingProperties::IsMilitary(bldType))
+        if(BuildingProperties::isMilitary(bldType))
             BOOST_TEST_REQUIRE(dynamic_cast<nobMilitary*>(bld));
         else
             BOOST_TEST_REQUIRE(!dynamic_cast<nobMilitary*>(bld));
-        if(BuildingProperties::IsWareHouse(bldType))
+        if(BuildingProperties::isWareHouse(bldType))
             BOOST_TEST_REQUIRE(dynamic_cast<nobBaseWarehouse*>(bld));
         else
             BOOST_TEST_REQUIRE(!dynamic_cast<nobBaseWarehouse*>(bld));
-        if(BuildingProperties::IsMine(bldType))
+        if(BuildingProperties::isMine(bldType))
             BOOST_TEST_REQUIRE(dynamic_cast<nobUsual*>(bld)); // At least a usual
-        if(BuildingProperties::IsUsual(bldType))
+        if(BuildingProperties::isUsual(bldType))
             BOOST_TEST_REQUIRE(dynamic_cast<nobUsual*>(bld));
-        world.DestroyNO(bldPos);
+        world.destroyNO(bldPos);
         // Destroy fire
-        world.DestroyNO(bldPos);
+        world.destroyNO(bldPos);
     }
 }

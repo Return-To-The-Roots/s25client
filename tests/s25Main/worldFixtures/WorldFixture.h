@@ -22,13 +22,13 @@
 /// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
 /// Return the number of GFs executed
 template<class T>
-unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond)
+unsigned rttrExecTillCtGf(TestEventManager& em, unsigned maxGFs, T&& cond)
 {
-    const unsigned endGf = em.GetCurrentGF() + maxGFs;
+    const unsigned endGf = em.getCurrentGF() + maxGFs;
     unsigned gfsExecuted = 0;
     while(!cond())
     {
-        const unsigned numGF = em.ExecuteNextEvent(endGf);
+        const unsigned numGF = em.executeNextEvent(endGf);
         if(numGF == 0)
             break;
         gfsExecuted += numGF;
@@ -36,8 +36,8 @@ unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond)
     return gfsExecuted;
 }
 
-#define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                           \
-    gfReturnVar = rttr_exec_till_ct_gf(this->em, maxGFs, [&] { return (cond); }); \
+#define RTTR_EXEC_TILL_CT_GF(maxGFs, cond, gfReturnVar)                       \
+    gfReturnVar = rttrExecTillCtGf(this->em, maxGFs, [&] { return (cond); }); \
     BOOST_TEST_REQUIRE((cond))
 
 /// Execute up to maxGFs gameframes or till a condition is met. Asserts the condition is true afterwards
@@ -48,12 +48,12 @@ unsigned rttr_exec_till_ct_gf(TestEventManager& em, unsigned maxGFs, T&& cond)
         (void)dummyReturnGF;                               \
     }
 
-inline void rttr_skip_gfs(TestEventManager& em, unsigned numGFs)
+inline void rttrSkipGfs(TestEventManager& em, unsigned numGFs)
 {
-    rttr_exec_till_ct_gf(em, numGFs, [] { return false; });
+    rttrExecTillCtGf(em, numGFs, [] { return false; });
 }
 /// Skip up to numGFs GFs or until no event left
-#define RTTR_SKIP_GFS(numGFs) rttr_skip_gfs(this->em, numGFs)
+#define RTTR_SKIP_GFS(numGFs) rttrSkipGfs(this->em, numGFs)
 //////////////////////////////////////////////////////////////////////////
 
 template<unsigned T_numPlayers>
@@ -94,7 +94,7 @@ struct WorldFixtureBase
     GameWorld& world;
     WorldFixtureBase(unsigned numPlayers)
         : game(std::make_shared<Game>(GlobalGameSettings(), std::make_unique<TestEventManager>(),
-                                      std::vector<PlayerInfo>(numPlayers, GetPlayer()))),
+                                      std::vector<PlayerInfo>(numPlayers, getPlayer()))),
           em(static_cast<TestEventManager&>(*game->em_)), ggs(const_cast<GlobalGameSettings&>(game->ggs_)),
           world(game->world_)
     {
@@ -109,7 +109,7 @@ struct WorldFixtureBase
     /// Add start resources to HQ of the given player
     void addStartResources(unsigned playerIdx);
 
-    static PlayerInfo GetPlayer()
+    static PlayerInfo getPlayer()
     {
         PlayerInfo result;
         result.ps = PlayerState::Occupied;
@@ -125,7 +125,7 @@ struct WorldFixture : WorldFixtureBase
     WorldFixture() : WorldFixtureBase(T_numPlayers), worldCreator(MapExtent(T_width, T_height))
     {
         BOOST_TEST_REQUIRE(worldCreator(world));
-        BOOST_TEST_REQUIRE(world.GetNumPlayers() == T_numPlayers);
+        BOOST_TEST_REQUIRE(world.getNumPlayers() == T_numPlayers);
     }
 };
 
@@ -133,12 +133,12 @@ class TestWorld : public World
 {
 public:
     TestWorld() = default;
-    TestWorld(const MapExtent size, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>{1}) { Init(size, lt); }
-    using World::GetNodeInt;
+    TestWorld(const MapExtent size, DescIdx<LandscapeDesc> lt = DescIdx<LandscapeDesc>{1}) { init(size, lt); }
+    using World::getNodeInt;
 
 protected:
     // LCOV_EXCL_START
-    void AltitudeChanged(MapPoint) override {}
-    void VisibilityChanged(MapPoint, unsigned, Visibility, Visibility) override {}
+    void altitudeChanged(MapPoint) override {}
+    void visibilityChanged(MapPoint, unsigned, Visibility, Visibility) override {}
     // LCOV_EXCL_STOP
 };

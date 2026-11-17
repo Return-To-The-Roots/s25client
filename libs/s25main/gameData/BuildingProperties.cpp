@@ -10,7 +10,7 @@ const std::array<BuildingType, 4> BuildingProperties::militaryBldTypes = []() {
     unsigned cur = 0;
     for(const auto bld : helpers::enumRange<BuildingType>())
     {
-        if(BuildingProperties::IsMilitary(bld))
+        if(BuildingProperties::isMilitary(bld))
             result[cur++] = bld;
     }
     if(cur != result.size())
@@ -18,7 +18,7 @@ const std::array<BuildingType, 4> BuildingProperties::militaryBldTypes = []() {
     return result;
 }();
 
-bool BuildingProperties::IsMilitary(BuildingType bld)
+bool BuildingProperties::isMilitary(BuildingType bld)
 {
     switch(bld)
     {
@@ -30,7 +30,7 @@ bool BuildingProperties::IsMilitary(BuildingType bld)
     }
 }
 
-bool BuildingProperties::IsMine(BuildingType bld)
+bool BuildingProperties::isMine(BuildingType bld)
 {
     switch(bld)
     {
@@ -42,7 +42,7 @@ bool BuildingProperties::IsMine(BuildingType bld)
     }
 }
 
-bool BuildingProperties::IsWareHouse(BuildingType bld)
+bool BuildingProperties::isWareHouse(BuildingType bld)
 {
     switch(bld)
     {
@@ -53,12 +53,12 @@ bool BuildingProperties::IsWareHouse(BuildingType bld)
     }
 }
 
-bool BuildingProperties::IsUsual(BuildingType bld)
+bool BuildingProperties::isUsual(BuildingType bld)
 {
-    return IsValid(bld) && !IsMilitary(bld) && !IsWareHouse(bld);
+    return isValid(bld) && !isMilitary(bld) && !isWareHouse(bld);
 }
 
-bool BuildingProperties::IsValid(BuildingType bld)
+bool BuildingProperties::isValid(BuildingType bld)
 {
     switch(bld)
     {

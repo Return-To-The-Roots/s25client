@@ -15,7 +15,7 @@ class ConfigOverride
 
 public:
     ConfigOverride(std::string pathEntry, const boost::filesystem::path& newPath)
-        : entry(std::move(pathEntry)), oldPath(RTTRCONFIG.ExpandPath("<RTTR_" + entry + ">"))
+        : entry(std::move(pathEntry)), oldPath(RTTRCONFIG.expandPath("<RTTR_" + entry + ">"))
     {
         RTTRCONFIG.overridePathMapping(entry, newPath);
     }

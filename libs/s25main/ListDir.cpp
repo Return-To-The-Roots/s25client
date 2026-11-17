@@ -11,7 +11,7 @@
 namespace bfs = boost::filesystem;
 
 // lists the files of a directory
-std::vector<bfs::path> ListDir(const bfs::path& path, std::string extension, bool includeDirectories)
+std::vector<bfs::path> listDir(const bfs::path& path, std::string extension, bool includeDirectories)
 {
     std::vector<bfs::path> result;
 

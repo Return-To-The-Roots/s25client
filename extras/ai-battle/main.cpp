@@ -89,13 +89,13 @@ int main(int argc, char** argv)
         std::vector<std::string> ais;
         optional<std::string> teams;
         std::string objective, wares;
-        optional<std::string> replay_path;
-        optional<std::string> savegame_path;
+        optional<std::string> replayPath;
+        optional<std::string> savegamePath;
         optional<std::string> lua_path;
-        optional<std::string> settings_path;
+        optional<std::string> settingsPath;
         unsigned random_init =
           static_cast<unsigned>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-        unsigned random_ai_init = random_init;
+        unsigned randomAiInit = random_init;
         unsigned maxGF = std::numeric_limits<unsigned>::max();
     } opts;
     // clang-format off
@@ -106,12 +106,12 @@ int main(int argc, char** argv)
         ("teams", po::value(&opts.teams),"Team assignment, e.g. \"0,1;2,3\" for a 2v2 (groups separated by ';', player indices by ','). Allied players get start pacts.")
         ("objective", po::value(&opts.objective)->default_value("domination"),"domination(default) | conquer")
         ("wares", po::value(&opts.wares)->default_value("normal"),"Starting wares: vlow | low | normal (default) | alot")
-        ("settings", po::value(&opts.settings_path),"INI file with an [addons] section to configure addon settings (optional)")
-        ("replay", po::value(&opts.replay_path),"Filename to write replay to (optional)")
-        ("save", po::value(&opts.savegame_path),"Filename to write savegame to (optional)")
+        ("settings", po::value(&opts.settingsPath),"INI file with an [addons] section to configure addon settings (optional)")
+        ("replay", po::value(&opts.replayPath),"Filename to write replay to (optional)")
+        ("save", po::value(&opts.savegamePath),"Filename to write savegame to (optional)")
         ("lua", po::value(&opts.lua_path),"Lua script to execute during the game (optional)")
         ("random_init", po::value(&opts.random_init),"Seed value for the random number generator (optional)")
-        ("random_ai_init", po::value(&opts.random_ai_init),"Seed value for the AI random number generator (optional)")
+        ("random_ai_init", po::value(&opts.randomAiInit),"Seed value for the AI random number generator (optional)")
         ("maxGF", po::value(&opts.maxGF),"Maximum number of game frames to run (optional)")
         ("version", "Show version information and exit")
         ;
@@ -142,8 +142,8 @@ int main(int argc, char** argv)
         }
         if(options.count("version"))
         {
-            bnw::cout << rttr::version::GetTitle() << " v" << rttr::version::GetVersion() << "-"
-                      << rttr::version::GetRevision() << std::endl
+            bnw::cout << rttr::version::getTitle() << " v" << rttr::version::getVersion() << "-"
+                      << rttr::version::getRevision() << std::endl
                       << "Compiled with " << System::getCompilerName() << " for " << System::getOSName() << std::endl;
             return 0;
         }
@@ -163,20 +163,20 @@ int main(int argc, char** argv)
             bnw::cout << argv[i] << " ";
         bnw::cout << std::endl;
         bnw::cout << "random_init: " << opts.random_init << std::endl;
-        bnw::cout << "random_ai_init: " << opts.random_ai_init << std::endl;
+        bnw::cout << "random_ai_init: " << opts.randomAiInit << std::endl;
         bnw::cout << std::endl;
 
-        RTTRCONFIG.Init();
+        RTTRCONFIG.init();
         // Lua errors and the AI log to file; without this that is ./logs, and a missing folder there turned
         // every Lua error into "Could not open logs/... for writing"
-        const bfs::path logDir = RTTRCONFIG.ExpandPath(s25::folders::logs);
+        const bfs::path logDir = RTTRCONFIG.expandPath(s25::folders::logs);
         bfs::create_directories(logDir);
         LOG.setLogFilepath(logDir);
-        RANDOM.Init(opts.random_init);
-        AI::getRandomGenerator().seed(opts.random_ai_init);
+        RANDOM.init(opts.random_init);
+        AI::getRandomGenerator().seed(opts.randomAiInit);
 
-        const bfs::path mapPath = RTTRCONFIG.ExpandPath(opts.map);
-        const std::vector<AI::Info> ais = ParseAIOptions(opts.ais);
+        const bfs::path mapPath = RTTRCONFIG.expandPath(opts.map);
+        const std::vector<AI::Info> ais = parseAIOptions(opts.ais);
 
         GlobalGameSettings ggs;
         if(opts.objective == "domination")
@@ -203,11 +203,11 @@ int main(int argc, char** argv)
             return 1;
         }
 
-        if(opts.settings_path)
+        if(opts.settingsPath)
         {
-            loadAddonsFromIni(ggs, RTTRCONFIG.ExpandPath(*opts.settings_path));
+            loadAddonsFromIni(ggs, RTTRCONFIG.expandPath(*opts.settingsPath));
 
-            bnw::cout << "settings: " << RTTRCONFIG.ExpandPath(*opts.settings_path) << std::endl;
+            bnw::cout << "settings: " << RTTRCONFIG.expandPath(*opts.settingsPath) << std::endl;
             bnw::cout << "addon selections (non-default only):" << std::endl;
             for(unsigned i = 0; i < ggs.getNumAddons(); ++i)
             {
@@ -253,15 +253,15 @@ int main(int argc, char** argv)
             }
         }
 
-        HeadlessGame game(ggs, mapPath, ais, opts.lua_path ? RTTRCONFIG.ExpandPath(*opts.lua_path) : bfs::path{},
+        HeadlessGame game(ggs, mapPath, ais, opts.lua_path ? RTTRCONFIG.expandPath(*opts.lua_path) : bfs::path{},
                           teams);
-        if(opts.replay_path)
-            game.RecordReplay(RTTRCONFIG.ExpandPath(*opts.replay_path), opts.random_init);
+        if(opts.replayPath)
+            game.recordReplay(RTTRCONFIG.expandPath(*opts.replayPath), opts.random_init);
 
-        game.Run(opts.maxGF);
-        game.Close();
-        if(opts.savegame_path)
-            game.SaveGame(RTTRCONFIG.ExpandPath(*opts.savegame_path));
+        game.run(opts.maxGF);
+        game.close();
+        if(opts.savegamePath)
+            game.saveGame(RTTRCONFIG.expandPath(*opts.savegamePath));
     } catch(const std::exception& e)
     {
         bnw::cerr << e.what() << std::endl;

@@ -13,27 +13,27 @@ struct PathConditionReachable
     PathConditionReachable(const World& world) : world(world) {}
 
     // Called for every node but the start & goal and should return true, if this point is usable
-    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
+    BOOST_FORCEINLINE bool isNodeOk(const MapPoint& pt) const
     {
         bool goodTerrainFound = false;
-        for(const DescIdx<TerrainDesc> tIdx : world.GetTerrainsAround(pt))
+        for(const DescIdx<TerrainDesc> tIdx : world.getTerrainsAround(pt))
         {
-            const TerrainDesc& t = world.GetDescription().get(tIdx);
-            if(t.Is(ETerrain::Unreachable))
+            const TerrainDesc& t = world.getDescription().get(tIdx);
+            if(t.is(ETerrain::Unreachable))
                 return false;
-            else if(t.Is(ETerrain::Walkable))
+            else if(t.is(ETerrain::Walkable))
                 goodTerrainFound = true;
         }
         return goodTerrainFound;
     }
     // Called for every node
-    BOOST_FORCEINLINE bool IsEdgeOk(const MapPoint& fromPt, const Direction dir) const
+    BOOST_FORCEINLINE bool isEdgeOk(const MapPoint& fromPt, const Direction dir) const
     {
         // Check terrain for node transition
-        const auto terrains = world.GetTerrain(fromPt, dir);
-        const TerrainDesc& tLeft = world.GetDescription().get(terrains.left);
-        const TerrainDesc& tRight = world.GetDescription().get(terrains.right);
+        const auto terrains = world.getTerrain(fromPt, dir);
+        const TerrainDesc& tLeft = world.getDescription().get(terrains.left);
+        const TerrainDesc& tRight = world.getDescription().get(terrains.right);
         // Don't go next to danger terrain
-        return !tLeft.Is(ETerrain::Unreachable) && !tRight.Is(ETerrain::Unreachable);
+        return !tLeft.is(ETerrain::Unreachable) && !tRight.is(ETerrain::Unreachable);
     }
 };

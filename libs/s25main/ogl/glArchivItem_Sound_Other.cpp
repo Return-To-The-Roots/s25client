@@ -5,7 +5,7 @@
 #include "glArchivItem_Sound_Other.h"
 #include "drivers/AudioDriverWrapper.h"
 
-SoundHandle glArchivItem_Sound_Other::Load()
+SoundHandle glArchivItem_Sound_Other::load()
 {
     std::string extension = ".tmp";
     if(getType() == libsiedler2::SoundType::OGG)
@@ -13,5 +13,5 @@ SoundHandle glArchivItem_Sound_Other::Load()
     else if(getType() == libsiedler2::SoundType::MP3)
         extension = ".mp3";
 
-    return AUDIODRIVER.LoadMusic(*this, extension);
+    return AUDIODRIVER.loadMusic(*this, extension);
 }

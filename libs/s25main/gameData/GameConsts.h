@@ -29,13 +29,13 @@ static_assert(REFERENCE_SPEED * std::numeric_limits<unsigned>::max() >= 24h * 36
 
 /// Get normalized number of game frames for the given duration
 template<class Rep, class Period>
-constexpr auto duration_to_gfs(const std::chrono::duration<Rep, Period> d)
+constexpr auto durationToGfs(const std::chrono::duration<Rep, Period> d)
 {
     return static_cast<unsigned>(d / REFERENCE_SPEED);
 }
 
 /// Get normalized duration for the given number of game frames
-constexpr auto gfs_to_duration(const unsigned gfs)
+constexpr auto gfsToDuration(const unsigned gfs)
 {
     return gfs * REFERENCE_SPEED;
 }

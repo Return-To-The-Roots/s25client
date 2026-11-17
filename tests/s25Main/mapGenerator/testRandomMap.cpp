@@ -21,25 +21,25 @@ using namespace rttr::mapGenerator;
 
 BOOST_AUTO_TEST_SUITE(RandomMapTests)
 
-static void ValidateMap(const Map& map, const MapExtent& size, unsigned players)
+static void validateMap(const Map& map, const MapExtent& size, unsigned players)
 {
     BOOST_TEST_REQUIRE(map.players == players);
     BOOST_TEST(map.size == size);
 
     const auto validateHqPos = [&](const MapPoint hqPos) {
         // All textures around the point must allow a castle
-        const auto neighbors = map.z.GetNeighbours(hqPos);
+        const auto neighbors = map.z.getNeighbours(hqPos);
         for(const MapPoint pt : neighbors)
         {
             BOOST_TEST_REQUIRE(
-              map.textureMap.All(pt, [](const TerrainDesc& terrain) { return terrain.GetBQ() == TerrainBQ::Castle; }),
+              map.textureMap.all(pt, [](const TerrainDesc& terrain) { return terrain.getBQ() == TerrainBQ::Castle; }),
               "At point " << pt);
         }
         // All direct neighbors must have the same height as the hqPos
         for(const MapPoint pt : neighbors)
             BOOST_TEST_REQUIRE(map.z[pt] == map.z[hqPos], "At point " << pt);
 
-        const auto neighbors2 = map.z.GetPointsInRadiusWithCenter(hqPos, 2);
+        const auto neighbors2 = map.z.getPointsInRadiusWithCenter(hqPos, 2);
 
         const auto compareHeight = [&](const MapPoint& p1, const MapPoint& p2) { return map.z[p1] < map.z[p2]; };
         const MapPoint lowestPoint = *std::min_element(neighbors2.begin(), neighbors2.end(), compareHeight);
@@ -82,8 +82,8 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_land_map)
     settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Land;
 
-    Map map = GenerateRandomMap(rnd, worldDesc, settings);
-    ValidateMap(map, settings.size, settings.numPlayers);
+    Map map = generateRandomMap(rnd, worldDesc, settings);
+    validateMap(map, settings.size, settings.numPlayers);
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_water_map)
@@ -97,8 +97,8 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_water_map)
     settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Water;
 
-    Map map = GenerateRandomMap(rnd, worldDesc, settings);
-    ValidateMap(map, settings.size, settings.numPlayers);
+    Map map = generateRandomMap(rnd, worldDesc, settings);
+    validateMap(map, settings.size, settings.numPlayers);
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mixed_map)
@@ -112,8 +112,8 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mixed_map)
     settings.numPlayers = rttr::test::randomValue(2u, MAX_PLAYERS);
     settings.style = MapStyle::Mixed;
 
-    Map map = GenerateRandomMap(rnd, worldDesc, settings);
-    ValidateMap(map, settings.size, settings.numPlayers);
+    Map map = generateRandomMap(rnd, worldDesc, settings);
+    validateMap(map, settings.size, settings.numPlayers);
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_for_many_islands_returns_valid_map)
@@ -128,8 +128,8 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_for_many_islands_returns_valid_map)
     settings.numPlayers = 2u;
     settings.style = MapStyle::Mixed;
 
-    Map map = GenerateRandomMap(rnd, worldDesc, settings);
-    ValidateMap(map, settings.size, settings.numPlayers);
+    Map map = generateRandomMap(rnd, worldDesc, settings);
+    validateMap(map, settings.size, settings.numPlayers);
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
@@ -143,8 +143,8 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
     settings.numPlayers = MAX_PLAYERS;
     settings.style = MapStyle::Land;
 
-    Map map = GenerateRandomMap(rnd, worldDesc, settings);
-    ValidateMap(map, settings.size, settings.numPlayers);
+    Map map = generateRandomMap(rnd, worldDesc, settings);
+    validateMap(map, settings.size, settings.numPlayers);
 }
 
 BOOST_AUTO_TEST_CASE(getMaxMountainSize_grows_with_map_size)
@@ -185,8 +185,8 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_more_mountains_for_higher_amount)
     const auto countMountainNodes = [&worldDesc, &settings](const unsigned short mountains) {
         settings.mountains = mountains;
         RandomUtility rnd(0);
-        const Map map = GenerateRandomMap(rnd, worldDesc, settings);
-        return SelectPoints([&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); }, map.size)
+        const Map map = generateRandomMap(rnd, worldDesc, settings);
+        return selectPoints([&map](const MapPoint& pt) { return map.textureMap.any(pt, isMinableMountain); }, map.size)
           .size();
     };
 
@@ -215,8 +215,8 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_maps_for_maximum_amount_of_
             settings.style = style;
             RandomUtility rnd(1);
 
-            Map map = GenerateRandomMap(rnd, worldDesc, settings);
-            ValidateMap(map, settings.size, settings.numPlayers);
+            Map map = generateRandomMap(rnd, worldDesc, settings);
+            validateMap(map, settings.size, settings.numPlayers);
         }
     }
 }
@@ -246,10 +246,10 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_leaves_no_large_free_land)
         settings.style = style;
         RandomUtility rnd(0);
 
-        const Map map = GenerateRandomMap(rnd, worldDesc, settings);
-        const auto distances = DistancesTo(map.size, [&map](const MapPoint& pt) {
-            return helpers::contains(map.barren, pt) || map.textureMap.Any(pt, [](const TerrainDesc& t) {
-                return IsWater(t) || IsMountainOrSnowOrLava(t);
+        const Map map = generateRandomMap(rnd, worldDesc, settings);
+        const auto distances = distancesTo(map.size, [&map](const MapPoint& pt) {
+            return helpers::contains(map.barren, pt) || map.textureMap.any(pt, [](const TerrainDesc& t) {
+                return isWater(t) || isMountainOrSnowOrLava(t);
             });
         });
 
@@ -274,8 +274,8 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_maps_for_all_styles_and_mou
             settings.mountainDistance = distance;
             RandomUtility rnd(1);
 
-            Map map = GenerateRandomMap(rnd, worldDesc, settings);
-            ValidateMap(map, settings.size, settings.numPlayers);
+            Map map = generateRandomMap(rnd, worldDesc, settings);
+            validateMap(map, settings.size, settings.numPlayers);
         }
     }
 }
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_no_deserts_and_swamps_if_disabled
     settings.swamp = 0;
     RandomUtility rnd(0);
 
-    const Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    const Map map = generateRandomMap(rnd, worldDesc, settings);
 
     BOOST_TEST(map.barren.empty());
 }
@@ -313,24 +313,24 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_deserts_and_swamps_for_all_landsc
         settings.type = DescIdx<LandscapeDesc>(landscape);
         RandomUtility rnd(0);
 
-        const Map map = GenerateRandomMap(rnd, worldDesc, settings);
-        ValidateMap(map, settings.size, settings.numPlayers);
+        const Map map = generateRandomMap(rnd, worldDesc, settings);
+        validateMap(map, settings.size, settings.numPlayers);
 
         const auto count = [&map](bool (*predicate)(const TerrainDesc&)) {
-            return helpers::count_if(map.barren, [&](const MapPoint& pt) { return map.textureMap.All(pt, predicate); });
+            return helpers::countIf(map.barren, [&](const MapPoint& pt) { return map.textureMap.all(pt, predicate); });
         };
         BOOST_TEST_CONTEXT("Landscape " << landscape)
         {
             BOOST_TEST(count(isImpassable) > 0);
-            BOOST_TEST(count(IsCoastTerrain) > 0);
+            BOOST_TEST(count(isCoastTerrain) > 0);
             BOOST_TEST(helpers::count(map.objectTypes, 0xC8) > 0);
             for(const MapPoint& pt : map.barren)
             {
-                if(!map.textureMap.All(pt, isImpassable))
+                if(!map.textureMap.all(pt, isImpassable))
                     continue;
                 // Swamps are flat and not used for fishing
                 BOOST_TEST_REQUIRE(map.resources[pt] != libsiedler2::R_Fish, "At point " << pt);
-                for(const MapPoint& neighbor : map.z.GetNeighbours(pt))
+                for(const MapPoint& neighbor : map.z.getNeighbours(pt))
                 {
                     if(helpers::contains(map.barren, neighbor))
                         BOOST_TEST_REQUIRE(map.z[pt] == map.z[neighbor], "At point " << pt);
@@ -362,8 +362,8 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_maps_with_deserts_and_swamp
                 settings.numPlayers = numPlayers;
                 RandomUtility rnd(1);
 
-                Map map = GenerateRandomMap(rnd, worldDesc, settings);
-                ValidateMap(map, settings.size, settings.numPlayers);
+                Map map = generateRandomMap(rnd, worldDesc, settings);
+                validateMap(map, settings.size, settings.numPlayers);
             }
         }
     }
@@ -389,7 +389,7 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_no_special_objects_if_disabled)
     settings.specialObjects = false;
     RandomUtility rnd(0);
 
-    const Map map = GenerateRandomMap(rnd, worldDesc, settings);
+    const Map map = generateRandomMap(rnd, worldDesc, settings);
 
     BOOST_TEST(countSpecialObjects(map) == 0u);
     BOOST_TEST(map.reserved.empty());
@@ -415,8 +415,8 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_a_few_special_objects_if_enabled)
             settings.style = style;
             RandomUtility rnd(2);
 
-            const Map map = GenerateRandomMap(rnd, worldDesc, settings);
-            ValidateMap(map, settings.size, settings.numPlayers);
+            const Map map = generateRandomMap(rnd, worldDesc, settings);
+            validateMap(map, settings.size, settings.numPlayers);
 
             BOOST_TEST_CONTEXT("Landscape " << landscape << " style " << static_cast<unsigned>(style))
             {
@@ -441,9 +441,9 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mapfile_with_max_players)
     settings.numPlayers = MAX_PLAYERS;
     settings.style = MapStyle::Land;
 
-    CreateRandomMap(mapPath, settings);
+    createRandomMap(mapPath, settings);
     libsiedler2::Archiv archive;
-    BOOST_TEST_REQUIRE(libsiedler2::Load(mapPath, archive) == 0);
+    BOOST_TEST_REQUIRE(libsiedler2::load(mapPath, archive) == 0);
     const auto* map = dynamic_cast<const libsiedler2::ArchivItem_Map*>(archive[0]);
     BOOST_TEST_REQUIRE(map);
     const auto& mapHeader = map->getHeader();

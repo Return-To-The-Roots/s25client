@@ -8,7 +8,7 @@
 
 namespace rttr::mapGenerator {
 
-River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
+River createStream(RandomUtility& rnd, Map& map, const MapPoint& source, Direction direction, unsigned length,
                    unsigned splitRate)
 {
     const MapExtent& size = map.size;
@@ -17,20 +17,20 @@ River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Directi
     std::vector<Direction> exlcuded{direction + 2, direction + 3, direction + 4};
 
     auto& textures = map.textureMap;
-    const auto water = textures.Find(IsWater);
+    const auto water = textures.find(isWater);
 
     MapPoint currentNode = source;
     Direction currentDir = direction;
 
     for(unsigned node = 0; node < length; ++node)
     {
-        const auto& triangles = GetTriangles(currentNode, size, currentDir);
+        const auto& triangles = getTriangles(currentNode, size, currentDir);
 
         for(const auto& triangle : triangles)
         {
-            textures.Set(triangle, water);
+            textures.set(triangle, water);
 
-            const auto& edges = GetTriangleEdges(triangle, size);
+            const auto& edges = getTriangleEdges(triangle, size);
             for(const MapPoint& edge : edges)
             {
                 river.insert(edge);
@@ -46,15 +46,15 @@ River CreateStream(RandomUtility& rnd, Map& map, const MapPoint& source, Directi
 
         while(currentDir == lastDir || helpers::contains(exlcuded, currentDir))
         {
-            currentDir = lastDir + (rnd.ByChance(50) ? 5 : 1);
+            currentDir = lastDir + (rnd.byChance(50) ? 5 : 1);
         }
 
-        currentNode = map.getTextures().GetNeighbour(currentNode, lastDir);
+        currentNode = map.getTextures().getNeighbour(currentNode, lastDir);
 
-        if(rnd.ByChance(splitRate))
+        if(rnd.byChance(splitRate))
         {
-            auto splitDirection = direction + (rnd.ByChance(50) ? 5 : 1);
-            auto anotherRivers = CreateStream(rnd, map, currentNode, splitDirection, length / 2, splitRate / 2);
+            auto splitDirection = direction + (rnd.byChance(50) ? 5 : 1);
+            auto anotherRivers = createStream(rnd, map, currentNode, splitDirection, length / 2, splitRate / 2);
 
             for(const MapPoint& node : anotherRivers)
             {

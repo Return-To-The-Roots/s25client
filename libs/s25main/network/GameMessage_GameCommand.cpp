@@ -15,20 +15,20 @@ GameMessage_GameCommand::GameMessage_GameCommand(uint8_t player, const AsyncChec
     : GameMessageWithPlayer(NMS_GAMECOMMANDS, player), cmds(checksum, gcs)
 {}
 
-void GameMessage_GameCommand::Serialize(Serializer& ser) const
+void GameMessage_GameCommand::serialize(Serializer& ser) const
 {
-    GameMessageWithPlayer::Serialize(ser);
-    cmds.Serialize(ser);
+    GameMessageWithPlayer::serialize(ser);
+    cmds.serialize(ser);
 }
 
-void GameMessage_GameCommand::Deserialize(Serializer& ser)
+void GameMessage_GameCommand::deserialize(Serializer& ser)
 {
-    GameMessageWithPlayer::Deserialize(ser);
+    GameMessageWithPlayer::deserialize(ser);
     gc::Deserializer deser(ser);
-    cmds.Deserialize(deser);
+    cmds.deserialize(deser);
 }
 
-bool GameMessage_GameCommand::Run(GameMessageInterface* callback) const
+bool GameMessage_GameCommand::runGame(GameMessageInterface* callback) const
 {
-    return callback->OnGameMessage(*this);
+    return callback->onGameMessage(*this);
 }

@@ -15,12 +15,12 @@ public:
     dskSplash(std::unique_ptr<glArchivItem_Bitmap> splashImg);
     ~dskSplash() override;
 
-    void SetActive(bool activate) override;
+    void setActive(bool activate) override;
 
 private:
-    void Msg_Timer(unsigned ctrl_id) override;
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    void LoadFiles();
+    void msgTimer(unsigned ctrl_id) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    void loadFiles();
 
     std::unique_ptr<glArchivItem_Bitmap> splashImg;
     bool isLoading, isLoaded;

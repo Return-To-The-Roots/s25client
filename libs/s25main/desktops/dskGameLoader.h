@@ -23,9 +23,9 @@ public:
     void CI_Error(ClientError ce) override;
 
 private:
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
-    void Msg_Timer(unsigned ctrl_id) override;
-    void ShowErrorMsg(const std::string& error);
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgTimer(unsigned ctrl_id) override;
+    void showErrorMsg(const std::string& error);
 
     unsigned position;
     GameLoader loader_;

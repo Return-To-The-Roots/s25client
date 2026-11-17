@@ -14,7 +14,7 @@ void OpenGLRenderer::synchronize()
     glFinish();
 }
 
-void OpenGLRenderer::Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture)
+void OpenGLRenderer::draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture)
 {
     const Extent rectSize = rect.getSize();
     if(rectSize.x < 4 || rectSize.y < 4)
@@ -34,8 +34,8 @@ void OpenGLRenderer::Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_
         vertImgBorderPos += DrawPoint(rectSize.x - 2, 0);
     }
     // Draw img borders
-    texture.DrawPart(Rect(horImgBorderPos, Extent(rectSize.x, 2)));
-    texture.DrawPart(Rect(vertImgBorderPos, Extent(2, rectSize.y)));
+    texture.drawPart(Rect(horImgBorderPos, Extent(rectSize.x, 2)));
+    texture.drawPart(Rect(vertImgBorderPos, Extent(2, rectSize.y)));
 
     // Draw black borders over the img borders
     glDisable(GL_TEXTURE_2D);
@@ -66,7 +66,7 @@ void OpenGLRenderer::Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_
     glEnable(GL_TEXTURE_2D);
 }
 
-void OpenGLRenderer::Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated,
+void OpenGLRenderer::draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated,
                                    unsigned color)
 {
     if(illuminated)
@@ -82,7 +82,7 @@ void OpenGLRenderer::Draw3DContent(const Rect& rect, bool elevated, glArchivItem
         // Move a bit to left upper for elevated version
         contentOffset = DrawPoint(2, 2);
     }
-    texture.DrawPart(rect, contentOffset, color);
+    texture.drawPart(rect, contentOffset, color);
 
     if(illuminated)
     {
@@ -91,11 +91,11 @@ void OpenGLRenderer::Draw3DContent(const Rect& rect, bool elevated, glArchivItem
     }
 }
 
-void OpenGLRenderer::DrawRect(const Rect& rect, unsigned color)
+void OpenGLRenderer::drawRect(const Rect& rect, unsigned color)
 {
     glDisable(GL_TEXTURE_2D);
 
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+    glColor4ub(getRed(color), getGreen(color), getBlue(color), getAlpha(color));
 
     glBegin(GL_QUADS);
     glVertex2i(rect.left, rect.top);
@@ -107,10 +107,10 @@ void OpenGLRenderer::DrawRect(const Rect& rect, unsigned color)
     glEnable(GL_TEXTURE_2D);
 }
 
-void OpenGLRenderer::DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsigned color)
+void OpenGLRenderer::drawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsigned color)
 {
     glDisable(GL_TEXTURE_2D);
-    glColor4ub(GetRed(color), GetGreen(color), GetBlue(color), GetAlpha(color));
+    glColor4ub(getRed(color), getGreen(color), getBlue(color), getAlpha(color));
 
     glLineWidth(VIDEODRIVER.getGuiScale().viewToScreen<GLfloat>(static_cast<float>(width)));
     glBegin(GL_LINES);

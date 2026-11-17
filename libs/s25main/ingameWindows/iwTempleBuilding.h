@@ -16,5 +16,5 @@ public:
     iwTempleBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* building);
 
 private:
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 };

@@ -14,12 +14,12 @@ class ctrlBaseText
 public:
     ctrlBaseText(std::string text, unsigned color, const glFont* font);
 
-    void SetText(const std::string& text);
-    const std::string& GetText() const { return text; }
-    void SetFont(glFont* font);
-    const glFont* GetFont() const { return font; }
-    void SetTextColor(unsigned color) { color_ = color; }
-    unsigned GetTextColor() const { return color_; }
+    void setText(const std::string& text);
+    const std::string& getText() const { return text; }
+    void setFont(glFont* font);
+    const glFont* getFont() const { return font; }
+    void setTextColor(unsigned color) { color_ = color; }
+    unsigned getTextColor() const { return color_; }
 
 protected:
     std::string text;

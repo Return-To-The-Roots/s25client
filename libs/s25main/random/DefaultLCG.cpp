@@ -14,12 +14,12 @@ void DefaultLCG::discard(uint64_t j)
 
 void DefaultLCG::deserialize(Serializer& ser)
 {
-    state_ = ser.PopUnsignedInt();
+    state_ = ser.popUnsignedInt();
 }
 
 void DefaultLCG::serialize(Serializer& ser) const
 {
-    ser.PushUnsignedInt(state_);
+    ser.pushUnsignedInt(state_);
 }
 
 std::ostream& operator<<(std::ostream& os, const DefaultLCG& obj)

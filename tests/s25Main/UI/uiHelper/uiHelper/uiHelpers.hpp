@@ -18,5 +18,5 @@ struct Fixture
 };
 
 /// Return the video driver. Initializes the GUI tests if required
-MockupVideoDriver* GetVideoDriver();
+MockupVideoDriver* getVideoDriver();
 } // namespace uiHelper

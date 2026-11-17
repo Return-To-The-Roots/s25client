@@ -21,13 +21,13 @@
 const std::array<DrawPoint, 6> STONE_STARTS = {{{-4, -48}, {-3, -47}, {-13, -47}, {-11, -48}, {-13, -47}, {-2, -47}}};
 
 nofCatapultMan::PossibleTarget::PossibleTarget(SerializedGameData& sgd)
-    : pos(sgd.PopMapPoint()), distance(sgd.PopUnsignedInt())
+    : pos(sgd.popMapPoint()), distance(sgd.popUnsignedInt())
 {}
 
-void nofCatapultMan::PossibleTarget::Serialize(SerializedGameData& sgd) const
+void nofCatapultMan::PossibleTarget::serialize(SerializedGameData& sgd) const
 {
     helpers::pushPoint(sgd, pos);
-    sgd.PushUnsignedInt(distance);
+    sgd.pushUnsignedInt(distance);
 }
 
 nofCatapultMan::nofCatapultMan(const MapPoint pos, const unsigned char player, nobUsual* workplace)
@@ -35,20 +35,20 @@ nofCatapultMan::nofCatapultMan(const MapPoint pos, const unsigned char player, n
 {}
 
 nofCatapultMan::nofCatapultMan(SerializedGameData& sgd, const unsigned obj_id)
-    : nofBuildingWorker(sgd, obj_id), wheel_steps(sgd.PopSignedInt()), target(sgd)
+    : nofBuildingWorker(sgd, obj_id), wheel_steps(sgd.popSignedInt()), target(sgd)
 {}
 
-void nofCatapultMan::Serialize(SerializedGameData& sgd) const
+void nofCatapultMan::serialize(SerializedGameData& sgd) const
 {
-    nofBuildingWorker::Serialize(sgd);
+    nofBuildingWorker::serialize(sgd);
 
-    sgd.PushSignedInt(wheel_steps);
-    target.PossibleTarget::Serialize(sgd);
+    sgd.pushSignedInt(wheel_steps);
+    target.PossibleTarget::serialize(sgd);
 }
 
-void nofCatapultMan::WalkedDerived() {}
+void nofCatapultMan::walkedDerived() {}
 
-void nofCatapultMan::DrawWorking(DrawPoint drawPt)
+void nofCatapultMan::drawWorking(DrawPoint drawPt)
 {
     // Offset of the catapult
     drawPt -= DrawPoint(7, 19);
@@ -57,7 +57,7 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
         default: return;
         case State::CatapultTargetBuilding:
         {
-            int step = GAMECLIENT.Interpolate(std::abs(wheel_steps) + 1, current_ev);
+            int step = GAMECLIENT.interpolate(std::abs(wheel_steps) + 1, current_ev);
 
             if(step <= std::abs(wheel_steps))
             {
@@ -65,20 +65,20 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
                     step = -step;
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen
-                LOADER.GetPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->DrawFull(drawPt);
+                LOADER.getPlayerImage("rom_bobs", 1781 + (7 + step) % 6)->drawFull(drawPt);
             }
             // else
             //  // Katapult schießend zeichnen
-            //  LOADER.GetPlayerImage("rom_bobs", 1787+(7+wheel_steps)%6)->Draw(x-7,y-19);
+            //  LOADER.getPlayerImage("rom_bobs", 1787+(7+wheel_steps)%6)->draw(x-7,y-19);
         }
         break;
         case State::CatapultBackoff:
         {
-            int step = GAMECLIENT.Interpolate((std::abs(wheel_steps) + 3) * 2, current_ev);
+            int step = GAMECLIENT.interpolate((std::abs(wheel_steps) + 3) * 2, current_ev);
 
             if(step < 2 * 3)
                 // Katapult nach Schießen zeichnen (hin und her wippen
-                LOADER.GetPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->DrawFull(drawPt);
+                LOADER.getPlayerImage("rom_bobs", 1787 + (step % 2) * 6 + (7 + wheel_steps) % 6)->drawFull(drawPt);
             else
             {
                 step = (step - 6) / 2;
@@ -87,14 +87,14 @@ void nofCatapultMan::DrawWorking(DrawPoint drawPt)
                     step = -(step);
 
                 // Katapult auf dem Dach mit Stein drehend zeichnen (zurück in Ausgangsposition: Richtung 4)
-                LOADER.GetPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->DrawFull(drawPt);
+                LOADER.getPlayerImage("rom_bobs", 1775 + (7 + wheel_steps - step) % 6)->drawFull(drawPt);
             }
         }
         break;
     }
 }
 
-void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
+void nofCatapultMan::handleDerivedEvent(const unsigned /*id*/)
 {
     switch(state)
     {
@@ -106,25 +106,25 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             // Liste von potentiellen Zielen
             std::vector<PossibleTarget> possibleTargets;
 
-            sortedMilitaryBlds buildings = world->LookForMilitaryBuildings(pos, 3);
+            sortedMilitaryBlds buildings = world->lookForMilitaryBuildings(pos, 3);
             for(auto* building : buildings)
             {
                 // Auch ein richtiges Militärgebäude (kein HQ usw.),
-                if(building->GetGOT() == GO_Type::NobMilitary
-                   && world->GetPlayer(player).IsAttackable(building->GetPlayer()))
+                if(building->getGOT() == GO_Type::NobMilitary
+                   && world->getPlayer(player).isAttackable(building->getPlayer()))
                 {
                     // Was nicht im Nebel liegt und auch schon besetzt wurde (nicht neu gebaut)?
-                    if(world->GetNode(building->GetPos()).fow[player].visibility == Visibility::Visible
-                       && !static_cast<nobMilitary*>(building)->IsNewBuilt())
+                    if(world->getNode(building->getPos()).fow[player].visibility == Visibility::Visible
+                       && !static_cast<nobMilitary*>(building)->isNewBuilt())
                     {
                         // Entfernung ausrechnen
-                        unsigned distance = world->CalcDistance(pos, building->GetPos());
+                        unsigned distance = world->calcDistance(pos, building->getPos());
 
                         // Entfernung nicht zu hoch?
                         if(distance <= CATAPULT_MAX_TARGET_RANGE)
                         {
                             // Mit in die Liste aufnehmen
-                            possibleTargets.push_back(PossibleTarget(building->GetPos(), distance));
+                            possibleTargets.push_back(PossibleTarget(building->getPos(), distance));
                         }
                     }
                 }
@@ -134,13 +134,13 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             if(possibleTargets.empty())
             {
                 // Weiter warten, vielleicht gibts ja später wieder mal was
-                current_ev = GetEvMgr().AddEvent(this, CATAPULT_WAIT1_LENGTH, 1);
-                workplace->StartNotWorking();
+                current_ev = getEvMgr().addEvent(this, CATAPULT_WAIT1_LENGTH, 1);
+                workplace->startNotWorking();
                 return;
             }
 
             // Waren verbrauchen
-            workplace->ConsumeWares();
+            workplace->consumeWares();
 
             // Eins zufällig auswählen
             target = RANDOM_ELEMENT(possibleTargets);
@@ -158,9 +158,9 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                 targetIsRight = false;
             }
             // Distance over map border is closer (max distance is size/2 due to wrap around)
-            if(distX > world->GetWidth() / 2)
+            if(distX > world->getWidth() / 2)
             {
-                distX -= world->GetWidth() / 2;
+                distX -= world->getWidth() / 2;
                 targetIsRight = !targetIsRight; // Reverse direction
             }
 
@@ -177,9 +177,9 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
                 targetIsDown = false;
             }
             // Distance over map border is closer (max distance is size/2 due to wrap around)
-            if(distY > world->GetHeight() / 2)
+            if(distY > world->getHeight() / 2)
             {
-                distY -= world->GetHeight() / 2;
+                distY -= world->getHeight() / 2;
                 targetIsDown = !targetIsDown; // Reverse direction
             }
 
@@ -199,11 +199,11 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             }
 
             // "Drehschritte" ausrechnen, da von Richtung 4 aus gedreht wird
-            wheel_steps = int(rttr::enum_cast(shooting_dir)) - 4;
+            wheel_steps = int(rttr::enumCast(shooting_dir)) - 4;
             if(wheel_steps < -3)
                 wheel_steps = 6 + wheel_steps;
 
-            current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 1), 1);
+            current_ev = getEvMgr().addEvent(this, 15 * (std::abs(wheel_steps) + 1), 1);
 
             state = State::CatapultTargetBuilding;
 
@@ -231,19 +231,19 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             } else
             {
                 // Ansonsten zufälligen Punkt rundrum heraussuchen
-                destMap = world->GetNeighbour(target.pos, RANDOM_ENUM(Direction));
+                destMap = world->getNeighbour(target.pos, RANDOM_ENUM(Direction));
             }
 
             unsigned shooting_dir = (7 + wheel_steps) % 6;
 
             // Größe der Welt in Pixeln bestimmen
-            int worldWidth = world->GetWidth() * TR_W;
-            int worldHeight = world->GetHeight() * TR_H;
+            int worldWidth = world->getWidth() * TR_W;
+            int worldHeight = world->getHeight() * TR_H;
 
             // Startpunkt bestimmen
-            Position start = world->GetNodePos(pos) + STONE_STARTS[shooting_dir]; //-V557
+            Position start = world->getNodePos(pos) + STONE_STARTS[shooting_dir]; //-V557
             // (Visuellen) Aufschlagpunkt bestimmen
-            Position dest = world->GetNodePos(destMap);
+            Position dest = world->getNodePos(destMap);
 
             // Kartenränder beachten
             // Wenn Abstand kleiner is, den kürzeren Abstand über den Kartenrand wählen
@@ -266,10 +266,10 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             }
 
             // Stein erzeugen
-            world->AddCatapultStone(new CatapultStone(target.pos, destMap, start, dest, 80));
+            world->addCatapultStone(new CatapultStone(target.pos, destMap, start, dest, 80));
 
             // Katapult wieder in Ausgangslage zurückdrehen
-            current_ev = GetEvMgr().AddEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
+            current_ev = getEvMgr().addEvent(this, 15 * (std::abs(wheel_steps) + 3), 1);
 
             state = State::CatapultBackoff;
         }
@@ -280,10 +280,10 @@ void nofCatapultMan::HandleDerivedEvent(const unsigned /*id*/)
             // wir arbeiten nicht mehr
             workplace->is_working = false;
             // Wieder versuchen, zu arbeiten
-            TryToWork();
+            tryToWork();
         }
         break;
     }
 }
 
-void nofCatapultMan::WorkAborted() {}
+void nofCatapultMan::workAborted() {}

@@ -57,13 +57,13 @@ public:
      */
     iwMapGenerator(rttr::mapGenerator::MapSettings& settings);
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 
 private:
     rttr::mapGenerator::MapSettings& mapSettings;
 
     /// Reset the UI to the values of @ref mapSettings
-    void Reset();
+    void reset();
     /// Updates @ref mapSettings with the values currently configured in the UI.
-    void Apply();
+    void apply();
 };

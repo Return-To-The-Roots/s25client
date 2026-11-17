@@ -28,34 +28,34 @@ nofBuilder::nofBuilder(const MapPoint pos, const unsigned char player, noBuildin
     // Sind wir schon an unsere Baustelle gleich hingesetzt worden (bei Häfen)?
     if(building_site)
     {
-        if(pos == building_site->GetPos())
+        if(pos == building_site->getPos())
         {
             // Dann gleich mit dem Bauprozess beginnen
             fs = FigureState::Job;
-            GoalReached();
+            goalReached();
         }
     }
 }
 
-void nofBuilder::Serialize(SerializedGameData& sgd) const
+void nofBuilder::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(state);
-    sgd.PushObject(building_site, true);
+    sgd.pushEnum<uint8_t>(state);
+    sgd.pushObject(building_site, true);
     helpers::pushPoint(sgd, offsetSite);
     helpers::pushPoint(sgd, nextOffsetSite);
-    sgd.PushUnsignedChar(building_steps_available);
+    sgd.pushUnsignedChar(building_steps_available);
 }
 
 nofBuilder::nofBuilder(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), state(sgd.Pop<BuilderState>()),
-      building_site(sgd.PopObject<noBuildingSite>(GO_Type::Buildingsite)),
+    : noFigure(sgd, obj_id), state(sgd.pop<BuilderState>()),
+      building_site(sgd.popObject<noBuildingSite>(GO_Type::Buildingsite)),
       offsetSite(helpers::popPoint<Point<int16_t>>(sgd)), nextOffsetSite(helpers::popPoint<Point<int16_t>>(sgd)),
-      building_steps_available(sgd.PopUnsignedChar())
+      building_steps_available(sgd.popUnsignedChar())
 {}
 
-void nofBuilder::GoalReached()
+void nofBuilder::goalReached()
 {
     goal_ = nullptr;
     // an der Baustelle normal anfangen zu arbeiten
@@ -65,39 +65,39 @@ void nofBuilder::GoalReached()
     offsetSite = Point<short>(0, 0);
 
     // Anfangen um die Baustelle herumzulaufen
-    StartFreewalk();
+    startFreewalk();
 }
 
-void nofBuilder::Walked() {}
+void nofBuilder::walked() {}
 
-void nofBuilder::AbrogateWorkplace()
+void nofBuilder::abrogateWorkplace()
 {
     if(building_site)
     {
         state = BuilderState::FigureWork;
-        building_site->Abrogate();
+        building_site->abrogate();
         building_site = nullptr;
     }
 }
 
-void nofBuilder::LostWork()
+void nofBuilder::lostWork()
 {
     building_site = nullptr;
 
     if(state == BuilderState::FigureWork)
-        GoHome();
+        goHome();
     else
     {
         // Event abmelden
-        GetEvMgr().RemoveEvent(current_ev);
+        getEvMgr().removeEvent(current_ev);
 
-        StartWandering();
-        Wander();
+        startWandering();
+        wander();
         state = BuilderState::FigureWork;
     }
 }
 
-void nofBuilder::HandleDerivedEvent(const unsigned id)
+void nofBuilder::handleDerivedEvent(const unsigned id)
 {
     RTTR_Assert(id == 1u && current_ev->id == id);
     switch(state)
@@ -108,11 +108,11 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
             offsetSite = nextOffsetSite;
 
             // Ware aufnehmen, falls es eine gibt
-            if(ChooseWare())
+            if(chooseWare())
                 state = BuilderState::BuildFreewalk;
 
             // Weiter drumrumlaufen
-            StartFreewalk();
+            startFreewalk();
         }
         break;
         case BuilderState::BuildFreewalk:
@@ -124,9 +124,9 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
             if(building_steps_available)
             {
                 // dann mal schön bauen
-                current_ev = GetEvMgr().AddEvent(this, 40, 1);
+                current_ev = getEvMgr().addEvent(this, 40, 1);
                 state = BuilderState::Build;
-            } else if(building_site->IsBuildingComplete())
+            } else if(building_site->isBuildingComplete())
             {
                 // fertig mit Bauen!
                 current_ev = nullptr;
@@ -134,71 +134,71 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
                 // Baustelle abreißen und Gebäude hinsetzen
 
                 // Gebäudetyp merken und das Volk des Gebäudes
-                BuildingType building_type = building_site->GetBuildingType();
-                Nation building_nation = building_site->GetNation();
+                BuildingType buildingType = building_site->getBuildingType();
+                Nation buildingNation = building_site->getNation();
 
                 state = BuilderState::FigureWork;
 
                 // Baustelle abmelden
-                GamePlayer& owner = world->GetPlayer(player);
-                owner.RemoveBuildingSite(building_site);
-                if(world->IsHarborBuildingSiteFromSea(building_site))
-                    world->RemoveHarborBuildingSiteFromSea(building_site);
+                GamePlayer& owner = world->getPlayer(player);
+                owner.removeBuildingSite(building_site);
+                if(world->isHarborBuildingSiteFromSea(building_site))
+                    world->removeHarborBuildingSiteFromSea(building_site);
 
                 // Remove buildingsite, but don't destroy!
-                world->SetNO(building_site->GetPos(), nullptr);
+                world->setNO(building_site->getPos(), nullptr);
                 deletePtr(building_site);
 
-                noBuilding* bld = BuildingFactory::CreateBuilding(*world, building_type, pos, player, building_nation);
-                world->GetNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, building_type));
+                noBuilding* bld = BuildingFactory::createBuilding(*world, buildingType, pos, player, buildingNation);
+                world->getNotifications().publish(BuildingNote(BuildingNote::Constructed, player, pos, buildingType));
 
                 // Special handling for warehouses
-                if(BuildingProperties::IsWareHouse(building_type))
+                if(BuildingProperties::isWareHouse(buildingType))
                 {
                     auto* wh = static_cast<nobBaseWarehouse*>(bld);
                     // Mich dort gleich einquartieren und nicht erst zurücklaufen
-                    wh->AddFigure(world->RemoveFigure(pos, *this));
+                    wh->addFigure(world->removeFigure(pos, *this));
 
                     // Evtl Träger aus dem HQ wieder verwenden
-                    owner.FindCarrierForAllRoads();
-                    owner.FindWarehouseForAllJobs(Job::Helper);
+                    owner.findCarrierForAllRoads();
+                    owner.findWarehouseForAllJobs(Job::Helper);
 
                     // Evtl gabs verlorene Waren, die jetzt in das WH wieder reinkönnen
-                    owner.FindClientForLostWares();
+                    owner.findClientForLostWares();
                     return;
                 }
 
                 // Nach Hause laufen bzw. auch rumirren
                 rs_pos = 0;
                 rs_dir = true;
-                cur_rs = world->GetSpecObj<noRoadNode>(pos)->GetRoute(Direction::SouthEast);
+                cur_rs = world->getSpecObj<noRoadNode>(pos)->getRoute(Direction::SouthEast);
 
-                GoHome();
-                StartWalking(Direction::SouthEast);
+                goHome();
+                startWalking(Direction::SouthEast);
             } else
             {
                 // Brauchen neues Material
 
                 // Ware aufnehmen, falls es eine gibt
-                if(!ChooseWare())
+                if(!chooseWare())
                     state = BuilderState::WaitingFreewalk;
 
                 // Weiter drumrumlaufen
-                StartFreewalk();
+                startFreewalk();
             }
         }
         break;
         case BuilderState::Build:
         {
             // Sounds abmelden
-            world->GetSoundMgr().stopSounds(*this);
+            world->getSoundMgr().stopSounds(*this);
 
             // ein Bauschritt weniger, Haus um eins höher
             --building_steps_available;
             ++building_site->build_progress;
             // Fertig mit dem Bauschritt, dann an nächste Position gehen
             state = BuilderState::BuildFreewalk;
-            StartFreewalk();
+            startFreewalk();
         }
         break;
         default: break;
@@ -209,96 +209,96 @@ void nofBuilder::HandleDerivedEvent(const unsigned id)
 const std::array<short, 2> FREEWALK_LENGTH = {22, 11};          // waagerecht
 const std::array<short, 2> FREEWALK_LENGTH_SLANTWISE = {14, 7}; // schräg
 
-void nofBuilder::StartFreewalk()
+void nofBuilder::startFreewalk()
 {
-    std::vector<Direction> possible_directions;
+    std::vector<Direction> possibleDirections;
 
-    unsigned char waiting_walk = ((state == BuilderState::WaitingFreewalk) ? 0 : 1);
+    unsigned char waitingWalk = ((state == BuilderState::WaitingFreewalk) ? 0 : 1);
 
     // Wohin kann der Bauarbeiter noch laufen?
 
     // Nach links
-    if(offsetSite.x - FREEWALK_LENGTH[waiting_walk] >= LEFT_MAX)
-        possible_directions.push_back(Direction::West);
+    if(offsetSite.x - FREEWALK_LENGTH[waitingWalk] >= LEFT_MAX)
+        possibleDirections.push_back(Direction::West);
     // Nach rechts
-    if(offsetSite.x + FREEWALK_LENGTH[waiting_walk] <= RIGHT_MAX)
-        possible_directions.push_back(Direction::East);
+    if(offsetSite.x + FREEWALK_LENGTH[waitingWalk] <= RIGHT_MAX)
+        possibleDirections.push_back(Direction::East);
     // Nach links/oben
-    if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= LEFT_MAX
-       && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= UP_MAX)
-        possible_directions.push_back(Direction::NorthWest);
+    if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waitingWalk] >= LEFT_MAX
+       && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waitingWalk] >= UP_MAX)
+        possibleDirections.push_back(Direction::NorthWest);
     // Nach links/unten
-    if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= LEFT_MAX
-       && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
-        possible_directions.push_back(Direction::SouthWest);
+    if(offsetSite.x - FREEWALK_LENGTH_SLANTWISE[waitingWalk] >= LEFT_MAX
+       && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waitingWalk] <= DOWN_MAX)
+        possibleDirections.push_back(Direction::SouthWest);
     // Nach rechts/oben
-    if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX
-       && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waiting_walk] >= UP_MAX)
-        possible_directions.push_back(Direction::NorthEast);
+    if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waitingWalk] <= RIGHT_MAX
+       && offsetSite.y - FREEWALK_LENGTH_SLANTWISE[waitingWalk] >= UP_MAX)
+        possibleDirections.push_back(Direction::NorthEast);
     // Nach rechts/unten
-    if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= RIGHT_MAX
-       && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waiting_walk] <= DOWN_MAX)
-        possible_directions.push_back(Direction::SouthEast);
+    if(offsetSite.x + FREEWALK_LENGTH_SLANTWISE[waitingWalk] <= RIGHT_MAX
+       && offsetSite.y + FREEWALK_LENGTH_SLANTWISE[waitingWalk] <= DOWN_MAX)
+        possibleDirections.push_back(Direction::SouthEast);
 
-    RTTR_Assert(!possible_directions.empty());
+    RTTR_Assert(!possibleDirections.empty());
     // Zufällige Richtung von diesen auswählen
-    FaceDir(RANDOM_ELEMENT(possible_directions));
+    faceDir(RANDOM_ELEMENT(possibleDirections));
 
     // Und dort auch hinlaufen
-    current_ev = GetEvMgr().AddEvent(this, (state == BuilderState::WaitingFreewalk) ? 24 : 17, 1);
+    current_ev = getEvMgr().addEvent(this, (state == BuilderState::WaitingFreewalk) ? 24 : 17, 1);
 
     // Zukünftigen Platz berechnen
     nextOffsetSite = offsetSite;
 
-    switch(GetCurMoveDir())
+    switch(getCurMoveDir())
     {
-        case Direction::West: nextOffsetSite.x -= FREEWALK_LENGTH[waiting_walk]; break;
+        case Direction::West: nextOffsetSite.x -= FREEWALK_LENGTH[waitingWalk]; break;
         case Direction::NorthWest:
-            nextOffsetSite.x -= FREEWALK_LENGTH_SLANTWISE[waiting_walk];
-            nextOffsetSite.y -= FREEWALK_LENGTH_SLANTWISE[waiting_walk];
+            nextOffsetSite.x -= FREEWALK_LENGTH_SLANTWISE[waitingWalk];
+            nextOffsetSite.y -= FREEWALK_LENGTH_SLANTWISE[waitingWalk];
             break;
         case Direction::NorthEast:
-            nextOffsetSite.x += FREEWALK_LENGTH_SLANTWISE[waiting_walk];
-            nextOffsetSite.y -= FREEWALK_LENGTH_SLANTWISE[waiting_walk];
+            nextOffsetSite.x += FREEWALK_LENGTH_SLANTWISE[waitingWalk];
+            nextOffsetSite.y -= FREEWALK_LENGTH_SLANTWISE[waitingWalk];
             break;
-        case Direction::East: nextOffsetSite.x += FREEWALK_LENGTH[waiting_walk]; break;
+        case Direction::East: nextOffsetSite.x += FREEWALK_LENGTH[waitingWalk]; break;
         case Direction::SouthEast:
-            nextOffsetSite.x += FREEWALK_LENGTH_SLANTWISE[waiting_walk];
-            nextOffsetSite.y += FREEWALK_LENGTH_SLANTWISE[waiting_walk];
+            nextOffsetSite.x += FREEWALK_LENGTH_SLANTWISE[waitingWalk];
+            nextOffsetSite.y += FREEWALK_LENGTH_SLANTWISE[waitingWalk];
             break;
         case Direction::SouthWest:
-            nextOffsetSite.x -= FREEWALK_LENGTH_SLANTWISE[waiting_walk];
-            nextOffsetSite.y += FREEWALK_LENGTH_SLANTWISE[waiting_walk];
+            nextOffsetSite.x -= FREEWALK_LENGTH_SLANTWISE[waitingWalk];
+            nextOffsetSite.y += FREEWALK_LENGTH_SLANTWISE[waitingWalk];
             break;
     }
 }
 
-void nofBuilder::Draw(DrawPoint drawPt)
+void nofBuilder::draw(DrawPoint drawPt)
 {
     switch(state)
     {
         case BuilderState::FigureWork:
         {
-            DrawWalkingBobJobs(drawPt, Job::Builder);
+            drawWalkingBobJobs(drawPt, Job::Builder);
         }
         break;
         case BuilderState::BuildFreewalk:
         case BuilderState::WaitingFreewalk:
         {
             // Interpolieren und Door-Point von Baustelle draufaddieren
-            drawPt.x += GAMECLIENT.Interpolate(offsetSite.x, nextOffsetSite.x, current_ev);
-            drawPt.y += GAMECLIENT.Interpolate(offsetSite.y, nextOffsetSite.y, current_ev);
-            drawPt += building_site->GetDoorPoint();
+            drawPt.x += GAMECLIENT.interpolate(offsetSite.x, nextOffsetSite.x, current_ev);
+            drawPt.y += GAMECLIENT.interpolate(offsetSite.y, nextOffsetSite.y, current_ev);
+            drawPt += building_site->getDoorPoint();
 
             LOADER
-              .getBobSprite(building_site->GetNation(), Job::Builder, GetCurMoveDir(),
-                            GAMECLIENT.Interpolate(12, current_ev) % 8u)
-              .draw(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
+              .getBobSprite(building_site->getNation(), Job::Builder, getCurMoveDir(),
+                            GAMECLIENT.interpolate(12, current_ev) % 8u)
+              .draw(drawPt, COLOR_WHITE, world->getPlayer(player).color);
         }
         break;
         case BuilderState::Build:
         {
-            const unsigned index = GAMECLIENT.Interpolate(28, current_ev);
+            const unsigned index = GAMECLIENT.interpolate(28, current_ev);
             unsigned texture;
             unsigned soundId = 0;
 
@@ -327,21 +327,21 @@ void nofBuilder::Draw(DrawPoint drawPt)
                 // in der Mitte mit "Händen"
                 texture = 287 + (index / 2) % 4;
             }
-            drawPt += building_site->GetDoorPoint() + DrawPoint(offsetSite);
-            LOADER.GetPlayerImage("rom_bobs", texture)
-              ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(building_site->GetPlayer()).color);
+            drawPt += building_site->getDoorPoint() + DrawPoint(offsetSite);
+            LOADER.getPlayerImage("rom_bobs", texture)
+              ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(building_site->getPlayer()).color);
             if(soundId && index % 4 == 2)
-                world->GetSoundMgr().playNOSound(soundId, *this, index, 160 - rand() % 60);
+                world->getSoundMgr().playNOSound(soundId, *this, index, 160 - rand() % 60);
         }
         break;
     }
 }
 
-bool nofBuilder::ChooseWare()
+bool nofBuilder::chooseWare()
 {
     // Brauch ich ein Brett(Rohbau und wenn kein Stein benötigt wird) oder Stein?
-    const BuildingCost costs = BUILDING_COSTS[building_site->GetBuildingType()];
-    if(building_site->GetBuildProgress(false) < costs.boards * 8 || !costs.stones)
+    const BuildingCost costs = BUILDING_COSTS[building_site->getBuildingType()];
+    if(building_site->getBuildProgress(false) < costs.boards * 8 || !costs.stones)
     {
         // Brett
         if(building_site->boards)

@@ -10,12 +10,12 @@ namespace {
 struct TestGO : GameObject
 {
     // LCOV_EXCL_START
-    void Destroy() override final{};
-    void Serialize(SerializedGameData&) const override final{};
-    GO_Type GetGOT() const override final { return GO_Type::Animal; }
+    void destroy() override final{};
+    void serialize(SerializedGameData&) const override final{};
+    GO_Type getGOT() const override final { return GO_Type::Animal; }
     // LCOV_EXCL_STOP
 
-    void HandleEvent(unsigned) override final { handled = true; }
+    void handleEvent(unsigned) override final { handled = true; }
     bool handled = false;
 };
 } // namespace
@@ -24,31 +24,31 @@ using WorldFixtureEmpty = WorldFixture<CreateEmptyWorld, 0, 6, 6>;
 BOOST_FIXTURE_TEST_CASE(SkipGFs_Works, WorldFixtureEmpty)
 {
     // No events -> Nothing to do
-    BOOST_TEST(em.GetNumActiveEvents() == 0u);
+    BOOST_TEST(em.getNumActiveEvents() == 0u);
     RTTR_SKIP_GFS(0);
-    BOOST_TEST(em.GetCurrentGF() == 0u);
-    BOOST_TEST(em.ExecuteNextEvent(0) == 0u);
-    BOOST_TEST(em.GetCurrentGF() == 0u);
+    BOOST_TEST(em.getCurrentGF() == 0u);
+    BOOST_TEST(em.executeNextEvent(0) == 0u);
+    BOOST_TEST(em.getCurrentGF() == 0u);
     RTTR_SKIP_GFS(10);
-    BOOST_TEST(em.GetCurrentGF() == 10u);
-    BOOST_TEST(em.ExecuteNextEvent(5) == 0u);
-    BOOST_TEST(em.ExecuteNextEvent(10) == 0u);
-    BOOST_TEST(em.GetCurrentGF() == 10u);
+    BOOST_TEST(em.getCurrentGF() == 10u);
+    BOOST_TEST(em.executeNextEvent(5) == 0u);
+    BOOST_TEST(em.executeNextEvent(10) == 0u);
+    BOOST_TEST(em.getCurrentGF() == 10u);
 
     TestGO go;
-    em.AddEvent(&go, 10);
+    em.addEvent(&go, 10);
     RTTR_SKIP_GFS(5); // No event triggered
-    BOOST_TEST(em.GetCurrentGF() == 15u);
+    BOOST_TEST(em.getCurrentGF() == 15u);
     BOOST_TEST(!go.handled);
     RTTR_SKIP_GFS(7); // event triggered
-    BOOST_TEST(em.GetCurrentGF() == 22u);
+    BOOST_TEST(em.getCurrentGF() == 22u);
     BOOST_TEST(go.handled);
 
     go.handled = false;
-    em.AddEvent(&go, 8); // at +20
+    em.addEvent(&go, 8); // at +20
 
     unsigned numGF;
     RTTR_EXEC_TILL_CT_GF(100, go.handled, numGF);
-    BOOST_TEST(em.GetCurrentGF() == 30u);
+    BOOST_TEST(em.getCurrentGF() == 30u);
     BOOST_TEST(numGF == 8u);
 }

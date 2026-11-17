@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(SizeAndPosCorrect)
                 continue;
 
             Rect rect2(Position(bmp2.texCoords[0] * size), Extent((bmp2.texCoords[2] - bmp2.texCoords[0]) * size));
-            BOOST_TEST(!DoRectsIntersect(rect1, rect2));
+            BOOST_TEST(!doRectsIntersect(rect1, rect2));
         }
     }
 }

@@ -63,8 +63,8 @@ int main(int argc, char** argv)
         }
         if(options.count("version"))
         {
-            bnw::cout << rttr::version::GetTitle() << " v" << rttr::version::GetVersion() << "-"
-                      << rttr::version::GetRevision() << std::endl
+            bnw::cout << rttr::version::getTitle() << " v" << rttr::version::getVersion() << "-"
+                      << rttr::version::getRevision() << std::endl
                       << "Compiled with " << System::getCompilerName() << " for " << System::getOSName() << std::endl;
             return 0;
         }
@@ -82,14 +82,14 @@ int main(int argc, char** argv)
 
     try
     {
-        RTTRCONFIG.Init();
+        RTTRCONFIG.init();
         // Lua output goes to the log file, and writing it throws if the log directory does not exist
-        const bfs::path logDir = RTTRCONFIG.ExpandPath(s25::folders::logs);
+        const bfs::path logDir = RTTRCONFIG.expandPath(s25::folders::logs);
         bfs::create_directories(logDir);
         LOG.setLogFilepath(logDir);
         libsiedler2::setAllocator(new GlAllocator);
 
-        const bfs::path replayPath = RTTRCONFIG.ExpandPath(options["replay"].as<std::string>());
+        const bfs::path replayPath = RTTRCONFIG.expandPath(options["replay"].as<std::string>());
         const bool verbose = options.count("verbose") > 0;
 
         bnw::cout << "Loading: " << replayPath << "\n";
@@ -105,7 +105,7 @@ int main(int argc, char** argv)
         const auto printStats = [&] {
             HeadlessStats stats;
             stats.currentGF = replay.getCurrentGF();
-            stats.totalGFs = replay.getReplay().GetLastGF() + 1;
+            stats.totalGFs = replay.getReplay().getLastGF() + 1;
             stats.gameTime = std::chrono::duration_cast<std::chrono::milliseconds>(SPEED_GF_LENGTHS[GameSpeed::Normal]
                                                                                    * stats.currentGF);
             stats.wallTime =
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
             lastReportGF = stats.currentGF;
         };
 
-        replay.Run([&](const HeadlessReplay&) {
+        replay.run([&](const HeadlessReplay&) {
             const auto now = std::chrono::steady_clock::now();
             if(now >= nextReport)
             {

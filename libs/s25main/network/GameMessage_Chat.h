@@ -20,7 +20,7 @@ public:
         : GameMessageWithPlayer(NMS_CHAT, player), destination(destination), text(std::move(text))
     {}
 
-    void Serialize(Serializer& ser) const override;
-    void Deserialize(Serializer& ser) override;
-    bool Run(GameMessageInterface* callback) const override;
+    void serialize(Serializer& ser) const override;
+    void deserialize(Serializer& ser) override;
+    bool runGame(GameMessageInterface* callback) const override;
 };

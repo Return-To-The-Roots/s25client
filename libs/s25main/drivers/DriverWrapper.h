@@ -28,8 +28,8 @@ public:
     {
     public:
         DriverItem(bfs::path file, std::string name) : file(std::move(file)), name(std::move(name)) {}
-        const bfs::path& GetFile() const { return file; }
-        const std::string& GetName() const { return name; }
+        const bfs::path& getFile() const { return file; }
+        const std::string& getName() const { return name; }
 
     private:
         bfs::path file;
@@ -39,22 +39,22 @@ public:
     DriverWrapper();
     ~DriverWrapper();
     /// Läd einen Treiber in die Treiber DLL, versucht, "preference" zu nehmen
-    bool Load(DriverType dt, std::string& preference);
+    bool load(DriverType dt, std::string& preference);
     /// Gibt eine Treiber-Handle wieder frei
-    void Unload();
-    bool IsLoaded() const;
+    void unload();
+    bool isLoaded() const;
     template<typename T>
-    T* GetFunction(const std::string& name)
+    T* getFunction(const std::string& name)
     {
         return dll.get<T>(name);
     }
 
     /// Läd eine Liste von verfügbaren Treibern
-    static std::vector<DriverItem> LoadDriverList(DriverType dt);
+    static std::vector<DriverItem> loadDriverList(DriverType dt);
 
 private:
     boost::dll::shared_library dll;
     /// Checks if the library is valid. Puts either the name or the error message into nameOrError
-    static bool CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError);
+    static bool checkLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError);
 };
 } // namespace drivers

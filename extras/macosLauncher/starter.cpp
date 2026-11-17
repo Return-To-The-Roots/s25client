@@ -30,14 +30,14 @@ void copyDirectory(const bfs::path& sourceDir, const bfs::path& destinationDir)
 
 bool isS2Installed()
 {
-    const bfs::path fileA = RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/CREDITS.LST");
-    const bfs::path fileB = RTTRCONFIG.ExpandPath("<RTTR_GAME>/GFX/PALETTE/PAL5.BBM");
+    const bfs::path fileA = RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/CREDITS.LST");
+    const bfs::path fileB = RTTRCONFIG.expandPath("<RTTR_GAME>/GFX/PALETTE/PAL5.BBM");
     return bfs::exists(fileA) && bfs::exists(fileB);
 }
 
 int main(int argc, char* argv[])
 {
-    if(!RTTRCONFIG.Init())
+    if(!RTTRCONFIG.init())
     {
         std::cerr << "Failed to init program!" << std::endl;
         return 1;
@@ -48,11 +48,11 @@ int main(int argc, char* argv[])
         {
             const bfs::path tmpPath = "/tmp/rttr.command";
             boost::nowide::ofstream file(tmpPath);
-            file << "\"" << RTTRCONFIG.ExpandPath("<RTTR_BIN>/starter") << "\" interminal" << std::endl;
+            file << "\"" << RTTRCONFIG.expandPath("<RTTR_BIN>/starter") << "\" interminal" << std::endl;
             file << "rm " << tmpPath << std::endl;
             file.close();
             bfs::permissions(tmpPath, bfs::owner_all);
-            bfs::current_path(RTTRCONFIG.ExpandPath("<RTTR_BIN>"));
+            bfs::current_path(RTTRCONFIG.expandPath("<RTTR_BIN>"));
             system("open rttr.terminal");
         } catch(const std::exception& e)
         {
@@ -68,7 +68,7 @@ int main(int argc, char* argv[])
         {
             std::cerr << "Couldn't find data files for Settlers II" << std::endl;
             std::cerr << "Please copy the folders \"DATA\" and \"GFX\" from your Settlers II install to" << std::endl;
-            std::cerr << "\"" << RTTRCONFIG.ExpandPath("<RTTR_GAME>") << "\" or" << std::endl;
+            std::cerr << "\"" << RTTRCONFIG.expandPath("<RTTR_GAME>") << "\" or" << std::endl;
             std::cerr << "insert the Settlers II Gold CD in your drive and hit \"Enter\"." << std::endl;
             std::cin.ignore();
         }
@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
             std::cout << "Copying files..." << std::endl;
             try
             {
-                copyDirectory(S2CD / "DATA", RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA"));
+                copyDirectory(S2CD / "DATA", RTTRCONFIG.expandPath("<RTTR_GAME>/DATA"));
             } catch(const std::runtime_error& e)
             {
                 std::cerr << "Error copying DATA dir: " << e.what() << std::endl;
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
             }
             try
             {
-                copyDirectory(S2CD / "GFX", RTTRCONFIG.ExpandPath("<RTTR_GAME>/GFX"));
+                copyDirectory(S2CD / "GFX", RTTRCONFIG.expandPath("<RTTR_GAME>/GFX"));
             } catch(const std::runtime_error& e)
             {
                 std::cerr << "Error copying GFX dir: " << e.what() << std::endl;
@@ -96,11 +96,11 @@ int main(int argc, char* argv[])
     }
     if(argc <= 2 || argv[2] != std::string("noupdate"))
     {
-        bfs::path updaterPath = RTTRCONFIG.ExpandPath("<RTTR_EXTRA_BIN>/s25update");
+        bfs::path updaterPath = RTTRCONFIG.expandPath("<RTTR_EXTRA_BIN>/s25update");
         if(bfs::exists(updaterPath))
             System::execute(updaterPath, "--dir \"../../../\" -v");
         else
             std::cerr << "Updater not found at " << updaterPath << std::endl;
     }
-    System::execute(RTTRCONFIG.ExpandPath("<RTTR_BIN>/s25client"));
+    System::execute(RTTRCONFIG.expandPath("<RTTR_BIN>/s25client"));
 }

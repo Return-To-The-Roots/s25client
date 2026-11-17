@@ -21,7 +21,7 @@ using FreePathNodes = std::vector<FreePathNode>;
 MapNodes nodes;
 FreePathNodes fpNodes;
 
-void FreePathFinder::Init(const MapExtent& mapSize)
+void FreePathFinder::init(const MapExtent& mapSize)
 {
     currentVisit = 0;
     size_ = Extent(mapSize);
@@ -32,14 +32,14 @@ void FreePathFinder::Init(const MapExtent& mapSize)
     fpNodes.resize(nodes.size());
     RTTR_FOREACH_PT(MapPoint, size_)
     {
-        const unsigned idx = gwb_.GetIdx(pt);
+        const unsigned idx = gwb_.getIdx(pt);
         nodes[idx].mapPt = pt;
         fpNodes[idx].lastVisited = 0;
         fpNodes[idx].mapPt = pt;
     }
 }
 
-void FreePathFinder::IncreaseCurrentVisit()
+void FreePathFinder::increaseCurrentVisit()
 {
     // if the counter reaches its maxium, tidy up
     if(currentVisit == std::numeric_limits<unsigned>::max())
@@ -59,7 +59,7 @@ void FreePathFinder::IncreaseCurrentVisit()
 }
 
 /// Pathfinder ( A* ), O(v lg v) --> Normal terrain (ignoring roads) for road building and free walking jobs
-bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const MapPoint dest, const bool randomRoute,
+bool FreePathFinder::findPathAlternatingConditions(const MapPoint start, const MapPoint dest, const bool randomRoute,
                                                    const unsigned maxLength, std::vector<Direction>* route,
                                                    unsigned* length, Direction* firstDir, FP_Node_OK_Callback IsNodeOK,
                                                    FP_Node_OK_Callback IsNodeOKAlternate,
@@ -71,7 +71,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         RTTR_Assert(false);
         LOG.write("WARNING: Bug detected (GF: %u). Please report this with the savegame and replay (Start==Dest in "
                   "pathfinding %u,%u)\n")
-          % gwb_.GetEvMgr().GetCurrentGF() % unsigned(start.x) % unsigned(start.y);
+          % gwb_.getEvMgr().getCurrentGF() % unsigned(start.x) % unsigned(start.y);
         // But for now we assume it to be valid and return (kind of) correct values
         if(route)
             route->clear();
@@ -83,17 +83,17 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
     }
 
     // increase currentVisit, so we don't have to clear the visited-states at every run
-    IncreaseCurrentVisit();
+    increaseCurrentVisit();
 
     std::list<PathfindingPoint> todo;
-    const unsigned destId = gwb_.GetIdx(dest);
+    const unsigned destId = gwb_.getIdx(dest);
 
     bool prevStepEven = true; // flips between even and odd
     unsigned stepsTilSwitch = 1;
 
     // Add start node
-    unsigned startId = gwb_.GetIdx(start);
-    todo.push_back(PathfindingPoint(startId, gwb_.CalcDistance(start, dest), 0));
+    unsigned startId = gwb_.getIdx(start);
+    todo.push_back(PathfindingPoint(startId, gwb_.calcDistance(start, dest), 0));
     // And init it
     nodes[startId].prevEven = INVALID_PREV;
     nodes[startId].lastVisitedEven = currentVisit;
@@ -102,7 +102,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
 
     // Start at random dir (so different jobs may use different roads)
     const Direction startDir =
-      randomRoute ? convertToDirection(gwb_.GetIdx(start) * gwb_.GetEvMgr().GetCurrentGF()) : Direction::West;
+      randomRoute ? convertToDirection(gwb_.getIdx(start) * gwb_.getEvMgr().getCurrentGF()) : Direction::West;
 
     while(!todo.empty())
     {
@@ -170,10 +170,10 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
         for(const auto dir : helpers::enumRange(startDir))
         {
             // Koordinaten des entsprechenden umliegenden Punktes bilden
-            MapPoint neighbourPos = gwb_.GetNeighbour(nodes[bestId].mapPt, dir);
+            MapPoint neighbourPos = gwb_.getNeighbour(nodes[bestId].mapPt, dir);
 
             // ID des umliegenden Knotens bilden
-            unsigned nbId = gwb_.GetIdx(neighbourPos);
+            unsigned nbId = gwb_.getIdx(neighbourPos);
 
             // Knoten schon auf dem Feld gebildet ?
             if((prevStepEven && nodes[nbId].lastVisited == currentVisit)
@@ -197,28 +197,27 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
 
                     std::vector<MapPoint> evenLocationsOnRoute;
                     bool alternate = false;
-                    unsigned back_id = bestId;
+                    unsigned backId = bestId;
                     for(unsigned i = nodes[bestId].way - 1; i > 1;
                         i--) // backtrack the plannend route and check if another "even" position is too close
                     {
-                        Direction pdir = alternate ? nodes[back_id].dirEven : nodes[back_id].dir;
-                        p = gwb_.GetNeighbour(p, pdir + 3u);
+                        Direction pdir = alternate ? nodes[backId].dirEven : nodes[backId].dir;
+                        p = gwb_.getNeighbour(p, pdir + 3u);
                         if(i % 2 == 0) // even step
                         {
                             evenLocationsOnRoute.push_back(p);
                         }
-                        back_id = alternate ? nodes[back_id].prevEven : nodes[back_id].prev;
+                        backId = alternate ? nodes[backId].prevEven : nodes[backId].prev;
                         alternate = !alternate;
                     }
-                    bool tooClose =
-                      helpers::contains_if(evenLocationsOnRoute, [this, neighbourPos](const MapPoint& it) {
-                          return gwb_.CalcDistance(neighbourPos, it) < 2;
-                      });
+                    bool tooClose = helpers::containsIf(evenLocationsOnRoute, [this, neighbourPos](const MapPoint& it) {
+                        return gwb_.calcDistance(neighbourPos, it) < 2;
+                    });
                     if(tooClose)
                         continue;
-                    if(gwb_.CalcDistance(neighbourPos, start) < 2)
+                    if(gwb_.calcDistance(neighbourPos, start) < 2)
                         continue;
-                    if(gwb_.CalcDistance(neighbourPos, dest) < 2)
+                    if(gwb_.calcDistance(neighbourPos, dest) < 2)
                         continue;
                 }
             }
@@ -246,7 +245,7 @@ bool FreePathFinder::FindPathAlternatingConditions(const MapPoint start, const M
                 nodes[nbId].prevEven = bestId;
             }
 
-            todo.push_back(PathfindingPoint(nbId, gwb_.CalcDistance(neighbourPos, dest), way));
+            todo.push_back(PathfindingPoint(nbId, gwb_.calcDistance(neighbourPos, dest), way));
             // pf_nodes[xaid].it_p = ret.first;
         }
     }

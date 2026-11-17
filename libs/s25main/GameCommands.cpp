@@ -24,34 +24,34 @@
 
 namespace gc {
 
-void SetFlag::Execute(GameWorld& world, uint8_t playerId)
+void SetFlag::execute(GameWorld& world, uint8_t playerId)
 {
     world.SetFlag(pt_, playerId);
 }
 
-void DestroyFlag::Execute(GameWorld& world, uint8_t playerId)
+void DestroyFlag::execute(GameWorld& world, uint8_t playerId)
 {
     world.DestroyFlag(pt_, playerId);
 }
 
 BuildRoad::BuildRoad(Serializer& ser)
-    : Coords(GCType::BuildRoad, ser), boat_road(ser.PopBool()), route(ser.PopUnsignedInt())
+    : Coords(GCType::BuildRoad, ser), boat_road(ser.popBool()), route(ser.popUnsignedInt())
 {
     for(Direction& i : route)
         i = helpers::popEnum<Direction>(ser);
 }
 
-void BuildRoad::Serialize(Serializer& ser) const
+void BuildRoad::serialize(Serializer& ser) const
 {
-    Coords::Serialize(ser);
+    Coords::serialize(ser);
 
-    ser.PushBool(boat_road);
-    ser.PushUnsignedInt(route.size());
+    ser.pushBool(boat_road);
+    ser.pushUnsignedInt(route.size());
     for(auto i : route)
         helpers::pushEnum<uint8_t>(ser, i);
 }
 
-void BuildRoad::Execute(GameWorld& world, uint8_t playerId)
+void BuildRoad::execute(GameWorld& world, uint8_t playerId)
 {
     world.BuildRoad(playerId, boat_road, pt_, route);
 }
@@ -60,17 +60,17 @@ DestroyRoad::DestroyRoad(Serializer& ser)
     : Coords(GCType::DestroyRoad, ser), start_dir(helpers::popEnum<Direction>(ser))
 {}
 
-void DestroyRoad::Serialize(Serializer& ser) const
+void DestroyRoad::serialize(Serializer& ser) const
 {
-    Coords::Serialize(ser);
+    Coords::serialize(ser);
 
     helpers::pushEnum<uint8_t>(ser, start_dir);
 }
 
-void DestroyRoad::Execute(GameWorld& world, uint8_t playerId)
+void DestroyRoad::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* flag = world.GetSpecObj<noFlag>(pt_);
-    if(flag && flag->GetPlayer() == playerId)
+    auto* flag = world.getSpecObj<noFlag>(pt_);
+    if(flag && flag->getPlayer() == playerId)
         flag->DestroyRoad(start_dir);
 }
 
@@ -78,16 +78,16 @@ UpgradeRoad::UpgradeRoad(Serializer& ser)
     : Coords(GCType::UpgradeRoad, ser), start_dir(helpers::popEnum<Direction>(ser))
 {}
 
-void UpgradeRoad::Serialize(Serializer& ser) const
+void UpgradeRoad::serialize(Serializer& ser) const
 {
-    Coords::Serialize(ser);
+    Coords::serialize(ser);
     helpers::pushEnum<uint8_t>(ser, start_dir);
 }
 
-void UpgradeRoad::Execute(GameWorld& world, uint8_t playerId)
+void UpgradeRoad::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* flag = world.GetSpecObj<noFlag>(pt_);
-    if(flag && flag->GetPlayer() == playerId)
+    auto* flag = world.getSpecObj<noFlag>(pt_);
+    if(flag && flag->getPlayer() == playerId)
         flag->UpgradeRoad(start_dir);
 }
 
@@ -135,13 +135,13 @@ ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::
     }
 }
 
-void ChangeDistribution::Execute(GameWorld& world, uint8_t playerId)
+void ChangeDistribution::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).ChangeDistribution(data);
+    world.getPlayer(playerId).ChangeDistribution(data);
 }
 
 ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
-    : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.PopBool())
+    : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.popBool())
 {
     if(ser.getDataVersion() >= 2)
     {
@@ -169,17 +169,17 @@ ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
     }
 }
 
-void ChangeBuildOrder::Execute(GameWorld& world, uint8_t playerId)
+void ChangeBuildOrder::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).ChangeBuildOrder(useCustomBuildOrder, data);
+    world.getPlayer(playerId).ChangeBuildOrder(useCustomBuildOrder, data);
 }
 
-void SetBuildingSite::Execute(GameWorld& world, uint8_t playerId)
+void SetBuildingSite::execute(GameWorld& world, uint8_t playerId)
 {
     world.SetBuildingSite(bt, pt_, playerId);
 }
 
-void DestroyBuilding::Execute(GameWorld& world, uint8_t playerId)
+void DestroyBuilding::execute(GameWorld& world, uint8_t playerId)
 {
     world.DestroyBuilding(pt_, playerId);
 }
@@ -205,86 +205,86 @@ ChangeTransport::ChangeTransport(Deserializer& ser) : GameCommand(GCType::Change
     }
 }
 
-void ChangeTransport::Execute(GameWorld& world, uint8_t playerId)
+void ChangeTransport::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).ConvertTransportData(data);
+    world.getPlayer(playerId).convertTransportData(data);
 }
 
-void ChangeMilitary::Execute(GameWorld& world, uint8_t playerId)
+void ChangeMilitary::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).ChangeMilitarySettings(data);
+    world.getPlayer(playerId).changeMilitarySettings(data);
 }
 
-ChangeTools::ChangeTools(const ToolSettings& data, const int8_t* order_delta)
+ChangeTools::ChangeTools(const ToolSettings& data, const int8_t* orderDelta)
     : GameCommand(GCType::ChangeTools), data(data), orders()
 {
-    if(order_delta != nullptr)
-        std::copy_n(order_delta, orders.size(), orders.begin());
+    if(orderDelta != nullptr)
+        std::copy_n(orderDelta, orders.size(), orders.begin());
 }
 
-void ChangeTools::Execute(GameWorld& world, uint8_t playerId)
+void ChangeTools::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).ChangeToolsSettings(data, orders);
+    world.getPlayer(playerId).changeToolsSettings(data, orders);
 }
 
-void CallSpecialist::Execute(GameWorld& world, uint8_t playerId)
+void CallSpecialist::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).CallFlagWorker(pt_, job);
+    world.getPlayer(playerId).callFlagWorker(pt_, job);
 }
 
-void Attack::Execute(GameWorld& world, uint8_t playerId)
+void Attack::execute(GameWorld& world, uint8_t playerId)
 {
     world.Attack(playerId, pt_, soldiers_count, strong_soldiers);
 }
 
-void SeaAttack::Execute(GameWorld& world, uint8_t playerId)
+void SeaAttack::execute(GameWorld& world, uint8_t playerId)
 {
-    world.AttackViaSea(playerId, pt_, soldiers_count, strong_soldiers);
+    world.attackViaSea(playerId, pt_, soldiers_count, strong_soldiers);
 }
 
-void SetCoinsAllowed::Execute(GameWorld& world, uint8_t playerId)
+void SetCoinsAllowed::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobMilitary>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetCoinsAllowed(enabled);
 }
 
-void SetArmorAllowed::Execute(GameWorld& world, uint8_t playerId)
+void SetArmorAllowed::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobMilitary>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetArmorAllowed(enabled);
 }
 
-void SetTroopLimit::Execute(GameWorld& world, uint8_t playerId)
+void SetTroopLimit::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobMilitary>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobMilitary>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetTroopLimit(rank, count);
 }
 
-void SetProductionEnabled::Execute(GameWorld& world, uint8_t playerId)
+void SetProductionEnabled::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobUsual>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobUsual>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetProductionEnabled(enabled);
 }
 
-void SetInventorySetting::Execute(GameWorld& world, uint8_t playerId)
+void SetInventorySetting::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobBaseWarehouse>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetInventorySetting(what, state);
 }
 
 SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
-    : Coords(GCType::SetAllInventorySettings, ser), isJob(ser.PopBool())
+    : Coords(GCType::SetAllInventorySettings, ser), isJob(ser.popBool())
 {
     const uint32_t numStates = (isJob ? helpers::NumEnumValues_v<Job> : helpers::NumEnumValues_v<GoodType>);
     if(ser.getDataVersion() >= 2)
     {
         for(unsigned i = 0; i < numStates; i++)
-            states.push_back(InventorySetting(ser.PopUnsignedChar()));
+            states.push_back(InventorySetting(ser.popUnsignedChar()));
     } else
     {
         states.resize(numStates);
@@ -300,7 +300,7 @@ SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
             {
                 // skip over not stored jobs
                 if(!isJobSkipped(job))
-                    states[tgtIdx] = InventorySetting(ser.PopUnsignedChar());
+                    states[tgtIdx] = InventorySetting(ser.popUnsignedChar());
                 tgtIdx++;
             }
         } else
@@ -315,125 +315,125 @@ SetAllInventorySettings::SetAllInventorySettings(Deserializer& ser)
             {
                 // skip over not stored wares
                 if(!isWareSkipped(ware))
-                    states[tgtIdx] = InventorySetting(ser.PopUnsignedChar());
+                    states[tgtIdx] = InventorySetting(ser.popUnsignedChar());
                 tgtIdx++;
             }
         }
     }
 }
 
-void SetAllInventorySettings::Execute(GameWorld& world, uint8_t playerId)
+void SetAllInventorySettings::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobBaseWarehouse>(pt_);
+    if(bld && bld->getPlayer() == playerId)
         bld->SetAllInventorySettings(isJob, states);
 }
 
-void ChangeReserve::Execute(GameWorld& world, uint8_t playerId)
+void ChangeReserve::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
-        bld->SetRealReserve(rank, count);
+    auto* const bld = world.getSpecObj<nobBaseWarehouse>(pt_);
+    if(bld && bld->getPlayer() == playerId)
+        bld->setRealReserve(rank, count);
 }
 
-void Surrender::Execute(GameWorld& world, uint8_t playerId)
+void Surrender::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).Surrender();
+    world.getPlayer(playerId).Surrender();
 }
 
-void CheatArmageddon::Execute(GameWorld& world, unsigned char /*playerId*/)
+void CheatArmageddon::execute(GameWorld& world, unsigned char /*playerId*/)
 {
-    world.Armageddon();
+    world.armageddon();
 }
 
-void DestroyAll::Execute(GameWorld& world, uint8_t playerId)
+void DestroyAll::execute(GameWorld& world, uint8_t playerId)
 {
-    world.Armageddon(playerId);
+    world.armageddon(playerId);
 }
 
-void SuggestPact::Execute(GameWorld& world, uint8_t playerId)
+void SuggestPact::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).SuggestPact(targetPlayer, pt, duration);
+    world.getPlayer(playerId).SuggestPact(targetPlayer, pt, duration);
 }
 
-void AcceptPact::Execute(GameWorld& world, uint8_t playerId)
+void AcceptPact::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(fromPlayer).AcceptPact(id, pt, playerId);
+    world.getPlayer(fromPlayer).AcceptPact(id, pt, playerId);
 }
 
-void CancelPact::Execute(GameWorld& world, uint8_t playerId)
+void CancelPact::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).CancelPact(pt, otherPlayer);
+    world.getPlayer(playerId).CancelPact(pt, otherPlayer);
 }
 
-void NotifyAlliesOfLocation::Execute(GameWorld& world, uint8_t playerId)
+void NotifyAlliesOfLocation::execute(GameWorld& world, uint8_t playerId)
 {
-    world.GetPlayer(playerId).NotifyAlliesOfLocation(pt_);
+    world.getPlayer(playerId).NotifyAlliesOfLocation(pt_);
 }
 
-void SetShipYardMode::Execute(GameWorld& world, uint8_t playerId)
+void SetShipYardMode::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobShipYard>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
-        bld->SetMode(buildShips ? nobShipYard::Mode::Ships : nobShipYard::Mode::Boats);
+    auto* const bld = world.getSpecObj<nobShipYard>(pt_);
+    if(bld && bld->getPlayer() == playerId)
+        bld->setMode(buildShips ? nobShipYard::Mode::Ships : nobShipYard::Mode::Boats);
 }
 
-void SetTempleProductionMode::Execute(GameWorld& world, uint8_t playerId)
+void SetTempleProductionMode::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobTemple>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
-        bld->SetProductionMode(productionMode);
+    auto* const bld = world.getSpecObj<nobTemple>(pt_);
+    if(bld && bld->getPlayer() == playerId)
+        bld->setProductionMode(productionMode);
 }
 
-void StartStopExpedition::Execute(GameWorld& world, uint8_t playerId)
+void StartStopExpedition::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobHarborBuilding>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobHarborBuilding>(pt_);
+    if(bld && bld->getPlayer() == playerId)
     {
         if(start)
-            bld->StartExpedition();
+            bld->startExpedition();
         else
-            bld->StopExpedition();
+            bld->stopExpedition();
     }
 }
 
-void StartStopExplorationExpedition::Execute(GameWorld& world, uint8_t playerId)
+void StartStopExplorationExpedition::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobHarborBuilding>(pt_);
-    if(bld && bld->GetPlayer() == playerId)
+    auto* const bld = world.getSpecObj<nobHarborBuilding>(pt_);
+    if(bld && bld->getPlayer() == playerId)
     {
         if(start)
-            bld->StartExplorationExpedition();
+            bld->startExplorationExpedition();
         else
-            bld->StopExplorationExpedition();
+            bld->stopExplorationExpedition();
     }
 }
 
-void ExpeditionCommand::Execute(GameWorld& world, uint8_t playerId)
+void ExpeditionCommand::execute(GameWorld& world, uint8_t playerId)
 {
-    noShip* ship = world.GetPlayer(playerId).GetShipByID(this->ship_id);
+    noShip* ship = world.getPlayer(playerId).getShipByID(this->ship_id);
     if(!ship)
         return;
 
     switch(action)
     {
-        case Action::FoundColony: ship->FoundColony(); break;
+        case Action::FoundColony: ship->foundColony(); break;
         case Action::CancelExpedition: ship->CancelExpedition(); break;
-        case Action::North: ship->ContinueExpedition(ShipDirection::North); break;
-        case Action::NorthEast: ship->ContinueExpedition(ShipDirection::NorthEast); break;
-        case Action::SouthEast: ship->ContinueExpedition(ShipDirection::SouthEast); break;
-        case Action::South: ship->ContinueExpedition(ShipDirection::South); break;
-        case Action::SouthWest: ship->ContinueExpedition(ShipDirection::SouthWest); break;
-        case Action::NorthWest: ship->ContinueExpedition(ShipDirection::NorthWest); break;
+        case Action::North: ship->continueExpedition(ShipDirection::North); break;
+        case Action::NorthEast: ship->continueExpedition(ShipDirection::NorthEast); break;
+        case Action::SouthEast: ship->continueExpedition(ShipDirection::SouthEast); break;
+        case Action::South: ship->continueExpedition(ShipDirection::South); break;
+        case Action::SouthWest: ship->continueExpedition(ShipDirection::SouthWest); break;
+        case Action::NorthWest: ship->continueExpedition(ShipDirection::NorthWest); break;
     }
 }
 
 /// Fuehrt das GameCommand aus
-void TradeOverLand::Execute(GameWorld& world, uint8_t playerId)
+void TradeOverLand::execute(GameWorld& world, uint8_t playerId)
 {
-    auto* const bld = world.GetSpecObj<nobBaseWarehouse>(pt_);
+    auto* const bld = world.getSpecObj<nobBaseWarehouse>(pt_);
     if(bld)
-        world.GetPlayer(playerId).Trade(bld, what, count);
+        world.getPlayer(playerId).trade(bld, what, count);
 }
 
 } // namespace gc

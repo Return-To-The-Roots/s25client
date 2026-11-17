@@ -137,16 +137,16 @@ void testMapSelection(Position const& windowPos, Extent const& windowExtent, Ext
     // Initial the selection is not set
     BOOST_TEST(!ms.getSelection());
     // Click on non mission area => selection will not change
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + freeQuadrantMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + freeQuadrantMidPoint));
     BOOST_TEST(!ms.getSelection());
     // Click on mission area of first mission => selection will change because mission is playable
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + firstMissionMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + firstMissionMidPoint));
     BOOST_TEST(ms.getSelection() == 0u);
     // Click on mission area of second mission => selection will not change because mission is not playable
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + secondMissionMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + secondMissionMidPoint));
     BOOST_TEST(ms.getSelection() == 0u);
     // Click on mission area of third mission => selection will not change because mission is not playable
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + thirdMissionMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + thirdMissionMidPoint));
     BOOST_TEST(ms.getSelection() == 0u);
 
     // Activate first and second mission
@@ -154,16 +154,16 @@ void testMapSelection(Position const& windowPos, Extent const& windowExtent, Ext
     // Selection stays the same as before
     BOOST_TEST(ms.getSelection() == 0u);
     // Click on mission area of second mission => selection will change because mission is playable
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + secondMissionMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + secondMissionMidPoint));
     BOOST_TEST(ms.getSelection() == 1u);
     // Click on mission area of third mission => selection will not change because mission is not playable
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + thirdMissionMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + thirdMissionMidPoint));
     BOOST_TEST(ms.getSelection() == 1u);
     // Click on non mission area => selection will not change
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + freeQuadrantMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + freeQuadrantMidPoint));
     BOOST_TEST(ms.getSelection() == 1u);
     // Click on mission area of first mission => selection will change because mission is playable
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + firstMissionMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + firstMissionMidPoint));
     BOOST_TEST(ms.getSelection() == 0u);
 
     // Test selection
@@ -192,13 +192,13 @@ void testMapSelection(Position const& windowPos, Extent const& windowExtent, Ext
     ms.setSelection(0);
     ms.setPreview(true);
     BOOST_TEST(ms.getSelection() == 0u);
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + secondMissionMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + secondMissionMidPoint));
     BOOST_TEST(ms.getSelection() == 0u);
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + thirdMissionMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + thirdMissionMidPoint));
     BOOST_TEST(ms.getSelection() == 0u);
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + freeQuadrantMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + freeQuadrantMidPoint));
     BOOST_TEST(ms.getSelection() == 0u);
-    ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + firstMissionMidPoint));
+    ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + firstMissionMidPoint));
     BOOST_TEST(ms.getSelection() == 0u);
     ms.setPreview(false);
 
@@ -217,9 +217,9 @@ void testMapSelection(Position const& windowPos, Extent const& windowExtent, Ext
                     borderPoint.y--;
 
                 const unsigned deselectIndex = (mid + 1) < midPoints.size() ? (mid + 1) : 0;
-                ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + midPoints[deselectIndex]));
+                ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + midPoints[deselectIndex]));
                 BOOST_TEST(ms.getSelection() == deselectIndex);
-                ms.Msg_LeftUp(MouseCoords(ms.GetPos() + offsetOfBackground + borderPoint));
+                ms.msgLeftUp(MouseCoords(ms.getPos() + offsetOfBackground + borderPoint));
                 BOOST_TEST(ms.getSelection() == mid);
             }
         }

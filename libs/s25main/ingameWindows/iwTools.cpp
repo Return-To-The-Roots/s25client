@@ -28,63 +28,63 @@
 iwTools::iwTools(const GameWorldViewer& gwv, GameCommandFactory& gcFactory)
     : TransmitSettingsIgwAdapter(
       CGI_TOOLS, IngameWindow::posLastOrCenter,
-      Extent(166 + (gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432), _("Tools"),
-      LOADER.GetImageN("io", 5)),
+      Extent(166 + (gwv.getWorld().getGGS().isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 432), _("Tools"),
+      LOADER.getImageN("io", 5)),
       gwv(gwv), gcFactory(gcFactory), ordersChanged(false), shouldUpdateTexts(false),
-      isReplay(GAMECLIENT.IsReplayModeOn())
+      isReplay(GAMECLIENT.isReplayModeOn())
 {
     // Einzelne Balken
     for(const auto tool : helpers::enumRange<Tool>())
-        AddToolSettingSlider(rttr::enum_cast(tool), TOOL_TO_GOOD[tool]);
+        addToolSettingSlider(rttr::enumCast(tool), TOOL_TO_GOOD[tool]);
 
-    const GlobalGameSettings& settings = gwv.GetWorld().GetGGS();
+    const GlobalGameSettings& settings = gwv.getWorld().getGGS();
     if(settings.isEnabled(AddonId::TOOL_ORDERING))
     {
         // qx:tools
         for(const auto tool : helpers::enumRange<Tool>())
         {
-            const auto toolIdx = rttr::enum_cast(tool);
+            const auto toolIdx = rttr::enumCast(tool);
             constexpr Extent btSize(20, 13);
             auto* txt = static_cast<ctrlTextDeepening*>(
-              AddTextDeepening(200 + toolIdx, DrawPoint(151, 31 + toolIdx * 28), Extent(22, 18), TextureColor::Grey, "",
+              addTextDeepening(200 + toolIdx, DrawPoint(151, 31 + toolIdx * 28), Extent(22, 18), TextureColor::Grey, "",
                                NormalFont, COLOR_YELLOW));
-            txt->ResizeForMaxChars(2);
-            const auto txtSize = txt->GetSize();
-            ctrlButton* bt = AddImageButton(100 + toolIdx * 2, txt->GetPos() + DrawPoint(txtSize.x + 1, -4), btSize,
-                                            TextureColor::Grey, LOADER.GetImageN("io", 33), "+1");
-            AddImageButton(101 + toolIdx * 2, bt->GetPos() + DrawPoint(0, btSize.y), btSize, TextureColor::Grey,
-                           LOADER.GetImageN("io", 34), "-1");
+            txt->resizeForMaxChars(2);
+            const auto txtSize = txt->getSize();
+            ctrlButton* bt = addImageButton(100 + toolIdx * 2, txt->getPos() + DrawPoint(txtSize.x + 1, -4), btSize,
+                                            TextureColor::Grey, LOADER.getImageN("io", 33), "+1");
+            addImageButton(101 + toolIdx * 2, bt->getPos() + DrawPoint(0, btSize.y), btSize, TextureColor::Grey,
+                           LOADER.getImageN("io", 34), "-1");
         }
         std::fill(pendingOrderChanges.begin(), pendingOrderChanges.end(), 0);
-        UpdateTexts();
+        updateTexts();
     }
 
     // Info
-    AddImageButton(12, DrawPoint(18, 384), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
+    addImageButton(12, DrawPoint(18, 384), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225), _("Help"));
     if(settings.isEnabled(AddonId::TOOL_ORDERING))
-        AddImageButton(15, DrawPoint(130, 384), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 216),
+        addImageButton(15, DrawPoint(130, 384), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 216),
                        _("Zero all production"));
     // Standard
-    AddImageButton(13, DrawPoint(118 + (settings.isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384), Extent(30, 32),
-                   TextureColor::Grey, LOADER.GetImageN("io", 191), _("Default"));
+    addImageButton(13, DrawPoint(118 + (settings.isEnabled(AddonId::TOOL_ORDERING) ? 46 : 0), 384), Extent(30, 32),
+                   TextureColor::Grey, LOADER.getImageN("io", 191), _("Default"));
 
     // Einstellungen festlegen
-    UpdateSettings();
+    updateSettings();
 
     toolSubscription =
-      gwv.GetWorld().GetNotifications().subscribe<ToolNote>([this](auto) noexcept { this->shouldUpdateTexts = true; });
+      gwv.getWorld().getNotifications().subscribe<ToolNote>([this](auto) noexcept { this->shouldUpdateTexts = true; });
 }
 
-void iwTools::AddToolSettingSlider(unsigned id, GoodType ware)
+void iwTools::addToolSettingSlider(unsigned id, GoodType ware)
 {
     ctrlProgress* el =
-      AddProgress(id, DrawPoint(17, 25 + id * 28), Extent(132, 26), TextureColor::Grey, 140 + id * 2 + 1, 140 + id * 2,
+      addProgress(id, DrawPoint(17, 25 + id * 28), Extent(132, 26), TextureColor::Grey, 140 + id * 2 + 1, 140 + id * 2,
                   10, _(WARE_NAMES[ware]), Extent(4, 4), 0, _("Less often"), _("More often"));
     if(isReplay)
-        el->ActivateControls(false);
+        el->activateControls(false);
 }
 
-void iwTools::TransmitSettings()
+void iwTools::transmitSettings()
 {
     if(isReplay)
         return;
@@ -95,16 +95,16 @@ void iwTools::TransmitSettings()
         // Einstellungen speichern
         ToolSettings newSettings;
         for(const auto tool : helpers::enumRange<Tool>())
-            newSettings[tool] = static_cast<uint8_t>(GetCtrl<ctrlProgress>(rttr::enum_cast(tool))->GetPosition());
+            newSettings[tool] = static_cast<uint8_t>(getCtrl<ctrlProgress>(rttr::enumCast(tool))->getPosition());
 
         int8_t* orderDelta = nullptr;
         if(ordersChanged)
         {
             orderDelta = pendingOrderChanges.data();
-            const GamePlayer& localPlayer = gwv.GetPlayer();
+            const GamePlayer& localPlayer = gwv.getPlayer();
             for(const auto tool : helpers::enumRange<Tool>())
             {
-                auto curOrder = static_cast<int>(localPlayer.GetToolsOrderedVisual(tool));
+                auto curOrder = static_cast<int>(localPlayer.getToolsOrderedVisual(tool));
                 pendingOrderChanges[tool] = helpers::clamp<int>(pendingOrderChanges[tool], -curOrder, 100 - curOrder);
             }
         }
@@ -114,9 +114,9 @@ void iwTools::TransmitSettings()
             GAMECLIENT.visual_settings.tools_settings = newSettings;
             if(ordersChanged)
             {
-                const GamePlayer& localPlayer = gwv.GetPlayer();
+                const GamePlayer& localPlayer = gwv.getPlayer();
                 for(const auto tool : helpers::enumRange<Tool>())
-                    localPlayer.ChangeToolOrderVisual(tool, pendingOrderChanges[tool]);
+                    localPlayer.changeToolOrderVisual(tool, pendingOrderChanges[tool]);
                 std::fill(pendingOrderChanges.begin(), pendingOrderChanges.end(), 0);
             }
             settings_changed = false;
@@ -125,33 +125,33 @@ void iwTools::TransmitSettings()
     }
 }
 
-void iwTools::UpdateTexts()
+void iwTools::updateTexts()
 {
-    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::TOOL_ORDERING))
+    if(gwv.getWorld().getGGS().isEnabled(AddonId::TOOL_ORDERING))
     {
-        const GamePlayer& localPlayer = gwv.GetPlayer();
+        const GamePlayer& localPlayer = gwv.getPlayer();
         for(const auto tool : helpers::enumRange<Tool>())
         {
-            auto* field = GetCtrl<ctrlBaseText>(200 + rttr::enum_cast(tool));
-            int curOrders = isReplay ? localPlayer.GetToolsOrdered(tool) :
-                                       localPlayer.GetToolsOrderedVisual(tool) + pendingOrderChanges[tool];
-            field->SetText(helpers::toString(curOrders));
+            auto* field = getCtrl<ctrlBaseText>(200 + rttr::enumCast(tool));
+            int curOrders = isReplay ? localPlayer.getToolsOrdered(tool) :
+                                       localPlayer.getToolsOrderedVisual(tool) + pendingOrderChanges[tool];
+            field->setText(helpers::toString(curOrders));
         }
     }
 }
 
-void iwTools::Msg_PaintBefore()
+void iwTools::msgPaintBefore()
 {
-    IngameWindow::Msg_PaintBefore();
+    IngameWindow::msgPaintBefore();
 
     if(shouldUpdateTexts)
     {
-        UpdateTexts();
+        updateTexts();
         shouldUpdateTexts = false;
     }
 }
 
-void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
+void iwTools::msgButtonClick(const unsigned ctrl_id)
 {
     if(isReplay)
         return;
@@ -159,7 +159,7 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
     if(ctrl_id >= 100 && ctrl_id < (100 + 2 * helpers::NumEnumValues_v<Tool>))
     {
         const auto tool = static_cast<Tool>((ctrl_id - 100) / 2);
-        int curOrders = gwv.GetPlayer().GetToolsOrderedVisual(tool) + pendingOrderChanges[tool];
+        int curOrders = gwv.getPlayer().getToolsOrderedVisual(tool) + pendingOrderChanges[tool];
 
         if(ctrl_id & 0x1)
         {
@@ -175,43 +175,43 @@ void iwTools::Msg_ButtonClick(const unsigned ctrl_id)
             ++curOrders;
         }
         ordersChanged = true;
-        GetCtrl<ctrlBaseText>(200 + rttr::enum_cast(tool))->SetText(helpers::toString(curOrders));
+        getCtrl<ctrlBaseText>(200 + rttr::enumCast(tool))->setText(helpers::toString(curOrders));
     } else
         switch(ctrl_id)
         {
             default: return;
             case 12:
-                WINDOWMANAGER.ReplaceWindow(
+                WINDOWMANAGER.replaceWindow(
                   std::make_unique<iwHelp>(_("These settings control the tool production of your metalworks. "
                                              "The higher the value, the more likely this tool is to be produced.")));
                 break;
             case 13: // Standard
-                UpdateSettings(GAMECLIENT.default_settings.tools_settings);
+                updateSettings(GAMECLIENT.default_settings.tools_settings);
                 settings_changed = true;
                 break;
             case 15: // Zero all
                 ToolSettings zero{};
-                UpdateSettings(zero);
+                updateSettings(zero);
                 settings_changed = true;
                 break;
         }
 }
 
-void iwTools::Msg_ProgressChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
+void iwTools::msgProgressChange(const unsigned /*ctrl_id*/, const unsigned short /*position*/)
 {
     // Einstellungen wurden geändert
     settings_changed = true;
 }
 
-void iwTools::UpdateSettings(const ToolSettings& tool_settings)
+void iwTools::updateSettings(const ToolSettings& tool_settings)
 {
     if(isReplay)
-        GAMECLIENT.ResetVisualSettings();
+        GAMECLIENT.resetVisualSettings();
     for(const auto tool : helpers::enumRange<Tool>())
-        GetCtrl<ctrlProgress>(rttr::enum_cast(tool))->SetPosition(tool_settings[tool]);
+        getCtrl<ctrlProgress>(rttr::enumCast(tool))->setPosition(tool_settings[tool]);
 }
 
-void iwTools::UpdateSettings()
+void iwTools::updateSettings()
 {
-    UpdateSettings(GAMECLIENT.visual_settings.tools_settings);
+    updateSettings(GAMECLIENT.visual_settings.tools_settings);
 }

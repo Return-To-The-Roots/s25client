@@ -32,64 +32,64 @@ constexpr std::array jumpPresets = {
 
 iwSkipGFs::iwSkipGFs(GameWorldView& gwv)
     : IngameWindow(CGI_SKIPGFS, IngameWindow::posLastOrCenter, Extent(300, 120), _("Skip GameFrames"),
-                   LOADER.GetImageN("resource", 41)),
+                   LOADER.getImageN("resource", 41)),
       gwv(gwv)
 {
     constexpr auto lblWidth = 135;
     const auto edtOffset = contentOffset.x + lblWidth;
     constexpr auto spacing = 5;
     constexpr Extent edtSize(100, 20);
-    Extent btSize(GetIwSize().x - edtOffset - edtSize.x - spacing, edtSize.y);
+    Extent btSize(getIwSize().x - edtOffset - edtSize.x - spacing, edtSize.y);
 
     DrawPoint curPos(edtOffset, 28);
-    ctrlEdit* edit = AddEdit(ID_edtToGf, curPos, edtSize, TextureColor::Grey, NormalFont);
-    edit->SetFocus();
+    ctrlEdit* edit = addEdit(ID_edtToGf, curPos, edtSize, TextureColor::Grey, NormalFont);
+    edit->setFocus();
     curPos.x -= spacing;
-    AddText(ID_lblToGf, curPos + DrawPoint(0, 4), _("to GameFrame:"), COLOR_YELLOW, FontStyle::RIGHT, NormalFont);
+    addText(ID_lblToGf, curPos + DrawPoint(0, 4), _("to GameFrame:"), COLOR_YELLOW, FontStyle::RIGHT, NormalFont);
     curPos.x += edtSize.x + spacing * 2;
-    AddTextButton(ID_btToGf, curPos, btSize, TextureColor::Green2, "->|", NormalFont);
+    addTextButton(ID_btToGf, curPos, btSize, TextureColor::Green2, "->|", NormalFont);
 
     curPos.x = edtOffset;
     curPos.y += edtSize.y + 5;
 
-    AddEdit(ID_edtByGf, curPos, edtSize, TextureColor::Grey, NormalFont);
+    addEdit(ID_edtByGf, curPos, edtSize, TextureColor::Grey, NormalFont);
     curPos.x -= spacing;
-    AddText(ID_lblByGf, curPos + DrawPoint(0, 4), _("by GameFrames:"), COLOR_YELLOW, FontStyle::RIGHT, NormalFont);
+    addText(ID_lblByGf, curPos + DrawPoint(0, 4), _("by GameFrames:"), COLOR_YELLOW, FontStyle::RIGHT, NormalFont);
     curPos.x += edtSize.x + spacing * 2;
-    AddTextButton(ID_btByGf, curPos, btSize, TextureColor::Green2, "-->", NormalFont);
+    addTextButton(ID_btByGf, curPos, btSize, TextureColor::Green2, "-->", NormalFont);
 
     curPos.x = contentOffset.x + spacing;
     curPos.y += edtSize.y + 5;
-    const auto availWidth = GetIwSize().x - spacing * 2;
+    const auto availWidth = getIwSize().x - spacing * 2;
     btSize.x = (availWidth - spacing * (jumpPresets.size() - 1)) / jumpPresets.size();
     for(auto i : jumpPresets)
     {
-        AddTextButton(ID_btJumpPresetStart + i, curPos, btSize, TextureColor::Green2, "+" + std::to_string(i),
+        addTextButton(ID_btJumpPresetStart + i, curPos, btSize, TextureColor::Green2, "+" + std::to_string(i),
                       NormalFont);
         curPos.x += btSize.x + spacing;
     }
 }
 
-void iwSkipGFs::SkipGFs(const unsigned edtCtrlId)
+void iwSkipGFs::skipGFs(const unsigned edtCtrlId)
 {
-    int targetGF = s25util::fromStringClassicDef(GetCtrl<ctrlEdit>(edtCtrlId)->GetText(), 0);
+    int targetGF = s25util::fromStringClassicDef(getCtrl<ctrlEdit>(edtCtrlId)->getText(), 0);
     if(edtCtrlId == ID_edtByGf)
-        targetGF += GAMECLIENT.GetGFNumber();
-    GAMECLIENT.SkipGF(targetGF, gwv);
+        targetGF += GAMECLIENT.getGFNumber();
+    GAMECLIENT.skipGF(targetGF, gwv);
 }
 
-void iwSkipGFs::Msg_ButtonClick(const unsigned ctrlId)
+void iwSkipGFs::msgButtonClick(const unsigned ctrlId)
 {
     if(ctrlId < ID_btJumpPresetStart)
-        SkipGFs((ctrlId == ID_btByGf) ? ID_edtByGf : ID_edtToGf);
+        skipGFs((ctrlId == ID_btByGf) ? ID_edtByGf : ID_edtToGf);
     else
     {
-        const unsigned targetGF = GAMECLIENT.GetGFNumber() + ctrlId - ID_btJumpPresetStart;
-        GAMECLIENT.SkipGF(targetGF, gwv);
+        const unsigned targetGF = GAMECLIENT.getGFNumber() + ctrlId - ID_btJumpPresetStart;
+        GAMECLIENT.skipGF(targetGF, gwv);
     }
 }
 
-void iwSkipGFs::Msg_EditEnter(const unsigned ctrlId)
+void iwSkipGFs::msgEditEnter(const unsigned ctrlId)
 {
-    SkipGFs(ctrlId);
+    skipGFs(ctrlId);
 }

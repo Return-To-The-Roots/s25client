@@ -32,7 +32,7 @@ glSmartBitmap::~glSmartBitmap()
 void glSmartBitmap::reset()
 {
     if(texture && !sharedTexture)
-        VIDEODRIVER.DeleteTexture(texture);
+        VIDEODRIVER.deleteTexture(texture);
     texture = 0;
 
     for(glBitmapItem& bmpItem : items)
@@ -111,8 +111,8 @@ void glSmartBitmap::calcDimensions()
 
 void glSmartBitmap::drawTo(libsiedler2::PixelBufferBGRA& buffer, const Extent& bufOffset) const
 {
-    libsiedler2::ArchivItem_Palette* p_colors = LOADER.GetPaletteN("colors");
-    libsiedler2::ArchivItem_Palette* p_5 = LOADER.GetPaletteN("pal5");
+    libsiedler2::ArchivItem_Palette* p_colors = LOADER.getPaletteN("colors");
+    libsiedler2::ArchivItem_Palette* p_5 = LOADER.getPaletteN("pal5");
 
     for(const glBitmapItem& bmpItem : items)
     {
@@ -201,7 +201,7 @@ void glSmartBitmap::generateTexture()
 
     if(!texture)
     {
-        texture = VIDEODRIVER.GenerateTexture();
+        texture = VIDEODRIVER.generateTexture();
 
         if(!texture)
             return;
@@ -212,7 +212,7 @@ void glSmartBitmap::generateTexture()
     libsiedler2::PixelBufferBGRA buffer(bufSize.x, bufSize.y);
     drawTo(buffer);
 
-    VIDEODRIVER.BindTexture(texture);
+    VIDEODRIVER.bindTexture(texture);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -240,7 +240,7 @@ void glSmartBitmap::generateTexture()
     }
 }
 
-void glSmartBitmap::Draw(Rect dstArea, Rect srcArea, unsigned color /*= 0xFFFFFFFF*/)
+void glSmartBitmap::draw(Rect dstArea, Rect srcArea, unsigned color /*= 0xFFFFFFFF*/)
 {
     drawRect(dstArea, srcArea, color);
 }
@@ -288,10 +288,10 @@ void glSmartBitmap::drawRect(Rect dstArea, Rect srcArea, unsigned color /*= 0xFF
     vertices[0].y = vertices[3].y = GLfloat(drawPt.y); // destination top
     vertices[1].y = vertices[2].y;                     // destination bottom
 
-    colors[0].r = GetRed(color);
-    colors[0].g = GetGreen(color);
-    colors[0].b = GetBlue(color);
-    colors[0].a = GetAlpha(color);
+    colors[0].r = getRed(color);
+    colors[0].g = getGreen(color);
+    colors[0].b = getBlue(color);
+    colors[0].a = getAlpha(color);
     colors[3] = colors[2] = colors[1] = colors[0];
 
     //  0--3/4--7
@@ -311,10 +311,10 @@ void glSmartBitmap::drawRect(Rect dstArea, Rect srcArea, unsigned color /*= 0xFF
     {
         std::copy(vertices.begin(), vertices.begin() + 4, vertices.begin() + 4);
 
-        colors[4].r = GetRed(player_color);
-        colors[4].g = GetGreen(player_color);
-        colors[4].b = GetBlue(player_color);
-        colors[4].a = GetAlpha(player_color);
+        colors[4].r = getRed(player_color);
+        colors[4].g = getGreen(player_color);
+        colors[4].b = getBlue(player_color);
+        colors[4].a = getAlpha(player_color);
         colors[7] = colors[6] = colors[5] = colors[4];
 
         curTexCoords[4] = texCoords[4];
@@ -331,7 +331,7 @@ void glSmartBitmap::drawRect(Rect dstArea, Rect srcArea, unsigned color /*= 0xFF
     glVertexPointer(2, GL_FLOAT, 0, vertices.data());
     glTexCoordPointer(2, GL_FLOAT, 0, curTexCoords.data());
     glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors.data());
-    VIDEODRIVER.BindTexture(texture);
+    VIDEODRIVER.bindTexture(texture);
     glDrawArrays(GL_QUADS, 0, numQuads);
     glDisableClientState(GL_COLOR_ARRAY);
 }

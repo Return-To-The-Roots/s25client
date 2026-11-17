@@ -108,32 +108,32 @@ TerrainDesc::TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldD
 
 TerrainDesc::~TerrainDesc() = default;
 
-TerrainBQ TerrainDesc::GetBQ() const
+TerrainBQ TerrainDesc::getBQ() const
 {
-    if(Is(ETerrain::Buildable))
+    if(is(ETerrain::Buildable))
         return TerrainBQ::Castle;
-    else if(Is(ETerrain::Mineable))
+    else if(is(ETerrain::Mineable))
         return TerrainBQ::Mine;
-    else if(Is(ETerrain::Walkable))
+    else if(is(ETerrain::Walkable))
         return TerrainBQ::Flag;
-    else if(Is(ETerrain::Unreachable))
+    else if(is(ETerrain::Unreachable))
         return TerrainBQ::Danger;
     else
         return TerrainBQ::Nothing;
 }
 
-bool TerrainDesc::IsUsableByAnimals() const
+bool TerrainDesc::isUsableByAnimals() const
 {
     // If it is buildable land or mountain, animals can use it
-    return (kind == TerrainKind::Land || kind == TerrainKind::Mountain) && Is(ETerrain::Buildable);
+    return (kind == TerrainKind::Land || kind == TerrainKind::Mountain) && is(ETerrain::Buildable);
 }
 
-bool TerrainDesc::IsVital() const
+bool TerrainDesc::isVital() const
 {
-    return kind == TerrainKind::Land && Is(ETerrain::Buildable);
+    return kind == TerrainKind::Land && is(ETerrain::Buildable);
 }
 
-TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
+TerrainDesc::Triangle TerrainDesc::getUSDTriangle() const
 {
     // Inset by 0.5 on all sites to sample middle of pixel in OGL
     RectBase<float> oglRect(posInTexture.getOrigin() + PointF::all(.5f), posInTexture.getSize() - PointF::all(1));
@@ -162,7 +162,7 @@ TerrainDesc::Triangle TerrainDesc::GetUSDTriangle() const
     return result;
 }
 
-TerrainDesc::Triangle TerrainDesc::GetRSUTriangle() const
+TerrainDesc::Triangle TerrainDesc::getRSUTriangle() const
 {
     // Inset by 0.5 on all sites to sample middle of pixel in OGL
     RectBase<float> oglRect(posInTexture.getOrigin() + PointF::all(.5f), posInTexture.getSize() - PointF::all(1));

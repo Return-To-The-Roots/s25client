@@ -11,8 +11,8 @@ struct TextFormatSetter
 {
     ctrlBaseText* ctrl;
     boost::format fmt;
-    TextFormatSetter(ctrlBaseText* ctrl) : ctrl(ctrl), fmt(ctrl->GetText()) {}
-    ~TextFormatSetter() { ctrl->SetText(fmt.str()); }
+    TextFormatSetter(ctrlBaseText* ctrl) : ctrl(ctrl), fmt(ctrl->getText()) {}
+    ~TextFormatSetter() { ctrl->setText(fmt.str()); }
     template<typename T>
     TextFormatSetter& operator%(const T& val)
     {

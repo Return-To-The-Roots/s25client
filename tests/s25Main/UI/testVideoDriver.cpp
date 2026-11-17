@@ -21,18 +21,18 @@ static std::ostream& operator<<(std::ostream& os, const VideoMode mode)
 }
 // LCOV_EXCL_STOP
 
-BOOST_AUTO_TEST_CASE(FindClosestVideoMode)
+BOOST_AUTO_TEST_CASE(findClosestVideoMode)
 {
-    auto* driver = uiHelper::GetVideoDriver();
+    auto* driver = uiHelper::getVideoDriver();
     driver->video_modes_ = {VideoMode(800, 600), VideoMode(1000, 600), VideoMode(1500, 800)};
     // Exact match
     for(const auto& mode : driver->video_modes_)
-        BOOST_TEST(driver->FindClosestVideoMode(mode) == mode);
+        BOOST_TEST(driver->findClosestVideoMode(mode) == mode);
     // Close match
-    BOOST_TEST(driver->FindClosestVideoMode(VideoMode(850, 622)) == VideoMode(800, 600));
-    BOOST_TEST(driver->FindClosestVideoMode(VideoMode(950, 570)) == VideoMode(1000, 600));
-    BOOST_TEST(driver->FindClosestVideoMode(VideoMode(2000, 622)) == VideoMode(1500, 800));
-    BOOST_TEST(driver->FindClosestVideoMode(VideoMode(1200, 900)) == VideoMode(1500, 800));
+    BOOST_TEST(driver->findClosestVideoMode(VideoMode(850, 622)) == VideoMode(800, 600));
+    BOOST_TEST(driver->findClosestVideoMode(VideoMode(950, 570)) == VideoMode(1000, 600));
+    BOOST_TEST(driver->findClosestVideoMode(VideoMode(2000, 622)) == VideoMode(1500, 800));
+    BOOST_TEST(driver->findClosestVideoMode(VideoMode(1200, 900)) == VideoMode(1500, 800));
 }
 
 namespace rttrOglMock2 {
@@ -67,8 +67,8 @@ BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
     // Fresh start
     {
         rttr::test::LogAccessor logAcc;
-        VIDEODRIVER.DestroyScreen();
-        VIDEODRIVER.CreateScreen(VideoMode(800, 600), DisplayMode::Windowed);
+        VIDEODRIVER.destroyScreen();
+        VIDEODRIVER.createScreen(VideoMode(800, 600), DisplayMode::Windowed);
         logAcc.clearLog();
     }
 
@@ -76,37 +76,37 @@ BOOST_FIXTURE_TEST_CASE(CreateAndDestroyTextures, uiHelper::Fixture)
     RTTR_STUB_FUNCTION(glDeleteTextures, rttrOglMock2::glDeleteTextures);
 
     for(unsigned i = 1u; i <= 5u; ++i)
-        BOOST_TEST(VIDEODRIVER.GenerateTexture() == i);
+        BOOST_TEST(VIDEODRIVER.generateTexture() == i);
     BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.size() == 5u);
     {
         rttr::test::LogAccessor logAcc;
-        VIDEODRIVER.DestroyScreen();
+        VIDEODRIVER.destroyScreen();
         logAcc.clearLog();
     }
     BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.empty());
     // Next cleanup call is a no-op (validated inside glDeleteTextures)
-    VIDEODRIVER.CleanUp();
+    VIDEODRIVER.cleanUp();
 
     {
         rttr::test::LogAccessor logAcc;
-        VIDEODRIVER.CreateScreen(VideoMode(800, 600), DisplayMode::Windowed);
+        VIDEODRIVER.createScreen(VideoMode(800, 600), DisplayMode::Windowed);
         logAcc.clearLog();
     }
     glGenTextures = rttrOglMock2::glGenTextures;
     glDeleteTextures = rttrOglMock2::glDeleteTextures;
     for(unsigned i = 1u; i <= 5u; ++i)
-        VIDEODRIVER.GenerateTexture();
+        VIDEODRIVER.generateTexture();
     BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.size() == 5u);
-    VIDEODRIVER.CleanUp();
+    VIDEODRIVER.cleanUp();
     BOOST_TEST_REQUIRE(rttrOglMock2::activeTextures.empty());
     // Next cleanup call is a no-op (validated inside glDeleteTextures)
-    VIDEODRIVER.CleanUp();
+    VIDEODRIVER.cleanUp();
 }
 
 BOOST_AUTO_TEST_CASE(TranslateDimensionsBetweenScreenAndViewSpace)
 {
-    auto* driver = uiHelper::GetVideoDriver();
-    driver->CreateScreen("", VideoMode(800 * 2, 600 * 2), DisplayMode::Windowed);
+    auto* driver = uiHelper::getVideoDriver();
+    driver->createScreen("", VideoMode(800 * 2, 600 * 2), DisplayMode::Windowed);
 
     {
         // GUI scale 100%; translations are no-ops
@@ -193,8 +193,8 @@ BOOST_AUTO_TEST_CASE(TranslateDimensionsBetweenScreenAndViewSpace)
 BOOST_AUTO_TEST_CASE(GuiScaleRangeCalculation)
 {
     GuiScaleRange range;
-    auto* driver = uiHelper::GetVideoDriver();
-    driver->CreateScreen("", VideoMode(800 * 3, 600 * 3), DisplayMode::Windowed);
+    auto* driver = uiHelper::getVideoDriver();
+    driver->createScreen("", VideoMode(800 * 3, 600 * 3), DisplayMode::Windowed);
 
     // Regular DPI configuration
     range = driver->getGuiScaleRange();
@@ -203,16 +203,16 @@ BOOST_AUTO_TEST_CASE(GuiScaleRangeCalculation)
     BOOST_TEST(range.recommendedPercent == 100u);
 
     // Maximum is constrained by width
-    driver->ResizeScreen(VideoMode(800 * 2, 600 * 3), DisplayMode::Windowed);
+    driver->resizeScreen(VideoMode(800 * 2, 600 * 3), DisplayMode::Windowed);
     BOOST_TEST(driver->getGuiScaleRange().maxPercent == 200u);
 
     // Maximum is constrained by height
-    driver->ResizeScreen(VideoMode(800 * 3, 600 * 2), DisplayMode::Windowed);
+    driver->resizeScreen(VideoMode(800 * 3, 600 * 2), DisplayMode::Windowed);
     BOOST_TEST(driver->getGuiScaleRange().maxPercent == 200u);
 
     // HighDPI configuration (50% larger render size than window size)
-    driver->ResizeScreen(VideoMode(800 * 2, 600 * 2), DisplayMode::Windowed);
-    driver->SetNewSize(driver->GetWindowSize(), Extent(800 * 3, 600 * 3));
+    driver->resizeScreen(VideoMode(800 * 2, 600 * 2), DisplayMode::Windowed);
+    driver->setNewSize(driver->getWindowSize(), Extent(800 * 3, 600 * 3));
     range = driver->getGuiScaleRange();
     BOOST_TEST(range.minPercent == 100u);
     BOOST_TEST(range.maxPercent == (200 * 1.5));
@@ -221,38 +221,38 @@ BOOST_AUTO_TEST_CASE(GuiScaleRangeCalculation)
 
 BOOST_AUTO_TEST_CASE(DpiScale)
 {
-    auto* driver = uiHelper::GetVideoDriver();
+    auto* driver = uiHelper::getVideoDriver();
 
-    driver->SetNewSize(VideoMode(800, 600), Extent(800, 600));
+    driver->setNewSize(VideoMode(800, 600), Extent(800, 600));
     BOOST_TEST(driver->getDpiScale() == 1.f);
 
-    driver->SetNewSize(VideoMode(800, 600), Extent(800 * 3 / 2, 600 * 3 / 2));
+    driver->setNewSize(VideoMode(800, 600), Extent(800 * 3 / 2, 600 * 3 / 2));
     BOOST_TEST(driver->getDpiScale() == 1.5f);
 
-    driver->SetNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
+    driver->setNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
     BOOST_TEST(driver->getDpiScale() == 2.f);
 }
 
 BOOST_AUTO_TEST_CASE(AutoGuiScale)
 {
-    auto* driver = uiHelper::GetVideoDriver();
+    auto* driver = uiHelper::getVideoDriver();
 
     BOOST_TEST_CONTEXT("Fixed GUI scale")
     {
-        driver->SetNewSize(VideoMode(800, 600), Extent(800, 600));
+        driver->setNewSize(VideoMode(800, 600), Extent(800, 600));
         driver->setGuiScalePercent(100);
         BOOST_TEST(driver->getDpiScale() == 1.f);
         BOOST_TEST(driver->getGuiScale().percent() == 100u);
 
         // Changing window and render size has no effect on GUI scale, even though DPI scale has changed
-        driver->SetNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
+        driver->setNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
         BOOST_TEST(driver->getDpiScale() == 2.f);
         BOOST_TEST(driver->getGuiScale().percent() == 100u);
     }
 
     BOOST_TEST_CONTEXT("Automatic GUI scale")
     {
-        driver->SetNewSize(VideoMode(800, 600), Extent(800, 600));
+        driver->setNewSize(VideoMode(800, 600), Extent(800, 600));
         driver->setGuiScalePercent(0);
 
         // Automatic GUI scale is correctly calculated from current sizes
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(AutoGuiScale)
         BOOST_TEST(driver->getGuiScale().percent() == 100u);
 
         // After changing window and render size, GUI scale is updated based on DPI scale
-        driver->SetNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
+        driver->setNewSize(VideoMode(800, 600), Extent(800 * 2, 600 * 2));
         BOOST_TEST(driver->getDpiScale() == 2.f);
         BOOST_TEST(driver->getGuiScale().percent() == 200u);
     }

@@ -11,36 +11,36 @@
 PostManager::PostManager() = default;
 PostManager::~PostManager() = default;
 
-PostBox& PostManager::AddPostBox(unsigned player)
+PostBox& PostManager::addPostBox(unsigned player)
 {
     if(player >= postBoxes.size())
         throw std::out_of_range("Invalid player for new postbox");
-    if(GetPostBox(player))
+    if(getPostBox(player))
         throw std::logic_error("Postbox already exists");
     postBoxes[player] = std::make_unique<PostBox>();
     return *postBoxes[player];
 }
 
-PostBox* PostManager::GetPostBox(unsigned player) const
+PostBox* PostManager::getPostBox(unsigned player) const
 {
     return (player < postBoxes.size()) ? postBoxes[player].get() : nullptr;
 }
 
-void PostManager::RemovePostBox(unsigned player)
+void PostManager::removePostBox(unsigned player)
 {
     postBoxes[player].reset();
 }
 
-void PostManager::SendMsg(unsigned player, std::unique_ptr<PostMsg> msg) const
+void PostManager::sendMsg(unsigned player, std::unique_ptr<PostMsg> msg) const
 {
-    PostBox* box = GetPostBox(player);
+    PostBox* box = getPostBox(player);
     if(box)
-        box->AddMsg(std::move(msg));
+        box->addMsg(std::move(msg));
 }
 
-void PostManager::SetMissionGoal(unsigned player, const std::string& newGoal) const
+void PostManager::setMissionGoal(unsigned player, const std::string& newGoal) const
 {
-    PostBox* box = GetPostBox(player);
+    PostBox* box = getPostBox(player);
     if(box)
-        box->SetCurrentMissionGoal(newGoal);
+        box->setCurrentMissionGoal(newGoal);
 }

@@ -12,5 +12,5 @@ void initGameRNG(unsigned defaultValue /*= 1337*/)
 #ifdef RTTR_RAND_TEST
     defaultValue += rttr::test::randomValue<unsigned>();
 #endif
-    RANDOM.Init(defaultValue);
+    RANDOM.init(defaultValue);
 }

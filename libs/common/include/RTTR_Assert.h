@@ -27,12 +27,12 @@ extern void __cdecl __debugbreak();
 #    define RTTR_BREAKPOINT
 #endif
 
-[[noreturn]] void RTTR_AssertFailure(const char* condition, const char* file, int line, const char* function);
+[[noreturn]] void rttrAssertFailure(const char* condition, const char* file, int line, const char* function);
 /// If true(default), a breakpoint is triggered on assert (if available)
 /// Note: This breakpoint can be globally disabled by setting the environment variable
 ///       RTTR_DISABLE_ASSERT_BREAKPOINT to "1" or "yes" which overrides this setting
-bool RTTR_IsBreakOnAssertFailureEnabled();
-bool RTTR_SetBreakOnAssertFailure(bool enabled);
+bool rttrIsBreakOnAssertFailureEnabled();
+bool rttrSetBreakOnAssertFailure(bool enabled);
 
 /* Some aspects about RTTR_Assert:
     - do-while(false) so it can be used in conditions: if(foo) RTTR_Assert(bar);
@@ -41,19 +41,19 @@ bool RTTR_SetBreakOnAssertFailure(bool enabled);
     - RTTR_AssertNoThrow which does just logging and triggers a breakpoint but does not throw (e.g. for dtors)
  */
 #if RTTR_ENABLE_ASSERTS
-#    define RTTR_Assert(cond)                                            \
-        do                                                               \
-        {                                                                \
-            RTTR_IGNORE_UNREACHABLE_CODE                                 \
-            if(!(cond)) /* NOLINT(readability-simplify-boolean-expr)*/   \
-            {                                                            \
-                if(RTTR_IsBreakOnAssertFailureEnabled())                 \
-                {                                                        \
-                    RTTR_BREAKPOINT;                                     \
-                }                                                        \
-                RTTR_AssertFailure(#cond, __FILE__, __LINE__, __func__); \
-            }                                                            \
-            RTTR_POP_DIAGNOSTIC                                          \
+#    define RTTR_Assert(cond)                                           \
+        do                                                              \
+        {                                                               \
+            RTTR_IGNORE_UNREACHABLE_CODE                                \
+            if(!(cond)) /* NOLINT(readability-simplify-boolean-expr)*/  \
+            {                                                           \
+                if(rttrIsBreakOnAssertFailureEnabled())                 \
+                {                                                       \
+                    RTTR_BREAKPOINT;                                    \
+                }                                                       \
+                rttrAssertFailure(#cond, __FILE__, __LINE__, __func__); \
+            }                                                           \
+            RTTR_POP_DIAGNOSTIC                                         \
         } while(false)
 #else
 #    define RTTR_Assert(cond)   \

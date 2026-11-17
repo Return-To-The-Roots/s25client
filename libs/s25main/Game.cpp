@@ -25,36 +25,36 @@ Game::Game(GlobalGameSettings settings, std::unique_ptr<EventManager> em, const 
 
 Game::~Game() = default;
 
-void Game::Start(bool startFromSave)
+void Game::start(bool startFromSave)
 {
     if(started_)
         return;
     started_ = true;
     if(startFromSave)
-        CheckObjective();
+        checkObjective();
     else
     {
         if(ggs_.objective == GameObjective::EconomyMode)
         {
             unsigned int selection = ggs_.getSelection(AddonId::ECONOMY_MODE_GAME_LENGTH);
             world_.setEconHandler(
-              std::make_unique<EconomyModeHandler>(duration_to_gfs(AddonEconomyModeGameLengthList[selection])));
+              std::make_unique<EconomyModeHandler>(durationToGfs(AddonEconomyModeGameLengthList[selection])));
         }
-        StatisticStep();
+        statisticStep();
     }
-    if(world_.HasLua())
-        world_.GetLua().EventStart(!startFromSave);
+    if(world_.hasLua())
+        world_.getLua().eventStart(!startFromSave);
 }
 
-void Game::AddAIPlayer(std::unique_ptr<AIPlayer> newAI)
+void Game::addAIPlayer(std::unique_ptr<AIPlayer> newAI)
 {
     aiPlayers_.push_back(std::move(newAI));
 }
 
-void Game::SetLua(std::unique_ptr<LuaInterfaceGame> newLua)
+void Game::setLua(std::unique_ptr<LuaInterfaceGame> newLua)
 {
     lua = std::move(newLua);
-    world_.SetLua(lua.get());
+    world_.setLua(lua.get());
 }
 
 namespace {
@@ -63,49 +63,49 @@ unsigned getNumAlivePlayers(const GameWorldBase& world)
     unsigned numPlayersAlive = 0;
     for(const auto& player : world.getPlayers())
     {
-        if(!player.IsDefeated())
+        if(!player.isDefeated())
             ++numPlayersAlive;
     }
     return numPlayersAlive;
 }
 } // namespace
 
-void Game::RunGF()
+void Game::runGF()
 {
     unsigned numPlayersAlive = getNumAlivePlayers(world_);
     //  EventManager Bescheid sagen
-    em_->ExecuteNextGF();
+    em_->executeNextGF();
     // Notfallprogramm durchlaufen lassen
     for(GamePlayer& player : world_.getPlayers())
     {
         if(player.isUsed())
         {
             // Auf Notfall testen (Wenige Bretter/Steine und keine Holzindustrie)
-            player.TestForEmergencyProgramm();
-            player.TestPacts();
+            player.testForEmergencyProgramm();
+            player.testPacts();
         }
     }
 
-    if(world_.HasLua())
-        world_.GetLua().EventGameFrame(em_->GetCurrentGF());
+    if(world_.hasLua())
+        world_.getLua().eventGameFrame(em_->getCurrentGF());
     // Update statistic every 30 seconds
-    constexpr auto GFsIn30s = static_cast<unsigned>(duration_to_gfs(30s));
-    if(em_->GetCurrentGF() % GFsIn30s == 0)
-        StatisticStep();
+    constexpr auto GFsIn30s = static_cast<unsigned>(durationToGfs(30s));
+    if(em_->getCurrentGF() % GFsIn30s == 0)
+        statisticStep();
     // If some players got defeated check objective
     if(getNumAlivePlayers(world_) < numPlayersAlive)
-        CheckObjective();
+        checkObjective();
 }
 
-void Game::StatisticStep()
+void Game::statisticStep()
 {
     for(auto& player : world_.getPlayers())
-        player.StatisticStep();
+        player.statisticStep();
 
-    CheckObjective();
+    checkObjective();
 }
 
-void Game::CheckObjective()
+void Game::checkObjective()
 {
     // Check objective if there is one
     if(finished_ || (ggs_.objective != GameObjective::Conquer3_4 && ggs_.objective != GameObjective::TotalDomination))
@@ -117,12 +117,12 @@ void Game::CheckObjective()
     const auto getPlayerMask = [](unsigned playerId) { return 1u << playerId; };
 
     // Find out best player. Since at least 3/4 of the populated land is needed to win, we don't care about ties.
-    for(unsigned i = 0; i < world_.GetNumPlayers(); ++i)
+    for(unsigned i = 0; i < world_.getNumPlayers(); ++i)
     {
-        const GamePlayer& player = world_.GetPlayer(i);
-        if(player.IsDefeated())
+        const GamePlayer& player = world_.getPlayer(i);
+        if(player.isDefeated())
             continue;
-        const unsigned points = player.GetStatisticCurrentValue(StatisticType::Country);
+        const unsigned points = player.getStatisticCurrentValue(StatisticType::Country);
         if(points > maxPoints)
         {
             maxPoints = points;
@@ -134,14 +134,14 @@ void Game::CheckObjective()
             unsigned curTeam = getPlayerMask(i);
             unsigned teamPoints = points;
             // Add points of all players in this players team (excluding himself)
-            for(unsigned j = 0; j < world_.GetNumPlayers(); ++j)
+            for(unsigned j = 0; j < world_.getNumPlayers(); ++j)
             {
-                if(i == j || !player.IsAlly(j))
+                if(i == j || !player.isAlly(j))
                     continue;
                 curTeam = curTeam | getPlayerMask(j);
-                const GamePlayer& teamPlayer = world_.GetPlayer(j);
-                if(!teamPlayer.IsDefeated())
-                    teamPoints += teamPlayer.GetStatisticCurrentValue(StatisticType::Country);
+                const GamePlayer& teamPlayer = world_.getPlayer(j);
+                if(!teamPlayer.isDefeated())
+                    teamPoints += teamPlayer.getStatisticCurrentValue(StatisticType::Country);
             }
             if(teamPoints > maxTeamPoints)
             {
@@ -169,22 +169,22 @@ void Game::CheckObjective()
     }
 
     // We have a winner!
-    if(world_.GetGameInterface() && finished_)
+    if(world_.getGameInterface() && finished_)
     {
         // If there is a team that is best and it does not only consist of the best player
         // then it is a team victory, else a single players victory
         if(bestTeam && *bestTeam != getPlayerMask(bestPlayer))
-            world_.GetGameInterface()->GI_TeamWinner(*bestTeam);
+            world_.getGameInterface()->GI_TeamWinner(*bestTeam);
         else
-            world_.GetGameInterface()->GI_Winner(bestPlayer);
+            world_.getGameInterface()->GI_Winner(bestPlayer);
     }
 }
 
-AIPlayer* Game::GetAIPlayer(unsigned id)
+AIPlayer* Game::getAIPlayer(unsigned id)
 {
     for(AIPlayer& ai : aiPlayers_)
     {
-        if(ai.GetPlayerId() == id)
+        if(ai.getPlayerId() == id)
             return &ai;
     }
     return nullptr;

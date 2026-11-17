@@ -27,169 +27,169 @@ namespace {
 class SwitchOnStart : public ClientInterface
 {
 public:
-    SwitchOnStart() { GAMECLIENT.SetInterface(this); }
-    ~SwitchOnStart() override { GAMECLIENT.RemoveInterface(this); }
+    SwitchOnStart() { GAMECLIENT.setInterface(this); }
+    ~SwitchOnStart() override { GAMECLIENT.removeInterface(this); }
 
     void CI_GameLoading(std::shared_ptr<Game> game) override
     {
-        WINDOWMANAGER.Switch(std::make_unique<dskGameLoader>(std::move(game)));
+        WINDOWMANAGER.switchTo(std::make_unique<dskGameLoader>(std::move(game)));
     }
 };
 
-std::vector<bfs::path> GetReplays()
+std::vector<bfs::path> getReplays()
 {
-    return ListDir(RTTRCONFIG.ExpandPath(s25::folders::replays), "rpl");
+    return listDir(RTTRCONFIG.expandPath(s25::folders::replays), "rpl");
 }
 } // namespace
 
 iwPlayReplay::iwPlayReplay()
     : IngameWindow(CGI_PLAYREPLAY, IngameWindow::posLastOrCenter, Extent(600, 330), _("Play Replay"),
-                   LOADER.GetImageN("resource", 41))
+                   LOADER.getImageN("resource", 41))
 {
     using SRT = ctrlTable::SortType;
-    AddTable(0, DrawPoint(20, 30), Extent(560, 220), TextureColor::Green2, NormalFont,
+    addTable(0, DrawPoint(20, 30), Extent(560, 220), TextureColor::Green2, NormalFont,
              ctrlTable::Columns{{("Filename"), 300, SRT::String},
                                 {_("Stocktaking date"), 220, SRT::Date},
                                 {_("Player"), 360, SRT::String},
                                 {_("Length"), 120, SRT::Time},
                                 {}});
 
-    AddTextButton(2, DrawPoint(20, 260), Extent(100, 22), TextureColor::Red1, _("Clear"), NormalFont);
-    AddTextButton(5, DrawPoint(130, 260), Extent(160, 22), TextureColor::Red1, "Delete Invalid", NormalFont,
+    addTextButton(2, DrawPoint(20, 260), Extent(100, 22), TextureColor::Red1, _("Clear"), NormalFont);
+    addTextButton(5, DrawPoint(130, 260), Extent(160, 22), TextureColor::Red1, "Delete Invalid", NormalFont,
                   _("Removes all replays that cannot be loaded with the current game version"));
-    AddTextButton(3, DrawPoint(20, 290), Extent(160, 22), TextureColor::Red1, _("Delete selected"), NormalFont);
-    AddTextButton(4, DrawPoint(190, 290), Extent(190, 22), TextureColor::Red1, _("Back"), NormalFont);
-    AddTextButton(1, DrawPoint(390, 290), Extent(190, 22), TextureColor::Green2, _("Start"), NormalFont);
+    addTextButton(3, DrawPoint(20, 290), Extent(160, 22), TextureColor::Red1, _("Delete selected"), NormalFont);
+    addTextButton(4, DrawPoint(190, 290), Extent(190, 22), TextureColor::Red1, _("Back"), NormalFont);
+    addTextButton(1, DrawPoint(390, 290), Extent(190, 22), TextureColor::Green2, _("Start"), NormalFont);
 
-    PopulateTable();
+    populateTable();
 
     // Nach Zeit Sortieren
-    GetCtrl<ctrlTable>(0)->SortRows(1, TableSortDir::Descending);
+    getCtrl<ctrlTable>(0)->sortRows(1, TableSortDir::Descending);
 }
 
-void iwPlayReplay::PopulateTable()
+void iwPlayReplay::populateTable()
 {
     static bool loadedOnce = false;
 
-    auto* table = GetCtrl<ctrlTable>(0);
-    int sortCol = table->GetSortColumn();
+    auto* table = getCtrl<ctrlTable>(0);
+    int sortCol = table->getSortColumn();
     if(sortCol == -1)
         sortCol = 0;
-    const auto sortDir = table->GetSortDirection();
-    table->DeleteAllItems();
+    const auto sortDir = table->getSortDirection();
+    table->deleteAllItems();
 
     unsigned numInvalid = 0;
 
-    const std::vector<bfs::path> replays = GetReplays();
+    const std::vector<bfs::path> replays = getReplays();
     for(const auto& path : replays)
     {
         Replay replay;
 
         // Datei laden
-        if(!replay.LoadHeader(path))
+        if(!replay.loadHeader(path))
         {
             // Show errors only first time this is loaded
             if(!loadedOnce)
             {
                 LOG.write(_("Invalid Replay %1%! Reason: %2%\n")) % path
-                  % (replay.GetLastErrorMsg().empty() ? _("Unknown") : replay.GetLastErrorMsg());
+                  % (replay.getLastErrorMsg().empty() ? _("Unknown") : replay.getLastErrorMsg());
             }
             numInvalid++;
             continue;
         }
 
         // Zeitstamp benutzen
-        std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", replay.GetSaveTime());
+        std::string dateStr = s25util::Time::formatTime("%d.%m.%Y - %H:%i", replay.getSaveTime());
 
         // Spielernamen auslesen
-        std::string tmp_players;
-        for(const std::string& playerName : replay.GetPlayerNames())
+        std::string tmpPlayers;
+        for(const std::string& playerName : replay.getPlayerNames())
         {
-            if(!tmp_players.empty())
-                tmp_players += ", ";
+            if(!tmpPlayers.empty())
+                tmpPlayers += ", ";
 
-            tmp_players += playerName;
+            tmpPlayers += playerName;
         }
 
         // Dateiname noch rausextrahieren aus dem Pfad
         if(!path.has_filename())
             continue;
         std::string fileName = path.filename().string();
-        std::string length = GAMECLIENT.FormatGFTime(replay.GetLastGF());
+        std::string length = GAMECLIENT.formatGFTime(replay.getLastGF());
 
         // Und das Zeug zur Tabelle hinzufügen
-        table->AddRow({fileName, dateStr, tmp_players, length, path.string()});
+        table->addRow({fileName, dateStr, tmpPlayers, length, path.string()});
     }
 
     // Erst einmal nach Dateiname sortieren
-    table->SortRows(sortCol, sortDir);
+    table->sortRows(sortCol, sortDir);
 
-    auto* btDelInvalid = GetCtrl<ctrlTextButton>(5);
+    auto* btDelInvalid = getCtrl<ctrlTextButton>(5);
     if(numInvalid == 0)
-        btDelInvalid->SetVisible(false);
+        btDelInvalid->setVisible(false);
     else
     {
-        btDelInvalid->SetVisible(true);
-        btDelInvalid->SetText((boost::format(_("Delete Invalid (%u)")) % numInvalid).str());
+        btDelInvalid->setVisible(true);
+        btDelInvalid->setText((boost::format(_("Delete Invalid (%u)")) % numInvalid).str());
     }
     loadedOnce = true;
 }
 
-void iwPlayReplay::Msg_ButtonClick(const unsigned ctrl_id)
+void iwPlayReplay::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         default: break;
-        case 1: StartReplay(); break;
+        case 1: startReplay(); break;
         case 2:
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all replays?"), this,
+            WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all replays?"), this,
                                                           MsgboxButton::YesNo, MsgboxIcon::QuestionRed, 1));
             break;
         case 3:
         {
-            auto* table = GetCtrl<ctrlTable>(0);
-            if(table->GetSelection())
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Delete selected"),
+            auto* table = getCtrl<ctrlTable>(0);
+            if(table->getSelection())
+                WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Delete selected"),
                                                               _("Are you sure you want to remove the selected replay?"),
                                                               this, MsgboxButton::YesNo, MsgboxIcon::QuestionRed, 2));
             break;
         }
-        case 4: Close(); break;
+        case 4: close(); break;
         case 5:
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all invalid replays?"),
+            WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Clear"), _("Are you sure to remove all invalid replays?"),
                                                           this, MsgboxButton::YesNo, MsgboxIcon::QuestionRed, 3));
             break;
     }
 }
 
-void iwPlayReplay::Msg_TableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
+void iwPlayReplay::msgTableChooseItem(const unsigned /*ctrl_id*/, const unsigned /*selection*/)
 {
-    StartReplay();
+    startReplay();
 }
 
 /// Startet das Replay (aktuell ausgewählter Eintrag)
-void iwPlayReplay::StartReplay()
+void iwPlayReplay::startReplay()
 {
     // Mond malen
-    LOADER.GetImageN("resource", 33)->DrawFull(VIDEODRIVER.GetMousePos() - DrawPoint(0, 40));
-    VIDEODRIVER.SwapBuffers();
+    LOADER.getImageN("resource", 33)->drawFull(VIDEODRIVER.getMousePos() - DrawPoint(0, 40));
+    VIDEODRIVER.swapBuffers();
 
-    auto* table = GetCtrl<ctrlTable>(0);
-    if(table->GetSelection())
+    auto* table = getCtrl<ctrlTable>(0);
+    if(table->getSelection())
     {
         SwitchOnStart switchOnStart;
-        if(!GAMECLIENT.StartReplay(table->GetItemText(*table->GetSelection(), 4)))
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error while playing replay!"), _("Invalid Replay!"), this,
+        if(!GAMECLIENT.startReplay(table->getItemText(*table->getSelection(), 4)))
+            WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error while playing replay!"), _("Invalid Replay!"), this,
                                                           MsgboxButton::Ok, MsgboxIcon::ExclamationRed));
     }
 }
 
-void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
+void iwPlayReplay::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult mbr)
 {
     // Sollen alle Replays gelöscht werden?
     if(msgbox_id == 1 && mbr == MsgboxResult::Yes)
     {
-        const std::vector<bfs::path> replays = GetReplays();
+        const std::vector<bfs::path> replays = getReplays();
         for(const auto& replay : replays)
         {
             boost::system::error_code ec;
@@ -197,30 +197,30 @@ void iwPlayReplay::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult
         }
 
         // Tabelle leeren
-        GetCtrl<ctrlTable>(0)->DeleteAllItems();
+        getCtrl<ctrlTable>(0)->deleteAllItems();
     } else if(msgbox_id == 3 && mbr == MsgboxResult::Yes)
     {
-        const std::vector<bfs::path> replays = GetReplays();
+        const std::vector<bfs::path> replays = getReplays();
         for(const auto& it : replays)
         {
             Replay replay;
-            if(!replay.LoadHeader(it))
+            if(!replay.loadHeader(it))
             {
-                replay.Close();
+                replay.close();
                 boost::system::error_code ec;
                 bfs::remove(it, ec);
             }
         }
 
-        PopulateTable();
+        populateTable();
     } else if(msgbox_id == 2 && mbr == MsgboxResult::Yes)
     {
-        auto* table = GetCtrl<ctrlTable>(0);
-        if(table->GetSelection())
+        auto* table = getCtrl<ctrlTable>(0);
+        if(table->getSelection())
         {
             boost::system::error_code ec;
-            bfs::remove(table->GetItemText(*table->GetSelection(), 4), ec);
-            PopulateTable();
+            bfs::remove(table->getItemText(*table->getSelection(), 4), ec);
+            populateTable();
         }
     }
 }

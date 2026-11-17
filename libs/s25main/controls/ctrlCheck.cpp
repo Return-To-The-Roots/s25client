@@ -17,65 +17,65 @@ ctrlCheck::ctrlCheck(Window* parent, unsigned id, const DrawPoint& pos, const Ex
     : Window(parent, id, pos, size), tc(tc), text(std::move(text)), font(font), check(false), readonly(readonly)
 {}
 
-bool ctrlCheck::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlCheck::msgLeftDown(const MouseCoords& mc)
 {
-    if(!readonly && IsPointInRect(mc.pos, GetDrawRect()))
+    if(!readonly && isPointInRect(mc.pos, getDrawRect()))
     {
         check = !check;
-        GetParent()->Msg_CheckboxChange(GetID(), check);
+        getParent()->msgCheckboxChange(getID(), check);
         return true;
     }
 
     return false;
 }
 
-bool ctrlCheck::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlCheck::msgMouseMove(const MouseCoords& mc)
 {
-    if(IsMouseOver(mc.pos))
+    if(isMouseOver(mc.pos))
     {
-        ShowTooltip();
+        showTooltip();
         return true;
     } else
     {
-        HideTooltip();
+        hideTooltip();
         return false;
     }
 }
 
-void ctrlCheck::Draw_()
+void ctrlCheck::drawImpl()
 {
     const unsigned short boxSize = 20;
-    short spacing = (GetSize().y - boxSize) / 2;
+    short spacing = (getSize().y - boxSize) / 2;
     if(spacing < 0)
         spacing = 0;
-    Rect drawRect = GetDrawRect();
+    Rect drawRect = getDrawRect();
     const bool drawText = font && !text.empty();
     if(!drawText)
     {
         // If we draw only the check mark, draw surrounding box smaller and center checkbox
         drawRect.setSize(Extent(boxSize + 2 * spacing, drawRect.getSize().y));
-        drawRect.move(DrawPoint((GetSize().x - drawRect.getSize().x) / 2, 0));
+        drawRect.move(DrawPoint((getSize().x - drawRect.getSize().x) / 2, 0));
     }
     short boxStartOffsetX = drawRect.getSize().x - spacing - boxSize;
     if(boxStartOffsetX < 0)
         boxStartOffsetX = 0;
 
-    Draw3D(drawRect, tc, false);
+    draw3D(drawRect, tc, false);
 
     if(drawText)
     {
         int availableWidth = boxStartOffsetX - 4;
         if(availableWidth < 0)
             availableWidth = 0;
-        font->Draw(drawRect.getOrigin() + DrawPoint(4, GetSize().y / 2), text, FontStyle::VCENTER,
+        font->draw(drawRect.getOrigin() + DrawPoint(4, getSize().y / 2), text, FontStyle::VCENTER,
                    (check ? COLOR_YELLOW : 0xFFBBBBBB), availableWidth);
     }
 
     DrawPoint boxPos = drawRect.getOrigin() + DrawPoint(boxStartOffsetX, spacing);
 
     if(!readonly)
-        Draw3D(Rect(boxPos, Extent::all(boxSize)), tc, false);
+        draw3D(Rect(boxPos, Extent::all(boxSize)), tc, false);
 
     if(check)
-        LOADER.GetImageN("io", 32)->DrawFull(boxPos + DrawPoint(boxSize, boxSize) / 2);
+        LOADER.getImageN("io", 32)->drawFull(boxPos + DrawPoint(boxSize, boxSize) / 2);
 }

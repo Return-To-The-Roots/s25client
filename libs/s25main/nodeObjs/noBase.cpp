@@ -7,26 +7,26 @@
 
 noBase::noBase(SerializedGameData& sgd, const unsigned obj_id) : GameObject(sgd, obj_id)
 {
-    nop = sgd.Pop<NodalObjectType>();
+    nop = sgd.pop<NodalObjectType>();
 }
 
-void noBase::Serialize(SerializedGameData& sgd) const
+void noBase::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushEnum<uint8_t>(nop);
+    sgd.pushEnum<uint8_t>(nop);
 }
 
-std::unique_ptr<FOWObject> noBase::CreateFOWObject() const
+std::unique_ptr<FOWObject> noBase::createFOWObject() const
 {
     return nullptr;
 }
 
-BlockingManner noBase::GetBM() const
+BlockingManner noBase::getBM() const
 {
     return BlockingManner::None;
 }
 
 /// Gibt zurück, ob sich das angegebene Objekt zwischen zwei Punkten bewegt
-bool noBase::IsMoving() const
+bool noBase::isMoving() const
 {
     return false;
 }

@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
-        BOOST_TEST_REQUIRE(!loader.Load());
+        BOOST_TEST_REQUIRE(!loader.load());
         RTTR_REQUIRE_LOG_CONTAINS(
           "Lua script did not provide the function getRequiredLuaVersion()! It is probably outdated.", false);
     }
@@ -59,13 +59,13 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         {
             bnw::ofstream file(campaignFile, std::ios::app);
             file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end\n",
-                                    CampaignDataLoader::GetVersion());
+                                    CampaignDataLoader::getVersion());
         }
 
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
-        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST_REQUIRE(loader.load());
         logAcc.clearLog();
     }
 
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
-        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST_REQUIRE(loader.load());
         logAcc.clearLog();
         BOOST_TEST_PASSPOINT();
     }
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
             bnw::ofstream file(tmp / "campaign.lua", std::ios::app);
             BOOST_TEST_PASSPOINT();
             file << helpers::format("function getRequiredLuaVersion()\n return %1%\n end\n",
-                                    CampaignDataLoader::GetVersion() + 1);
+                                    CampaignDataLoader::getVersion() + 1);
             BOOST_TEST_PASSPOINT();
         }
 
@@ -100,10 +100,10 @@ BOOST_AUTO_TEST_CASE(ScriptVersion)
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
         rttr::test::LogAccessor logAcc;
-        BOOST_TEST_REQUIRE(!loader.Load());
+        BOOST_TEST_REQUIRE(!loader.load());
         RTTR_REQUIRE_LOG_CONTAINS(helpers::format("Wrong lua script version: %1%. Current version: %2%.\n",
-                                                  CampaignDataLoader::GetVersion() + 1,
-                                                  CampaignDataLoader::GetVersion()),
+                                                  CampaignDataLoader::getVersion() + 1,
+                                                  CampaignDataLoader::getVersion()),
                                   false);
     }
 }
@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
 
     CampaignDescription desc;
     CampaignDataLoader loader(desc, tmp);
-    BOOST_TEST_REQUIRE(loader.Load());
+    BOOST_TEST_REQUIRE(loader.load());
 
     // campaign description
     BOOST_TEST(desc.version == "1");
@@ -148,12 +148,12 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionWithoutTranslation)
 
     // maps
     BOOST_TEST(desc.getNumMaps() == 3u);
-    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
-    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
-    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
-    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
-    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
-    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
+    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
+    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
+    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
+    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
+    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
+    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
 }
 
 BOOST_AUTO_TEST_CASE(LoadCampaignWithoutImage)
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignWithoutImage)
     {
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
-        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST_REQUIRE(loader.load());
         BOOST_TEST(!desc.image);
     }
 
@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignWithoutImage)
     }
     CampaignDescription desc;
     CampaignDataLoader loader(desc, tmp);
-    BOOST_TEST_REQUIRE(loader.Load());
+    BOOST_TEST_REQUIRE(loader.load());
     BOOST_TEST(!desc.image);
 }
 
@@ -223,7 +223,7 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
     {
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
-        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST_REQUIRE(loader.load());
         BOOST_TEST(desc.getMapFilePath(0) == tmp / "map.WLD");
         BOOST_TEST(desc.getLuaFilePath(0) == tmp / "map.lua");
         // Similar for image
@@ -240,7 +240,7 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
     {
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
-        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST_REQUIRE(loader.load());
         BOOST_TEST(desc.getMapFilePath(0) == tmp / "maps" / "map.WLD");
         BOOST_TEST(desc.getLuaFilePath(0) == tmp / "maps" / "map.lua");
     }
@@ -255,7 +255,7 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
     {
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
-        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST_REQUIRE(loader.load());
         BOOST_TEST(desc.getMapFilePath(0) == tmp / "maps" / "map.WLD");
         BOOST_TEST(desc.getLuaFilePath(0) == tmp / "scripts" / "map.lua");
     }
@@ -270,7 +270,7 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
     {
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
-        BOOST_TEST_REQUIRE(loader.Load());
+        BOOST_TEST_REQUIRE(loader.load());
         BOOST_TEST(desc.getMapFilePath(0) == tmp / "maps" / "map.WLD");
         BOOST_TEST(desc.getLuaFilePath(0) == tmp / "map.lua");
     }
@@ -286,7 +286,7 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
     {
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
-        BOOST_TEST_REQUIRE(!loader.Load());
+        BOOST_TEST_REQUIRE(!loader.load());
         RTTR_REQUIRE_LOG_CONTAINS_SOME("Invalid path 'subdir/scripts", false);
     }
     {
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
     {
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
-        BOOST_TEST_REQUIRE(!loader.Load());
+        BOOST_TEST_REQUIRE(!loader.load());
         RTTR_REQUIRE_LOG_CONTAINS_SOME("Invalid path 'subdir/maps", false);
     }
 
@@ -320,7 +320,7 @@ BOOST_AUTO_TEST_CASE(HandleMapAndLuaPaths)
         }
         CampaignDescription desc;
         CampaignDataLoader loader(desc, tmp);
-        BOOST_TEST_REQUIRE(!loader.Load());
+        BOOST_TEST_REQUIRE(!loader.load());
         RTTR_REQUIRE_LOG_CONTAINS_SOME("Invalid path '" + std::string(invValue), false);
     }
 }
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingCampaignVariable)
     CampaignDescription desc;
     CampaignDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
-    BOOST_TEST(!loader.Load());
+    BOOST_TEST(!loader.load());
     RTTR_REQUIRE_LOG_CONTAINS("Failed to load campaign data!\nReason: Campaign table variable missing.", false);
 }
 
@@ -373,7 +373,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToIncorrectDifficulty)
     CampaignDescription desc;
     CampaignDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
-    BOOST_TEST(!loader.Load());
+    BOOST_TEST(!loader.load());
     RTTR_REQUIRE_LOG_CONTAINS("Failed to load campaign data!\nReason: Invalid difficulty: middle", false);
 }
 
@@ -402,7 +402,7 @@ BOOST_AUTO_TEST_CASE(LoadCampaignDescriptionFailsDueToMissingField)
     CampaignDescription desc;
     CampaignDataLoader loader(desc, tmp);
     rttr::test::LogAccessor logAcc;
-    BOOST_TEST(!loader.Load());
+    BOOST_TEST(!loader.load());
     RTTR_REQUIRE_LOG_CONTAINS(
       "Failed to load campaign data!\nReason: Failed to load game data: Required field 'difficulty' not found", false);
 }
@@ -452,7 +452,7 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
 
     CampaignDescription desc;
     CampaignDataLoader loader(desc, tmp);
-    BOOST_TEST_REQUIRE(loader.Load());
+    BOOST_TEST_REQUIRE(loader.load());
 
     // campaign description
     BOOST_TEST(desc.version == "1");
@@ -466,12 +466,12 @@ BOOST_AUTO_TEST_CASE(CampaignDescriptionLoadWithTranslation)
 
     // maps
     BOOST_TEST(desc.getNumMaps() == 3u);
-    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
-    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
-    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
-    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
-    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
-    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
+    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
+    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
+    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
+    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
+    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
+    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
 
     // selection map
     BOOST_TEST(!desc.selectionMapData);
@@ -518,7 +518,7 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
 
     CampaignDescription desc;
     CampaignDataLoader loader(desc, tmp);
-    BOOST_TEST_REQUIRE(loader.Load());
+    BOOST_TEST_REQUIRE(loader.load());
 
     // campaign description
     BOOST_TEST(desc.version == "1");
@@ -532,12 +532,12 @@ BOOST_AUTO_TEST_CASE(OptionalSelectionMapLoadTest)
 
     // maps
     BOOST_TEST(desc.getNumMaps() == 3u);
-    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
-    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
-    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
-    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
-    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
-    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.ExpandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
+    BOOST_TEST(desc.getMapFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert0.WLD"));
+    BOOST_TEST(desc.getMapFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert1.WLD"));
+    BOOST_TEST(desc.getMapFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/DATA/MAPS/dessert2.WLD"));
+    BOOST_TEST(desc.getLuaFilePath(0) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert0.lua"));
+    BOOST_TEST(desc.getLuaFilePath(1) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert1.lua"));
+    BOOST_TEST(desc.getLuaFilePath(2) == RTTRCONFIG.expandPath("<RTTR_GAME>/campaigns/roman/dessert2.lua"));
 
     // selection map
     const auto& selectionMap = desc.selectionMapData;

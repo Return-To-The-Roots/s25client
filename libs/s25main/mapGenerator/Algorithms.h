@@ -35,14 +35,14 @@ auto join(const T& container)
  * @param nodes map of node values
  */
 template<typename T>
-void Smooth(unsigned iterations, unsigned radius, NodeMapBase<T>& nodes)
+void smooth(unsigned iterations, unsigned radius, NodeMapBase<T>& nodes)
 {
-    const MapExtent& size = nodes.GetSize();
+    const MapExtent& size = nodes.getSize();
     std::vector<std::vector<MapPoint>> neighbors(size.x * size.y);
 
     RTTR_FOREACH_PT(MapPoint, size)
     {
-        neighbors[nodes.GetIdx(pt)] = nodes.GetPointsInRadius(pt, radius);
+        neighbors[nodes.getIdx(pt)] = nodes.getPointsInRadius(pt, radius);
     }
 
     for(unsigned i = 0; i < iterations; ++i)
@@ -50,7 +50,7 @@ void Smooth(unsigned iterations, unsigned radius, NodeMapBase<T>& nodes)
         RTTR_FOREACH_PT(MapPoint, size)
         {
             int sum = static_cast<int>(nodes[pt]);
-            const auto& neighborPoints = neighbors[nodes.GetIdx(pt)];
+            const auto& neighborPoints = neighbors[nodes.getIdx(pt)];
 
             for(const MapPoint& p : neighborPoints)
             {
@@ -63,7 +63,7 @@ void Smooth(unsigned iterations, unsigned radius, NodeMapBase<T>& nodes)
 }
 
 /// Flatten the height map so a castle sized building can be placed at pos
-void FlattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos);
+void flattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos);
 
 /**
  * Maps the values to the specified range [minimum, maximum].
@@ -73,10 +73,10 @@ void FlattenForCastleBuilding(NodeMapBase<uint8_t>& heightMap, MapPoint pos);
  * @param maximum maximum value to map any values to
  */
 template<typename T>
-void Scale(NodeMapBase<T>& values, T minimum, T maximum)
+void scale(NodeMapBase<T>& values, T minimum, T maximum)
 {
-    auto range = GetRange(values);
-    auto actualRange = range.GetDifference();
+    auto range = getRange(values);
+    auto actualRange = range.getDifference();
     auto actualMinimum = range.minimum;
 
     if(actualRange == 0)
@@ -86,7 +86,7 @@ void Scale(NodeMapBase<T>& values, T minimum, T maximum)
 
     auto scaledRange = maximum - minimum;
 
-    RTTR_FOREACH_PT(MapPoint, values.GetSize())
+    RTTR_FOREACH_PT(MapPoint, values.getSize())
     {
         auto normalizer = static_cast<double>(values[pt] - actualMinimum) / actualRange;
         auto offset = round(normalizer * scaledRange);
@@ -109,7 +109,7 @@ void Scale(NodeMapBase<T>& values, T minimum, T maximum)
  * has also been evaluated positively.
  */
 template<typename T>
-std::vector<MapPoint> Collect(const MapBase& map, const MapPoint& pt, T&& evaluator)
+std::vector<MapPoint> collect(const MapBase& map, const MapPoint& pt, T&& evaluator)
 {
     std::set<MapPoint, MapPointLess> visited;
     std::vector<MapPoint> body;
@@ -128,7 +128,7 @@ std::vector<MapPoint> Collect(const MapBase& map, const MapPoint& pt, T&& evalua
             {
                 body.push_back(currentPoint);
 
-                const auto& neighbors = map.GetNeighbours(currentPoint);
+                const auto& neighbors = map.getNeighbours(currentPoint);
                 for(MapPoint neighbor : neighbors)
                 {
                     searchSpace.push(neighbor);
@@ -147,7 +147,7 @@ std::vector<MapPoint> Collect(const MapBase& map, const MapPoint& pt, T&& evalua
  * @param distances distance map which is being updated
  * @param queue queue with initial elements to used for distance computation
  */
-void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue);
+void updateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& queue);
 
 /**
  * Computes a map of distance values describing the distance of each grid position to the closest flagged point.
@@ -158,11 +158,11 @@ void UpdateDistances(NodeMapBase<unsigned>& distances, std::queue<MapPoint>& que
  * @return distance of each grid position to closest flagged point.
  */
 template<class T_Container>
-NodeMapBase<unsigned> DistancesTo(const T_Container& flaggedPoints, const MapExtent& size)
+NodeMapBase<unsigned> distancesTo(const T_Container& flaggedPoints, const MapExtent& size)
 {
     std::queue<MapPoint> queue;
     NodeMapBase<unsigned> distances;
-    distances.Resize(size, unsigned(-1));
+    distances.resize(size, unsigned(-1));
 
     for(const MapPoint& pt : flaggedPoints)
     {
@@ -170,15 +170,15 @@ NodeMapBase<unsigned> DistancesTo(const T_Container& flaggedPoints, const MapExt
         queue.push(pt);
     }
 
-    UpdateDistances(distances, queue);
+    updateDistances(distances, queue);
 
     return distances;
 }
 
 template<typename T>
-NodeMapBase<unsigned> DistancesTo(const MapExtent& size, T&& evaluator)
+NodeMapBase<unsigned> distancesTo(const MapExtent& size, T&& evaluator)
 {
-    return DistancesTo(SelectPoints(evaluator, size), size);
+    return distancesTo(selectPoints(evaluator, size), size);
 }
 
 /**
@@ -194,12 +194,12 @@ NodeMapBase<unsigned> DistancesTo(const MapExtent& size, T&& evaluator)
  * @return distance of each grid position to closest point which has been evaluted with `true`.
  */
 template<typename T, class T_Container>
-NodeMapBase<unsigned> Distances(const MapExtent& size, const T_Container& area, const unsigned defaultValue,
+NodeMapBase<unsigned> distances(const MapExtent& size, const T_Container& area, const unsigned defaultValue,
                                 T&& evaluator)
 {
     std::queue<MapPoint> queue;
     NodeMapBase<unsigned> distances;
-    distances.Resize(size, defaultValue);
+    distances.resize(size, defaultValue);
 
     for(const MapPoint& pt : area)
     {
@@ -213,7 +213,7 @@ NodeMapBase<unsigned> Distances(const MapExtent& size, const T_Container& area, 
         }
     }
 
-    UpdateDistances(distances, queue);
+    updateDistances(distances, queue);
 
     return distances;
 }
@@ -229,7 +229,7 @@ NodeMapBase<unsigned> Distances(const MapExtent& size, const T_Container& area, 
  * @returns a value between the specified minimum and the maximum value of the map.
  */
 template<typename T>
-T LimitFor(const NodeMapBase<T>& values, double coverage, T minimum)
+T limitFor(const NodeMapBase<T>& values, double coverage, T minimum)
 {
     if(coverage < 0 || coverage > 1)
     {
@@ -243,7 +243,7 @@ T LimitFor(const NodeMapBase<T>& values, double coverage, T minimum)
         return maximum;
     }
 
-    const auto nodes = values.GetWidth() * values.GetHeight();
+    const auto nodes = values.getWidth() * values.getHeight();
     const auto expectedNodes = static_cast<unsigned>(coverage * nodes);
 
     unsigned currentNodes = 0;
@@ -255,7 +255,7 @@ T LimitFor(const NodeMapBase<T>& values, double coverage, T minimum)
     {
         previousNodes = currentNodes;
         currentNodes =
-          helpers::count_if(values, [minimum, limit](const T value) { return value >= minimum && value <= limit; });
+          helpers::countIf(values, [minimum, limit](const T value) { return value >= minimum && value <= limit; });
         limit++;
     }
 
@@ -279,21 +279,21 @@ T LimitFor(const NodeMapBase<T>& values, double coverage, T minimum)
  * @returns a value between the specified minimum and the maximum value of the map.
  */
 template<typename T, class T_Area>
-T LimitFor(const NodeMapBase<T>& values, const T_Area& area, double coverage, T minimum)
+T limitFor(const NodeMapBase<T>& values, const T_Area& area, double coverage, T minimum)
 {
     if(coverage < 0 || coverage > 1)
     {
         throw std::invalid_argument("coverage must be between 0 and 1");
     }
 
-    const T maximum = GetMaximum(values, area);
+    const T maximum = getMaximum(values, area);
 
     if(minimum >= maximum)
     {
         return maximum;
     }
 
-    const auto nodes = area.empty() ? values.GetWidth() * values.GetHeight() : area.size();
+    const auto nodes = area.empty() ? values.getWidth() * values.getHeight() : area.size();
     const auto expectedNodes = static_cast<unsigned>(coverage * nodes);
 
     unsigned currentNodes = 0;
@@ -304,7 +304,7 @@ T LimitFor(const NodeMapBase<T>& values, const T_Area& area, double coverage, T 
     while(currentNodes < expectedNodes && limit <= maximum)
     {
         previousNodes = currentNodes;
-        currentNodes = helpers::count_if(
+        currentNodes = helpers::countIf(
           area, [&values, minimum, limit](const MapPoint& pt) { return values[pt] >= minimum && values[pt] <= limit; });
         limit++;
     }

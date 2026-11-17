@@ -20,6 +20,6 @@ class BuildingFactory
 public:
     BuildingFactory() = delete;
 
-    static noBuilding* CreateBuilding(GameWorldBase& world, BuildingType type, MapPoint pt, unsigned char player,
+    static noBuilding* createBuilding(GameWorldBase& world, BuildingType type, MapPoint pt, unsigned char player,
                                       Nation nation);
 };

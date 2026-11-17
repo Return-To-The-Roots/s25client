@@ -53,16 +53,16 @@ public:
     void rearrange(T* el) { decreasedKey(el); }
 
 protected:
-    static size_type NoPos() { return std::numeric_limits<size_type>::max(); }
-    static size_type ParentPos(size_type pos) { return (pos - 1) / 2; }
-    static size_type LeftChildPos(size_type pos) { return (2 * pos) + 1; }
-    static size_type RightChildPos(size_type pos) { return (2 * pos) + 2; }
+    static size_type noPos() { return std::numeric_limits<size_type>::max(); }
+    static size_type parentPos(size_type pos) { return (pos - 1) / 2; }
+    static size_type leftChildPos(size_type pos) { return (2 * pos) + 1; }
+    static size_type rightChildPos(size_type pos) { return (2 * pos) + 2; }
 
     bool isHeap() const;
     bool arePositionsValid() const;
-    static size_type& GetPos(T* el) { return static_cast<BinaryHeapPosMarker*>(el)->pos; }
-    key_type GetKey(T* el) const { return T_GetKey::operator()(*el); }
-    key_type GetKey(size_type idx) const { return GetKey(this->elements[idx].el); }
+    static size_type& getPos(T* el) { return static_cast<BinaryHeapPosMarker*>(el)->pos; }
+    key_type getKey(T* el) const { return T_GetKey::operator()(*el); }
+    key_type getKey(size_type idx) const { return getKey(this->elements[idx].el); }
 
     boost::container::small_vector<Element, 64> elements;
 };
@@ -85,12 +85,12 @@ bool OpenListBinaryHeap<T, T_GetKey>::isHeap() const
     size_type size = this->size();
     for(size_type i = 0; i < size; i++)
     {
-        const size_type left = LeftChildPos(i);
-        const size_type right = RightChildPos(i);
+        const size_type left = leftChildPos(i);
+        const size_type right = rightChildPos(i);
         // If child exist, parent must be "less" than child
-        if(left < size && GetKey(left) < GetKey(i))
+        if(left < size && getKey(left) < getKey(i))
             return false;
-        if(right < size && GetKey(right) < GetKey(i))
+        if(right < size && getKey(right) < getKey(i))
             return false;
     }
     return true;
@@ -101,7 +101,7 @@ bool OpenListBinaryHeap<T, T_GetKey>::arePositionsValid() const
 {
     for(size_type i = 0; i < this->size(); i++)
     {
-        if(i != GetPos(this->elements[i].el))
+        if(i != getPos(this->elements[i].el))
             return false;
     }
     return true;
@@ -118,28 +118,28 @@ template<typename T, class T_GetKey>
 inline void OpenListBinaryHeap<T, T_GetKey>::push(T* newEl)
 {
     RTTR_VALIDATE_HEAP();
-    GetPos(newEl) = this->size();
-    this->elements.push_back(Element(GetKey(newEl), newEl));
+    getPos(newEl) = this->size();
+    this->elements.push_back(Element(getKey(newEl), newEl));
     decreasedKey(newEl);
 }
 
 template<typename T, class T_GetKey>
 inline void OpenListBinaryHeap<T, T_GetKey>::decreasedKey(T* el)
 {
-    size_type i = GetPos(el);
-    unsigned elVal = this->elements[i].key = GetKey(el);
+    size_type i = getPos(el);
+    unsigned elVal = this->elements[i].key = getKey(el);
     RTTR_Assert(i < this->size());
     while(i > 0)
     {
-        const unsigned parentPos = ParentPos(i);
-        if(elVal >= this->elements[parentPos].key)
+        const unsigned parent = parentPos(i);
+        if(elVal >= this->elements[parent].key)
             break;
         using std::swap;
-        GetPos(this->elements[parentPos].el) = i;
-        swap(this->elements[parentPos], this->elements[i]);
-        i = parentPos;
+        getPos(this->elements[parent].el) = i;
+        swap(this->elements[parent], this->elements[i]);
+        i = parent;
     }
-    GetPos(el) = i;
+    getPos(el) = i;
     RTTR_VALIDATE_HEAP();
 }
 
@@ -170,17 +170,17 @@ inline T* OpenListBinaryHeap<T, T_GetKey>::pop()
     do
     {
         // Now check if the heap condition is violated for the current position
-        const size_type left = LeftChildPos(i);
+        const size_type left = leftChildPos(i);
         if(left >= size)
             break; // No child? -> All ok
-        const size_type right = RightChildPos(i);
+        const size_type right = rightChildPos(i);
         const unsigned leftVal = this->elements[left].key;
         if(leftVal < el.key) // left < i
         {
             if(right >= size || leftVal < this->elements[right].key) // left < right
             {
                 this->elements[i] = this->elements[left];
-                GetPos(this->elements[i].el) = i;
+                getPos(this->elements[i].el) = i;
                 i = left;
                 continue;
             }
@@ -189,14 +189,14 @@ inline T* OpenListBinaryHeap<T, T_GetKey>::pop()
         if(right < size && this->elements[right].key < el.key) // right < i
         {
             this->elements[i] = this->elements[right];
-            GetPos(this->elements[i].el) = i;
+            getPos(this->elements[i].el) = i;
             i = right;
         } else
             break;
     } while(true);
 
     this->elements[i] = el;
-    GetPos(el.el) = i;
+    getPos(el.el) = i;
 
     return result;
 }

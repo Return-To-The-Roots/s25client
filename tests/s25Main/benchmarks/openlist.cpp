@@ -32,7 +32,7 @@ auto getRandomNodes(size_t numElements, unsigned maxValue = 512)
 }
 } // namespace
 
-static void BM_PushElements(benchmark::State& state)
+static void bmPushElements(benchmark::State& state)
 {
     const auto numElements = static_cast<size_t>(state.range(0));
     for(auto _ : state)
@@ -47,9 +47,9 @@ static void BM_PushElements(benchmark::State& state)
     }
     state.SetItemsProcessed(state.iterations() * state.range(0));
 }
-BENCHMARK(BM_PushElements)->Arg(3)->Arg(5)->Arg(7)->Arg(10)->Arg(20)->Arg(30)->Arg(40);
+BENCHMARK(bmPushElements)->Arg(3)->Arg(5)->Arg(7)->Arg(10)->Arg(20)->Arg(30)->Arg(40);
 
-static void BM_PopElements(benchmark::State& state)
+static void bmPopElements(benchmark::State& state)
 {
     const auto numElements = static_cast<size_t>(state.range(0));
     for(auto _ : state)
@@ -70,9 +70,9 @@ static void BM_PopElements(benchmark::State& state)
     }
     state.SetItemsProcessed(state.iterations() * state.range(0));
 }
-BENCHMARK(BM_PopElements)->Arg(3)->Arg(5)->Arg(7)->Arg(10)->Arg(20)->Arg(30)->Arg(40);
+BENCHMARK(bmPopElements)->Arg(3)->Arg(5)->Arg(7)->Arg(10)->Arg(20)->Arg(30)->Arg(40);
 
-static void BM_PushPopElements(benchmark::State& state)
+static void bmPushPopElements(benchmark::State& state)
 {
     const auto numElements = static_cast<size_t>(state.range(0));
     const auto numOperations = static_cast<size_t>(state.range(1));
@@ -97,4 +97,4 @@ static void BM_PushPopElements(benchmark::State& state)
     }
     state.SetItemsProcessed(state.iterations() * numOperations * 2);
 }
-BENCHMARK(BM_PushPopElements)->ArgsProduct({{3, 5, 7, 10, 20, 30, 40, 70}, {5, 7, 15, 20, 50, 200, 600}});
+BENCHMARK(bmPushPopElements)->ArgsProduct({{3, 5, 7, 10, 20, 30, 40, 70}, {5, 7, 15, 20, 50, 200, 600}});

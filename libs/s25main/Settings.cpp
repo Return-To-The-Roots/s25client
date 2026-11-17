@@ -77,10 +77,10 @@ bool checkPort(int port)
 
 Settings::Settings() //-V730
 {
-    LoadDefaults();
+    loadDefaults();
 }
 
-void Settings::LoadDefaults()
+void Settings::loadDefaults()
 {
     // global
     // {
@@ -93,13 +93,13 @@ void Settings::LoadDefaults()
 
     // video
     // {
-    if(VIDEODRIVER.IsLoaded())
+    if(VIDEODRIVER.isLoaded())
     {
-        video.fullscreenSize = (VIDEODRIVER.GetDisplayMode() == DisplayMode::Fullscreen) ? VIDEODRIVER.GetWindowSize() :
+        video.fullscreenSize = (VIDEODRIVER.getDisplayMode() == DisplayMode::Fullscreen) ? VIDEODRIVER.getWindowSize() :
                                                                                            VIDEODRIVER.MinWindowSize;
-        video.windowedSize = (VIDEODRIVER.GetDisplayMode() == DisplayMode::Windowed) ? VIDEODRIVER.GetWindowSize() :
+        video.windowedSize = (VIDEODRIVER.getDisplayMode() == DisplayMode::Windowed) ? VIDEODRIVER.getWindowSize() :
                                                                                        VIDEODRIVER.MinWindowSize;
-        video.displayMode = VIDEODRIVER.GetDisplayMode();
+        video.displayMode = VIDEODRIVER.getDisplayMode();
     } else
     {
         video.windowedSize = video.fullscreenSize = VIDEODRIVER.MinWindowSize;
@@ -120,8 +120,8 @@ void Settings::LoadDefaults()
 
     // driver
     // {
-    driver.audio = AUDIODRIVER.GetName();
-    driver.video = VIDEODRIVER.GetName();
+    driver.audio = AUDIODRIVER.getName();
+    driver.video = VIDEODRIVER.getName();
     // }
 
     // sound
@@ -166,10 +166,10 @@ void Settings::LoadDefaults()
     addons.configuration.clear();
     // }
 
-    LoadIngameDefaults();
+    loadIngameDefaults();
 }
 
-void Settings::LoadIngameDefaults()
+void Settings::loadIngameDefaults()
 {
     // ingame
     // {
@@ -189,13 +189,13 @@ void Settings::LoadIngameDefaults()
 
 ///////////////////////////////////////////////////////////////////////////////
 // Routine for loading the configuration
-void Settings::Load()
+void Settings::load()
 {
     libsiedler2::Archiv settings;
-    const auto settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);
+    const auto settingsPath = RTTRCONFIG.expandPath(s25::resources::config);
     try
     {
-        if(libsiedler2::Load(settingsPath, settings) != 0 || settings.size() < SECTION_NAMES.size())
+        if(libsiedler2::load(settingsPath, settings) != 0 || settings.size() < SECTION_NAMES.size())
             throw std::runtime_error("File missing or invalid");
 
         const libsiedler2::ArchivItem_Ini* iniGlobal =
@@ -227,7 +227,7 @@ void Settings::Load()
 
         // global
         // {
-        if(iniGlobal->getValue("gameversion") != rttr::version::GetRevision())
+        if(iniGlobal->getValue("gameversion") != rttr::version::getRevision())
             s25util::warning("Your application version has changed - please recheck your settings!");
 
         unsigned submitDebugData = iniGlobal->getIntValue("submit_debug_data");
@@ -361,24 +361,24 @@ void Settings::Load()
                                                            s25util::fromStringClassic<unsigned>(item->getText())));
         }
 
-        LoadIngame();
+        loadIngame();
         // }
     } catch(const std::runtime_error& e)
     {
         s25util::warning(std::string("Could not use settings from \"") + settingsPath.string()
                          + "\", using default values. Reason: " + e.what());
-        LoadDefaults();
-        Save();
+        loadDefaults();
+        save();
     }
 }
 
-void Settings::LoadIngame()
+void Settings::loadIngame()
 {
     libsiedler2::Archiv settingsIngame;
-    const auto settingsPathIngame = RTTRCONFIG.ExpandPath(s25::resources::ingameOptions);
+    const auto settingsPathIngame = RTTRCONFIG.expandPath(s25::resources::ingameOptions);
     try
     {
-        if(libsiedler2::Load(settingsPathIngame, settingsIngame) != 0)
+        if(libsiedler2::load(settingsPathIngame, settingsIngame) != 0)
             throw std::runtime_error("File missing");
 
         const libsiedler2::ArchivItem_Ini* iniIngame =
@@ -412,14 +412,14 @@ void Settings::LoadIngame()
     {
         s25util::warning(std::string("Could not use ingame settings from \"") + settingsPathIngame.string()
                          + "\", using default values. Reason: " + e.what());
-        LoadIngameDefaults();
-        SaveIngame();
+        loadIngameDefaults();
+        saveIngame();
     }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 // Routine for saving the configuration
-void Settings::Save()
+void Settings::save()
 {
     libsiedler2::Archiv settings;
     settings.alloc(SECTION_NAMES.size());
@@ -444,8 +444,8 @@ void Settings::Save()
     // global
     // {
     iniGlobal->setValue("version", VERSION);
-    iniGlobal->setValue("gameversion", rttr::version::GetRevision());
-    iniGlobal->setValue("submit_debug_data", rttr::enum_cast(global.submitDebugData));
+    iniGlobal->setValue("gameversion", rttr::version::getRevision());
+    iniGlobal->setValue("submit_debug_data", rttr::enumCast(global.submitDebugData));
     iniGlobal->setValue("use_upnp", global.useUPNP);
     iniGlobal->setValue("smartCursor", global.smartCursor);
     iniGlobal->setValue("debugMode", global.debugMode);
@@ -458,7 +458,7 @@ void Settings::Save()
     iniVideo->setValue("fullscreen_height", video.fullscreenSize.height);
     iniVideo->setValue("windowed_width", video.windowedSize.width);
     iniVideo->setValue("windowed_height", video.windowedSize.height);
-    iniVideo->setValue("displayMode", rttr::enum_cast(video.displayMode.type));
+    iniVideo->setValue("displayMode", rttr::enumCast(video.displayMode.type));
     iniVideo->setValue("lock_window_size", !video.displayMode.resizeable);
     iniVideo->setValue("framerate", video.framerate);
     iniVideo->setValue("vbo", video.vbo);
@@ -524,14 +524,14 @@ void Settings::Save()
         iniAddons->setValue(s25util::toStringClassic(it.first), s25util::toStringClassic(it.second));
     // }
 
-    bfs::path settingsPath = RTTRCONFIG.ExpandPath(s25::resources::config);
+    bfs::path settingsPath = RTTRCONFIG.expandPath(s25::resources::config);
     if(libsiedler2::Write(settingsPath, settings) == 0)
         bfs::permissions(settingsPath, bfs::owner_read | bfs::owner_write);
 
-    SaveIngame();
+    saveIngame();
 }
 
-void Settings::SaveIngame()
+void Settings::saveIngame()
 {
     libsiedler2::Archiv settingsIngame;
     settingsIngame.alloc(1 + persistentWindows.size());
@@ -576,7 +576,7 @@ void Settings::SaveIngame()
         iniWindow->setValue("is_minimized", settings.isMinimized);
     }
 
-    bfs::path settingsPathIngame = RTTRCONFIG.ExpandPath(s25::resources::ingameOptions);
+    bfs::path settingsPathIngame = RTTRCONFIG.expandPath(s25::resources::ingameOptions);
     if(libsiedler2::Write(settingsPathIngame, settingsIngame) == 0)
         bfs::permissions(settingsPathIngame, bfs::owner_read | bfs::owner_write);
 }

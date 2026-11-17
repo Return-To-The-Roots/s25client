@@ -22,38 +22,38 @@ BasePlayerInfo::BasePlayerInfo(Serializer& ser, int serializedVersion, bool ligh
         color = PLAYER_COLORS[0];
     } else
     {
-        name = ser.PopLongString();
-        portraitIndex = (serializedVersion >= 1) ? ser.PopUnsignedInt() : 0;
+        name = ser.popLongString();
+        portraitIndex = (serializedVersion >= 1) ? ser.popUnsignedInt() : 0;
         if(portraitIndex >= Portraits.size())
         {
             portraitIndex = 0;
         }
         nation = helpers::popEnum<Nation>(ser);
-        color = ser.PopUnsignedInt();
+        color = ser.popUnsignedInt();
         team = helpers::popEnum<Team>(ser);
     }
 }
 
-void BasePlayerInfo::Serialize(Serializer& ser, bool lightData) const
+void BasePlayerInfo::serialize(Serializer& ser, bool lightData) const
 {
     helpers::pushEnum<uint8_t>(ser, ps);
     if(lightData && !isUsed())
         return;
     if(!lightData || ps == PlayerState::AI)
         aiInfo.serialize(ser);
-    ser.PushLongString(name);
-    ser.PushUnsignedInt(portraitIndex);
+    ser.pushLongString(name);
+    ser.pushUnsignedInt(portraitIndex);
     helpers::pushEnum<uint8_t>(ser, nation);
-    ser.PushUnsignedInt(color);
+    ser.pushUnsignedInt(color);
     helpers::pushEnum<uint8_t>(ser, team);
 }
 
-int BasePlayerInfo::GetColorIdx() const
+int BasePlayerInfo::getColorIdx() const
 {
-    return GetColorIdx(color);
+    return getColorIdx(color);
 }
 
-int BasePlayerInfo::GetColorIdx(unsigned color) //-V688
+int BasePlayerInfo::getColorIdx(unsigned color) //-V688
 {
     for(int i = 0; i < static_cast<int>(PLAYER_COLORS.size()); ++i)
     {

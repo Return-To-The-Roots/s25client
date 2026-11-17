@@ -19,51 +19,51 @@ class nofDefender : public nofActiveSoldier
     nofAttacker* attacker;
 
     /// Walked to the next map point
-    void Walked() override;
+    void walked() override;
 
     /// Hand back control to derived class after a fight of nofActiveSoldier, not possible for defenders
-    [[noreturn]] SoldierState FreeFightAborted() override
+    [[noreturn]] SoldierState freeFightAborted() override
     {
         throw std::logic_error("Should not participate in free fights");
     }
 
 protected:
-    void HandleDerivedEvent [[noreturn]] (unsigned) override { throw std::logic_error("No events expected"); }
+    void handleDerivedEvent [[noreturn]] (unsigned) override { throw std::logic_error("No events expected"); }
 
 public:
     nofDefender(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank, nofAttacker& attacker);
     nofDefender(const nofPassiveSoldier& other, nofAttacker& attacker);
     nofDefender(SerializedGameData& sgd, unsigned obj_id);
 
-    void Destroy() override
+    void destroy() override
     {
         RTTR_Assert(!attacker);
-        nofActiveSoldier::Destroy();
+        nofActiveSoldier::destroy();
     }
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofDefender; }
+    GO_Type getGOT() const final { return GO_Type::NofDefender; }
 
     /// Inform that a new attacker arrived at the flag while we are going in such that we can come right back
-    void NewAttacker(nofAttacker& attacker) { this->attacker = &attacker; }
+    void newAttacker(nofAttacker& attacker) { this->attacker = &attacker; }
     /// The attacker won't come to the flag anymore
-    void AttackerArrested();
+    void attackerArrested();
 
     /// Home military building destroyed during mission
-    void HomeDestroyed() override;
+    void homeDestroyed() override;
     /// Home military building destroyed while waiting to go out
-    void HomeDestroyedAtBegin() override;
+    void homeDestroyedAtBegin() override;
     /// Fight was won
-    void WonFighting() override;
+    void wonFighting() override;
     /// Fight was lost -> Die
-    void LostFighting() override;
+    void lostFighting() override;
 
     /// Is the defender waiting at the flag for an attacker?
-    bool IsWaitingAtFlag() const { return (state == SoldierState::DefendingWaiting); }
-    bool IsFightingAtFlag() const { return (state == SoldierState::Fighting); }
+    bool isWaitingAtFlag() const { return (state == SoldierState::DefendingWaiting); }
+    bool isFightingAtFlag() const { return (state == SoldierState::Fighting); }
     /// Inform the defender that a fight between him and an attacker has started
-    void FightStarted() { state = SoldierState::Fighting; }
+    void fightStarted() { state = SoldierState::Fighting; }
 
     // For debugging
-    const nofAttacker* GetAttacker() const { return attacker; }
+    const nofAttacker* getAttacker() const { return attacker; }
 };

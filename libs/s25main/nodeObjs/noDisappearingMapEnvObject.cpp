@@ -19,24 +19,24 @@ noDisappearingMapEnvObject::noDisappearingMapEnvObject(const MapPoint pos, const
     : noDisappearingEnvObject(pos, 4000, 1000), map_id(map_id)
 {}
 
-void noDisappearingMapEnvObject::Serialize(SerializedGameData& sgd) const
+void noDisappearingMapEnvObject::serialize(SerializedGameData& sgd) const
 {
-    noDisappearingEnvObject::Serialize(sgd);
+    noDisappearingEnvObject::serialize(sgd);
 
-    sgd.PushUnsignedShort(map_id);
+    sgd.pushUnsignedShort(map_id);
 }
 
 noDisappearingMapEnvObject::noDisappearingMapEnvObject(SerializedGameData& sgd, const unsigned obj_id)
-    : noDisappearingEnvObject(sgd, obj_id), map_id(sgd.PopUnsignedShort())
+    : noDisappearingEnvObject(sgd, obj_id), map_id(sgd.popUnsignedShort())
 {}
 
 /**
  *  An x,y zeichnen.
  */
-void noDisappearingMapEnvObject::Draw(DrawPoint drawPt)
+void noDisappearingMapEnvObject::draw(DrawPoint drawPt)
 {
     // Bild
-    LOADER.GetMapTexture(map_id)->DrawFull(drawPt, GetDrawColor());
+    LOADER.getMapTexture(map_id)->drawFull(drawPt, getDrawColor());
     // Schatten
-    LOADER.GetMapTexture(map_id + 100)->DrawFull(drawPt, GetDrawShadowColor());
+    LOADER.getMapTexture(map_id + 100)->drawFull(drawPt, getDrawShadowColor());
 }

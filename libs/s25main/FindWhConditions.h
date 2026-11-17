@@ -9,7 +9,7 @@
 
 class nobBaseWarehouse;
 
-/// Vorgefertigte Bedingungsfunktionen für FindWarehouse, param jeweils Pointer auf die einzelnen Strukturen
+/// Vorgefertigte Bedingungsfunktionen für findWarehouse, param jeweils Pointer auf die einzelnen Strukturen
 namespace FW {
 struct HasMinWares
 {

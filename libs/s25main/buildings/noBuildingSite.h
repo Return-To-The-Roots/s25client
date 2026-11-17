@@ -56,38 +56,38 @@ public:
 
     ~noBuildingSite() override;
 
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Buildingsite; }
-    unsigned GetMilitaryRadius() const override;
+    GO_Type getGOT() const final { return GO_Type::Buildingsite; }
+    unsigned getMilitaryRadius() const override;
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-    std::unique_ptr<FOWObject> CreateFOWObject() const override;
+    std::unique_ptr<FOWObject> createFOWObject() const override;
 
-    void AddWare(std::unique_ptr<Ware> ware) override;
-    void GotWorker(Job job, noFigure& worker) override;
+    void addWare(std::unique_ptr<Ware> ware) override;
+    void gotWorker(Job job, noFigure& worker) override;
 
     /// Fordert Baumaterial an
-    void OrderConstructionMaterial();
+    void orderConstructionMaterial();
     /// Wird aufgerufen, wenn der Bauarbeiter kündigt
-    void Abrogate();
+    void abrogate();
     /// Eine bestellte Ware konnte doch nicht kommen
-    void WareLost(Ware& ware) override;
+    void wareLost(Ware& ware) override;
     /// Gibt den Bau-Fortschritt zurück
-    unsigned char GetBuildProgress(bool percent = true) const;
+    unsigned char getBuildProgress(bool percent = true) const;
 
-    unsigned CalcDistributionPoints(GoodType goodtype);
+    unsigned calcDistributionPoints(GoodType goodtype);
 
     /// Wird aufgerufen, wenn eine neue Ware zum dem Gebäude geliefert wird (nicht wenn sie bestellt wurde vom Gebäude!)
-    void TakeWare(Ware* ware) override;
+    void takeWare(Ware* ware) override;
     /// Gibt zurück, ob die Baustelle fertiggestellt ist
-    bool IsBuildingComplete();
+    bool isBuildingComplete();
 
     /// Aufgerufen, wenn Planierung beendet wurde
-    void PlaningFinished();
+    void planingFinished();
     /// Gibt zurück, ob eine bestimmte Baustellen eine Baustelle ist, die vom Schiff aus errichtet wurde
-    bool IsHarborBuildingSiteFromSea() const;
+    bool isHarborBuildingSiteFromSea() const;
 };

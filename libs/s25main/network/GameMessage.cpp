@@ -10,10 +10,10 @@
 bool GameMessage::run(MessageInterface* callback, unsigned senderPlayerID)
 {
     this->senderPlayerID = senderPlayerID;
-    return Run(checkedCast<GameMessageInterface*>(callback));
+    return runGame(checkedCast<GameMessageInterface*>(callback));
 }
 
-Message* GameMessage::create_game(unsigned short id)
+Message* GameMessage::createGame(unsigned short id)
 {
     Message* msg = nullptr;
 
@@ -65,14 +65,14 @@ Message* GameMessage::create_game(unsigned short id)
     return msg;
 }
 
-void GameMessageWithPlayer::Serialize(Serializer& ser) const
+void GameMessageWithPlayer::serialize(Serializer& ser) const
 {
-    Message::Serialize(ser);
-    ser.PushUnsignedChar(player);
+    Message::serialize(ser);
+    ser.pushUnsignedChar(player);
 }
 
-void GameMessageWithPlayer::Deserialize(Serializer& ser)
+void GameMessageWithPlayer::deserialize(Serializer& ser)
 {
-    Message::Deserialize(ser);
-    player = ser.PopUnsignedChar();
+    Message::deserialize(ser);
+    player = ser.popUnsignedChar();
 }

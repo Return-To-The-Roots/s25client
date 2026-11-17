@@ -14,17 +14,17 @@ struct PathConditionTrade : public PathConditionHuman
     const GamePlayer& player;
 
     PathConditionTrade(const GameWorldBase& gwb, unsigned char player)
-        : PathConditionHuman(gwb), player(gwb.GetPlayer(player))
+        : PathConditionHuman(gwb), player(gwb.getPlayer(player))
     {}
 
     // Called for every node but the start & goal and should return true, if this point is usable
-    BOOST_FORCEINLINE bool IsNodeOk(const MapPoint& pt) const
+    BOOST_FORCEINLINE bool isNodeOk(const MapPoint& pt) const
     {
-        if(!PathConditionHuman::IsNodeOk(pt))
+        if(!PathConditionHuman::isNodeOk(pt))
             return false;
 
-        unsigned char owner = world.GetNode(pt).owner;
+        unsigned char owner = world.getNode(pt).owner;
         // Ally or no player? Then ok
-        return (owner == 0 || player.IsAlly(owner - 1));
+        return (owner == 0 || player.isAlly(owner - 1));
     }
 };

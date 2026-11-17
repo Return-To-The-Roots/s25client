@@ -10,84 +10,84 @@ ctrlMinimap::ctrlMinimap(Window* parent, const unsigned id, const DrawPoint& pos
                          const Extent& padding, const Extent& mapSize)
     : Window(parent, id, pos, size), padding(padding), mapSize(mapSize)
 {
-    SetMapSize(mapSize);
+    setMapSize(mapSize);
 }
 
-Rect ctrlMinimap::GetMapArea() const
+Rect ctrlMinimap::getMapArea() const
 {
-    return Rect(DrawPoint(GetSize() - drawnMapSize) / 2, drawnMapSize);
+    return Rect(DrawPoint(getSize() - drawnMapSize) / 2, drawnMapSize);
 }
 
-Rect ctrlMinimap::GetBoundaryRect() const
+Rect ctrlMinimap::getBoundaryRect() const
 {
-    Rect mapArea = GetMapDrawArea();
+    Rect mapArea = getMapDrawArea();
     mapArea.setSize(mapArea.getSize() + padding);
     return mapArea;
 }
 
-Rect ctrlMinimap::GetMapDrawArea() const
+Rect ctrlMinimap::getMapDrawArea() const
 {
-    return Rect::move(GetMapArea(), GetDrawPos());
+    return Rect::move(getMapArea(), getDrawPos());
 }
 
-void ctrlMinimap::SetPadding(const Extent& padding)
+void ctrlMinimap::setPadding(const Extent& padding)
 {
     this->padding = padding;
-    SetMapSize(mapSize);
+    setMapSize(mapSize);
 }
 
-void ctrlMinimap::Resize(const Extent& newSize)
+void ctrlMinimap::resize(const Extent& newSize)
 {
-    Window::Resize(newSize);
-    SetMapSize(mapSize);
+    Window::resize(newSize);
+    setMapSize(mapSize);
 }
 
-void ctrlMinimap::SetMapSize(const Extent& newMapSize)
+void ctrlMinimap::setMapSize(const Extent& newMapSize)
 {
     mapSize = newMapSize;
 
     // Drawn map size is the full size reduced by the padding but >= 0
-    drawnMapSize = Extent(elMax(GetSize() - 2 * Position(padding), Position::all(0)));
+    drawnMapSize = Extent(elMax(getSize() - 2 * Position(padding), Position::all(0)));
     // If any size is 0 -> no map
     if(prodOfComponents(mapSize) == 0 || prodOfComponents(drawnMapSize) == 0)
         drawnMapSize = Extent::all(0);
     else
     {
         // Rescale width due to geometry using triangles
-        double scaled_map_width = mapSize.x * MINIMAP_SCALE_X;
+        double scaledMapWidth = mapSize.x * MINIMAP_SCALE_X;
 
         // Find out scale factors to due a box fit while retaining aspect ratio
         RTTR_Assert(mapSize.y != 0);
-        RTTR_Assert(scaled_map_width != 0.); //-V550
-        double x_scale = double(drawnMapSize.x) / scaled_map_width;
-        double y_scale = double(drawnMapSize.y) / double(mapSize.y);
+        RTTR_Assert(scaledMapWidth != 0.); //-V550
+        double xScale = double(drawnMapSize.x) / scaledMapWidth;
+        double yScale = double(drawnMapSize.y) / double(mapSize.y);
 
         // Scale by the smaller factor
         // Note: Only 1 coord needs to be scaled. The other is already the max size
-        if(y_scale <= x_scale)
-            drawnMapSize.x = static_cast<unsigned>(scaled_map_width * y_scale);
+        if(yScale <= xScale)
+            drawnMapSize.x = static_cast<unsigned>(scaledMapWidth * yScale);
         else
-            drawnMapSize.y = static_cast<unsigned>(mapSize.y * x_scale);
+            drawnMapSize.y = static_cast<unsigned>(mapSize.y * xScale);
     }
 }
 
-DrawPoint ctrlMinimap::CalcMapCoord(MapPoint pt) const
+DrawPoint ctrlMinimap::calcMapCoord(MapPoint pt) const
 {
-    DrawPoint result = GetMapArea().getOrigin();
+    DrawPoint result = getMapArea().getOrigin();
     result += DrawPoint(drawnMapSize * Extent(pt) / mapSize);
     return result;
 }
 
-void ctrlMinimap::DrawMap(Minimap& map) const
+void ctrlMinimap::drawMap(Minimap& map) const
 {
     // Map an sich zeichnen
-    map.Draw(GetMapDrawArea());
+    map.draw(getMapDrawArea());
 }
 
-void ctrlMinimap::RemoveBoundingBox(const Extent& minSize)
+void ctrlMinimap::removeBoundingBox(const Extent& minSize)
 {
     Extent newSize = drawnMapSize + padding * 2u;
     newSize = elMax(newSize, minSize);
     padding = Extent(0, 0);
-    Resize(newSize);
+    resize(newSize);
 }

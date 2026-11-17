@@ -21,17 +21,17 @@ public:
     static GoodsAndPeopleCounts getStartInventory(StartWares setting);
     void addStartWares();
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NobHq; }
+    GO_Type getGOT() const final { return GO_Type::NobHq; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
-    unsigned GetMilitaryRadius() const override { return HQ_RADIUS; }
+    unsigned getMilitaryRadius() const override { return HQ_RADIUS; }
 
-    void HandleEvent(unsigned id) override;
-    bool IsTent() const { return isTent_; }
-    void SetIsTent(const bool isTent) { isTent_ = isTent; }
+    void handleEvent(unsigned id) override;
+    bool isTent() const { return isTent_; }
+    void setIsTent(const bool isTent) { isTent_ = isTent; }
 
 protected:
     void DestroyBuilding() override;

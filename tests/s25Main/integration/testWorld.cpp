@@ -28,7 +28,7 @@
 struct MapTestFixture
 {
     const boost::filesystem::path testMapPath;
-    MapTestFixture() : testMapPath(RTTRCONFIG.ExpandPath(s25::folders::mapsOther) / "Bergruft.swd") {}
+    MapTestFixture() : testMapPath(RTTRCONFIG.expandPath(s25::folders::mapsOther) / "Bergruft.swd") {}
 };
 
 BOOST_FIXTURE_TEST_SUITE(MapTestSuite, MapTestFixture)
@@ -51,7 +51,7 @@ struct LoadWorldAndS2MapCreator : MapTestFixture
         if(map.load(mapFile, false) != 0)
             throw std::runtime_error("Could not load file " + testMapPath.string()); // LCOV_EXCL_LINE
         MapLoader loader(world);
-        if(!loader.Load(map, Exploration::FogOfWar))
+        if(!loader.load(map, Exploration::FogOfWar))
             throw std::runtime_error("Could not load map"); // LCOV_EXCL_LINE
         return true;
     }
@@ -73,17 +73,17 @@ BOOST_FIXTURE_TEST_CASE(LoadWorld, WorldFixture<UninitializedWorldCreator>)
     BOOST_TEST(header.getNumPlayers() == 4);
 
     MapLoader loader(world);
-    BOOST_TEST_REQUIRE(loader.Load(fixture.testMapPath));
-    BOOST_TEST(world.GetWidth() == map.getHeader().getWidth());
-    BOOST_TEST(world.GetHeight() == map.getHeader().getHeight());
+    BOOST_TEST_REQUIRE(loader.load(fixture.testMapPath));
+    BOOST_TEST(world.getWidth() == map.getHeader().getWidth());
+    BOOST_TEST(world.getHeight() == map.getHeader().getHeight());
 }
 
 BOOST_FIXTURE_TEST_CASE(HeightLoading, WorldLoadedWithS2MapFixture)
 {
     using libsiedler2::MapLayer;
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        BOOST_TEST_REQUIRE(world.GetNode(pt).altitude == worldCreator.map.getMapDataAt(MapLayer::Altitude, pt.x, pt.y));
+        BOOST_TEST_REQUIRE(world.getNode(pt).altitude == worldCreator.map.getMapDataAt(MapLayer::Altitude, pt.x, pt.y));
     }
 }
 
@@ -106,14 +106,14 @@ BOOST_FIXTURE_TEST_CASE(SameBQasInS2, WorldLoadedWithS2MapFixture)
 {
     using libsiedler2::MapLayer;
     // Init BQ
-    world.InitAfterLoad();
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    world.initAfterLoad();
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         BOOST_TEST_INFO("pt " << pt);
         const auto original = worldCreator.map.getMapDataAt(MapLayer::BuildingQuality, pt.x, pt.y);
         BOOST_TEST_INFO(" original: " << static_cast<unsigned>(original));
 
-        BuildingQuality bq = world.GetNode(pt).bq;
+        BuildingQuality bq = world.getNode(pt).bq;
         BOOST_TEST(bq == convertS2Bq(original));
     }
 }
@@ -130,23 +130,23 @@ BOOST_AUTO_TEST_CASE(HQPlacement)
         fixture.ggs.randomStartPosition = randStartPos;
         auto& world = fixture.world;
         MapLoader loader(world);
-        BOOST_TEST_REQUIRE(loader.Load(testMapPath));
+        BOOST_TEST_REQUIRE(loader.load(testMapPath));
         auto& hqsMap = randStartPos ? hqsShuffledMap : hqsOriginalMap;
         auto& hqsWorld = randStartPos ? hqsShuffledWorld : hqsOriginalWorld;
-        hqsWorld.resize(world.GetNumPlayers());
-        for(unsigned i = 0; i < world.GetNumPlayers(); i++)
+        hqsWorld.resize(world.getNumPlayers());
+        for(unsigned i = 0; i < world.getNumPlayers(); i++)
         {
             BOOST_TEST_INFO_SCOPE("Player: " << i);
-            GamePlayer& player = world.GetPlayer(i);
+            GamePlayer& player = world.getPlayer(i);
             BOOST_TEST_REQUIRE(player.isUsed());
 
-            auto hqPos = loader.GetOriginalHQPos(i);
+            auto hqPos = loader.getOriginalHQPos(i);
             BOOST_TEST_REQUIRE(hqPos.isValid());
             BOOST_TEST(!helpers::contains(hqsMap, hqPos)); // Unique position
             hqsMap.push_back(hqPos);
-            BOOST_TEST(world.GetNO(hqPos)->GetGOT() == GO_Type::NobHq);
+            BOOST_TEST(world.getNO(hqPos)->getGOT() == GO_Type::NobHq);
 
-            hqPos = world.GetPlayer(i).GetHQPos();
+            hqPos = world.getPlayer(i).getHQPos();
             BOOST_TEST_REQUIRE(hqPos.isValid());
             BOOST_TEST(!helpers::contains(hqsWorld, hqPos)); // Unique position
             hqsWorld[i] = hqPos;
@@ -168,14 +168,14 @@ BOOST_AUTO_TEST_CASE(HQPlacement)
 
 BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator>)
 {
-    loadGameData(world.GetDescriptionWriteable());
-    const auto tWater = GetWaterTerrain(world.GetDescription());
-    const auto tLand = GetLandTerrain(world.GetDescription());
+    loadGameData(world.getDescriptionWriteable());
+    const auto tWater = getWaterTerrain(world.getDescription());
+    const auto tLand = getLandTerrain(world.getDescription());
 
-    world.Init(MapExtent(30, 30));
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    world.init(MapExtent(30, 30));
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        MapNode& node = world.GetNodeWriteable(pt);
+        MapNode& node = world.getNodeWriteable(pt);
         node.t1 = node.t2 = tWater;
     }
 
@@ -186,21 +186,21 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     hbPos.push_back(MapPoint(11, 10));
 
     hbPos.push_back(MapPoint(20, 10));
-    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::NorthWest));
+    hbPos.push_back(world.getNeighbour(hbPos.back(), Direction::NorthWest));
 
     hbPos.push_back(MapPoint(10, 20)); //-V525
-    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::NorthEast));
+    hbPos.push_back(world.getNeighbour(hbPos.back(), Direction::NorthEast));
 
     hbPos.push_back(MapPoint(0, 10));
-    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::SouthEast));
+    hbPos.push_back(world.getNeighbour(hbPos.back(), Direction::SouthEast));
 
     hbPos.push_back(MapPoint(20, 10));
-    hbPos.push_back(world.GetNeighbour(hbPos.back(), Direction::SouthWest));
+    hbPos.push_back(world.getNeighbour(hbPos.back(), Direction::SouthWest));
 
     // Place land in radius 2
     for(const MapPoint& pt : hbPos)
     {
-        for(const MapPoint& curPt : world.GetPointsInRadius(pt, 1))
+        for(const MapPoint& curPt : world.getPointsInRadius(pt, 1))
         {
             for(const auto dir : helpers::EnumRange<Direction>{})
                 setRightTerrain(world, curPt, dir, tLand);
@@ -209,12 +209,12 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
 
     // And a node of water nearby so we do have a coast
     std::vector<MapPoint> waterPts;
-    waterPts.push_back(world.GetNeighbour2(hbPos[0], 10));
-    waterPts.push_back(world.GetNeighbour2(hbPos[0], 8));
-    waterPts.push_back(world.GetNeighbour2(hbPos[3], 4));
-    waterPts.push_back(world.GetNeighbour2(hbPos[5], 6));
-    waterPts.push_back(world.GetNeighbour2(hbPos[7], 10));
-    waterPts.push_back(world.GetNeighbour2(hbPos[9], 8));
+    waterPts.push_back(world.getNeighbour2(hbPos[0], 10));
+    waterPts.push_back(world.getNeighbour2(hbPos[0], 8));
+    waterPts.push_back(world.getNeighbour2(hbPos[3], 4));
+    waterPts.push_back(world.getNeighbour2(hbPos[5], 6));
+    waterPts.push_back(world.getNeighbour2(hbPos[7], 10));
+    waterPts.push_back(world.getNeighbour2(hbPos[9], 8));
 
     for(const MapPoint& pt : waterPts)
     {
@@ -223,25 +223,25 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
     }
 
     // Check if this works
-    BOOST_TEST_REQUIRE(MapLoader::InitSeasAndHarbors(world, hbPos));
+    BOOST_TEST_REQUIRE(MapLoader::initSeasAndHarbors(world, hbPos));
     // All harbors valid
-    BOOST_TEST_REQUIRE(world.GetNumHarborPoints() == hbPos.size());
-    for(const auto startHb : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
+    BOOST_TEST_REQUIRE(world.getNumHarborPoints() == hbPos.size());
+    for(const auto startHb : helpers::idRange<HarborId>(world.getNumHarborPoints()))
     {
         for(const auto dir : helpers::EnumRange<Direction>{})
         {
-            SeaId seaId = world.GetSeaId(startHb, dir);
+            SeaId seaId = world.getSeaId(startHb, dir);
             if(!seaId)
                 continue;
-            MapPoint startPt = world.GetCoastalPoint(startHb, seaId);
-            BOOST_TEST_REQUIRE(startPt == world.GetNeighbour(world.GetHarborPoint(startHb), dir));
-            for(const auto targetHb : helpers::idRange<HarborId>(world.GetNumHarborPoints()))
+            MapPoint startPt = world.getCoastalPoint(startHb, seaId);
+            BOOST_TEST_REQUIRE(startPt == world.getNeighbour(world.getHarborPoint(startHb), dir));
+            for(const auto targetHb : helpers::idRange<HarborId>(world.getNumHarborPoints()))
             {
-                MapPoint destPt = world.GetCoastalPoint(targetHb, seaId);
+                MapPoint destPt = world.getCoastalPoint(targetHb, seaId);
                 BOOST_TEST_REQUIRE(destPt.isValid());
                 std::vector<Direction> route;
-                BOOST_TEST_REQUIRE((startPt == destPt || world.FindShipPath(startPt, destPt, 10000, &route, nullptr)));
-                BOOST_TEST_REQUIRE(route.size() == world.GetMinHarborDistance(startHb, targetHb));
+                BOOST_TEST_REQUIRE((startPt == destPt || world.findShipPath(startPt, destPt, 10000, &route, nullptr)));
+                BOOST_TEST_REQUIRE(route.size() == world.getMinHarborDistance(startHb, targetHb));
             }
         }
     }
@@ -249,17 +249,17 @@ BOOST_FIXTURE_TEST_CASE(CloseHarborSpots, WorldFixture<UninitializedWorldCreator
 
 BOOST_FIXTURE_TEST_CASE(NONothingOnEmptyNode, WorldFixtureEmpty1P)
 {
-    const MapPoint hqPos = world.GetPlayer(0).GetHQPos();
-    BOOST_TEST(world.GetNode(hqPos).obj != nullptr);
-    BOOST_TEST_REQUIRE(world.GetNO(hqPos));
-    BOOST_TEST(world.GetNO(hqPos)->GetGOT() == GO_Type::NobHq);
-    BOOST_TEST(world.GetGOT(hqPos) == GO_Type::NobHq);
+    const MapPoint hqPos = world.getPlayer(0).getHQPos();
+    BOOST_TEST(world.getNode(hqPos).obj != nullptr);
+    BOOST_TEST_REQUIRE(world.getNO(hqPos));
+    BOOST_TEST(world.getNO(hqPos)->getGOT() == GO_Type::NobHq);
+    BOOST_TEST(world.getGOT(hqPos) == GO_Type::NobHq);
 
-    const MapPoint emptySpot = world.GetNeighbour(hqPos, Direction::SouthWest);
-    BOOST_TEST(world.GetNode(emptySpot).obj == nullptr);
-    BOOST_TEST_REQUIRE(world.GetNO(emptySpot));
-    BOOST_TEST(world.GetNO(emptySpot)->GetGOT() == GO_Type::Nothing);
-    BOOST_TEST(world.GetGOT(emptySpot) == GO_Type::Nothing);
+    const MapPoint emptySpot = world.getNeighbour(hqPos, Direction::SouthWest);
+    BOOST_TEST(world.getNode(emptySpot).obj == nullptr);
+    BOOST_TEST_REQUIRE(world.getNO(emptySpot));
+    BOOST_TEST(world.getNO(emptySpot)->getGOT() == GO_Type::Nothing);
+    BOOST_TEST(world.getGOT(emptySpot) == GO_Type::Nothing);
 }
 
 BOOST_FIXTURE_TEST_CASE(LoadLua, WorldFixture<UninitializedWorldCreator>)
@@ -271,71 +271,71 @@ BOOST_FIXTURE_TEST_CASE(LoadLua, WorldFixture<UninitializedWorldCreator>)
     invalidLuaFile.close();
     {
         rttr::test::LogAccessor logAcc;
-        BOOST_TEST_REQUIRE(!loader.LoadLuaScript(*game, lgs, invalidLuaFile.filePath));
-        BOOST_TEST(!world.HasLua());
+        BOOST_TEST_REQUIRE(!loader.loadLuaScript(*game, lgs, invalidLuaFile.filePath));
+        BOOST_TEST(!world.hasLua());
         RTTR_REQUIRE_LOG_CONTAINS("getRequiredLuaVersion()", false); // Should show a warning
     }
 
     TmpFile validLuaFile(".lua");
-    validLuaFile.getStream() << "function getRequiredLuaVersion()\n return " << LuaInterfaceGameBase::GetVersion()
+    validLuaFile.getStream() << "function getRequiredLuaVersion()\n return " << LuaInterfaceGameBase::getVersion()
                              << "\n end";
     validLuaFile.close();
 
-    BOOST_TEST_REQUIRE(loader.LoadLuaScript(*game, lgs, validLuaFile.filePath));
-    BOOST_TEST(world.HasLua());
+    BOOST_TEST_REQUIRE(loader.loadLuaScript(*game, lgs, validLuaFile.filePath));
+    BOOST_TEST(world.hasLua());
 }
 
 BOOST_AUTO_TEST_CASE(GetTerrainReturnsCorrectValues)
 {
     using TerrainIdx = DescIdx<TerrainDesc>;
     TestWorld world(MapExtent(6, 4));
-    const auto calcT1 = [&world](MapPoint pt) { return TerrainIdx(world.GetIdx(pt) * 2); };
-    const auto calcT2 = [&world](MapPoint pt) { return TerrainIdx(world.GetIdx(pt) * 2 + 1); };
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    const auto calcT1 = [&world](MapPoint pt) { return TerrainIdx(world.getIdx(pt) * 2); };
+    const auto calcT2 = [&world](MapPoint pt) { return TerrainIdx(world.getIdx(pt) * 2 + 1); };
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
-        auto& node = world.GetNodeInt(pt);
+        auto& node = world.getNodeInt(pt);
         node.t1 = calcT1(pt);
         node.t2 = calcT2(pt);
     }
     {
         const MapPoint testPt(1, 1);
         // t1 (idx) is the triangle directly below, t2 (idx+1) on right lower
-        auto terrain = world.GetTerrain(testPt, Direction::SouthEast);
+        auto terrain = world.getTerrain(testPt, Direction::SouthEast);
         BOOST_TEST(terrain.left == calcT2(testPt));
         BOOST_TEST(terrain.right == calcT1(testPt));
 
-        terrain = world.GetTerrain(testPt, Direction::West);
+        terrain = world.getTerrain(testPt, Direction::West);
         // right lower from previous point
         BOOST_TEST(terrain.left == calcT2(MapPoint(0, 1)));
         // below and right lower from upper point
         BOOST_TEST(terrain.right == calcT1(MapPoint(1, 0)));
 
-        terrain = world.GetTerrain(testPt, Direction::NorthEast);
+        terrain = world.getTerrain(testPt, Direction::NorthEast);
         BOOST_TEST(terrain.left == calcT2(MapPoint(1, 0)));
         // below of the point next to it
         BOOST_TEST(terrain.right == calcT1(MapPoint(2, 0)));
     }
     {
         const MapPoint testPt(5, 3); // Last point -> check borders
-        auto terrain = world.GetTerrain(testPt, Direction::SouthEast);
+        auto terrain = world.getTerrain(testPt, Direction::SouthEast);
         BOOST_TEST(terrain.left == calcT2(testPt));
         BOOST_TEST(terrain.right == calcT1(testPt));
-        terrain = world.GetTerrain(testPt, Direction::West);
+        terrain = world.getTerrain(testPt, Direction::West);
         BOOST_TEST(terrain.left == calcT2(MapPoint(4, 3)));
         BOOST_TEST(terrain.right == calcT1(MapPoint(5, 2)));
-        terrain = world.GetTerrain(testPt, Direction::NorthEast);
+        terrain = world.getTerrain(testPt, Direction::NorthEast);
         BOOST_TEST(terrain.left == calcT2(MapPoint(5, 2)));
         BOOST_TEST(terrain.right == calcT1(MapPoint(0, 2)));
     }
-    // Now assume GetTerrain works and only check for consistency:
-    RTTR_FOREACH_PT(MapPoint, world.GetSize())
+    // Now assume getTerrain works and only check for consistency:
+    RTTR_FOREACH_PT(MapPoint, world.getSize())
     {
         BOOST_TEST_CONTEXT(pt)
         {
-            const auto terrains = world.GetTerrainsAround(pt);
+            const auto terrains = world.getTerrainsAround(pt);
             for(const auto dir : helpers::enumRange<Direction>())
             {
-                const auto terrain = world.GetTerrain(pt, dir);
+                const auto terrain = world.getTerrain(pt, dir);
                 BOOST_TEST(terrain.left == terrains[dir - 1u]);
                 BOOST_TEST(terrain.right == terrains[dir]);
             }

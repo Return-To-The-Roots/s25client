@@ -18,9 +18,9 @@ struct ResourceTestFixture : MapGenFixture
 
     ResourceTestFixture() : map(createMap(size))
     {
-        auto mountain = map.textureMap.Find(IsMinableMountain);
-        auto water = map.textureMap.Find(IsWater);
-        auto land = map.textureMap.Find(IsBuildableCoast);
+        auto mountain = map.textureMap.find(isMinableMountain);
+        auto water = map.textureMap.find(isWater);
+        auto land = map.textureMap.find(isBuildableCoast);
 
         /*
          * ========== Test Map ===========
@@ -68,11 +68,11 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_hqs_empty)
     MapPoint hq(3, 3);
     map.hqPositions.push_back(hq);
 
-    AddObjects(map, rnd, settings);
+    addObjects(map, rnd, settings);
 
     auto& objectTypes = map.objectTypes;
     auto& objectInfos = map.objectInfos;
-    auto forbiddenArea = objectTypes.GetPointsInRadius(hq, 5);
+    auto forbiddenArea = objectTypes.getPointsInRadius(hq, 5);
     for(const MapPoint& pt : forbiddenArea)
     {
         BOOST_TEST_REQUIRE(objectTypes[pt] == OT_Empty);
@@ -87,11 +87,11 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_area_around_harbors_empty)
     MapPoint harbor(3, 3);
     map.harbors.push_back(Triangle(true, harbor));
 
-    AddObjects(map, rnd, settings);
+    addObjects(map, rnd, settings);
 
     auto& objectTypes = map.objectTypes;
     auto& objectInfos = map.objectInfos;
-    auto forbiddenArea = objectTypes.GetPointsInRadius(harbor, 5);
+    auto forbiddenArea = objectTypes.getPointsInRadius(harbor, 5);
     for(const MapPoint& pt : forbiddenArea)
     {
         BOOST_TEST_REQUIRE(objectTypes[pt] == OT_Empty);
@@ -105,12 +105,12 @@ BOOST_AUTO_TEST_CASE(AddObjects_adds_objects_to_the_map)
     MapSettings settings;
 
     auto countObjects = [this]() {
-        return helpers::count_if(map.objectTypes, [](const auto o) { return o != OT_Empty; });
+        return helpers::countIf(map.objectTypes, [](const auto o) { return o != OT_Empty; });
     };
 
     const unsigned objectsBefore = countObjects();
 
-    AddObjects(map, rnd, settings);
+    addObjects(map, rnd, settings);
 
     const unsigned objectsAfter = countObjects();
 
@@ -122,19 +122,19 @@ BOOST_AUTO_TEST_CASE(AddResources_updates_resources_according_to_textures)
     RandomUtility rnd(0);
     MapSettings settings;
 
-    AddResources(map, rnd, settings);
+    addResources(map, rnd, settings);
 
     unsigned numMountainWithRes = 0;
     unsigned numMountainWithoutRes = 0;
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
-        if(map.textureMap.All(pt, IsMinableMountain))
+        if(map.textureMap.all(pt, isMinableMountain))
         {
             if(map.resources[pt] == R_None)
                 numMountainWithoutRes++; // LCOV_EXCL_LINE
             else
                 numMountainWithRes++;
-        } else if(map.textureMap.All(pt, IsWater))
+        } else if(map.textureMap.all(pt, isWater))
             BOOST_TEST_REQUIRE(map.resources[pt] == R_Fish);
         else
             BOOST_TEST_REQUIRE(map.resources[pt] == R_Water);
@@ -148,11 +148,11 @@ BOOST_AUTO_TEST_CASE(AddAnimals_updates_animals_according_to_textures)
 {
     RandomUtility rnd(0);
 
-    AddAnimals(map, rnd);
+    addAnimals(map, rnd);
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
-        if(map.textureMap.All(pt, IsWater))
+        if(map.textureMap.all(pt, isWater))
         {
             BOOST_TEST_REQUIRE(
               (map.animals[pt] == Animal::None || map.animals[pt] == Animal::Duck || map.animals[pt] == Animal::Duck2));

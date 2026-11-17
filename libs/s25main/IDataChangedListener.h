@@ -12,5 +12,5 @@ protected:
 
 public:
     /// Handles a change, changeId is the type of the change (object dependent)
-    virtual void OnChange(unsigned changeId) = 0;
+    virtual void onChange(unsigned changeId) = 0;
 };

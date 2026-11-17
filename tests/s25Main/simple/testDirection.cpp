@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_CASE(DirectionIncDec)
     for(const auto startDir : helpers::enumRange<Direction>())
     {
         // Fit back to range
-        const auto iStartDir = rttr::enum_cast(startDir);
-        BOOST_TEST_REQUIRE(rttr::enum_cast(convertToDirection(iStartDir + helpers::NumEnumValues_v<Direction>))
+        const auto iStartDir = rttr::enumCast(startDir);
+        BOOST_TEST_REQUIRE(rttr::enumCast(convertToDirection(iStartDir + helpers::NumEnumValues_v<Direction>))
                            == iStartDir);
         for(unsigned diff = 0; diff < 20; diff++)
         {
@@ -57,6 +57,6 @@ BOOST_AUTO_TEST_CASE(DirectionToImgDir)
     for(Direction curDir : helpers::EnumRange<Direction>{})
     {
         // S2 Img dir is offset by 3
-        BOOST_TEST(static_cast<unsigned>(toImgDir(curDir)) == rttr::enum_cast(curDir + 3u));
+        BOOST_TEST(static_cast<unsigned>(toImgDir(curDir)) == rttr::enumCast(curDir + 3u));
     }
 }

@@ -40,153 +40,153 @@ enum
 };
 }
 
-dskLobby::dskLobby() : dskMenuBase(LOADER.GetImageN("setup013", 0)), serverInfoWnd(nullptr), createServerWnd(nullptr)
+dskLobby::dskLobby() : dskMenuBase(LOADER.getImageN("setup013", 0)), serverInfoWnd(nullptr), createServerWnd(nullptr)
 {
-    AddTextButton(ID_btBack, DrawPoint(530, 530), Extent(250, 22), TextureColor::Red1, _("Back"), NormalFont);
-    AddTextButton(ID_btConnect, DrawPoint(530, 470), Extent(250, 22), TextureColor::Green2, _("Connect"), NormalFont);
-    AddTextButton(ID_btAddServer, DrawPoint(530, 440), Extent(250, 22), TextureColor::Green2, _("Add Server"),
+    addTextButton(ID_btBack, DrawPoint(530, 530), Extent(250, 22), TextureColor::Red1, _("Back"), NormalFont);
+    addTextButton(ID_btConnect, DrawPoint(530, 470), Extent(250, 22), TextureColor::Green2, _("Connect"), NormalFont);
+    addTextButton(ID_btAddServer, DrawPoint(530, 440), Extent(250, 22), TextureColor::Green2, _("Add Server"),
                   NormalFont);
 
     using SRT = ctrlTable::SortType;
-    AddTable(ID_tblGames, DrawPoint(20, 20), Extent(500, 262), TextureColor::Grey, NormalFont,
+    addTable(ID_tblGames, DrawPoint(20, 20), Extent(500, 262), TextureColor::Grey, NormalFont,
              ctrlTable::Columns{{_("ID"), 0, SRT::Number},
                                 {_("Server"), 300, SRT::String},
                                 {_("Map"), 300, SRT::String},
                                 {_("Player"), 200, SRT::String},
                                 {_("Version"), 100, SRT::String},
                                 {_("Ping"), 100, SRT::Number}});
-    AddTable(ID_tblPlayers, DrawPoint(530, 20), Extent(250, 410), TextureColor::Grey, NormalFont,
+    addTable(ID_tblPlayers, DrawPoint(530, 20), Extent(250, 410), TextureColor::Grey, NormalFont,
              ctrlTable::Columns{{_("Name"), 12, SRT::String}, {_("Version"), 10, SRT::String}});
 
     // Chatfenster
-    AddChatCtrl(ID_Chat, DrawPoint(20, 290), Extent(500, 238), TextureColor::Grey, NormalFont);
+    addChatCtrl(ID_Chat, DrawPoint(20, 290), Extent(500, 238), TextureColor::Grey, NormalFont);
     // Chatfenster-Edit
-    AddEdit(ID_edtChat, DrawPoint(20, 530), Extent(500, 22), TextureColor::Grey, NormalFont);
+    addEdit(ID_edtChat, DrawPoint(20, 530), Extent(500, 22), TextureColor::Grey, NormalFont);
 
     using namespace std::chrono_literals;
-    AddTimer(ID_tmrUpdateGames, 5s);
+    addTimer(ID_tmrUpdateGames, 5s);
 
     // If we came from an active game, tell the server we quit
-    if(LOBBYCLIENT.IsIngame())
-        LOBBYCLIENT.SendLeaveServer();
+    if(LOBBYCLIENT.isIngame())
+        LOBBYCLIENT.sendLeaveServer();
 
-    UpdateServerList();
-    UpdatePlayerList();
+    updateServerList();
+    updatePlayerList();
 
-    LOBBYCLIENT.AddListener(this);
-    LOBBYCLIENT.SendServerListRequest();
-    LOBBYCLIENT.SendPlayerListRequest();
+    LOBBYCLIENT.addListener(this);
+    LOBBYCLIENT.sendServerListRequest();
+    LOBBYCLIENT.sendPlayerListRequest();
 }
 
 dskLobby::~dskLobby()
 {
-    LOBBYCLIENT.RemoveListener(this);
+    LOBBYCLIENT.removeListener(this);
 }
 
-void dskLobby::Msg_Timer(const unsigned /*ctrl_id*/)
+void dskLobby::msgTimer(const unsigned /*ctrl_id*/)
 {
-    if(LOBBYCLIENT.IsLoggedIn())
-        LOBBYCLIENT.SendServerListRequest();
+    if(LOBBYCLIENT.isLoggedIn())
+        LOBBYCLIENT.sendServerListRequest();
 }
 
-void dskLobby::Msg_PaintBefore()
+void dskLobby::msgPaintBefore()
 {
-    dskMenuBase::Msg_PaintBefore();
-    UpdateServerList();
-    UpdatePlayerList();
-    GetCtrl<ctrlEdit>(ID_edtChat)->SetFocus();
+    dskMenuBase::msgPaintBefore();
+    updateServerList();
+    updatePlayerList();
+    getCtrl<ctrlEdit>(ID_edtChat)->setFocus();
 }
 
-void dskLobby::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
+void dskLobby::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
     // Verbindung verloren
     if(msgbox_id == 0)
-        WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskMultiPlayer>());
 }
 
-void dskLobby::Msg_ButtonClick(const unsigned ctrl_id)
+void dskLobby::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case ID_btBack:
         {
-            LOBBYCLIENT.Stop();
-            WINDOWMANAGER.Switch(std::make_unique<dskMultiPlayer>());
+            LOBBYCLIENT.stop();
+            WINDOWMANAGER.switchTo(std::make_unique<dskMultiPlayer>());
         }
         break;
-        case ID_btConnect: ConnectToSelectedGame(); break;
+        case ID_btConnect: connectToSelectedGame(); break;
         case ID_btAddServer:
         {
             if(SETTINGS.proxy.type != ProxyType::None)
-                WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(
+                WINDOWMANAGER.show(std::make_unique<iwMsgbox>(
                   _("Sorry!"),
                   _("You can't create a game while a proxy server is active\nDisable the use of a proxy server first!"),
                   this, MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 1));
             else
             {
-                createServerWnd = &WINDOWMANAGER.ReplaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::Lobby));
+                createServerWnd = &WINDOWMANAGER.replaceWindow(std::make_unique<iwDirectIPCreate>(ServerType::Lobby));
             }
         }
         break;
     }
 }
 
-void dskLobby::Msg_EditEnter(const unsigned ctrl_id)
+void dskLobby::msgEditEnter(const unsigned ctrl_id)
 {
     if(ctrl_id == ID_edtChat)
     {
-        auto* edit = GetCtrl<ctrlEdit>(ID_edtChat);
-        LOBBYCLIENT.SendChat(edit->GetText());
-        edit->SetText("");
+        auto* edit = getCtrl<ctrlEdit>(ID_edtChat);
+        LOBBYCLIENT.sendChat(edit->getText());
+        edit->setText("");
     }
 }
 
-void dskLobby::Msg_TableRightButton(const unsigned ctrl_id, const std::optional<unsigned>& selection)
+void dskLobby::msgTableRightButton(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
     if(!selection)
         return;
-    auto* table = GetCtrl<ctrlTable>(ctrl_id);
+    auto* table = getCtrl<ctrlTable>(ctrl_id);
     switch(ctrl_id)
     {
         case ID_tblGames: // Server list
         {
-            const std::string& item = table->GetItemText(*selection, 0);
+            const std::string& item = table->getItemText(*selection, 0);
 
             if(boost::lexical_cast<unsigned>(item.c_str()) != 0)
             {
-                if(serverInfoWnd && serverInfoWnd->GetServerId() == boost::lexical_cast<unsigned>(item))
+                if(serverInfoWnd && serverInfoWnd->getServerId() == boost::lexical_cast<unsigned>(item))
                     return; // Already open -> Nothing to do
 
-                serverInfoWnd = &WINDOWMANAGER.ReplaceWindow(
+                serverInfoWnd = &WINDOWMANAGER.replaceWindow(
                   std::make_unique<iwLobbyServerInfo>(boost::lexical_cast<unsigned>(item)));
-                serverInfoWnd->SetTitle(table->GetItemText(*selection, 1));
+                serverInfoWnd->setTitle(table->getItemText(*selection, 1));
             }
         }
         break;
     }
 }
 
-void dskLobby::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned /*selection*/)
+void dskLobby::msgTableChooseItem(const unsigned ctrl_id, const unsigned /*selection*/)
 {
     if(ctrl_id == ID_tblGames) // Server list
-        ConnectToSelectedGame();
+        connectToSelectedGame();
 }
 
-void dskLobby::UpdatePlayerList()
+void dskLobby::updatePlayerList()
 {
-    if(LOBBYCLIENT.GetPlayerList().empty())
+    if(LOBBYCLIENT.getPlayerList().empty())
         return;
-    LC_PlayerList(LOBBYCLIENT.GetPlayerList());
+    LC_PlayerList(LOBBYCLIENT.getPlayerList());
 }
 
-void dskLobby::UpdateServerList()
+void dskLobby::updateServerList()
 {
-    if(LOBBYCLIENT.GetServerList().empty())
+    if(LOBBYCLIENT.getServerList().empty())
         return;
-    LC_ServerList(LOBBYCLIENT.GetServerList());
+    LC_ServerList(LOBBYCLIENT.getServerList());
 }
 
-void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
+void dskLobby::msgWindowClosed(IngameWindow& wnd)
 {
     if(&wnd == serverInfoWnd)
         serverInfoWnd = nullptr;
@@ -196,14 +196,14 @@ void dskLobby::Msg_WindowClosed(IngameWindow& wnd)
 
 bool isServerVersionValid(const LobbyServerInfo& serverInfo)
 {
-    // The server version is/should be rttr::version::GetReadableVersion()
-    if(serverInfo.getVersion() == rttr::version::GetReadableVersion())
+    // The server version is/should be rttr::version::getReadableVersion()
+    if(serverInfo.getVersion() == rttr::version::getReadableVersion())
         return true;
     // If we don't have an exact match we allow at least the same revision.
     // The short revision is the part after " - "
     const auto pos = serverInfo.getVersion().rfind(" - ");
     if(pos != std::string::npos)
-        return serverInfo.getVersion().substr(pos + 3) == rttr::version::GetShortRevision();
+        return serverInfo.getVersion().substr(pos + 3) == rttr::version::getShortRevision();
     else
     {
         LOG.writeToFile("Can't get server revision from version %1%") % serverInfo.getVersion();
@@ -211,19 +211,19 @@ bool isServerVersionValid(const LobbyServerInfo& serverInfo)
     }
 }
 
-bool dskLobby::ConnectToSelectedGame()
+bool dskLobby::connectToSelectedGame()
 {
-    const auto* table = GetCtrl<ctrlTable>(ID_tblGames);
-    const auto& selectedRow = table->GetSelection();
+    const auto* table = getCtrl<ctrlTable>(ID_tblGames);
+    const auto& selectedRow = table->getSelection();
     if(!selectedRow)
         return false;
-    const auto selectedId = boost::lexical_cast<unsigned>(table->GetItemText(*selectedRow, 0));
-    const auto serverList = LOBBYCLIENT.GetServerList();
-    const auto itServer = helpers::find_if(
-      serverList, [selectedId](const LobbyServerInfo& server) { return server.getId() == selectedId; });
+    const auto selectedId = boost::lexical_cast<unsigned>(table->getItemText(*selectedRow, 0));
+    const auto serverList = LOBBYCLIENT.getServerList();
+    const auto itServer =
+      helpers::findIf(serverList, [selectedId](const LobbyServerInfo& server) { return server.getId() == selectedId; });
     if(itServer == serverList.end())
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"), _("The selected game was not found anymore."), this,
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Sorry!"), _("The selected game was not found anymore."), this,
                                                       MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
     } else
     {
@@ -231,12 +231,12 @@ bool dskLobby::ConnectToSelectedGame()
         if(isServerVersionValid(*itServer))
         {
             auto connect = std::make_unique<iwDirectIPConnect>(ServerType::Lobby);
-            connect->Connect(itServer->getHost(), itServer->getPort(), false, itServer->hasPassword());
-            WINDOWMANAGER.ReplaceWindow(std::move(connect));
+            connect->connect(itServer->getHost(), itServer->getPort(), false, itServer->hasPassword());
+            WINDOWMANAGER.replaceWindow(std::move(connect));
             return true;
         } else
         {
-            WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Sorry!"), _("You can't join that game with your version!"),
+            WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Sorry!"), _("You can't join that game with your version!"),
                                                           this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
         }
     }
@@ -256,7 +256,7 @@ void dskLobby::LC_Status_ConnectionLost()
  */
 void dskLobby::LC_Status_IncompleteMessage()
 {
-    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Lost connection to lobby!"), this, MsgboxButton::Ok,
+    WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), _("Lost connection to lobby!"), this, MsgboxButton::Ok,
                                                   MsgboxIcon::ExclamationRed, 0));
 }
 
@@ -274,13 +274,13 @@ void dskLobby::LC_Status_Error(const std::string& error)
  */
 void dskLobby::LC_Chat(const std::string& player, const std::string& text)
 {
-    unsigned playerColor = ctrlChat::CalcUniqueColor(player);
+    unsigned playerColor = ctrlChat::calcUniqueColor(player);
 
-    std::string time = s25util::Time::FormatTime("(%H:%i:%s)");
+    std::string time = s25util::Time::formatTime("(%H:%i:%s)");
 
     if(player == "LobbyBot")
     {
-        std::string self = LOBBYCLIENT.GetUser();
+        std::string self = LOBBYCLIENT.getUser();
 
         if((text.length() > (self.length() + 3)) && text[0] == ' ')
         {
@@ -288,11 +288,11 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
             {
                 if(text.substr(self.length() + 1, 2) == ": ")
                 {
-                    WINDOWMANAGER.Show(std::make_unique<iwMsgbox>("LobbyBot", text.substr(self.length() + 3), this,
+                    WINDOWMANAGER.show(std::make_unique<iwMsgbox>("LobbyBot", text.substr(self.length() + 3), this,
                                                                   MsgboxButton::Ok, MsgboxIcon::ExclamationGreen, 2));
                 } else if(text.substr(self.length() + 1, 2) == ", ")
                 {
-                    GetCtrl<ctrlChat>(ID_Chat)->AddMessage(time, player, playerColor, text.substr(self.length() + 3),
+                    getCtrl<ctrlChat>(ID_Chat)->addMessage(time, player, playerColor, text.substr(self.length() + 3),
                                                            COLOR_YELLOW);
                 }
             }
@@ -301,20 +301,20 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
         }
     }
 
-    GetCtrl<ctrlChat>(ID_Chat)->AddMessage(time, player, playerColor, text, COLOR_YELLOW);
+    getCtrl<ctrlChat>(ID_Chat)->addMessage(time, player, playerColor, text, COLOR_YELLOW);
 }
 
 void dskLobby::LC_ServerList(const LobbyServerList& servers)
 {
-    auto* servertable = GetCtrl<ctrlTable>(ID_tblGames);
-    bool first = servertable->GetNumRows() == 0;
+    auto* servertable = getCtrl<ctrlTable>(ID_tblGames);
+    bool first = servertable->getNumRows() == 0;
 
-    const unsigned selection = servertable->GetSelection().value_or(0u);
-    int sortColumn = servertable->GetSortColumn();
+    const unsigned selection = servertable->getSelection().value_or(0u);
+    int sortColumn = servertable->getSortColumn();
     if(sortColumn == -1)
         sortColumn = 0;
-    const auto direction = servertable->GetSortDirection();
-    servertable->DeleteAllItems();
+    const auto direction = servertable->getSortDirection();
+    servertable->deleteAllItems();
 
     std::set<unsigned> ids;
     for(const LobbyServerInfo& server : servers)
@@ -333,31 +333,31 @@ void dskLobby::LC_ServerList(const LobbyServerList& servers)
         std::string ping = helpers::toString(server.getPing());
         std::string player =
           helpers::toString(server.getCurPlayers()) + "/" + helpers::toString(server.getMaxPlayers());
-        servertable->AddRow({id, name, server.getMap(), player, server.getVersion(), ping});
+        servertable->addRow({id, name, server.getMap(), player, server.getVersion(), ping});
     }
     if(first)
-        servertable->SortRows(0, TableSortDir::Ascending);
+        servertable->sortRows(0, TableSortDir::Ascending);
     else
-        servertable->SortRows(sortColumn, direction);
-    servertable->SetSelection(selection);
+        servertable->sortRows(sortColumn, direction);
+    servertable->setSelection(selection);
 }
 
 void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
 {
-    auto* playertable = GetCtrl<ctrlTable>(ID_tblPlayers);
-    bool first = playertable->GetNumRows() == 0;
+    auto* playertable = getCtrl<ctrlTable>(ID_tblPlayers);
+    bool first = playertable->getNumRows() == 0;
 
-    if((playertable->GetNumRows() > 0) && (playertable->GetNumRows() < players.size()))
+    if((playertable->getNumRows() > 0) && (playertable->getNumRows() < players.size()))
     {
-        LOADER.GetSoundN("sound", 114)->Play(255, false);
+        LOADER.getSoundN("sound", 114)->play(255, false);
     }
 
-    const unsigned selection = playertable->GetSelection().value_or(0u);
-    int sortColumn = playertable->GetSortColumn();
+    const unsigned selection = playertable->getSelection().value_or(0u);
+    int sortColumn = playertable->getSortColumn();
     if(sortColumn == -1)
         sortColumn = 0;
-    const auto direction = playertable->GetSortDirection();
-    playertable->DeleteAllItems();
+    const auto direction = playertable->getSortDirection();
+    playertable->deleteAllItems();
 
     for(const LobbyPlayerInfo& player : players)
     {
@@ -366,18 +366,18 @@ void dskLobby::LC_PlayerList(const LobbyPlayerList& players)
             std::string name = player.getName();
             if(player.isIngame)
                 name += _(" (playing)");
-            playertable->AddRow({name, player.getVersion()});
+            playertable->addRow({name, player.getVersion()});
         }
     }
     if(first)
-        playertable->SortRows(0, TableSortDir::Ascending);
+        playertable->sortRows(0, TableSortDir::Ascending);
     else
-        playertable->SortRows(sortColumn, direction);
-    playertable->SetSelection(selection);
+        playertable->sortRows(sortColumn, direction);
+    playertable->setSelection(selection);
 }
 
 void dskLobby::LC_ServerInfo(const LobbyServerInfo&)
 {
     if(serverInfoWnd)
-        serverInfoWnd->UpdateServerInfo();
+        serverInfoWnd->updateServerInfo();
 }

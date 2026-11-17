@@ -16,10 +16,10 @@ auto makeException(Args&&... args)
 }
 
 /// Return the last error (either GetLastError or errno)
-std::error_code GetLastErrorCode();
+std::error_code getLastErrorCode();
 
 template<typename... Args>
 std::system_error makeLastSystemError(Args&&... args)
 {
-    return {GetLastErrorCode(), helpers::concat(std::forward<Args>(args)...)};
+    return {getLastErrorCode(), helpers::concat(std::forward<Args>(args)...)};
 }

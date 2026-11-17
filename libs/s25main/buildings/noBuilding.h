@@ -21,21 +21,21 @@ protected:
     virtual void DestroyBuilding() = 0;
 
 public:
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
     /// Draws the basic building (no fires etc.) with the door
-    void DrawBaseBuilding(DrawPoint drawPt) const;
+    void drawBaseBuilding(DrawPoint drawPt) const;
     /// Draws the door only (if building is drawn at x, y)
-    void DrawDoor(DrawPoint drawPt) const;
+    void drawDoor(DrawPoint drawPt) const;
 
-    void OpenDoor();
-    void CloseDoor();
-    bool IsDoorOpen() const { return opendoor > 0; }
+    void openDoor();
+    void closeDoor();
+    bool isDoorOpen() const { return opendoor > 0; }
 
     /// Wird aufgerufen, wenn von der Fahne vor dem Gebäude ein Rohstoff aufgenommen wurde
-    virtual bool FreePlaceAtFlag() = 0;
+    virtual bool freePlaceAtFlag() = 0;
 
     /// Erzeugt von ihnen selbst ein FOW Objekt als visuelle "Erinnerung" für den Fog of War
-    std::unique_ptr<FOWObject> CreateFOWObject() const override;
+    std::unique_ptr<FOWObject> createFOWObject() const override;
 };

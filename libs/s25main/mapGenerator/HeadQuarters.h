@@ -22,7 +22,7 @@ namespace rttr::mapGenerator {
  *
  * @returns all map points within the largest connected area of the map.
  */
-std::vector<MapPoint> FindLargestConnectedArea(const Map& map);
+std::vector<MapPoint> findLargestConnectedArea(const Map& map);
 
 /**
  * Finds suitable positions for a HQ in the specified area of the map. The resulting HQ positions are sorted by
@@ -41,7 +41,7 @@ std::vector<MapPoint> FindLargestConnectedArea(const Map& map);
  * @throw runtime_error
  */
 template<class T_Container>
-std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, MountainDistance distance)
+std::vector<MapPoint> findHqPositions(const Map& map, const T_Container& area, MountainDistance distance)
 {
     if(area.empty())
     {
@@ -49,8 +49,8 @@ std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, M
     }
 
     // 1. look for points within a buildable area of radius 2 (min. req. of HQ)
-    const auto obstacleDistance = DistancesTo(map.size, [&map](const MapPoint& pt) {
-        return map.textureMap.Any(pt, [](auto t) { return !t.Is(ETerrain::Buildable); });
+    const auto obstacleDistance = distancesTo(map.size, [&map](const MapPoint& pt) {
+        return map.textureMap.any(pt, [](auto t) { return !t.is(ETerrain::Buildable); });
     });
     const auto hasEnoughSpace = [&obstacleDistance](const MapPoint& pt) { return obstacleDistance[pt] >= 2; };
     std::vector<MapPoint> possiblePositions;
@@ -62,7 +62,7 @@ std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, M
     }
 
     // 2. sort all those points by their distance to existing HQs
-    const auto distanceToOtherHqs = DistancesTo(map.hqPositions, map.size);
+    const auto distanceToOtherHqs = distancesTo(map.hqPositions, map.size);
     const auto byDistanceToOtherHqs = [&distanceToOtherHqs](MapPoint p1, MapPoint p2) {
         return distanceToOtherHqs[p1] > distanceToOtherHqs[p2];
     };
@@ -83,8 +83,8 @@ std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, M
     }
 
     // 5. sort remaining points by how close they're to desired mountain distance
-    const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.Any(pt, IsMinableMountain); };
-    const auto mountainDistances = DistancesTo(map.size, mountain);
+    const auto mountain = [&map](const MapPoint& pt) { return map.textureMap.any(pt, isMinableMountain); };
+    const auto mountainDistances = distancesTo(map.size, mountain);
     const auto desiredDistance = static_cast<unsigned>(distance);
     const auto desiredDistanceOffset = [&mountainDistances, desiredDistance](const MapPoint& pt) {
         return mountainDistances[pt] > desiredDistance ? mountainDistances[pt] - desiredDistance :
@@ -108,12 +108,12 @@ std::vector<MapPoint> FindHqPositions(const Map& map, const T_Container& area, M
  * @throw runtime_error
  */
 template<class T_Container>
-void PlaceHeadquarter(Map& map, const T_Container& area, MountainDistance distance)
+void placeHeadquarter(Map& map, const T_Container& area, MountainDistance distance)
 {
-    const auto positions = FindHqPositions(map, area, distance);
+    const auto positions = findHqPositions(map, area, distance);
     if(positions.empty())
         throw std::runtime_error("Could not find any valid HQ position!");
-    FlattenForCastleBuilding(map.z, positions.front());
+    flattenForCastleBuilding(map.z, positions.front());
     map.hqPositions.push_back(positions.front());
 }
 
@@ -128,6 +128,6 @@ void PlaceHeadquarter(Map& map, const T_Container& area, MountainDistance distan
  *
  * @throw runtime_error
  */
-void PlaceHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistance distance, int retries = 10);
+void placeHeadquarters(Map& map, RandomUtility& rnd, int number, MountainDistance distance, int retries = 10);
 
 } // namespace rttr::mapGenerator

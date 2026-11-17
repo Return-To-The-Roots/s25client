@@ -194,37 +194,37 @@ namespace {
         DescIdx<TerrainDesc> overlayTexture(Overlay overlay) const
         {
             const auto isRock = [](const TerrainDesc& t) {
-                return t.Is(ETerrain::Buildable) && t.s2Id == rockTextureId;
+                return t.is(ETerrain::Buildable) && t.s2Id == rockTextureId;
             };
             switch(overlay)
             {
-                case Overlay::RockRim: return map_.textureMap.Find(IsBuildableMountain);
-                case Overlay::Rock: return map_.textureMap.Find(isRock);
-                case Overlay::Sand: return map_.textureMap.Find(IsCoastTerrain);
-                default: return map_.textureMap.Find(IsShipableWater);
+                case Overlay::RockRim: return map_.textureMap.find(isBuildableMountain);
+                case Overlay::Rock: return map_.textureMap.find(isRock);
+                case Overlay::Sand: return map_.textureMap.find(isCoastTerrain);
+                default: return map_.textureMap.find(isShipableWater);
             }
         }
 
     public:
         SceneBuilder(Map& map, RandomUtility& rnd, const MapPoint& center, SceneType type)
             : map_(map), rnd_(rnd), center_(center),
-              theme_(makeTheme(type, map.textureMap.GetLandscapeId() == winterLandscapeId)),
-              tree_(rnd.RandomItem(CreateTrees(map.textureMap))),
-              otherTree_(rnd.RandomItem(CreateTrees(map.textureMap)))
+              theme_(makeTheme(type, map.textureMap.getLandscapeId() == winterLandscapeId)),
+              tree_(rnd.randomItem(createTrees(map.textureMap))),
+              otherTree_(rnd.randomItem(createTrees(map.textureMap)))
         {
-            const auto sceneArea = map.z.GetPointsInRadiusWithCenter(center, sceneRadius);
+            const auto sceneArea = map.z.getPointsInRadiusWithCenter(center, sceneRadius);
             for(const MapPoint& pt : sceneArea)
             {
-                if(map.textureMap.All(pt, IsBuildableLand) && map.objectTypes[pt] == libsiedler2::OT_Empty
+                if(map.textureMap.all(pt, isBuildableLand) && map.objectTypes[pt] == libsiedler2::OT_Empty
                    && !helpers::contains(map.barren, pt))
                     free_.insert(pt);
             }
             map.reserved.insert(sceneArea.begin(), sceneArea.end());
-            overlay_.Resize(map.size, Overlay::None);
+            overlay_.resize(map.size, Overlay::None);
 
             // Flowers are the most lush texture. The index makes the order independent from the sort algorithm.
-            ramp_ = map.textureMap.FindAll(IsBuildableLand);
-            map.textureMap.Sort(ramp_, [](const TerrainDesc& terrain) {
+            ramp_ = map.textureMap.findAll(isBuildableLand);
+            map.textureMap.sort(ramp_, [](const TerrainDesc& terrain) {
                 return std::make_tuple(terrain.humidity, terrain.s2Id == flowerTextureId, terrain.s2Id);
             });
 
@@ -243,16 +243,16 @@ namespace {
         const Theme& getTheme() const { return theme_; }
         RandomUtility& rnd() { return rnd_; }
         int minZ() const { return map_.height.minimum + 1; }
-        unsigned distance(const MapPoint& pt) const { return map_.z.CalcDistance(center_, pt); }
-        unsigned distance(const MapPoint& from, const MapPoint& to) const { return map_.z.CalcDistance(from, to); }
-        bool isWater(const MapPoint& pt) const { return overlay_[pt] == Overlay::Water; }
+        unsigned distance(const MapPoint& pt) const { return map_.z.calcDistance(center_, pt); }
+        unsigned distance(const MapPoint& from, const MapPoint& to) const { return map_.z.calcDistance(from, to); }
+        bool isPond(const MapPoint& pt) const { return overlay_[pt] == Overlay::Water; }
         bool isFree(const MapPoint& pt) const { return helpers::contains(free_, pt); }
 
         /// Moves from the node into the direction which is counted clockwise starting in the west
         MapPoint step(MapPoint pt, int dir, unsigned steps = 1) const
         {
             for(unsigned i = 0; i < steps; i++)
-                pt = map_.z.GetNeighbour(pt, Direction(mod6(dir)));
+                pt = map_.z.getNeighbour(pt, Direction(mod6(dir)));
             return pt;
         }
 
@@ -274,8 +274,8 @@ namespace {
 
         std::vector<MapPoint> area(const MapPoint& pt, unsigned radius) const
         {
-            auto result = map_.z.GetPointsInRadiusWithCenter(pt, radius);
-            helpers::erase_if(result, [this](const MapPoint& p) { return !isFree(p); });
+            auto result = map_.z.getPointsInRadiusWithCenter(pt, radius);
+            helpers::eraseIf(result, [this](const MapPoint& p) { return !isFree(p); });
             return result;
         }
 
@@ -285,7 +285,7 @@ namespace {
             return std::atan2(y, x);
         }
 
-        double randomAngle() { return rnd_.RandomDouble(-pi, pi); }
+        double randomAngle() { return rnd_.randomDouble(-pi, pi); }
 
         Blob makeBlob(const MapPoint& center, double radius, bool irregular = true)
         {
@@ -304,7 +304,7 @@ namespace {
         std::vector<MapPoint> nodes(const Blob& blob, double limit = 1.) const
         {
             auto result = area(blob.center, static_cast<unsigned>(blob.radius * 1.4) + 1);
-            helpers::erase_if(result, [this, &blob, limit](const MapPoint& pt) { return eval(blob, pt) >= limit; });
+            helpers::eraseIf(result, [this, &blob, limit](const MapPoint& pt) { return eval(blob, pt) >= limit; });
             return result;
         }
 
@@ -362,42 +362,42 @@ namespace {
         bool canPlace(const MapPoint& pt) const
         {
             return isFree(pt) && map_.objectTypes[pt] == libsiedler2::OT_Empty && !helpers::contains(blocked_, pt)
-                   && !isWater(pt);
+                   && !isPond(pt);
         }
 
-        bool chance(unsigned percentage) { return percentage >= 100 || rnd_.ByChance(percentage); }
+        bool chance(unsigned percentage) { return percentage >= 100 || rnd_.byChance(percentage); }
 
         void place(const MapPoint& pt, const Objects& objects)
         {
             if(!canPlace(pt))
                 return;
             map_.objectTypes[pt] = OT_Decoration;
-            map_.objectInfos[pt] = rnd_.RandomItem(objects);
+            map_.objectInfos[pt] = rnd_.randomItem(objects);
         }
 
         void placeTree(const MapPoint& pt)
         {
             if(!canPlace(pt))
                 return;
-            const Tree& tree = rnd_.ByChance(75) ? tree_ : otherTree_;
+            const Tree& tree = rnd_.byChance(75) ? tree_ : otherTree_;
             map_.objectTypes[pt] = tree.type;
-            map_.objectInfos[pt] = tree.index + rnd_.RandomValue(0, 7);
+            map_.objectInfos[pt] = tree.index + rnd_.randomValue(0, 7);
         }
 
         void placeGranite(const MapPoint& pt)
         {
             if(!canPlace(pt))
                 return;
-            map_.objectTypes[pt] = rnd_.ByChance(50) ? libsiedler2::OT_Stone1 : libsiedler2::OT_Stone2;
-            map_.objectInfos[pt] = static_cast<uint8_t>(rnd_.RandomValue(2, 6));
+            map_.objectTypes[pt] = rnd_.byChance(50) ? libsiedler2::OT_Stone1 : libsiedler2::OT_Stone2;
+            map_.objectInfos[pt] = static_cast<uint8_t>(rnd_.randomValue(2, 6));
         }
 
         /// Trees mixed with some undergrowth or dead trees for gloomy themes
         void placeVegetation(const MapPoint& pt)
         {
             if(theme_.deadVegetation)
-                place(pt, rnd_.ByChance(80) ? deadTrees : mushrooms);
-            else if(rnd_.ByChance(85))
+                place(pt, rnd_.byChance(80) ? deadTrees : mushrooms);
+            else if(rnd_.byChance(85))
                 placeTree(pt);
             else
                 place(pt, undergrowth);
@@ -411,14 +411,14 @@ namespace {
             else if(canPlace(pt))
             {
                 map_.objectTypes[pt] = tree_.type;
-                map_.objectInfos[pt] = tree_.index + rnd_.RandomValue(0, 7);
+                map_.objectInfos[pt] = tree_.index + rnd_.randomValue(0, 7);
             }
         }
 
         /// Large rocks or the props of the theme
         void placeRock(const MapPoint& pt)
         {
-            if(theme_.granite && rnd_.ByChance(60))
+            if(theme_.granite && rnd_.byChance(60))
                 placeGranite(pt);
             else
                 place(pt, theme_.granite ? stones : theme_.props);
@@ -458,7 +458,7 @@ namespace {
         void placeCore(SceneType type)
         {
             map_.objectTypes[center_] = OT_Decoration;
-            map_.objectInfos[center_] = rnd_.RandomItem(theme_.main);
+            map_.objectInfos[center_] = rnd_.randomItem(theme_.main);
             block(center_);
             const auto innerRing = ring(1);
             const auto outerRing = ring(2);
@@ -477,7 +477,7 @@ namespace {
                     for(const unsigned index : {2u, 3u, 4u, 8u, 9u, 10u})
                         place(outerRing[index], theme_.main);
                     break;
-                case SceneType::Camp: place(innerRing[rnd_.Index(innerRing.size())], {OI_PileOfWood}); break;
+                case SceneType::Camp: place(innerRing[rnd_.index(innerRing.size())], {OI_PileOfWood}); break;
                 case SceneType::StoneCircle:
                     for(unsigned i = 0; i < outerRing.size(); i += 2)
                         place(outerRing[i], standingStones);
@@ -489,19 +489,19 @@ namespace {
         /// Applies the collected ground to the map and makes sure the special object stands on even ground
         void finish()
         {
-            FlattenForCastleBuilding(map_.z, center_);
+            flattenForCastleBuilding(map_.z, center_);
 
             // Ponds are flat
-            const auto sceneArea = map_.z.GetPointsInRadiusWithCenter(center_, sceneRadius);
+            const auto sceneArea = map_.z.getPointsInRadiusWithCenter(center_, sceneRadius);
             int waterLevel = map_.height.maximum;
             for(const MapPoint& pt : sceneArea)
             {
-                if(isWater(pt))
+                if(isPond(pt))
                     waterLevel = std::min<int>(waterLevel, map_.z[pt]);
             }
             for(const MapPoint& pt : sceneArea)
             {
-                if(isWater(pt))
+                if(isPond(pt))
                     map_.z[pt] = static_cast<uint8_t>(waterLevel);
             }
 
@@ -512,7 +512,7 @@ namespace {
                 for(const MapPoint& pt : sceneArea)
                 {
                     if(overlay_[pt] == overlay)
-                        map_.textureMap.Set(pt, overlayTexture(overlay));
+                        map_.textureMap.set(pt, overlayTexture(overlay));
                 }
             }
         }
@@ -592,7 +592,7 @@ namespace {
             for(const Anchor& anchor : painted)
             {
                 const int index = std::clamp<int>(anchor.index, 0, static_cast<int>(ramp_.size()) - 1);
-                map_.textureMap.Set(anchor.pt, ramp_[index]);
+                map_.textureMap.set(anchor.pt, ramp_[index]);
             }
         }
     };
@@ -609,7 +609,7 @@ namespace {
             scene.bump(center, 2, 5.);
 
         // A path leads through the gap between the rocks and the trees
-        const int pathDir = static_cast<int>(scene.rnd().RandomValue(0, 5));
+        const int pathDir = static_cast<int>(scene.rnd().randomValue(0, 5));
         for(unsigned i = 1; i < sceneRadius; i++)
         {
             const MapPoint pt = scene.step(scene.step(center, pathDir, i), pathDir + 1, i / 3);
@@ -619,8 +619,8 @@ namespace {
         }
 
         const double pathAngle = scene.angle(center, scene.step(center, pathDir, 3));
-        const double rockAngle = pathAngle + scene.rnd().RandomDouble(1.2, 1.9);
-        const double treeAngle = pathAngle - scene.rnd().RandomDouble(1.2, 1.9);
+        const double rockAngle = pathAngle + scene.rnd().randomDouble(1.2, 1.9);
+        const double treeAngle = pathAngle - scene.rnd().randomDouble(1.2, 1.9);
         const auto wrap = [](double angle) { return std::atan2(std::sin(angle), std::cos(angle)); };
 
         scene.forSector(wrap(rockAngle), 0.65, 2, 5, 55, [&scene](const MapPoint& pt) { scene.placeRock(pt); });
@@ -637,7 +637,7 @@ namespace {
     {
         const Theme& theme = scene.getTheme();
         const MapPoint center = scene.center();
-        const int dir = static_cast<int>(scene.rnd().RandomValue(0, 5));
+        const int dir = static_cast<int>(scene.rnd().randomValue(0, 5));
         const Ground paving = theme.core == Ground::Lush ? Ground::Dry : theme.core;
 
         scene.blend(scene.makeBlob(center, 4.6), theme.surround);
@@ -655,7 +655,7 @@ namespace {
                 scene.blend(scene.makeBlob(road.back(), 1.1, false), Ground::Dry);
         }
         const auto nearRoad = [&scene, &road](const MapPoint& pt) {
-            return helpers::contains_if(road, [&](const MapPoint& node) { return scene.distance(node, pt) <= 1; });
+            return helpers::containsIf(road, [&](const MapPoint& node) { return scene.distance(node, pt) <= 1; });
         };
 
         // Trees on both sides of the road outside the court
@@ -697,8 +697,8 @@ namespace {
     {
         const Theme& theme = scene.getTheme();
         const MapPoint center = scene.center();
-        const int dir = static_cast<int>(scene.rnd().RandomValue(0, 5));
-        const int side = scene.rnd().ByChance(50) ? 2 : 4;
+        const int dir = static_cast<int>(scene.rnd().randomValue(0, 5));
+        const int side = scene.rnd().byChance(50) ? 2 : 4;
         const MapPoint crag = scene.step(center, dir, 3);
         const MapPoint pond = scene.step(center, dir + 3, 3);
 
@@ -709,7 +709,7 @@ namespace {
         scene.blend(cragBlob, Ground::Rock);
         scene.bump(crag, 4, 4.4);
         scene.forBlob(cragBlob, 0.95, 55, [&scene](const MapPoint& pt) {
-            if(scene.rnd().ByChance(65))
+            if(scene.rnd().byChance(65))
                 scene.placeGranite(pt);
             else
                 scene.place(pt, stones);
@@ -723,7 +723,7 @@ namespace {
         std::vector<MapPoint> water{pond, scene.step(pond, dir + 3)};
         for(const MapPoint& pt : scene.area(pond, 1))
         {
-            if(scene.distance(pt) >= 3 && scene.rnd().ByChance(60) && !helpers::contains(water, pt))
+            if(scene.distance(pt) >= 3 && scene.rnd().byChance(60) && !helpers::contains(water, pt))
                 water.push_back(pt);
         }
         for(const MapPoint& pt : water)
@@ -735,10 +735,10 @@ namespace {
         {
             for(const MapPoint& neighbor : scene.area(pt, 1))
             {
-                if(scene.isWater(neighbor))
+                if(scene.isPond(neighbor))
                     continue;
                 scene.setOverlay(neighbor, Overlay::Sand);
-                if(scene.distance(neighbor) > scene.distance(pond) && scene.rnd().ByChance(50))
+                if(scene.distance(neighbor) > scene.distance(pond) && scene.rnd().byChance(50))
                     scene.place(neighbor, shrubs);
             }
         }
@@ -761,8 +761,8 @@ namespace {
     {
         const Theme& theme = scene.getTheme();
         const MapPoint center = scene.center();
-        const int dir = static_cast<int>(scene.rnd().RandomValue(0, 5));
-        const int turn = scene.rnd().ByChance(50) ? 1 : -1;
+        const int dir = static_cast<int>(scene.rnd().randomValue(0, 5));
+        const int turn = scene.rnd().byChance(50) ? 1 : -1;
 
         scene.blend(scene.makeBlob(center, 3.4), theme.surround);
         scene.blend(scene.makeBlob(center, theme.core == Ground::Rock ? 1.9 : 2.6), theme.core, true);
@@ -786,7 +786,7 @@ namespace {
             const int left = trail[i].second + 2;
             const int right = trail[i].second + 4;
             scene.place(scene.step(trail[i].first, i % 2 ? left : right), theme.props);
-            if(scene.rnd().ByChance(45))
+            if(scene.rnd().byChance(45))
                 scene.place(scene.step(trail[i].first, i % 2 ? right : left), theme.litter);
         }
         scene.placeRock(scene.step(trail.back().first, trail.back().second + 1));
@@ -818,19 +818,19 @@ unsigned getNumSpecialScenes(const MapExtent& size)
 std::vector<MapPoint> findSceneSites(const Map& map, RandomUtility& rnd, unsigned number)
 {
     const auto isUnsuitable = [&map](const MapPoint& pt) {
-        return !map.textureMap.All(pt, IsBuildableLand) || map.objectTypes[pt] != libsiedler2::OT_Empty
+        return !map.textureMap.all(pt, isBuildableLand) || map.objectTypes[pt] != libsiedler2::OT_Empty
                || helpers::contains(map.barren, pt) || helpers::contains(map.reserved, pt);
     };
-    const auto obstacleDistance = DistancesTo(map.size, isUnsuitable);
+    const auto obstacleDistance = distancesTo(map.size, isUnsuitable);
 
     std::vector<MapPoint> players = map.hqPositions;
     for(const Triangle& harbor : map.harbors)
         players.push_back(harbor.position);
-    const auto playerDistance = DistancesTo(players, map.size);
+    const auto playerDistance = distancesTo(players, map.size);
 
     // Only the middle of a scene requires free land - one node more leaves a gap to the surroundings. Obstacles
     // further out cut the scene which allows scenes on maps with little free land.
-    auto candidates = SelectPoints(
+    auto candidates = selectPoints(
       [&](const MapPoint& pt) {
           return obstacleDistance[pt] > sceneCoreRadius + 1 && playerDistance[pt] >= minPlayerDistance;
       },
@@ -841,10 +841,10 @@ std::vector<MapPoint> findSceneSites(const Map& map, RandomUtility& rnd, unsigne
 
     while(sites.size() < number && !candidates.empty())
     {
-        const MapPoint site = rnd.RandomItem(candidates);
+        const MapPoint site = rnd.randomItem(candidates);
         sites.push_back(site);
-        helpers::erase_if(candidates, [&map, &site, minSceneDistance](const MapPoint& pt) {
-            return map.z.CalcDistance(site, pt) < minSceneDistance;
+        helpers::eraseIf(candidates, [&map, &site, minSceneDistance](const MapPoint& pt) {
+            return map.z.calcDistance(site, pt) < minSceneDistance;
         });
     }
 
@@ -874,14 +874,14 @@ std::vector<Scene> addSpecialScenes(Map& map, RandomUtility& rnd)
     for(const SceneType type : helpers::EnumRange<SceneType>())
         types.push_back(type);
     for(size_t i = types.size(); i > 1; i--)
-        std::swap(types[i - 1], types[rnd.Index(i)]);
+        std::swap(types[i - 1], types[rnd.index(i)]);
 
     std::vector<Scene> scenes;
     for(const MapPoint& site : findSceneSites(map, rnd, getNumSpecialScenes(map.size)))
     {
         const SceneType type = types[scenes.size() % types.size()];
         const auto style =
-          static_cast<SceneStyle>(rnd.RandomValue(0u, static_cast<unsigned>(maxEnumValue(SceneStyle{}))));
+          static_cast<SceneStyle>(rnd.randomValue(0u, static_cast<unsigned>(maxEnumValue(SceneStyle{}))));
         createScene(map, rnd, site, type, style);
         scenes.push_back(Scene{type, style, site});
     }

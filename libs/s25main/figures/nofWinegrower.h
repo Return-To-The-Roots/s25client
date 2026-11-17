@@ -16,37 +16,37 @@ class nofWinegrower : public nofFarmhand
 
 private:
     /// Draw worker at work
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    [[noreturn]] unsigned short GetCarryID() const override;
+    [[noreturn]] unsigned short getCarryID() const override;
 
     /// Inform derived class, when working starts (preparing)
-    void WorkStarted() override;
+    void workStarted() override;
     /// Inform derived class, when work is finished
-    void WorkFinished() override;
+    void workFinished() override;
     /// Inform derived class, when work was aborted
-    void WorkAborted() override;
+    void workAborted() override;
 
     /// Returns the quality of this working point or determines if the worker can work here at all
-    PointQuality GetPointQuality(MapPoint pt, bool isBeforeWork) const override;
-    using nofFarmhand::GetPointQuality;
+    PointQuality getPointQuality(MapPoint pt, bool isBeforeWork) const override;
+    using nofFarmhand::getPointQuality;
 
     /// Inform derived class about the start of the whole working process (at the beginning when walking out of the
     /// house)
-    void WalkingStarted() override;
+    void walkingStarted() override;
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
-    void DrawWalkingWithWare(DrawPoint drawPt) override;
+    void drawWalkingWithWare(DrawPoint drawPt) override;
     /// Draws the vintner while walking
-    void DrawOtherStates(DrawPoint drawPt) override;
+    void drawOtherStates(DrawPoint drawPt) override;
 
-    bool AreWaresAvailable() const override;
+    bool areWaresAvailable() const override;
 
 public:
     nofWinegrower(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofWinegrower(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofWinegrower; }
+    GO_Type getGOT() const final { return GO_Type::NofWinegrower; }
 };

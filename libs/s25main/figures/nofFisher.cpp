@@ -21,81 +21,81 @@ nofFisher::nofFisher(const MapPoint pos, const unsigned char player, nobUsual* w
     : nofFarmhand(Job::Fisher, pos, player, workplace), fishing_dir(Direction::West), successful(false)
 {}
 
-void nofFisher::Serialize(SerializedGameData& sgd) const
+void nofFisher::serialize(SerializedGameData& sgd) const
 {
-    nofFarmhand::Serialize(sgd);
+    nofFarmhand::serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(fishing_dir);
-    sgd.PushBool(successful);
+    sgd.pushEnum<uint8_t>(fishing_dir);
+    sgd.pushBool(successful);
 }
 
 nofFisher::nofFisher(SerializedGameData& sgd, const unsigned obj_id)
-    : nofFarmhand(sgd, obj_id), fishing_dir(sgd.Pop<Direction>()), successful(sgd.PopBool())
+    : nofFarmhand(sgd, obj_id), fishing_dir(sgd.pop<Direction>()), successful(sgd.popBool())
 {}
 
 /// Malt den Arbeiter beim Arbeiten
-void nofFisher::DrawWorking(DrawPoint drawPt)
+void nofFisher::drawWorking(DrawPoint drawPt)
 {
-    unsigned short id = GAMECLIENT.Interpolate(232, current_ev);
-    unsigned short draw_id;
+    unsigned short id = GAMECLIENT.interpolate(232, current_ev);
+    unsigned short drawId;
 
     if(id < 16)
     {
         // Angel reinlassen
-        const unsigned iFishingDir = rttr::enum_cast(fishing_dir);
+        const unsigned iFishingDir = rttr::enumCast(fishing_dir);
         if(iFishingDir < 3)
-            draw_id = 1566 + 8 * iFishingDir + (id / 2);
+            drawId = 1566 + 8 * iFishingDir + (id / 2);
         else
-            draw_id = 108 + 8 * (iFishingDir - 3) + (id / 2);
+            drawId = 108 + 8 * (iFishingDir - 3) + (id / 2);
 
         if(id / 2 == 1)
         {
-            world->GetSoundMgr().playNOSound(62, *this, 0);
+            world->getSoundMgr().playNOSound(62, *this, 0);
             was_sounding = true;
         }
     } else if(id < 216)
     {
         // Angel im Wasser hängen lassen und warten
-        draw_id = 1590 + 8 * rttr::enum_cast(fishing_dir + 3) + (id % 8);
+        drawId = 1590 + 8 * rttr::enumCast(fishing_dir + 3) + (id % 8);
     } else
     {
         // Angel wieder rausholn
         if(successful)
             // Mit Fisch an der Angel
-            draw_id = 1638 + 8 * rttr::enum_cast(fishing_dir + 3) + (id - 216) / 2;
+            drawId = 1638 + 8 * rttr::enumCast(fishing_dir + 3) + (id - 216) / 2;
         else
         {
             // Ohne Fisch (wie das Reinlassen, bloß umgekehrt)
-            const unsigned iFishingDir = rttr::enum_cast(fishing_dir);
+            const unsigned iFishingDir = rttr::enumCast(fishing_dir);
             if(iFishingDir < 3)
-                draw_id = 1566 + 8 * iFishingDir + 7 - (id - 216) / 2;
+                drawId = 1566 + 8 * iFishingDir + 7 - (id - 216) / 2;
             else
-                draw_id = 108 + 8 * (iFishingDir - 3) + 7 - (id - 216) / 2;
+                drawId = 108 + 8 * (iFishingDir - 3) + 7 - (id - 216) / 2;
         }
 
         if((id - 216) / 2 == 1)
         {
-            world->GetSoundMgr().playNOSound(62, *this, 1);
+            world->getSoundMgr().playNOSound(62, *this, 1);
             was_sounding = true;
         }
     }
 
-    LOADER.GetPlayerImage("rom_bobs", draw_id)->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
-    DrawShadow(drawPt, 0, Direction(fishing_dir));
+    LOADER.getPlayerImage("rom_bobs", drawId)->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
+    drawShadow(drawPt, 0, Direction(fishing_dir));
 }
 
-unsigned short nofFisher::GetCarryID() const
+unsigned short nofFisher::getCarryID() const
 {
     return 70;
 }
 
-void nofFisher::WorkStarted()
+void nofFisher::workStarted()
 {
     // Find a random neighbour point with fish
     unsigned fishAmount = 0;
     for(Direction dir : helpers::enumRange(RANDOM_ENUM(Direction)))
     {
-        const Resource neighbourRes = world->GetNode(world->GetNeighbour(pos, dir)).resources;
+        const Resource neighbourRes = world->getNode(world->getNeighbour(pos, dir)).resources;
         if(neighbourRes.has(ResourceType::Fish))
         {
             fishing_dir = dir;
@@ -108,11 +108,11 @@ void nofFisher::WorkStarted()
     const int probability = (fishAmount == 0) ? 0 : 40 + fishAmount * 10;
     successful = RANDOM_RAND(100) < probability;
     // On success remove the fish now to make it unavailable to others
-    if(successful && !world->GetGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
-        world->ReduceResource(world->GetNeighbour(pos, fishing_dir));
+    if(successful && !world->getGGS().isEnabled(AddonId::INEXHAUSTIBLE_FISH))
+        world->reduceResource(world->getNeighbour(pos, fishing_dir));
 }
 
-void nofFisher::WorkFinished()
+void nofFisher::workFinished()
 {
     if(successful)
         ware = GoodType::Fish;
@@ -121,16 +121,16 @@ void nofFisher::WorkFinished()
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofFisher::GetPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
+nofFarmhand::PointQuality nofFisher::getPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
 {
     // Der Punkt muss passierbar sein für Figuren
-    if(!PathConditionHuman(*world).IsNodeOk(pt))
+    if(!PathConditionHuman(*world).isNodeOk(pt))
         return PointQuality::NotPossible;
 
     // irgendwo drumherum muss es Fisch geben
-    for(const MapPoint nb : world->GetNeighbours(pt))
+    for(const MapPoint nb : world->getNeighbours(pt))
     {
-        if(world->GetNode(nb).resources.has(ResourceType::Fish))
+        if(world->getNode(nb).resources.has(ResourceType::Fish))
             return PointQuality::Class1;
     }
 

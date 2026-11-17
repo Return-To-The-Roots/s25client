@@ -21,6 +21,6 @@ struct PlayerGameCommands
     PlayerGameCommands(const AsyncChecksum& checksum, std::vector<gc::GameCommandPtr> gcs)
         : checksum(checksum), gcs(std::move(gcs))
     {}
-    void Serialize(Serializer& ser) const;
-    void Deserialize(gc::Deserializer& ser);
+    void serialize(Serializer& ser) const;
+    void deserialize(gc::Deserializer& ser);
 };

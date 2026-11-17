@@ -32,7 +32,7 @@ enum class TerrainKind : uint8_t
 };
 /// Bitset of what can be done on that terrain
 enum class ETerrain : uint8_t
-{ /// Can do nothing, but also not dangerous. Don't use in code! Use !Is(Walkable) etc. instead!
+{ /// Can do nothing, but also not dangerous. Don't use in code! Use !is(Walkable) etc. instead!
     Unwalkable = 0,
     /// Dangerous, can't go near
     Unreachable = 1,
@@ -78,20 +78,20 @@ struct TerrainDesc
     TerrainDesc(CheckedLuaTable luaData, const WorldDescription& worldDesc);
     ~TerrainDesc();
     /// Get the building quality of the terrain from the flags
-    TerrainBQ GetBQ() const;
+    TerrainBQ getBQ() const;
     /// Returns whether "regular" animals walk on that terrain (no water or snow animals)
-    bool IsUsableByAnimals() const;
+    bool isUsableByAnimals() const;
     /// Returns whether corn fields can grow on the terrain (no dessert, mountain etc)
-    bool IsVital() const;
+    bool isVital() const;
     /// Return true if the terrain has the given attribute
-    bool Is(ETerrain what) const;
+    bool is(ETerrain what) const;
     /// Get the position of the up side down triangle
-    Triangle GetUSDTriangle() const;
+    Triangle getUSDTriangle() const;
     /// Get the position of right side up down triangle
-    Triangle GetRSUTriangle() const;
+    Triangle getRSUTriangle() const;
 };
 
-inline bool TerrainDesc::Is(ETerrain what) const
+inline bool TerrainDesc::is(ETerrain what) const
 {
     return (static_cast<uint8_t>(flags) & static_cast<uint8_t>(what)) == static_cast<uint8_t>(what);
 }

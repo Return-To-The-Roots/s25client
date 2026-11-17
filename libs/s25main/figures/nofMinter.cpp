@@ -17,31 +17,31 @@ nofMinter::nofMinter(const MapPoint pos, const unsigned char player, nobUsual* w
 
 nofMinter::nofMinter(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofMinter::DrawWorking(DrawPoint drawPt)
+void nofMinter::drawWorking(DrawPoint drawPt)
 {
     constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {{{19, -20}, {19, -11}, {22, -12}, {28, 1}, {16, -12}}};
 
-    unsigned now_id = GAMECLIENT.Interpolate(136, current_ev);
+    unsigned nowId = GAMECLIENT.interpolate(136, current_ev);
 
-    if(now_id < 91)
+    if(nowId < 91)
     {
-        LOADER.GetPlayerImage("rom_bobs", 84 + (now_id) % 8)
-          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     world->GetPlayer(workplace->GetPlayer()).color);
+        LOADER.getPlayerImage("rom_bobs", 84 + (nowId) % 8)
+          ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+                     world->getPlayer(workplace->getPlayer()).color);
 
         // Evtl Sound abspielen
-        if(now_id % 8 == 3)
+        if(nowId % 8 == 3)
         {
-            world->GetSoundMgr().playNOSound(58, *this, now_id);
+            world->getSoundMgr().playNOSound(58, *this, nowId);
             was_sounding = true;
         }
     }
 
-    last_id = now_id;
+    last_id = nowId;
 }
 
-helpers::OptionalEnum<GoodType> nofMinter::ProduceWare()
+helpers::OptionalEnum<GoodType> nofMinter::produceWare()
 {
-    world->GetPlayer(player).ChangeStatisticValue(StatisticType::Gold, 1);
+    world->getPlayer(player).changeStatisticValue(StatisticType::Gold, 1);
     return GoodType::Coins;
 }

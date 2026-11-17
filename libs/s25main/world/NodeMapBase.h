@@ -20,8 +20,8 @@ public:
     using Node = T_Node;
     using const_iterator = typename std::vector<Node>::const_iterator;
 
-    void Resize(const MapExtent& newSize) override;
-    void Resize(const MapExtent& newSize, const Node& defaultValue);
+    void resize(const MapExtent& newSize) override;
+    void resize(const MapExtent& newSize, const Node& defaultValue);
 
     /// Access given node
     Node& operator[](unsigned idx) { return nodes[idx]; }
@@ -39,27 +39,27 @@ public:
 template<typename T_Node>
 inline const T_Node& NodeMapBase<T_Node>::operator[](const MapPoint& pt) const
 {
-    return nodes[GetIdx(pt)];
+    return nodes[getIdx(pt)];
 }
 
 template<typename T_Node>
 inline T_Node& NodeMapBase<T_Node>::operator[](const MapPoint& pt)
 {
-    return nodes[GetIdx(pt)];
+    return nodes[getIdx(pt)];
 }
 
 template<typename T_Node>
-void NodeMapBase<T_Node>::Resize(const MapExtent& newSize)
+void NodeMapBase<T_Node>::resize(const MapExtent& newSize)
 {
-    MapBase::Resize(newSize);
+    MapBase::resize(newSize);
     nodes.clear();
     nodes.resize(prodOfComponents(newSize));
 }
 
 template<typename T_Node>
-void NodeMapBase<T_Node>::Resize(const MapExtent& newSize, const T_Node& defaultValue)
+void NodeMapBase<T_Node>::resize(const MapExtent& newSize, const T_Node& defaultValue)
 {
-    MapBase::Resize(newSize);
+    MapBase::resize(newSize);
     nodes.clear();
     nodes.resize(prodOfComponents(newSize), defaultValue);
 }

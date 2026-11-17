@@ -23,14 +23,14 @@ BurnedWarehouse::BurnedWarehouse(const MapPoint pos, const unsigned char player,
     : noCoordBase(NodalObjectType::BurnedWarehouse, pos), player(player), go_out_phase(0), people(people)
 {
     // First event
-    GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);
+    getEvMgr().addEvent(this, PHASE_LENGTH, 0);
 }
 
 BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), player(sgd.PopUnsignedChar()), go_out_phase(sgd.PopUnsignedInt())
+    : noCoordBase(sgd, obj_id), player(sgd.popUnsignedChar()), go_out_phase(sgd.popUnsignedInt())
 {
     helpers::popContainer(sgd, people.people);
-    if(sgd.GetGameDataVersion() >= 12)
+    if(sgd.getGameDataVersion() >= 12)
         helpers::popContainer(sgd, people.armoredSoldiers);
     else
         std::fill(people.armoredSoldiers.begin(), people.armoredSoldiers.end(), 0);
@@ -38,22 +38,22 @@ BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
 
 BurnedWarehouse::~BurnedWarehouse() = default;
 
-void BurnedWarehouse::Destroy()
+void BurnedWarehouse::destroy()
 {
-    noCoordBase::Destroy();
+    noCoordBase::destroy();
 }
 
-void BurnedWarehouse::Serialize(SerializedGameData& sgd) const
+void BurnedWarehouse::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(player);
-    sgd.PushUnsignedInt(go_out_phase);
+    sgd.pushUnsignedChar(player);
+    sgd.pushUnsignedInt(go_out_phase);
     helpers::pushContainer(sgd, people.people);
     helpers::pushContainer(sgd, people.armoredSoldiers);
 }
 
-void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
+void BurnedWarehouse::handleEvent(const unsigned /*id*/)
 {
     RTTR_Assert(go_out_phase != GO_OUT_PHASES);
 
@@ -62,19 +62,19 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
     PathConditionHuman pathChecker(*world);
     for(const auto dir : helpers::EnumRange<Direction>{})
     {
-        if(pathChecker.IsNodeOk(world->GetNeighbour(pos, dir)))
+        if(pathChecker.isNodeOk(world->getNeighbour(pos, dir)))
             possibleDirs.push_back(dir);
     }
 
     if(possibleDirs.empty())
     {
         // No way out for figures -> all die and we can remove this object
-        GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
-        auto& currentPlayer = world->GetPlayer(player);
+        getEvMgr().addToKillList(world->removeFigure(pos, *this));
+        auto& currentPlayer = world->getPlayer(player);
         for(const auto i : helpers::enumRange<Job>())
-            currentPlayer.DecreaseInventoryJob(i, people[i]);
+            currentPlayer.decreaseInventoryJob(i, people[i]);
         for(const auto i : helpers::enumRange<ArmoredSoldier>())
-            currentPlayer.DecreaseInventoryJob(i, people[i]);
+            currentPlayer.decreaseInventoryJob(i, people[i]);
 
         return;
     }
@@ -108,18 +108,18 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
             for([[maybe_unused]] const auto z : helpers::range(curNumPeople))
             {
                 // Create job and send moving into the current direction
-                auto& figure = world->AddFigure(pos, std::make_unique<nofPassiveWorker>(job, pos, player, nullptr));
+                auto& figure = world->addFigure(pos, std::make_unique<nofPassiveWorker>(job, pos, player, nullptr));
                 if(isSoldier(job))
                 {
                     auto const armoredSoldier = jobEnumToAmoredSoldierEnum(job);
                     if(people[armoredSoldier] > 0)
                     {
-                        figure.SetArmor(true);
+                        figure.setArmor(true);
                         people[armoredSoldier]--;
                     }
                 }
-                figure.StartWandering(GetObjId());
-                figure.StartWalking(curDir);
+                figure.startWandering(getObjId());
+                figure.startWalking(curDir);
             }
         }
     }
@@ -129,12 +129,12 @@ void BurnedWarehouse::HandleEvent(const unsigned /*id*/)
     if(go_out_phase == GO_OUT_PHASES)
     {
         // All done
-        GetEvMgr().AddToKillList(world->RemoveFigure(pos, *this));
+        getEvMgr().addToKillList(world->removeFigure(pos, *this));
         // There shouldn't be any more
         for(unsigned int num : people.people)
             RTTR_Assert(num == 0);
         for(unsigned int num : people.armoredSoldiers)
             RTTR_Assert(num == 0);
     } else // Not done yet
-        GetEvMgr().AddEvent(this, PHASE_LENGTH, 0);
+        getEvMgr().addEvent(this, PHASE_LENGTH, 0);
 }

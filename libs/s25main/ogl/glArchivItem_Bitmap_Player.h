@@ -21,18 +21,18 @@ public:
     RTTR_CLONEABLE(glArchivItem_Bitmap_Player)
 
     /// Draw the texture in the given rect, stretching if required
-    /// equivalent to Draw(destArea, {0, 0, 0, 0}, color)
-    void DrawFull(const Rect& destArea, unsigned color, unsigned player_color = COLOR_WHITE);
+    /// equivalent to draw(destArea, {0, 0, 0, 0}, color)
+    void drawFull(const Rect& destArea, unsigned color, unsigned player_color = COLOR_WHITE);
     /// Draw the texture to the given position with full size
-    /// equivalent to Draw({dst, 0, 0}, {0, 0, 0, 0}, color, player_color)
-    void DrawFull(const DrawPoint& dst, unsigned color, unsigned player_color);
-    virtual void DrawFull(const Position& dstPos, unsigned color = COLOR_WHITE) override;
+    /// equivalent to draw({dst, 0, 0}, {0, 0, 0, 0}, color, player_color)
+    void drawFull(const DrawPoint& dst, unsigned color, unsigned player_color);
+    virtual void drawFull(const Position& dstPos, unsigned color = COLOR_WHITE) override;
     /// Draw in player colors
     void drawForPlayer(const DrawPoint& dst, unsigned playerColor);
-    void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE) override;
+    void draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE) override;
 
 protected:
-    void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE, unsigned player_color = COLOR_WHITE);
-    void FillTexture() override;
-    Extent CalcTextureSize() const override;
+    void draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE, unsigned player_color = COLOR_WHITE);
+    void fillTexture() override;
+    Extent calcTextureSize() const override;
 };

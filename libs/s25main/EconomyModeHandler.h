@@ -37,7 +37,7 @@ public:
 
         EconTeam(SerializedGameData& sgd, unsigned numGoodTypesToCollect);
 
-        void Serialize(SerializedGameData& sgd) const;
+        void serialize(SerializedGameData& sgd) const;
 
         /// Returns true if the player is in the team
         bool containsPlayer(unsigned playerId) const;
@@ -64,44 +64,44 @@ private:
 
     /// Sum up all forms of the given good in the inventory (tools, weapons and beer are also counted in the hands of
     /// workers and soldiers)
-    unsigned SumUpGood(GoodType good, const Inventory& Inventory);
+    unsigned sumUpGood(GoodType good, const Inventory& Inventory);
 
     /// Determine the teams for the economy mode (only called at game start)
-    void DetermineTeams();
+    void determineTeams();
 
 public:
     EconomyModeHandler(unsigned endFrame);
 
     EconomyModeHandler(SerializedGameData& sgd, unsigned objId);
 
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
     /// Event-Handler
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 
     /// Return vector of the teams (and their collected amounts)
-    const std::vector<EconTeam>& GetTeams() const { return economyModeTeams; }
+    const std::vector<EconTeam>& getTeams() const { return economyModeTeams; }
 
     /// Method to update the ware trackers
-    void UpdateAmounts();
+    void updateAmounts();
 
     /// Get the amounts collected by a player
-    unsigned GetAmount(unsigned goodNumber, unsigned playerId) const
+    unsigned getAmount(unsigned goodNumber, unsigned playerId) const
     {
         return amountsThePlayersCollected[goodNumber][playerId];
     }
 
     /// Get the amount of good the leading team (with regards to that good) has collected
-    unsigned GetMaxTeamAmount(unsigned goodNumber) const { return maxAmountsATeamCollected[goodNumber]; }
+    unsigned getMaxTeamAmount(unsigned goodNumber) const { return maxAmountsATeamCollected[goodNumber]; }
 
     /// Get Game frame in which the economy mode winners will be determined
-    unsigned GetEndFrame() const { return endFrame; }
+    unsigned getEndFrame() const { return endFrame; }
 
     /// Return the good types to collect
-    const std::vector<GoodType>& GetGoodTypesToCollect() const { return goodsToCollect; }
+    const std::vector<GoodType>& getGoodTypesToCollect() const { return goodsToCollect; }
 
-    GO_Type GetGOT() const final { return GO_Type::Economymodehandler; }
+    GO_Type getGOT() const final { return GO_Type::Economymodehandler; }
 
     /// Miscellaneous status checks
     bool isOver() const;

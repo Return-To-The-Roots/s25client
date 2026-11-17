@@ -46,43 +46,43 @@ public:
     ctrlTable(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
               const glFont* font, Columns columns);
 
-    void Resize(const Extent& newSize) override;
+    void resize(const Extent& newSize) override;
     /// löscht alle Items.
-    void DeleteAllItems();
+    void deleteAllItems();
     /// fügt eine Zeile hinzu.
-    void AddRow(std::vector<std::string> row);
-    void RemoveRow(unsigned rowIdx);
+    void addRow(std::vector<std::string> row);
+    void removeRow(unsigned rowIdx);
     /// liefert den Wert eines Feldes.
-    const std::string& GetItemText(unsigned short row, unsigned short column) const;
+    const std::string& getItemText(unsigned short row, unsigned short column) const;
     /// sortiert die Zeilen.
-    void SortRows(unsigned column, TableSortDir sortDir);
-    int GetSortColumn() const { return sortColumn_; }
-    TableSortDir GetSortDirection() const { return sortDir_; }
-    unsigned short GetNumRows() const { return static_cast<unsigned short>(rows_.size()); }
-    unsigned short GetNumColumns() const { return static_cast<unsigned short>(columns_.size()); }
-    const std::optional<unsigned>& GetSelection() const { return selection_; }
-    void SetSelection(const std::optional<unsigned>& selection);
+    void sortRows(unsigned column, TableSortDir sortDir);
+    int getSortColumn() const { return sortColumn_; }
+    TableSortDir getSortDirection() const { return sortDir_; }
+    unsigned short getNumRows() const { return static_cast<unsigned short>(rows_.size()); }
+    unsigned short getNumColumns() const { return static_cast<unsigned short>(columns_.size()); }
+    const std::optional<unsigned>& getSelection() const { return selection_; }
+    void setSelection(const std::optional<unsigned>& selection);
 
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_RightDown(const MouseCoords& mc) override;
-    bool Msg_LeftUp(const MouseCoords& mc) override;
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_ScrollShow(unsigned ctrl_id, bool visible) override;
-    bool Msg_KeyDown(const KeyEvent& ke) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgRightDown(const MouseCoords& mc) override;
+    bool msgLeftUp(const MouseCoords& mc) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgScrollShow(unsigned ctrl_id, bool visible) override;
+    bool msgKeyDown(const KeyEvent& ke) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
     /// Setzt die Breite und Position der Buttons ohne Scrolleiste
-    void ResetButtonWidths();
-    std::optional<unsigned> GetSelectionFromMouse(const MouseCoords& mc) const;
+    void resetButtonWidths();
+    std::optional<unsigned> getSelectionFromMouse(const MouseCoords& mc) const;
     /// Get the area of the content (table itself w/o header)
-    Rect GetContentDrawArea() const;
+    Rect getContentDrawArea() const;
     /// Get the full area (element less spacing)
-    Rect GetFullDrawArea() const;
+    Rect getFullDrawArea() const;
 
 private:
     TextureColor tc;

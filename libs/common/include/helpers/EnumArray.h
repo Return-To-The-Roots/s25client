@@ -25,8 +25,8 @@ struct EnumArray
     static constexpr unsigned size() { return helpers::MaxEnumValue_v<T_Index> + 1u; }
     constexpr bool empty() const { return false; }
 
-    constexpr T_Elements& operator[](T_Index idx) noexcept { return elems[rttr::enum_cast(idx)]; }
-    constexpr const T_Elements& operator[](T_Index idx) const noexcept { return elems[rttr::enum_cast(idx)]; }
+    constexpr T_Elements& operator[](T_Index idx) noexcept { return elems[rttr::enumCast(idx)]; }
+    constexpr const T_Elements& operator[](T_Index idx) const noexcept { return elems[rttr::enumCast(idx)]; }
 
     iterator begin() noexcept { return elems; }
     constexpr const_iterator begin() const noexcept { return elems; }

@@ -16,31 +16,31 @@ class nofSkinner : public nofWorkman
     noAnimal* animal = nullptr;
 
     /// Draw worker at work
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    [[noreturn]] unsigned short GetCarryID() const override;
-    helpers::OptionalEnum<GoodType> ProduceWare() override;
+    [[noreturn]] unsigned short getCarryID() const override;
+    helpers::OptionalEnum<GoodType> produceWare() override;
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
-    void DrawWalkingWithWare(DrawPoint drawPt) override;
+    void drawWalkingWithWare(DrawPoint drawPt) override;
 
-    void HandleDerivedEvent(unsigned id) override;
-    void TryToWork() override;
-    void WalkedDerived() override;
+    void handleDerivedEvent(unsigned id) override;
+    void tryToWork() override;
+    void walkedDerived() override;
 
-    void TryStartSkinning();
-    void HandleStateSkinningCarcass();
-    void StartWalkingHome();
-    void HandleStateWalkingHome();
+    void tryStartSkinning();
+    void handleStateSkinningCarcass();
+    void startWalkingHome();
+    void handleStateWalkingHome();
 
 public:
     nofSkinner(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofSkinner(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofSkinner; }
+    GO_Type getGOT() const final { return GO_Type::NofSkinner; }
 
-    void WorkAborted() override;
-    void AnimalLost();
+    void workAborted() override;
+    void animalLost();
 };

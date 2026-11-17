@@ -10,12 +10,12 @@
 #include "ai/AIPlayer.h"
 #include "network/GameClient.h"
 
-void GameClient::ExecuteNWF()
+void GameClient::executeNWF()
 {
     // Geschickte Network Commands der Spieler ausführen und ggf. im Replay aufzeichnen
 
     AsyncChecksum checksum = AsyncChecksum::create(*game);
-    const unsigned curGF = GetGFNumber();
+    const unsigned curGF = getGFNumber();
 
     for(const NWFPlayerInfo& player : nwfInfo->getPlayerInfos())
     {
@@ -23,28 +23,28 @@ void GameClient::ExecuteNWF()
 
         // Command im Replay aufzeichnen (wenn nicht gerade eins schon läuft xD)
         // Nur Commands reinschreiben, KEINE PLATZHALTER (nc_count = 0)
-        if(!currentGCs.gcs.empty() && replayinfo && replayinfo->replay.IsRecording())
+        if(!currentGCs.gcs.empty() && replayinfo && replayinfo->replay.isRecording())
         {
             // Set the current checksum as the GF checksum. The checksum from the command is from the last NWF!
             PlayerGameCommands replayCmds(checksum, currentGCs.gcs);
-            replayinfo->replay.AddGameCommand(curGF, player.id, replayCmds);
+            replayinfo->replay.addGameCommand(curGF, player.id, replayCmds);
         }
 
         // Das ganze Zeug soll die andere Funktion ausführen
-        ExecuteAllGCs(player.id, currentGCs);
+        executeAllGCs(player.id, currentGCs);
     }
 
     // Send GC message for this NWF
     // First for all potential AIs as we need to combine the AI cmds of the local player with our own ones
     for(AIPlayer& ai : game->aiPlayers_)
     {
-        const std::vector<gc::GameCommandPtr> aiGCs = ai.FetchGameCommands();
+        const std::vector<gc::GameCommandPtr> aiGCs = ai.fetchGameCommands();
         /// Cmds from own AI get added to our gcs
-        if(ai.GetPlayerId() == GetPlayerId())
+        if(ai.getPlayerId() == getPlayerId())
             gameCommands_.insert(gameCommands_.end(), aiGCs.begin(), aiGCs.end());
         else
-            mainPlayer.sendMsgAsync(new GameMessage_GameCommand(ai.GetPlayerId(), checksum, aiGCs));
-        for(auto& msg : ai.getAIInterface().FetchChatMessages())
+            mainPlayer.sendMsgAsync(new GameMessage_GameCommand(ai.getPlayerId(), checksum, aiGCs));
+        for(auto& msg : ai.getAIInterface().fetchChatMessages())
             mainPlayer.sendMsgAsync(msg.release());
     }
     mainPlayer.sendMsgAsync(new GameMessage_GameCommand(0xFF, checksum, gameCommands_));

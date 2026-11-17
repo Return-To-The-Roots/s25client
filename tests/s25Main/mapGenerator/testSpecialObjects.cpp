@@ -24,19 +24,19 @@ constexpr unsigned numLandscapes = 3;
 
 struct SpecialObjectsFixture : MapGenFixture
 {
-    static bool isMeadow(const TerrainDesc& terrain) { return IsBuildableLand(terrain) && terrain.s2Id == 0x08; }
+    static bool isMeadow(const TerrainDesc& terrain) { return isBuildableLand(terrain) && terrain.s2Id == 0x08; }
 
-    static bool isLushMeadow(const TerrainDesc& terrain) { return IsBuildableLand(terrain) && terrain.s2Id == 0x0A; }
+    static bool isLushMeadow(const TerrainDesc& terrain) { return isBuildableLand(terrain) && terrain.s2Id == 0x0A; }
 
     /// Creates a flat map which is entirely covered by meadow
     Map createLandMap(const MapExtent size, bool lush = false) const
     {
         Map map = createMap(size);
-        map.z.Resize(size, landHeight);
-        const auto land = map.textureMap.Find(lush ? isLushMeadow : isMeadow);
+        map.z.resize(size, landHeight);
+        const auto land = map.textureMap.find(lush ? isLushMeadow : isMeadow);
         RTTR_FOREACH_PT(MapPoint, size)
         {
-            map.textureMap.Set(pt, land);
+            map.textureMap.set(pt, land);
         }
         return map;
     }
@@ -75,17 +75,17 @@ BOOST_AUTO_TEST_CASE(findSceneSites_returns_requested_number_of_distant_sites)
     for(unsigned i = 0; i < sites.size(); i++)
     {
         for(unsigned j = i + 1; j < sites.size(); j++)
-            BOOST_TEST(map.z.CalcDistance(sites[i], sites[j]) >= 4 * sceneRadius);
+            BOOST_TEST(map.z.calcDistance(sites[i], sites[j]) >= 4 * sceneRadius);
     }
 }
 
 BOOST_AUTO_TEST_CASE(findSceneSites_finds_nothing_without_buildable_land)
 {
     Map map = createMap(MapExtent(32, 32));
-    const auto water = map.textureMap.Find(IsWater);
+    const auto water = map.textureMap.find(isWater);
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
-        map.textureMap.Set(pt, water);
+        map.textureMap.set(pt, water);
     }
     RandomUtility rnd(0);
 
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(findSceneSites_keeps_distance_to_obstacles_and_players)
     map.hqPositions.push_back(hq);
     map.harbors.push_back(Triangle(true, MapPoint(50, 12)));
     map.objectTypes[tree] = libsiedler2::OT_TreeOrPalm;
-    map.textureMap.Set(swamp, map.textureMap.Find(isImpassable));
+    map.textureMap.set(swamp, map.textureMap.find(isImpassable));
 
     for(unsigned seed = 0; seed < 30; seed++)
     {
@@ -109,10 +109,10 @@ BOOST_AUTO_TEST_CASE(findSceneSites_keeps_distance_to_obstacles_and_players)
         for(const MapPoint& site : findSceneSites(map, rnd, 3))
         {
             // Objects around headquarters and harbors are removed within a radius of 5
-            BOOST_TEST_REQUIRE(map.z.CalcDistance(site, hq) > sceneRadius + 5, "At point " << site);
-            BOOST_TEST_REQUIRE(map.z.CalcDistance(site, MapPoint(50, 12)) > sceneRadius + 5, "At point " << site);
-            BOOST_TEST_REQUIRE(map.z.CalcDistance(site, tree) > sceneCoreRadius + 1, "At point " << site);
-            BOOST_TEST_REQUIRE(map.z.CalcDistance(site, swamp) > sceneCoreRadius + 1, "At point " << site);
+            BOOST_TEST_REQUIRE(map.z.calcDistance(site, hq) > sceneRadius + 5, "At point " << site);
+            BOOST_TEST_REQUIRE(map.z.calcDistance(site, MapPoint(50, 12)) > sceneRadius + 5, "At point " << site);
+            BOOST_TEST_REQUIRE(map.z.calcDistance(site, tree) > sceneCoreRadius + 1, "At point " << site);
+            BOOST_TEST_REQUIRE(map.z.calcDistance(site, swamp) > sceneCoreRadius + 1, "At point " << site);
         }
     }
 }
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(createScene_surrounds_special_object_by_decoration_within_s
                         BOOST_TEST(map.reserved.size() == 169u);
                         RTTR_FOREACH_PT(MapPoint, map.size)
                         {
-                            const bool inScene = map.z.CalcDistance(center, pt) <= sceneRadius;
+                            const bool inScene = map.z.calcDistance(center, pt) <= sceneRadius;
                             BOOST_TEST_REQUIRE(helpers::contains(map.reserved, pt) == inScene, "At point " << pt);
                             if(!inScene)
                             {
@@ -151,12 +151,12 @@ BOOST_AUTO_TEST_CASE(createScene_surrounds_special_object_by_decoration_within_s
                                 BOOST_TEST_REQUIRE(map.z[pt] == landHeight, "At point " << pt);
                             }
                             // Transitions may reach the triangles right next to the scene
-                            if(map.z.CalcDistance(center, pt) > sceneRadius + 1)
-                                BOOST_TEST_REQUIRE(map.textureMap.All(pt, isMeadow), "At point " << pt);
-                            if(map.textureMap.All(pt, IsWater))
+                            if(map.z.calcDistance(center, pt) > sceneRadius + 1)
+                                BOOST_TEST_REQUIRE(map.textureMap.all(pt, isMeadow), "At point " << pt);
+                            if(map.textureMap.all(pt, isWater))
                                 BOOST_TEST_REQUIRE(map.objectTypes[pt] == libsiedler2::OT_Empty, "At point " << pt);
                             // Hills and hollows are smooth
-                            for(const MapPoint& neighbor : map.z.GetNeighbours(pt))
+                            for(const MapPoint& neighbor : map.z.getNeighbours(pt))
                             {
                                 const int difference = static_cast<int>(map.z[pt]) - static_cast<int>(map.z[neighbor]);
                                 BOOST_TEST_REQUIRE(std::abs(difference) <= 2, "At point " << pt);
@@ -185,9 +185,9 @@ BOOST_AUTO_TEST_CASE(createScene_keeps_footprint_of_castle_ruin_free_and_even)
             for(const Direction dir : {Direction::West, Direction::NorthWest, Direction::NorthEast})
             {
                 // The ruin covers some of its neighbors
-                BOOST_TEST_REQUIRE(map.objectTypes[map.z.GetNeighbour(center, dir)] == libsiedler2::OT_Empty);
+                BOOST_TEST_REQUIRE(map.objectTypes[map.z.getNeighbour(center, dir)] == libsiedler2::OT_Empty);
             }
-            for(const MapPoint& pt : map.z.GetNeighbours(center))
+            for(const MapPoint& pt : map.z.getNeighbours(center))
                 BOOST_TEST_REQUIRE(map.z[pt] == map.z[center], "At point " << pt);
         }
     }
@@ -203,14 +203,14 @@ BOOST_AUTO_TEST_CASE(createScene_blends_ground_into_surrounding_land)
     createScene(map, rnd, center, SceneType::RuinGrove, SceneStyle::Overgrown);
 
     // Flowers in the middle fade out via the textures between flowers and meadow
-    BOOST_TEST(map.textureMap.All(center, isFlowers));
+    BOOST_TEST(map.textureMap.all(center, isFlowers));
     std::set<uint8_t> textures;
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
-        textures.insert(map.textureMap.GetTextureId(map.getTextures()[pt].rsu));
+        textures.insert(map.textureMap.getTextureId(map.getTextures()[pt].rsu));
         // Flowers never touch the meadow of the surrounding land directly
-        if(map.textureMap.Any(pt, isFlowers))
-            BOOST_TEST_REQUIRE(!map.textureMap.Any(pt, isMeadow), "At point " << pt);
+        if(map.textureMap.any(pt, isFlowers))
+            BOOST_TEST_REQUIRE(!map.textureMap.any(pt, isMeadow), "At point " << pt);
     }
     BOOST_TEST(textures.count(0x09) == 1u);
     BOOST_TEST(textures.count(0x0A) == 1u);
@@ -231,15 +231,15 @@ BOOST_AUTO_TEST_CASE(createScene_uses_all_transition_textures_between_dry_ground
 
             createScene(map, rnd, center, SceneType::Camp, style);
 
-            BOOST_TEST(map.textureMap.All(center, isSteppe));
+            BOOST_TEST(map.textureMap.all(center, isSteppe));
             unsigned savannah = 0;
             RTTR_FOREACH_PT(MapPoint, map.size)
             {
-                if(map.textureMap.Any(pt, isSavannah))
+                if(map.textureMap.any(pt, isSavannah))
                     savannah++;
                 // Steppe is always separated from meadow by savannah
-                if(map.textureMap.Any(pt, isSteppe))
-                    BOOST_TEST_REQUIRE(!map.textureMap.Any(pt, isMeadow), "At point " << pt);
+                if(map.textureMap.any(pt, isSteppe))
+                    BOOST_TEST_REQUIRE(!map.textureMap.any(pt, isMeadow), "At point " << pt);
             }
             BOOST_TEST(savannah > 6u);
         }
@@ -266,19 +266,19 @@ BOOST_AUTO_TEST_CASE(createScene_surrounds_pond_by_transitions_from_sand_to_mead
                 unsigned water = 0;
                 RTTR_FOREACH_PT(MapPoint, map.size)
                 {
-                    if(map.textureMap.All(pt, IsWater))
+                    if(map.textureMap.all(pt, isWater))
                         water++;
                     // Water is enclosed by sand, sand by steppe and steppe by savannah
-                    if(map.textureMap.Any(pt, IsWater))
+                    if(map.textureMap.any(pt, isWater))
                         BOOST_TEST_REQUIRE(
-                          map.textureMap.All(pt, [](const TerrainDesc& t) { return IsWater(t) || IsCoastTerrain(t); }),
+                          map.textureMap.all(pt, [](const TerrainDesc& t) { return isWater(t) || isCoastTerrain(t); }),
                           "At point " << pt);
-                    if(map.textureMap.Any(pt, IsCoastTerrain))
-                        BOOST_TEST_REQUIRE(!map.textureMap.Any(pt, isMeadow), "At point " << pt);
-                    if(map.textureMap.Any(pt, isSteppe))
-                        BOOST_TEST_REQUIRE(!map.textureMap.Any(pt, isMeadow), "At point " << pt);
-                    if(map.textureMap.Any(pt, IsCoastTerrain))
-                        BOOST_TEST_REQUIRE(!map.textureMap.Any(pt, isSavannah), "At point " << pt);
+                    if(map.textureMap.any(pt, isCoastTerrain))
+                        BOOST_TEST_REQUIRE(!map.textureMap.any(pt, isMeadow), "At point " << pt);
+                    if(map.textureMap.any(pt, isSteppe))
+                        BOOST_TEST_REQUIRE(!map.textureMap.any(pt, isMeadow), "At point " << pt);
+                    if(map.textureMap.any(pt, isCoastTerrain))
+                        BOOST_TEST_REQUIRE(!map.textureMap.any(pt, isSavannah), "At point " << pt);
                 }
                 BOOST_TEST(water >= 2u);
             }
@@ -289,7 +289,7 @@ BOOST_AUTO_TEST_CASE(createScene_surrounds_pond_by_transitions_from_sand_to_mead
 BOOST_AUTO_TEST_CASE(createScene_adds_transitions_within_lush_meadow)
 {
     // The most lush meadow is several textures away from sand but looks like any other meadow
-    const auto isGreen = [](const TerrainDesc& terrain) { return IsBuildableLand(terrain) && terrain.humidity > 90; };
+    const auto isGreen = [](const TerrainDesc& terrain) { return isBuildableLand(terrain) && terrain.humidity > 90; };
     const auto isSteppe = [](const TerrainDesc& terrain) { return terrain.s2Id == 0x0E; };
     const auto isSavannah = [](const TerrainDesc& terrain) { return terrain.s2Id == 0x00; };
 
@@ -311,13 +311,13 @@ BOOST_AUTO_TEST_CASE(createScene_adds_transitions_within_lush_meadow)
                     RTTR_FOREACH_PT(MapPoint, map.size)
                     {
                         // Sand meets steppe, steppe meets savannah and only savannah meets meadow
-                        if(map.textureMap.Any(pt, IsCoastTerrain))
+                        if(map.textureMap.any(pt, isCoastTerrain))
                         {
-                            BOOST_TEST_REQUIRE(!map.textureMap.Any(pt, isGreen), "At point " << pt);
-                            BOOST_TEST_REQUIRE(!map.textureMap.Any(pt, isSavannah), "At point " << pt);
+                            BOOST_TEST_REQUIRE(!map.textureMap.any(pt, isGreen), "At point " << pt);
+                            BOOST_TEST_REQUIRE(!map.textureMap.any(pt, isSavannah), "At point " << pt);
                         }
-                        if(map.textureMap.Any(pt, isSteppe))
-                            BOOST_TEST_REQUIRE(!map.textureMap.Any(pt, isGreen), "At point " << pt);
+                        if(map.textureMap.any(pt, isSteppe))
+                            BOOST_TEST_REQUIRE(!map.textureMap.any(pt, isGreen), "At point " << pt);
                     }
                 }
             }
@@ -336,18 +336,18 @@ BOOST_AUTO_TEST_CASE(createScene_leaves_other_landscapes_untouched)
                 // Water, a mountain and a tree are located in the outer part of the scene
                 Map map = createLandMap(MapExtent(40, 40));
                 const MapPoint center(20, 20);
-                const auto water = map.textureMap.Find(IsWater);
+                const auto water = map.textureMap.find(isWater);
                 RTTR_FOREACH_PT(MapPoint, map.size)
                 {
                     if(pt.x >= 26)
                     {
-                        map.textureMap.Set(pt, water);
+                        map.textureMap.set(pt, water);
                         map.z[pt] = map.height.minimum;
                     }
                 }
                 const MapPoint mountain(15, 15);
                 const MapPoint tree(17, 26);
-                map.textureMap.Set(mountain, map.textureMap.Find(IsMinableMountain));
+                map.textureMap.set(mountain, map.textureMap.find(isMinableMountain));
                 map.z[mountain] = landHeight + 8;
                 map.objectTypes[tree] = libsiedler2::OT_TreeOrPalm;
                 map.objectInfos[tree] = libsiedler2::OI_TreeOrPalm_Begin;
@@ -363,7 +363,7 @@ BOOST_AUTO_TEST_CASE(createScene_leaves_other_landscapes_untouched)
                     BOOST_TEST(map.objectTypes[tree] == original.objectTypes[tree]);
                     BOOST_TEST(map.objectInfos[tree] == original.objectInfos[tree]);
                     const auto isLand = [this](DescIdx<TerrainDesc> texture) {
-                        return IsBuildableLand(worldDesc.get(texture));
+                        return isBuildableLand(worldDesc.get(texture));
                     };
                     RTTR_FOREACH_PT(MapPoint, map.size)
                     {
@@ -373,7 +373,7 @@ BOOST_AUTO_TEST_CASE(createScene_leaves_other_landscapes_untouched)
                         BOOST_TEST_REQUIRE((isLand(before.rsu) || after.rsu == before.rsu), "At point " << pt);
                         BOOST_TEST_REQUIRE((isLand(before.lsd) || after.lsd == before.lsd), "At point " << pt);
                         // Nodes which are part of other landscapes keep their height and get no objects
-                        if(original.textureMap.All(pt, IsBuildableLand))
+                        if(original.textureMap.all(pt, isBuildableLand))
                             continue;
                         BOOST_TEST_REQUIRE(map.z[pt] == original.z[pt], "At point " << pt);
                         BOOST_TEST_REQUIRE(map.objectTypes[pt] == original.objectTypes[pt], "At point " << pt);
@@ -393,12 +393,12 @@ BOOST_AUTO_TEST_CASE(createScene_adds_rim_around_rock)
 
     createScene(map, rnd, center, SceneType::CastleRuin, SceneStyle::Overgrown);
 
-    BOOST_TEST(map.textureMap.All(center, isRock));
+    BOOST_TEST(map.textureMap.all(center, isRock));
     BOOST_TEST(map.z[center] > landHeight);
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
-        if(map.textureMap.Any(pt, isRock))
-            BOOST_TEST_REQUIRE(map.textureMap.All(pt, IsBuildableMountain), "At point " << pt);
+        if(map.textureMap.any(pt, isRock))
+            BOOST_TEST_REQUIRE(map.textureMap.all(pt, isBuildableMountain), "At point " << pt);
     }
 }
 
@@ -421,7 +421,7 @@ BOOST_AUTO_TEST_CASE(createScene_raises_crag_next_to_pond)
             top = std::max(top, map.z[pt]);
             if(map.objectTypes[pt] == libsiedler2::OT_Stone1 || map.objectTypes[pt] == libsiedler2::OT_Stone2)
                 rocks++;
-            if(map.textureMap.All(pt, IsWater))
+            if(map.textureMap.all(pt, isWater))
             {
                 BOOST_TEST_REQUIRE((pond == 0 || map.z[pt] == waterLevel), "At point " << pt);
                 waterLevel = map.z[pt];
@@ -453,7 +453,7 @@ BOOST_AUTO_TEST_CASE(createScene_lines_road_of_avenue_with_trees)
             bool isRoad = true;
             for(unsigned i = 1; i <= sceneRadius; i++)
             {
-                pt = map.z.GetNeighbour(pt, dir);
+                pt = map.z.getNeighbour(pt, dir);
                 isRoad &= map.objectTypes[pt] == libsiedler2::OT_Empty;
             }
             if(isRoad)
@@ -532,9 +532,9 @@ BOOST_AUTO_TEST_CASE(createScene_levels_ground_and_smooths_transition)
 
     createScene(map, rnd, center, SceneType::Camp, SceneStyle::Trail);
 
-    for(const MapPoint& pt : map.z.GetPointsInRadiusWithCenter(center, sceneRadius))
+    for(const MapPoint& pt : map.z.getPointsInRadiusWithCenter(center, sceneRadius))
     {
-        const unsigned distance = map.z.CalcDistance(center, pt);
+        const unsigned distance = map.z.calcDistance(center, pt);
         const int difference = static_cast<int>(map.z[pt]) - static_cast<int>(level);
         const int tolerance = distance <= 3 ? 0 : static_cast<int>(distance) - 3;
         BOOST_TEST_REQUIRE(std::abs(difference) <= tolerance, "At point " << pt);
@@ -586,7 +586,7 @@ BOOST_AUTO_TEST_CASE(AddObjects_keeps_scenes_free_from_trees_and_stone_piles)
     MapSettings settings;
     settings.trees = 100;
     settings.stonePiles = 20;
-    AddObjects(map, rnd, settings);
+    addObjects(map, rnd, settings);
 
     BOOST_TEST(countObjects(map) > 500u);
     for(const MapPoint& pt : map.reserved)

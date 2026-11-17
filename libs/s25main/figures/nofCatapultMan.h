@@ -28,28 +28,28 @@ class nofCatapultMan : public nofBuildingWorker
         PossibleTarget(const MapPoint pt, unsigned distance) : pos(pt), distance(distance) {}
         PossibleTarget(SerializedGameData& sgd);
 
-        void Serialize(SerializedGameData& sgd) const;
+        void serialize(SerializedGameData& sgd) const;
 
     } target; /// das anvisierte Ziel
 
 private:
     /// Funktionen, die nur von der Basisklasse (noFigure) aufgerufen werden, wenn man gelaufen ist
-    void WalkedDerived() override;
+    void walkedDerived() override;
     /// Malt den Arbeiter beim Arbeiten
-    void DrawWorking(DrawPoint drawPt) override;
+    void drawWorking(DrawPoint drawPt) override;
     /// Id in jobs.bob or carrier.bob when carrying a ware
-    unsigned short GetCarryID() const override { return 0; }
+    unsigned short getCarryID() const override { return 0; }
 
 public:
     nofCatapultMan(MapPoint pos, unsigned char player, nobUsual* workplace);
     nofCatapultMan(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofCatapultman; }
+    GO_Type getGOT() const final { return GO_Type::NofCatapultman; }
 
-    void HandleDerivedEvent(unsigned id) override;
+    void handleDerivedEvent(unsigned id) override;
 
     /// wird aufgerufen, wenn die Arbeit abgebrochen wird (von nofBuildingWorker aufgerufen)
-    void WorkAborted() override;
+    void workAborted() override;
 };

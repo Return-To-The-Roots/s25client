@@ -12,7 +12,7 @@ ctrlVarDeepening::ctrlVarDeepening(Window* parent, unsigned id, const DrawPoint&
     : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseVarText(fmtString, color, font, count, fmtArgs)
 {}
 
-void ctrlVarDeepening::DrawContent() const
+void ctrlVarDeepening::drawContent() const
 {
-    font->Draw(GetDrawPos() + GetSize() / 2, GetFormatedText(), FontStyle::CENTER | FontStyle::VCENTER, color_);
+    font->draw(getDrawPos() + getSize() / 2, getFormatedText(), FontStyle::CENTER | FontStyle::VCENTER, color_);
 }

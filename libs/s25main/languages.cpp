@@ -26,14 +26,14 @@ Languages::Languages() : loaded(false)
 {
     const char* domain = "rttr";
     mygettext::bind_textdomain_codeset(domain, "UTF-8");
-    mygettext::bindtextdomain(domain, RTTRCONFIG.ExpandPath(s25::folders::languages).string().c_str());
+    mygettext::bindtextdomain(domain, RTTRCONFIG.expandPath(s25::folders::languages).string().c_str());
     mygettext::textdomain(domain);
 }
 
 void Languages::loadLanguages()
 {
     const libsiedler2::Archiv& langInfo =
-      dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.GetArchive("languages").find("Languages"));
+      dynamic_cast<const libsiedler2::ArchivItem_Ini&>(*LOADER.getArchive("languages").find("Languages"));
     unsigned count = langInfo.size();
 
     for(unsigned i = 0; i < count; i++)

@@ -19,7 +19,7 @@ struct LocaleFixture
     {
         rttr::test::LogAccessor logAcc;
         LANGUAGES.setLanguage("en");
-        LOADER.Load(RTTRCONFIG.ExpandPath(s25::folders::assetsBase) / "languages.ini", nullptr);
+        LOADER.load(RTTRCONFIG.expandPath(s25::folders::assetsBase) / "languages.ini", nullptr);
         RTTR_REQUIRE_LOG_CONTAINS("Loading", true);
     }
     std::vector<std::string> getLanguageCodes()

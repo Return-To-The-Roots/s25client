@@ -28,7 +28,7 @@ struct RandomContext
 /// Allows getting/restoring the state and provides a log of the last invocations and results
 /// T_PRNG must be a model of the Pseudo-Random Number Generator according to boost:
 ///        http://www.boost.org/doc/libs/1_61_0/doc/html/boost_random/reference.html#boost_random.reference.concepts.pseudo_random_number_generator
-/// Additionally it must implement Serialize and Deserialize functions and provide a static GetName function
+/// Additionally it must implement Serialize and Deserialize functions and provide a static getName function
 template<class T_PRNG>
 class Random : public Singleton<Random<T_PRNG>>
 {
@@ -51,28 +51,28 @@ public:
             : counter(counter), maxExcl(maxExcl), rngState(rngState), srcName(ctx.srcName), srcLine(ctx.srcLine),
               objId(ctx.objId){};
 
-        void Serialize(Serializer& ser) const;
-        void Deserialize(Serializer& ser);
+        void serialize(Serializer& ser) const;
+        void deserialize(Serializer& ser);
 
-        int GetValue() const;
+        int getValue() const;
     };
 
     Random();
     /// Initialize the rng with a given seed
-    void Init(const uint64_t& seed);
+    void init(const uint64_t& seed);
     /// Reset the Random class to start from a given state
-    void ResetState(const PRNG& newState);
+    void resetState(const PRNG& newState);
     /// Return a random number in the range [0, maxExcl)
-    int Rand(const RandomContext& context, int maxExcl);
+    int rand(const RandomContext& context, int maxExcl);
 
     /// Get a checksum of the RNG
-    unsigned GetChecksum() const;
-    static unsigned CalcChecksum(const PRNG& rng);
+    unsigned getChecksum() const;
+    static unsigned calcChecksum(const PRNG& rng);
 
     /// Get current rng state
-    const PRNG& GetCurrentState() const;
+    const PRNG& getCurrentState() const;
 
-    std::vector<RandomEntry> GetAsyncLog();
+    std::vector<RandomEntry> getAsyncLog();
 
 private:
     PRNG rng_; /// the PRNG
@@ -91,12 +91,12 @@ using RandomEntry = UsedRandom::RandomEntry;
 // Macros / Defines
 #define RANDOM UsedRandom::inst()
 #define RANDOM_CONTEXT() \
-    RandomContext { __FILE__, __LINE__, GetObjId() }
+    RandomContext { __FILE__, __LINE__, getObjId() }
 #define RANDOM_CONTEXT2(objId) \
     RandomContext { __FILE__, __LINE__, objId }
 /// Shortcut to get a new random value in range [0, maxVal) for a given object id
 /// Note: maxVal has to be small (at least <= 32768)
-#define RANDOM_RAND(maxValExcl) RANDOM.Rand(RANDOM_CONTEXT(), maxValExcl)
+#define RANDOM_RAND(maxValExcl) RANDOM.rand(RANDOM_CONTEXT(), maxValExcl)
 /// Return a random element from the container. Must not be empty
 #define RANDOM_ELEMENT(container) detail::randomElement(container, RANDOM_CONTEXT())
 /// Return a random enumerator of the given type. Requires the <helpers/MaxEnumValue.h> include
@@ -110,7 +110,7 @@ template<typename T>
 auto randomElement(const T& container, const RandomContext& ctx)
 {
     RTTR_Assert(!container.empty());
-    return *(container.begin() + RANDOM.Rand(ctx, container.size()));
+    return *(container.begin() + RANDOM.rand(ctx, container.size()));
 }
 template<class T>
 static void shuffleContainer(T& container, const RandomContext& ctx)
@@ -120,7 +120,7 @@ static void shuffleContainer(T& container, const RandomContext& ctx)
     for(int i = container.size() - 1; i > 0; --i)
     {
         using std::swap;
-        swap(container[i], container[RANDOM.Rand(ctx, i + 1)]);
+        swap(container[i], container[RANDOM.rand(ctx, i + 1)]);
     }
 }
 } // namespace detail

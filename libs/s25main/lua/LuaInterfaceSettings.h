@@ -20,33 +20,33 @@ public:
     LuaInterfaceSettings(IGameLobbyController& lobbyServerController, const ILocalGameState& localGameState);
     virtual ~LuaInterfaceSettings();
 
-    static void Register(kaguya::State& state);
+    static void registerClasses(kaguya::State& state);
 
     // Interface for C++
     /// Called when settings are entered. Returns whether script should be executed
-    bool EventSettingsInit(bool isSinglePlayer, bool isSavegame);
+    bool eventSettingsInit(bool isSinglePlayer, bool isSavegame);
     // Other events are only called for the host
     /// Called when the settings screen is ready
-    void EventSettingsReady();
-    void EventPlayerJoined(unsigned playerIdx);
-    void EventPlayerLeft(unsigned playerIdx);
-    void EventPlayerReady(unsigned playerIdx);
+    void eventSettingsReady();
+    void eventPlayerJoined(unsigned playerIdx);
+    void eventPlayerLeft(unsigned playerIdx);
+    void eventPlayerReady(unsigned playerIdx);
     /// Return whether the named change is allowed
-    bool IsChangeAllowed(const std::string& name, bool defaultVal = false);
+    bool isChangeAllowed(const std::string& name, bool defaultVal = false);
     /// Get addons that are allowed to be changed
-    std::vector<AddonId> GetAllowedAddons();
-    bool IsMapPreviewEnabled();
+    std::vector<AddonId> getAllowedAddons();
+    bool isMapPreviewEnabled();
 
 private:
     IGameLobbyController& lobbyServerController_;
-    kaguya::LuaRef GetAllowedChanges();
+    kaguya::LuaRef getAllowedChanges();
 
     // Callable from Lua
-    unsigned GetNumPlayers() const;
-    LuaServerPlayer GetPlayer(int idx);
-    void SetAddon(AddonIdWrapper id, unsigned value);
-    void SetBoolAddon(AddonIdWrapper id, bool value); // Alias
-    void ResetAddons();
-    void ResetGameSettings();
-    void SetGameSettings(const kaguya::LuaTable& settings);
+    unsigned getNumPlayers() const;
+    LuaServerPlayer getPlayer(int idx);
+    void setAddon(AddonIdWrapper id, unsigned value);
+    void setBoolAddon(AddonIdWrapper id, bool value); // Alias
+    void resetAddons();
+    void resetGameSettings();
+    void setGameSettings(const kaguya::LuaTable& settings);
 };

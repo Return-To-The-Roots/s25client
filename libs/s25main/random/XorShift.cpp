@@ -14,8 +14,8 @@ void XorShift::discard(uint64_t j)
 
 void XorShift::deserialize(Serializer& ser)
 {
-    uint64_t high = ser.PopUnsignedInt();
-    uint64_t low = ser.PopUnsignedInt();
+    uint64_t high = ser.popUnsignedInt();
+    uint64_t low = ser.popUnsignedInt();
     state_ = (high << 32) | low;
 }
 
@@ -23,8 +23,8 @@ void XorShift::serialize(Serializer& ser) const
 {
     auto high = static_cast<unsigned>(state_ >> 32);
     auto low = static_cast<unsigned>(state_);
-    ser.PushUnsignedInt(high);
-    ser.PushUnsignedInt(low);
+    ser.pushUnsignedInt(high);
+    ser.pushUnsignedInt(low);
 }
 
 std::ostream& operator<<(std::ostream& os, const XorShift& obj)

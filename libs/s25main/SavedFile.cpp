@@ -18,59 +18,59 @@
 
 SavedFile::SavedFile() : saveTime_(0)
 {
-    const std::string rev = rttr::version::GetRevision();
+    const std::string rev = rttr::version::getRevision();
     std::copy(rev.begin(), rev.begin() + revision.size(), revision.begin());
 }
 
 SavedFile::~SavedFile() = default;
 
-uint8_t SavedFile::GetMinorVersion() const
+uint8_t SavedFile::getMinorVersion() const
 {
     return minorVersion_.value();
 }
 
-uint8_t SavedFile::GetMajorVersion() const
+uint8_t SavedFile::getMajorVersion() const
 {
     return majorVersion_.value();
 }
 
-void SavedFile::WriteFileHeader(BinaryFile& file) const
+void SavedFile::writeFileHeader(BinaryFile& file) const
 {
     // Signature
-    const std::string signature = GetSignature();
-    file.WriteRawData(signature.c_str(), signature.length());
+    const std::string signature = getSignature();
+    file.writeRawData(signature.c_str(), signature.length());
     // Format version
-    file.WriteUnsignedChar(GetLatestMajorVersion());
-    file.WriteUnsignedChar(GetLatestMinorVersion());
+    file.writeUnsignedChar(getLatestMajorVersion());
+    file.writeUnsignedChar(getLatestMinorVersion());
 }
 
-void SavedFile::WriteExtHeader(BinaryFile& file, const std::string& mapName)
+void SavedFile::writeExtHeader(BinaryFile& file, const std::string& mapName)
 {
     // Store data in struct
-    saveTime_ = s25util::Time::CurrentTime();
+    saveTime_ = s25util::Time::currentTime();
     mapName_ = mapName;
 
     // Program version
-    file.WriteRawData(revision.data(), revision.size());
+    file.writeRawData(revision.data(), revision.size());
     s25util::time64_t tmpTime = libendian::ConvertEndianess<false>::fromNative(saveTime_);
-    file.WriteRawData(&tmpTime, sizeof(tmpTime));
-    file.WriteShortString(mapName);
-    file.WriteUnsignedInt(playerNames_.size());
+    file.writeRawData(&tmpTime, sizeof(tmpTime));
+    file.writeShortString(mapName);
+    file.writeUnsignedInt(playerNames_.size());
     for(const std::string& name : playerNames_)
-        file.WriteShortString(name);
+        file.writeShortString(name);
 }
 
-bool SavedFile::ReadFileHeader(BinaryFile& file)
+bool SavedFile::readFileHeader(BinaryFile& file)
 {
     lastErrorMsg.clear();
 
-    const std::string signature = GetSignature();
+    const std::string signature = getSignature();
     std::array<char, 32> read_signature;
     if(signature.size() > read_signature.size())
         throw std::range_error("Program signature is to long!");
     try
     {
-        file.ReadRawData(read_signature.data(), signature.size());
+        file.readRawData(read_signature.data(), signature.size());
 
         // Signatur überprüfen
         if(!std::equal(signature.begin(), signature.end(), read_signature.begin()))
@@ -80,17 +80,17 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
         }
 
         // Version überprüfen
-        majorVersion_ = file.ReadUnsignedChar();
-        minorVersion_ = file.ReadUnsignedChar();
-        if(majorVersion_ != GetLatestMajorVersion() || minorVersion_ > GetLatestMinorVersion())
+        majorVersion_ = file.readUnsignedChar();
+        minorVersion_ = file.readUnsignedChar();
+        if(majorVersion_ != getLatestMajorVersion() || minorVersion_ > getLatestMinorVersion())
         {
             boost::format fmt =
-              boost::format((majorVersion_ < GetLatestMajorVersion()) ?
+              boost::format((majorVersion_ < getLatestMajorVersion()) ?
                               _("File has an old version and cannot be used (version: %1%.%2%, expected: %3%.%4%)!") :
                               _("File was created with more recent program and cannot be used (version: %1%.%2%, "
                                 "expected: %3%.%4%)!"));
             lastErrorMsg =
-              (fmt % majorVersion_.value() % minorVersion_.value() % GetLatestMajorVersion() % GetLatestMinorVersion())
+              (fmt % majorVersion_.value() % minorVersion_.value() % getLatestMajorVersion() % getLatestMinorVersion())
                 .str();
             return false;
         }
@@ -103,50 +103,50 @@ bool SavedFile::ReadFileHeader(BinaryFile& file)
     return true;
 }
 
-bool SavedFile::ReadExtHeader(BinaryFile& file)
+bool SavedFile::readExtHeader(BinaryFile& file)
 {
-    file.ReadRawData(revision.data(), revision.size());
-    file.ReadRawData(&saveTime_, sizeof(saveTime_));
+    file.readRawData(revision.data(), revision.size());
+    file.readRawData(&saveTime_, sizeof(saveTime_));
     saveTime_ = libendian::ConvertEndianess<false>::toNative(saveTime_);
-    mapName_ = file.ReadShortString();
-    playerNames_.resize(file.ReadUnsignedInt());
+    mapName_ = file.readShortString();
+    playerNames_.resize(file.readUnsignedInt());
     for(std::string& name : playerNames_)
-        name = file.ReadShortString();
+        name = file.readShortString();
     return true;
 }
 
-void SavedFile::WriteAllHeaderData(BinaryFile& file, const std::string& mapName)
+void SavedFile::writeAllHeaderData(BinaryFile& file, const std::string& mapName)
 {
     // Versionszeug schreiben
-    WriteFileHeader(file);
-    WriteExtHeader(file, mapName);
+    writeFileHeader(file);
+    writeExtHeader(file, mapName);
 }
 
-bool SavedFile::ReadAllHeaderData(BinaryFile& file)
+bool SavedFile::readAllHeaderData(BinaryFile& file)
 {
-    if(!ReadFileHeader(file))
+    if(!readFileHeader(file))
         return false;
-    if(!ReadExtHeader(file))
+    if(!readExtHeader(file))
         return false;
     return true;
 }
 
-void SavedFile::WritePlayerData(BinaryFile& file)
+void SavedFile::writePlayerData(BinaryFile& file)
 {
     Serializer ser;
-    ser.PushUnsignedChar(players.size());
+    ser.pushUnsignedChar(players.size());
     for(const auto& player : players)
-        player.Serialize(ser, true);
+        player.serialize(ser, true);
 
-    ser.WriteToFile(file);
+    ser.writeToFile(file);
 }
 
-void SavedFile::ReadPlayerData(BinaryFile& file)
+void SavedFile::readPlayerData(BinaryFile& file)
 {
-    ClearPlayers();
+    clearPlayers();
     Serializer ser;
-    ser.ReadFromFile(file);
-    const unsigned playerCt = ser.PopUnsignedChar();
+    ser.readFromFile(file);
+    const unsigned playerCt = ser.popUnsignedChar();
     if(playerCt > MAX_PLAYERS)
     {
         throw std::length_error(
@@ -156,60 +156,60 @@ void SavedFile::ReadPlayerData(BinaryFile& file)
     for(unsigned i = 0; i < playerCt; i++)
     {
         // TODO(Replay) TODO(Savegame) minor versions will change their meaning when major is bumped
-        BasePlayerInfo player(ser, GetMinorVersion() >= 1 ? 1 : 0, true);
+        BasePlayerInfo player(ser, getMinorVersion() >= 1 ? 1 : 0, true);
         // Temporary workaround: The random team was stored in the file but should not anymore, see PR #1331
         if(player.team > Team::Team4)
-            player.team = Team(rttr::enum_cast(player.team) - 3); // Was random team 2-4
+            player.team = Team(rttr::enumCast(player.team) - 3); // Was random team 2-4
         else if(player.team == Team::Random)
             player.team = Team::Team1; // Was random team 1
-        AddPlayer(player);
+        addPlayer(player);
     }
 }
 
 /**
  *  schreibt die GlobalGameSettings in die Datei.
  */
-void SavedFile::WriteGGS(BinaryFile& file) const
+void SavedFile::writeGGS(BinaryFile& file) const
 {
     Serializer ser;
-    ggs.Serialize(ser);
-    ser.WriteToFile(file);
+    ggs.serialize(ser);
+    ser.writeToFile(file);
 }
 
 /**
  *  liest die GlobalGameSettings aus der Datei.
  */
-void SavedFile::ReadGGS(BinaryFile& file)
+void SavedFile::readGGS(BinaryFile& file)
 {
     Serializer ser;
-    ser.ReadFromFile(file);
-    ggs.Deserialize(ser);
+    ser.readFromFile(file);
+    ggs.deserialize(ser);
 }
 
-const BasePlayerInfo& SavedFile::GetPlayer(unsigned idx) const
+const BasePlayerInfo& SavedFile::getPlayer(unsigned idx) const
 {
     return players[idx];
 }
 
-unsigned SavedFile::GetNumPlayers()
+unsigned SavedFile::getNumPlayers()
 {
     return players.size();
 }
 
-void SavedFile::AddPlayer(const BasePlayerInfo& player)
+void SavedFile::addPlayer(const BasePlayerInfo& player)
 {
     players.push_back(player);
     if(player.isUsed())
         playerNames_.push_back(player.name);
 }
 
-void SavedFile::ClearPlayers()
+void SavedFile::clearPlayers()
 {
     players.clear();
     playerNames_.clear();
 }
 
-std::string SavedFile::GetRevision() const
+std::string SavedFile::getRevision() const
 {
     return std::string(revision.begin(), revision.end());
 }

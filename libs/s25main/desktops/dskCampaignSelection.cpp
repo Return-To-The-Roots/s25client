@@ -62,13 +62,13 @@ int getColumnOffsetY()
 } // namespace
 
 dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
-    : Desktop(LOADER.GetImageN("setup015", 0)), csi_(std::move(csi))
+    : Desktop(LOADER.getImageN("setup015", 0)), csi_(std::move(csi))
 {
-    AddText(ID_Label, DrawPoint(250, startOffsetY), _("Campaigns"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    addText(ID_Label, DrawPoint(250, startOffsetY), _("Campaigns"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     // The table for the campaigns
     using SRT = ctrlTable::SortType;
-    AddTable(ID_Table, DrawPoint(padding, getColumnOffsetY()), Extent(firstColumnExtentX, columnExtentY),
+    addTable(ID_Table, DrawPoint(padding, getColumnOffsetY()), Extent(firstColumnExtentX, columnExtentY),
              TextureColor::Grey, NormalFont,
              ctrlTable::Columns{{_("Title"), 100, SRT::String},
                                 {_("Description"), 150, SRT::String},
@@ -78,66 +78,66 @@ dskCampaignSelection::dskCampaignSelection(CreateServerInfo csi)
                                 {"", 0, SRT::Default}});
 
     const int previewTitleOffsetY = getColumnOffsetY() + campaignImageExtentY + padding;
-    AddText(ID_PreviewTitle, DrawPoint(640, previewTitleOffsetY), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    addText(ID_PreviewTitle, DrawPoint(640, previewTitleOffsetY), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     int const multilineOffsetY = previewTitleOffsetY + LargeFont->getHeight();
     int const mutlilineExtentY = columnExtentY - (multilineOffsetY - getColumnOffsetY());
-    AddMultiline(ID_PreviewDescription, DrawPoint(secondColumnOffsetX, multilineOffsetY),
+    addMultiline(ID_PreviewDescription, DrawPoint(secondColumnOffsetX, multilineOffsetY),
                  Extent(secondColumnExtentX, mutlilineExtentY), TextureColor::Grey, NormalFont);
 
-    AddTextButton(ID_btBack, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
-    AddTextButton(ID_Next, DrawPoint(590, 560), Extent(200, 22), TextureColor::Green2, _("Continue"), NormalFont)
-      ->SetEnabled(false);
+    addTextButton(ID_btBack, DrawPoint(380, 560), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
+    addTextButton(ID_Next, DrawPoint(590, 560), Extent(200, 22), TextureColor::Green2, _("Continue"), NormalFont)
+      ->setEnabled(false);
 
     showCampaignInfo(false);
 
     // Delay loading until screen is shown such that possible error message boxes are shown after switching to this
-    AddTimer(ID_TimerFillCampaignTable, 1ms);
+    addTimer(ID_TimerFillCampaignTable, 1ms);
 }
 
 dskCampaignSelection::~dskCampaignSelection() noexcept = default;
 
-void dskCampaignSelection::Msg_TableChooseItem(const unsigned ctrl_id, const unsigned)
+void dskCampaignSelection::msgTableChooseItem(const unsigned ctrl_id, const unsigned)
 {
     if(ctrl_id == ID_Table)
         showCampaignMissionSelectionScreen();
 }
 
-void dskCampaignSelection::Msg_TableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
+void dskCampaignSelection::msgTableSelectItem(const unsigned ctrl_id, const std::optional<unsigned>& selection)
 {
     if(ctrl_id != ID_Table)
         return;
 
-    DeleteCtrl(ID_MapSelection); // Needs to be either hidden or recreated as it doesn't support updating
-    auto& btContinue = *GetCtrl<ctrlButton>(ID_Next);
+    deleteCtrl(ID_MapSelection); // Needs to be either hidden or recreated as it doesn't support updating
+    auto& btContinue = *getCtrl<ctrlButton>(ID_Next);
     if(!selection)
     {
-        btContinue.SetEnabled(false);
+        btContinue.setEnabled(false);
         showCampaignInfo(false);
     } else
     {
-        btContinue.SetEnabled(true);
+        btContinue.setEnabled(true);
         showCampaignInfo(true);
 
         const auto& campaign = campaigns_.at(*selection);
 
-        auto& campaignDescription = *GetCtrl<ctrlMultiline>(ID_PreviewDescription);
-        campaignDescription.Clear();
-        campaignDescription.AddString(campaign.longDescription, COLOR_YELLOW);
+        auto& campaignDescription = *getCtrl<ctrlMultiline>(ID_PreviewDescription);
+        campaignDescription.clear();
+        campaignDescription.addString(campaign.longDescription, COLOR_YELLOW);
 
-        auto& campaignTitle = *GetCtrl<ctrlText>(ID_PreviewTitle);
-        campaignTitle.SetText(campaign.name);
+        auto& campaignTitle = *getCtrl<ctrlText>(ID_PreviewTitle);
+        campaignTitle.setText(campaign.name);
 
         if(campaign.selectionMapData)
         {
             campaignImage_ = nullptr;
             auto* mapSelection =
-              AddMapSelection(ID_MapSelection, DrawPoint(secondColumnOffsetX, getColumnOffsetY()),
+              addMapSelection(ID_MapSelection, DrawPoint(secondColumnOffsetX, getColumnOffsetY()),
                               Extent(secondColumnExtentX, campaignImageExtentY), *campaign.selectionMapData);
             mapSelection->setMissionsStatus(std::vector<MissionStatus>(campaign.getNumMaps(), {true, true}));
             mapSelection->setPreview(true);
         } else if(campaign.image)
-            campaignImage_ = LOADER.GetImageN(ResourceId::fromPath(*campaign.image), 0);
+            campaignImage_ = LOADER.getImageN(ResourceId::fromPath(*campaign.image), 0);
         else
             campaignImage_ = nullptr;
     }
@@ -145,29 +145,29 @@ void dskCampaignSelection::Msg_TableSelectItem(const unsigned ctrl_id, const std
 
 void dskCampaignSelection::showCampaignInfo(const bool show)
 {
-    GetCtrl<ctrlMultiline>(ID_PreviewDescription)->SetVisible(show);
-    GetCtrl<ctrlText>(ID_PreviewTitle)->SetVisible(show);
+    getCtrl<ctrlMultiline>(ID_PreviewDescription)->setVisible(show);
+    getCtrl<ctrlText>(ID_PreviewTitle)->setVisible(show);
     if(!show)
         campaignImage_ = nullptr;
 }
 
 void dskCampaignSelection::showCampaignMissionSelectionScreen()
 {
-    const auto& campaign = campaigns_.at(GetCtrl<ctrlTable>(ID_Table)->GetSelection().value());
-    WINDOWMANAGER.Switch(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
+    const auto& campaign = campaigns_.at(getCtrl<ctrlTable>(ID_Table)->getSelection().value());
+    WINDOWMANAGER.switchTo(std::make_unique<dskCampaignMissionSelection>(csi_, campaign));
 }
 
-void dskCampaignSelection::Msg_ButtonClick(unsigned ctrl_id)
+void dskCampaignSelection::msgButtonClick(unsigned ctrl_id)
 {
     if(ctrl_id == ID_btBack)
-        WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
+        WINDOWMANAGER.switchTo(std::make_unique<dskSinglePlayer>());
     else if(ctrl_id == ID_Next)
         showCampaignMissionSelectionScreen();
 }
 
-void dskCampaignSelection::Msg_Timer(unsigned ctrl_id)
+void dskCampaignSelection::msgTimer(unsigned ctrl_id)
 {
-    GetCtrl<ctrlTimer>(ctrl_id)->Stop();
+    getCtrl<ctrlTimer>(ctrl_id)->stop();
     loadCampaigns();
     std::set<std::string> resourcesToLoad;
     for(const auto& campaign : campaigns_)
@@ -175,29 +175,29 @@ void dskCampaignSelection::Msg_Timer(unsigned ctrl_id)
         if(campaign.image)
             resourcesToLoad.insert(*campaign.image);
     }
-    LOADER.LoadFiles({resourcesToLoad.begin(), resourcesToLoad.end()});
-    FillCampaignsTable();
+    LOADER.loadFiles({resourcesToLoad.begin(), resourcesToLoad.end()});
+    fillCampaignsTable();
 }
 
-void dskCampaignSelection::FillCampaignsTable()
+void dskCampaignSelection::fillCampaignsTable()
 {
-    auto* table = GetCtrl<ctrlTable>(ID_Table);
+    auto* table = getCtrl<ctrlTable>(ID_Table);
     for(const auto& campaign : campaigns_)
     {
-        table->AddRow({campaign.name, campaign.shortDescription, campaign.author, std::to_string(campaign.getNumMaps()),
+        table->addRow({campaign.name, campaign.shortDescription, campaign.author, std::to_string(campaign.getNumMaps()),
                        _(campaign.difficulty)});
     }
 }
 
-void dskCampaignSelection::Draw_()
+void dskCampaignSelection::drawImpl()
 {
-    Desktop::Draw_();
+    Desktop::drawImpl();
 
-    // replace this by AddImageButton as soon as it can handle this scenario correctly
+    // replace this by addImageButton as soon as it can handle this scenario correctly
     if(campaignImage_)
     {
-        campaignImage_->DrawFull(Rect(ScaleIf(DrawPoint(secondColumnOffsetX, getColumnOffsetY())),
-                                      ScaleIf(Extent(secondColumnExtentX, campaignImageExtentY))));
+        campaignImage_->drawFull(Rect(scaleIf(DrawPoint(secondColumnOffsetX, getColumnOffsetY())),
+                                      scaleIf(Extent(secondColumnExtentX, campaignImageExtentY))));
     }
 }
 
@@ -206,14 +206,14 @@ void dskCampaignSelection::loadCampaigns()
     unsigned numBroken = 0;
     for(const std::string campaignFolder : {s25::folders::campaignsBuiltin, s25::folders::campaignsUser})
     {
-        for(const bfs::path& folder : ListDir(RTTRCONFIG.ExpandPath(campaignFolder), "", true))
+        for(const bfs::path& folder : listDir(RTTRCONFIG.expandPath(campaignFolder), "", true))
         {
             if(!is_directory(folder))
                 continue;
 
             CampaignDescription desc;
             CampaignDataLoader loader(desc, folder);
-            if(!loader.Load())
+            if(!loader.load())
             {
                 LOG.write(_("Failed to load campaign %1%.\n")) % folder;
                 numBroken++;
@@ -256,7 +256,7 @@ void dskCampaignSelection::loadCampaigns()
     {
         const std::string errorTxt =
           helpers::format(_("%1% campaign(s) could not be loaded. Check the log for details"), numBroken);
-        WINDOWMANAGER.Show(
+        WINDOWMANAGER.show(
           std::make_unique<iwMsgbox>(_("Error"), errorTxt, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 1));
     }
 }

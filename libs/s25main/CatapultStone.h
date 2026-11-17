@@ -36,14 +36,14 @@ public:
     CatapultStone(SerializedGameData& sgd, unsigned obj_id);
 
     /// Zerstören
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
     // Zeichnet den fliegenden Stein
-    void Draw(DrawPoint drawOffset);
+    void draw(DrawPoint drawOffset);
 
     /// Event-Handler
-    void HandleEvent(unsigned id) override;
+    void handleEvent(unsigned id) override;
 
-    GO_Type GetGOT() const final { return GO_Type::Catapultstone; }
+    GO_Type getGOT() const final { return GO_Type::Catapultstone; }
 };

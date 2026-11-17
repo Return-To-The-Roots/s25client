@@ -14,5 +14,6 @@ public:
     RTTR_CLONEABLE(glArchivItem_Sound_Other)
 
 protected:
-    SoundHandle Load() override;
+    using libsiedler2::ArchivItem_Sound_Other::load;
+    SoundHandle load() override;
 };

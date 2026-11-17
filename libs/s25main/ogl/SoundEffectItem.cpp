@@ -6,9 +6,9 @@
 #include "Settings.h"
 #include "drivers/AudioDriverWrapper.h"
 
-EffectPlayId SoundEffectItem::Play(uint8_t volume, bool loop)
+EffectPlayId SoundEffectItem::play(uint8_t volume, bool loop)
 {
     if(!SETTINGS.sound.effectsEnabled)
         return EffectPlayId::Invalid;
-    return AUDIODRIVER.PlayEffect(GetSoundHandle(), volume, loop);
+    return AUDIODRIVER.playEffect(getSoundHandle(), volume, loop);
 }

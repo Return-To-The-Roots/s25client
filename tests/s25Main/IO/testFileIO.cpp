@@ -51,7 +51,7 @@ struct FileOpenFixture
 
 BOOST_FIXTURE_TEST_CASE(TestListDir, FileOpenFixture)
 {
-    const std::vector<bfs::path> files = ListDir(tmpPath, "txt");
+    const std::vector<bfs::path> files = listDir(tmpPath, "txt");
     BOOST_TEST_REQUIRE(files.size() == 3u);
     for(const bfs::path& file : files)
     {

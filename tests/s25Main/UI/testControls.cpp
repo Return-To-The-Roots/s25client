@@ -62,18 +62,18 @@ BOOST_FIXTURE_TEST_CASE(MouseOver, uiHelper::Fixture)
     const auto size = rttr::test::randomPoint<Extent>(10);
     const auto font = createMockFont({'H', 'e', 'l', 'o', '?'});
     ctrlTextButton bt(nullptr, 1, pos, size, TextureColor::Bricks, "Hello", font.get(), "");
-    BOOST_TEST(bt.IsMouseOver(pos));
-    BOOST_TEST(!bt.IsMouseOver(pos - DrawPoint(1, 0)));
-    BOOST_TEST(!bt.IsMouseOver(pos - DrawPoint(0, 1)));
-    BOOST_TEST(bt.IsMouseOver(pos + size / 2u));
-    BOOST_TEST(bt.IsMouseOver(pos + size - DrawPoint(1, 1)));
-    BOOST_TEST(!bt.IsMouseOver(pos + size));
-    BOOST_TEST(!bt.IsMouseOver(pos + size + DrawPoint(0, 1)));
+    BOOST_TEST(bt.isMouseOver(pos));
+    BOOST_TEST(!bt.isMouseOver(pos - DrawPoint(1, 0)));
+    BOOST_TEST(!bt.isMouseOver(pos - DrawPoint(0, 1)));
+    BOOST_TEST(bt.isMouseOver(pos + size / 2u));
+    BOOST_TEST(bt.isMouseOver(pos + size - DrawPoint(1, 1)));
+    BOOST_TEST(!bt.isMouseOver(pos + size));
+    BOOST_TEST(!bt.isMouseOver(pos + size + DrawPoint(0, 1)));
     // Without argument asks the video driver for the mouse position
-    uiHelper::GetVideoDriver()->SetMousePos(pos + size / 2u);
-    BOOST_TEST(bt.IsMouseOver());
-    uiHelper::GetVideoDriver()->SetMousePos(pos + size * 2u);
-    BOOST_TEST(!bt.IsMouseOver());
+    uiHelper::getVideoDriver()->setMousePos(pos + size / 2u);
+    BOOST_TEST(bt.isMouseOver());
+    uiHelper::getVideoDriver()->setMousePos(pos + size * 2u);
+    BOOST_TEST(!bt.isMouseOver());
 }
 
 static void resizeMap(libsiedler2::ArchivItem_Map& glMap, const Extent& size)
@@ -91,45 +91,45 @@ BOOST_FIXTURE_TEST_CASE(PreviewMinimap, uiHelper::Fixture)
     DrawPoint pos(5, 12);
     Extent size(20, 10);
     ctrlPreviewMinimap mm(nullptr, 1, pos, size, nullptr);
-    BOOST_TEST_REQUIRE(mm.GetCurMapSize() == Extent::all(0));
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize() == Extent::all(4)); // Padding
+    BOOST_TEST_REQUIRE(mm.getCurMapSize() == Extent::all(0));
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize() == Extent::all(4)); // Padding
     // Remove padding
-    mm.SetPadding(Extent::all(0));
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize() == Extent::all(0));
+    mm.setPadding(Extent::all(0));
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize() == Extent::all(0));
     libsiedler2::ArchivItem_Map map;
     resizeMap(map, size);
-    mm.SetMap(&map);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().x <= size.x); //-V807
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().y <= size.y);
-    const Extent origBoundary = mm.GetBoundaryRect().getSize();
+    mm.setMap(&map);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize().x <= size.x); //-V807
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize().y <= size.y);
+    const Extent origBoundary = mm.getBoundaryRect().getSize();
     // Width smaller -> Don't go over width
     resizeMap(map, Extent(size.x / 2, size.y));
-    mm.SetMap(&map);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().x <= size.x);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().y == size.y);
+    mm.setMap(&map);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize().x <= size.x);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize().y == size.y);
     // Height smaller -> Don't go over height
     resizeMap(map, Extent(size.x, size.y / 2));
-    mm.SetMap(&map);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().x == size.x);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().y <= size.y);
+    mm.setMap(&map);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize().x == size.x);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize().y <= size.y);
     // Both smaller -> Stretch to original height
     resizeMap(map, size / 2u);
-    mm.SetMap(&map);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize() == origBoundary);
+    mm.setMap(&map);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize() == origBoundary);
     // Width bigger -> Narrow map
     resizeMap(map, Extent(size.x * 2, size.y));
-    mm.SetMap(&map);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().x == size.x);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().y <= size.y);
+    mm.setMap(&map);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize().x == size.x);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize().y <= size.y);
     // Height bigger -> Narrow map in x
     resizeMap(map, Extent(size.x, size.y * 2));
-    mm.SetMap(&map);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().x <= size.x);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize().y == size.y);
+    mm.setMap(&map);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize().x <= size.x);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize().y == size.y);
     // Both bigger -> Stretch to original height
     resizeMap(map, size * 2u);
-    mm.SetMap(&map);
-    BOOST_TEST_REQUIRE(mm.GetBoundaryRect().getSize() == origBoundary);
+    mm.setMap(&map);
+    BOOST_TEST_REQUIRE(mm.getBoundaryRect().getSize() == origBoundary);
 }
 
 BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
@@ -151,13 +151,13 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     const auto font = createMockFont(codepoints);
     ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(90, 15), TextureColor::Green1, font.get());
     ctrlEdit edt2(nullptr, 0, DrawPoint(0, 0), Extent(90, 15), TextureColor::Green1, font.get());
-    const ctrlBaseText* txt = edt.GetCtrl<ctrlBaseText>(0);
-    const ctrlBaseText* txt2 = edt2.GetCtrl<ctrlBaseText>(0);
+    const ctrlBaseText* txt = edt.getCtrl<ctrlBaseText>(0);
+    const ctrlBaseText* txt2 = edt2.getCtrl<ctrlBaseText>(0);
     BOOST_TEST_REQUIRE(txt);
     BOOST_TEST_REQUIRE(txt2);
-    BOOST_TEST_REQUIRE(txt->GetText() == "");
+    BOOST_TEST_REQUIRE(txt->getText() == "");
     // Width available for text excludes the border left&right and 1 "Dx" for new chars
-    const auto allowedWidth = edt.GetSize().x - ctrlDeepening::borderSize.x * 2;
+    const auto allowedWidth = edt.getSize().x - ctrlDeepening::borderSize.x * 2;
     std::vector<std::string> curChars;
     // Add random chars and observe front chars beeing removed
     for(int i = 0; i < 30; i++)
@@ -166,45 +166,45 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
         auto it = curChars.back().begin();
         const char32_t c = utfDecoder::decode_valid(it);
         std::string curText = std::accumulate(curChars.begin(), curChars.end(), std::string{});
-        edt.SetText(curText);
+        edt.setText(curText);
         // Activate
-        MouseCoords mc(edt2.GetPos());
+        MouseCoords mc(edt2.getPos());
         mc.ldown = true;
-        edt2.Msg_LeftDown(mc);
-        edt2.Msg_PaintAfter();
-        edt2.Msg_KeyDown(KeyEvent(c));
+        edt2.msgLeftDown(mc);
+        edt2.msgPaintAfter();
+        edt2.msgKeyDown(KeyEvent(c));
         // Remove chars from front until in size
         auto itFirst = curChars.begin();
         while(font->getWidth(curText) > allowedWidth)
         {
             curText = std::accumulate(++itFirst, curChars.end(), std::string{});
         }
-        BOOST_TEST_REQUIRE(txt->GetText() == curText);
-        BOOST_TEST_REQUIRE(txt2->GetText() == curText);
+        BOOST_TEST_REQUIRE(txt->getText() == curText);
+        BOOST_TEST_REQUIRE(txt2->getText() == curText);
     }
     // Check navigating of cursor
-    MouseCoords mc(edt2.GetPos());
+    MouseCoords mc(edt2.getPos());
     mc.ldown = true;
-    edt.Msg_LeftDown(mc); // Activate
-    edt.Msg_PaintAfter();
+    edt.msgLeftDown(mc); // Activate
+    edt.msgPaintAfter();
     int curCursorPos = curChars.size(); // Current cursor should be at end
     while(!curChars.empty())
     {
         int moveOffset = rttr::test::randomValue<int>(-curCursorPos - 1,
                                                       curChars.size() - curCursorPos + 1); //+-1 to check for "overrun"
         for(; moveOffset < 0; ++moveOffset, --curCursorPos)
-            edt.Msg_KeyDown(KeyEvent(KeyType::Left));
+            edt.msgKeyDown(KeyEvent(KeyType::Left));
         for(; moveOffset > 0; --moveOffset, ++curCursorPos)
-            edt.Msg_KeyDown(KeyEvent(KeyType::Right));
+            edt.msgKeyDown(KeyEvent(KeyType::Right));
         curCursorPos = helpers::clamp(curCursorPos, 0, static_cast<int>(curChars.size()));
         // Erase one char (currently only good way to check where the cursor is
-        edt.Msg_KeyDown(KeyEvent(KeyType::Backspace));
+        edt.msgKeyDown(KeyEvent(KeyType::Backspace));
         if(curCursorPos > 0)
         {
             curChars.erase(curChars.begin() + --curCursorPos);
         }
         const auto curText = std::accumulate(curChars.begin(), curChars.end(), std::string{});
-        BOOST_TEST_REQUIRE(edt.GetText() == curText);
+        BOOST_TEST_REQUIRE(edt.getText() == curText);
     }
     // Check "movement" of text when using cursor
     // First create a text bigger than fit
@@ -215,7 +215,7 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
         curChars.push_back(chars[rttr::test::randomValue<size_t>(0u, chars.size() - 1)]);
         curText += curChars.back();
     } while(font->getWidth(curText) <= allowedWidth);
-    edt.SetText(curText);
+    edt.setText(curText);
     // Now cursor is at end and first "char" is not showing
     curCursorPos = curChars.size();
     const auto txtWithoutFirst = curText.substr(curChars.front().size());
@@ -223,20 +223,20 @@ BOOST_FIXTURE_TEST_CASE(EditShowsCorrectChars, uiHelper::Fixture)
     // At least 5 chars before cursor should be shown -> No change until curCursorPos <= 5
     do
     {
-        BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
-        edt.Msg_KeyDown(KeyEvent(KeyType::Left));
+        BOOST_TEST_REQUIRE(txt->getText() == txtWithoutFirst);
+        edt.msgKeyDown(KeyEvent(KeyType::Left));
         --curCursorPos;
     } while(curCursorPos > 5);
     while(curCursorPos-- >= 0)
     {
-        BOOST_TEST_REQUIRE(txt->GetText() == curText); // Trailing chars are removed by font rendering
-        edt.Msg_KeyDown(KeyEvent(KeyType::Left));
+        BOOST_TEST_REQUIRE(txt->getText() == curText); // Trailing chars are removed by font rendering
+        edt.msgKeyDown(KeyEvent(KeyType::Left));
     }
     // Moving fully right shows txt again
     curCursorPos = 0;
     while(static_cast<unsigned>(curCursorPos++) < curChars.size())
-        edt.Msg_KeyDown(KeyEvent(KeyType::Right));
-    BOOST_TEST_REQUIRE(txt->GetText() == txtWithoutFirst);
+        edt.msgKeyDown(KeyEvent(KeyType::Right));
+    BOOST_TEST_REQUIRE(txt->getText() == txtWithoutFirst);
 }
 
 BOOST_FIXTURE_TEST_CASE(EditFileNameOnlyFiltersInvalidChars, uiHelper::Fixture)
@@ -244,23 +244,23 @@ BOOST_FIXTURE_TEST_CASE(EditFileNameOnlyFiltersInvalidChars, uiHelper::Fixture)
     const auto font = createMockFont(
       {'a', 'B', 'c', 'D', '1', '2', '3', '4', ' ', '-', '!', '<', '>', ':', '"', '/', '\\', '|', '?', '*'});
     ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get());
-    edt.SetType(EditType::Filename);
+    edt.setType(EditType::Filename);
 
-    MouseCoords mc(edt.GetPos());
+    MouseCoords mc(edt.getPos());
     mc.ldown = true;
-    edt.Msg_LeftDown(mc); // give focus
+    edt.msgLeftDown(mc); // give focus
 
     for(char32_t c : {U'a', U'B', U'1', U'2', U' '}) // valid chars
-        edt.Msg_KeyDown(KeyEvent(c));
-    BOOST_TEST(edt.GetText() == "aB12 "); // all accepted
+        edt.msgKeyDown(KeyEvent(c));
+    BOOST_TEST(edt.getText() == "aB12 "); // all accepted
 
     for(char32_t c : {U'c', U'<', U'D', U'>', U'-', U':', U'"', U'3', U'/', U'\\', U'4', U'|', U'?', U'!',
                       U'*'}) // mixed valid and invalid chars
-        edt.Msg_KeyDown(KeyEvent(c));
-    BOOST_TEST(edt.GetText() == "aB12 cD-34!"); // only valid accepted
+        edt.msgKeyDown(KeyEvent(c));
+    BOOST_TEST(edt.getText() == "aB12 cD-34!"); // only valid accepted
 
-    edt.SetText("a/B\\1");
-    BOOST_TEST(edt.GetText() == "aB1");
+    edt.setText("a/B\\1");
+    BOOST_TEST(edt.getText() == "aB1");
 }
 
 BOOST_FIXTURE_TEST_CASE(EditGetFileName, uiHelper::Fixture)
@@ -269,35 +269,35 @@ BOOST_FIXTURE_TEST_CASE(EditGetFileName, uiHelper::Fixture)
                                       'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q',
                                       'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', static_cast<char32_t>(0xE9)});
     ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get());
-    edt.SetType(EditType::Filename);
+    edt.setType(EditType::Filename);
 
-    edt.SetText("");
-    BOOST_TEST((edt.GetFileName(".ini").status == FileNameStatus::Empty));
+    edt.setText("");
+    BOOST_TEST((edt.getFileName(".ini").status == FileNameStatus::Empty));
 
-    edt.SetText("   "); // whitespace only
-    BOOST_TEST((edt.GetFileName(".ini").status == FileNameStatus::Empty));
+    edt.setText("   "); // whitespace only
+    BOOST_TEST((edt.getFileName(".ini").status == FileNameStatus::Empty));
 
     // leading whitespace trimmed, trailing kept - not at the end of the filename
-    edt.SetText("  mypreset  ");
-    auto r = edt.GetFileName(".ini");
+    edt.setText("  mypreset  ");
+    auto r = edt.getFileName(".ini");
     BOOST_TEST((r.status == FileNameStatus::Valid));
     BOOST_TEST(r.name == "mypreset  .ini");
 
     // trailing space right before the extension round-trips
-    edt.SetText("abc ");
-    r = edt.GetFileName(".ini");
+    edt.setText("abc ");
+    r = edt.getFileName(".ini");
     BOOST_TEST((r.status == FileNameStatus::Valid));
     BOOST_TEST(r.name == "abc .ini");
 
     // valid name: extension appended
-    edt.SetText("mypreset");
-    r = edt.GetFileName(".ini");
+    edt.setText("mypreset");
+    r = edt.getFileName(".ini");
     BOOST_TEST((r.status == FileNameStatus::Valid));
     BOOST_TEST(r.name == "mypreset.ini");
 
     // extension appended even when the input already ends in it
-    edt.SetText("mypreset.ini");
-    r = edt.GetFileName(".ini");
+    edt.setText("mypreset.ini");
+    r = edt.getFileName(".ini");
     BOOST_TEST((r.status == FileNameStatus::Valid));
     BOOST_TEST(r.name == "mypreset.ini.ini");
 
@@ -306,25 +306,25 @@ BOOST_FIXTURE_TEST_CASE(EditGetFileName, uiHelper::Fixture)
     std::string justFitsName;
     for(int i = 0; i < 125; ++i)
         justFitsName += twoByteChar;
-    edt.SetText(justFitsName);
-    r = edt.GetFileName(".ini");
+    edt.setText(justFitsName);
+    r = edt.getFileName(".ini");
     BOOST_TEST((r.status == FileNameStatus::Valid));
     BOOST_TEST(r.name == justFitsName + ".ini");
 
     // With one more character the name is rejected
     const std::string oneOverName = justFitsName + twoByteChar;
-    edt.SetText(oneOverName);
-    BOOST_TEST((edt.GetFileName(".ini").status == FileNameStatus::Invalid));
+    edt.setText(oneOverName);
+    BOOST_TEST((edt.getFileName(".ini").status == FileNameStatus::Invalid));
 
     // no ext: name returned as-is without appending
-    edt.SetText("mypreset");
-    r = edt.GetFileName();
+    edt.setText("mypreset");
+    r = edt.getFileName();
     BOOST_TEST((r.status == FileNameStatus::Valid));
     BOOST_TEST(r.name == "mypreset");
 
     // no ext: leading and trailing space trimmed
-    edt.SetText("  mypreset  ");
-    r = edt.GetFileName();
+    edt.setText("  mypreset  ");
+    r = edt.getFileName();
     BOOST_TEST((r.status == FileNameStatus::Valid));
     BOOST_TEST(r.name == "mypreset");
 }
@@ -333,31 +333,31 @@ BOOST_FIXTURE_TEST_CASE(EditSpaceKeyDoesNotDuplicateChar, uiHelper::Fixture)
 {
     const auto font = createMockFont({U' ', '?'}); // '?' is required as glFont's missing-glyph fallback
     ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get());
-    MouseCoords mc(edt.GetPos());
+    MouseCoords mc(edt.getPos());
     mc.ldown = true;
-    edt.Msg_LeftDown(mc);
+    edt.msgLeftDown(mc);
 
     // A real space press fires both of these on SDL2 (SDL_KEYDOWN+SDL_TEXTINPUT) and WinAPI
     // (WM_KEYDOWN+WM_CHAR) for one physical key press.
-    edt.Msg_KeyDown(KeyEvent(KeyType::Space)); // OS "key down" event - must not insert anything
-    edt.Msg_KeyDown(KeyEvent(U' '));           // OS "char/text-input" event - inserts the space
-    BOOST_TEST(edt.GetText() == " ");          // exactly one space, not two
+    edt.msgKeyDown(KeyEvent(KeyType::Space)); // OS "key down" event - must not insert anything
+    edt.msgKeyDown(KeyEvent(U' '));           // OS "char/text-input" event - inserts the space
+    BOOST_TEST(edt.getText() == " ");         // exactly one space, not two
 }
 
 BOOST_FIXTURE_TEST_CASE(EditMaxLengthTruncatesInput, uiHelper::Fixture)
 {
     const auto font = createMockFont({'a', 'b', 'c', 'd', 'e', '?'}); // '?' is glFont's missing-glyph fallback
     ctrlEdit edt(nullptr, 0, DrawPoint(0, 0), Extent(200, 15), TextureColor::Green1, font.get(), 3 /*maxlength*/);
-    MouseCoords mc(edt.GetPos());
+    MouseCoords mc(edt.getPos());
     mc.ldown = true;
-    edt.Msg_LeftDown(mc);
+    edt.msgLeftDown(mc);
 
     for(char32_t c : {U'a', U'b', U'c', U'd', U'e'}) // 5 chars typed, cap is 3
-        edt.Msg_KeyDown(KeyEvent(c));
-    BOOST_TEST(edt.GetText() == "abc"); // input beyond maxLength is dropped
+        edt.msgKeyDown(KeyEvent(c));
+    BOOST_TEST(edt.getText() == "abc"); // input beyond maxLength is dropped
 
-    edt.SetText("abcde"); // input beyond maxLength is dropped
-    BOOST_TEST(edt.GetText() == "abc");
+    edt.setText("abcde"); // input beyond maxLength is dropped
+    BOOST_TEST(edt.getText() == "abc");
 }
 
 BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
@@ -366,26 +366,26 @@ BOOST_AUTO_TEST_CASE(AdjustWidthForMaxChars_SetsCorrectSize)
     {
         ctrlTextDeepening txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(),
                               TextureColor::Green1, "foo", font.get(), COLOR_BLACK);
-        const Extent sizeBefore = txt.GetSize();
+        const Extent sizeBefore = txt.getSize();
         // Don't assume size, so get size for 0 chars
-        txt.ResizeForMaxChars(0);
-        const Extent sizeZero = txt.GetSize();
+        txt.resizeForMaxChars(0);
+        const Extent sizeZero = txt.getSize();
         BOOST_TEST(sizeZero.y == sizeBefore.y);
         const auto numChars = rttr::test::randomValue(1u, 20u);
-        txt.ResizeForMaxChars(numChars);
-        BOOST_TEST(txt.GetSize() == Extent(sizeZero.x + numChars * font->getDx(), sizeBefore.y));
+        txt.resizeForMaxChars(numChars);
+        BOOST_TEST(txt.getSize() == Extent(sizeZero.x + numChars * font->getDx(), sizeBefore.y));
     }
     {
         ctrlTextButton txt(nullptr, 1, rttr::test::randomPoint<DrawPoint>(), rttr::test::randomPoint<Extent>(),
                            TextureColor::Green1, "foo", font.get(), "tooltip");
-        const Extent sizeBefore = txt.GetSize();
+        const Extent sizeBefore = txt.getSize();
         // Don't assume size, so get size for 0 chars
-        txt.ResizeForMaxChars(0);
-        const Extent sizeZero = txt.GetSize();
+        txt.resizeForMaxChars(0);
+        const Extent sizeZero = txt.getSize();
         BOOST_TEST(sizeZero.y == sizeBefore.y);
         const auto numChars = rttr::test::randomValue(1u, 20u);
-        txt.ResizeForMaxChars(numChars);
-        BOOST_TEST(txt.GetSize() == Extent(sizeZero.x + numChars * font->getDx(), sizeBefore.y));
+        txt.resizeForMaxChars(numChars);
+        BOOST_TEST(txt.getSize() == Extent(sizeZero.x + numChars * font->getDx(), sizeBefore.y));
     }
 }
 
@@ -399,8 +399,8 @@ BOOST_AUTO_TEST_CASE(TextControlWorks)
     ctrlText text(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle{}, font.get());
 
     // Test positioning
-    BOOST_TEST(text.GetPos() == pos);
-    const auto origBoundaryRect = text.GetBoundaryRect();
+    BOOST_TEST(text.getPos() == pos);
+    const auto origBoundaryRect = text.getBoundaryRect();
     BOOST_TEST(origBoundaryRect.getOrigin() == pos + parentPos);
     const auto fullTextWidth = font->getWidth(testText);
     BOOST_TEST(origBoundaryRect.getSize() == Extent(fullTextWidth, font->getHeight()));
@@ -409,31 +409,31 @@ BOOST_AUTO_TEST_CASE(TextControlWorks)
     {
         const Position origSize(origBoundaryRect.getSize()); // Convert to signed type
         ctrlText textRight(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::RIGHT, font.get());
-        BOOST_TEST(textRight.GetBoundaryRect() == Rect::move(origBoundaryRect, Position(-origSize.x, 0)));
+        BOOST_TEST(textRight.getBoundaryRect() == Rect::move(origBoundaryRect, Position(-origSize.x, 0)));
         ctrlText textCenter(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::CENTER, font.get());
-        BOOST_TEST(textCenter.GetBoundaryRect() == Rect::move(origBoundaryRect, Position(-origSize.x / 2, 0)));
+        BOOST_TEST(textCenter.getBoundaryRect() == Rect::move(origBoundaryRect, Position(-origSize.x / 2, 0)));
         ctrlText textBottom(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::BOTTOM, font.get());
-        BOOST_TEST(textBottom.GetBoundaryRect() == Rect::move(origBoundaryRect, Position(0, -origSize.y)));
+        BOOST_TEST(textBottom.getBoundaryRect() == Rect::move(origBoundaryRect, Position(0, -origSize.y)));
         ctrlText textVCenter(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::VCENTER, font.get());
-        BOOST_TEST(textVCenter.GetBoundaryRect() == Rect::move(origBoundaryRect, Position(0, -origSize.y / 2)));
+        BOOST_TEST(textVCenter.getBoundaryRect() == Rect::move(origBoundaryRect, Position(0, -origSize.y / 2)));
         ctrlText textFullCenter(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::CENTER | FontStyle::VCENTER,
                                 font.get());
-        BOOST_TEST(textFullCenter.GetBoundaryRect()
+        BOOST_TEST(textFullCenter.getBoundaryRect()
                    == Rect::move(origBoundaryRect, Position(-origSize.x / 2, -origSize.y / 2)));
         ctrlText textBottomRight(&parent, 0, pos, testText, COLOR_YELLOW, FontStyle::RIGHT | FontStyle::BOTTOM,
                                  font.get());
-        BOOST_TEST(textBottomRight.GetBoundaryRect()
+        BOOST_TEST(textBottomRight.getBoundaryRect()
                    == Rect::move(origBoundaryRect, Position(-origSize.x, -origSize.y)));
     }
 
     // Test maxWidth
     {
         text.setMaxWidth(fullTextWidth); // Limit width without actually limiting it
-        BOOST_TEST(text.GetBoundaryRect() == origBoundaryRect);
+        BOOST_TEST(text.getBoundaryRect() == origBoundaryRect);
         // Limit width truncating the text
         const auto maxWidth = rttr::test::randomValue(font->getDx(), fullTextWidth - 1u);
         text.setMaxWidth(maxWidth);
-        const auto newBoundaryRect = text.GetBoundaryRect();
+        const auto newBoundaryRect = text.getBoundaryRect();
         BOOST_TEST(newBoundaryRect.getOrigin() == origBoundaryRect.getOrigin());
         // TODO: Test that with a maxWidth of x-1 the width matches that of the last few chars replaced by dots
         BOOST_TEST(newBoundaryRect.getSize().x <= maxWidth);
@@ -443,9 +443,9 @@ BOOST_AUTO_TEST_CASE(TextControlWorks)
 
 static std::vector<std::string> getRow(const ctrlTable& table, unsigned row)
 {
-    std::vector<std::string> values(table.GetNumColumns());
-    for(unsigned i = 0; i < table.GetNumColumns(); i++)
-        values[i] = table.GetItemText(row, i);
+    std::vector<std::string> values(table.getNumColumns());
+    for(unsigned i = 0; i < table.getNumColumns(); i++)
+        values[i] = table.getItemText(row, i);
     return values;
 }
 
@@ -463,12 +463,12 @@ BOOST_AUTO_TEST_CASE(TableSorting)
     const std::vector<std::string> r4 = {"ccc", "10x30", "10", "09.11.2000 - 10:12"};
     const std::vector<std::string> r5 = {"zcc", "30x10", "13", "10.12.2000 - 10:12"};
     const std::vector<std::string> r6 = {"tts", "10x22", "42", "10.11.2001 - 10:12"};
-    table.AddRow(r1);
-    table.AddRow(r2);
-    table.AddRow(r3);
-    table.AddRow(r4);
-    table.AddRow(r5);
-    table.AddRow(r6);
+    table.addRow(r1);
+    table.addRow(r2);
+    table.addRow(r3);
+    table.addRow(r4);
+    table.addRow(r5);
+    table.addRow(r6);
 
     auto testRowsEqual = [&table](std::array<const std::vector<std::string>*, 6> rows) {
         for(unsigned i = 0; i < rows.size(); i++)
@@ -480,28 +480,28 @@ BOOST_AUTO_TEST_CASE(TableSorting)
         }
     };
 
-    table.SortRows(0, TableSortDir::Descending);
-    BOOST_TEST(table.GetSortColumn() == 0);
-    BOOST_TEST(table.GetSortDirection() == TableSortDir::Descending);
+    table.sortRows(0, TableSortDir::Descending);
+    BOOST_TEST(table.getSortColumn() == 0);
+    BOOST_TEST(table.getSortDirection() == TableSortDir::Descending);
     BOOST_TEST_CONTEXT("String column") testRowsEqual({&r5, &r6, &r4, &r3, &r1, &r2});
 
-    table.SortRows(1, TableSortDir::Ascending);
-    BOOST_TEST(table.GetSortColumn() == 1);
-    BOOST_TEST(table.GetSortDirection() == TableSortDir::Ascending);
+    table.sortRows(1, TableSortDir::Ascending);
+    BOOST_TEST(table.getSortColumn() == 1);
+    BOOST_TEST(table.getSortDirection() == TableSortDir::Ascending);
     BOOST_TEST_CONTEXT("MapSize column") testRowsEqual({&r3, &r1, &r2, &r6, &r4, &r5});
 
-    table.SortRows(2, TableSortDir::Descending);
-    BOOST_TEST(table.GetSortColumn() == 2);
-    BOOST_TEST(table.GetSortDirection() == TableSortDir::Descending);
+    table.sortRows(2, TableSortDir::Descending);
+    BOOST_TEST(table.getSortColumn() == 2);
+    BOOST_TEST(table.getSortDirection() == TableSortDir::Descending);
     BOOST_TEST_CONTEXT("Number column") testRowsEqual({&r6, &r5, &r4, &r3, &r2, &r1});
 
-    table.SortRows(3, TableSortDir::Ascending);
-    BOOST_TEST(table.GetSortColumn() == 3);
-    BOOST_TEST(table.GetSortDirection() == TableSortDir::Ascending);
+    table.sortRows(3, TableSortDir::Ascending);
+    BOOST_TEST(table.getSortColumn() == 3);
+    BOOST_TEST(table.getSortDirection() == TableSortDir::Ascending);
     BOOST_TEST_CONTEXT("Date column") testRowsEqual({&r4, &r1, &r2, &r3, &r5, &r6});
-    table.SortRows(3, TableSortDir::Descending);
-    BOOST_TEST(table.GetSortColumn() == 3);
-    BOOST_TEST(table.GetSortDirection() == TableSortDir::Descending);
+    table.sortRows(3, TableSortDir::Descending);
+    BOOST_TEST(table.getSortColumn() == 3);
+    BOOST_TEST(table.getSortDirection() == TableSortDir::Descending);
     BOOST_TEST_CONTEXT("Date column") testRowsEqual({&r6, &r5, &r3, &r2, &r1, &r4});
 }
 

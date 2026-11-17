@@ -25,68 +25,68 @@
  *  Startet das Spiel und lädt alles Notwendige.
  */
 dskGameLoader::dskGameLoader(std::shared_ptr<Game> game)
-    : Desktop(LOADER.GetImageN(ResourceId(LOAD_SCREENS[rand() % LOAD_SCREENS.size()]), 0)), position(0),
+    : Desktop(LOADER.getImageN(ResourceId(LOAD_SCREENS[rand() % LOAD_SCREENS.size()]), 0)), position(0),
       loader_(LOADER, std::move(game))
 {
-    WINDOWMANAGER.SetCursor(Cursor::None);
+    WINDOWMANAGER.setCursor(Cursor::None);
 
     using namespace std::chrono_literals;
-    AddTimer(1, 50ms);
+    addTimer(1, 50ms);
 
-    AddText(10, DrawPoint(800 / 2, 600 - 50), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    addText(10, DrawPoint(800 / 2, 600 - 50), "", COLOR_YELLOW, FontStyle::CENTER, LargeFont);
 
     for(unsigned i = 0; i < 8; ++i)
-        AddText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, FontStyle{}, LargeFont);
+        addText(11 + i, DrawPoint(30, 30 + i * 20), "", COLOR_GREEN, FontStyle{}, LargeFont);
 
-    LOBBYCLIENT.AddListener(this);
-    GAMECLIENT.SetInterface(this);
+    LOBBYCLIENT.addListener(this);
+    GAMECLIENT.setInterface(this);
 }
 
 dskGameLoader::~dskGameLoader()
 {
-    WINDOWMANAGER.SetCursor();
-    LOBBYCLIENT.RemoveListener(this);
-    GAMECLIENT.RemoveInterface(this);
+    WINDOWMANAGER.setCursor();
+    LOBBYCLIENT.removeListener(this);
+    GAMECLIENT.removeInterface(this);
 }
 
-void dskGameLoader::Msg_MsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
+void dskGameLoader::msgMsgBoxResult(const unsigned msgbox_id, const MsgboxResult /*mbr*/)
 {
     if(msgbox_id == 0) // Verbindung zu Server verloren?
     {
-        GAMECLIENT.Stop();
+        GAMECLIENT.stop();
 
-        if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
-            WINDOWMANAGER.Switch(std::make_unique<dskLobby>());
-        else if(loader_.getGame()->world_.IsSinglePlayer())
-            WINDOWMANAGER.Switch(std::make_unique<dskSinglePlayer>());
+        if(LOBBYCLIENT.isLoggedIn()) // steht die Lobbyverbindung noch?
+            WINDOWMANAGER.switchTo(std::make_unique<dskLobby>());
+        else if(loader_.getGame()->world_.isSinglePlayer())
+            WINDOWMANAGER.switchTo(std::make_unique<dskSinglePlayer>());
         else
-            WINDOWMANAGER.Switch(std::make_unique<dskDirectIP>());
+            WINDOWMANAGER.switchTo(std::make_unique<dskDirectIP>());
     }
 }
 
-void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
+void dskGameLoader::msgTimer(const unsigned /*ctrl_id*/)
 {
-    auto* timer = GetCtrl<ctrlTimer>(1);
-    auto* text = GetCtrl<ctrlText>(10 + position);
+    auto* timer = getCtrl<ctrlTimer>(1);
+    auto* text = getCtrl<ctrlText>(10 + position);
     using namespace std::chrono_literals;
     const auto interval = 50ms;
 
-    timer->Stop();
+    timer->stop();
 
     switch(position)
     {
         case 0: // Kartename anzeigen
-            text->SetText(GAMECLIENT.GetMapTitle());
+            text->setText(GAMECLIENT.getMapTitle());
             break;
 
         case 1: // Karte geladen
-            text->SetText(_("Map was loaded and pinned at the wall..."));
+            text->setText(_("Map was loaded and pinned at the wall..."));
             break;
 
         case 2: // Nationen ermitteln
             loader_.initNations();
 
-            text->SetText(_("Tribal chiefs assembled around the table..."));
+            text->setText(_("Tribal chiefs assembled around the table..."));
             break;
 
         case 3: // Objekte laden
@@ -94,50 +94,50 @@ void dskGameLoader::Msg_Timer(const unsigned /*ctrl_id*/)
             loader_.initTextures();
             if(!loader_.loadTextures())
             {
-                ShowErrorMsg(_("Failed to load game resources"));
+                showErrorMsg(_("Failed to load game resources"));
                 return; // Don't restart timer!
             }
 
-            text->SetText(_("Game crate was picked and spread out..."));
+            text->setText(_("Game crate was picked and spread out..."));
             break;
         }
         case 4: // Welt erstellen
             try
             {
                 // Do this here as it will init OGL
-                gameInterface = std::make_unique<dskGameInterface>(loader_.getGame(), GAMECLIENT.GetNWFInfo(),
-                                                                   GAMECLIENT.GetPlayerId());
+                gameInterface = std::make_unique<dskGameInterface>(loader_.getGame(), GAMECLIENT.getNWFInfo(),
+                                                                   GAMECLIENT.getPlayerId());
             } catch(const std::runtime_error& e)
             {
-                ShowErrorMsg(std::string(_("Failed to init GUI: ")) + e.what());
+                showErrorMsg(std::string(_("Failed to init GUI: ")) + e.what());
                 return;
             }
-            // TODO: richtige Messages senden, um das zu laden /*GetMap()->GenerateOpenGL();*/
+            // TODO: richtige Messages senden, um das zu laden /*GetMap()->generateOpenGL();*/
 
             // We are done, wait for others
-            GAMECLIENT.GameLoaded();
+            GAMECLIENT.gameLoaded();
 
-            text->SetText(_("World was put together and glued..."));
+            text->setText(_("World was put together and glued..."));
             break;
 
         case 5: // nochmal text anzeigen
-            text->SetText(_("And let's go!"));
-            text->SetTextColor(COLOR_RED);
+            text->setText(_("And let's go!"));
+            text->setTextColor(COLOR_RED);
             return;
     }
 
     ++position;
-    timer->Start(interval);
+    timer->start(interval);
 }
 
-void dskGameLoader::ShowErrorMsg(const std::string& error)
+void dskGameLoader::showErrorMsg(const std::string& error)
 {
     auto wnd = std::make_unique<iwMsgbox>(_("Error"), error, this, MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0);
-    if(IsActive())
-        WINDOWMANAGER.Show(std::move(wnd));
+    if(isActive())
+        WINDOWMANAGER.show(std::move(wnd));
     else
-        WINDOWMANAGER.ShowAfterSwitch(std::move(wnd));
-    GetCtrl<ctrlTimer>(1)->Stop();
+        WINDOWMANAGER.showAfterSwitch(std::move(wnd));
+    getCtrl<ctrlTimer>(1)->stop();
 }
 
 /**
@@ -145,16 +145,16 @@ void dskGameLoader::ShowErrorMsg(const std::string& error)
  */
 void dskGameLoader::LC_Status_Error(const std::string& error)
 {
-    ShowErrorMsg(error);
+    showErrorMsg(error);
 }
 
 void dskGameLoader::CI_GameStarted()
 {
     RTTR_Assert(gameInterface);
-    WINDOWMANAGER.Switch(std::move(gameInterface));
+    WINDOWMANAGER.switchTo(std::move(gameInterface));
 }
 
 void dskGameLoader::CI_Error(const ClientError ce)
 {
-    ShowErrorMsg(ClientErrorToStr(ce));
+    showErrorMsg(clientErrorToStr(ce));
 }

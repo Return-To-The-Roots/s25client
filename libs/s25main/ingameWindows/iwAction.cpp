@@ -46,7 +46,7 @@ enum TabID
 
 iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapPoint selectedPt,
                    const DrawPoint& mousePos, Params params, bool military_buildings)
-    : IngameWindow(CGI_ACTION, mousePos, Extent(200, 254), _("Activity window"), LOADER.GetImageN("io", 1)), gi(gi),
+    : IngameWindow(CGI_ACTION, mousePos, Extent(200, 254), _("Activity window"), LOADER.getImageN("io", 1)), gi(gi),
       gwv(gwv), selectedPt(selectedPt), mousePosAtOpen_(mousePos), activeHoveredIcon_(nullptr)
 {
     /*
@@ -76,28 +76,28 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         TAB_CHEAT   1 = Place cheat building
     */
 
-    const GamePlayer& player = gwv.GetViewer().GetPlayer();
+    const GamePlayer& player = gwv.getViewer().getPlayer();
 
     /// Haupttab
-    ctrlTab* main_tab = AddTabCtrl(0, DrawPoint(10, 20), 180);
+    ctrlTab* main_tab = addTabCtrl(0, DrawPoint(10, 20), 180);
 
     // Bau-main_tab
     if(tabs.build)
     {
-        ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 18), _("-> Build house"), TAB_BUILD);
+        ctrlGroup* group = main_tab->addTab(LOADER.getImageN("io", 18), _("-> Build house"), TAB_BUILD);
 
-        ctrlTab* build_tab = group->AddTabCtrl(1, DrawPoint(0, 45), 180);
+        ctrlTab* build_tab = group->addTabCtrl(1, DrawPoint(0, 45), 180);
 
         // Building tabs
         if(tabs.build_tabs == BuildTab::Mine) // mines
-            build_tab->AddTab(LOADER.GetImageN("io", 76), _("-> Dig mines"), int(BuildTab::Mine));
+            build_tab->addTab(LOADER.getImageN("io", 76), _("-> Dig mines"), int(BuildTab::Mine));
         else
         {
-            build_tab->AddTab(LOADER.GetImageN("io", 67), _("-> Build hut"), int(BuildTab::Hut));
+            build_tab->addTab(LOADER.getImageN("io", 67), _("-> Build hut"), int(BuildTab::Hut));
             if(tabs.build_tabs >= BuildTab::House)
-                build_tab->AddTab(LOADER.GetImageN("io", 68), _("-> Build house"), int(BuildTab::House));
+                build_tab->addTab(LOADER.getImageN("io", 68), _("-> Build house"), int(BuildTab::House));
             if(tabs.build_tabs >= BuildTab::Castle) // castle & harbor
-                build_tab->AddTab(LOADER.GetImageN("io", 69), _("-> Build castle"), int(BuildTab::Castle));
+                build_tab->addTab(LOADER.getImageN("io", 69), _("-> Build castle"), int(BuildTab::Castle));
         }
 
         // add building icons to TabCtrl. Note: None for BuildTab::Harbor (last)
@@ -115,52 +115,52 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
            {BuildingType::GoldMine, BuildingType::IronMine, BuildingType::CoalMine, BuildingType::GraniteMine}}};
 
         /// Flexible what-buildings-are-available handling
-        helpers::EnumArray<bool, BuildingType> building_available;
+        helpers::EnumArray<bool, BuildingType> buildingAvailable;
 
         // First enable all buildings
         for(const auto bld : helpers::enumRange<BuildingType>())
-            building_available[bld] = player.IsBuildingEnabled(bld);
+            buildingAvailable[bld] = player.isBuildingEnabled(bld);
 
         // Now deactivate those we don't want
 
         if(tabs.build_tabs != BuildTab::Harbor)
-            building_available[BuildingType::HarborBuilding] = false;
+            buildingAvailable[BuildingType::HarborBuilding] = false;
 
         if(!military_buildings)
         {
-            building_available[BuildingType::Barracks] = false;
-            building_available[BuildingType::Guardhouse] = false;
-            building_available[BuildingType::Watchtower] = false;
-            building_available[BuildingType::Fortress] = false;
+            buildingAvailable[BuildingType::Barracks] = false;
+            buildingAvailable[BuildingType::Guardhouse] = false;
+            buildingAvailable[BuildingType::Watchtower] = false;
+            buildingAvailable[BuildingType::Fortress] = false;
         }
 
-        if(gwv.GetWorld().GetGGS().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS))
+        if(gwv.getWorld().getGGS().isEnabled(AddonId::CHANGE_GOLD_DEPOSITS))
         {
-            building_available[BuildingType::GoldMine] = false;
-            building_available[BuildingType::Mint] = false;
+            buildingAvailable[BuildingType::GoldMine] = false;
+            buildingAvailable[BuildingType::Mint] = false;
         }
 
-        if(!player.CanBuildCatapult())
-            building_available[BuildingType::Catapult] = false;
+        if(!player.canBuildCatapult())
+            buildingAvailable[BuildingType::Catapult] = false;
 
-        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::CHARBURNER))
-            building_available[BuildingType::Charburner] = false;
+        if(!gwv.getWorld().getGGS().isEnabled(AddonId::CHARBURNER))
+            buildingAvailable[BuildingType::Charburner] = false;
 
-        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::WINE))
+        if(!gwv.getWorld().getGGS().isEnabled(AddonId::WINE))
         {
-            building_available[BuildingType::Vineyard] = false;
-            building_available[BuildingType::Winery] = false;
-            building_available[BuildingType::Temple] = false;
+            buildingAvailable[BuildingType::Vineyard] = false;
+            buildingAvailable[BuildingType::Winery] = false;
+            buildingAvailable[BuildingType::Temple] = false;
         }
 
-        if(!gwv.GetWorld().GetGGS().isEnabled(AddonId::LEATHER))
+        if(!gwv.getWorld().getGGS().isEnabled(AddonId::LEATHER))
         {
-            building_available[BuildingType::Skinner] = false;
-            building_available[BuildingType::Tannery] = false;
-            building_available[BuildingType::LeatherWorks] = false;
+            buildingAvailable[BuildingType::Skinner] = false;
+            buildingAvailable[BuildingType::Tannery] = false;
+            buildingAvailable[BuildingType::LeatherWorks] = false;
         }
 
-        const bool showBuildingRadius = gwv.GetWorld().GetGGS().isEnabled(AddonId::BUILDING_RADIUS);
+        const bool showBuildingRadius = gwv.getWorld().getGGS().isEnabled(AddonId::BUILDING_RADIUS);
         constexpr helpers::EnumArray<unsigned, BuildTab> NUM_TABS = {1, 2, 3, 1, 3};
 
         for(unsigned char i = 0; i < NUM_TABS[tabs.build_tabs]; ++i)
@@ -170,7 +170,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
 
             for(const BuildingType bld : building_icons[bt])
             {
-                if(!building_available[bld])
+                if(!buildingAvailable[bld])
                     continue;
 
                 // Baukosten im Tooltip mit anzeigen
@@ -178,7 +178,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 tooltip << _(BUILDING_NAMES[bld]);
 
                 // Show radius if any
-                const unsigned radius = showBuildingRadius ? gwv.GetBuildingRadius(bld) : 0;
+                const unsigned radius = showBuildingRadius ? gwv.getBuildingRadius(bld) : 0;
                 if(radius > 0)
                     tooltip << boost::format(_("\nRange: %1% tiles")) % radius;
 
@@ -193,20 +193,20 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
                 }
 
                 DrawPoint iconPos((k % 5) * 36, (k / 5) * 36 + 45);
-                ctrlBuildingIcon* icon = build_tab->GetGroup(static_cast<int>(bt))
-                                           ->AddBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
+                ctrlBuildingIcon* icon = build_tab->getGroup(static_cast<int>(bt))
+                                           ->addBuildingIcon(k, iconPos, bld, player.nation, 36, tooltip.str());
 
                 if(radius > 0)
                 {
-                    icon->SetOnHoverChanged([this, icon, radius](bool hovered) noexcept {
-                        if(hovered && !ShouldBeClosed())
+                    icon->setOnHoverChanged([this, icon, radius](bool hovered) noexcept {
+                        if(hovered && !shouldBeClosed())
                         {
                             this->activeHoveredIcon_ = icon;
-                            this->gwv.ShowRadiusPreview(this->selectedPt, radius);
+                            this->gwv.showRadiusPreview(this->selectedPt, radius);
                         } else if(this->activeHoveredIcon_ == icon)
                         {
                             this->activeHoveredIcon_ = nullptr;
-                            this->gwv.HideRadiusPreview();
+                            this->gwv.hideRadiusPreview();
                         }
                         // else: stale leave from a previously-hovered icon, ignore
                     });
@@ -218,54 +218,54 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
             building_tab_heights[static_cast<int>(bt)] = (k / 5 + ((k % 5 != 0) ? 1 : 0)) * 36 + 150;
         }
 
-        build_tab->SetSelection(0, true);
+        build_tab->setSelection(0, true);
     }
 
     // Wenn es einen Flaggen-main_tab gibt, dann entsprechend die Buttons anordnen, wie sie gebraucht werden
     if(tabs.flag)
     {
-        ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 70), _("Erect flag"), TAB_FLAG);
+        ctrlGroup* group = main_tab->addTab(LOADER.getImageN("io", 70), _("Erect flag"), TAB_FLAG);
 
         switch(get<FlagType>(params))
         {
             case FlagType::Normal:
             {
-                group->AddImageButton(1, DrawPoint(0, 45), Extent(45, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 65), _("Build road"));
-                group->AddImageButton(3, DrawPoint(45, 45), Extent(45, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 118), _("Pull down flag"));
-                group->AddImageButton(4, DrawPoint(90, 45), Extent(45, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 20), _("Call in geologist"));
-                group->AddImageButton(5, DrawPoint(135, 45), Extent(45, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 96), _("Send out scout"));
+                group->addImageButton(1, DrawPoint(0, 45), Extent(45, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 65), _("Build road"));
+                group->addImageButton(3, DrawPoint(45, 45), Extent(45, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 118), _("Pull down flag"));
+                group->addImageButton(4, DrawPoint(90, 45), Extent(45, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 20), _("Call in geologist"));
+                group->addImageButton(5, DrawPoint(135, 45), Extent(45, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 96), _("Send out scout"));
             }
             break;
             case FlagType::WaterFlag:
             {
-                group->AddImageButton(1, DrawPoint(0, 45), Extent(36, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 65), _("Build road"));
-                group->AddImageButton(2, DrawPoint(36, 45), Extent(36, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 95), _("Build waterway"));
-                group->AddImageButton(3, DrawPoint(72, 45), Extent(36, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 118), _("Pull down flag"));
-                group->AddImageButton(4, DrawPoint(108, 45), Extent(36, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 20), _("Call in geologist"));
-                group->AddImageButton(5, DrawPoint(144, 45), Extent(36, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 96), _("Send out scout"));
+                group->addImageButton(1, DrawPoint(0, 45), Extent(36, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 65), _("Build road"));
+                group->addImageButton(2, DrawPoint(36, 45), Extent(36, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 95), _("Build waterway"));
+                group->addImageButton(3, DrawPoint(72, 45), Extent(36, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 118), _("Pull down flag"));
+                group->addImageButton(4, DrawPoint(108, 45), Extent(36, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 20), _("Call in geologist"));
+                group->addImageButton(5, DrawPoint(144, 45), Extent(36, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 96), _("Send out scout"));
             }
             break;
             case FlagType::HQ:
             {
-                group->AddImageButton(1, DrawPoint(0, 45), Extent(180, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 65), _("Build road"));
+                group->addImageButton(1, DrawPoint(0, 45), Extent(180, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 65), _("Build road"));
             }
             break;
             case FlagType::Storehouse:
             {
-                group->AddImageButton(1, DrawPoint(0, 45), Extent(90, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 65), _("Build road"));
-                group->AddImageButton(3, DrawPoint(90, 45), Extent(90, 36), TextureColor::Grey,
-                                      LOADER.GetImageN("io", 118), _("Demolish house"));
+                group->addImageButton(1, DrawPoint(0, 45), Extent(90, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 65), _("Build road"));
+                group->addImageButton(3, DrawPoint(90, 45), Extent(90, 36), TextureColor::Grey,
+                                      LOADER.getImageN("io", 118), _("Demolish house"));
             }
             break;
         }
@@ -274,7 +274,7 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
     // Flagge Setzen-main_tab
     if(tabs.setflag)
     {
-        ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 45), _("Erect flag"), TAB_SETFLAG);
+        ctrlGroup* group = main_tab->addTab(LOADER.getImageN("io", 45), _("Erect flag"), TAB_SETFLAG);
 
         unsigned nr = 70;
         if(get<FlagType>(params) == FlagType::WaterFlag)
@@ -283,43 +283,43 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         // Straße aufwerten ggf anzeigen
         Extent btSize(180, 36);
         unsigned btPosX = 90;
-        AddUpgradeRoad(group, btPosX, btSize.x);
+        addUpgradeRoad(group, btPosX, btSize.x);
 
-        group->AddImageButton(1, DrawPoint(0, 45), btSize, TextureColor::Grey, LOADER.GetImageN("io", nr),
+        group->addImageButton(1, DrawPoint(0, 45), btSize, TextureColor::Grey, LOADER.getImageN("io", nr),
                               _("Erect flag"));
     }
 
     // Cut-main_tab
     if(tabs.cutroad)
     {
-        ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 19), _("Dig up road"), TAB_CUTROAD);
+        ctrlGroup* group = main_tab->addTab(LOADER.getImageN("io", 19), _("Dig up road"), TAB_CUTROAD);
 
         // Straße aufwerten ggf anzeigen
         Extent btSize(180, 36);
         unsigned btPosX = 0;
         if(tabs.upgradeRoad)
-            AddUpgradeRoad(group, btPosX, btSize.x);
+            addUpgradeRoad(group, btPosX, btSize.x);
 
-        group->AddImageButton(1, DrawPoint(btPosX, 45), btSize, TextureColor::Grey, LOADER.GetImageN("io", 32),
+        group->addImageButton(1, DrawPoint(btPosX, 45), btSize, TextureColor::Grey, LOADER.getImageN("io", 32),
                               _("Dig up road"));
     }
 
     if(tabs.attack)
     {
-        ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 98), _("Attack options"), TAB_ATTACK);
+        ctrlGroup* group = main_tab->addTab(LOADER.getImageN("io", 98), _("Attack options"), TAB_ATTACK);
         available_soldiers_count = get<SoldierCount>(params);
-        AddAttackControls(group, available_soldiers_count);
+        addAttackControls(group, available_soldiers_count);
         selected_soldiers_count = 1;
     }
 
     if(tabs.sea_attack)
     {
-        ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 177), _("Attack options"), TAB_SEAATTACK);
+        ctrlGroup* group = main_tab->addTab(LOADER.getImageN("io", 177), _("Attack options"), TAB_SEAATTACK);
 
         selected_soldiers_count_sea = 1;
-        available_soldiers_count_sea = gwv.GetViewer().GetNumSoldiersForSeaAttack(selectedPt);
+        available_soldiers_count_sea = gwv.getViewer().getNumSoldiersForSeaAttack(selectedPt);
 
-        AddAttackControls(group, available_soldiers_count_sea);
+        addAttackControls(group, available_soldiers_count_sea);
     }
 
     // Beobachten-main_tab
@@ -328,178 +328,178 @@ iwAction::iwAction(GameInterface& gi, GameWorldView& gwv, const Tabs& tabs, MapP
         if(gi.GI_GetCheats().canPlaceCheatBuilding(selectedPt))
         {
             constexpr auto buildImgId = 18;
-            auto* buildImg = LOADER.GetImageN("io", buildImgId);
-            ctrlGroup* group = main_tab->AddTab(buildImg, _("Build headquarters"), TAB_CHEAT);
-            group->AddImageButton(1, DrawPoint{0, 45}, Extent{180, 36}, TextureColor::Grey, buildImg,
+            auto* buildImg = LOADER.getImageN("io", buildImgId);
+            ctrlGroup* group = main_tab->addTab(buildImg, _("Build headquarters"), TAB_CHEAT);
+            group->addImageButton(1, DrawPoint{0, 45}, Extent{180, 36}, TextureColor::Grey, buildImg,
                                   _("Build headquarters"));
         }
 
-        ctrlGroup* group = main_tab->AddTab(LOADER.GetImageN("io", 36), _("Display options"), TAB_WATCH);
+        ctrlGroup* group = main_tab->addTab(LOADER.getImageN("io", 36), _("Display options"), TAB_WATCH);
         const Extent btSize(45, 36);
         DrawPoint curPos(0, 45);
-        group->AddImageButton(1, curPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 108),
+        group->addImageButton(1, curPos, btSize, TextureColor::Grey, LOADER.getImageN("io", 108),
                               _("Observation window"));
         curPos.x += btSize.x;
-        group->AddImageButton(2, curPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 179), _("House names"));
+        group->addImageButton(2, curPos, btSize, TextureColor::Grey, LOADER.getImageN("io", 179), _("House names"));
         curPos.x += btSize.x;
-        group->AddImageButton(3, curPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 180),
+        group->addImageButton(3, curPos, btSize, TextureColor::Grey, LOADER.getImageN("io", 180),
                               _("Go to headquarters"));
         curPos.x += btSize.x;
-        group->AddImageButton(4, curPos, btSize, TextureColor::Grey, LOADER.GetImageN("io", 107),
+        group->addImageButton(4, curPos, btSize, TextureColor::Grey, LOADER.getImageN("io", 107),
                               _("Notify allies of this location"));
     }
 
-    main_tab->SetSelection(0, true);
+    main_tab->setSelection(0, true);
 
-    DrawPoint adjPos = GetPos();
-    DrawPoint outerPt = GetPos() + GetSize();
-    if(outerPt.x > static_cast<int>(VIDEODRIVER.GetRenderSize().x))
-        adjPos.x = mousePos.x - GetSize().x - 40;
-    if(outerPt.y > static_cast<int>(VIDEODRIVER.GetRenderSize().y))
-        adjPos.y = mousePos.y - GetSize().y - 40;
-    if(adjPos != GetPos())
-        SetPos(adjPos);
+    DrawPoint adjPos = getPos();
+    DrawPoint outerPt = getPos() + getSize();
+    if(outerPt.x > static_cast<int>(VIDEODRIVER.getRenderSize().x))
+        adjPos.x = mousePos.x - getSize().x - 40;
+    if(outerPt.y > static_cast<int>(VIDEODRIVER.getRenderSize().y))
+        adjPos.y = mousePos.y - getSize().y - 40;
+    if(adjPos != getPos())
+        setPos(adjPos);
 
-    VIDEODRIVER.SetMousePos(GetDrawPos() + DrawPoint(20, 75));
+    VIDEODRIVER.setMousePos(getDrawPos() + DrawPoint(20, 75));
 }
 
-void iwAction::AddUpgradeRoad(ctrlGroup* group, unsigned& /*x*/, unsigned& width)
+void iwAction::addUpgradeRoad(ctrlGroup* group, unsigned& /*x*/, unsigned& width)
 {
     RTTR_Assert(group);
 
-    if(gwv.GetWorld().GetGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
+    if(gwv.getWorld().getGGS().isEnabled(AddonId::MANUAL_ROAD_ENLARGEMENT))
     {
         width = 90;
-        group->AddImageButton(2, DrawPoint(90, 45), Extent(width, 36), TextureColor::Grey, LOADER.GetImageN("io", 44),
+        group->addImageButton(2, DrawPoint(90, 45), Extent(width, 36), TextureColor::Grey, LOADER.getImageN("io", 44),
                               _("Upgrade to donkey road"));
     }
 }
 
-bool iwAction::DoUpgradeRoad()
+bool iwAction::doUpgradeRoad()
 {
-    Direction flag_dir;
-    const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
+    Direction flagDir;
+    const noFlag* flag = gwv.getWorld().getRoadFlag(selectedPt, flagDir);
     if(flag)
-        return GAMECLIENT.UpgradeRoad(flag->GetPos(), flag_dir);
+        return GAMECLIENT.UpgradeRoad(flag->getPos(), flagDir);
     else
         return true;
 }
 
 /// Fügt Angriffs-Steuerelemente für bestimmte Gruppe hinzu
-void iwAction::AddAttackControls(ctrlGroup* group, const unsigned attackers_count)
+void iwAction::addAttackControls(ctrlGroup* group, const unsigned attackersCount)
 {
     // Verfügbare Soldatenzahl steht in params, wenns keine gibt, einfach Meldung anzeigen: "Angriff nicht möglich!"
-    if(attackers_count == 0)
+    if(attackersCount == 0)
     {
         // Angriff nicht  möglich!
-        group->AddText(1, DrawPoint(90, 56), _("Attack not possible."), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+        group->addText(1, DrawPoint(90, 56), _("Attack not possible."), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     } else
     {
         selected_soldiers_count = 1;
 
         // Minus und Plus - Button
-        group->AddImageButton(1, DrawPoint(3, 49), Extent(26, 32), TextureColor::Grey, LOADER.GetImageN("io", 139),
+        group->addImageButton(1, DrawPoint(3, 49), Extent(26, 32), TextureColor::Grey, LOADER.getImageN("io", 139),
                               _("Less attackers"));
-        group->AddImageButton(2, DrawPoint(89, 49), Extent(26, 32), TextureColor::Grey, LOADER.GetImageN("io", 138),
+        group->addImageButton(2, DrawPoint(89, 49), Extent(26, 32), TextureColor::Grey, LOADER.getImageN("io", 138),
                               _("More attackers"));
 
         // Starke/Schwache Soldaten
-        ctrlOptionGroup* ogroup = group->AddOptionGroup(3, GroupSelectType::Illuminate);
-        ogroup->AddImageButton(0, DrawPoint(146, 49), Extent(30, 33), TextureColor::Grey, LOADER.GetImageN("io", 31),
+        ctrlOptionGroup* ogroup = group->addOptionGroup(3, GroupSelectType::Illuminate);
+        ogroup->addImageButton(0, DrawPoint(146, 49), Extent(30, 33), TextureColor::Grey, LOADER.getImageN("io", 31),
                                _("Weak attackers"));
-        ogroup->AddImageButton(1, DrawPoint(117, 49), Extent(30, 33), TextureColor::Grey, LOADER.GetImageN("io", 30),
+        ogroup->addImageButton(1, DrawPoint(117, 49), Extent(30, 33), TextureColor::Grey, LOADER.getImageN("io", 30),
                                _("Strong attackers"));
         // standardmäßig starke Soldaten
-        ogroup->SetSelection(1);
+        ogroup->setSelection(1);
 
         // Schnellauswahl-Buttons
-        unsigned buttons_count = (attackers_count > 3) ? 4 : attackers_count;
-        unsigned short button_width = 112 / buttons_count;
+        unsigned buttonsCount = (attackersCount > 3) ? 4 : attackersCount;
+        unsigned short buttonWidth = 112 / buttonsCount;
 
-        for(unsigned i = 0; i < buttons_count; ++i)
-            group->AddImageButton(10 + i, DrawPoint(3 + i * button_width, 83), Extent(button_width, 32),
-                                  TextureColor::Grey, LOADER.GetImageN("io", 204 + i), _("Number of attackers"));
+        for(unsigned i = 0; i < buttonsCount; ++i)
+            group->addImageButton(10 + i, DrawPoint(3 + i * buttonWidth, 83), Extent(buttonWidth, 32),
+                                  TextureColor::Grey, LOADER.getImageN("io", 204 + i), _("Number of attackers"));
 
         // Angriffsbutton
-        group->AddImageButton(4, DrawPoint(117, 83), Extent(59, 32), TextureColor::Red1, LOADER.GetImageN("io", 25),
+        group->addImageButton(4, DrawPoint(117, 83), Extent(59, 32), TextureColor::Red1, LOADER.getImageN("io", 25),
                               _("Attack!"));
     }
 }
 
-void iwAction::Close()
+void iwAction::close()
 {
-    if(ShouldBeClosed())
+    if(shouldBeClosed())
         return;
     activeHoveredIcon_ = nullptr;
-    gwv.HideRadiusPreview();
-    IngameWindow::Close();
+    gwv.hideRadiusPreview();
+    IngameWindow::close();
     if(mousePosAtOpen_.isValid())
-        VIDEODRIVER.SetMousePos(mousePosAtOpen_);
+        VIDEODRIVER.setMousePos(mousePosAtOpen_);
 }
 
-void iwAction::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)
+void iwAction::msgGroupButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)
 {
-    switch(GetCtrl<ctrlTab>(0)->GetCurrentTab())
+    switch(getCtrl<ctrlTab>(0)->getCurrentTab())
     {
         default: break;
 
         case TAB_ATTACK:
         {
-            Msg_ButtonClick_TabAttack(ctrl_id);
+            msgButtonClickTabAttack(ctrl_id);
         }
         break;
         case TAB_SEAATTACK:
         {
-            Msg_ButtonClick_TabSeaAttack(ctrl_id);
+            msgButtonClickTabSeaAttack(ctrl_id);
         }
         break;
 
         case TAB_FLAG:
         {
-            Msg_ButtonClick_TabFlag(ctrl_id);
+            msgButtonClickTabFlag(ctrl_id);
         }
         break;
 
         case TAB_BUILD:
         {
-            Msg_ButtonClick_TabBuild(ctrl_id);
+            msgButtonClickTabBuild(ctrl_id);
         }
         break;
 
         case TAB_SETFLAG:
         {
-            Msg_ButtonClick_TabSetFlag(ctrl_id);
+            msgButtonClickTabSetFlag(ctrl_id);
         }
         break;
 
         case TAB_CUTROAD:
         {
-            Msg_ButtonClick_TabCutRoad(ctrl_id);
+            msgButtonClickTabCutRoad(ctrl_id);
         }
         break;
 
         case TAB_WATCH:
         {
-            Msg_ButtonClick_TabWatch(ctrl_id);
+            msgButtonClickTabWatch(ctrl_id);
         }
         break;
 
         case TAB_CHEAT:
         {
-            Msg_ButtonClick_TabCheat(ctrl_id);
+            msgButtonClickTabCheat(ctrl_id);
         }
         break;
     }
 }
 
-void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id)
+void iwAction::msgTabChange(const unsigned ctrl_id, const unsigned short tabId)
 {
     switch(ctrl_id)
     {
         case 0: // Haupttabs
         {
             unsigned short height = 0;
-            switch(tab_id)
+            switch(tabId)
             {
                 case TAB_FLAG:
                 case TAB_CUTROAD:
@@ -509,7 +509,7 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
                 case TAB_BUILD:
                 {
                     height = building_tab_heights
-                      [GetCtrl<ctrlTab>(0)->GetGroup(TAB_BUILD)->GetCtrl<ctrlTab>(1)->GetCurrentTab()];
+                      [getCtrl<ctrlTab>(0)->getGroup(TAB_BUILD)->getCtrl<ctrlTab>(1)->getCurrentTab()];
                 }
                 break;
                 case TAB_ATTACK:
@@ -530,46 +530,46 @@ void iwAction::Msg_TabChange(const unsigned ctrl_id, const unsigned short tab_id
                 break;
             }
 
-            SetHeight(height);
+            setHeight(height);
         }
         break;
     }
 }
 
-void iwAction::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
+void iwAction::msgGroupTabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tabId)
 {
     switch(ctrl_id)
     {
         case 1: // Gebäudetabs
         {
-            SetHeight(building_tab_heights[tab_id]);
+            setHeight(building_tab_heights[tabId]);
         }
         break;
     }
 }
 
-void iwAction::Msg_PaintAfter()
+void iwAction::msgPaintAfter()
 {
-    IngameWindow::Msg_PaintAfter();
+    IngameWindow::msgPaintAfter();
 
-    auto* tab = GetCtrl<ctrlTab>(0);
+    auto* tab = getCtrl<ctrlTab>(0);
     if(tab)
     {
         static boost::format fmt("%u/%u");
         // Anzeige Soldaten/mögliche Soldatenanzahl bei Angriffstab
-        if(tab->GetCurrentTab() == TAB_ATTACK && available_soldiers_count > 0)
+        if(tab->getCurrentTab() == TAB_ATTACK && available_soldiers_count > 0)
         {
             fmt % selected_soldiers_count % available_soldiers_count;
-            LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
-        } else if(tab->GetCurrentTab() == TAB_SEAATTACK && available_soldiers_count_sea > 0)
+            LargeFont->draw(getDrawPos() + DrawPoint(67, 79), fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
+        } else if(tab->getCurrentTab() == TAB_SEAATTACK && available_soldiers_count_sea > 0)
         {
             fmt % selected_soldiers_count_sea % available_soldiers_count_sea;
-            LargeFont->Draw(GetDrawPos() + DrawPoint(67, 79), fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
+            LargeFont->draw(getDrawPos() + DrawPoint(67, 79), fmt.str(), FontStyle::CENTER, COLOR_YELLOW);
         }
     }
 }
 
-void iwAction::Msg_ButtonClick_TabAttack(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabAttack(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -598,15 +598,15 @@ void iwAction::Msg_ButtonClick_TabAttack(const unsigned ctrl_id)
         break;
         case 4: // Angriff!
         {
-            auto* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_ATTACK)->GetCtrl<ctrlOptionGroup>(3);
-            if(GAMECLIENT.Attack(selectedPt, selected_soldiers_count, (ogroup->GetSelection() == 1)))
-                Close();
+            auto* ogroup = getCtrl<ctrlTab>(0)->getGroup(TAB_ATTACK)->getCtrl<ctrlOptionGroup>(3);
+            if(GAMECLIENT.Attack(selectedPt, selected_soldiers_count, (ogroup->getSelection() == 1)))
+                close();
         }
         break;
     }
 }
 
-void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabSeaAttack(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
@@ -635,94 +635,94 @@ void iwAction::Msg_ButtonClick_TabSeaAttack(const unsigned ctrl_id)
         break;
         case 4: // Angriff!
         {
-            auto* ogroup = GetCtrl<ctrlTab>(0)->GetGroup(TAB_SEAATTACK)->GetCtrl<ctrlOptionGroup>(3);
-            if(GAMECLIENT.SeaAttack(selectedPt, selected_soldiers_count_sea, (ogroup->GetSelection() == 1)))
-                Close();
+            auto* ogroup = getCtrl<ctrlTab>(0)->getGroup(TAB_SEAATTACK)->getCtrl<ctrlOptionGroup>(3);
+            if(GAMECLIENT.SeaAttack(selectedPt, selected_soldiers_count_sea, (ogroup->getSelection() == 1)))
+                close();
         }
         break;
     }
 }
 
-void iwAction::Msg_ButtonClick_TabFlag(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabFlag(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 1: // Straße bauen
         {
             gi.GI_StartRoadBuilding(selectedPt, false);
-            Close();
+            close();
         }
         break;
         case 2: // Wasserstraße bauen
         {
             gi.GI_StartRoadBuilding(selectedPt, true);
-            Close();
+            close();
         }
         break;
         case 3: // Flagge abreißen
         {
-            const GameWorldBase& world = gwv.GetWorld();
-            NodalObjectType nop = (world.GetNO(world.GetNeighbour(selectedPt, Direction::NorthWest)))->GetType();
+            const GameWorldBase& world = gwv.getWorld();
+            NodalObjectType nop = (world.getNO(world.getNeighbour(selectedPt, Direction::NorthWest)))->getType();
             // Haben wir ne Baustelle/Gebäude dran?
             if(nop == NodalObjectType::Building || nop == NodalObjectType::Buildingsite)
             {
                 // Abreißen?
                 const auto* building =
-                  world.GetSpecObj<noBaseBuilding>(world.GetNeighbour(selectedPt, Direction::NorthWest));
+                  world.getSpecObj<noBaseBuilding>(world.getNeighbour(selectedPt, Direction::NorthWest));
 
                 // Militärgebäude?
-                if(building->GetGOT() == GO_Type::NobMilitary)
+                if(building->getGOT() == GO_Type::NobMilitary)
                 {
                     // Darf das Gebäude abgerissen werden?
-                    if(!static_cast<const nobMilitary*>(building)->IsDemolitionAllowed())
+                    if(!static_cast<const nobMilitary*>(building)->isDemolitionAllowed())
                     {
                         // Nein, dann Messagebox anzeigen
-                        iwMilitaryBuilding::DemolitionNotAllowed(world.GetGGS());
+                        iwMilitaryBuilding::demolitionNotAllowed(world.getGGS());
                         break;
                     }
                 }
 
-                WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, building, true));
-                DisableMousePosResetOnClose();
-                Close();
+                WINDOWMANAGER.show(std::make_unique<iwDemolishBuilding>(gwv, building, true));
+                disableMousePosResetOnClose();
+                close();
             } else
             {
                 if(GAMECLIENT.DestroyFlag(selectedPt))
-                    Close();
+                    close();
             }
         }
         break;
         case 4: // Geologen rufen
         {
             if(GAMECLIENT.CallSpecialist(selectedPt, Job::Geologist))
-                Close();
+                close();
         }
         break;
         case 5: // Späher rufen
         {
             if(GAMECLIENT.CallSpecialist(selectedPt, Job::Scout))
-                Close();
+                close();
         }
         break;
     }
 }
 
-void iwAction::Msg_ButtonClick_TabBuild(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabBuild(const unsigned ctrl_id)
 {
     // Klick auf Gebäudebauicon
-    if(GAMECLIENT.SetBuildingSite(selectedPt, GetCtrl<ctrlTab>(0)
-                                                ->GetGroup(TAB_BUILD)
-                                                ->GetCtrl<ctrlTab>(1)
-                                                ->GetCurrentGroup()
-                                                ->GetCtrl<ctrlBuildingIcon>(ctrl_id)
-                                                ->GetType()))
+    if(GAMECLIENT.SetBuildingSite(selectedPt, getCtrl<ctrlTab>(0)
+                                                ->getGroup(TAB_BUILD)
+                                                ->getCtrl<ctrlTab>(1)
+                                                ->getCurrentGroup()
+                                                ->getCtrl<ctrlBuildingIcon>(ctrl_id)
+                                                ->getType()))
     {
         // Fenster schließen
-        Close();
+        close();
     }
 }
 
-void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabSetFlag(const unsigned ctrl_id)
 {
     bool success = false;
     switch(ctrl_id)
@@ -731,74 +731,74 @@ void iwAction::Msg_ButtonClick_TabSetFlag(const unsigned ctrl_id)
             success = GAMECLIENT.SetFlag(selectedPt);
             break;
         case 2: // Weg aufwerten
-            success = DoUpgradeRoad();
+            success = doUpgradeRoad();
             break;
     }
 
     if(success)
-        Close();
+        close();
 }
 
-void iwAction::Msg_ButtonClick_TabCutRoad(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabCutRoad(const unsigned ctrl_id)
 {
     bool success = true;
     switch(ctrl_id)
     {
         case 1: // Straße abreißen
         {
-            Direction flag_dir;
-            const noFlag* flag = gwv.GetWorld().GetRoadFlag(selectedPt, flag_dir);
+            Direction flagDir;
+            const noFlag* flag = gwv.getWorld().getRoadFlag(selectedPt, flagDir);
             if(flag)
-                success = GAMECLIENT.DestroyRoad(flag->GetPos(), flag_dir);
+                success = GAMECLIENT.DestroyRoad(flag->getPos(), flagDir);
         }
         break;
         case 2: // Straße aufwerten
-            success = DoUpgradeRoad();
+            success = doUpgradeRoad();
             break;
     }
 
     if(success)
-        Close();
+        close();
 }
 
-void iwAction::Msg_ButtonClick_TabWatch(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabWatch(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 1:
             // TODO: bestimen, was an der position selected ist
-            WINDOWMANAGER.Show(std::make_unique<iwObservate>(gwv, selectedPt));
-            DisableMousePosResetOnClose();
-            Close();
+            WINDOWMANAGER.show(std::make_unique<iwObservate>(gwv, selectedPt));
+            disableMousePosResetOnClose();
+            close();
             break;
         case 2: // Häusernamen/Prozent anmachen
-            gwv.ToggleShowNamesAndProductivity();
-            Close();
+            gwv.toggleShowNamesAndProductivity();
+            close();
             break;
         case 3: // zum HQ
-            gwv.MoveToMapPt(gwv.GetViewer().GetPlayer().GetHQPos());
-            DisableMousePosResetOnClose();
-            Close();
+            gwv.moveToMapPt(gwv.getViewer().getPlayer().getHQPos());
+            disableMousePosResetOnClose();
+            close();
             break;
         case 4:
             if(GAMECLIENT.NotifyAlliesOfLocation(selectedPt))
-                Close();
+                close();
             break;
     }
 }
 
-void iwAction::Msg_ButtonClick_TabCheat(const unsigned ctrl_id)
+void iwAction::msgButtonClickTabCheat(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 1:
-            gi.GI_GetCheats().placeCheatBuilding(selectedPt, gwv.GetViewer().GetPlayer());
-            Close();
+            gi.GI_GetCheats().placeCheatBuilding(selectedPt, gwv.getViewer().getPlayer());
+            close();
             break;
     }
 }
 
-void iwAction::DisableMousePosResetOnClose()
+void iwAction::disableMousePosResetOnClose()
 {
-    mousePosAtOpen_ = DrawPoint::Invalid();
+    mousePosAtOpen_ = DrawPoint::invalid();
 }

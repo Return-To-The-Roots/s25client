@@ -24,7 +24,7 @@ Playlist::Playlist(std::vector<std::string> songs, unsigned numRepeats, bool ran
         throw std::invalid_argument("Empty song passed");
 }
 
-void Playlist::Prepare()
+void Playlist::prepare()
 {
     currentSong_.clear();
     order_.clear();
@@ -39,7 +39,7 @@ void Playlist::Prepare()
         std::shuffle(order_.begin(), order_.end(), std::mt19937(std::random_device()()));
 }
 
-bool Playlist::SaveAs(const boost::filesystem::path& filepath) const
+bool Playlist::saveAs(const boost::filesystem::path& filepath) const
 {
     s25util::ClassicImbuedStream<bnw::ofstream> out(filepath);
     if(!out)
@@ -54,7 +54,7 @@ bool Playlist::SaveAs(const boost::filesystem::path& filepath) const
     return static_cast<bool>(out);
 }
 
-bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
+bool Playlist::load(Log& logger, const boost::filesystem::path& filepath)
 {
     songs_.clear();
     order_.clear();
@@ -67,14 +67,14 @@ bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
     if(!in)
         return false;
 
-    std::string line, random_str;
+    std::string line, randomStr;
     if(!std::getline(in, line))
         return false;
     s25util::ClassicImbuedStream<std::istringstream> sline(line);
-    if(!(sline >> numRepeats_ >> random_str))
+    if(!(sline >> numRepeats_ >> randomStr))
         return false;
 
-    random_ = (random_str == "random_playback" || random_str == "random");
+    random_ = (randomStr == "random_playback" || randomStr == "random");
 
     while(std::getline(in, line))
     {
@@ -86,10 +86,10 @@ bool Playlist::Load(Log& logger, const boost::filesystem::path& filepath)
     return in.eof();
 }
 
-void Playlist::SetStartSong(const unsigned id)
+void Playlist::setStartSong(const unsigned id)
 {
     if(order_.empty())
-        Prepare();
+        prepare();
     const auto itEl = helpers::find(order_, id);
     if(itEl != order_.end())
         std::swap(order_.front(), *itEl);
@@ -99,7 +99,7 @@ const std::string& Playlist::getNextSong()
 {
     // Playlist not started, yet or full played?
     if(order_.empty())
-        Prepare();
+        prepare();
 
     // Still no songs? (I.e. empty playlist)
     if(order_.empty())

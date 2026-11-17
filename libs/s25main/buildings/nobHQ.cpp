@@ -17,18 +17,18 @@ nobHQ::nobHQ(const MapPoint pos, const unsigned char player, const Nation nation
     : nobBaseWarehouse(BuildingType::Headquarters, pos, player, nation), isTent_(isTent)
 {
     // Take 1 as the reserve per rank
-    for(unsigned i = 0; i <= world->GetGGS().GetMaxMilitaryRank(); ++i)
+    for(unsigned i = 0; i <= world->getGGS().getMaxMilitaryRank(); ++i)
     {
         reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = 1;
-        RefreshReserve(i);
+        refreshReserve(i);
     }
 
     // Evtl. liegen am Anfang Waffen im HQ, sodass rekrutiert werden muss
-    TryRecruiting();
+    tryRecruiting();
 
     // ins Militärquadrat einfügen
-    world->GetMilitarySquares().Add(this);
-    world->RecalcTerritory(*this, TerritoryChangeReason::Build);
+    world->getMilitarySquares().add(this);
+    world->recalcTerritory(*this, TerritoryChangeReason::Build);
 }
 
 GoodsAndPeopleCounts nobHQ::getStartInventory(StartWares setting)
@@ -319,52 +319,52 @@ GoodsAndPeopleCounts nobHQ::getStartInventory(StartWares setting)
 
 void nobHQ::addStartWares()
 {
-    AddToInventory(getStartInventory(world->GetGGS().startWares), true);
+    addToInventory(getStartInventory(world->getGGS().startWares), true);
 }
 
 void nobHQ::DestroyBuilding()
 {
     nobBaseWarehouse::DestroyBuilding();
     // Wieder aus dem Militärquadrat rauswerfen
-    world->GetMilitarySquares().Remove(this);
+    world->getMilitarySquares().remove(this);
     // Recalc territory. AFTER calling base destroy as otherwise figures might get stuck here
-    world->RecalcTerritory(*this, TerritoryChangeReason::Destroyed);
+    world->recalcTerritory(*this, TerritoryChangeReason::Destroyed);
 }
 
-void nobHQ::Serialize(SerializedGameData& sgd) const
+void nobHQ::serialize(SerializedGameData& sgd) const
 {
-    nobBaseWarehouse::Serialize(sgd);
-    sgd.PushBool(isTent_);
+    nobBaseWarehouse::serialize(sgd);
+    sgd.pushBool(isTent_);
 }
 
-nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id), isTent_(sgd.PopBool())
+nobHQ::nobHQ(SerializedGameData& sgd, const unsigned obj_id) : nobBaseWarehouse(sgd, obj_id), isTent_(sgd.popBool())
 {
-    world->GetMilitarySquares().Add(this);
+    world->getMilitarySquares().add(this);
 }
 
-void nobHQ::Draw(DrawPoint drawPt)
+void nobHQ::draw(DrawPoint drawPt)
 {
     if(isTent_)
         LOADER.building_cache[nation][BuildingType::Headquarters].skeleton.draw(drawPt);
     else
     {
-        DrawBaseBuilding(drawPt);
+        drawBaseBuilding(drawPt);
 
         // Draw at most 4 flags
         const unsigned numSoldiers =
-          std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), GetNumSoldiers());
+          std::accumulate(reserve_soldiers_available.begin(), reserve_soldiers_available.end(), getNumSoldiers());
         DrawPoint flagsPos = drawPt + TROOPS_FLAG_HQ_OFFSET[nation];
         for(auto i = std::min<unsigned>(numSoldiers, 4); i; --i)
         {
             glArchivItem_Bitmap_Player* bitmap =
-              LOADER.GetMapPlayerImage(3162 + GAMECLIENT.GetGlobalAnimation(8, 80, 40, GetX() * GetY() * i));
+              LOADER.getMapPlayerImage(3162 + GAMECLIENT.getGlobalAnimation(8, 80, 40, getX() * getY() * i));
             if(bitmap)
-                bitmap->drawForPlayer(flagsPos + DrawPoint(0, (i - 1) * 3), world->GetPlayer(player).color);
+                bitmap->drawForPlayer(flagsPos + DrawPoint(0, (i - 1) * 3), world->getPlayer(player).color);
         }
     }
 }
 
-void nobHQ::HandleEvent(const unsigned id)
+void nobHQ::handleEvent(const unsigned id)
 {
-    HandleBaseEvent(id);
+    handleBaseEvent(id);
 }

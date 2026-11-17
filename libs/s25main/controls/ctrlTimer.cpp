@@ -13,13 +13,13 @@ ctrlTimer::ctrlTimer(Window* parent, unsigned id, std::chrono::milliseconds time
 /**
  *  start the timer
  */
-void ctrlTimer::Start(std::chrono::milliseconds timeout)
+void ctrlTimer::start(std::chrono::milliseconds timeout)
 {
     timeout_ = timeout;
-    Start();
+    start();
 }
 
-void ctrlTimer::Start()
+void ctrlTimer::start()
 {
     timer_.restart();
 }
@@ -27,14 +27,14 @@ void ctrlTimer::Start()
 /**
  *  stop the timer
  */
-void ctrlTimer::Stop()
+void ctrlTimer::stop()
 {
     timer_.stop();
 }
 
-void ctrlTimer::Msg_PaintBefore()
+void ctrlTimer::msgPaintBefore()
 {
-    Window::Msg_PaintBefore();
+    Window::msgPaintBefore();
 
     if(!timer_.isRunning())
         return;
@@ -42,6 +42,6 @@ void ctrlTimer::Msg_PaintBefore()
     if(timer_.getElapsed() >= timeout_)
     {
         timer_.restart(); // Do this first so parent can stop or change duration
-        GetParent()->Msg_Timer(GetID());
+        getParent()->msgTimer(getID());
     }
 }

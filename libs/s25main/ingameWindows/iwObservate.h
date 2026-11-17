@@ -37,13 +37,13 @@ public:
     iwObservate(GameWorldView& gwv, MapPoint selectedPt);
 
 private:
-    void DrawBackground() override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
-    bool Msg_RightDown(const MouseCoords& mc) override;
-    bool Msg_RightUp(const MouseCoords& mc) override;
-    void Msg_Timer(unsigned ctrl_id) override;
+    void drawBackground() override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
+    bool msgRightDown(const MouseCoords& mc) override;
+    bool msgRightUp(const MouseCoords& mc) override;
+    void msgTimer(unsigned ctrl_id) override;
     /// Move view to the object we currently follow, return true if it can still be found
-    bool MoveToFollowedObj();
-    bool MoveToFollowedObj(MapPoint ptToCheck);
+    bool moveToFollowedObj();
+    bool moveToFollowedObj(MapPoint ptToCheck);
 };

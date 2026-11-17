@@ -12,14 +12,14 @@
 iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* wh)
     : iwBaseWarehouse(gwv, gcFactory, wh)
 {
-    SetTitle(_("Headquarters"));
+    setTitle(_("Headquarters"));
 
     // Soldaten Reservierungsseite
-    ctrlGroup& reserve = AddPage();
-    grpIdReserve = reserve.GetID();
+    ctrlGroup& reserve = addPage();
+    grpIdReserve = reserve.getID();
 
     // "Reserve"-Überschrift
-    reserve.AddText(0, DrawPoint(83, 87), _("Reserve"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
+    reserve.addText(0, DrawPoint(83, 87), _("Reserve"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Y-Abstand zwischen den Zeilen
     const unsigned Y_DISTANCE = 30;
@@ -27,22 +27,22 @@ iwHQ::iwHQ(GameWorldView& gwv, GameCommandFactory& gcFactory, nobBaseWarehouse* 
     for(unsigned i = 0; i < 5; ++i)
     {
         // Bildhintergrund
-        reserve.AddImage(1 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.GetMapTexture(2298));
+        reserve.addImage(1 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.getMapTexture(2298));
         // Rang-Bild
-        reserve.AddImage(6 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.GetMapTexture(2321 + i));
+        reserve.addImage(6 + i, DrawPoint(34, 124 + Y_DISTANCE * i), LOADER.getMapTexture(2321 + i));
         // Minus-Button
-        reserve.AddImageButton(11 + i, DrawPoint(54, 112 + Y_DISTANCE * i), Extent(24, 24), TextureColor::Red1,
-                               LOADER.GetImageN("io", 139), _("Less"));
+        reserve.addImageButton(11 + i, DrawPoint(54, 112 + Y_DISTANCE * i), Extent(24, 24), TextureColor::Red1,
+                               LOADER.getImageN("io", 139), _("Less"));
         // Plus-Button
-        reserve.AddImageButton(16 + i, DrawPoint(118, 112 + Y_DISTANCE * i), Extent(24, 24), TextureColor::Green2,
-                               LOADER.GetImageN("io", 138), _("More"));
+        reserve.addImageButton(16 + i, DrawPoint(118, 112 + Y_DISTANCE * i), Extent(24, 24), TextureColor::Green2,
+                               LOADER.getImageN("io", 138), _("More"));
         // Anzahl-Text
-        reserve.AddVarText(21 + i, DrawPoint(100, 117 + Y_DISTANCE * i), _("%u/%u"), 0xFFFFFF00, FontStyle::CENTER,
-                           NormalFont, 2, wh->GetReserveAvailablePointer(i), wh->GetReserveClaimedVisualPointer(i));
+        reserve.addVarText(21 + i, DrawPoint(100, 117 + Y_DISTANCE * i), _("%u/%u"), 0xFFFFFF00, FontStyle::CENTER,
+                           NormalFont, 2, wh->getReserveAvailablePointer(i), wh->getReserveClaimedVisualPointer(i));
     }
 }
 
-void iwHQ::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
+void iwHQ::msgGroupButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     if(group_id == grpIdReserve)
     {
@@ -53,22 +53,22 @@ void iwHQ::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id
         if(ctrl_id >= 11 && ctrl_id < 16)
         {
             rank = ctrl_id - 11;
-            oldReserve = *(wh->GetReserveClaimedVisualPointer(rank));
+            oldReserve = *(wh->getReserveClaimedVisualPointer(rank));
             newReserve = oldReserve > 0 ? oldReserve - 1 : oldReserve;
         }
         // Plus-Button
         else if(ctrl_id >= 16 && ctrl_id < 21)
         {
             rank = ctrl_id - 16;
-            oldReserve = *(wh->GetReserveClaimedVisualPointer(rank));
+            oldReserve = *(wh->getReserveClaimedVisualPointer(rank));
             newReserve = oldReserve + 1;
         }
 
         // Netzwerk-Nachricht generieren
-        if(newReserve != oldReserve && GAMECLIENT.ChangeReserve(wh->GetPos(), rank, newReserve))
-            wh->SetReserveVisual(rank, newReserve);
+        if(newReserve != oldReserve && GAMECLIENT.ChangeReserve(wh->getPos(), rank, newReserve))
+            wh->setReserveVisual(rank, newReserve);
     }
 
     // an Basis weiterleiten
-    iwBaseWarehouse::Msg_Group_ButtonClick(group_id, ctrl_id);
+    iwBaseWarehouse::msgGroupButtonClick(group_id, ctrl_id);
 }

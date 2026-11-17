@@ -10,34 +10,34 @@
 PostBox::PostBox() = default;
 PostBox::~PostBox() = default;
 
-void PostBox::AddMsg(std::unique_ptr<const PostMsg> msg)
+void PostBox::addMsg(std::unique_ptr<const PostMsg> msg)
 {
     if(numMessages == MAX_MESSAGES)
-        DeleteMsg(0, false);
+        deleteMsg(0, false);
     messages[numMessages] = std::move(msg);
     numMessages++;
     if(evNewMsg)
         evNewMsg(*messages[numMessages - 1u], numMessages);
 }
 
-bool PostBox::DeleteMsg(const PostMsg* msg)
+bool PostBox::deleteMsg(const PostMsg* msg)
 {
     if(!msg)
         return false;
     for(unsigned i = 0; i < numMessages; ++i)
     {
         if(messages[i].get() == msg)
-            return DeleteMsg(i);
+            return deleteMsg(i);
     }
     return false;
 }
 
-bool PostBox::DeleteMsg(unsigned idx)
+bool PostBox::deleteMsg(unsigned idx)
 {
-    return DeleteMsg(idx, true);
+    return deleteMsg(idx, true);
 }
 
-bool PostBox::DeleteMsg(unsigned idx, bool notify)
+bool PostBox::deleteMsg(unsigned idx, bool notify)
 {
     if(idx >= numMessages)
         return false;
@@ -50,25 +50,25 @@ bool PostBox::DeleteMsg(unsigned idx, bool notify)
     return true;
 }
 
-void PostBox::Clear()
+void PostBox::clear()
 {
     for(unsigned i = numMessages; i > 0; --i)
-        DeleteMsg(i - 1);
+        deleteMsg(i - 1);
 }
 
-const PostMsg* PostBox::GetMsg(unsigned idx) const
+const PostMsg* PostBox::getMsg(unsigned idx) const
 {
     if(idx >= numMessages)
         return nullptr;
     return messages[idx].get();
 }
 
-void PostBox::SetCurrentMissionGoal(const std::string& goal)
+void PostBox::setCurrentMissionGoal(const std::string& goal)
 {
     currentMissionGoal = goal;
 }
 
-std::string PostBox::GetCurrentMissionGoal() const
+std::string PostBox::getCurrentMissionGoal() const
 {
     return currentMissionGoal;
 }

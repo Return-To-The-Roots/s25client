@@ -38,7 +38,7 @@ namespace {
             queue.pop();
 
             const unsigned distance = freeLand[current] + 1;
-            for(const MapPoint& neighbor : freeLand.GetNeighbours(current))
+            for(const MapPoint& neighbor : freeLand.getNeighbours(current))
             {
                 if(distance < freeLand[neighbor])
                 {
@@ -59,7 +59,7 @@ unsigned getMountainSize(const MountainSettings& settings, unsigned index)
 NodeMapBase<unsigned> getFreeLandDistances(const Map& map, unsigned mountainLevel)
 {
     const auto& textures = map.getTextures();
-    return DistancesTo(map.size, [&map, &textures, mountainLevel](const MapPoint& pt) {
+    return distancesTo(map.size, [&map, &textures, mountainLevel](const MapPoint& pt) {
         return map.z[pt] == map.height.minimum || map.z[pt] >= mountainLevel || textures[pt].rsu || textures[pt].lsd;
     });
 }
@@ -68,7 +68,7 @@ Mountain growMountain(const NodeMapBase<unsigned>& freeLand, RandomUtility& rnd,
                       unsigned margin)
 {
     const auto priority = [&freeLand, &center](const MapPoint& pt) {
-        return static_cast<int64_t>(freeLand[pt]) - freeLand.CalcDistance(center, pt);
+        return static_cast<int64_t>(freeLand[pt]) - freeLand.calcDistance(center, pt);
     };
     const auto compare = [&priority](const MapPoint& lhs, const MapPoint& rhs) {
         return priority(lhs) < priority(rhs);
@@ -83,9 +83,9 @@ Mountain growMountain(const NodeMapBase<unsigned>& freeLand, RandomUtility& rnd,
         const MapPoint current = queue.top();
         queue.pop();
 
-        for(const MapPoint& pt : freeLand.GetPointsInRadius(current, brushRadius))
+        for(const MapPoint& pt : freeLand.getPointsInRadius(current, brushRadius))
         {
-            if(mountain.size() < size && freeLand[pt] > margin && rnd.ByChance(brushDensity)
+            if(mountain.size() < size && freeLand[pt] > margin && rnd.byChance(brushDensity)
                && mountain.insert(pt).second)
             {
                 queue.push(pt);
@@ -113,11 +113,11 @@ std::vector<Mountain> findMountains(const Map& map, RandomUtility& rnd, unsigned
     for(unsigned distance = maxDistance(); distance > minFreeLand; distance = maxDistance())
     {
         const auto isFreest = [&freeLand, distance](const MapPoint& pt) { return freeLand[pt] == distance; };
-        const MapPoint center = rnd.RandomItem(SelectPoints(isFreest, map.size));
+        const MapPoint center = rnd.randomItem(selectPoints(isFreest, map.size));
 
         // A larger margin than required varies the gaps. It must stay below the distance to include the center.
         const unsigned maxMargin = std::min(minFreeLand + minFreeLand / 2, distance - 1);
-        const unsigned margin = rnd.RandomValue(minFreeLand, maxMargin);
+        const unsigned margin = rnd.randomValue(minFreeLand, maxMargin);
         const unsigned size = getSize(static_cast<unsigned>(mountains.size()));
 
         mountains.push_back(growMountain(freeLand, rnd, center, size, margin));
@@ -130,26 +130,26 @@ std::vector<Mountain> findMountains(const Map& map, RandomUtility& rnd, unsigned
 NodeMapBase<unsigned> getFootDistances(const MapExtent& size, const Mountain& mountain)
 {
     NodeMapBase<unsigned> neighbors;
-    neighbors.Resize(size);
+    neighbors.resize(size);
 
     const auto isFoot = [&neighbors, &mountain](const MapPoint& pt) {
-        return helpers::contains_if(neighbors.GetNeighbours(pt),
-                                    [&mountain](const MapPoint& pt) { return !helpers::contains(mountain, pt); });
+        return helpers::containsIf(neighbors.getNeighbours(pt),
+                                   [&mountain](const MapPoint& pt) { return !helpers::contains(mountain, pt); });
     };
-    return Distances(size, mountain, 0, isFoot);
+    return distances(size, mountain, 0, isFoot);
 }
 
 void raiseMountain(Map& map, RandomUtility& rnd, const Mountain& mountain)
 {
     const auto footDistance = getFootDistances(map.size, mountain);
-    const ValueRange<unsigned> range(0u, GetMaximum(footDistance, mountain));
-    const auto textures = map.textureMap.FindAll(IsMinableMountain);
+    const ValueRange<unsigned> range(0u, getMaximum(footDistance, mountain));
+    const auto textures = map.textureMap.findAll(isMinableMountain);
 
     for(const MapPoint& pt : mountain)
     {
-        const unsigned elevation = rnd.RandomValue(footDistance[pt], footDistance[pt] + 1u);
+        const unsigned elevation = rnd.randomValue(footDistance[pt], footDistance[pt] + 1u);
         map.z[pt] = static_cast<uint8_t>(std::min<unsigned>(map.z[pt] + elevation, map.height.maximum));
-        map.textureMap.Set(pt, textures[MapValueToIndex(footDistance[pt], range, textures.size())]);
+        map.textureMap.set(pt, textures[mapValueToIndex(footDistance[pt], range, textures.size())]);
     }
 }
 

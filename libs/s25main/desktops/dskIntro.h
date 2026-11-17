@@ -13,5 +13,5 @@ public:
     dskIntro();
 
 private:
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 };

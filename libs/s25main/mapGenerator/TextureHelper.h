@@ -8,31 +8,31 @@
 
 namespace rttr::mapGenerator {
 
-uint8_t ByHumidity(const TerrainDesc& terrain);
+uint8_t byHumidity(const TerrainDesc& terrain);
 
-bool IsWater(const TerrainDesc& terrain);
+bool isWater(const TerrainDesc& terrain);
 
-bool IsSwamp(const TerrainDesc& terrain);
+bool isSwamp(const TerrainDesc& terrain);
 
 /// Terrain which can neither be entered by settlers nor by ships, e.g. swamp
 bool isImpassable(const TerrainDesc& terrain);
 
-bool IsLand(const TerrainDesc& terrain);
+bool isLand(const TerrainDesc& terrain);
 
-bool IsShipableWater(const TerrainDesc& terrain);
+bool isShipableWater(const TerrainDesc& terrain);
 
-bool IsBuildableLand(const TerrainDesc& terrain);
+bool isBuildableLand(const TerrainDesc& terrain);
 
-bool IsCoastTerrain(const TerrainDesc& terrain);
+bool isCoastTerrain(const TerrainDesc& terrain);
 
-bool IsBuildableCoast(const TerrainDesc& terrain);
+bool isBuildableCoast(const TerrainDesc& terrain);
 
-bool IsBuildableMountain(const TerrainDesc& terrain);
+bool isBuildableMountain(const TerrainDesc& terrain);
 
-bool IsMinableMountain(const TerrainDesc& terrain);
+bool isMinableMountain(const TerrainDesc& terrain);
 
-bool IsSnowOrLava(const TerrainDesc& terrain);
+bool isSnowOrLava(const TerrainDesc& terrain);
 
-bool IsMountainOrSnowOrLava(const TerrainDesc& terrain);
+bool isMountainOrSnowOrLava(const TerrainDesc& terrain);
 
 } // namespace rttr::mapGenerator

@@ -24,14 +24,14 @@ public:
     /// Draw a border around rect with 3D effect
     /// @param elevated true for elevated, false for deepened effect
     /// @param texture Texture to use
-    virtual void Draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture) = 0;
+    virtual void draw3DBorder(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture) = 0;
     /// Draw the content with 3D effect
     /// @param elevated true for elevated, false for deepened effect
     /// @param texture Texture to use
     /// @param illuminated Draw illuminated
     /// @param color Color for the content
-    virtual void Draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated,
+    virtual void draw3DContent(const Rect& rect, bool elevated, glArchivItem_Bitmap& texture, bool illuminated,
                                unsigned color) = 0;
-    virtual void DrawRect(const Rect& rect, unsigned color) = 0;
-    virtual void DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsigned color) = 0;
+    virtual void drawRect(const Rect& rect, unsigned color) = 0;
+    virtual void drawLine(DrawPoint pt1, DrawPoint pt2, unsigned width, unsigned color) = 0;
 };

@@ -31,21 +31,21 @@ protected:
     friend constexpr auto maxEnumValue(State) { return State::ScoutScouting; }
 
     /// Kündigt bei der Flagge
-    void AbrogateWorkplace() override;
+    void abrogateWorkplace() override;
     /// Geht wieder zurück zur Flagge und dann nach Hause
-    void GoToFlag();
+    void goToFlag();
 
 public:
     nofFlagWorker(Job job, MapPoint pos, unsigned char player, noRoadNode* goal);
     nofFlagWorker(SerializedGameData& sgd, unsigned obj_id);
     nofFlagWorker(const nofFlagWorker&) = delete;
 
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
     /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-    virtual void LostWork() = 0;
+    virtual void lostWork() = 0;
 
     /// Gibt Flagge zurück
-    noFlag* GetFlag() const { return flag; }
+    noFlag* getFlag() const { return flag; }
 };

@@ -13,10 +13,10 @@
 
 namespace rttr::mapGenerator {
 
-unsigned GetMaximumHeight(const MapExtent& size);
-unsigned GetCoastline(const MapExtent& size);
-unsigned GetIslandRadius(const MapExtent& size);
-unsigned GetIslandSize(const MapExtent& size);
+unsigned getMaximumHeight(const MapExtent& size);
+unsigned getCoastline(const MapExtent& size);
+unsigned getIslandRadius(const MapExtent& size);
+unsigned getIslandSize(const MapExtent& size);
 unsigned getMaxMountainSize(const MapExtent& size);
 
 /**
@@ -27,10 +27,10 @@ unsigned getMaxMountainSize(const MapExtent& size);
  */
 unsigned getMinFreeLand(unsigned mountainDistance, unsigned mountains);
 
-unsigned GetSmoothRadius(const MapExtent& size);
-unsigned GetSmoothIterations(const MapExtent& size);
+unsigned getSmoothRadius(const MapExtent& size);
+unsigned getSmoothIterations(const MapExtent& size);
 
-void SmoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range);
+void smoothHeightMap(NodeMapBase<uint8_t>& z, const ValueRange<uint8_t>& range);
 
 class RandomMap
 {
@@ -40,20 +40,20 @@ private:
     Texturizer texturizer_;
     MapSettings settings_;
 
-    std::vector<River> CreateRivers(MapPoint source = MapPoint::Invalid());
-    void CreateFreeIslands(unsigned waterNodes);
+    std::vector<River> createRivers(MapPoint source = MapPoint::invalid());
+    void createFreeIslands(unsigned waterNodes);
     void fillFreeLand(unsigned mountainLevel);
     void addTextures(unsigned mountainLevel);
-    void CreateMixedMap();
-    void CreateLandMap();
-    void CreateWaterMap();
+    void createMixedMap();
+    void createLandMap();
+    void createWaterMap();
 
 public:
     RandomMap(RandomUtility& rnd, Map& map);
-    void Create(const MapSettings& settings);
+    void create(const MapSettings& settings);
 };
 
-Map GenerateRandomMap(RandomUtility& rnd, const WorldDescription& worldDesc, const MapSettings& settings);
-void CreateRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings);
+Map generateRandomMap(RandomUtility& rnd, const WorldDescription& worldDesc, const MapSettings& settings);
+void createRandomMap(const boost::filesystem::path& filePath, const MapSettings& settings);
 
 } // namespace rttr::mapGenerator

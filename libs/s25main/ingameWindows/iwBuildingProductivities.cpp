@@ -40,7 +40,7 @@ const std::array<BuildingType, 30> iwBuildingProductivities::allIcons = {
 void iwBuildingProductivities::setBuildingOrder()
 {
     usedIcons.assign(allIcons.begin(), allIcons.end());
-    helpers::erase_if(usedIcons, makeIsUnusedBuilding(player.GetGameWorld().GetGGS()));
+    helpers::eraseIf(usedIcons, makeIsUnusedBuilding(player.getGameWorld().getGGS()));
 }
 
 /// Abstand vom linken, oberen Fensterrand
@@ -59,12 +59,12 @@ constexpr Extent cellSize(percent_image_x + percentSize.x + image_percent_x, dis
 iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
     : IngameWindow(CGI_BUILDINGSPRODUCTIVITY, IngameWindow::posLastOrCenter,
                    cellSize * Extent(2, helpers::divCeil(allIcons.size(), 2) + 1) + bldProdContentOffset,
-                   _("Productivity"), LOADER.GetImageN("resource", 41)),
+                   _("Productivity"), LOADER.getImageN("resource", 41)),
       player(player), percents()
 {
     setBuildingOrder();
     const unsigned numRows = helpers::divCeil(usedIcons.size(), 2);
-    Resize(cellSize * Extent(2, numRows + 1) + bldProdContentOffset);
+    resize(cellSize * Extent(2, numRows + 1) + bldProdContentOffset);
 
     const Nation playerNation = player.nation;
     unsigned curIdx = 0;
@@ -77,34 +77,34 @@ iwBuildingProductivities::iwBuildingProductivities(const GamePlayer& player)
             const DrawPoint curPos = cellSize * DrawPoint(x, y) + bldProdContentOffset;
             const DrawPoint imgPos = curPos + DrawPoint(0, percentSize.y / 2);
             const unsigned imgId = curIdx * 2;
-            if(player.IsBuildingEnabled(usedIcons[curIdx]))
+            if(player.isBuildingEnabled(usedIcons[curIdx]))
             {
-                AddImage(imgId, imgPos, LOADER.GetNationIcon(playerNation, usedIcons[curIdx]),
+                addImage(imgId, imgPos, LOADER.getNationIcon(playerNation, usedIcons[curIdx]),
                          _(BUILDING_NAMES[usedIcons[curIdx]]));
                 DrawPoint percentPos = curPos + DrawPoint(image_percent_x, 0);
-                AddPercent(imgId + 1, percentPos, percentSize, TextureColor::Grey, COLOR_YELLOW, SmallFont,
+                addPercent(imgId + 1, percentPos, percentSize, TextureColor::Grey, COLOR_YELLOW, SmallFont,
                            &percents[usedIcons[curIdx]]);
             } else
-                AddImage(imgId, imgPos, LOADER.GetImageN("io", 188));
+                addImage(imgId, imgPos, LOADER.getImageN("io", 188));
         }
     }
 
-    UpdatePercents();
+    updatePercents();
 
     // Hilfe-Button
     // Original S2 does not have a Help button in this window. Add it if you have something to say.
-    // AddImageButton(500, GetSize().x - 14 - 30, GetSize().y - 20 - 32, 30, 32, TextureColor::Grey,
-    // LOADER.GetImageN("io", 225),
+    // addImageButton(500, getSize().x - 14 - 30, getSize().y - 20 - 32, 30, 32, TextureColor::Grey,
+    // LOADER.getImageN("io", 225),
     // _("Help"));
 }
 
-void iwBuildingProductivities::UpdatePercents()
+void iwBuildingProductivities::updatePercents()
 {
-    percents = player.GetBuildingRegister().CalcProductivities();
+    percents = player.getBuildingRegister().calcProductivities();
 }
 
-void iwBuildingProductivities::Msg_PaintAfter()
+void iwBuildingProductivities::msgPaintAfter()
 {
-    IngameWindow::Msg_PaintAfter();
-    UpdatePercents();
+    IngameWindow::msgPaintAfter();
+    updatePercents();
 }

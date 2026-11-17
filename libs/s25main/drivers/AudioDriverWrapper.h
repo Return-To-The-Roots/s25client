@@ -34,43 +34,43 @@ public:
     ~AudioDriverWrapper();
 
     /// Loads the driver
-    bool LoadDriver(std::unique_ptr<driver::IAudioDriver> audioDriver);
-    bool LoadDriver(std::string& preference);
+    bool loadDriver(std::unique_ptr<driver::IAudioDriver> audioDriver);
+    bool loadDriver(std::string& preference);
     /// Unloads the driver resetting all open handles
-    void UnloadDriver();
+    void unloadDriver();
 
     /// Lädt einen Sound.
-    SoundHandle LoadEffect(const std::string& filepath);
-    SoundHandle LoadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension);
-    SoundHandle LoadMusic(const std::string& filepath);
-    SoundHandle LoadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension);
+    SoundHandle loadEffect(const std::string& filepath);
+    SoundHandle loadEffect(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension);
+    SoundHandle loadMusic(const std::string& filepath);
+    SoundHandle loadMusic(const libsiedler2::ArchivItem_Sound& soundArchiv, const std::string& extension);
 
     /// Spielt einen Sound
-    EffectPlayId PlayEffect(const SoundHandle& sound, uint8_t volume, bool loop);
+    EffectPlayId playEffect(const SoundHandle& sound, uint8_t volume, bool loop);
     /// Stops a sound and resets the id to "Invalid"
-    void StopEffect(EffectPlayId& playId);
+    void stopEffect(EffectPlayId& playId);
 
     /// Spielt Midi ab
-    void PlayMusic(const SoundHandle& sound, int repeats);
+    void playMusic(const SoundHandle& sound, int repeats);
 
     /// Stoppt die Musik.
-    void StopMusic();
+    void stopMusic();
 
     /// Wird ein Sound (noch) abgespielt?
-    bool IsEffectPlaying(EffectPlayId play_id);
+    bool isEffectPlaying(EffectPlayId play_id);
 
     /// Verändert die Lautstärke von einem abgespielten Sound (falls er noch abgespielt wird)
-    void ChangeVolume(EffectPlayId play_id, uint8_t volume);
+    void changeVolume(EffectPlayId play_id, uint8_t volume);
 
-    void SetMasterEffectVolume(uint8_t volume);
-    void SetMusicVolume(uint8_t volume);
+    void setMasterEffectVolume(uint8_t volume);
+    void setMusicVolume(uint8_t volume);
 
-    std::string GetName() const;
+    std::string getName() const;
 
 private:
     using Handle = std::unique_ptr<driver::IAudioDriver, void (*)(driver::IAudioDriver*)>;
-    bool Init();
-    void Msg_MusicFinished() override;
+    bool init();
+    void msgMusicFinished() override;
     SoundHandle createSoundHandle(const driver::RawSoundHandle& rawHandle);
 
     drivers::DriverWrapper driver_wrapper;

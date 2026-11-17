@@ -19,21 +19,21 @@ public:
     glArchivItem_Bitmap(const glArchivItem_Bitmap& item);
 
     /// Draw the texture in the given rect, stretching if required
-    void DrawFull(const Rect& destArea, unsigned color = COLOR_WHITE);
+    void drawFull(const Rect& destArea, unsigned color = COLOR_WHITE);
     /// Draw the texture to the given position with full size
-    void DrawFull(const DrawPoint& dstPos, unsigned color = COLOR_WHITE) override;
+    void drawFull(const DrawPoint& dstPos, unsigned color = COLOR_WHITE) override;
     /// Draw a rectangular part of the texture. offset specifies the offset from the origin of the texture
-    void DrawPart(const Rect& destArea, const DrawPoint& offset, unsigned color = COLOR_WHITE);
+    void drawPart(const Rect& destArea, const DrawPoint& offset, unsigned color = COLOR_WHITE);
     /// Draw a rectangular part of the texture from the origin of it
-    void DrawPart(const Rect& destArea, unsigned color = COLOR_WHITE);
+    void drawPart(const Rect& destArea, unsigned color = COLOR_WHITE);
     /// Draw only percent% of the height of the image, counting from the bottom of the image
-    void DrawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color = COLOR_WHITE);
+    void drawPercent(const DrawPoint& dstPos, unsigned percent, unsigned color = COLOR_WHITE);
     /// Draw the texture.
     /// src_w/h default to the full bitmap size
     /// dst_w/h default the src_w/h
-    void Draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE) override;
+    void draw(Rect dstArea, Rect srcArea, unsigned color = COLOR_WHITE) override;
 
 protected:
-    void FillTexture() override;
-    Extent CalcTextureSize() const override;
+    void fillTexture() override;
+    Extent calcTextureSize() const override;
 };

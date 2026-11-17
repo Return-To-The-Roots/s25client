@@ -15,11 +15,11 @@ class nofPassiveWorker : public noFigure
 {
 private:
     /// von noFigure aufgerufen
-    void Walked() override;      // wenn man gelaufen ist
-    void GoalReached() override; // wenn das Ziel erreicht wurde
-    void AbrogateWorkplace() override;
+    void walked() override;      // wenn man gelaufen ist
+    void goalReached() override; // wenn das Ziel erreicht wurde
+    void abrogateWorkplace() override;
     void
-    HandleDerivedEvent(unsigned id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
+    handleDerivedEvent(unsigned id) override; /// Für alle restlichen Events, die nicht von noFigure behandelt werden
 
 public:
     nofPassiveWorker(Job job, MapPoint pos, unsigned char player, noRoadNode* goal);
@@ -27,7 +27,7 @@ public:
     nofPassiveWorker(const nofPassiveWorker&) = delete;
 
     /// Zeichnen
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofPassiveworker; }
+    GO_Type getGOT() const final { return GO_Type::NofPassiveworker; }
 };

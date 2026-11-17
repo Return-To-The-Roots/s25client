@@ -42,28 +42,28 @@ public:
     IngameMinimap(const GameWorldViewer& gwv);
 
     /// Merkt, vor dass ein bestimmter Punkt aktualisiert werden soll
-    void UpdateNode(MapPoint pt);
+    void updateNode(MapPoint pt);
 
     /// Updatet die gesamte Minimap
-    void UpdateAll();
+    void updateAll();
 
     /// Die einzelnen Dinge umschalten
-    void ToggleTerritory();
-    void ToggleHouses();
-    void ToggleRoads();
+    void toggleTerritory();
+    void toggleHouses();
+    void toggleRoads();
 
 protected:
     /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
-    unsigned CalcPixelColor(MapPoint pt, unsigned t) override;
+    unsigned calcPixelColor(MapPoint pt, unsigned t) override;
     /// Berechnet für einen bestimmten Punkt und ein Dreieck die normale Terrainfarbe
-    unsigned CalcTerrainColor(MapPoint pt, unsigned t);
+    unsigned calcTerrainColor(MapPoint pt, unsigned t);
     /// Prüft ob an einer Stelle eine Straße gezeichnet werden muss
-    bool IsRoad(MapPoint pt, Visibility visibility);
+    bool isRoad(MapPoint pt, Visibility visibility);
     /// Berechnet Spielerfarbe mit in eine gegebene Farbe mit ein (player muss mit +1 gegeben sein!)
-    unsigned CombineWithPlayerColor(unsigned color, unsigned char player) const;
+    unsigned combineWithPlayerColor(unsigned color, unsigned char player) const;
     /// Zusätzliche Dinge, die die einzelnen Maps vor dem Zeichenvorgang zu tun haben
     /// in dem Falle: Karte aktualisieren
-    void BeforeDrawing() override;
-    /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem übergebenen drawn_object ist
-    void UpdateAll(DrawnObject drawn_object);
+    void beforeDrawing() override;
+    /// Alle Punkte Updaten, bei denen das DrawnObject gleich dem übergebenen drawnObject ist
+    void updateAll(DrawnObject drawnObject);
 };

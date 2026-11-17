@@ -14,29 +14,29 @@ noGranite::noGranite(const GraniteType type, const unsigned char state)
     : noBase(NodalObjectType::Granite), type(type), state(state)
 {}
 
-void noGranite::Serialize(SerializedGameData& sgd) const
+void noGranite::serialize(SerializedGameData& sgd) const
 {
-    noBase::Serialize(sgd);
+    noBase::serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(type);
-    sgd.PushUnsignedChar(state);
+    sgd.pushEnum<uint8_t>(type);
+    sgd.pushUnsignedChar(state);
 }
 
 noGranite::noGranite(SerializedGameData& sgd, const unsigned obj_id)
-    : noBase(sgd, obj_id), type(sgd.Pop<GraniteType>()), state(sgd.PopUnsignedChar())
+    : noBase(sgd, obj_id), type(sgd.pop<GraniteType>()), state(sgd.popUnsignedChar())
 {}
 
-void noGranite::Draw(DrawPoint drawPt)
+void noGranite::draw(DrawPoint drawPt)
 {
     LOADER.granite_cache[type][state].draw(drawPt);
 }
 
-std::unique_ptr<FOWObject> noGranite::CreateFOWObject() const
+std::unique_ptr<FOWObject> noGranite::createFOWObject() const
 {
     return std::make_unique<fowGranite>(type, state);
 }
 
-void noGranite::Hew()
+void noGranite::hew()
 {
     if(state)
         --state;

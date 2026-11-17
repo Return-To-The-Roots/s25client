@@ -21,8 +21,8 @@ class iwMusicPlayer final : public IngameWindow
     public:
         InputWindow(iwMusicPlayer& playerWnd, unsigned win_id, const std::string& title);
 
-        void Msg_ButtonClick(unsigned ctrl_id) override;
-        void Msg_EditEnter(unsigned ctrl_id) override;
+        void msgButtonClick(unsigned ctrl_id) override;
+        void msgEditEnter(unsigned ctrl_id) override;
     };
 
     /// Set to true if anything changed to (re)start music on close
@@ -30,29 +30,29 @@ class iwMusicPlayer final : public IngameWindow
 
 public:
     iwMusicPlayer();
-    void Close() override;
+    void close() override;
 
 private:
     /// Get the full path to a playlist by its name
-    static boost::filesystem::path GetFullPlaylistPath(const std::string& name);
+    static boost::filesystem::path getFullPlaylistPath(const std::string& name);
 
-    unsigned GetRepeats() const;
-    void SetRepeats(unsigned repeats);
-    bool GetRandomPlayback() const;
-    void SetRandomPlayback(bool random_playback);
+    unsigned getRepeats() const;
+    void setRepeats(unsigned repeats);
+    bool getRandomPlayback() const;
+    void setRandomPlayback(bool random_playback);
 
     /// Fill combobox with all playlists and selects given entry if present
-    void UpdatePlaylistCombo(const std::string& highlight_entry);
+    void updatePlaylistCombo(const std::string& highlight_entry);
 
-    bool SaveCurrentPlaylist();
-    void UpdateFromPlaylist(const Playlist&);
+    bool saveCurrentPlaylist();
+    void updateFromPlaylist(const Playlist&);
     // Enable/Disable buttons for changing playlist contents
-    void UpdateSaveChangeButtonsState();
-    Playlist MakePlaylist();
+    void updateSaveChangeButtonsState();
+    Playlist makePlaylist();
 
-    void Msg_ListChooseItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
+    void msgListChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
 
-    void Msg_Input(unsigned win_id, const std::string& msg);
+    void msgInput(unsigned win_id, const std::string& msg);
 };

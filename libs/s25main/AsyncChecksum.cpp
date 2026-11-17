@@ -18,35 +18,35 @@ AsyncChecksum::AsyncChecksum(unsigned randChecksum, unsigned objCt, unsigned obj
     : randChecksum(randChecksum), objCt(objCt), objIdCt(objIdCt), eventCt(eventCt), evInstanceCt(evInstanceCt)
 {}
 
-void AsyncChecksum::Serialize(Serializer& ser) const
+void AsyncChecksum::serialize(Serializer& ser) const
 {
-    ser.PushUnsignedInt(randChecksum);
-    ser.PushUnsignedInt(objCt);
-    ser.PushUnsignedInt(objIdCt);
-    ser.PushUnsignedInt(eventCt);
-    ser.PushUnsignedInt(evInstanceCt);
+    ser.pushUnsignedInt(randChecksum);
+    ser.pushUnsignedInt(objCt);
+    ser.pushUnsignedInt(objIdCt);
+    ser.pushUnsignedInt(eventCt);
+    ser.pushUnsignedInt(evInstanceCt);
 }
 
-void AsyncChecksum::Deserialize(Serializer& ser)
+void AsyncChecksum::deserialize(Serializer& ser)
 {
-    randChecksum = ser.PopUnsignedInt();
-    objCt = ser.PopUnsignedInt();
-    objIdCt = ser.PopUnsignedInt();
-    eventCt = ser.PopUnsignedInt();
-    evInstanceCt = ser.PopUnsignedInt();
+    randChecksum = ser.popUnsignedInt();
+    objCt = ser.popUnsignedInt();
+    objIdCt = ser.popUnsignedInt();
+    eventCt = ser.popUnsignedInt();
+    evInstanceCt = ser.popUnsignedInt();
 }
 
 unsigned AsyncChecksum::getHash() const
 {
     Serializer ser;
-    Serialize(ser);
-    return CalcChecksumOfBuffer(ser.GetData(), ser.GetLength());
+    serialize(ser);
+    return calcChecksumOfBuffer(ser.getData(), ser.getLength());
 }
 
 AsyncChecksum AsyncChecksum::create(const Game& game)
 {
-    return AsyncChecksum(RANDOM.GetChecksum(), GameObject::GetNumObjs(), GameObject::GetObjIDCounter(),
-                         game.em_->GetNumActiveEvents(), game.em_->GetEventInstanceCtr());
+    return AsyncChecksum(RANDOM.getChecksum(), GameObject::getNumObjs(), GameObject::getObjIDCounter(),
+                         game.em_->getNumActiveEvents(), game.em_->getEventInstanceCtr());
 }
 
 std::ostream& operator<<(std::ostream& os, const AsyncChecksum& checksum)

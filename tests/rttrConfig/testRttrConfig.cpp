@@ -32,7 +32,7 @@ public:
 BOOST_FIXTURE_TEST_CASE(PrefixPath, rttr::test::BaseFixture)
 {
     rttr::test::LogAccessor logAcc;
-    fs::path prefixPath = RTTRCONFIG.GetPrefixPath();
+    fs::path prefixPath = RTTRCONFIG.getPrefixPath();
     BOOST_TEST_REQUIRE(!prefixPath.empty());
     BOOST_TEST(fs::exists(prefixPath));
     BOOST_TEST(fs::is_directory(prefixPath));
@@ -46,7 +46,7 @@ BOOST_FIXTURE_TEST_CASE(PrefixPath, rttr::test::BaseFixture)
     {
         fs::path fakePrefixPath = fs::current_path() / "testPrefixPath";
         BOOST_TEST_REQUIRE(System::setEnvVar("RTTR_PREFIX_DIR", fakePrefixPath.string()));
-        BOOST_TEST(RTTRCONFIG.GetPrefixPath() == fakePrefixPath);
+        BOOST_TEST(RTTRCONFIG.getPrefixPath() == fakePrefixPath);
         RTTR_REQUIRE_LOG_CONTAINS("manually set", false);
         BOOST_TEST_REQUIRE(System::removeEnvVar("RTTR_PREFIX_DIR"));
     }
@@ -54,7 +54,7 @@ BOOST_FIXTURE_TEST_CASE(PrefixPath, rttr::test::BaseFixture)
         ResetWorkDir resetWorkDir;
         // Just change it in case we would not change it back
         fs::current_path(fs::current_path().parent_path());
-        BOOST_TEST_REQUIRE(RTTRCONFIG.Init());
+        BOOST_TEST_REQUIRE(RTTRCONFIG.init());
         BOOST_TEST(prefixPath == fs::current_path());
     }
 }
@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(EnvOverride, rttr::test::BaseFixture)
 
 BOOST_AUTO_TEST_CASE(YearIsValid)
 {
-    const std::string year = rttr::version::GetYear();
+    const std::string year = rttr::version::getYear();
     BOOST_TEST(year.length() == 4u);
     int iYear;
     BOOST_TEST_REQUIRE(boost::conversion::try_lexical_convert(year, iYear));
@@ -82,7 +82,7 @@ BOOST_AUTO_TEST_CASE(YearIsValid)
 
 BOOST_AUTO_TEST_CASE(BuildDateIsValid)
 {
-    const std::string date = rttr::version::GetBuildDate();
+    const std::string date = rttr::version::getBuildDate();
     BOOST_TEST(date.length() == 8u);
     int iDate;
     BOOST_TEST_REQUIRE(boost::conversion::try_lexical_convert(date, iDate));

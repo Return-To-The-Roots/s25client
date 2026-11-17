@@ -5,20 +5,20 @@
 #include "PlayerGameCommands.h"
 #include "s25util/Serializer.h"
 
-void PlayerGameCommands::Serialize(Serializer& ser) const
+void PlayerGameCommands::serialize(Serializer& ser) const
 {
-    checksum.Serialize(ser);
+    checksum.serialize(ser);
 
-    ser.PushUnsignedInt(gcs.size());
+    ser.pushUnsignedInt(gcs.size());
     for(const gc::GameCommandPtr& gc : gcs)
-        gc->Serialize(ser);
+        gc->serialize(ser);
 }
 
-void PlayerGameCommands::Deserialize(gc::Deserializer& ser)
+void PlayerGameCommands::deserialize(gc::Deserializer& ser)
 {
-    checksum.Deserialize(ser);
+    checksum.deserialize(ser);
 
-    gcs.resize(ser.PopUnsignedInt());
+    gcs.resize(ser.popUnsignedInt());
     for(gc::GameCommandPtr& gc : gcs)
-        gc = gc::GameCommand::Deserialize(ser);
+        gc = gc::GameCommand::deserialize(ser);
 }

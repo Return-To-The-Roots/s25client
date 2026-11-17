@@ -16,92 +16,92 @@
 #include "gameData/const_gui_ids.h"
 
 iwBuildingSite::iwBuildingSite(GameWorldView& gwv, const noBuildingSite* const buildingsite)
-    : IngameWindow(CGI_BUILDING + MapBase::CreateGUIID(buildingsite->GetPos()), IngameWindow::posAtMouse,
-                   Extent(226, 194), _(BUILDING_NAMES[buildingsite->GetBuildingType()]),
-                   LOADER.GetImageN("resource", 41)),
+    : IngameWindow(CGI_BUILDING + MapBase::createGUIID(buildingsite->getPos()), IngameWindow::posAtMouse,
+                   Extent(226, 194), _(BUILDING_NAMES[buildingsite->getBuildingType()]),
+                   LOADER.getImageN("resource", 41)),
       gwv(gwv), buildingsite(buildingsite)
 {
     // Bild des Gebäudes
-    AddImage(0, DrawPoint(113, 130), &buildingsite->GetBuildingImage());
+    addImage(0, DrawPoint(113, 130), &buildingsite->getBuildingImage());
     // Gebäudename
-    AddText(1, DrawPoint(113, 44), _("Order of building site"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    addText(1, DrawPoint(113, 44), _("Order of building site"), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
 
     // Hilfe
-    AddImageButton(2, DrawPoint(16, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 225), _("Help"));
+    addImageButton(2, DrawPoint(16, 147), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 225), _("Help"));
     // Gebäude abbrennen
-    AddImageButton(3, DrawPoint(50, 147), Extent(34, 32), TextureColor::Grey, LOADER.GetImageN("io", 23),
+    addImageButton(3, DrawPoint(50, 147), Extent(34, 32), TextureColor::Grey, LOADER.getImageN("io", 23),
                    _("Demolish house"));
 
     // "Gehe Zu Ort"
-    AddImageButton(4, DrawPoint(179, 147), Extent(30, 32), TextureColor::Grey, LOADER.GetImageN("io", 107),
+    addImageButton(4, DrawPoint(179, 147), Extent(30, 32), TextureColor::Grey, LOADER.getImageN("io", 107),
                    _("Go to place"));
 }
 
-void iwBuildingSite::Msg_ButtonClick(const unsigned ctrl_id)
+void iwBuildingSite::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case 2: // Hilfe
         {
-            WINDOWMANAGER.ReplaceWindow(
-              std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[buildingsite->GetBuildingType()])));
+            WINDOWMANAGER.replaceWindow(
+              std::make_unique<iwHelp>(_(BUILDING_HELP_STRINGS[buildingsite->getBuildingType()])));
         }
         break;
         case 3: // Gebäude abbrennen
         {
             // Abreißen?
-            Close();
-            WINDOWMANAGER.Show(std::make_unique<iwDemolishBuilding>(gwv, buildingsite));
+            close();
+            WINDOWMANAGER.show(std::make_unique<iwDemolishBuilding>(gwv, buildingsite));
         }
         break;
         case 4: // "Gehe Zu Ort"
         {
-            gwv.MoveToMapPt(buildingsite->GetPos());
+            gwv.moveToMapPt(buildingsite->getPos());
         }
         break;
     }
 }
 
-void iwBuildingSite::Msg_PaintAfter()
+void iwBuildingSite::msgPaintAfter()
 {
-    IngameWindow::Msg_PaintAfter();
+    IngameWindow::msgPaintAfter();
     // Baukosten zeichnen
-    DrawPoint curPos = GetDrawPos() + DrawPoint(GetSize().x / 2, 60);
+    DrawPoint curPos = getDrawPos() + DrawPoint(getSize().x / 2, 60);
     for(unsigned char i = 0; i < 2; ++i)
     {
-        unsigned wares_count = 0;
-        unsigned wares_delivered = 0;
-        unsigned wares_used = 0;
+        unsigned waresCount = 0;
+        unsigned waresDelivered = 0;
+        unsigned waresUsed = 0;
 
         if(i == 0)
         {
-            wares_count = BUILDING_COSTS[buildingsite->GetBuildingType()].boards;
-            wares_used = buildingsite->getUsedBoards();
-            wares_delivered = buildingsite->getBoards() + wares_used;
+            waresCount = BUILDING_COSTS[buildingsite->getBuildingType()].boards;
+            waresUsed = buildingsite->getUsedBoards();
+            waresDelivered = buildingsite->getBoards() + waresUsed;
         } else
         {
-            wares_count = BUILDING_COSTS[buildingsite->GetBuildingType()].stones;
-            wares_used = buildingsite->getUsedStones();
-            wares_delivered = buildingsite->getStones() + wares_used;
+            waresCount = BUILDING_COSTS[buildingsite->getBuildingType()].stones;
+            waresUsed = buildingsite->getUsedStones();
+            waresDelivered = buildingsite->getStones() + waresUsed;
         }
 
-        if(wares_count == 0)
+        if(waresCount == 0)
             break;
 
         // "Schwarzer Rahmen"
-        DrawPoint waresPos = curPos - DrawPoint(24 * wares_count / 2, 0);
-        DrawRectangle(Rect(waresPos, Extent(24 * wares_count, 24)), 0x80000000);
+        DrawPoint waresPos = curPos - DrawPoint(24 * waresCount / 2, 0);
+        drawRectangle(Rect(waresPos, Extent(24 * waresCount, 24)), 0x80000000);
         waresPos += DrawPoint(12, 12);
 
         // Die Waren
-        for(unsigned char z = 0; z < wares_count; ++z)
+        for(unsigned char z = 0; z < waresCount; ++z)
         {
-            LOADER.GetWareTex(i == 0 ? GoodType::Boards : GoodType::Stones)
-              ->DrawFull(waresPos, (z < wares_delivered ? 0xFFFFFFFF : 0xFF404040));
+            LOADER.getWareTex(i == 0 ? GoodType::Boards : GoodType::Stones)
+              ->drawFull(waresPos, (z < waresDelivered ? 0xFFFFFFFF : 0xFF404040));
 
             // Hammer wenn Ware verbaut
-            if(z < wares_used)
-                LOADER.GetWareTex(GoodType::Hammer)->DrawFull(waresPos);
+            if(z < waresUsed)
+                LOADER.getWareTex(GoodType::Hammer)->drawFull(waresPos);
             waresPos.x += 24;
         }
         curPos.y += 29;

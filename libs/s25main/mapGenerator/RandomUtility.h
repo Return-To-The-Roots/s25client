@@ -27,7 +27,7 @@ public:
      *
      * @param percentage likelihood to return true
      */
-    bool ByChance(unsigned percentage);
+    bool byChance(unsigned percentage);
 
     /**
      * Generates a random index based on the specified size.
@@ -36,7 +36,7 @@ public:
      *
      * @return a random index based on the specified size.
      */
-    unsigned Index(const size_t& size);
+    unsigned index(const size_t& size);
 
     /**
      * Creates a random point within the specified size.
@@ -55,9 +55,9 @@ public:
      * @returns a random item out of the specified collection of items.
      */
     template<typename T>
-    T RandomItem(const std::vector<T>& items)
+    T randomItem(const std::vector<T>& items)
     {
-        return items[Index(items.size())];
+        return items[index(items.size())];
     }
 
     /**
@@ -69,7 +69,7 @@ public:
      * @return a random number between min and max (inclusive).
      */
     template<typename T>
-    T RandomValue(T min, T max)
+    T randomValue(T min, T max)
     {
         static_assert(std::is_integral_v<T>, "T must be an integral type.");
         std::uniform_int_distribution<T> distr(min, max);
@@ -84,7 +84,7 @@ public:
      *
      * @return a random float value between min and max (inclusive).
      */
-    double RandomDouble(double min, double max);
+    double randomDouble(double min, double max);
 };
 
 } // namespace rttr::mapGenerator

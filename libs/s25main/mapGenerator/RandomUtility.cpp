@@ -20,22 +20,22 @@ RandomUtility::RandomUtility(uint64_t seed)
     rng_.seed(static_cast<UsedRNG::result_type>(seed));
 }
 
-bool RandomUtility::ByChance(unsigned percentage)
+bool RandomUtility::byChance(unsigned percentage)
 {
-    return static_cast<unsigned>(RandomValue(1, 100)) <= percentage;
+    return static_cast<unsigned>(randomValue(1, 100)) <= percentage;
 }
 
-unsigned RandomUtility::Index(const size_t& size)
+unsigned RandomUtility::index(const size_t& size)
 {
-    return RandomValue(0u, static_cast<unsigned>(size - 1));
+    return randomValue(0u, static_cast<unsigned>(size - 1));
 }
 
 MapPoint RandomUtility::Point(const MapExtent& size)
 {
-    return MapPoint(Index(size.x), Index(size.y));
+    return MapPoint(index(size.x), index(size.y));
 }
 
-double RandomUtility::RandomDouble(double min, double max)
+double RandomUtility::randomDouble(double min, double max)
 {
     std::uniform_real_distribution<double> distr(min, max);
     return distr(rng_);

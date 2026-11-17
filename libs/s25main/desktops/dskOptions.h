@@ -15,19 +15,19 @@ public:
     dskOptions();
     ~dskOptions() override;
 
-    void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
-    bool Msg_WheelUp(const MouseCoords& mc) override;
-    bool Msg_WheelDown(const MouseCoords& mc) override;
+    void msgScreenResize(const ScreenResizeEvent& sr) override;
+    bool msgWheelUp(const MouseCoords& mc) override;
+    bool msgWheelDown(const MouseCoords& mc) override;
 
 private:
-    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
 
-    void Msg_Group_ButtonClick(unsigned group_id, unsigned ctrl_id) override;
-    void Msg_Group_ProgressChange(unsigned group_id, unsigned ctrl_id, unsigned short position) override;
-    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
-    void Msg_Group_OptionGroupChange(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
+    void msgGroupButtonClick(unsigned group_id, unsigned ctrl_id) override;
+    void msgGroupProgressChange(unsigned group_id, unsigned ctrl_id, unsigned short position) override;
+    void msgGroupComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
+    void msgGroupOptionGroupChange(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
 
     void updateGuiScale();
     void scrollGuiScale(bool up);

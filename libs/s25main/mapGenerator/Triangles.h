@@ -20,7 +20,7 @@ struct Triangle
 
     Triangle(bool rsu, const MapPoint& position) : rsu(rsu), position(position) {}
     Triangle(bool rsu, const Position& position, const MapExtent& size)
-        : rsu(rsu), position(MakeMapPoint(position, size))
+        : rsu(rsu), position(makeMapPoint(position, size))
     {}
 };
 
@@ -33,7 +33,7 @@ struct Triangle
  *
  * @returns a triangle pair around the target point in the specified direction.
  */
-std::array<Triangle, 2> GetTriangles(const MapPoint& p, const MapExtent& size, Direction direction);
+std::array<Triangle, 2> getTriangles(const MapPoint& p, const MapExtent& size, Direction direction);
 
 /**
  * Finds all triangles connected to the specified map point.
@@ -42,7 +42,7 @@ std::array<Triangle, 2> GetTriangles(const MapPoint& p, const MapExtent& size, D
  *
  * @returns a list of all triangles which are connected to the point.
  */
-std::array<Triangle, 6> GetTriangles(const MapPoint& p, const MapExtent& size);
+std::array<Triangle, 6> getTriangles(const MapPoint& p, const MapExtent& size);
 
 /**
  * Computes all neighboring triangles for the specified triangle.
@@ -51,7 +51,7 @@ std::array<Triangle, 6> GetTriangles(const MapPoint& p, const MapExtent& size);
  *
  * @returns all three neighboring triangles
  */
-std::array<Triangle, 3> GetTriangleNeighbors(const Triangle& triangle, const MapExtent& size);
+std::array<Triangle, 3> getTriangleNeighbors(const Triangle& triangle, const MapExtent& size);
 
 /**
  * Computes the edge points for the specified triangle - useful for interpolation.
@@ -60,6 +60,6 @@ std::array<Triangle, 3> GetTriangleNeighbors(const Triangle& triangle, const Map
  *
  * @returns edge points of the triangle.
  */
-std::array<MapPoint, 3> GetTriangleEdges(const Triangle& triangle, const MapExtent& size);
+std::array<MapPoint, 3> getTriangleEdges(const Triangle& triangle, const MapExtent& size);
 
 } // namespace rttr::mapGenerator

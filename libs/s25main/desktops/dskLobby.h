@@ -25,10 +25,10 @@ public:
     dskLobby();
     ~dskLobby();
 
-    void UpdatePlayerList();
-    void UpdateServerList();
+    void updatePlayerList();
+    void updateServerList();
 
-    void Msg_WindowClosed(IngameWindow& wnd) override;
+    void msgWindowClosed(IngameWindow& wnd) override;
 
     void LC_Status_ConnectionLost() override;
     void LC_Status_IncompleteMessage() override;
@@ -40,16 +40,16 @@ public:
     void LC_ServerInfo(const LobbyServerInfo& info) override;
 
 protected:
-    void Msg_Timer(unsigned ctrl_id) override;
-    void Msg_PaintBefore() override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_EditEnter(unsigned ctrl_id) override;
-    void Msg_TableRightButton(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
-    void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void msgTimer(unsigned ctrl_id) override;
+    void msgPaintBefore() override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgEditEnter(unsigned ctrl_id) override;
+    void msgTableRightButton(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void msgTableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
     /**
      * Connects to the currently selected game and returns true on success
      */
-    bool ConnectToSelectedGame();
+    bool connectToSelectedGame();
 };

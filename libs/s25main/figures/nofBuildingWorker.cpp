@@ -25,38 +25,38 @@ nofBuildingWorker::nofBuildingWorker(const Job job, const MapPoint pos, const un
       workplace))); // Assume we have at least a GameObject and check if it is a valid workplace
 }
 
-void nofBuildingWorker::Serialize(SerializedGameData& sgd) const
+void nofBuildingWorker::serialize(SerializedGameData& sgd) const
 {
-    noFigure::Serialize(sgd);
+    noFigure::serialize(sgd);
 
-    sgd.PushEnum<uint8_t>(state);
+    sgd.pushEnum<uint8_t>(state);
 
     if(fs != FigureState::GoHome && fs != FigureState::Wander)
     {
-        sgd.PushObject(workplace);
-        sgd.PushOptionalEnum<uint8_t>(ware);
-        sgd.PushBool(was_sounding);
+        sgd.pushObject(workplace);
+        sgd.pushOptionalEnum<uint8_t>(ware);
+        sgd.pushBool(was_sounding);
     }
 }
 
 nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj_id)
-    : noFigure(sgd, obj_id), state(sgd.Pop<State>())
+    : noFigure(sgd, obj_id), state(sgd.pop<State>())
 {
     if(fs != FigureState::GoHome && fs != FigureState::Wander)
     {
-        workplace = sgd.PopObject<nobUsual>();
-        if(sgd.GetGameDataVersion() < 5)
+        workplace = sgd.popObject<nobUsual>();
+        if(sgd.getGameDataVersion() < 5)
         {
-            const auto iWare = sgd.PopUnsignedChar();
+            const auto iWare = sgd.popUnsignedChar();
             // GoodType::Nothing is moved because of adding new wares due addons
             // The old GoodType::Nothing is now GoodType::Grapes
-            if(iWare == rttr::enum_cast(GoodType::Grapes))
+            if(iWare == rttr::enumCast(GoodType::Grapes))
                 ware = std::nullopt;
             else
                 ware = GoodType(iWare);
         } else
-            ware = sgd.PopOptionalEnum<GoodType>();
-        was_sounding = sgd.PopBool();
+            ware = sgd.popOptionalEnum<GoodType>();
+        was_sounding = sgd.popBool();
     } else
     {
         workplace = nullptr;
@@ -65,16 +65,16 @@ nofBuildingWorker::nofBuildingWorker(SerializedGameData& sgd, const unsigned obj
     }
 }
 
-void nofBuildingWorker::AbrogateWorkplace()
+void nofBuildingWorker::abrogateWorkplace()
 {
     if(workplace)
     {
-        workplace->WorkerLost();
+        workplace->workerLost();
         workplace = nullptr;
     }
 }
 
-void nofBuildingWorker::Draw(DrawPoint drawPt)
+void nofBuildingWorker::draw(DrawPoint drawPt)
 {
     switch(state)
     {
@@ -82,27 +82,27 @@ void nofBuildingWorker::Draw(DrawPoint drawPt)
         case State::HunterChasing:
         case State::HunterWalkingToCadaver:
         case State::HunterFindingShootingpoint:
-        case State::SkinnerWalkingToCarcass: DrawWalking(drawPt); break;
+        case State::SkinnerWalkingToCarcass: drawWalking(drawPt); break;
         case State::Work:
         case State::HunterShooting:
         case State::HunterEviscerating:
         case State::HunterWaitingForAnimalReady:
         case State::SkinnerSkinningCarcass:
         case State::CatapultTargetBuilding:
-        case State::CatapultBackoff: DrawWorking(drawPt); break;
-        case State::CarryoutWare: DrawWalkingWithWare(drawPt); break;
+        case State::CatapultBackoff: drawWorking(drawPt); break;
+        case State::CarryoutWare: drawWalkingWithWare(drawPt); break;
         case State::WalkingHome:
         case State::EnterBuilding:
             if(ware)
-                DrawWalkingWithWare(drawPt);
+                drawWalkingWithWare(drawPt);
             else
-                DrawWalking(drawPt);
+                drawWalking(drawPt);
             break;
-        default: DrawOtherStates(drawPt); break;
+        default: drawOtherStates(drawPt); break;
     }
 }
 
-void nofBuildingWorker::Walked()
+void nofBuildingWorker::walked()
 {
     switch(state)
     {
@@ -114,28 +114,28 @@ void nofBuildingWorker::Walked()
             {
                 // dann war draußen kein Platz --> ist jetzt evtl Platz?
                 state = State::WaitForWareSpace;
-                if(workplace->GetFlag()->HasSpaceForWare())
-                    FreePlaceAtFlag();
+                if(workplace->getFlag()->hasSpaceForWare())
+                    freePlaceAtFlag();
                 // Ab jetzt warten, d.h. nicht mehr arbeiten --> schlecht für die Produktivität
-                workplace->StartNotWorking();
+                workplace->startNotWorking();
             } else
             {
                 // Anfangen zu Arbeiten
-                TryToWork();
+                tryToWork();
             }
         }
         break;
         case State::CarryoutWare:
         {
             // Alles weitere übernimmt nofBuildingWorker
-            WorkingReady();
+            workingReady();
         }
         break;
-        default: WalkedDerived();
+        default: walkedDerived();
     }
 }
 
-void nofBuildingWorker::WorkingReady()
+void nofBuildingWorker::workingReady()
 {
     // wir arbeiten nicht mehr
     workplace->is_working = false;
@@ -143,90 +143,90 @@ void nofBuildingWorker::WorkingReady()
     // Trage ich eine Ware?
     if(ware)
     {
-        noFlag* flag = workplace->GetFlag();
+        noFlag* flag = workplace->getFlag();
         // Ist noch Platz an der Fahne?
-        if(flag->HasSpaceForWare())
+        if(flag->hasSpaceForWare())
         {
             // Ware erzeugen
-            auto real_ware = std::make_unique<Ware>(*ware, nullptr, flag);
-            real_ware->WaitAtFlag(*flag);
+            auto realWare = std::make_unique<Ware>(*ware, nullptr, flag);
+            realWare->waitAtFlag(*flag);
             // Inventur entsprechend erhöhen, dabei Schilder unterscheiden!
-            GoodType ware_type = ConvertShields(real_ware->type);
-            world->GetPlayer(player).IncreaseInventoryWare(ware_type, 1);
+            GoodType wareType = convertShields(realWare->type);
+            world->getPlayer(player).increaseInventoryWare(wareType, 1);
             // Abnehmer für Ware finden
-            real_ware->SetGoal(world->GetPlayer(player).FindClientForWare(*real_ware));
+            realWare->setGoal(world->getPlayer(player).findClientForWare(*realWare));
             // Ware soll ihren weiteren Weg berechnen
-            real_ware->RecalcRoute();
+            realWare->recalcRoute();
             // Ware ablegen
-            flag->AddWare(std::move(real_ware));
+            flag->addWare(std::move(realWare));
             // Warenstatistik erhöhen
-            world->GetPlayer(this->player).IncreaseMerchandiseStatistic(ware_type);
+            world->getPlayer(this->player).increaseMerchandiseStatistic(wareType);
             // Tragen nun keine Ware mehr
             ware = std::nullopt;
         }
     }
 
     // Wieder reingehen
-    StartWalking(Direction::NorthWest);
+    startWalking(Direction::NorthWest);
     state = State::EnterBuilding;
 }
 
-void nofBuildingWorker::TryToWork()
+void nofBuildingWorker::tryToWork()
 {
-    if(!workplace->IsProductionDisabled() && AreWaresAvailable())
+    if(!workplace->isProductionDisabled() && areWaresAvailable())
     {
         state = State::Waiting1;
-        current_ev = GetEvMgr().AddEvent(
-          this, (GetGOT() == GO_Type::NofCatapultman) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
-        workplace->StopNotWorking();
+        current_ev = getEvMgr().addEvent(
+          this, (getGOT() == GO_Type::NofCatapultman) ? CATAPULT_WAIT1_LENGTH : JOB_CONSTS[job_].wait1_length, 1);
+        workplace->stopNotWorking();
     } else
     {
         state = State::WaitingForWaresOrProductionStopped;
         // Nun arbeite ich nich mehr
-        workplace->StartNotWorking();
+        workplace->startNotWorking();
     }
 }
 
-bool nofBuildingWorker::AreWaresAvailable() const
+bool nofBuildingWorker::areWaresAvailable() const
 {
-    return workplace->WaresAvailable();
+    return workplace->waresAvailable();
 }
 
-void nofBuildingWorker::GotWareOrProductionAllowed()
+void nofBuildingWorker::gotWareOrProductionAllowed()
 {
     // Falls man auf Waren wartet, kann man dann anfangen zu arbeiten
     if(state == State::WaitingForWaresOrProductionStopped)
     {
-        // anfangen zu arbeiten
-        TryToWork();
+        // Anfangen zu arbeiten
+        tryToWork();
     }
 }
 
-void nofBuildingWorker::GoalReached()
+void nofBuildingWorker::goalReached()
 {
     // Tür zumachen (ist immer bis zu Erstbesetzung offen)
-    workplace->CloseDoor();
+    workplace->closeDoor();
     // Gebäude Bescheid sagen, dass ich da bin
-    workplace->WorkerArrived();
+    workplace->workerArrived();
 
-    WorkplaceReached();
+    workplaceReached();
 
     // ggf. anfangen zu arbeiten
-    TryToWork();
+    tryToWork();
 }
 
-bool nofBuildingWorker::FreePlaceAtFlag()
+bool nofBuildingWorker::freePlaceAtFlag()
 {
     // Hinaus gehen, um Ware abzulegen, falls wir auf einen freien Platz warten
     if(state == State::WaitForWareSpace)
     {
-        StartWalking(Direction::SouthEast);
+        startWalking(Direction::SouthEast);
         state = State::CarryoutWare;
         return true;
     } else
         return false;
 }
-void nofBuildingWorker::LostWork()
+void nofBuildingWorker::lostWork()
 {
     switch(state)
     {
@@ -234,7 +234,7 @@ void nofBuildingWorker::LostWork()
         case State::FigureWork:
         {
             // Auf Wegen nach Hause gehen
-            GoHome();
+            goHome();
         }
         break;
         case State::Waiting1:
@@ -250,17 +250,17 @@ void nofBuildingWorker::LostWork()
         case State::CatapultBackoff:
         {
             // Bisheriges Event abmelden, da die Arbeit unterbrochen wird
-            GetEvMgr().RemoveEvent(current_ev);
+            getEvMgr().removeEvent(current_ev);
 
             // Bescheid sagen, dass Arbeit abgebrochen wurde
-            WorkAborted();
+            workAborted();
 
             // Rumirren
-            StartWandering();
-            Wander();
+            startWandering();
+            wander();
 
             // Evtl. Sounds löschen
-            world->GetSoundMgr().stopSounds(*this);
+            world->getSoundMgr().stopSounds(*this);
 
             state = State::FigureWork;
         }
@@ -275,15 +275,15 @@ void nofBuildingWorker::LostWork()
         case State::SkinnerWalkingToCarcass:
         {
             // Bescheid sagen, dass Arbeit abgebrochen wurde
-            WorkAborted();
+            workAborted();
 
             // Rumirren
             // Bei diesen States läuft man schon, darf also nicht noch zusätzlich Wander aufrufen, da man dann ja im
             // Laufen nochmal losläuft!
-            StartWandering();
+            startWandering();
 
             // Evtl. Sounds löschen
-            world->GetSoundMgr().stopSounds(*this);
+            world->getSoundMgr().stopSounds(*this);
 
             state = State::FigureWork;
         }
@@ -293,35 +293,35 @@ void nofBuildingWorker::LostWork()
     workplace = nullptr;
 }
 
-void nofBuildingWorker::ProductionStopped()
+void nofBuildingWorker::productionStopped()
 {
     // Wenn ich gerade warte und schon ein Arbeitsevent angemeldet habe, muss das wieder abgemeldet werden
     if(state == State::Waiting1)
     {
-        GetEvMgr().RemoveEvent(current_ev);
+        getEvMgr().removeEvent(current_ev);
         current_ev = nullptr;
         state = State::WaitingForWaresOrProductionStopped;
-        workplace->StartNotWorking();
+        workplace->startNotWorking();
     }
 }
 
-void nofBuildingWorker::WorkAborted() {}
+void nofBuildingWorker::workAborted() {}
 
-void nofBuildingWorker::WorkplaceReached() {}
+void nofBuildingWorker::workplaceReached() {}
 
 /// Zeichnen der Figur in sonstigen Arbeitslagen
-void nofBuildingWorker::DrawOtherStates(DrawPoint) {}
+void nofBuildingWorker::drawOtherStates(DrawPoint) {}
 
 /// Zeichnet Figur beim Hereinlaufen/nach Hause laufen mit evtl. getragenen Waren
-void nofBuildingWorker::DrawWalkingWithWare(DrawPoint drawPt)
+void nofBuildingWorker::drawWalkingWithWare(DrawPoint drawPt)
 {
-    unsigned short id = GetCarryID();
+    unsigned short id = getCarryID();
     // >=CARRY_ID_CARRIER_OFFSET -> carrier.bob else jobs.bob!
     if(id >= CARRY_ID_CARRIER_OFFSET)
     {
         id -= CARRY_ID_CARRIER_OFFSET;
         RTTR_Assert(id <= helpers::MaxEnumValue_v<GoodType>);
-        DrawWalkingCarrier(drawPt, GoodType(id), JOB_SPRITE_CONSTS[job_].isFat());
+        drawWalkingCarrier(drawPt, GoodType(id), JOB_SPRITE_CONSTS[job_].isFat());
     } else
-        DrawWalking(drawPt, LOADER.GetBob("jobs"), id, JOB_SPRITE_CONSTS[job_].isFat());
+        drawWalking(drawPt, LOADER.getBob("jobs"), id, JOB_SPRITE_CONSTS[job_].isFat());
 }

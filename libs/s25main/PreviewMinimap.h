@@ -19,13 +19,13 @@ class PreviewMinimap : public Minimap
 public:
     explicit PreviewMinimap(const libsiedler2::ArchivItem_Map* s2map);
 
-    void SetMap(const libsiedler2::ArchivItem_Map& s2map);
+    void setMap(const libsiedler2::ArchivItem_Map& s2map);
 
 protected:
     /// Berechnet die Farbe für einen bestimmten Pixel der Minimap (t = Terrain1 oder 2)
-    unsigned CalcPixelColor(MapPoint pt, unsigned t) override;
+    unsigned calcPixelColor(MapPoint pt, unsigned t) override;
 
 private:
-    unsigned char CalcShading(MapPoint pt, const std::vector<unsigned char>& altitudes) const;
-    void CalcShadows(const std::vector<unsigned char>& altitudes);
+    unsigned char calcShading(MapPoint pt, const std::vector<unsigned char>& altitudes) const;
+    void calcShadows(const std::vector<unsigned char>& altitudes);
 };

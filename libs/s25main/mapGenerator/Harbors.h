@@ -14,7 +14,7 @@ namespace rttr::mapGenerator {
  * @param map reference to the map to place the harbor position on
  * @param position position for the harbor
  */
-void PlaceHarborPosition(Map& map, const MapPoint& position);
+void placeHarborPosition(Map& map, const MapPoint& position);
 
 /**
  * Finds all connected nodes which are part of a coastline. A coast node must fulfill following three criteria:
@@ -25,7 +25,7 @@ void PlaceHarborPosition(Map& map, const MapPoint& position);
  * @param map reference to the map to look up coastlines for
  * @param rivers all rivers already placed on the map
  */
-std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vector<River>& rivers);
+std::vector<std::vector<MapPoint>> findCoastlines(const Map& map, const std::vector<River>& rivers);
 
 /**
  * Places harbors on the specified map in suitable positions based on the given parameters.
@@ -35,6 +35,6 @@ std::vector<std::vector<MapPoint>> FindCoastlines(const Map& map, const std::vec
  * @param coastSize minimum number of nodes a coastline requires to be considered for harbor positions
  * @param nodesPerHarbor number of coast nodes required per harbor position
  */
-void PlaceHarbors(Map& map, const std::vector<River>& rivers, int coastSize = 32, int nodesPerHarbor = 64);
+void placeHarbors(Map& map, const std::vector<River>& rivers, int coastSize = 32, int nodesPerHarbor = 64);
 
 } // namespace rttr::mapGenerator

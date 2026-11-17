@@ -14,10 +14,10 @@ private:
 public:
     iwLobbyServerInfo(unsigned serverId);
 
-    void SetServerId(unsigned serverId);
-    unsigned GetServerId() const { return serverId_; }
-    void UpdateServerInfo();
+    void setServerId(unsigned serverId);
+    unsigned getServerId() const { return serverId_; }
+    void updateServerInfo();
 
 protected:
-    void Msg_Timer(unsigned ctrl_id) override;
+    void msgTimer(unsigned ctrl_id) override;
 };

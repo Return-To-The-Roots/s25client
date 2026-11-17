@@ -21,16 +21,16 @@ public:
     DebugInfo();
     ~DebugInfo();
 
-    static stacktrace_t GetStackTrace(void* ctx = nullptr) noexcept(false);
+    static stacktrace_t getStackTrace(void* ctx = nullptr) noexcept(false);
 
-    bool Send(const void* buffer, size_t length);
-    bool SendSigned(int32_t i);
-    bool SendUnsigned(uint32_t i);
-    bool SendString(const char* str, size_t len = 0);
-    bool SendString(const std::string& str);
+    bool send(const void* buffer, size_t length);
+    bool sendSigned(int32_t i);
+    bool sendUnsigned(uint32_t i);
+    bool sendString(const char* str, size_t len = 0);
+    bool sendString(const std::string& str);
 
-    bool SendStackTrace(const stacktrace_t& stacktrace);
-    bool SendReplay();
-    bool SendAsyncLog(const boost::filesystem::path& asyncLogFilepath);
-    bool SendFile(BinaryFile& file);
+    bool sendStackTrace(const stacktrace_t& stacktrace);
+    bool sendReplay();
+    bool sendAsyncLog(const boost::filesystem::path& asyncLogFilepath);
+    bool sendFile(BinaryFile& file);
 };

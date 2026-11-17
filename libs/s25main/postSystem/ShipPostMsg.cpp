@@ -7,10 +7,10 @@
 #include "nodeObjs/noShip.h"
 
 ShipPostMsg::ShipPostMsg(unsigned sendFrame, const std::string& text, PostCategory cat, const noShip& ship)
-    : PostMsg(sendFrame, text, cat, ship.GetPos())
+    : PostMsg(sendFrame, text, cat, ship.getPos())
 {}
 
-ITexture* ShipPostMsg::GetImage_() const
+ITexture* ShipPostMsg::getImage() const
 {
-    return LOADER.GetTextureN("boot_z", 12);
+    return LOADER.getTextureN("boot_z", 12);
 }

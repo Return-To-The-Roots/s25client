@@ -17,14 +17,14 @@ public:
     noSkeleton(SerializedGameData& sgd, unsigned obj_id);
     ~noSkeleton() override;
 
-    void Destroy() override;
-    void Serialize(SerializedGameData& sgd) const override;
+    void destroy() override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::Skeleton; }
+    GO_Type getGOT() const final { return GO_Type::Skeleton; }
 
 protected:
-    void Draw(DrawPoint drawPt) override;
-    void HandleEvent(unsigned id) override;
+    void draw(DrawPoint drawPt) override;
+    void handleEvent(unsigned id) override;
 
 private:
     /// Type des Skeletts (0 = ganz "frisch", 1 - schon etwas verdorrt)

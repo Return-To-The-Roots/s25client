@@ -12,7 +12,7 @@ struct FramesInfo
     using UsedClock = std::chrono::steady_clock;
 
     FramesInfo();
-    void Clear();
+    void clear();
 
     /// Length of one GF in ms (~ 1/speed of the game)
     std::chrono::milliseconds gf_length;
@@ -22,7 +22,7 @@ struct FramesInfo
     unsigned nwf_length;
     /// Time since last GF in ms (valid range: [0, gfLength) )
     std::chrono::milliseconds frameTime;
-    /// Timestamp of the last processed GF (--> FrameTime = CurrentTime - LastTime (except for lags) )
+    /// Timestamp of the last processed GF (--> FrameTime = currentTime - LastTime (except for lags) )
     UsedClock::time_point lastTime;
     /// True if the game is paused (no processing of GFs)
     bool isPaused;
@@ -32,7 +32,7 @@ struct FramesInfo
 struct FramesInfoClient : public FramesInfo
 {
     FramesInfoClient();
-    void Clear();
+    void clear();
 
     /// Force pause the game (start TS and length) e.g. to compensate for lags
     UsedClock::time_point forcePauseStart;

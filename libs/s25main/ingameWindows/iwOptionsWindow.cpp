@@ -63,102 +63,102 @@ constexpr auto leftMargin = 35;
 
 iwOptionsWindow::iwOptionsWindow(SoundManager& soundManager)
     : IngameWindow(CGI_OPTIONSWINDOW, IngameWindow::posLastOrCenter, windowSize, _("Game menu"),
-                   LOADER.GetImageN("resource", 41)),
+                   LOADER.getImageN("resource", 41)),
       soundManager(soundManager)
 {
     DrawPoint curPos = DrawPoint(centerPosition, 10);
 
     // The soldier on top
     constexpr Offset soldierOffset(0, 26);
-    AddImage(ID_imgSoldier, curPos + soldierOffset, LOADER.GetImageN("io", 30));
+    addImage(ID_imgSoldier, curPos + soldierOffset, LOADER.getImageN("io", 30));
     curPos.y += textSpacing + soldierOffset.y;
 
-    AddText(ID_txtRttr, curPos, "Return To The Roots", COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    addText(ID_txtRttr, curPos, "Return To The Roots", COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     curPos.y += textSpacing;
 
-    AddText(ID_txtVersion, curPos, rttr::version::GetReadableVersion(), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
+    addText(ID_txtVersion, curPos, rttr::version::getReadableVersion(), COLOR_YELLOW, FontStyle::CENTER, NormalFont);
     curPos.y += textSpacing;
 
-    AddFormattedText(ID_txtCopyright, curPos,
+    addFormattedText(ID_txtCopyright, curPos,
                      "\xC2\xA9"
                      "2005 - %s Settlers Freaks",
                      COLOR_YELLOW, FontStyle::CENTER, NormalFont)
-      % rttr::version::GetYear();
+      % rttr::version::getYear();
     curPos.y += textSpacing * 2;
     curPos.x = leftMargin;
 
-    AddImageButton(ID_btKeyboardLayout, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 79));
-    AddText(ID_txtKeyboardLayout, curPos + textOffset, _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM,
+    addImageButton(ID_btKeyboardLayout, curPos, imageButtonSize, TextureColor::Green2, LOADER.getImageN("io", 79));
+    addText(ID_txtKeyboardLayout, curPos + textOffset, _("Keyboard layout"), COLOR_YELLOW, FontStyle::BOTTOM,
             NormalFont);
     curPos.y += imageButtonSize.y + generalSpacing;
 
-    AddImageButton(ID_btReadme, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 79));
-    AddText(ID_txtReadme, curPos + textOffset, _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    addImageButton(ID_btReadme, curPos, imageButtonSize, TextureColor::Green2, LOADER.getImageN("io", 79));
+    addText(ID_txtReadme, curPos + textOffset, _("Load 'ReadMe' file"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
     curPos.y += imageButtonSize.y + generalSpacing;
 
     // TODO: Implement
-    // AddImageButton(ID_btLoad, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 48));
-    // AddText(ID_txtLoad, curPos + textOffset, _("Load game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    // addImageButton(ID_btLoad, curPos, imageButtonSize, TextureColor::Green2, LOADER.getImageN("io", 48));
+    // addText(ID_txtLoad, curPos + textOffset, _("Load game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
     // curPos.y += imageButtonSize.y + generalSpacing;
 
     curPos.y += 3 + imageButtonSize.y / 2; // TODO: Delete this row, if the Load button is implemented
-    AddImageButton(ID_btSave, curPos, imageButtonSize, TextureColor::Green2, LOADER.GetImageN("io", 47));
-    AddText(ID_txtSave, curPos + textOffset, _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
+    addImageButton(ID_btSave, curPos, imageButtonSize, TextureColor::Green2, LOADER.getImageN("io", 47));
+    addText(ID_txtSave, curPos + textOffset, _("Save game!"), COLOR_YELLOW, FontStyle::BOTTOM, NormalFont);
     curPos.y += 3 + imageButtonSize.y / 2; // TODO: Delete this row, if the Load button is implemented
     curPos.y += imageButtonSize.y + generalSpacing;
 
     // Sound on/off + volume
-    AddImageButton(ID_btSoundEffects, curPos, imageButtonSize, TextureColor::Green2,
-                   LOADER.GetImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
-    AddProgress(ID_pgEffectVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
-      ->SetPosition((SETTINGS.sound.effectsVolume * 100) / 255);
+    addImageButton(ID_btSoundEffects, curPos, imageButtonSize, TextureColor::Green2,
+                   LOADER.getImageN("io", 114 + !SETTINGS.sound.effectsEnabled)); //-V807
+    addProgress(ID_pgEffectVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
+      ->setPosition((SETTINGS.sound.effectsVolume * 100) / 255);
     curPos.y += imageButtonSize.y;
     curPos.x += optionOffset.x;
 
-    AddCheckBox(ID_cpBirdSounds, curPos, optionSizeSmall, TextureColor::Green2, _("Bird sounds"), NormalFont, false)
+    addCheckBox(ID_cpBirdSounds, curPos, optionSizeSmall, TextureColor::Green2, _("Bird sounds"), NormalFont, false)
       ->setChecked(SETTINGS.sound.birdsEnabled);
     curPos.y += optionSizeSmall.y + generalSpacing * 3;
     curPos.x = leftMargin;
 
     // Music on/off + volume
-    AddImageButton(ID_btMusic, curPos, imageButtonSize, TextureColor::Green2,
-                   LOADER.GetImageN("io", 116 + !SETTINGS.sound.musicEnabled));
-    AddProgress(ID_pgMusicVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
-      ->SetPosition((SETTINGS.sound.musicVolume * 100) / 255);
+    addImageButton(ID_btMusic, curPos, imageButtonSize, TextureColor::Green2,
+                   LOADER.getImageN("io", 116 + !SETTINGS.sound.musicEnabled));
+    addProgress(ID_pgMusicVol, curPos + optionOffset, optionSizeSmall, TextureColor::Green2, 139, 138, 100)
+      ->setPosition((SETTINGS.sound.musicVolume * 100) / 255);
     curPos.y += imageButtonSize.y;
     curPos.x += optionOffset.x;
 
-    AddTextButton(ID_btMusicPlayer, curPos, optionSizeSmall, TextureColor::Green2, _("Music player"), NormalFont);
+    addTextButton(ID_btMusicPlayer, curPos, optionSizeSmall, TextureColor::Green2, _("Music player"), NormalFont);
     curPos.y += optionSizeSmall.y + generalSpacing * 3;
     curPos.x = leftMargin;
 
     // Buttons at the bottom
     curPos.x = centerPosition - optionSizeBig.x / 2;
-    AddTextButton(ID_btAdvanced, curPos, optionSizeBig, TextureColor::Green2, _("Advanced"), NormalFont);
+    addTextButton(ID_btAdvanced, curPos, optionSizeBig, TextureColor::Green2, _("Advanced"), NormalFont);
     curPos.y += optionSizeBig.y + generalSpacing;
-    AddTextButton(ID_btSurrender, curPos, optionSizeBig, TextureColor::Red1, _("Surrender"), NormalFont);
+    addTextButton(ID_btSurrender, curPos, optionSizeBig, TextureColor::Red1, _("Surrender"), NormalFont);
     curPos.y += optionSizeBig.y + generalSpacing;
-    AddTextButton(ID_btEndGame, curPos, optionSizeBig, TextureColor::Red1, _("End game"), NormalFont);
+    addTextButton(ID_btEndGame, curPos, optionSizeBig, TextureColor::Red1, _("End game"), NormalFont);
 }
 
-void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
+void iwOptionsWindow::msgButtonClick(const unsigned ctrl_id)
 {
     switch(ctrl_id)
     {
         case ID_btEndGame:
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwEndgame>());
-            Close();
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwEndgame>());
+            close();
             break;
         case ID_btKeyboardLayout:
-            WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
+            WINDOWMANAGER.toggleWindow(std::make_unique<iwTextfile>("keyboardlayout.txt", _("Keyboard layout")));
             break;
-        case ID_btReadme: WINDOWMANAGER.ToggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!"))); break;
-        case ID_btSave: WINDOWMANAGER.ToggleWindow(std::make_unique<iwSave>()); break;
+        case ID_btReadme: WINDOWMANAGER.toggleWindow(std::make_unique<iwTextfile>("readme.txt", _("Readme!"))); break;
+        case ID_btSave: WINDOWMANAGER.toggleWindow(std::make_unique<iwSave>()); break;
 
         case ID_btSoundEffects:
             SETTINGS.sound.effectsEnabled = !SETTINGS.sound.effectsEnabled; //-V807
-            GetCtrl<ctrlImageButton>(ID_btSoundEffects)
-              ->SetImage(LOADER.GetTextureN("io", 114 + !SETTINGS.sound.effectsEnabled));
+            getCtrl<ctrlImageButton>(ID_btSoundEffects)
+              ->setImage(LOADER.getTextureN("io", 114 + !SETTINGS.sound.effectsEnabled));
 
             if(!SETTINGS.sound.effectsEnabled)
                 soundManager.stopAll();
@@ -166,41 +166,41 @@ void iwOptionsWindow::Msg_ButtonClick(const unsigned ctrl_id)
 
         case ID_btMusic:
             SETTINGS.sound.musicEnabled = !SETTINGS.sound.musicEnabled;
-            GetCtrl<ctrlImageButton>(ID_btMusic)
-              ->SetImage(LOADER.GetTextureN("io", 116 + !SETTINGS.sound.musicEnabled));
+            getCtrl<ctrlImageButton>(ID_btMusic)
+              ->setImage(LOADER.getTextureN("io", 116 + !SETTINGS.sound.musicEnabled));
             if(SETTINGS.sound.musicEnabled)
-                MUSICPLAYER.Play();
+                MUSICPLAYER.play();
             else
-                MUSICPLAYER.Stop();
+                MUSICPLAYER.stop();
             break;
-        case ID_btMusicPlayer: WINDOWMANAGER.ToggleWindow(std::make_unique<iwMusicPlayer>()); break;
+        case ID_btMusicPlayer: WINDOWMANAGER.toggleWindow(std::make_unique<iwMusicPlayer>()); break;
         case ID_btSurrender:
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSurrender>());
-            Close();
+            WINDOWMANAGER.replaceWindow(std::make_unique<iwSurrender>());
+            close();
             break;
         case ID_btAdvanced:
-            WINDOWMANAGER.ReplaceWindow(std::make_unique<iwSettings>());
-            Close();
+            WINDOWMANAGER.replaceWindow(std::make_unique<iwSettings>());
+            close();
             break;
     }
 }
 
-void iwOptionsWindow::Msg_ProgressChange(const unsigned ctrl_id, const unsigned short position)
+void iwOptionsWindow::msgProgressChange(const unsigned ctrl_id, const unsigned short position)
 {
     switch(ctrl_id)
     {
         case ID_pgEffectVol:
             SETTINGS.sound.effectsVolume = static_cast<uint8_t>((position * 255) / 100);
-            AUDIODRIVER.SetMasterEffectVolume(SETTINGS.sound.effectsVolume);
+            AUDIODRIVER.setMasterEffectVolume(SETTINGS.sound.effectsVolume);
             break;
         case ID_pgMusicVol:
             SETTINGS.sound.musicVolume = static_cast<uint8_t>((position * 255) / 100);
-            AUDIODRIVER.SetMusicVolume(SETTINGS.sound.musicVolume);
+            AUDIODRIVER.setMusicVolume(SETTINGS.sound.musicVolume);
             break;
     }
 }
 
-void iwOptionsWindow::Msg_CheckboxChange(const unsigned ctrl_id, const bool checked)
+void iwOptionsWindow::msgCheckboxChange(const unsigned ctrl_id, const bool checked)
 {
     RTTR_Assert(ctrl_id == ID_cpBirdSounds);
     SETTINGS.sound.birdsEnabled = checked;

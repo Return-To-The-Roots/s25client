@@ -31,7 +31,7 @@ namespace bfs = boost::filesystem;
 #    endif
 #endif // !RTTR_SETTINGSDIR
 
-bfs::path RttrConfig::GetPrefixPath()
+bfs::path RttrConfig::getPrefixPath()
 {
     // Determine install prefix
     // Get path to current executable (at least for checks)
@@ -82,12 +82,12 @@ bfs::path RttrConfig::GetPrefixPath()
     return bfs::absolute(prefixPath);
 }
 
-boost::filesystem::path RttrConfig::GetSourceDir()
+boost::filesystem::path RttrConfig::getSourceDir()
 {
     return RTTR_SRCDIR;
 }
 
-boost::filesystem::path RttrConfig::ExpandPath(const std::string& path) const
+boost::filesystem::path RttrConfig::expandPath(const std::string& path) const
 {
     if(path.empty())
         return prefixPath_;
@@ -121,9 +121,9 @@ void RttrConfig::overridePathMapping(const std::string& id, const boost::filesys
     pathMappings[id] = path;
 }
 
-bool RttrConfig::Init()
+bool RttrConfig::init()
 {
-    prefixPath_ = GetPrefixPath();
+    prefixPath_ = getPrefixPath();
     if(prefixPath_.empty())
         return false;
     // Make the prefix path our working directory as all other paths are relative to that

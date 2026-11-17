@@ -28,5 +28,5 @@ public:
     };
 
 private:
-    void AddBottomTexts();
+    void addBottomTexts();
 };

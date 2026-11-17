@@ -46,7 +46,7 @@ void SoundManager::playNOSound(unsigned soundLstId, const noBase& obj, unsigned 
     if(numPlayedCt >= maxPlayCtPerSound)
         return;
 
-    EffectPlayId playId = LOADER.GetSoundN("sound", soundLstId)->Play(volume, false);
+    EffectPlayId playId = LOADER.getSoundN("sound", soundLstId)->play(volume, false);
 
     if(playId != EffectPlayId::Invalid)
         noSounds.push_back(NOSound{soundLstId, &obj, id, playId});
@@ -59,7 +59,7 @@ void SoundManager::stopSounds(const noBase& obj)
     {
         if(it->obj == &obj)
         {
-            AUDIODRIVER.StopEffect(it->playId);
+            AUDIODRIVER.stopEffect(it->playId);
             it = noSounds.erase(it);
         } else
             ++it;
@@ -74,7 +74,7 @@ void SoundManager::playAnimalSound(unsigned soundLstId)
     {
         if(it->soundId == soundLstId)
         {
-            if(AUDIODRIVER.IsEffectPlaying(it->playId))
+            if(AUDIODRIVER.isEffectPlaying(it->playId))
                 ++numPlayedCt;
             else
             {
@@ -88,7 +88,7 @@ void SoundManager::playAnimalSound(unsigned soundLstId)
         return;
 
     const unsigned volume = helpers::randomValue(getSoundRng(), 50u, 70u);
-    EffectPlayId playId = LOADER.GetSoundN("sound", soundLstId)->Play(volume, false);
+    EffectPlayId playId = LOADER.getSoundN("sound", soundLstId)->play(volume, false);
 
     if(playId != EffectPlayId::Invalid)
         animalSounds.push_back(AnimalSound{soundLstId, playId});
@@ -115,7 +115,7 @@ void SoundManager::playBirdSounds(const unsigned treeCount)
         {
             const unsigned soundIdx = helpers::randomValue(getSoundRng(), 87u, 91u);
             const unsigned volume = helpers::randomValue(getSoundRng(), 50u, 70u);
-            birdPlayId = LOADER.GetSoundN("sound", soundIdx)->Play(volume, false);
+            birdPlayId = LOADER.getSoundN("sound", soundIdx)->play(volume, false);
         }
         minNextBirdSound = now + milliseconds(helpers::randomValue(getSoundRng(), 150u, 1000u));
     }
@@ -132,32 +132,32 @@ void SoundManager::playOceanBrawling(const unsigned waterPercent)
     if(waterPercent >= 10)
     {
         const unsigned volume = waterPercent * 2u + 55u;
-        if(!AUDIODRIVER.IsEffectPlaying(oceanPlayId))
+        if(!AUDIODRIVER.isEffectPlaying(oceanPlayId))
         {
             // SDL Mixer may wrongly return that the sound is not playing, so make sure the old effect is stopped.
             // DO NOT REMOVE - THIS PREVENTS A BUG!
             if(oceanPlayId != EffectPlayId::Invalid)
-                AUDIODRIVER.StopEffect(oceanPlayId);
+                AUDIODRIVER.stopEffect(oceanPlayId);
 
             const unsigned soundIdx = helpers::randomValue(getSoundRng(), 98u, 100u);
-            oceanPlayId = LOADER.GetSoundN("sound", soundIdx)->Play(volume, true);
+            oceanPlayId = LOADER.getSoundN("sound", soundIdx)->play(volume, true);
         } else
-            AUDIODRIVER.ChangeVolume(oceanPlayId, volume);
+            AUDIODRIVER.changeVolume(oceanPlayId, volume);
     } else if(oceanPlayId != EffectPlayId::Invalid)
-        AUDIODRIVER.StopEffect(oceanPlayId);
+        AUDIODRIVER.stopEffect(oceanPlayId);
 }
 
 void SoundManager::stopAll()
 {
     if(oceanPlayId != EffectPlayId::Invalid)
-        AUDIODRIVER.StopEffect(oceanPlayId);
+        AUDIODRIVER.stopEffect(oceanPlayId);
     if(birdPlayId != EffectPlayId::Invalid)
-        AUDIODRIVER.StopEffect(birdPlayId);
+        AUDIODRIVER.stopEffect(birdPlayId);
 
     for(auto& sound : noSounds)
-        AUDIODRIVER.StopEffect(sound.playId);
+        AUDIODRIVER.stopEffect(sound.playId);
     noSounds.clear();
     for(auto& sound : animalSounds)
-        AUDIODRIVER.StopEffect(sound.playId);
+        AUDIODRIVER.stopEffect(sound.playId);
     animalSounds.clear();
 }

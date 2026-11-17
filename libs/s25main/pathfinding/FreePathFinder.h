@@ -24,25 +24,25 @@ class FreePathFinder
 
 public:
     FreePathFinder(GameWorldBase& gwb) : gwb_(gwb), currentVisit(0), size_(0, 0) {}
-    void Init(const MapExtent& mapSize);
+    void init(const MapExtent& mapSize);
 
     /// Wegfindung in freiem Terrain - Template version. Users need to include FreePathFinderImpl.h
-    /// TNodeChecker must implement: bool IsNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool
+    /// TNodeChecker must implement: bool isNodeOk(MapPoint pt, unsigned char dirFromPrevPt) and bool
     /// IsNodeToDestOk(MapPoint pt, unsigned char dirFromPrevPt)
     template<class TNodeChecker>
-    bool FindPath(MapPoint start, MapPoint dest, bool randomRoute, unsigned maxLength, std::vector<Direction>* route,
+    bool findPath(MapPoint start, MapPoint dest, bool randomRoute, unsigned maxLength, std::vector<Direction>* route,
                   unsigned* length, Direction* firstDir, const TNodeChecker& nodeChecker);
 
-    bool FindPathAlternatingConditions(MapPoint start, MapPoint dest, bool randomRoute, unsigned maxLength,
+    bool findPathAlternatingConditions(MapPoint start, MapPoint dest, bool randomRoute, unsigned maxLength,
                                        std::vector<Direction>* route, unsigned* length, Direction* firstDir,
                                        FP_Node_OK_Callback IsNodeOK, FP_Node_OK_Callback IsNodeOKAlternate,
                                        FP_Node_OK_Callback IsNodeToDestOk, const void* param);
 
     /// Ermittelt, ob eine freie Route noch passierbar ist und gibt den Endpunkt der Route zurück
     template<class TNodeChecker>
-    bool CheckRoute(MapPoint start, const std::vector<Direction>& route, unsigned pos, const TNodeChecker& nodeChecker,
+    bool checkRoute(MapPoint start, const std::vector<Direction>& route, unsigned pos, const TNodeChecker& nodeChecker,
                     MapPoint* dest) const;
 
 private:
-    void IncreaseCurrentVisit();
+    void increaseCurrentVisit();
 };

@@ -69,215 +69,215 @@ public:
     Window(Window* parent, unsigned id, const DrawPoint& pos, const Extent& size = Extent(0, 0));
     virtual ~Window();
     /// Draw all contained controls if the window is visible
-    void Draw();
+    void draw();
     /// Get the current position relative to the parent window
-    DrawPoint GetPos() const;
+    DrawPoint getPos() const;
     /// Get the absolute position for drawing
-    DrawPoint GetDrawPos() const;
+    DrawPoint getDrawPos() const;
     /// Get the size of the window
-    Extent GetSize() const;
+    Extent getSize() const;
     /// Get the extent of the window in absolute coordinates
-    Rect GetDrawRect() const;
+    Rect getDrawRect() const;
     /// Get the actual extents of the rect
     /// (might be different to the draw rect if the window resizes according to content)
-    virtual Rect GetBoundaryRect() const;
+    virtual Rect getBoundaryRect() const;
     /// Change the size
-    virtual void Resize(const Extent& newSize) { size_ = newSize; }
+    virtual void resize(const Extent& newSize) { size_ = newSize; }
     /// Change only the width
-    void SetWidth(unsigned width) { Resize(Extent(width, size_.y)); }
+    void setWidth(unsigned width) { resize(Extent(width, size_.y)); }
     /// Change only the height
-    void SetHeight(unsigned height) { Resize(Extent(size_.x, height)); }
+    void setHeight(unsigned height) { resize(Extent(size_.x, height)); }
     /// Send a keyboard message to all controls, return true if handled
-    bool RelayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
+    bool relayKeyboardMessage(KeyboardMsgHandler msg, const KeyEvent& ke);
     /// Send a mouse message to all controls, return true if handled
-    bool RelayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
+    bool relayMouseMessage(MouseMsgHandler msg, const MouseCoords& mc);
     /// Make the window active or inactive. Inactive controls e.g. don't react to events
-    virtual void SetActive(bool activate = true);
+    virtual void setActive(bool activate = true);
     /// Activate/deactivate only the elements of the window
-    void ActivateControls(bool activate = true);
+    void activateControls(bool activate = true);
     /// Lock a region which won't react to mouse events anymore except for the given window/control.
     /// Only a single region can be locked per window.
-    void LockRegion(Window* window, const Rect& rect);
+    void lockRegion(Window* window, const Rect& rect);
     /// Release the region locked for the given window/control.
-    void FreeRegion(Window* window);
+    void freeRegion(Window* window);
     /// Check if the given point is in a region locked by any window other than exception
-    bool IsInLockedRegion(const Position& pos, const Window* exception = nullptr) const;
+    bool isInLockedRegion(const Position& pos, const Window* exception = nullptr) const;
     /// Check if the mouse is hovering over this control, i.e. inside its boundary.
-    bool IsMouseOver() const;
+    bool isMouseOver() const;
     /// Check if the given mouse position inside the boundary of this control.
-    bool IsMouseOver(const MouseCoords& mousePos) const;
+    bool isMouseOver(const MouseCoords& mousePos) const;
 
     /// Set the position for the window
-    void SetPos(const DrawPoint& newPos);
+    void setPos(const DrawPoint& newPos);
 
     // Make the window visible or hide it
-    virtual void SetVisible(bool visible) { visible_ = visible; }
-    bool IsVisible() const { return visible_; }
-    bool IsActive() const { return active_; }
+    virtual void setVisible(bool visible) { visible_ = visible; }
+    bool isVisible() const { return visible_; }
+    bool isActive() const { return active_; }
     /// Get the parent window (containing this) or nullptr if this is a top-level window
-    Window* GetParent() const { return parent_; }
-    unsigned GetID() const { return id_; }
+    Window* getParent() const { return parent_; }
+    unsigned getID() const { return id_; }
     /// Get control with given ID of given type or nullptr if not found or other type
     template<typename T>
-    T* GetCtrl(unsigned id);
+    T* getCtrl(unsigned id);
     /// Get control with given ID of given type or nullptr if not found or other type
     template<typename T>
-    const T* GetCtrl(unsigned id) const;
+    const T* getCtrl(unsigned id) const;
 
     /// Get all controls of given type
     template<typename T>
-    std::vector<T*> GetCtrls();
+    std::vector<T*> getCtrls();
     /// Get all controls of given type
     template<typename T>
-    std::vector<const T*> GetCtrls() const;
+    std::vector<const T*> getCtrls() const;
 
-    void DeleteCtrl(unsigned id);
+    void deleteCtrl(unsigned id);
 
-    AnimationManager& GetAnimationManager() { return animations_; }
+    AnimationManager& getAnimationManager() { return animations_; }
 
     template<typename T>
-    T* AddCtrl(std::unique_ptr<T> ctrl);
+    T* addCtrl(std::unique_ptr<T> ctrl);
 
-    ctrlBuildingIcon* AddBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation,
+    ctrlBuildingIcon* addBuildingIcon(unsigned id, const DrawPoint& pos, BuildingType type, Nation nation,
                                       unsigned short size = 36, const std::string& tooltip = "");
-    ctrlButton* AddTextButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlButton* addTextButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                               const std::string& text, const glFont* font, const std::string& tooltip = "");
-    ctrlButton* AddColorButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlButton* addColorButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                unsigned fillColor, const std::string& tooltip = "");
-    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* image,
+    ctrlButton* addImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, ITexture* image,
                                const std::string& tooltip = "");
-    ctrlButton* AddImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlButton* addImageButton(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                glArchivItem_Bitmap* image, const std::string& tooltip = "");
-    ctrlChat* AddChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
-    ctrlCheck* AddCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlChat* addChatCtrl(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
+    ctrlCheck* addCheckBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                            const std::string& text, const glFont* font, bool readonly = false);
-    ctrlComboBox* AddComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlComboBox* addComboBox(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                               const glFont* font, unsigned short max_list_height, bool readonly = false);
-    ctrlDeepening* AddTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlDeepening* addTextDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                     const std::string& text, const glFont* font, unsigned color,
                                     FontStyle style = FontStyle::CENTER | FontStyle::VCENTER);
-    ctrlDeepening* AddColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlDeepening* addColorDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                      unsigned fillColor);
-    ctrlDeepening* AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlDeepening* addImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                      ITexture* image);
-    ctrlDeepening* AddImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlDeepening* addImageDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                      glArchivItem_Bitmap* image);
 
-    ctrlEdit* AddEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
+    ctrlEdit* addEdit(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                       unsigned short maxlength = 0, bool password = false, bool disabled = false, bool notify = false);
-    ctrlGroup* AddGroup(unsigned id);
-    ctrlImage* AddImage(unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip = "");
-    ctrlImage* AddImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip = "");
-    ctrlList* AddList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
-    ctrlMultiline* AddMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlGroup* addGroup(unsigned id);
+    ctrlImage* addImage(unsigned id, const DrawPoint& pos, ITexture* image, const std::string& tooltip = "");
+    ctrlImage* addImage(unsigned id, const DrawPoint& pos, glArchivItem_Bitmap* image, const std::string& tooltip = "");
+    ctrlList* addList(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font);
+    ctrlMultiline* addMultiline(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                 const glFont* font, FontStyle format = {});
-    ctrlOptionGroup* AddOptionGroup(unsigned id, GroupSelectType select_type);
-    ctrlMultiSelectGroup* AddMultiSelectGroup(unsigned id, GroupSelectType select_type);
-    ctrlPercent* AddPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
+    ctrlOptionGroup* addOptionGroup(unsigned id, GroupSelectType select_type);
+    ctrlMultiSelectGroup* addMultiSelectGroup(unsigned id, GroupSelectType select_type);
+    ctrlPercent* addPercent(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, unsigned text_color,
                             const glFont* font, const unsigned short* percentage);
-    ctrlProgress* AddProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
-                              unsigned short button_minus, unsigned short button_plus, unsigned short maximum,
+    ctrlProgress* addProgress(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+                              unsigned short buttonMinus, unsigned short buttonPlus, unsigned short maximum,
                               const std::string& tooltip = "", const Extent& padding = Extent(0, 0),
                               unsigned force_color = 0, const std::string& button_minus_tooltip = "",
                               const std::string& button_plus_tooltip = "");
-    ctrlScrollBar* AddScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
+    ctrlScrollBar* addScrollBar(unsigned id, const DrawPoint& pos, const Extent& size, unsigned short button_height,
                                 TextureColor tc, unsigned short page_size);
-    ctrlTab* AddTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width);
-    ctrlTable* AddTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
+    ctrlTab* addTabCtrl(unsigned id, const DrawPoint& pos, unsigned short width);
+    ctrlTable* addTable(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc, const glFont* font,
                         std::vector<TableColumn> columns);
     /// Add text
     /// @param color    Text color (ARGB)
     /// @param format   can be a combination of FontStyle::LEFT/CENTER/RIGHT and FontStyle::TOP/VCENTER/BOTTOM and
     /// FontStyle::OUTLINE/NO_OUTLINE
     ///                 Alignment specifies how the position is treated, i.e. where relative to the text it will be.
-    ctrlText* AddText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
+    ctrlText* addText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color, FontStyle format,
                       const glFont* font);
-    ctrlMapSelection* AddMapSelection(unsigned id, const DrawPoint& pos, const Extent& size,
+    ctrlMapSelection* addMapSelection(unsigned id, const DrawPoint& pos, const Extent& size,
                                       const SelectionMapInputData& inputData);
-    TextFormatSetter AddFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
+    TextFormatSetter addFormattedText(unsigned id, const DrawPoint& pos, const std::string& text, unsigned color,
                                       FontStyle format, const glFont* font);
-    ctrlTimer* AddTimer(unsigned id, std::chrono::milliseconds timeout);
+    ctrlTimer* addTimer(unsigned id, std::chrono::milliseconds timeout);
     /// Add a 3D text control with a variable text. The text is formatted like printf but with pointers
     /// to int (%d), unsigned (%u) or const char (%s) which must be valid for the lifetime of the var text!
-    ctrlVarDeepening* AddVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
+    ctrlVarDeepening* addVarDeepening(unsigned id, const DrawPoint& pos, const Extent& size, TextureColor tc,
                                       const std::string& formatstr, const glFont* font, unsigned color,
                                       unsigned parameters, ...);
     /// Add a text control with a variable text. The text is formatted like printf but with pointers
     /// to int (%d), unsigned (%u) or const char (%s) which must be valid for the lifetime of the var text!
-    ctrlVarText* AddVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color,
+    ctrlVarText* addVarText(unsigned id, const DrawPoint& pos, const std::string& formatstr, unsigned color,
                             FontStyle format, const glFont* font, unsigned parameters, ...);
-    ctrlPreviewMinimap* AddPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size,
+    ctrlPreviewMinimap* addPreviewMinimap(unsigned id, const DrawPoint& pos, const Extent& size,
                                           libsiedler2::ArchivItem_Map* map);
 
     /// Draw a 3D rectangle (e.g. button)
-    static void Draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
+    static void draw3D(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
                        bool illuminated = false, unsigned contentColor = COLOR_WHITE);
-    static void Draw3DBorder(const Rect& rect, TextureColor tc, bool elevated);
-    static void Draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
+    static void draw3DBorder(const Rect& rect, TextureColor tc, bool elevated);
+    static void draw3DContent(const Rect& rect, TextureColor tc, bool elevated, bool highlighted = false,
                               bool illuminated = false, unsigned contentColor = COLOR_WHITE);
-    static void DrawRectangle(const Rect& rect, unsigned color);
-    static void DrawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsigned color);
+    static void drawRectangle(const Rect& rect, unsigned color);
+    static void drawLine(DrawPoint pt1, DrawPoint pt2, unsigned short width, unsigned color);
 
     // GUI-Notify-Messages
 
     // These messages get passed downwards (WindowManager to controls)
     // Return true if the message was handled
-    virtual void Msg_PaintBefore();
-    virtual void Msg_PaintAfter();
-    virtual bool Msg_LeftDown(const MouseCoords&) { return false; }
-    virtual bool Msg_RightDown(const MouseCoords&) { return false; }
-    virtual bool Msg_MiddleDown(const MouseCoords&) { return false; }
-    virtual bool Msg_LeftUp(const MouseCoords&) { return false; }
-    virtual bool Msg_RightUp(const MouseCoords&) { return false; }
-    virtual bool Msg_MiddleUp(const MouseCoords&) { return false; }
-    virtual bool Msg_WheelUp(const MouseCoords&) { return false; }
-    virtual bool Msg_WheelDown(const MouseCoords&) { return false; }
-    virtual bool Msg_MouseMove(const MouseCoords&) { return false; }
-    virtual bool Msg_KeyDown(const KeyEvent&) { return false; }
-    virtual void Msg_ScreenResize(const ScreenResizeEvent& sr);
+    virtual void msgPaintBefore();
+    virtual void msgPaintAfter();
+    virtual bool msgLeftDown(const MouseCoords&) { return false; }
+    virtual bool msgRightDown(const MouseCoords&) { return false; }
+    virtual bool msgMiddleDown(const MouseCoords&) { return false; }
+    virtual bool msgLeftUp(const MouseCoords&) { return false; }
+    virtual bool msgRightUp(const MouseCoords&) { return false; }
+    virtual bool msgMiddleUp(const MouseCoords&) { return false; }
+    virtual bool msgWheelUp(const MouseCoords&) { return false; }
+    virtual bool msgWheelDown(const MouseCoords&) { return false; }
+    virtual bool msgMouseMove(const MouseCoords&) { return false; }
+    virtual bool msgKeyDown(const KeyEvent&) { return false; }
+    virtual void msgScreenResize(const ScreenResizeEvent& sr);
 
     // Callback messages that are passed upwards (from controls to window)
-    virtual void Msg_ButtonClick(unsigned /*ctrl_id*/) {}
-    virtual void Msg_EditEnter(unsigned /*ctrl_id*/) {}
-    virtual void Msg_EditChange(unsigned /*ctrl_id*/) {}
-    virtual void Msg_TabChange(unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
-    virtual void Msg_ListSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
-    virtual void Msg_ListChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_ComboSelectItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_CheckboxChange(unsigned /*ctrl_id*/, bool /*checked*/) {}
-    virtual void Msg_ProgressChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
-    virtual void Msg_ScrollChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
-    virtual void Msg_ScrollShow(unsigned /*ctrl_id*/, bool /*visible*/) {}
-    virtual void Msg_OptionGroupChange(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_Timer(unsigned /*ctrl_id*/) {}
-    virtual void Msg_TableSelectItem(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
-    virtual void Msg_TableChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_TableRightButton(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
-    virtual void Msg_TableLeftButton(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
+    virtual void msgButtonClick(unsigned /*ctrl_id*/) {}
+    virtual void msgEditEnter(unsigned /*ctrl_id*/) {}
+    virtual void msgEditChange(unsigned /*ctrl_id*/) {}
+    virtual void msgTabChange(unsigned /*ctrl_id*/, unsigned short /*tabId*/) {}
+    virtual void msgListSelectItem(unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void msgListChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgComboSelectItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgCheckboxChange(unsigned /*ctrl_id*/, bool /*checked*/) {}
+    virtual void msgProgressChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
+    virtual void msgScrollChange(unsigned /*ctrl_id*/, unsigned short /*position*/) {}
+    virtual void msgScrollShow(unsigned /*ctrl_id*/, bool /*visible*/) {}
+    virtual void msgOptionGroupChange(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgTimer(unsigned /*ctrl_id*/) {}
+    virtual void msgTableSelectItem(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
+    virtual void msgTableChooseItem(unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgTableRightButton(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
+    virtual void msgTableLeftButton(unsigned /*ctrl_id*/, const std::optional<unsigned>& /*selection*/) {}
 
     /// Callback of a message box when closed
-    virtual void Msg_MsgBoxResult(unsigned /*msgbox_id*/, MsgboxResult /*mbr*/) {}
+    virtual void msgMsgBoxResult(unsigned /*msgbox_id*/, MsgboxResult /*mbr*/) {}
 
     // Callbacks triggered by controls of ctrlGroup
-    virtual void Msg_Group_ButtonClick(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_EditEnter(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_EditChange(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_TabChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*tab_id*/) {}
-    virtual void Msg_Group_ListSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
-    virtual void Msg_Group_ComboSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_Group_CheckboxChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*checked*/) {}
-    virtual void Msg_Group_ProgressChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*position*/) {}
-    virtual void Msg_Group_ScrollShow(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*visible*/) {}
-    virtual void Msg_Group_OptionGroupChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
-    virtual void Msg_Group_Timer(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
-    virtual void Msg_Group_TableSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/,
-                                           const std::optional<unsigned>& /*selection*/)
+    virtual void msgGroupButtonClick(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void msgGroupEditEnter(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void msgGroupEditChange(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void msgGroupTabChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*tabId*/) {}
+    virtual void msgGroupListSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, int /*selection*/) {}
+    virtual void msgGroupComboSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgGroupCheckboxChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*checked*/) {}
+    virtual void msgGroupProgressChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned short /*position*/) {}
+    virtual void msgGroupScrollShow(unsigned /*group_id*/, unsigned /*ctrl_id*/, bool /*visible*/) {}
+    virtual void msgGroupOptionGroupChange(unsigned /*group_id*/, unsigned /*ctrl_id*/, unsigned /*selection*/) {}
+    virtual void msgGroupTimer(unsigned /*group_id*/, unsigned /*ctrl_id*/) {}
+    virtual void msgGroupTableSelectItem(unsigned /*group_id*/, unsigned /*ctrl_id*/,
+                                         const std::optional<unsigned>& /*selection*/)
     {}
-    virtual void Msg_Group_TableRightButton(unsigned /*group_id*/, unsigned /*ctrl_id*/,
-                                            const std::optional<unsigned>& /*selection*/)
+    virtual void msgGroupTableRightButton(unsigned /*group_id*/, unsigned /*ctrl_id*/,
+                                          const std::optional<unsigned>& /*selection*/)
     {}
-    virtual void Msg_Group_TableLeftButton(unsigned /*group_id*/, unsigned /*ctrl_id*/,
-                                           const std::optional<unsigned>& /*selection*/)
+    virtual void msgGroupTableLeftButton(unsigned /*group_id*/, unsigned /*ctrl_id*/,
+                                         const std::optional<unsigned>& /*selection*/)
     {}
 
     enum class ButtonState
@@ -293,16 +293,16 @@ protected:
 
     /// Scale the value from the reference coordinates to current render size
     template<class T_Pt>
-    static T_Pt Scale(const T_Pt& pt);
+    static T_Pt scale(const T_Pt& pt);
     /// Scales the value when scale_ is true, else returns the value unchanged
     template<class T_Pt>
-    T_Pt ScaleIf(const T_Pt& pt) const;
+    T_Pt scaleIf(const T_Pt& pt) const;
     /// Set whether controls of this window shall be scaled
-    void SetScale(bool scale = true) { scale_ = scale; }
+    void setScale(bool scale = true) { scale_ = scale; }
     /// Implementation of drawing the window, derived classes can override this to draw custom backgrounds or similar
-    virtual void Draw_();
+    virtual void drawImpl();
     /// Shall messages be relayed to the controls of this window?
-    virtual bool IsMessageRelayAllowed() const;
+    virtual bool isMessageRelayAllowed() const;
 
 private:
     Window* const parent_; /// Handle to parent window
@@ -325,27 +325,27 @@ private:
 };
 
 template<typename T>
-T* Window::AddCtrl(std::unique_ptr<T> ctrl)
+T* Window::addCtrl(std::unique_ptr<T> ctrl)
 {
     RTTR_Assert(ctrl);
-    RTTR_Assert(childIdToWnd_.find(ctrl->GetID()) == childIdToWnd_.end());
+    RTTR_Assert(childIdToWnd_.find(ctrl->getID()) == childIdToWnd_.end());
 
     T* ctrlPtr = ctrl.get();
     ctrl->scale_ = scale_;
-    childIdToWnd_.emplace(ctrl->GetID(), std::move(ctrl));
+    childIdToWnd_.emplace(ctrl->getID(), std::move(ctrl));
 
-    ctrlPtr->SetActive(active_);
+    ctrlPtr->setActive(active_);
     return ctrlPtr;
 }
 
 template<typename T>
-T* Window::GetCtrl(unsigned id)
+T* Window::getCtrl(unsigned id)
 {
-    return const_cast<T*>(static_cast<const Window&>(*this).GetCtrl<T>(id));
+    return const_cast<T*>(static_cast<const Window&>(*this).getCtrl<T>(id));
 }
 
 template<typename T>
-const T* Window::GetCtrl(unsigned id) const
+const T* Window::getCtrl(unsigned id) const
 {
     auto it = childIdToWnd_.find(id);
     if(it == childIdToWnd_.end())
@@ -355,7 +355,7 @@ const T* Window::GetCtrl(unsigned id) const
 }
 
 template<typename T>
-std::vector<T*> Window::GetCtrls()
+std::vector<T*> Window::getCtrls()
 {
     std::vector<T*> result;
     for(const auto& wnd : childIdToWnd_ | boost::adaptors::map_values)
@@ -368,7 +368,7 @@ std::vector<T*> Window::GetCtrls()
 }
 
 template<typename T>
-std::vector<const T*> Window::GetCtrls() const
+std::vector<const T*> Window::getCtrls() const
 {
     std::vector<const T*> result;
     for(const auto& wnd : childIdToWnd_ | boost::adaptors::map_values)

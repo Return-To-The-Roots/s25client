@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <iostream>
 
-unsigned char TerrainData::GetTextureIdentifier(TerrainType t)
+unsigned char TerrainData::getTextureIdentifier(TerrainType t)
 {
     switch(t)
     {
@@ -38,7 +38,7 @@ unsigned char TerrainData::GetTextureIdentifier(TerrainType t)
     throw std::logic_error("Invalid parameters given");
 }
 
-TerrainType TerrainData::MapIdx2Terrain(unsigned char mapIdx)
+TerrainType TerrainData::mapIdx2Terrain(unsigned char mapIdx)
 {
     // Unset bit 0x40 (harbour) and 0x80 (unknown)
     mapIdx &= ~(0x40 | 0x80);
@@ -73,7 +73,7 @@ TerrainType TerrainData::MapIdx2Terrain(unsigned char mapIdx)
     }
 }
 
-Rect TerrainData::GetPosInTexture(TerrainType t)
+Rect TerrainData::getPosInTexture(TerrainType t)
 {
     switch(t)
     {
@@ -103,12 +103,12 @@ Rect TerrainData::GetPosInTexture(TerrainType t)
     throw std::logic_error("Invalid parameters given");
 }
 
-bool TerrainData::IsAnimated(TerrainType t)
+bool TerrainData::isAnimated(TerrainType t)
 {
-    return IsWater(t) || IsLava(t);
+    return isWater(t) || isLava(t);
 }
 
-unsigned TerrainData::GetNumFrames(TerrainType t)
+unsigned TerrainData::getNumFrames(TerrainType t)
 {
     switch(t)
     {
@@ -123,7 +123,7 @@ unsigned TerrainData::GetNumFrames(TerrainType t)
     }
 }
 
-unsigned char TerrainData::GetStartColor(TerrainType t)
+unsigned char TerrainData::getStartColor(TerrainType t)
 {
     switch(t)
     {
@@ -138,7 +138,7 @@ unsigned char TerrainData::GetStartColor(TerrainType t)
     }
 }
 
-unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
+unsigned TerrainData::getColor(Landscape landsCape, TerrainType t)
 {
     switch(landsCape)
     {
@@ -226,7 +226,7 @@ unsigned TerrainData::GetColor(Landscape landsCape, TerrainType t)
     throw std::logic_error("Invalid parameters given");
 }
 
-EdgeType TerrainData::GetEdgeType(Landscape landsCape, TerrainType t)
+EdgeType TerrainData::getEdgeType(Landscape landsCape, TerrainType t)
 {
     switch(landsCape)
     {
@@ -389,7 +389,7 @@ const helpers::MultiArray<int8_t, NUM_LTS, NUM_TTS, NUM_TTS> TERRAIN_DRAW_PRIORI
     /*TT_LAVA3*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0},
     /*TT_LAVA4*/ {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 0, 0}}}};
 
-unsigned char TerrainData::GetEdgeType(Landscape landsCape, TerrainType t1, TerrainType t2)
+unsigned char TerrainData::getEdgeType(Landscape landsCape, TerrainType t1, TerrainType t2)
 {
     static std::array<std::array<std::array<unsigned char, NUM_TTS>, NUM_TTS>, NUM_LTS> EDGE_TABLE;
     static bool isInitialized = false;
@@ -400,8 +400,8 @@ unsigned char TerrainData::GetEdgeType(Landscape landsCape, TerrainType t1, Terr
             for(int iT1 = 0; iT1 < NUM_TTS; ++iT1)
                 for(int iT2 = 0; iT2 <= iT1; ++iT2)
                 {
-                    EdgeType et1 = GetEdgeType(Landscape(lt), TerrainType(iT1));
-                    EdgeType et2 = GetEdgeType(Landscape(lt), TerrainType(iT2));
+                    EdgeType et1 = getEdgeType(Landscape(lt), TerrainType(iT1));
+                    EdgeType et2 = getEdgeType(Landscape(lt), TerrainType(iT2));
                     if(iT1 == iT2 ||                         // Same terrain
                        !TERRAIN_DRAW_PRIORITY[lt][iT1][iT2]) // Same priority
                     {
@@ -425,7 +425,7 @@ unsigned char TerrainData::GetEdgeType(Landscape landsCape, TerrainType t1, Terr
     return EDGE_TABLE[static_cast<uint8_t>(landsCape)][t1][t2];
 }
 
-static void CheckPriorities(Landscape lt, const std::array<int, NUM_TTS>& terrainPrios)
+static void checkPriorities(Landscape lt, const std::array<int, NUM_TTS>& terrainPrios)
 {
     for(int iT1 = 0; iT1 < NUM_TTS; ++iT1)
         std::cout << iT1 << ": " << terrainPrios[iT1] << std::endl;
@@ -434,10 +434,10 @@ static void CheckPriorities(Landscape lt, const std::array<int, NUM_TTS>& terrai
     {
         for(int iT2 = 0; iT2 < NUM_TTS; ++iT2)
         {
-            unsigned oldEdge = TerrainData::GetEdgeType(lt, TerrainType(iT1), TerrainType(iT2));
+            unsigned oldEdge = TerrainData::getEdgeType(lt, TerrainType(iT1), TerrainType(iT2));
             unsigned newEdge;
             if(terrainPrios[iT1] > terrainPrios[iT2])
-                newEdge = TerrainData::GetEdgeType(lt, TerrainType(iT1));
+                newEdge = TerrainData::getEdgeType(lt, TerrainType(iT1));
             else
                 newEdge = 0;
             if(oldEdge != newEdge)
@@ -450,7 +450,7 @@ static void CheckPriorities(Landscape lt, const std::array<int, NUM_TTS>& terrai
     std::cout << numWrong << " different entries" << std::endl;
 }
 
-const std::array<int, NUM_TTS>& TerrainData::GetEdgePrios(Landscape landsCape)
+const std::array<int, NUM_TTS>& TerrainData::getEdgePrios(Landscape landsCape)
 {
     static const std::array<int, NUM_TTS> prioGL{};
     static const std::array<int, NUM_TTS> prioWL{};
@@ -464,22 +464,22 @@ const std::array<int, NUM_TTS>& TerrainData::GetEdgePrios(Landscape landsCape)
     }
 }
 
-void TerrainData::PrintEdgePrios()
+void TerrainData::printEdgePrios()
 {
     for(int lt = 0; lt < NUM_LTS; ++lt)
     {
         std::cout << "Calculation landscape " << lt << std::endl;
-        CheckPriorities(Landscape(lt), GetEdgePrios(Landscape(lt)));
+        checkPriorities(Landscape(lt), getEdgePrios(Landscape(lt)));
     }
 }
 
-bool TerrainData::IsUseable(TerrainType t)
+bool TerrainData::isUseable(TerrainType t)
 {
-    TerrainBQ bq = GetBuildingQuality(t);
+    TerrainBQ bq = getBuildingQuality(t);
     return (bq != TerrainBQ::Nothing && bq != TerrainBQ::Danger);
 }
 
-bool TerrainData::IsUsableByShip(TerrainType t)
+bool TerrainData::isUsableByShip(TerrainType t)
 {
     switch(t)
     {
@@ -488,7 +488,7 @@ bool TerrainData::IsUsableByShip(TerrainType t)
     }
 }
 
-bool TerrainData::IsUsableByAnimals(TerrainType t)
+bool TerrainData::isUsableByAnimals(TerrainType t)
 {
     switch(t)
     {
@@ -504,7 +504,7 @@ bool TerrainData::IsUsableByAnimals(TerrainType t)
     }
 }
 
-bool TerrainData::IsVital(TerrainType t)
+bool TerrainData::isVital(TerrainType t)
 {
     switch(t)
     {
@@ -518,7 +518,7 @@ bool TerrainData::IsVital(TerrainType t)
     }
 }
 
-bool TerrainData::IsWater(TerrainType t)
+bool TerrainData::isWater(TerrainType t)
 {
     switch(t)
     {
@@ -529,7 +529,7 @@ bool TerrainData::IsWater(TerrainType t)
     }
 }
 
-bool TerrainData::IsLava(TerrainType t)
+bool TerrainData::isLava(TerrainType t)
 {
     switch(t)
     {
@@ -541,7 +541,7 @@ bool TerrainData::IsLava(TerrainType t)
     }
 }
 
-bool TerrainData::IsSnow(Landscape lt, TerrainType t)
+bool TerrainData::isSnow(Landscape lt, TerrainType t)
 {
     switch(lt)
     {
@@ -552,7 +552,7 @@ bool TerrainData::IsSnow(Landscape lt, TerrainType t)
     throw std::logic_error("Invalid terrain type");
 }
 
-bool TerrainData::IsMountain(TerrainType t)
+bool TerrainData::isMountain(TerrainType t)
 {
     switch(t)
     {
@@ -566,12 +566,12 @@ bool TerrainData::IsMountain(TerrainType t)
     }
 }
 
-bool TerrainData::IsMineable(TerrainType t)
+bool TerrainData::isMineable(TerrainType t)
 {
-    return GetBuildingQuality(t) == TerrainBQ::Mine;
+    return getBuildingQuality(t) == TerrainBQ::Mine;
 }
 
-TerrainBQ TerrainData::GetBuildingQuality(TerrainType t)
+TerrainBQ TerrainData::getBuildingQuality(TerrainType t)
 {
     switch(t)
     {

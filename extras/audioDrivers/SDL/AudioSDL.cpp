@@ -52,7 +52,7 @@ AudioSDL::AudioSDL(IAudioDriverCallback* adli) : AudioDriver(adli), master_effec
 
 AudioSDL::~AudioSDL()
 {
-    CleanUp();
+    cleanUp();
 }
 
 /**
@@ -60,14 +60,14 @@ AudioSDL::~AudioSDL()
  *
  *  @return liefert den Treibernamen zurück
  */
-const char* AudioSDL::GetName() const
+const char* AudioSDL::getName() const
 {
     return GetDriverName();
 }
 
 static AudioSDL* currentInstance = nullptr;
 
-bool AudioSDL::Initialize()
+bool AudioSDL::initialize()
 {
     initialized = false;
     // SDL_thread leaks a mutex on regular runs and SDL_mixer a lot on initialization error
@@ -90,29 +90,29 @@ bool AudioSDL::Initialize()
         std::cerr << Mix_GetError() << std::endl;
         return false;
     }
-    SetNumChannels(Mix_AllocateChannels(DEFAULT_NUM_CHANNELS));
+    setNumChannels(Mix_AllocateChannels(DEFAULT_NUM_CHANNELS));
     Mix_SetMusicCMD(nullptr);
     currentInstance = this;
-    Mix_HookMusicFinished(AudioSDL::MusicFinished);
+    Mix_HookMusicFinished(AudioSDL::musicFinished);
 
     initialized = true;
 
     return true;
 }
 
-void AudioSDL::MusicFinished()
+void AudioSDL::musicFinished()
 {
     if(currentInstance)
-        currentInstance->driverCallback->Msg_MusicFinished();
+        currentInstance->driverCallback->msgMusicFinished();
 }
 
 /**
  *  Treiberaufräumfunktion.
  */
-void AudioSDL::CleanUp()
+void AudioSDL::cleanUp()
 {
     // Unload sounds
-    AudioDriver::CleanUp();
+    AudioDriver::cleanUp();
 
     Mix_CloseAudio();
     currentInstance = nullptr;
@@ -130,7 +130,7 @@ void AudioSDL::CleanUp()
  *
  *  @return Sounddeskriptor bei Erfolg, @p nullptr bei Fehler
  */
-driver::RawSoundHandle AudioSDL::LoadEffect(const std::string& filepath)
+driver::RawSoundHandle AudioSDL::loadEffect(const std::string& filepath)
 {
     Mix_Chunk* sound = Mix_LoadWAV(filepath.c_str());
 
@@ -140,7 +140,7 @@ driver::RawSoundHandle AudioSDL::LoadEffect(const std::string& filepath)
     return createRawSoundHandle(sound, driver::SoundType::Effect);
 }
 
-driver::RawSoundHandle AudioSDL::LoadEffect(const std::vector<char>& data, const std::string& /*ext*/)
+driver::RawSoundHandle AudioSDL::loadEffect(const std::vector<char>& data, const std::string& /*ext*/)
 {
     SDL_RWops* rwOps = SDL_RWFromConstMem(data.data(), static_cast<int>(data.size()));
     Mix_Chunk* sound = Mix_LoadWAV_RW(rwOps, true); //-V601
@@ -156,7 +156,7 @@ driver::RawSoundHandle AudioSDL::LoadEffect(const std::vector<char>& data, const
 
  *  @return Sounddeskriptor bei Erfolg, @p nullptr bei Fehler
  */
-driver::RawSoundHandle AudioSDL::LoadMusic(const std::string& filepath)
+driver::RawSoundHandle AudioSDL::loadMusic(const std::string& filepath)
 {
     Mix_Music* music = Mix_LoadMUS(filepath.c_str());
 
@@ -169,7 +169,7 @@ driver::RawSoundHandle AudioSDL::LoadMusic(const std::string& filepath)
     return createRawSoundHandle(new SDLMusicData(music), driver::SoundType::Music);
 }
 
-driver::RawSoundHandle AudioSDL::LoadMusic(const std::vector<char>& data, const std::string& /*ext*/)
+driver::RawSoundHandle AudioSDL::loadMusic(const std::vector<char>& data, const std::string& /*ext*/)
 {
     // Need to copy data as it is used by SDL
     auto handle = std::make_unique<SDLMusicData>(data);
@@ -191,11 +191,11 @@ int AudioSDL::doPlayEffect(driver::RawSoundHandle::DriverData driverData, uint8_
     int channel = Mix_PlayChannel(-1, static_cast<Mix_Chunk*>(driverData), (loop) ? -1 : 0);
     if(channel < 0)
         return -1;
-    Mix_Volume(channel, CalcEffectVolume(volume));
+    Mix_Volume(channel, calcEffectVolume(volume));
     return channel;
 }
 
-void AudioSDL::PlayMusic(const driver::RawSoundHandle& sound, int repeats)
+void AudioSDL::playMusic(const driver::RawSoundHandle& sound, int repeats)
 {
     if(!sound.getDriverData())
         return;
@@ -213,7 +213,7 @@ void AudioSDL::PlayMusic(const driver::RawSoundHandle& sound, int repeats)
 /**
  *  Stoppt die Musik.
  */
-void AudioSDL::StopMusic()
+void AudioSDL::stopMusic()
 {
     // Musik anhalten
     Mix_FadeOutMusic(1000);
@@ -224,30 +224,30 @@ void AudioSDL::doStopEffect(int channel)
     Mix_HaltChannel(channel);
 }
 
-bool AudioSDL::IsEffectPlaying(EffectPlayId play_id)
+bool AudioSDL::isEffectPlaying(EffectPlayId play_id)
 {
-    int channel = GetEffectChannel(play_id);
+    int channel = getEffectChannel(play_id);
     if(channel < 0)
         return false;
     if(Mix_Playing(channel))
         return true;
-    RemoveEffect(play_id);
+    removeEffect(play_id);
     return false;
 }
 
-void AudioSDL::ChangeVolume(EffectPlayId play_id, uint8_t volume)
+void AudioSDL::changeVolume(EffectPlayId play_id, uint8_t volume)
 {
-    int channel = GetEffectChannel(play_id);
+    int channel = getEffectChannel(play_id);
     if(channel >= 0)
-        Mix_Volume(channel, CalcEffectVolume(volume));
+        Mix_Volume(channel, calcEffectVolume(volume));
 }
 
-void AudioSDL::SetMasterEffectVolume(uint8_t volume)
+void AudioSDL::setMasterEffectVolume(uint8_t volume)
 {
     master_effects_volume = volume;
 }
 
-void AudioSDL::SetMusicVolume(uint8_t volume)
+void AudioSDL::setMusicVolume(uint8_t volume)
 {
     master_music_volume = volume;
 
@@ -255,7 +255,7 @@ void AudioSDL::SetMusicVolume(uint8_t volume)
     Mix_VolumeMusic(volume / 2);
 }
 
-uint8_t AudioSDL::CalcEffectVolume(uint8_t volume) const
+uint8_t AudioSDL::calcEffectVolume(uint8_t volume) const
 {
     // Scale by master_effects_volume and scale down to SDL_Mixer range [0, 127]
     return (static_cast<unsigned>(master_effects_volume) * volume) / 255 / 2;

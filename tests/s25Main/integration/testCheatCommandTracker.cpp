@@ -20,7 +20,7 @@ struct StoreGCFactory : public GameCommandFactory
     std::vector<gc::GameCommandPtr> gcs;
 
 protected:
-    bool AddGC(gc::GameCommandPtr gc) override
+    bool addGC(gc::GameCommandPtr gc) override
     {
         gcs.push_back(gc);
         return true;
@@ -139,10 +139,10 @@ BOOST_FIXTURE_TEST_CASE(CheatCommands, CheatCommandTrackerFixture1P)
 BOOST_FIXTURE_TEST_CASE(CheatKeys, CheatCommandTrackerFixture4P)
 {
     using RRM = Cheats::ResourceRevealMode;
-    auto& p1 = world.GetPlayer(0);
-    auto& p2 = world.GetPlayer(1);
-    auto& p3 = world.GetPlayer(2);
-    auto& p4 = world.GetPlayer(3);
+    auto& p1 = world.getPlayer(0);
+    auto& p2 = world.getPlayer(1);
+    auto& p3 = world.getPlayer(2);
+    auto& p4 = world.getPlayer(3);
     p2.ps = p3.ps = p4.ps = PlayerState::AI;
 
     const KeyEvent evKeyVisible(KeyType::F7);
@@ -167,27 +167,27 @@ BOOST_FIXTURE_TEST_CASE(CheatKeys, CheatCommandTrackerFixture4P)
     // CTRL+SHIFT+F1-F8 destroy buildings of players 1-8
     KeyEvent evDestroy(KeyType::F3);
     tracker_.onKeyEvent(evDestroy);
-    BOOST_TEST_REQUIRE(!p3.IsDefeated());
+    BOOST_TEST_REQUIRE(!p3.isDefeated());
     evDestroy.ctrl = true;
     tracker_.onKeyEvent(evDestroy);
-    BOOST_TEST_REQUIRE(!p3.IsDefeated());
+    BOOST_TEST_REQUIRE(!p3.isDefeated());
     evDestroy.ctrl = false;
     evDestroy.shift = true;
     tracker_.onKeyEvent(evDestroy);
-    BOOST_TEST_REQUIRE(!p3.IsDefeated());
+    BOOST_TEST_REQUIRE(!p3.isDefeated());
     evDestroy.ctrl = evDestroy.shift = true;
     tracker_.onKeyEvent(evDestroy);
-    BOOST_TEST(p3.IsDefeated());
+    BOOST_TEST(p3.isDefeated());
 
     // Destroy AI players with CTRL+SHIFT+F9
     evDestroy.kt = KeyType::F9;
     evDestroy.ctrl = evDestroy.shift = true;
-    BOOST_TEST_REQUIRE(!p2.IsDefeated());
-    BOOST_TEST_REQUIRE(!p4.IsDefeated());
+    BOOST_TEST_REQUIRE(!p2.isDefeated());
+    BOOST_TEST_REQUIRE(!p4.isDefeated());
     tracker_.onKeyEvent(evDestroy);
-    BOOST_TEST(!p1.IsDefeated());
-    BOOST_TEST(p2.IsDefeated());
-    BOOST_TEST(p4.IsDefeated());
+    BOOST_TEST(!p1.isDefeated());
+    BOOST_TEST(p2.isDefeated());
+    BOOST_TEST(p4.isDefeated());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

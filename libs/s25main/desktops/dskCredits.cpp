@@ -41,63 +41,63 @@ enum
 };
 }
 
-dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(entries.end())
+dskCredits::dskCredits() : Desktop(LOADER.getImageN("setup013", 0)), itCurEntry(entries.end())
 {
-    AddTextButton(ID_btBack, DrawPoint(300, 550), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
-    AddText(ID_txtRttr, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
-    AddText(ID_txtCredits, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
-    AddTimer(ID_tmrBobAnim, 40ms);
-    pageTimer = AddTimer(ID_tmrPage, PAGE_TIME);
-    pageTimer->Stop();
+    addTextButton(ID_btBack, DrawPoint(300, 550), Extent(200, 22), TextureColor::Red1, _("Back"), NormalFont);
+    addText(ID_txtRttr, DrawPoint(400, 10), _("Return To The Roots"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    addText(ID_txtCredits, DrawPoint(400, 33), _("Credits"), COLOR_YELLOW, FontStyle::CENTER, LargeFont);
+    addTimer(ID_tmrBobAnim, 40ms);
+    pageTimer = addTimer(ID_tmrPage, PAGE_TIME);
+    pageTimer->stop();
 
-    LOADER.Load(ResourceId("credits")); // Ignore failure
+    LOADER.load(ResourceId("credits")); // Ignore failure
 
     // order by last name (alphabetical)
-    CreditsEntry entry = CreditsEntry("Alexander Grund (Flamefire):", GetCreditsImgOrDefault("flamefire"));
+    CreditsEntry entry = CreditsEntry("Alexander Grund (Flamefire):", getCreditsImgOrDefault("flamefire"));
     entry.lines.push_back(_("Programming"));
     entry.lines.push_back(_("Quality Assurance"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Patrick Haak (Demophobie):", GetCreditsImgOrDefault("demophobie"));
+    entry = CreditsEntry("Patrick Haak (Demophobie):", getCreditsImgOrDefault("demophobie"));
     entry.lines.push_back(_("Website Administration"));
     entry.lines.push_back(_("Quality Assurance"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Jan-Henrik Kluth (jh):", GetCreditsImgOrDefault("jh"));
+    entry = CreditsEntry("Jan-Henrik Kluth (jh):", getCreditsImgOrDefault("jh"));
     entry.lines.push_back(_("Programming"));
     entry.lines.push_back(_("Artificial Intelligence (AI)"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Christopher Kuehnel (Spikeone):", GetCreditsImgOrDefault("spikeone"));
+    entry = CreditsEntry("Christopher Kuehnel (Spikeone):", getCreditsImgOrDefault("spikeone"));
     entry.lines.push_back(_("Additional graphics"));
     entry.lines.push_back(_("Quality Assurance"));
     entry.lines.push_back(_("Mapping"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Stefan Schüchl (Z-Stef):", GetCreditsImgOrDefault("z-stef"));
+    entry = CreditsEntry("Stefan Schüchl (Z-Stef):", getCreditsImgOrDefault("z-stef"));
     entry.lines.push_back(_("Website Administration"));
     entry.lines.push_back(_("Website Programming"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Marcus Ströbel (Maqs):", GetCreditsImgOrDefault("maqs"));
+    entry = CreditsEntry("Marcus Ströbel (Maqs):", getCreditsImgOrDefault("maqs"));
     entry.lines.push_back(_("Programming"));
     entry.lines.push_back(_("Quality Assurance"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Jonas Trampe (NastX):", GetCreditsImgOrDefault("nastx"));
+    entry = CreditsEntry("Jonas Trampe (NastX):", getCreditsImgOrDefault("nastx"));
     entry.lines.push_back(_("Quality Assurance"));
     entry.lines.push_back(_("Mapping"));
     entries.push_back(entry);
 
     // founder members
-    entry = CreditsEntry("Oliver Siebert (Oliverr):", GetCreditsImgOrDefault("oliverr"));
+    entry = CreditsEntry("Oliver Siebert (Oliverr):", getCreditsImgOrDefault("oliverr"));
     entry.lines.push_back(_("Project founder"));
     entry.lines.push_back(_("Project management"));
     entry.lines.push_back(_("Programming"));
     entry.lines.push_back(_("Quality Assurance"));
     entries.push_back(entry);
 
-    entry = CreditsEntry("Florian Doersch (FloSoft):", GetCreditsImgOrDefault("flosoft"));
+    entry = CreditsEntry("Florian Doersch (FloSoft):", getCreditsImgOrDefault("flosoft"));
     entry.lines.push_back(_("Project founder"));
     entry.lines.push_back(_("Project management"));
     entry.lines.push_back(_("Server management"));
@@ -272,9 +272,9 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
 
     WorldDescription worldDesc;
     GameDataLoader gdLoader(worldDesc);
-    if(!gdLoader.Load())
+    if(!gdLoader.load())
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game data"), this, MsgboxButton::Ok,
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game data"), this, MsgboxButton::Ok,
                                                       MsgboxIcon::ExclamationRed, 0));
         return;
     }
@@ -283,9 +283,9 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     for(unsigned i = 0; i < NUM_NATIVE_NATIONS; i++)
         nations[i] = Nation(i);
 
-    if(!LOADER.LoadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations, {}))
+    if(!LOADER.loadFilesAtGame(worldDesc.get(DescIdx<LandscapeDesc>(0)).mapGfxPath, false, nations, {}))
     {
-        WINDOWMANAGER.Show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game resources"), this,
+        WINDOWMANAGER.show(std::make_unique<iwMsgbox>(_("Error"), _("Failed to load game resources"), this,
                                                       MsgboxButton::Ok, MsgboxIcon::ExclamationRed, 0));
         return;
     }
@@ -293,39 +293,39 @@ dskCredits::dskCredits() : Desktop(LOADER.GetImageN("setup013", 0)), itCurEntry(
     this->itCurEntry = entries.begin();
 
     if(LOADER.sng_lst.size() > 8)
-        LOADER.sng_lst[8]->Play(-1);
+        LOADER.sng_lst[8]->play(-1);
 }
 
 dskCredits::~dskCredits() = default;
 
-void dskCredits::Draw_()
+void dskCredits::drawImpl()
 {
-    Desktop::Draw_();
+    Desktop::drawImpl();
     if(itCurEntry != entries.end())
     {
-        DrawBobs();
-        DrawCredit();
+        drawBobs();
+        drawCredit();
     }
 }
 
-void dskCredits::GotoNextPage()
+void dskCredits::gotoNextPage()
 {
     ++itCurEntry;
     if(itCurEntry == entries.end())
         itCurEntry = entries.begin();
-    pageTimer->Start();
+    pageTimer->start();
 }
 
-void dskCredits::GotoPrevPage()
+void dskCredits::gotoPrevPage()
 {
     if(itCurEntry == entries.begin())
         itCurEntry = std::prev(entries.end());
     else
         --itCurEntry;
-    pageTimer->Start();
+    pageTimer->start();
 }
 
-void dskCredits::DrawCredit()
+void dskCredits::drawCredit()
 {
     const auto elapsedPageTime = std::chrono::duration_cast<std::chrono::milliseconds>(pageTimer->getElapsed());
 
@@ -336,23 +336,23 @@ void dskCredits::DrawCredit()
                                     helpers::interpolate(0u, 0xFFu, elapsedPageTime, FADING_TIME);
 
     // draw text
-    LargeFont->Draw(DrawPoint(40, 100), itCurEntry->title, FontStyle{}, SetAlpha(COLOR_RED, transparency));
+    LargeFont->draw(DrawPoint(40, 100), itCurEntry->title, FontStyle{}, setAlpha(COLOR_RED, transparency));
 
     std::array<unsigned, 2> columnToY = {{150, 150}};
 
     for(const auto& line : itCurEntry->lines)
     {
-        LargeFont->Draw(DrawPoint(60 + line.column * 350, columnToY[line.column]), line.line, FontStyle{},
-                        SetAlpha(COLOR_YELLOW, transparency));
+        LargeFont->draw(DrawPoint(60 + line.column * 350, columnToY[line.column]), line.line, FontStyle{},
+                        setAlpha(COLOR_YELLOW, transparency));
         columnToY[line.column] += LargeFont->getHeight() + 5;
     }
 
-    LargeFont->Draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, FontStyle{},
-                    SetAlpha(COLOR_RED, transparency));
+    LargeFont->draw(DrawPoint(40, columnToY[0] + 20), itCurEntry->lastLine, FontStyle{},
+                    setAlpha(COLOR_RED, transparency));
 
     if(itCurEntry->pic)
-        itCurEntry->pic->DrawFull(DrawPoint(VIDEODRIVER.GetRenderSize().x - 300, 70),
-                                  SetAlpha(COLOR_WHITE, transparency));
+        itCurEntry->pic->drawFull(DrawPoint(VIDEODRIVER.getRenderSize().x - 300, 70),
+                                  setAlpha(COLOR_WHITE, transparency));
 }
 
 template<typename T>
@@ -361,19 +361,19 @@ T randEnum()
     return T(rand() % helpers::NumEnumValues_v<T>);
 }
 
-void dskCredits::DrawBobs()
+void dskCredits::drawBobs()
 {
     using namespace std::chrono_literals;
     auto bobSpawnInterval = 200ms;
 
-    if(VIDEODRIVER.GetFPS() < 30)
+    if(VIDEODRIVER.getFPS() < 30)
         bobSpawnInterval = 0ms;
-    else if(VIDEODRIVER.GetFPS() < 60)
+    else if(VIDEODRIVER.getFPS() < 60)
         bobSpawnInterval = 1s;
-    else if(VIDEODRIVER.GetFPS() < 200)
+    else if(VIDEODRIVER.getFPS() < 200)
         bobSpawnInterval = 500ms;
 
-    const auto maxNumBos = 50 + VIDEODRIVER.GetRenderSize().x / 2;
+    const auto maxNumBos = 50 + VIDEODRIVER.getRenderSize().x / 2;
 
     // add new bob
     if(bobSpawnInterval != 0ms && bobSpawnTimer.getElapsed() >= bobSpawnInterval && bobs.size() < maxNumBos)
@@ -391,7 +391,7 @@ void dskCredits::DrawBobs()
             b.direction = libsiedler2::ImgDir::E;
         } else
         {
-            b.pos.x = VIDEODRIVER.GetRenderSize().x;
+            b.pos.x = VIDEODRIVER.getRenderSize().x;
             b.direction = libsiedler2::ImgDir::W;
         }
 
@@ -427,7 +427,7 @@ void dskCredits::DrawBobs()
             // only native nations are loaded
             b.id = JOB_SPRITE_CONSTS[job].getBobId(Nation(rand() % NUM_NATIVE_NATIONS));
             b.hasWare = false;
-            b.pos.y = GetCtrl<ctrlButton>(0)->GetPos().y - 20 - rand() % 150;
+            b.pos.y = getCtrl<ctrlButton>(0)->getPos().y - 20 - rand() % 150;
             bobs.push_back(b);
         } else
         {
@@ -435,9 +435,9 @@ void dskCredits::DrawBobs()
             if(isWareDrawable(ware))
             {
                 // Japanese shield is missing
-                b.id = rttr::enum_cast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
+                b.id = rttr::enumCast((ware == GoodType::ShieldJapanese) ? GoodType::ShieldRomans : ware);
                 b.hasWare = true;
-                b.pos.y = GetCtrl<ctrlButton>(0)->GetPos().y - 20 - rand() % 150;
+                b.pos.y = getCtrl<ctrlButton>(0)->getPos().y - 20 - rand() % 150;
                 bobs.push_back(b);
             }
         }
@@ -447,17 +447,17 @@ void dskCredits::DrawBobs()
     for(const auto& bob : bobs)
     {
         if(!bob.hasWare)
-            LOADER.GetBob("jobs")->Draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
+            LOADER.getBob("jobs")->draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
         else
-            LOADER.GetBob("carrier")->Draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
+            LOADER.getBob("carrier")->draw(bob.id, bob.direction, bob.isFat, bob.animationStep, bob.pos, bob.color);
     }
 }
 
-void dskCredits::Msg_Timer(unsigned timerId)
+void dskCredits::msgTimer(unsigned timerId)
 {
     if(timerId == ID_tmrBobAnim)
     {
-        const auto width = static_cast<int>(VIDEODRIVER.GetRenderSize().x);
+        const auto width = static_cast<int>(VIDEODRIVER.getRenderSize().x);
         for(auto& bob : bobs)
         {
             bob.animationStep++;
@@ -477,59 +477,59 @@ void dskCredits::Msg_Timer(unsigned timerId)
         }
     } else if(timerId == ID_tmrPage)
     {
-        GotoNextPage();
+        gotoNextPage();
     }
 }
 
-bool dskCredits::Close()
+bool dskCredits::close()
 {
-    WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>());
+    WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>());
     return true;
 }
 
-glArchivItem_Bitmap* dskCredits::GetCreditsImgOrDefault(const std::string& name)
+glArchivItem_Bitmap* dskCredits::getCreditsImgOrDefault(const std::string& name)
 {
-    glArchivItem_Bitmap* result = LOADER.GetImage("credits", name);
+    glArchivItem_Bitmap* result = LOADER.getImage("credits", name);
     if(!result)
-        result = LOADER.GetImage("credits", "default");
+        result = LOADER.getImage("credits", "default");
     return result;
 }
 
-bool dskCredits::Msg_KeyDown(const KeyEvent&)
+bool dskCredits::msgKeyDown(const KeyEvent&)
 {
-    GotoNextPage();
+    gotoNextPage();
     return true;
 }
 
-bool dskCredits::Msg_LeftUp(const MouseCoords&)
+bool dskCredits::msgLeftUp(const MouseCoords&)
 {
-    GotoNextPage();
+    gotoNextPage();
     bobSpawnTimer.restart(); // Little easteregg
     return true;
 }
 
-bool dskCredits::Msg_RightUp(const MouseCoords&)
+bool dskCredits::msgRightUp(const MouseCoords&)
 {
-    GotoPrevPage();
+    gotoPrevPage();
     return true;
 }
 
-void dskCredits::Msg_ButtonClick(const unsigned)
+void dskCredits::msgButtonClick(const unsigned)
 {
-    Close();
+    close();
 }
 
-void dskCredits::Msg_MsgBoxResult(unsigned, MsgboxResult)
+void dskCredits::msgMsgBoxResult(unsigned, MsgboxResult)
 {
-    Close();
+    close();
 }
 
-void dskCredits::SetActive(bool active)
+void dskCredits::setActive(bool active)
 {
-    Desktop::SetActive(active);
+    Desktop::setActive(active);
     if(active && !pageTimer->isRunning())
     {
-        pageTimer->Start();
+        pageTimer->start();
         bobSpawnTimer.start();
     }
 }

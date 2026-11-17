@@ -39,7 +39,7 @@ namespace {
 Mountain closeGaps(const MapExtent& size, const Mountain& area)
 {
     NodeMapBase<uint8_t> neighbors;
-    neighbors.Resize(size);
+    neighbors.resize(size);
     Mountain closedArea = area;
 
     for(unsigned i = 0; i < gapIterations; i++)
@@ -47,7 +47,7 @@ Mountain closeGaps(const MapExtent& size, const Mountain& area)
         std::set<MapPoint, MapPointLess> candidates;
         for(const MapPoint& pt : closedArea)
         {
-            for(const MapPoint& neighbor : neighbors.GetNeighbours(pt))
+            for(const MapPoint& neighbor : neighbors.getNeighbours(pt))
             {
                 if(!helpers::contains(closedArea, neighbor))
                     candidates.insert(neighbor);
@@ -58,7 +58,7 @@ Mountain closeGaps(const MapExtent& size, const Mountain& area)
         for(const MapPoint& candidate : candidates)
         {
             const auto inArea = [&closedArea](const MapPoint& pt) { return helpers::contains(closedArea, pt); };
-            if(helpers::count_if(neighbors.GetNeighbours(candidate), inArea) >= minGapNeighbors)
+            if(helpers::countIf(neighbors.getNeighbours(candidate), inArea) >= minGapNeighbors)
                 gaps.push_back(candidate);
         }
 
@@ -94,7 +94,7 @@ LandFill selectLandFill(RandomUtility& rnd, const LandFillAmounts& amounts, cons
     if(candidates.size() == 1)
         return candidates.front();
 
-    unsigned value = rnd.RandomValue(1u, candidateAmount);
+    unsigned value = rnd.randomValue(1u, candidateAmount);
     for(const LandFill candidate : candidates)
     {
         if(value <= amounts[candidate])
@@ -111,13 +111,13 @@ void raiseDesertHill(Map& map, RandomUtility& rnd, const Mountain& area)
         return;
 
     const auto footDistance = getFootDistances(map.size, area);
-    const unsigned maxDistance = GetMaximum(footDistance, area);
+    const unsigned maxDistance = getMaximum(footDistance, area);
     // Small hills get less transitions to still contain some desert
     const unsigned transitions = std::min(desertTransitions, maxDistance);
 
-    const auto desert = map.textureMap.Find(IsCoastTerrain);
-    auto transitionTextures = map.textureMap.FindAll(IsBuildableCoast);
-    map.textureMap.Sort(transitionTextures, ByHumidity);
+    const auto desert = map.textureMap.find(isCoastTerrain);
+    auto transitionTextures = map.textureMap.findAll(isBuildableCoast);
+    map.textureMap.sort(transitionTextures, byHumidity);
 
     // Neighboring nodes share triangles. Texturing from the foot to the center lets the inner texture win which results
     // in one row of triangles per transition and nodes of the desert which are entirely covered by desert.
@@ -134,14 +134,14 @@ void raiseDesertHill(Map& map, RandomUtility& rnd, const Mountain& area)
 
         if(distance >= transitions)
         {
-            map.textureMap.Set(pt, desert);
+            map.textureMap.set(pt, desert);
             map.barren.insert(pt);
         } else
         {
             // The driest texture is next to the desert
             const auto maxIndex = static_cast<unsigned>(transitionTextures.size() - 1);
             const unsigned index = std::min(transitions - 1 - distance, maxIndex);
-            map.textureMap.Set(pt, transitionTextures[index]);
+            map.textureMap.set(pt, transitionTextures[index]);
         }
     }
 
@@ -152,9 +152,9 @@ void raiseDesertHill(Map& map, RandomUtility& rnd, const Mountain& area)
         const bool isCenter = distance == maxDistance;
         const bool isAroundCenter = distance >= transitions && distance * 3 >= maxDistance * 2;
 
-        if((isCenter && !hasBones) || (isAroundCenter && rnd.ByChance(boneChance)))
+        if((isCenter && !hasBones) || (isAroundCenter && rnd.byChance(boneChance)))
         {
-            placeDecoration(map, pt, rnd.ByChance(50) ? OI_Bone1 : OI_Bone2);
+            placeDecoration(map, pt, rnd.byChance(50) ? OI_Bone1 : OI_Bone2);
             hasBones = true;
         }
     }
@@ -165,28 +165,28 @@ void createSwamp(Map& map, RandomUtility& rnd, const Mountain& area)
     if(area.empty())
         return;
 
-    const auto swamp = map.textureMap.Find(isImpassable);
+    const auto swamp = map.textureMap.find(isImpassable);
     const uint8_t level = map.z[*std::min_element(
       area.begin(), area.end(), [&map](const MapPoint& lhs, const MapPoint& rhs) { return map.z[lhs] < map.z[rhs]; })];
 
     // Other landscapes (rivers, mountains, deserts, water) are textured already or located at sea level. Rivers follow
     // the height of the land. Lowering their banks would leave the water on top of a ridge.
-    const auto obstacleDistances = DistancesTo(map.size, [&map](const MapPoint& pt) {
+    const auto obstacleDistances = distancesTo(map.size, [&map](const MapPoint& pt) {
         if(map.z[pt] == map.height.minimum)
             return true;
-        const auto triangles = GetTriangles(pt, map.size);
-        return helpers::contains_if(triangles,
-                                    [&map](const Triangle& t) { return static_cast<bool>(map.textureMap.Get(t)); });
+        const auto triangles = getTriangles(pt, map.size);
+        return helpers::containsIf(triangles,
+                                   [&map](const Triangle& t) { return static_cast<bool>(map.textureMap.get(t)); });
     });
 
     for(const MapPoint& pt : area)
     {
         map.z[pt] = level;
-        map.textureMap.Set(pt, swamp);
+        map.textureMap.set(pt, swamp);
         map.barren.insert(pt);
     }
 
-    const auto distances = DistancesTo(area, map.size);
+    const auto distances = distancesTo(area, map.size);
 
     RTTR_FOREACH_PT(MapPoint, map.size)
     {
@@ -200,9 +200,9 @@ void createSwamp(Map& map, RandomUtility& rnd, const Mountain& area)
         const unsigned target = std::min<unsigned>(map.z[pt], level + distance);
         map.z[pt] = static_cast<uint8_t>(std::max(target, map.z[pt] > maxLowering ? map.z[pt] - maxLowering : 0u));
 
-        if(distance == 1 && map.objectTypes[pt] == libsiedler2::OT_Empty && rnd.ByChance(deadTreeChance))
+        if(distance == 1 && map.objectTypes[pt] == libsiedler2::OT_Empty && rnd.byChance(deadTreeChance))
         {
-            placeDecoration(map, pt, rnd.ByChance(50) ? OI_DeadTree : OI_DeadTreeTrunk);
+            placeDecoration(map, pt, rnd.byChance(50) ? OI_DeadTree : OI_DeadTreeTrunk);
         }
     }
 }
@@ -210,33 +210,33 @@ void createSwamp(Map& map, RandomUtility& rnd, const Mountain& area)
 void smoothDesertTransitions(Map& map)
 {
     auto& textures = map.textureMap;
-    const auto desert = textures.Find(IsCoastTerrain);
+    const auto desert = textures.find(isCoastTerrain);
     std::vector<MapPoint> desertNodes;
     for(const MapPoint& pt : map.barren)
     {
-        if(textures.All(pt, IsCoastTerrain))
+        if(textures.all(pt, isCoastTerrain))
             desertNodes.push_back(pt);
     }
     if(desertNodes.empty())
         return;
 
     // Land from dry to lush: each ring around the desert may be one step more lush than the previous one
-    auto ramp = textures.FindAll(IsBuildableLand);
-    textures.Sort(ramp, [](const TerrainDesc& terrain) { return std::make_pair(terrain.humidity, terrain.s2Id); });
+    auto ramp = textures.findAll(isBuildableLand);
+    textures.sort(ramp, [](const TerrainDesc& terrain) { return std::make_pair(terrain.humidity, terrain.s2Id); });
     const auto exceeds = [&textures, &ramp](const MapPoint& pt, unsigned limit) {
-        for(const Triangle& triangle : GetTriangles(pt, textures.textures_.GetSize()))
+        for(const Triangle& triangle : getTriangles(pt, textures.textures_.getSize()))
         {
-            const auto it = std::find(ramp.begin(), ramp.end(), textures.Get(triangle));
+            const auto it = std::find(ramp.begin(), ramp.end(), textures.get(triangle));
             if(it != ramp.end() && static_cast<unsigned>(it - ramp.begin()) > limit)
                 return true;
         }
         return false;
     };
     const auto isWalkableLand = [](const TerrainDesc& terrain) {
-        return terrain.kind == TerrainKind::Land && terrain.Is(ETerrain::Walkable);
+        return terrain.kind == TerrainKind::Land && terrain.is(ETerrain::Walkable);
     };
 
-    const auto distances = DistancesTo(desertNodes, map.size);
+    const auto distances = distancesTo(desertNodes, map.size);
     const unsigned rings = std::min<unsigned>(3, static_cast<unsigned>(ramp.size()));
 
     // Neighboring nodes share triangles: painting from the outside to the inside keeps one row for each transition
@@ -244,13 +244,13 @@ void smoothDesertTransitions(Map& map)
     {
         RTTR_FOREACH_PT(MapPoint, map.size)
         {
-            if(distances[pt] == ring && !helpers::contains(map.barren, pt) && textures.All(pt, isWalkableLand)
+            if(distances[pt] == ring && !helpers::contains(map.barren, pt) && textures.all(pt, isWalkableLand)
                && exceeds(pt, ring - 1))
-                textures.Set(pt, ramp[ring - 1]);
+                textures.set(pt, ramp[ring - 1]);
         }
     }
     for(const MapPoint& pt : desertNodes)
-        textures.Set(pt, desert);
+        textures.set(pt, desert);
 }
 
 std::vector<FilledArea> fillFreeLand(Map& map, RandomUtility& rnd, unsigned mountainLevel,

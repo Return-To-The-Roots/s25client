@@ -15,9 +15,9 @@ public:
                    const std::string& text, const glFont* font, const std::string& tooltip);
 
     /// Changes width so at most this many chars can be shown
-    void ResizeForMaxChars(unsigned numChars);
+    void resizeForMaxChars(unsigned numChars);
 
 protected:
     /// Draw actual content (text here)
-    void DrawContent() const override;
+    void drawContent() const override;
 };

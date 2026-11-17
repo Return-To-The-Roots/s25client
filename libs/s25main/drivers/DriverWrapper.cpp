@@ -35,18 +35,18 @@ namespace drivers {
 DriverWrapper::DriverWrapper() = default;
 DriverWrapper::~DriverWrapper() = default;
 
-void DriverWrapper::Unload()
+void DriverWrapper::unload()
 {
     dll.unload();
 }
 
-bool DriverWrapper::Load(const DriverType dt, std::string& preference)
+bool DriverWrapper::load(const DriverType dt, std::string& preference)
 {
     // ggf. aufräumen vorher
-    Unload();
+    unload();
 
     /// Verfügbare Treiber auflisten
-    std::vector<DriverItem> drivers = LoadDriverList(dt);
+    std::vector<DriverItem> drivers = loadDriverList(dt);
 
     LOG.write("%u %s drivers found!\n") % drivers.size() % getName(dt);
 
@@ -55,19 +55,19 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
         return false;
 
     /// Suche, ob der Treiber dabei ist, den wir wünschen
-    const auto it = helpers::find_if(drivers, [preference](const auto& it) { return it.GetName() == preference; });
+    const auto it = helpers::findIf(drivers, [preference](const auto& it) { return it.getName() == preference; });
     if(it != drivers.end())
     {
         // Dann den gleich nehmen
-        dll = tryLoadLibrary(it->GetFile());
+        dll = tryLoadLibrary(it->getFile());
     }
 
     // ersten Treiber laden
     if(!dll)
     {
-        dll = tryLoadLibrary(drivers.front().GetFile());
+        dll = tryLoadLibrary(drivers.front().getFile());
         // Standardwert zuweisen
-        preference = drivers.front().GetName();
+        preference = drivers.front().getName();
     }
 
     if(!dll)
@@ -79,12 +79,12 @@ bool DriverWrapper::Load(const DriverType dt, std::string& preference)
     return true;
 }
 
-bool DriverWrapper::IsLoaded() const
+bool DriverWrapper::isLoaded() const
 {
     return dll.is_loaded();
 }
 
-bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError)
+bool DriverWrapper::checkLibrary(const bfs::path& path, DriverType dt, std::string& nameOrError)
 {
     auto dll = tryLoadLibrary(path);
 
@@ -128,11 +128,11 @@ bool DriverWrapper::CheckLibrary(const bfs::path& path, DriverType dt, std::stri
     return true;
 }
 
-std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const DriverType dt)
+std::vector<DriverWrapper::DriverItem> DriverWrapper::loadDriverList(const DriverType dt)
 {
-    std::vector<DriverItem> driver_list;
+    std::vector<DriverItem> driverList;
 
-    const auto driverDir = RTTRCONFIG.ExpandPath(s25::folders::driver) / getName(dt);
+    const auto driverDir = RTTRCONFIG.expandPath(s25::folders::driver) / getName(dt);
     std::string extension =
 #ifdef _WIN32
       "dll";
@@ -145,9 +145,9 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 #endif     // !_WIN32
 
     LOG.write(_("Searching for drivers in %s\n")) % driverDir;
-    const std::vector<boost::filesystem::path> driver_files = ListDir(driverDir, extension, false);
+    const std::vector<boost::filesystem::path> driverFiles = listDir(driverDir, extension, false);
 
-    for(const auto& path : driver_files)
+    for(const auto& path : driverFiles)
     {
 #ifdef _WIN32
         // check filename for "rls_*" / "dbg_*", to allow not specialized drivers (for cygwin builds)
@@ -158,18 +158,18 @@ std::vector<DriverWrapper::DriverItem> DriverWrapper::LoadDriverList(const Drive
 #    else
           {"dbg_", "Debug_"};
 #    endif
-        const bool isBlacklisted = helpers::contains_if(blacklistedPrefixes, [&filename](const std::string& prefix) {
+        const bool isBlacklisted = helpers::containsIf(blacklistedPrefixes, [&filename](const std::string& prefix) {
             return filename.substr(0, prefix.length()) == prefix;
         });
         if(isBlacklisted)
             continue;
 #endif
         std::string nameOrError;
-        if(!CheckLibrary(path, dt, nameOrError))
+        if(!checkLibrary(path, dt, nameOrError))
             LOG.write(_("Skipping %s: %s\n")) % path % nameOrError;
         else
-            driver_list.push_back(DriverItem(path, nameOrError));
+            driverList.push_back(DriverItem(path, nameOrError));
     }
-    return driver_list;
+    return driverList;
 }
 } // namespace drivers

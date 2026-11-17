@@ -13,9 +13,9 @@ class ILobbyClient
 {
 public:
     virtual ~ILobbyClient() = default;
-    virtual bool IsLoggedIn() const = 0;
-    virtual void AddListener(LobbyInterface* listener) = 0;
-    virtual void RemoveListener(LobbyInterface* listener) = 0;
-    virtual void SendServerJoinRequest() = 0;
-    virtual void SendChat(const std::string& text) = 0;
+    virtual bool isLoggedIn() const = 0;
+    virtual void addListener(LobbyInterface* listener) = 0;
+    virtual void removeListener(LobbyInterface* listener) = 0;
+    virtual void sendServerJoinRequest() = 0;
+    virtual void sendChat(const std::string& text) = 0;
 };

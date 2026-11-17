@@ -15,16 +15,16 @@ class RttrConfig : public Singleton<RttrConfig>
     std::map<std::string, boost::filesystem::path> pathMappings;
 
 public:
-    bool Init();
+    bool init();
 
     /// Checks the env var for path override and returns result path
     static boost::filesystem::path getEnvOverride(const std::string& id, const boost::filesystem::path& defaultPath);
     /// Return the prefix path for the installation
-    static boost::filesystem::path GetPrefixPath();
+    static boost::filesystem::path getPrefixPath();
     /// Return the path from which RTTR was compiled
-    static boost::filesystem::path GetSourceDir();
+    static boost::filesystem::path getSourceDir();
     /// Expand the given path to a valid, absolute path replacing placeholders like <RTTR_BINDIR>/foo.bar
-    boost::filesystem::path ExpandPath(const std::string& path) const;
+    boost::filesystem::path expandPath(const std::string& path) const;
     /// Overwrite a given path mapping
     void overridePathMapping(const std::string& id, const boost::filesystem::path& path);
 };

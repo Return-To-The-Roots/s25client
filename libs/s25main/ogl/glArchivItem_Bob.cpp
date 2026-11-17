@@ -10,18 +10,18 @@
 /**
  *  Zeichnet einen Animationsstep.
  */
-void glArchivItem_Bob::Draw(unsigned item, libsiedler2::ImgDir direction, bool fat, unsigned animationstep,
+void glArchivItem_Bob::draw(unsigned item, libsiedler2::ImgDir direction, bool fat, unsigned animationstep,
                             DrawPoint drawPt, unsigned color)
 {
     auto* body = dynamic_cast<glArchivItem_Bitmap_Player*>(getBody(fat, direction, animationstep));
     if(body)
-        body->DrawFull(drawPt, COLOR_WHITE, color);
+        body->drawFull(drawPt, COLOR_WHITE, color);
     auto overlay = getOverlay(item, fat, direction, animationstep);
     auto* glOverlay = dynamic_cast<glArchivItem_Bitmap_Player*>(overlay.first);
     if(glOverlay)
     {
         drawPt.y -= overlay.second;
-        glOverlay->DrawFull(drawPt, COLOR_WHITE, color);
+        glOverlay->drawFull(drawPt, COLOR_WHITE, color);
     }
 }
 

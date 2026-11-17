@@ -17,7 +17,7 @@ struct GetWorld
 template<>
 struct GetWorld<GameWorldViewer>
 {
-    static const GameWorldBase& get(const GameWorldViewer& gwv) { return gwv.GetWorld(); }
+    static const GameWorldBase& get(const GameWorldViewer& gwv) { return gwv.getWorld(); }
 };
 
 template<class T_WorldOrViewer>
@@ -30,16 +30,16 @@ const GameWorldBase& getWorld(const T_WorldOrViewer& world)
 namespace detail {
 
 template<class T_WorldOrViewer>
-std::vector<Direction> FindPathForRoad(const T_WorldOrViewer& world, const MapPoint startPt, const MapPoint endPt,
+std::vector<Direction> findPathForRoad(const T_WorldOrViewer& world, const MapPoint startPt, const MapPoint endPt,
                                        bool isBoatRoad, unsigned maxLen)
 {
     RTTR_Assert(startPt != endPt);
     std::vector<Direction> road;
-    getWorld(world).GetFreePathFinder().FindPath(startPt, endPt, false, maxLen, &road, nullptr, nullptr,
+    getWorld(world).getFreePathFinder().findPath(startPt, endPt, false, maxLen, &road, nullptr, nullptr,
                                                  makePathConditionRoad(world, isBoatRoad));
     return road;
 }
 
-template std::vector<Direction> FindPathForRoad(const GameWorldBase&, const MapPoint, const MapPoint, bool, unsigned);
-template std::vector<Direction> FindPathForRoad(const GameWorldViewer&, const MapPoint, const MapPoint, bool, unsigned);
+template std::vector<Direction> findPathForRoad(const GameWorldBase&, const MapPoint, const MapPoint, bool, unsigned);
+template std::vector<Direction> findPathForRoad(const GameWorldViewer&, const MapPoint, const MapPoint, bool, unsigned);
 } // namespace detail

@@ -5,7 +5,7 @@
 #include "glArchivItem_Sound_Wave.h"
 #include "drivers/AudioDriverWrapper.h"
 
-SoundHandle glArchivItem_Sound_Wave::Load()
+SoundHandle glArchivItem_Sound_Wave::load()
 {
-    return AUDIODRIVER.LoadEffect(*this, ".wav");
+    return AUDIODRIVER.loadEffect(*this, ".wav");
 }

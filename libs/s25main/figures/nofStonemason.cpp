@@ -20,56 +20,56 @@ nofStonemason::nofStonemason(const MapPoint pos, const unsigned char player, nob
 nofStonemason::nofStonemason(SerializedGameData& sgd, const unsigned obj_id) : nofFarmhand(sgd, obj_id) {}
 
 /// Malt den Arbeiter beim Arbeiten
-void nofStonemason::DrawWorking(DrawPoint drawPt)
+void nofStonemason::drawWorking(DrawPoint drawPt)
 {
-    unsigned now_id;
+    unsigned nowId;
 
     // Stein hauen
-    LOADER.GetPlayerImage("rom_bobs", 40 + (now_id = GAMECLIENT.Interpolate(64, current_ev)) % 8)
-      ->DrawFull(drawPt, COLOR_WHITE, world->GetPlayer(player).color);
+    LOADER.getPlayerImage("rom_bobs", 40 + (nowId = GAMECLIENT.interpolate(64, current_ev)) % 8)
+      ->drawFull(drawPt, COLOR_WHITE, world->getPlayer(player).color);
 
-    if(now_id % 8 == 5)
+    if(nowId % 8 == 5)
     {
-        world->GetSoundMgr().playNOSound(56, *this, now_id);
+        world->getSoundMgr().playNOSound(56, *this, nowId);
         was_sounding = true;
     }
 }
 
-unsigned short nofStonemason::GetCarryID() const
+unsigned short nofStonemason::getCarryID() const
 {
     return 63;
 }
 
 /// Abgeleitete Klasse informieren, wenn sie anfängt zu arbeiten (Vorbereitungen)
-void nofStonemason::WorkStarted() {}
+void nofStonemason::workStarted() {}
 
 /// Abgeleitete Klasse informieren, wenn fertig ist mit Arbeiten
-void nofStonemason::WorkFinished()
+void nofStonemason::workFinished()
 {
     // Stein abhauen (wenn er nur noch ganz klein ist, dann wird er von der Landkarte getilgt)
-    if(world->GetSpecObj<noGranite>(pos)->IsSmall())
+    if(world->getSpecObj<noGranite>(pos)->isSmall())
     {
         // Granitklötzchen löschen
-        world->DestroyNO(pos);
+        world->destroyNO(pos);
 
         // Minimap Bescheid geben (Granitglötzchen muss weg)
-        if(world->GetGameInterface())
-            world->GetGameInterface()->GI_UpdateMinimap(pos);
+        if(world->getGameInterface())
+            world->getGameInterface()->GI_UpdateMinimap(pos);
 
         // Drumherum BQ neu berechnen, da diese sich ja jetzt hätten ändern können
-        world->RecalcBQAroundPoint(pos);
+        world->recalcBQAroundPoint(pos);
     } else
         // ansonsten wird er um 1 kleiner
-        world->GetSpecObj<noGranite>(pos)->Hew();
+        world->getSpecObj<noGranite>(pos)->hew();
 
     // Stein in die Hand nehmen
     ware = GoodType::Stones;
 }
 
 /// Returns the quality of this working point or determines if the worker can work here at all
-nofFarmhand::PointQuality nofStonemason::GetPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
+nofFarmhand::PointQuality nofStonemason::getPointQuality(const MapPoint pt, bool /* isBeforeWork */) const
 {
     // An dieser Position muss es nur Stein geben
-    return ((world->GetNO(pt)->GetType() == NodalObjectType::Granite) ? PointQuality::Class1 :
+    return ((world->getNO(pt)->getType() == NodalObjectType::Granite) ? PointQuality::Class1 :
                                                                         PointQuality::NotPossible);
 }

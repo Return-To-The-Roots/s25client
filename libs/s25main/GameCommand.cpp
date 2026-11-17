@@ -18,7 +18,7 @@ unsigned Deserializer::getCurrentVersion()
     return 2;
 }
 
-GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
+GameCommandPtr GameCommand::deserialize(Deserializer& ser)
 {
     auto gcType = helpers::popEnum<GCType>(ser);
     GameCommand* gc;
@@ -59,13 +59,13 @@ GameCommandPtr GameCommand::Deserialize(Deserializer& ser)
         case GCType::UpgradeRoad: gc = new UpgradeRoad(ser); break;
         case GCType::SetTroopLimit: gc = new SetTroopLimit(ser); break;
         case GCType::NotifyAlliesOfLocation: gc = new NotifyAlliesOfLocation(ser); break;
-        default: throw std::logic_error("Invalid GC Type: " + helpers::toString(rttr::enum_cast(gcType)));
+        default: throw std::logic_error("Invalid GC Type: " + helpers::toString(rttr::enumCast(gcType)));
     }
     RTTR_Assert(gc->gcType == gcType);
     return gc;
 }
 
-void GameCommand::Serialize(Serializer& ser) const
+void GameCommand::serialize(Serializer& ser) const
 {
     helpers::pushEnum<uint8_t>(ser, gcType);
 }

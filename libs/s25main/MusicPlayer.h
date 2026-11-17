@@ -19,19 +19,19 @@ public:
     MusicPlayer();
 
     /// Startet Abspielvorgang
-    void Play();
+    void play();
     /// Stoppt Abspielvorgang
-    void Stop();
+    void stop();
 
     /// Musik wurde fertiggespielt (Callback)
-    void MusicFinished() { PlayNext(); }
+    void musicFinished() { playNext(); }
     /// liefert die Playlist.
-    const Playlist& GetPlaylist() const { return list; }
-    void SetPlaylist(Playlist pl) { list = std::move(pl); }
+    const Playlist& getPlaylist() const { return list; }
+    void setPlaylist(Playlist pl) { list = std::move(pl); }
 
 protected:
     /// Spielt nächstes Stück ab
-    void PlayNext();
+    void playNext();
 
 private:
     bool playing;            /// Läuft die Musik gerade?

@@ -19,12 +19,12 @@ public:
     GameMessage(uint16_t id) : Message(id) {}
 
     /// Run Methode für GameMessages, wobei PlayerId ggf. schon in der Message festgemacht wurde
-    virtual bool Run(GameMessageInterface* callback) const = 0;
+    virtual bool runGame(GameMessageInterface* callback) const = 0;
 
     bool run(MessageInterface* callback, unsigned senderPlayerID) override;
 
-    static Message* create_game(unsigned short id);
-    Message* create(unsigned short id) const override { return create_game(id); }
+    static Message* createGame(unsigned short id);
+    Message* create(unsigned short id) const override { return createGame(id); }
 };
 
 /// Game message that optionally has a player ID
@@ -37,6 +37,6 @@ public:
 
     GameMessageWithPlayer(uint16_t id, uint8_t player = NO_PLAYER_ID) : GameMessage(id), player(player) {}
 
-    void Serialize(Serializer& ser) const override;
-    void Deserialize(Serializer& ser) override;
+    void serialize(Serializer& ser) const override;
+    void deserialize(Serializer& ser) override;
 };

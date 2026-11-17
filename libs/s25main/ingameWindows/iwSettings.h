@@ -13,11 +13,11 @@ public:
     iwSettings();
 
 protected:
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_CheckboxChange(unsigned ctrl_id, bool checked) override;
-    void Msg_Group_ComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
-    void Msg_ScreenResize(const ScreenResizeEvent& sr) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+    void msgCheckboxChange(unsigned ctrl_id, bool checked) override;
+    void msgGroupComboSelectItem(unsigned group_id, unsigned ctrl_id, unsigned selection) override;
+    void msgScreenResize(const ScreenResizeEvent& sr) override;
 
 private:
     std::vector<VideoMode> supportedResolutions_, windowSizes_;

@@ -50,7 +50,7 @@ public:
      *
      * @return a new archiv containing the information of this map
      */
-    libsiedler2::Archiv CreateArchiv() const;
+    libsiedler2::Archiv createArchiv() const;
 
     NodeMapBase<TexturePair>& getTextures() { return textureMap.textures_; }
     const NodeMapBase<TexturePair>& getTextures() const { return textureMap.textures_; }

@@ -13,30 +13,30 @@ FoWNode::FoWNode() : last_update_time(0), visibility(Visibility::Invisible), own
     std::fill(boundary_stones.begin(), boundary_stones.end(), 0);
 }
 
-void FoWNode::Serialize(SerializedGameData& sgd) const
+void FoWNode::serialize(SerializedGameData& sgd) const
 {
-    sgd.PushEnum<uint8_t>(visibility);
+    sgd.pushEnum<uint8_t>(visibility);
     // Only in FoW can be FoW objects
     if(visibility == Visibility::FogOfWar)
     {
-        sgd.PushUnsignedInt(last_update_time);
-        sgd.PushFOWObject(object.get());
+        sgd.pushUnsignedInt(last_update_time);
+        sgd.pushFOWObject(object.get());
         helpers::pushContainer(sgd, roads);
-        sgd.PushUnsignedChar(owner);
+        sgd.pushUnsignedChar(owner);
         helpers::pushContainer(sgd, boundary_stones);
     }
 }
 
-void FoWNode::Deserialize(SerializedGameData& sgd)
+void FoWNode::deserialize(SerializedGameData& sgd)
 {
-    visibility = sgd.Pop<Visibility>();
+    visibility = sgd.pop<Visibility>();
     // Only in FoW can be FoW objects
     if(visibility == Visibility::FogOfWar)
     {
-        last_update_time = sgd.PopUnsignedInt();
-        object = sgd.PopFOWObject();
+        last_update_time = sgd.popUnsignedInt();
+        object = sgd.popFOWObject();
         helpers::popContainer(sgd, roads);
-        owner = sgd.PopUnsignedChar();
+        owner = sgd.popUnsignedChar();
         helpers::popContainer(sgd, boundary_stones);
     } else
     {

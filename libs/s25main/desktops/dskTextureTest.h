@@ -14,12 +14,12 @@ public:
     dskTextureTest();
     ~dskTextureTest();
 
-    void Load();
+    void load();
 
-    void Msg_ComboSelectItem(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_PaintAfter() override;
-    bool Msg_KeyDown(const KeyEvent& ke) override;
+    void msgComboSelectItem(unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgPaintAfter() override;
+    bool msgKeyDown(const KeyEvent& ke) override;
 
 private:
     WorldDescription desc;

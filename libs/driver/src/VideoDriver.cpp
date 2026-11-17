@@ -25,7 +25,7 @@ VideoDriver::VideoDriver(VideoDriverLoaderInterface* CallBack)
     std::fill(keyboard.begin(), keyboard.end(), false);
 }
 
-Position VideoDriver::GetMousePos() const
+Position VideoDriver::getMousePos() const
 {
     return mouse_xy.pos;
 }
@@ -35,7 +35,7 @@ Position VideoDriver::GetMousePos() const
  *
  *  @return @p true bei Gedrückt, @p false bei Losgelassen
  */
-bool VideoDriver::GetMouseStateL() const
+bool VideoDriver::getMouseStateL() const
 {
     return mouse_xy.ldown;
 }
@@ -45,7 +45,7 @@ bool VideoDriver::GetMouseStateL() const
  *
  *  @return @p true bei Gedrückt, @p false bei Losgelassen
  */
-bool VideoDriver::GetMouseStateR() const
+bool VideoDriver::getMouseStateR() const
 {
     return mouse_xy.rdown;
 }
@@ -55,14 +55,14 @@ bool VideoDriver::GetMouseStateR() const
  *
  *  @return @p true at least 1 finger, @p false when mouse used
  */
-bool VideoDriver::IsTouchEvent() const
+bool VideoDriver::isTouchEvent() const
 {
     return mouse_xy.num_tfingers > 0;
 }
 
-VideoMode VideoDriver::FindClosestVideoMode(const VideoMode mode) const
+VideoMode VideoDriver::findClosestVideoMode(const VideoMode mode) const
 {
-    std::vector<VideoMode> avModes = ListVideoModes();
+    std::vector<VideoMode> avModes = listVideoModes();
     if(avModes.empty())
         throw std::runtime_error("No supported video modes found!");
     unsigned minSizeDiff = std::numeric_limits<unsigned>::max();
@@ -81,7 +81,7 @@ VideoMode VideoDriver::FindClosestVideoMode(const VideoMode mode) const
     return best;
 }
 
-void VideoDriver::SetNewSize(VideoMode windowSize, Extent renderSize)
+void VideoDriver::setNewSize(VideoMode windowSize, Extent renderSize)
 {
     windowSize_ = windowSize;
     renderSize_ = renderSize;
@@ -109,12 +109,12 @@ void VideoDriver::setGuiScalePercent(unsigned percent)
 
     guiScale_ = GuiScale(percent);
     scaledRenderSize_ = guiScale_.screenToView<Extent>(renderSize_);
-    CallBack->WindowResized();
+    CallBack->windowResized();
 
     // move cursor to new position in view space
     // must happen after window resize event to avoid drawing spurious hover events
     mouse_xy.pos = guiScale_.screenToView(screenPos);
-    CallBack->Msg_MouseMove(mouse_xy);
+    CallBack->msgMouseMove(mouse_xy);
 }
 
 GuiScaleRange VideoDriver::getGuiScaleRange() const

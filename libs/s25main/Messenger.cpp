@@ -22,9 +22,9 @@ const helpers::EnumArray<unsigned, ChatDestination> CD_COLORS = {{0, COLOR_WHITE
 Messenger::~Messenger() = default;
 
 /// Zeit, die
-void Messenger::Draw()
+void Messenger::draw()
 {
-    const unsigned curTime = VIDEODRIVER.GetTickCount();
+    const unsigned curTime = VIDEODRIVER.getTickCount();
     DrawPoint textPos(20, 100);
     for(auto it = messages.begin(); it != messages.end(); textPos.y += LargeFont->getHeight())
     {
@@ -40,19 +40,19 @@ void Messenger::Draw()
         if(diff > 18000)
             transparency = (transparency - transparency * (diff - 18000) / 2000);
 
-        std::string cd_str = (it->cd == ChatDestination::System) ? "" : _(CD_STRINGS[it->cd]);
+        std::string cdStr = (it->cd == ChatDestination::System) ? "" : _(CD_STRINGS[it->cd]);
 
         DrawPoint curTextPos(textPos);
-        LargeFont->Draw(curTextPos, it->author, FontStyle::LEFT, SetAlpha(it->color_author, transparency));
+        LargeFont->draw(curTextPos, it->author, FontStyle::LEFT, setAlpha(it->color_author, transparency));
         curTextPos.x += LargeFont->getWidth(it->author);
-        LargeFont->Draw(curTextPos, cd_str, FontStyle::LEFT, SetAlpha(CD_COLORS[it->cd], transparency));
-        curTextPos.x += LargeFont->getWidth(cd_str);
-        LargeFont->Draw(curTextPos, it->msg, FontStyle::LEFT, SetAlpha(it->color_msg, transparency));
+        LargeFont->draw(curTextPos, cdStr, FontStyle::LEFT, setAlpha(CD_COLORS[it->cd], transparency));
+        curTextPos.x += LargeFont->getWidth(cdStr);
+        LargeFont->draw(curTextPos, it->msg, FontStyle::LEFT, setAlpha(it->color_msg, transparency));
         ++it;
     }
 }
 
-void Messenger::AddMessage(const std::string& author, const unsigned color_author, const ChatDestination cd,
+void Messenger::addMessage(const std::string& author, const unsigned color_author, const ChatDestination cd,
                            const std::string& msg, const unsigned color_msg)
 {
     if(!author.empty())
@@ -62,13 +62,13 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
     // in Zeilen aufteilen, damit alles auf den Bildschirm passt
     glFont::WrapInfo wi =
-      LargeFont->GetWrapInfo(msg,
-                             VIDEODRIVER.GetRenderSize().x - 60 - LargeFont->getWidth(author)
+      LargeFont->getWrapInfo(msg,
+                             VIDEODRIVER.getRenderSize().x - 60 - LargeFont->getWidth(author)
                                - ((cd == ChatDestination::System) ? 0 : LargeFont->getWidth(_(CD_STRINGS[cd]))),
-                             VIDEODRIVER.GetRenderSize().x - 60);
+                             VIDEODRIVER.getRenderSize().x - 60);
 
     // Message-Strings erzeugen aus den WrapInfo
-    std::vector<std::string> strings = wi.CreateSingleStrings(msg);
+    std::vector<std::string> strings = wi.createSingleStrings(msg);
 
     for(unsigned i = 0; i < strings.size(); ++i)
     {
@@ -91,7 +91,7 @@ void Messenger::AddMessage(const std::string& author, const unsigned color_autho
 
         tmp.color_author = color_author;
         tmp.color_msg = color_msg;
-        tmp.starttime = VIDEODRIVER.GetTickCount();
+        tmp.starttime = VIDEODRIVER.getTickCount();
 
         messages.push_back(tmp);
     }

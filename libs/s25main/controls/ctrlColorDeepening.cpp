@@ -9,7 +9,7 @@ ctrlColorDeepening::ctrlColorDeepening(Window* parent, unsigned id, DrawPoint po
     : ctrlDeepening(parent, id, pos, size, tc), ctrlBaseColor(fillColor)
 {}
 
-void ctrlColorDeepening::DrawContent() const
+void ctrlColorDeepening::drawContent() const
 {
-    DrawRectangle(Rect(GetDrawPos() + DrawPoint(3, 3), GetSize() - Extent(6, 6)), color_);
+    drawRectangle(Rect(getDrawPos() + DrawPoint(3, 3), getSize() - Extent(6, 6)), color_);
 }

@@ -11,70 +11,70 @@ ctrlOptionGroup::ctrlOptionGroup(Window* parent, unsigned id, GroupSelectType se
 /**
  *  wählt einen Button aus der Gruppe aus.
  */
-void ctrlOptionGroup::SetSelection(unsigned selection, bool notify)
+void ctrlOptionGroup::setSelection(unsigned selection, bool notify)
 {
     // Aktuellen ausgewählten Button wieder normal machen
     if(this->selection_)
     {
-        auto* button = GetCtrl<ctrlButton>(*this->selection_);
+        auto* button = getCtrl<ctrlButton>(*this->selection_);
         RTTR_Assert(button);
         switch(select_type)
         {
-            case GroupSelectType::Illuminate: button->SetIlluminated(false); break;
-            case GroupSelectType::Check: button->SetChecked(false); break;
-            case GroupSelectType::Show: button->SetVisible(true); break;
+            case GroupSelectType::Illuminate: button->setIlluminated(false); break;
+            case GroupSelectType::Check: button->setChecked(false); break;
+            case GroupSelectType::show: button->setVisible(true); break;
         }
     }
 
     // Neuen Button auswählen
-    auto* button = GetCtrl<ctrlButton>(selection);
+    auto* button = getCtrl<ctrlButton>(selection);
     RTTR_Assert(button);
     switch(select_type)
     {
-        case GroupSelectType::Illuminate: button->SetIlluminated(true); break;
-        case GroupSelectType::Check: button->SetChecked(true); break;
-        case GroupSelectType::Show: button->SetVisible(false); break;
+        case GroupSelectType::Illuminate: button->setIlluminated(true); break;
+        case GroupSelectType::Check: button->setChecked(true); break;
+        case GroupSelectType::show: button->setVisible(false); break;
     }
 
     this->selection_ = selection;
 
-    if(notify && GetParent())
-        GetParent()->Msg_OptionGroupChange(GetID(), selection);
+    if(notify && getParent())
+        getParent()->msgOptionGroupChange(getID(), selection);
 }
 
-unsigned ctrlOptionGroup::GetSelection() const
+unsigned ctrlOptionGroup::getSelection() const
 {
     if(!selection_)
         throw std::logic_error("No button selected in option group");
     return *selection_;
 }
 
-void ctrlOptionGroup::Msg_ButtonClick(const unsigned ctrl_id)
+void ctrlOptionGroup::msgButtonClick(const unsigned ctrl_id)
 {
-    SetSelection(ctrl_id, true);
+    setSelection(ctrl_id, true);
 }
 
-bool ctrlOptionGroup::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlOptionGroup::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+    return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
-bool ctrlOptionGroup::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlOptionGroup::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
-bool ctrlOptionGroup::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlOptionGroup::msgWheelUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_WheelUp, mc);
+    return relayMouseMessage(&Window::msgWheelUp, mc);
 }
 
-bool ctrlOptionGroup::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlOptionGroup::msgWheelDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_WheelDown, mc);
+    return relayMouseMessage(&Window::msgWheelDown, mc);
 }
 
-bool ctrlOptionGroup::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlOptionGroup::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }

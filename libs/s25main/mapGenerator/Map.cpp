@@ -16,14 +16,14 @@ Map::Map(const MapExtent& size, uint8_t players, const WorldDescription& worldDe
     : textureMap(TextureMap(worldDesc, landscape, size)), name("Random"), author("Auto"), height(0, maxHeight),
       players(players), size(size)
 {
-    z.Resize(size);
-    objectTypes.Resize(size, libsiedler2::OT_Empty);
-    objectInfos.Resize(size, libsiedler2::OI_Empty);
-    resources.Resize(size, libsiedler2::R_None);
-    animals.Resize(size, libsiedler2::Animal::None);
+    z.resize(size);
+    objectTypes.resize(size, libsiedler2::OT_Empty);
+    objectInfos.resize(size, libsiedler2::OI_Empty);
+    resources.resize(size, libsiedler2::R_None);
+    animals.resize(size, libsiedler2::Animal::None);
 }
 
-libsiedler2::Archiv Map::CreateArchiv() const
+libsiedler2::Archiv Map::createArchiv() const
 {
     // create header information for the archiv
     auto header = std::make_unique<libsiedler2::ArchivItem_Map_Header>();
@@ -32,11 +32,11 @@ libsiedler2::Archiv Map::CreateArchiv() const
     header->setWidth(size.x);
     header->setHeight(size.y);
     header->setNumPlayers(players);
-    header->setGfxSet(textureMap.GetLandscapeId());
+    header->setGfxSet(textureMap.getLandscapeId());
 
     if(players != hqPositions.size())
         throw std::logic_error("Not all players have an HQ set");
-    RTTR_Assert(!helpers::contains(hqPositions, MapPoint::Invalid()));
+    RTTR_Assert(!helpers::contains(hqPositions, MapPoint::invalid()));
     // First players go into the header
     const unsigned numPlayersInHeader =
       std::min(static_cast<unsigned>(header->maxPlayers), static_cast<unsigned>(hqPositions.size()));
@@ -66,8 +66,8 @@ libsiedler2::Archiv Map::CreateArchiv() const
     const auto& textureTriangles = getTextures();
     for(unsigned i = 0; i < numNodes; i++)
     {
-        rsu[i] = textureMap.GetTextureId(textureTriangles[i].rsu);
-        lsd[i] = textureMap.GetTextureId(textureTriangles[i].lsd);
+        rsu[i] = textureMap.getTextureId(textureTriangles[i].rsu);
+        lsd[i] = textureMap.getTextureId(textureTriangles[i].lsd);
         animal[i] = static_cast<uint8_t>(this->animals[i]);
     }
 
@@ -75,8 +75,8 @@ libsiedler2::Archiv Map::CreateArchiv() const
     {
         if(hqPositions[i].isValid())
         {
-            objectType[this->objectTypes.GetIdx(hqPositions[i])] = libsiedler2::OT_HeadquarterMask;
-            objectInfo[this->objectInfos.GetIdx(hqPositions[i])] = i;
+            objectType[this->objectTypes.getIdx(hqPositions[i])] = libsiedler2::OT_HeadquarterMask;
+            objectInfo[this->objectInfos.getIdx(hqPositions[i])] = i;
         }
     }
 

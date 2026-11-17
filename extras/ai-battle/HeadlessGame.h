@@ -30,14 +30,14 @@ public:
                  const boost::filesystem::path& luaPath = {}, const std::vector<Team>& teams = {});
     ~HeadlessGame();
 
-    void Run(unsigned maxGF = std::numeric_limits<unsigned>::max());
-    void Close();
+    void run(unsigned maxGF = std::numeric_limits<unsigned>::max());
+    void close();
 
-    void RecordReplay(const boost::filesystem::path& path, unsigned random_init);
-    void SaveGame(const boost::filesystem::path& path) const;
+    void recordReplay(const boost::filesystem::path& path, unsigned random_init);
+    void saveGame(const boost::filesystem::path& path) const;
 
 private:
-    void PrintState();
+    void printState();
 
     NullLocalGameState localState_;
     boost::filesystem::path map_;

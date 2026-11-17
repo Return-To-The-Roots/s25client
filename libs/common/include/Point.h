@@ -52,10 +52,10 @@ struct Point //-V690
     constexpr Point(const Point&) = default;
     constexpr Point& operator=(const Point&) = default;
 
-    static constexpr Point Invalid() noexcept { return Point(); }
+    static constexpr Point invalid() noexcept { return Point(); }
     /// Create a new point with all coordinates set to value
     static constexpr Point all(const T value) noexcept { return Point(value, value); }
-    constexpr bool isValid() const noexcept { return *this != Invalid(); }
+    constexpr bool isValid() const noexcept { return *this != invalid(); }
 
     constexpr bool operator==(const Point& second) const noexcept;
     constexpr bool operator!=(const Point& second) const noexcept;

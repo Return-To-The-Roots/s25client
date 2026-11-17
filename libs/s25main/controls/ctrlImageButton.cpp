@@ -10,11 +10,11 @@ ctrlImageButton::ctrlImageButton(Window* parent, unsigned id, const DrawPoint& p
     : ctrlButton(parent, id, pos, size, tc, tooltip), ctrlBaseImage(image)
 {}
 
-void ctrlImageButton::DrawContent() const
+void ctrlImageButton::drawContent() const
 {
-    // Adding of origin compensates for its substraction inside ITexture::Draw()
-    auto pos = GetDrawPos() + GetImage()->GetOrigin();
-    auto size = GetSize();
+    // Adding of origin compensates for its substraction inside ITexture::draw()
+    auto pos = getDrawPos() + getImage()->getOrigin();
+    auto size = getSize();
 
     if(hasBorder)
     {
@@ -31,8 +31,8 @@ void ctrlImageButton::DrawContent() const
     }
 
     Rect drawRect(pos, size);
-    if(!isEnabled && GetModulationColor() == COLOR_WHITE)
-        DrawImage(drawRect, 0xFF555555);
+    if(!isEnabled && getModulationColor() == COLOR_WHITE)
+        drawImage(drawRect, 0xFF555555);
     else
-        DrawImage(drawRect);
+        drawImage(drawRect);
 }

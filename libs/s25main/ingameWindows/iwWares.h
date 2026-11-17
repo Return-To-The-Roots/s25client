@@ -19,18 +19,18 @@ protected:
 
 public:
     iwWares(unsigned id, const DrawPoint& pos, unsigned additionalYSpace, const std::string& title,
-            bool allow_outhousing, const glFont* font, const Inventory& inventory, const GamePlayer& player);
+            bool allowOuthousing, const glFont* font, const Inventory& inventory, const GamePlayer& player);
 
 protected:
     /// bestimmte Inventurseite zeigen.
-    virtual void SetPage(unsigned page);
+    virtual void setPage(unsigned page);
     /// Add a new page and return it. ID will be in range 100+
-    ctrlGroup& AddPage();
+    ctrlGroup& addPage();
 
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_PaintBefore() override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgPaintBefore() override;
 
-    unsigned GetCurPage() const { return curPage_; }
+    unsigned getCurPage() const { return curPage_; }
 
 private:
     unsigned curPage_; /// aktuelle Seite des Inventurfensters.

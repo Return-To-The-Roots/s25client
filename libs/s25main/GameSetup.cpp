@@ -33,7 +33,7 @@ namespace {
 void removeLeatherAddonDistributions(Game& game, unsigned localPlayerId)
 {
     VisualSettings settings;
-    game.world_.GetPlayer(localPlayerId).FillVisualSettings(settings);
+    game.world_.getPlayer(localPlayerId).fillVisualSettings(settings);
 
     Distributions newDistributions = settings.distribution;
     unsigned idx = 0;
@@ -49,16 +49,16 @@ void removeLeatherAddonDistributions(Game& game, unsigned localPlayerId)
 }
 } // namespace
 
-void SetupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGameState, const Replay* replay)
+void setupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGameState, const Replay* replay)
 {
     GameWorld& gameWorld = game.world_;
     if(mapInfo.savegame)
-        mapInfo.savegame->sgd.ReadSnapshot(game, localGameState);
+        mapInfo.savegame->sgd.readSnapshot(game, localGameState);
     else
     {
         RTTR_Assert(mapInfo.type != MapType::Savegame);
         for(auto& player : gameWorld.getPlayers())
-            player.MakeStartPacts();
+            player.makeStartPacts();
 
         // Kept until the loader has read them
         std::optional<TmpFile> tmpMap, tmpLua;
@@ -73,31 +73,31 @@ void SetupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGa
         {
             tmpMap.emplace();
             tmpMap->close();
-            if(!mapInfo.mapData.DecompressToFile(tmpMap->filePath))
+            if(!mapInfo.mapData.decompressToFile(tmpMap->filePath))
                 throw GameSetupError("Could not decompress the map data");
             mapFilePath = tmpMap->filePath;
             if(mapInfo.luaData.uncompressedLength > 0)
             {
                 tmpLua.emplace(".lua");
                 tmpLua->close();
-                if(!mapInfo.luaData.DecompressToFile(tmpLua->filePath))
+                if(!mapInfo.luaData.decompressToFile(tmpLua->filePath))
                     throw GameSetupError("Could not decompress the Lua script");
                 luaFilePath = tmpLua->filePath;
             }
         }
 
         MapLoader loader(gameWorld);
-        if(!loader.Load(mapFilePath))
+        if(!loader.load(mapFilePath))
             throw GameSetupError("Could not load the map " + mapFilePath.string());
-        if(!luaFilePath.empty() && !loader.LoadLuaScript(game, localGameState, luaFilePath))
+        if(!luaFilePath.empty() && !loader.loadLuaScript(game, localGameState, luaFilePath))
             throw GameSetupError("Could not load the Lua script " + luaFilePath.string());
 
-        MapLoader::SetupResources(gameWorld, !replay || replay->usesFishFix());
+        MapLoader::setupResources(gameWorld, !replay || replay->usesFishFix());
     }
     if(replay)
-        gameWorld.SetReplayCompatVersion(replay->GetMinorVersion());
-    gameWorld.InitAfterLoad();
+        gameWorld.setReplayCompatVersion(replay->getMinorVersion());
+    gameWorld.initAfterLoad();
 
-    if(replay && !mapInfo.savegame && replay->GetMinorVersion() < 2)
-        removeLeatherAddonDistributions(game, localGameState.GetPlayerId());
+    if(replay && !mapInfo.savegame && replay->getMinorVersion() < 2)
+        removeLeatherAddonDistributions(game, localGameState.getPlayerId());
 }

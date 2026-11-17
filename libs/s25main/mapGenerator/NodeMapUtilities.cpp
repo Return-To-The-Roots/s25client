@@ -6,7 +6,7 @@
 
 namespace rttr::mapGenerator {
 
-std::vector<MapPoint> SelectPoints(const std::function<bool(const MapPoint&)>& predicate, const MapExtent& size)
+std::vector<MapPoint> selectPoints(const std::function<bool(const MapPoint&)>& predicate, const MapExtent& size)
 {
     std::vector<MapPoint> selectedNodes;
     RTTR_FOREACH_PT(MapPoint, size)

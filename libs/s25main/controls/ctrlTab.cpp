@@ -13,48 +13,48 @@ ctrlTab::ctrlTab(Window* parent, unsigned id, const DrawPoint& pos, unsigned sho
     : Window(parent, id, pos, Extent(width, 45)), tab_count(0), tab_selection(0)
 {}
 
-void ctrlTab::Msg_ButtonClick(const unsigned ctrl_id)
+void ctrlTab::msgButtonClick(const unsigned ctrl_id)
 {
-    SetSelection(ctrl_id, true);
+    setSelection(ctrl_id, true);
 }
 
-bool ctrlTab::Msg_LeftDown(const MouseCoords& mc)
+bool ctrlTab::msgLeftDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftDown, mc);
+    return relayMouseMessage(&Window::msgLeftDown, mc);
 }
 
-bool ctrlTab::Msg_LeftUp(const MouseCoords& mc)
+bool ctrlTab::msgLeftUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_LeftUp, mc);
+    return relayMouseMessage(&Window::msgLeftUp, mc);
 }
 
-bool ctrlTab::Msg_WheelUp(const MouseCoords& mc)
+bool ctrlTab::msgWheelUp(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_WheelUp, mc);
+    return relayMouseMessage(&Window::msgWheelUp, mc);
 }
 
-bool ctrlTab::Msg_WheelDown(const MouseCoords& mc)
+bool ctrlTab::msgWheelDown(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_WheelDown, mc);
+    return relayMouseMessage(&Window::msgWheelDown, mc);
 }
 
-bool ctrlTab::Msg_MouseMove(const MouseCoords& mc)
+bool ctrlTab::msgMouseMove(const MouseCoords& mc)
 {
-    return RelayMouseMessage(&Window::Msg_MouseMove, mc);
+    return relayMouseMessage(&Window::msgMouseMove, mc);
 }
 
 /**
  *  fügt eine Tab hinzu.
  */
-ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned id)
+ctrlGroup* ctrlTab::addTab(glArchivItem_Bitmap* image, const std::string& tooltip, const unsigned id)
 {
     if(tab_count < tabs.size())
     {
-        if(AddImageButton(tab_count, DrawPoint(36 * tab_count, 0), Extent(36, 45), TextureColor::Red1, image, tooltip))
+        if(addImageButton(tab_count, DrawPoint(36 * tab_count, 0), Extent(36, 45), TextureColor::Red1, image, tooltip))
         {
             tabs[tab_count++] = id;
-            ctrlGroup* group = AddGroup(tabs.size() + 1 + id);
-            group->SetVisible(false);
+            ctrlGroup* group = addGroup(tabs.size() + 1 + id);
+            group->setVisible(false);
 
             return group;
         }
@@ -66,10 +66,10 @@ ctrlGroup* ctrlTab::AddTab(glArchivItem_Bitmap* image, const std::string& toolti
 /**
  *  löscht alle Tabs.
  */
-void ctrlTab::DeleteAllTabs()
+void ctrlTab::deleteAllTabs()
 {
     for(unsigned i = 0; i < tab_count; ++i)
-        DeleteCtrl(i);
+        deleteCtrl(i);
 
     tab_selection = 0;
     tab_count = 0;
@@ -77,43 +77,43 @@ void ctrlTab::DeleteAllTabs()
 /**
  *  aktiviert eine bestimmte Tabseite.
  */
-void ctrlTab::SetSelection(unsigned short nr, bool /*notify*/)
+void ctrlTab::setSelection(unsigned short nr, bool /*notify*/)
 {
     if(nr >= tab_count)
         return;
 
     /// Eltern informieren, dass Tab geändert wurde
-    GetParent()->Msg_TabChange(GetID(), tabs[nr]);
+    getParent()->msgTabChange(getID(), tabs[nr]);
 
     // Farbe des alten Buttons ändern
     ctrlButton* button;
 
-    button = GetCtrl<ctrlButton>(tab_selection);
+    button = getCtrl<ctrlButton>(tab_selection);
     if(button)
-        button->SetTexture(TextureColor::Red1);
+        button->setTexture(TextureColor::Red1);
 
     // Steuerelemente auf der alten Tabseite ausblenden
-    GetCtrl<ctrlGroup>(tabs[tab_selection] + tabs.size() + 1)->SetVisible(false);
+    getCtrl<ctrlGroup>(tabs[tab_selection] + tabs.size() + 1)->setVisible(false);
 
     // Umwählen
     tab_selection = nr;
 
     // Farbe des neuen Buttons ändern
-    button = GetCtrl<ctrlButton>(tab_selection);
+    button = getCtrl<ctrlButton>(tab_selection);
     if(button)
-        button->SetTexture(TextureColor::Green1);
+        button->setTexture(TextureColor::Green1);
 
     // Steuerelemente auf der neuen Tabseite einblenden
-    GetCtrl<ctrlGroup>(tabs[nr] + tabs.size() + 1)->SetVisible(true);
+    getCtrl<ctrlGroup>(tabs[nr] + tabs.size() + 1)->setVisible(true);
 }
 
 /**
  *  Gibt Tab-Group zurück, über die die Steuerelemente der Tab angesprochen
  *  werden können
  */
-ctrlGroup* ctrlTab::GetGroup(const unsigned tab_id)
+ctrlGroup* ctrlTab::getGroup(const unsigned tabId)
 {
-    return GetCtrl<ctrlGroup>(tabs.size() + 1 + tab_id);
+    return getCtrl<ctrlGroup>(tabs.size() + 1 + tabId);
 }
 
 /**
@@ -121,92 +121,91 @@ ctrlGroup* ctrlTab::GetGroup(const unsigned tab_id)
  *
  *  @return @p true bei Erfolg, @p false bei Fehler
  */
-void ctrlTab::Draw_()
+void ctrlTab::drawImpl()
 {
-    Window::Draw_();
+    Window::drawImpl();
 
     // TODO: What is this really?
     int headerSize = tab_count * 36;
-    LOADER.GetImageN("io", 3)->DrawPart(
-      Rect(GetDrawPos() + DrawPoint(headerSize, 0), Extent(GetSize().x - headerSize, 45)));
+    LOADER.getImageN("io", 3)->drawPart(
+      Rect(getDrawPos() + DrawPoint(headerSize, 0), Extent(getSize().x - headerSize, 45)));
 
-    Draw3D(Rect(GetDrawPos() + DrawPoint(0, 32), Extent(GetSize().x, 13)), TextureColor::Green1, true);
+    draw3D(Rect(getDrawPos() + DrawPoint(0, 32), Extent(getSize().x, 13)), TextureColor::Green1, true);
 
-    auto* button = GetCtrl<ctrlButton>(tab_selection);
+    auto* button = getCtrl<ctrlButton>(tab_selection);
     if(button)
-        button->Draw();
+        button->draw();
 }
 
-void ctrlTab::Msg_Group_ButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)
+void ctrlTab::msgGroupButtonClick(const unsigned /*group_id*/, const unsigned ctrl_id)
 {
-    GetParent()->Msg_Group_ButtonClick(this->GetID(), ctrl_id);
+    getParent()->msgGroupButtonClick(this->getID(), ctrl_id);
 }
 
-void ctrlTab::Msg_Group_EditEnter(const unsigned /*group_id*/, const unsigned ctrl_id)
+void ctrlTab::msgGroupEditEnter(const unsigned /*group_id*/, const unsigned ctrl_id)
 {
-    GetParent()->Msg_Group_EditEnter(this->GetID(), ctrl_id);
+    getParent()->msgGroupEditEnter(this->getID(), ctrl_id);
 }
 
-void ctrlTab::Msg_Group_EditChange(const unsigned /*group_id*/, const unsigned ctrl_id)
+void ctrlTab::msgGroupEditChange(const unsigned /*group_id*/, const unsigned ctrl_id)
 {
-    GetParent()->Msg_Group_EditChange(this->GetID(), ctrl_id);
+    getParent()->msgGroupEditChange(this->getID(), ctrl_id);
 }
 
-void ctrlTab::Msg_Group_TabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tab_id)
+void ctrlTab::msgGroupTabChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short tabId)
 {
-    GetParent()->Msg_Group_TabChange(this->GetID(), ctrl_id, tab_id);
+    getParent()->msgGroupTabChange(this->getID(), ctrl_id, tabId);
 }
 
-void ctrlTab::Msg_Group_ListSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)
+void ctrlTab::msgGroupListSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const int selection)
 {
-    GetParent()->Msg_Group_ListSelectItem(this->GetID(), ctrl_id, selection);
+    getParent()->msgGroupListSelectItem(this->getID(), ctrl_id, selection);
 }
 
-void ctrlTab::Msg_Group_ComboSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned selection)
+void ctrlTab::msgGroupComboSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned selection)
 {
-    GetParent()->Msg_Group_ComboSelectItem(this->GetID(), ctrl_id, selection);
+    getParent()->msgGroupComboSelectItem(this->getID(), ctrl_id, selection);
 }
 
-void ctrlTab::Msg_Group_CheckboxChange(const unsigned /*group_id*/, const unsigned ctrl_id, const bool checked)
+void ctrlTab::msgGroupCheckboxChange(const unsigned /*group_id*/, const unsigned ctrl_id, const bool checked)
 {
-    GetParent()->Msg_Group_CheckboxChange(this->GetID(), ctrl_id, checked);
+    getParent()->msgGroupCheckboxChange(this->getID(), ctrl_id, checked);
 }
 
-void ctrlTab::Msg_Group_ProgressChange(const unsigned /*group_id*/, const unsigned ctrl_id,
-                                       const unsigned short position)
+void ctrlTab::msgGroupProgressChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned short position)
 {
-    GetParent()->Msg_Group_ProgressChange(this->GetID(), ctrl_id, position);
+    getParent()->msgGroupProgressChange(this->getID(), ctrl_id, position);
 }
 
-void ctrlTab::Msg_Group_ScrollShow(const unsigned /*group_id*/, const unsigned ctrl_id, const bool visible)
+void ctrlTab::msgGroupScrollShow(const unsigned /*group_id*/, const unsigned ctrl_id, const bool visible)
 {
-    GetParent()->Msg_Group_ScrollShow(this->GetID(), ctrl_id, visible);
+    getParent()->msgGroupScrollShow(this->getID(), ctrl_id, visible);
 }
 
-void ctrlTab::Msg_Group_OptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned selection)
+void ctrlTab::msgGroupOptionGroupChange(const unsigned /*group_id*/, const unsigned ctrl_id, const unsigned selection)
 {
-    GetParent()->Msg_Group_OptionGroupChange(this->GetID(), ctrl_id, selection);
+    getParent()->msgGroupOptionGroupChange(this->getID(), ctrl_id, selection);
 }
 
-void ctrlTab::Msg_Group_Timer(const unsigned /*group_id*/, const unsigned ctrl_id)
+void ctrlTab::msgGroupTimer(const unsigned /*group_id*/, const unsigned ctrl_id)
 {
-    GetParent()->Msg_Group_Timer(this->GetID(), ctrl_id);
+    getParent()->msgGroupTimer(this->getID(), ctrl_id);
 }
 
-void ctrlTab::Msg_Group_TableSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id,
-                                        const std::optional<unsigned>& selection)
+void ctrlTab::msgGroupTableSelectItem(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                      const std::optional<unsigned>& selection)
 {
-    GetParent()->Msg_Group_TableSelectItem(this->GetID(), ctrl_id, selection);
+    getParent()->msgGroupTableSelectItem(this->getID(), ctrl_id, selection);
 }
 
-void ctrlTab::Msg_Group_TableRightButton(const unsigned /*group_id*/, const unsigned ctrl_id,
-                                         const std::optional<unsigned>& selection)
+void ctrlTab::msgGroupTableRightButton(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                       const std::optional<unsigned>& selection)
 {
-    GetParent()->Msg_Group_TableRightButton(this->GetID(), ctrl_id, selection);
+    getParent()->msgGroupTableRightButton(this->getID(), ctrl_id, selection);
 }
 
-void ctrlTab::Msg_Group_TableLeftButton(const unsigned /*group_id*/, const unsigned ctrl_id,
-                                        const std::optional<unsigned>& selection)
+void ctrlTab::msgGroupTableLeftButton(const unsigned /*group_id*/, const unsigned ctrl_id,
+                                      const std::optional<unsigned>& selection)
 {
-    GetParent()->Msg_Group_TableLeftButton(this->GetID(), ctrl_id, selection);
+    getParent()->msgGroupTableLeftButton(this->getID(), ctrl_id, selection);
 }

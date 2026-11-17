@@ -22,9 +22,9 @@ public:
 
     GameEvent(unsigned instanceId, GameObject* obj, unsigned startGF, unsigned length, unsigned id);
     GameEvent(SerializedGameData& sgd, unsigned instanceId);
-    void Serialize(SerializedGameData& sgd) const;
+    void serialize(SerializedGameData& sgd) const;
 
     /// Return GF at which this event will be executed
-    unsigned GetTargetGF() const { return startGF + length; }
-    unsigned GetInstanceId() const { return instanceId; }
+    unsigned getTargetGF() const { return startGF + length; }
+    unsigned getInstanceId() const { return instanceId; }
 };

@@ -15,7 +15,7 @@
  *  Signal-Handler
  */
 #ifdef _WIN32
-BOOL WINAPI ConsoleSignalHandler(DWORD dwCtrlType)
+BOOL WINAPI consoleSignalHandler(DWORD dwCtrlType)
 {
     switch(dwCtrlType)
     {
@@ -32,7 +32,7 @@ BOOL WINAPI ConsoleSignalHandler(DWORD dwCtrlType)
 }
 #else
 bool killme = false;
-void ConsoleSignalHandler(int sig)
+void consoleSignalHandler(int sig)
 {
     if(sig == SIGINT)
     {

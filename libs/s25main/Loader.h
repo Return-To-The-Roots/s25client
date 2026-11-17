@@ -75,65 +75,64 @@ public:
     void initResourceFolders(const std::vector<Nation>& usedNations, const std::vector<AddonId>& enabledAddons);
 
     /// Load general files required also outside of games
-    bool LoadFilesAtStart();
-    bool LoadFonts();
+    bool loadFilesAtStart();
+    bool loadFonts();
     /// Load files required during a game
-    bool LoadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations,
+    bool loadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, const std::vector<Nation>& nations,
                          const std::vector<AddonId>& enabledAddons);
     /// Load all given files with the default palette
-    bool LoadFiles(const std::vector<std::string>& files);
-    bool LoadResources(const std::vector<ResourceId>& resources);
+    bool loadFiles(const std::vector<std::string>& files);
+    bool loadResources(const std::vector<ResourceId>& resources);
 
     /// Creates archives with empty files for the GUI (for testing purposes)
-    void LoadDummyGUIFiles();
-    void LoadDummyMapFiles();
-    void LoadDummySoundFiles();
+    void loadDummyGUIFiles();
+    void loadDummyMapFiles();
+    void loadDummySoundFiles();
     /// Load a file and save it into the loader repo
-    bool Load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
-    bool Load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool load(const boost::filesystem::path& path, const libsiedler2::ArchivItem_Palette* palette = nullptr);
+    bool load(const ResourceId& resId, const libsiedler2::ArchivItem_Palette* palette = nullptr);
     /// Load a file or directory and its overrides into the archive
-    bool Load(libsiedler2::Archiv& archive, const boost::filesystem::path& path,
+    bool load(libsiedler2::Archiv& archive, const boost::filesystem::path& path,
               const libsiedler2::ArchivItem_Palette* palette = nullptr);
-    bool Load(libsiedler2::Archiv& archive, const ResourceId& resId,
+    bool load(libsiedler2::Archiv& archive, const ResourceId& resId,
               const libsiedler2::ArchivItem_Palette* palette = nullptr);
 
     void fillCaches();
-    static std::unique_ptr<glArchivItem_Bitmap> ExtractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
-    static std::unique_ptr<libsiedler2::Archiv> ExtractAnimatedTexture(const glArchivItem_Bitmap& srcImg,
-                                                                       const Rect& rect, uint8_t start_index,
-                                                                       uint8_t color_count);
+    static std::unique_ptr<glArchivItem_Bitmap> extractTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect);
+    static std::unique_ptr<libsiedler2::Archiv>
+    extractAnimatedTexture(const glArchivItem_Bitmap& srcImg, const Rect& rect, uint8_t startIndex, uint8_t colorCount);
 
-    glArchivItem_Bitmap* GetImageN(const ResourceId& file, unsigned nr);
-    /// Same as GetImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
-    ITexture* GetTextureN(const ResourceId& file, unsigned nr);
-    glArchivItem_Bitmap* GetImage(const ResourceId& file, const std::string& name);
-    glArchivItem_Bitmap_Player* GetPlayerImage(const ResourceId& file, unsigned nr);
-    glFont* GetFont(FontSize);
-    libsiedler2::ArchivItem_Palette* GetPaletteN(const ResourceId& file, unsigned nr = 0);
-    SoundEffectItem* GetSoundN(const ResourceId& file, unsigned nr);
-    std::string GetTextN(const ResourceId& file, unsigned nr);
-    libsiedler2::Archiv& GetArchive(const ResourceId& file);
-    glArchivItem_Bob* GetBob(const ResourceId& file);
-    glArchivItem_BitmapBase* GetNationImageN(Nation nation, unsigned nr);
-    glArchivItem_Bitmap* GetNationImage(Nation nation, unsigned nr);
-    glArchivItem_Bitmap* GetNationIcon(Nation nation, BuildingType bld);
-    ITexture* GetBuildingTex(Nation nation, BuildingType bld);
-    glArchivItem_Bitmap_Player* GetNationPlayerImage(Nation nation, unsigned nr);
+    glArchivItem_Bitmap* getImageN(const ResourceId& file, unsigned nr);
+    /// Same as getImageN but returns a ITexture. Note glArchivItem_Bitmap is a ITexture
+    ITexture* getTextureN(const ResourceId& file, unsigned nr);
+    glArchivItem_Bitmap* getImage(const ResourceId& file, const std::string& name);
+    glArchivItem_Bitmap_Player* getPlayerImage(const ResourceId& file, unsigned nr);
+    glFont* getFont(FontSize);
+    libsiedler2::ArchivItem_Palette* getPaletteN(const ResourceId& file, unsigned nr = 0);
+    SoundEffectItem* getSoundN(const ResourceId& file, unsigned nr);
+    std::string getTextN(const ResourceId& file, unsigned nr);
+    libsiedler2::Archiv& getArchive(const ResourceId& file);
+    glArchivItem_Bob* getBob(const ResourceId& file);
+    glArchivItem_BitmapBase* getNationImageN(Nation nation, unsigned nr);
+    glArchivItem_Bitmap* getNationImage(Nation nation, unsigned nr);
+    glArchivItem_Bitmap* getNationIcon(Nation nation, BuildingType bld);
+    ITexture* getBuildingTex(Nation nation, BuildingType bld);
+    glArchivItem_Bitmap_Player* getNationPlayerImage(Nation nation, unsigned nr);
     /// Return the map texture with the given number
-    ITexture* GetMapTexture(unsigned nr);
-    /// Return the more specialized map image. Note: Prefer GetMapTexture which also handles (pseudo) player bitmaps
-    glArchivItem_Bitmap* GetMapImage(unsigned nr);
+    ITexture* getMapTexture(unsigned nr);
+    /// Return the more specialized map image. Note: Prefer getMapTexture which also handles (pseudo) player bitmaps
+    glArchivItem_Bitmap* getMapImage(unsigned nr);
     /// Get the ware symbol texture
-    ITexture* GetWareTex(GoodType ware);
+    ITexture* getWareTex(GoodType ware);
     /// Get the ware stack texture (lying on ground)
-    ITexture* GetWareStackTex(GoodType ware);
+    ITexture* getWareStackTex(GoodType ware);
     /// Get the ware texture when carried by donky
-    ITexture* GetWareDonkeyTex(GoodType ware);
+    ITexture* getWareDonkeyTex(GoodType ware);
     /// Get job symbol texture
-    ITexture* GetJobTex(Job job);
-    glArchivItem_Bitmap_Player* GetMapPlayerImage(unsigned nr);
+    ITexture* getJobTex(Job job);
+    glArchivItem_Bitmap_Player* getMapPlayerImage(unsigned nr);
 
-    bool IsWinterGFX() const { return isWinterGFX_; }
+    bool isWinterGFX() const { return isWinterGFX_; }
 
     std::vector<std::unique_ptr<MusicItem>> sng_lst;
 
@@ -201,13 +200,13 @@ public:
     std::array<AnimationSprites, 6> boat_cache;
     glSmartBitmap& getBoatCarrierSprite(Direction dir, unsigned aniFrame)
     {
-        return boat_cache[rttr::enum_cast(dir)][aniFrame];
+        return boat_cache[rttr::enumCast(dir)][aniFrame];
     }
     /// Donkey: Direction, AnimationFrame
     std::array<AnimationSprites, 6> donkey_cache;
     glSmartBitmap& getDonkeySprite(Direction dir, unsigned aniFrame)
     {
-        return donkey_cache[rttr::enum_cast(dir)][aniFrame];
+        return donkey_cache[rttr::enumCast(dir)][aniFrame];
     }
     /// Gateway: AnimationFrame
     std::array<glSmartBitmap, 5> gateway_cache;
@@ -216,10 +215,10 @@ public:
 
 private:
     /// Load all sounds
-    bool LoadSounds();
+    bool loadSounds();
 
     template<typename T>
-    bool LoadImpl(const T& resIdOrPath, const libsiedler2::ArchivItem_Palette* palette);
+    bool loadImpl(const T& resIdOrPath, const libsiedler2::ArchivItem_Palette* palette);
 
     Log& logger_;
     const RttrConfig& config_;
@@ -240,6 +239,6 @@ Loader& getGlobalLoader();
 #define LOADER getGlobalLoader()
 
 // Helper macros for easy access to fonts
-#define SmallFont (LOADER.GetFont(FontSize::Small))
-#define NormalFont (LOADER.GetFont(FontSize::Normal))
-#define LargeFont (LOADER.GetFont(FontSize::Large))
+#define SmallFont (LOADER.getFont(FontSize::Small))
+#define NormalFont (LOADER.getFont(FontSize::Normal))
+#define LargeFont (LOADER.getFont(FontSize::Large))

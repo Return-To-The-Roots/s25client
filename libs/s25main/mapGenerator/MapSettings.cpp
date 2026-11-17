@@ -8,7 +8,7 @@
 
 namespace rttr::mapGenerator {
 
-void MapSettings::MakeValid()
+void MapSettings::makeValid()
 {
     if(name.empty())
         name = "Random";

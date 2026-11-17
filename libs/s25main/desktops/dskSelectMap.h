@@ -25,34 +25,34 @@ public:
     ~dskSelectMap() override;
 
 private:
-    void Draw_() override;
+    void drawImpl() override;
 
-    void FillTable(const std::vector<boost::filesystem::path>& files);
+    void fillTable(const std::vector<boost::filesystem::path>& files);
 
-    void Msg_OptionGroupChange(unsigned ctrl_id, unsigned selection) override;
-    void Msg_ButtonClick(unsigned ctrl_id) override;
-    void Msg_MsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
-    void Msg_TableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
-    void Msg_TableChooseItem(unsigned ctrl_id, unsigned selection) override;
+    void msgOptionGroupChange(unsigned ctrl_id, unsigned selection) override;
+    void msgButtonClick(unsigned ctrl_id) override;
+    void msgMsgBoxResult(unsigned msgbox_id, MsgboxResult mbr) override;
+    void msgTableSelectItem(unsigned ctrl_id, const std::optional<unsigned>& selection) override;
+    void msgTableChooseItem(unsigned ctrl_id, unsigned selection) override;
 
     void LC_Status_Error(const std::string& error) override;
 
     /**
      * Starts a new game with the currently selected map.
      */
-    void StartServer();
+    void startServer();
 
     /**
      * Go back to the previous menu.
      */
-    void GoBack() const;
+    void goBack() const;
 
     /**
      * Generates a new random map and selects the new map in the table (UI).
      */
-    void CreateRandomMap();
+    void createRandomMap();
 
-    void OnMapCreated(const boost::filesystem::path& mapPath);
+    void onMapCreated(const boost::filesystem::path& mapPath);
 
     CreateServerInfo csi;
     rttr::mapGenerator::MapSettings rndMapSettings;

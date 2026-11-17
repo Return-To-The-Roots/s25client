@@ -10,15 +10,15 @@ namespace FW {
 
 bool HasMinWares::operator()(const nobBaseWarehouse& wh) const
 {
-    return wh.GetNumRealWares(type) >= count;
+    return wh.getNumRealWares(type) >= count;
 }
 
 bool HasFigure::operator()(const nobBaseWarehouse& wh) const
 {
-    if(wh.GetNumRealFigures(type) > 0)
+    if(wh.getNumRealFigures(type) > 0)
         return true;
     else if(recruitingAllowed && type != Job::PackDonkey)
-        return wh.CanRecruit(type);
+        return wh.canRecruit(type);
     else
         return false;
 }
@@ -32,7 +32,7 @@ bool HasAnyMatchingSoldier::operator()(const nobBaseWarehouse& wh) const
 {
     for(unsigned i = 0; i < SOLDIER_JOBS.size(); i++)
     {
-        if(ranks[i] && wh.GetNumRealFigures(SOLDIER_JOBS[i]) > 0)
+        if(ranks[i] && wh.getNumRealFigures(SOLDIER_JOBS[i]) > 0)
             return true;
     }
     return false;
@@ -42,8 +42,8 @@ bool AcceptsWare::operator()(const nobBaseWarehouse& wh) const
 {
     // Einlagern darf nicht verboten sein
     // Schilder beachten!
-    const GoodType good = ConvertShields(type);
-    return !wh.GetInventorySetting(good).IsSet(EInventorySetting::Stop);
+    const GoodType good = convertShields(type);
+    return !wh.getInventorySetting(good).isSet(EInventorySetting::Stop);
 }
 
 bool AcceptsFigure::operator()(const nobBaseWarehouse& wh) const
@@ -53,15 +53,15 @@ bool AcceptsFigure::operator()(const nobBaseWarehouse& wh) const
     if(job == Job::BoatCarrier)
         job = Job::Helper;
 
-    return !wh.GetInventorySetting(job).IsSet(EInventorySetting::Stop);
+    return !wh.getInventorySetting(job).isSet(EInventorySetting::Stop);
 }
 
 bool CollectsWare::operator()(const nobBaseWarehouse& wh) const
 {
     // Einlagern muss gewollt sein
     // Schilder beachten!
-    GoodType gt = ConvertShields(type);
-    return (wh.GetInventorySetting(gt).IsSet(EInventorySetting::Collect));
+    GoodType gt = convertShields(type);
+    return (wh.getInventorySetting(gt).isSet(EInventorySetting::Collect));
 }
 
 bool CollectsFigure::operator()(const nobBaseWarehouse& wh) const
@@ -70,7 +70,7 @@ bool CollectsFigure::operator()(const nobBaseWarehouse& wh) const
     Job job = type;
     if(job == Job::BoatCarrier)
         job = Job::Helper;
-    return (wh.GetInventorySetting(job).IsSet(EInventorySetting::Collect));
+    return (wh.getInventorySetting(job).isSet(EInventorySetting::Collect));
 }
 
 bool HasWareButNoCollect::operator()(const nobBaseWarehouse& wh) const
@@ -85,8 +85,8 @@ bool HasFigureButNoCollect::operator()(const nobBaseWarehouse& wh) const
 
 bool AcceptsWareButNoSend::operator()(const nobBaseWarehouse& wh) const
 {
-    const GoodType good = ConvertShields(type);
-    return AcceptsWare::operator()(wh) && !wh.GetInventorySetting(good).IsSet(EInventorySetting::Send);
+    const GoodType good = convertShields(type);
+    return AcceptsWare::operator()(wh) && !wh.getInventorySetting(good).isSet(EInventorySetting::Send);
 }
 
 bool AcceptsFigureButNoSend::operator()(const nobBaseWarehouse& wh) const
@@ -95,7 +95,7 @@ bool AcceptsFigureButNoSend::operator()(const nobBaseWarehouse& wh) const
     if(job == Job::BoatCarrier)
         job = Job::Helper;
 
-    return AcceptsFigure::operator()(wh) && !wh.GetInventorySetting(job).IsSet(EInventorySetting::Send);
+    return AcceptsFigure::operator()(wh) && !wh.getInventorySetting(job).isSet(EInventorySetting::Send);
 }
 
 } // namespace FW

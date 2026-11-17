@@ -15,7 +15,7 @@
 #include <boost/filesystem.hpp>
 #include <stdexcept>
 
-unsigned CampaignDataLoader::GetVersion()
+unsigned CampaignDataLoader::getVersion()
 {
     return 3;
 }
@@ -23,23 +23,23 @@ unsigned CampaignDataLoader::GetVersion()
 CampaignDataLoader::CampaignDataLoader(CampaignDescription& campaignDesc, const boost::filesystem::path& basePath)
     : campaignDesc_(campaignDesc), basePath_(basePath.lexically_normal().make_preferred())
 {
-    Register(lua);
+    registerClasses(lua);
     lua["rttr"] = this;
 }
 
 CampaignDataLoader::~CampaignDataLoader() = default;
 
-bool CampaignDataLoader::CheckScriptVersion()
+bool CampaignDataLoader::checkScriptVersion()
 {
     kaguya::LuaRef func = lua["getRequiredLuaVersion"];
     if(func.type() == LUA_TFUNCTION)
     {
         const auto scriptVersion = func.call<unsigned>();
-        if(scriptVersion <= GetVersion())
+        if(scriptVersion <= getVersion())
             return true;
         else
         {
-            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.\n")) % scriptVersion % GetVersion();
+            LOG.write(_("Wrong lua script version: %1%. Current version: %2%.\n")) % scriptVersion % getVersion();
             return false;
         }
     } else
@@ -49,7 +49,7 @@ bool CampaignDataLoader::CheckScriptVersion()
     }
 }
 
-bool CampaignDataLoader::Load()
+bool CampaignDataLoader::load()
 {
     auto curFile_ = basePath_ / "campaign.lua";
     try
@@ -57,7 +57,7 @@ bool CampaignDataLoader::Load()
         if(!loadScript(curFile_))
             return false;
 
-        if(!CheckScriptVersion())
+        if(!checkScriptVersion())
             throw std::runtime_error("Wrong lua script version.");
 
         kaguya::LuaRef entry = lua["campaign"];
@@ -73,7 +73,7 @@ bool CampaignDataLoader::Load()
     }
     return true;
 }
-void CampaignDataLoader::Register(kaguya::State& state)
+void CampaignDataLoader::registerClasses(kaguya::State& state)
 {
     state["RTTRCampaignData"].setClass(kaguya::UserdataMetatable<CampaignDataLoader, LuaInterfaceBase>());
 }

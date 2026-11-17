@@ -5,7 +5,7 @@
 #include "ClientError.h"
 #include "mygettext/mygettext.h"
 
-const char* ClientErrorToStr(ClientError error)
+const char* clientErrorToStr(ClientError error)
 {
     switch(error)
     {

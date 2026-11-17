@@ -21,37 +21,37 @@ const unsigned GROWING_LENGTH = 16;
 noGrainfield::noGrainfield(const MapPoint pos)
     : noCoordBase(NodalObjectType::Grainfield, pos), type(RANDOM_RAND(2)), state(State::GrowingWaiting), size(0)
 {
-    event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
+    event = getEvMgr().addEvent(this, GROWING_WAITING_LENGTH);
 }
 
 noGrainfield::~noGrainfield() = default;
 
-void noGrainfield::Destroy()
+void noGrainfield::destroy()
 {
-    GetEvMgr().RemoveEvent(event);
+    getEvMgr().removeEvent(event);
 
     // Bauplätze drumrum neu berechnen
-    world->RecalcBQAroundPoint(pos);
+    world->recalcBQAroundPoint(pos);
 
-    noCoordBase::Destroy();
+    noCoordBase::destroy();
 }
 
-void noGrainfield::Serialize(SerializedGameData& sgd) const
+void noGrainfield::serialize(SerializedGameData& sgd) const
 {
-    noCoordBase::Serialize(sgd);
+    noCoordBase::serialize(sgd);
 
-    sgd.PushUnsignedChar(type);
-    sgd.PushEnum<uint8_t>(state);
-    sgd.PushUnsignedChar(size);
-    sgd.PushEvent(event);
+    sgd.pushUnsignedChar(type);
+    sgd.pushEnum<uint8_t>(state);
+    sgd.pushUnsignedChar(size);
+    sgd.pushEvent(event);
 }
 
 noGrainfield::noGrainfield(SerializedGameData& sgd, const unsigned obj_id)
-    : noCoordBase(sgd, obj_id), type(sgd.PopUnsignedChar()), state(sgd.Pop<State>()), size(sgd.PopUnsignedChar()),
-      event(sgd.PopEvent())
+    : noCoordBase(sgd, obj_id), type(sgd.popUnsignedChar()), state(sgd.pop<State>()), size(sgd.popUnsignedChar()),
+      event(sgd.popEvent())
 {}
 
-void noGrainfield::Draw(DrawPoint drawPt)
+void noGrainfield::draw(DrawPoint drawPt)
 {
     switch(state)
     {
@@ -63,34 +63,34 @@ void noGrainfield::Draw(DrawPoint drawPt)
         break;
         case State::Growing:
         {
-            unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
+            unsigned alpha = GAMECLIENT.interpolate(0xFF, event);
 
             // altes Feld ausblenden
-            LOADER.grainfield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            LOADER.grainfield_cache[type][size].draw(drawPt, setAlpha(COLOR_WHITE, 0xFF - alpha));
 
             // neues Feld einblenden
-            LOADER.grainfield_cache[type][size + 1].draw(drawPt, SetAlpha(COLOR_WHITE, alpha));
+            LOADER.grainfield_cache[type][size + 1].draw(drawPt, setAlpha(COLOR_WHITE, alpha));
         }
         break;
         case State::Withering:
         {
-            unsigned alpha = GAMECLIENT.Interpolate(0xFF, event);
+            unsigned alpha = GAMECLIENT.interpolate(0xFF, event);
 
             // Feld ausblenden
-            LOADER.grainfield_cache[type][size].draw(drawPt, SetAlpha(COLOR_WHITE, 0xFF - alpha));
+            LOADER.grainfield_cache[type][size].draw(drawPt, setAlpha(COLOR_WHITE, 0xFF - alpha));
         }
         break;
     }
 }
 
-void noGrainfield::HandleEvent(const unsigned /*id*/)
+void noGrainfield::handleEvent(const unsigned /*id*/)
 {
     switch(state)
     {
         case State::GrowingWaiting:
         {
             // Feld hat gewartet, also wächst es jetzt
-            event = GetEvMgr().AddEvent(this, GROWING_LENGTH);
+            event = getEvMgr().addEvent(this, GROWING_LENGTH);
             state = State::Growing;
         }
         break;
@@ -100,7 +100,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
             // wächst
             if(++size != 3)
             {
-                event = GetEvMgr().AddEvent(this, GROWING_WAITING_LENGTH);
+                event = getEvMgr().addEvent(this, GROWING_WAITING_LENGTH);
                 // Erstmal wieder bis zum nächsten Wachsstumsschub warten
                 state = State::GrowingWaiting;
             } else
@@ -108,7 +108,7 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
                 // bin nun ausgewachsen
                 state = State::Normal;
                 // nach langer Zeit verdorren
-                event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
+                event = getEvMgr().addEvent(this, 3000 + RANDOM_RAND(1000));
             }
         }
         break;
@@ -116,30 +116,30 @@ void noGrainfield::HandleEvent(const unsigned /*id*/)
         {
             // Jetzt lebt es schon zu lange --> hokus pokus verschwindibus!
             state = State::Withering;
-            event = GetEvMgr().AddEvent(this, 20);
+            event = getEvMgr().addEvent(this, 20);
         }
         break;
         case State::Withering:
         {
             // Selbst zerstören
             event = nullptr;
-            world->SetNO(pos, nullptr);
-            GetEvMgr().AddToKillList(this);
+            world->setNO(pos, nullptr);
+            getEvMgr().addToKillList(this);
         }
         break;
     }
 }
 
-void noGrainfield::BeginHarvesting()
+void noGrainfield::beginHarvesting()
 {
     // Event killen, damit wir nicht plötzlich verschwinden, wenn er uns aberntet
-    GetEvMgr().RemoveEvent(event);
+    getEvMgr().removeEvent(event);
     event = nullptr;
     state = State::Normal;
 }
 
-void noGrainfield::EndHarvesting()
+void noGrainfield::endHarvesting()
 {
     // nach langer Zeit verdorren (von neuem)
-    event = GetEvMgr().AddEvent(this, 3000 + RANDOM_RAND(1000));
+    event = getEvMgr().addEvent(this, 3000 + RANDOM_RAND(1000));
 }

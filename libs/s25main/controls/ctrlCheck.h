@@ -29,11 +29,11 @@ public:
     }
     bool isReadOnly() const { return readonly; }
 
-    bool Msg_LeftDown(const MouseCoords& mc) override;
-    bool Msg_MouseMove(const MouseCoords& mc) override;
+    bool msgLeftDown(const MouseCoords& mc) override;
+    bool msgMouseMove(const MouseCoords& mc) override;
 
 protected:
-    void Draw_() override;
+    void drawImpl() override;
 
 private:
     TextureColor tc;

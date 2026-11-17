@@ -50,10 +50,10 @@ struct dskBenchmark::GameView
     GameWorldView view;
     GameView(GameWorldBase& gw, Extent size) : viewer(0u, gw), view(viewer, Position(0, 0), size)
     {
-        viewer.InitTerrainRenderer();
-        view.MoveToMapPt(MapPoint(0, 0));
-        view.ToggleShowBQ();
-        view.ToggleShowNames();
+        viewer.initTerrainRenderer();
+        view.moveToMapPt(MapPoint(0, 0));
+        view.toggleShowBQ();
+        view.toggleShowNames();
     }
 };
 
@@ -62,9 +62,9 @@ dskBenchmark::dskBenchmark()
 {
     for(std::chrono::milliseconds& t : testDurations_)
         t = std::chrono::milliseconds::zero();
-    AddText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F5 to start benchmark, F10 for all, NUM_n to set amount of instances",
+    addText(ID_txtHelp, DrawPoint(5, 5), "Use F1-F5 to start benchmark, F10 for all, NUM_n to set amount of instances",
             COLOR_YELLOW, FontStyle::LEFT, LargeFont);
-    AddText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
+    addText(ID_txtAmount, DrawPoint(795, 5), "Instances: default", COLOR_YELLOW, FontStyle::RIGHT, LargeFont);
 }
 
 dskBenchmark::~dskBenchmark()
@@ -76,11 +76,11 @@ dskBenchmark::~dskBenchmark()
     {}
 }
 
-bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
+bool dskBenchmark::msgKeyDown(const KeyEvent& ke)
 {
     switch(ke.kt)
     {
-        case KeyType::Escape: WINDOWMANAGER.Switch(std::make_unique<dskMainMenu>()); break;
+        case KeyType::Escape: WINDOWMANAGER.switchTo(std::make_unique<dskMainMenu>()); break;
         case KeyType::F1: startTest(Benchmark::Text); break;
         case KeyType::F2: startTest(Benchmark::Primitives); break;
         case KeyType::F3: startTest(Benchmark::EmptyGame); break;
@@ -96,43 +96,43 @@ bool dskBenchmark::Msg_KeyDown(const KeyEvent& ke)
                 numInstances_ = (ke.c - '0') * 100;
                 if(numInstances_ == 0)
                     numInstances_ = 1000;
-                GetCtrl<ctrlText>(ID_txtAmount)->SetText("Instances: " + helpers::toString(numInstances_));
+                getCtrl<ctrlText>(ID_txtAmount)->setText("Instances: " + helpers::toString(numInstances_));
                 break;
             } else
-                return dskMenuBase::Msg_KeyDown(ke);
-        default: return dskMenuBase::Msg_KeyDown(ke);
+                return dskMenuBase::msgKeyDown(ke);
+        default: return dskMenuBase::msgKeyDown(ke);
     }
     return true;
 }
 
-void dskBenchmark::Msg_PaintAfter()
+void dskBenchmark::msgPaintAfter()
 {
     for(const ColoredRect& rect : rects_)
-        DrawRectangle(rect.rect, rect.clr);
+        drawRectangle(rect.rect, rect.clr);
     for(const ColoredLine& line : lines_)
-        DrawLine(line.p1, line.p2, line.width, line.clr);
+        drawLine(line.p1, line.p2, line.width, line.clr);
     if(gameView_)
     {
         RoadBuildState roadState;
         roadState.mode = RoadBuildMode::Disabled;
-        gameView_->view.Draw(roadState, MapPoint::Invalid(), false);
+        gameView_->view.draw(roadState, MapPoint::invalid(), false);
     }
     if(curTest_ != Benchmark::None)
     {
         if(frameCtr_.getCurNumFrames() + 1u >= numTestFrames)
-            VIDEODRIVER.GetRenderer()->synchronize();
+            VIDEODRIVER.getRenderer()->synchronize();
         frameCtr_.update();
         if(frameCtr_.getCurNumFrames() >= numTestFrames)
             finishTest();
     }
-    dskMenuBase::Msg_PaintAfter();
+    dskMenuBase::msgPaintAfter();
 }
 
-void dskBenchmark::SetActive(bool activate)
+void dskBenchmark::setActive(bool activate)
 {
-    if(!IsActive() && activate)
-        VIDEODRIVER.ResizeScreen(VideoMode(1600, 900), DisplayMode::Windowed);
-    dskMenuBase::SetActive(activate);
+    if(!isActive() && activate)
+        VIDEODRIVER.resizeScreen(VideoMode(1600, 900), DisplayMode::Windowed);
+    dskMenuBase::setActive(activate);
 }
 
 void dskBenchmark::startTest(Benchmark test)
@@ -164,13 +164,13 @@ void dskBenchmark::startTest(Benchmark test)
                     if(pt.x >= 780)
                         pt.x = distrMove(rng);
                 }
-                AddText(ID_first + i, pt, txt, COLOR_YELLOW, FontStyle::LEFT, fnt);
+                addText(ID_first + i, pt, txt, COLOR_YELLOW, FontStyle::LEFT, fnt);
             }
             break;
         }
         case Benchmark::Primitives:
         {
-            Extent screenSize = VIDEODRIVER.GetRenderSize();
+            Extent screenSize = VIDEODRIVER.getRenderSize();
             std::uniform_int_distribution<unsigned> distSize(5, 50);
             std::uniform_int_distribution<unsigned> distClr(0, 0xFF);
             std::uniform_int_distribution<unsigned> distrMove(10, 50);
@@ -185,7 +185,7 @@ void dskBenchmark::startTest(Benchmark test)
                 rect.rect.setSize(Extent(distSize(rng), distSize(rng)));
                 unsigned clr = distClr(rng);
                 unsigned alpha = std::min((distClr(rng) + 10u) * 10u, 0xFFu);
-                rect.clr = MakeColor(alpha, clr, clr, clr);
+                rect.clr = makeColor(alpha, clr, clr, clr);
                 rects_.push_back(rect);
                 pt.y += distrMove(rng);
                 if(pt.y >= static_cast<int>(screenSize.y) - 20)
@@ -199,7 +199,7 @@ void dskBenchmark::startTest(Benchmark test)
                 line.p1 = Position(distrPosX(rng), distrPosY(rng));
                 line.p2 = Position(distrPosX(rng), distrPosY(rng));
                 line.width = distrWidth(rng);
-                line.clr = MakeColor(alpha, clr, clr, clr);
+                line.clr = makeColor(alpha, clr, clr, clr);
                 lines_.push_back(line);
             }
             break;
@@ -208,9 +208,9 @@ void dskBenchmark::startTest(Benchmark test)
             createGame();
             if(!game_)
                 return;
-            RTTR_FOREACH_PT(MapPoint, game_->world_.GetSize())
+            RTTR_FOREACH_PT(MapPoint, game_->world_.getSize())
             {
-                game_->world_.SetVisibility(pt, 0, Visibility::Visible);
+                game_->world_.setVisibility(pt, 0, Visibility::Visible);
             }
             break;
         case Benchmark::BasicGame:
@@ -220,7 +220,7 @@ void dskBenchmark::startTest(Benchmark test)
                 return;
             std::vector<MapPoint> hqs(2, MapPoint(0, 0));
             hqs[1].x += 30;
-            MapLoader::PlaceHQs(game_->world_, hqs);
+            MapLoader::placeHQs(game_->world_, hqs);
             break;
         }
         case Benchmark::FullGame:
@@ -230,10 +230,10 @@ void dskBenchmark::startTest(Benchmark test)
                 return;
             std::vector<MapPoint> hqs(2, MapPoint(0, 0));
             hqs[1].x += 30;
-            MapLoader::PlaceHQs(game_->world_, hqs);
+            MapLoader::placeHQs(game_->world_, hqs);
             for(unsigned i = 0; i < hqs.size(); i++)
             {
-                std::vector<MapPoint> pts = game_->world_.GetPointsInRadius(hqs[i], 15);
+                std::vector<MapPoint> pts = game_->world_.getPointsInRadius(hqs[i], 15);
                 std::bernoulli_distribution dist(numInstances_ / 1000.f);
                 std::bernoulli_distribution distEqual;
                 std::array<BuildingType, 5> blds = {{BuildingType::Barracks, BuildingType::Mill, BuildingType::IronMine,
@@ -243,29 +243,29 @@ void dskBenchmark::startTest(Benchmark test)
                 std::uniform_int_distribution<unsigned> getDir(0, helpers::MaxEnumValue_v<Direction>);
                 for(MapPoint pt : pts)
                 {
-                    MapPoint flagPt = game_->world_.GetNeighbour(pt, Direction::SouthEast);
-                    if(game_->world_.GetNode(pt).obj || game_->world_.GetNode(flagPt).obj || !dist(rng))
+                    MapPoint flagPt = game_->world_.getNeighbour(pt, Direction::SouthEast);
+                    if(game_->world_.getNode(pt).obj || game_->world_.getNode(flagPt).obj || !dist(rng))
                         continue;
                     BuildingType bldType = blds[getBld(rng)];
-                    noBuilding* bld = BuildingFactory::CreateBuilding(
+                    noBuilding* bld = BuildingFactory::createBuilding(
                       game_->world_, bldType, pt, i, distEqual(rng) ? Nation::Africans : Nation::Japanese);
                     if(bldType == BuildingType::Barracks)
                     {
                         auto* mil = static_cast<nobMilitary*>(bld);
-                        mil->AddPassiveSoldier(std::make_unique<nofPassiveSoldier>(pt, i, mil, mil, 0));
+                        mil->addPassiveSoldier(std::make_unique<nofPassiveSoldier>(pt, i, mil, mil, 0));
                     }
-                    auto& figure = game_->world_.AddFigure(
+                    auto& figure = game_->world_.addFigure(
                       flagPt, std::make_unique<nofPassiveWorker>(Job(getJob(rng)), flagPt, i, nullptr));
-                    figure.StartWandering();
-                    figure.StartWalking(Direction(getDir(rng)));
+                    figure.startWandering();
+                    figure.startWalking(Direction(getDir(rng)));
                 }
             }
             break;
         }
     }
     if(game_)
-        gameView_ = std::make_unique<GameView>(game_->world_, VIDEODRIVER.GetRenderSize());
-    VIDEODRIVER.GetRenderer()->synchronize();
+        gameView_ = std::make_unique<GameView>(game_->world_, VIDEODRIVER.getRenderSize());
+    VIDEODRIVER.getRenderer()->synchronize();
     VIDEODRIVER.setTargetFramerate(-1);
     curTest_ = test;
     frameCtr_ = FrameCounter(frameCtr_.getUpdateInterval());
@@ -275,7 +275,7 @@ void dskBenchmark::finishTest()
 {
     using namespace std::chrono;
     using helpers::withUnit;
-    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % rttr::enum_cast(curTest_)
+    LOG.write("Benchmark #%1% took %2%. -> %3%m/frame\n") % rttr::enumCast(curTest_)
       % withUnit(duration_cast<duration<float>>(frameCtr_.getCurIntervalLength()))
       % withUnit(duration_cast<milliseconds>(frameCtr_.getCurIntervalLength() / frameCtr_.getCurNumFrames()));
     if(testDurations_[curTest_] == milliseconds::zero())
@@ -284,17 +284,17 @@ void dskBenchmark::finishTest()
         testDurations_[curTest_] =
           duration_cast<milliseconds>(testDurations_[curTest_] + frameCtr_.getCurIntervalLength()) / 2;
 
-    std::vector<Window*> ctrls = GetCtrls<Window>();
+    std::vector<Window*> ctrls = getCtrls<Window>();
     for(Window* ctrl : ctrls)
     {
-        if(ctrl->GetID() >= ID_first)
-            DeleteCtrl(ctrl->GetID());
+        if(ctrl->getID() >= ID_first)
+            deleteCtrl(ctrl->getID());
     }
     rects_.clear();
     lines_.clear();
     gameView_.reset();
     game_.reset();
-    SetFpsDisplay(true);
+    setFpsDisplay(true);
     VIDEODRIVER.setTargetFramerate(0);
     if(!runAll_)
         curTest_ = Benchmark::None;
@@ -304,7 +304,7 @@ void dskBenchmark::finishTest()
             curTest_ = Benchmark::None;
         else
         {
-            curTest_ = Benchmark(rttr::enum_cast(curTest_) + 1);
+            curTest_ = Benchmark(rttr::enumCast(curTest_) + 1);
             startTest(curTest_);
         }
     }
@@ -312,7 +312,7 @@ void dskBenchmark::finishTest()
 
 void dskBenchmark::createGame()
 {
-    RANDOM.Init(42);
+    RANDOM.init(42);
     std::vector<PlayerInfo> players;
     PlayerInfo p;
     p.ps = PlayerState::Occupied;
@@ -326,18 +326,18 @@ void dskBenchmark::createGame()
     GameWorld& world = game_->world_;
     try
     {
-        loadGameData(world.GetDescriptionWriteable());
-        world.Init(MapExtent(128, 128));
-        const WorldDescription& desc = world.GetDescription();
+        loadGameData(world.getDescriptionWriteable());
+        world.init(MapExtent(128, 128));
+        const WorldDescription& desc = world.getDescription();
         DescIdx<TerrainDesc> lastTerrain(0);
         int lastHeight = 10;
         std::mt19937 rng(42);
         using std::uniform_int_distribution;
         uniform_int_distribution<int> percentage(0, 100);
         uniform_int_distribution<int> randTerrain(0, desc.terrain.size() / 2);
-        RTTR_FOREACH_PT(MapPoint, world.GetSize())
+        RTTR_FOREACH_PT(MapPoint, world.getSize())
         {
-            MapNode& node = world.GetNodeWriteable(pt);
+            MapNode& node = world.getNodeWriteable(pt);
             DescIdx<TerrainDesc> t;
             // 90% chance of using the same terrain
             if(percentage(rng) <= 90)
@@ -356,8 +356,8 @@ void dskBenchmark::createGame()
                 lastHeight = helpers::clamp(lastHeight + uniform_int_distribution<int>(-1, 1)(rng), 8, 13);
             node.altitude = lastHeight;
         }
-        MapLoader::InitShadows(world);
-        MapLoader::SetMapExplored(world);
+        MapLoader::initShadows(world);
+        MapLoader::setMapExplored(world);
 
         GameLoader loader(LOADER, game_);
         if(!loader.load())
@@ -377,7 +377,7 @@ void dskBenchmark::printTimes() const
     {
         if(i == Benchmark::None)
             continue;
-        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % rttr::enum_cast(i)
+        LOG.write("Benchmark #%1% took %2% -> %3%/frame\n") % rttr::enumCast(i)
           % helpers::withUnit(duration_cast<duration<float>>(testDurations_[i]))
           % helpers::withUnit(duration_cast<milliseconds>(testDurations_[i] / numTestFrames));
         total += testDurations_[i];

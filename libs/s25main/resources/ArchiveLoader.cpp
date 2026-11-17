@@ -73,7 +73,7 @@ libsiedler2::Archiv ArchiveLoader::loadFile(const fs::path& filePath,
     logger_.write(_("Loading %1%: ")) % filePath;
 
     libsiedler2::Archiv archive;
-    if(int ec = libsiedler2::Load(filePath, archive, palette))
+    if(int ec = libsiedler2::load(filePath, archive, palette))
         throw LoadError(libsiedler2::getErrorString(ec));
 
     return archive;
@@ -128,7 +128,7 @@ libsiedler2::Archiv ArchiveLoader::loadFileOrDir(const fs::path& filePath,
 void ArchiveLoader::mergeArchives(libsiedler2::Archiv& targetArchiv, libsiedler2::Archiv& otherArchiv)
 {
     if(targetArchiv.size() < otherArchiv.size())
-        targetArchiv.alloc_inc(otherArchiv.size() - targetArchiv.size());
+        targetArchiv.allocInc(otherArchiv.size() - targetArchiv.size());
     for(unsigned i = 0; i < otherArchiv.size(); i++)
     {
         // Skip empty entries

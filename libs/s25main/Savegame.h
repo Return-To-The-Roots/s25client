@@ -23,20 +23,20 @@ public:
     Savegame();
     ~Savegame() override;
 
-    std::string GetSignature() const override;
-    uint8_t GetLatestMinorVersion() const override;
-    uint8_t GetLatestMajorVersion() const override;
+    std::string getSignature() const override;
+    uint8_t getLatestMinorVersion() const override;
+    uint8_t getLatestMajorVersion() const override;
 
     /// Schreibst Savegame oder Teile davon
-    bool Save(const boost::filesystem::path& filepath, const std::string& mapName);
-    bool Save(BinaryFile& file, const std::string& mapName);
+    bool save(const boost::filesystem::path& filepath, const std::string& mapName);
+    bool save(BinaryFile& file, const std::string& mapName);
 
     /// Lädt Savegame oder Teile davon
-    bool Load(const boost::filesystem::path& filePath, SaveGameDataToLoad what);
-    bool Load(BinaryFile& file, SaveGameDataToLoad what);
+    bool load(const boost::filesystem::path& filePath, SaveGameDataToLoad what);
+    bool load(BinaryFile& file, SaveGameDataToLoad what);
 
-    void WriteExtHeader(BinaryFile& file, const std::string& mapName) override;
-    bool ReadExtHeader(BinaryFile& file) override;
+    void writeExtHeader(BinaryFile& file, const std::string& mapName) override;
+    bool readExtHeader(BinaryFile& file) override;
 
     /// Start-GF
     unsigned start_gf;
@@ -44,6 +44,6 @@ public:
     SerializedGameData sgd;
 
 protected:
-    void WriteGameData(BinaryFile& file);
-    bool ReadGameData(BinaryFile& file);
+    void writeGameData(BinaryFile& file);
+    bool readGameData(BinaryFile& file);
 };

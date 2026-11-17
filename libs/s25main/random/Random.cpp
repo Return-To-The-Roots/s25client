@@ -18,24 +18,24 @@ int calcRandValue(T_PRNG& rng, int maxExcl)
 template<class T_PRNG>
 Random<T_PRNG>::Random()
 {
-    Init(123456789);
+    init(123456789);
 }
 
 template<class T_PRNG>
-void Random<T_PRNG>::Init(const uint64_t& seed)
+void Random<T_PRNG>::init(const uint64_t& seed)
 {
-    ResetState(PRNG(static_cast<typename PRNG::result_type>(seed)));
+    resetState(PRNG(static_cast<typename PRNG::result_type>(seed)));
 }
 
 template<class T_PRNG>
-void Random<T_PRNG>::ResetState(const PRNG& newState)
+void Random<T_PRNG>::resetState(const PRNG& newState)
 {
     rng_ = newState;
     numInvocations_ = 0;
 }
 
 template<class T_PRNG>
-int Random<T_PRNG>::Rand(const RandomContext& context, const int maxExcl)
+int Random<T_PRNG>::rand(const RandomContext& context, const int maxExcl)
 {
     history_[numInvocations_ % history_.size()] = RandomEntry(numInvocations_, maxExcl, rng_, context);
     ++numInvocations_;
@@ -44,34 +44,34 @@ int Random<T_PRNG>::Rand(const RandomContext& context, const int maxExcl)
 }
 
 template<class T_PRNG>
-unsigned Random<T_PRNG>::GetChecksum() const
+unsigned Random<T_PRNG>::getChecksum() const
 {
-    return CalcChecksum(rng_);
+    return calcChecksum(rng_);
 }
 
 template<class T_PRNG>
-unsigned Random<T_PRNG>::CalcChecksum(const PRNG& rng)
+unsigned Random<T_PRNG>::calcChecksum(const PRNG& rng)
 {
     // This is designed in a way that makes the checksum be equivalent
     // to the state of the OldLCG for compatibility with old versions
     Serializer ser;
     rng.serialize(ser);
     unsigned checksum = 0;
-    while(ser.GetBytesLeft() >= sizeof(unsigned))
-        checksum += ser.PopUnsignedInt();
-    while(ser.GetBytesLeft())
-        checksum += ser.PopUnsignedChar();
+    while(ser.getBytesLeft() >= sizeof(unsigned))
+        checksum += ser.popUnsignedInt();
+    while(ser.getBytesLeft())
+        checksum += ser.popUnsignedChar();
     return checksum;
 }
 
 template<class T_PRNG>
-const typename Random<T_PRNG>::PRNG& Random<T_PRNG>::GetCurrentState() const
+const typename Random<T_PRNG>::PRNG& Random<T_PRNG>::getCurrentState() const
 {
     return rng_;
 }
 
 template<class T_PRNG>
-std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::GetAsyncLog()
+std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::getAsyncLog()
 {
     std::vector<RandomEntry> ret;
 
@@ -99,34 +99,34 @@ std::vector<typename Random<T_PRNG>::RandomEntry> Random<T_PRNG>::GetAsyncLog()
 //////////////////////////////////////////////////////////////////////////
 
 template<class T_PRNG>
-void Random<T_PRNG>::RandomEntry::Serialize(Serializer& ser) const
+void Random<T_PRNG>::RandomEntry::serialize(Serializer& ser) const
 {
-    ser.PushUnsignedInt(counter);
-    ser.PushSignedInt(maxExcl);
+    ser.pushUnsignedInt(counter);
+    ser.pushSignedInt(maxExcl);
     // We save the type a) for double checking and b) for future extension
-    ser.PushLongString(T_PRNG::getName());
+    ser.pushLongString(T_PRNG::getName());
     rngState.serialize(ser);
-    ser.PushLongString(srcName);
-    ser.PushUnsignedInt(srcLine);
-    ser.PushUnsignedInt(objId);
+    ser.pushLongString(srcName);
+    ser.pushUnsignedInt(srcLine);
+    ser.pushUnsignedInt(objId);
 }
 
 template<class T_PRNG>
-void Random<T_PRNG>::RandomEntry::Deserialize(Serializer& ser)
+void Random<T_PRNG>::RandomEntry::deserialize(Serializer& ser)
 {
-    counter = ser.PopUnsignedInt();
-    maxExcl = ser.PopSignedInt();
-    std::string name = ser.PopLongString();
+    counter = ser.popUnsignedInt();
+    maxExcl = ser.popSignedInt();
+    std::string name = ser.popLongString();
     if(name != T_PRNG::getName())
         throw std::runtime_error("Wrong random number generator");
     rngState.deserialize(ser);
-    srcName = ser.PopLongString();
-    srcLine = ser.PopUnsignedInt();
-    objId = ser.PopUnsignedInt();
+    srcName = ser.popLongString();
+    srcLine = ser.popUnsignedInt();
+    objId = ser.popUnsignedInt();
 }
 
 template<class T_PRNG>
-int Random<T_PRNG>::RandomEntry::GetValue() const
+int Random<T_PRNG>::RandomEntry::getValue() const
 {
     PRNG tmpRng(rngState);
     return calcRandValue(tmpRng, maxExcl);

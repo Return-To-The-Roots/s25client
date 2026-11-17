@@ -56,62 +56,62 @@ protected:
 
     /// wird von abgeleiteten Klassen aufgerufen, wenn sie die Ware an der Fahne vorm Gebäude ablegen wollen (oder auch
     /// nicht) also fertig mit Arbeiten sind
-    void WorkingReady();
+    void workingReady();
     /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
-    void AbrogateWorkplace() override;
+    void abrogateWorkplace() override;
     /// Tries to start working.
     /// Checks preconditions (production enabled, wares available...) and starts the pre-Work-Waiting period if ok
-    virtual void TryToWork();
+    virtual void tryToWork();
     /// Returns true, when there are enough wares available for working.
     /// Note: On false, we will wait for the next ware or production change till checking again
-    virtual bool AreWaresAvailable() const;
+    virtual bool areWaresAvailable() const;
 
 private:
     /// von noFigure aufgerufen
-    void Walked() override;      // wenn man gelaufen ist
-    void GoalReached() override; // wenn das Ziel erreicht wurde
+    void walked() override;      // wenn man gelaufen ist
+    void goalReached() override; // wenn das Ziel erreicht wurde
 
 protected:
     /// Malt den Arbeiter beim Arbeiten
-    virtual void DrawWorking(DrawPoint drawPt) = 0;
+    virtual void drawWorking(DrawPoint drawPt) = 0;
     static constexpr unsigned short CARRY_ID_CARRIER_OFFSET = 100;
     /// Ask derived class for an ID into JOBS.BOB when the figure is carrying a ware
     /// Use GD_* + CARRY_ID_CARRIER_OFFSET for using carrier graphics
-    virtual unsigned short GetCarryID() const = 0;
+    virtual unsigned short getCarryID() const = 0;
     /// Laufen an abgeleitete Klassen weiterleiten
-    virtual void WalkedDerived() = 0;
+    virtual void walkedDerived() = 0;
     /// Arbeit musste wegen Arbeitsplatzverlust abgebrochen werden
-    virtual void WorkAborted();
+    virtual void workAborted();
     /// Arbeitsplatz wurde erreicht
-    virtual void WorkplaceReached();
+    virtual void workplaceReached();
 
     /// Draws the figure while returning home / entering the building (often carrying wares)
-    virtual void DrawWalkingWithWare(DrawPoint drawPt);
+    virtual void drawWalkingWithWare(DrawPoint drawPt);
     /// Zeichnen der Figur in sonstigen Arbeitslagen
-    virtual void DrawOtherStates(DrawPoint drawPt);
+    virtual void drawOtherStates(DrawPoint drawPt);
 
 public:
-    State GetState() const { return state; }
+    State getState() const { return state; }
 
     nofBuildingWorker(Job job, MapPoint pos, unsigned char player, nobUsual* workplace);
     nofBuildingWorker(SerializedGameData& sgd, unsigned obj_id);
     nofBuildingWorker(const nofBuildingWorker&) = delete;
 
-    void Destroy() override
+    void destroy() override
     {
         RTTR_Assert(!workplace);
-        noFigure::Destroy();
+        noFigure::destroy();
     }
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Wenn eine neue Ware kommt oder die Produktion wieder erlaubt wurde, wird das aufgerufen
-    void GotWareOrProductionAllowed();
+    void gotWareOrProductionAllowed();
     /// Wenn wieder Platz an der Flagge ist und eine Ware wieder rausgetragen werden kann
-    bool FreePlaceAtFlag();
+    bool freePlaceAtFlag();
     /// Wenn das Haus des Arbeiters abbrennt
-    void LostWork();
+    void lostWork();
     /// Wird aufgerufen, nachdem die Produktion in dem Gebäude, wo er arbeitet, verboten wurde
-    void ProductionStopped();
+    void productionStopped();
 };

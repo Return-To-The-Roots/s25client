@@ -44,7 +44,7 @@ Mountain growMountain(const NodeMapBase<unsigned>& freeLand, RandomUtility& rnd,
  * Selects the nodes of new mountains until no node is further away from obstacles than settings.minFreeLand.
  * Nodes close to obstacles are never selected so passages stay open. Does not modify the map.
  *
- * @returns the nodes of each mountain. All mountains are disjoint.
+ * @returns the nodes of each mountain. all mountains are disjoint.
  */
 std::vector<Mountain> findMountains(const Map& map, RandomUtility& rnd, unsigned mountainLevel,
                                     const MountainSettings& settings);

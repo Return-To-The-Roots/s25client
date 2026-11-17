@@ -13,27 +13,27 @@
 iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobHarborBuilding* hb)
     : iwHQ(gwv, gcFactory, hb)
 {
-    SetTitle(_("Harbor building"));
+    setTitle(_("Harbor building"));
 
     // Zusätzliche Hafenseite
-    ctrlGroup& harbor_page = AddPage();
-    grpIdExpedition = harbor_page.GetID();
+    ctrlGroup& harbor_page = addPage();
+    grpIdExpedition = harbor_page.getID();
 
     // "Expedition"-Überschrift
-    harbor_page.AddText(0, DrawPoint(83, 70), _("Expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
+    harbor_page.addText(0, DrawPoint(83, 70), _("Expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(1, DrawPoint(65, 100), Extent(30, 30), TextureColor::Grey, LOADER.GetImageN("io", 176),
+    harbor_page.addImageButton(1, DrawPoint(65, 100), Extent(30, 30), TextureColor::Grey, LOADER.getImageN("io", 176),
                                _("Start expedition"));
-    AdjustExpeditionButton(false);
+    adjustExpeditionButton(false);
 
     // "Expedition"-Überschrift
-    harbor_page.AddText(2, DrawPoint(83, 140), _("Exploration expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
+    harbor_page.addText(2, DrawPoint(83, 140), _("Exploration expedition"), 0xFFFFFF00, FontStyle::CENTER, NormalFont);
 
     // Button zum Expedition starten
-    harbor_page.AddImageButton(3, DrawPoint(65, 170), Extent(30, 30), TextureColor::Grey, LOADER.GetImageN("io", 176),
+    harbor_page.addImageButton(3, DrawPoint(65, 170), Extent(30, 30), TextureColor::Grey, LOADER.getImageN("io", 176),
                                _("Start exporation expedition"));
-    AdjustExplorationExpeditionButton(false);
+    adjustExplorationExpeditionButton(false);
 }
 
 /**
@@ -41,25 +41,25 @@ iwHarborBuilding::iwHarborBuilding(GameWorldView& gwv, GameCommandFactory& gcFac
  *
  *  falls @p flip gesetzt, dann umgekehrt einfärben
  */
-void iwHarborBuilding::AdjustExpeditionButton(bool flip)
+void iwHarborBuilding::adjustExpeditionButton(bool flip)
 {
-    auto* button = GetCtrl<ctrlGroup>(grpIdExpedition)->GetCtrl<ctrlImageButton>(1);
+    auto* button = getCtrl<ctrlGroup>(grpIdExpedition)->getCtrl<ctrlImageButton>(1);
 
     // Visuelle Rückmeldung, grün einfärben, wenn Expedition gestartet wurde
     // Jeweils umgekehrte Farbe nehmen, da die änderung ja spielerisch noch nicht
     // in Kraft getreten ist!
-    bool exp = static_cast<const nobHarborBuilding*>(wh)->IsExpeditionActive();
+    bool exp = static_cast<const nobHarborBuilding*>(wh)->isExpeditionActive();
 
     // "flip xor exp", damit korrekt geswitcht wird, falls expedition abgebrochen werden soll
     // und dies direkt dargestellt werden soll (flip)
     if((flip || exp) && !(flip && exp))
     {
-        button->SetModulationColor(COLOR_WHITE);
-        button->SetTooltip(_("Cancel expedition"));
+        button->setModulationColor(COLOR_WHITE);
+        button->setTooltip(_("Cancel expedition"));
     } else
     {
-        button->SetModulationColor(COLOR_RED);
-        button->SetTooltip(_("Start expedition"));
+        button->setModulationColor(COLOR_RED);
+        button->setTooltip(_("Start expedition"));
     }
 }
 
@@ -68,29 +68,29 @@ void iwHarborBuilding::AdjustExpeditionButton(bool flip)
  *
  *  falls @p flip gesetzt, dann umgekehrt einfärben
  */
-void iwHarborBuilding::AdjustExplorationExpeditionButton(bool flip)
+void iwHarborBuilding::adjustExplorationExpeditionButton(bool flip)
 {
-    auto* button = GetCtrl<ctrlGroup>(grpIdExpedition)->GetCtrl<ctrlImageButton>(3);
+    auto* button = getCtrl<ctrlGroup>(grpIdExpedition)->getCtrl<ctrlImageButton>(3);
 
     // Visuelle Rückmeldung, grün einfärben, wenn Expedition gestartet wurde
     // Jeweils umgekehrte Farbe nehmen, da die änderung ja spielerisch noch nicht
     // in Kraft getreten ist!
-    bool exp = static_cast<const nobHarborBuilding*>(wh)->IsExplorationExpeditionActive();
+    bool exp = static_cast<const nobHarborBuilding*>(wh)->isExplorationExpeditionActive();
 
     // "flip xor exp", damit korrekt geswitcht wird, falls expedition abgebrochen werden soll
     // und dies direkt dargestellt werden soll (flip)
     if((flip || exp) && !(flip && exp))
     {
-        button->SetModulationColor(COLOR_WHITE);
-        button->SetTooltip(_("Cancel expedition"));
+        button->setModulationColor(COLOR_WHITE);
+        button->setTooltip(_("Cancel expedition"));
     } else
     {
-        button->SetModulationColor(COLOR_RED);
-        button->SetTooltip(_("Start expedition"));
+        button->setModulationColor(COLOR_RED);
+        button->setTooltip(_("Start expedition"));
     }
 }
 
-void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned group_id, const unsigned ctrl_id)
+void iwHarborBuilding::msgGroupButtonClick(const unsigned group_id, const unsigned ctrl_id)
 {
     if(group_id == grpIdExpedition) // Hafengruppe?
     {
@@ -98,19 +98,19 @@ void iwHarborBuilding::Msg_Group_ButtonClick(const unsigned group_id, const unsi
         {
             case 1: // Expedition starten
                 // Entsprechenden GC senden
-                if(GAMECLIENT.StartStopExpedition(wh->GetPos(),
-                                                  !static_cast<const nobHarborBuilding*>(wh)->IsExpeditionActive()))
-                    AdjustExpeditionButton(true);
+                if(GAMECLIENT.StartStopExpedition(wh->getPos(),
+                                                  !static_cast<const nobHarborBuilding*>(wh)->isExpeditionActive()))
+                    adjustExpeditionButton(true);
                 break;
             case 3: // Expedition starten
                 // Entsprechenden GC senden
                 if(GAMECLIENT.StartStopExplorationExpedition(
-                     wh->GetPos(), !static_cast<const nobHarborBuilding*>(wh)->IsExplorationExpeditionActive()))
-                    AdjustExplorationExpeditionButton(true);
+                     wh->getPos(), !static_cast<const nobHarborBuilding*>(wh)->isExplorationExpeditionActive()))
+                    adjustExplorationExpeditionButton(true);
                 break;
         }
     }
 
     // an Basis weiterleiten
-    iwHQ::Msg_Group_ButtonClick(group_id, ctrl_id);
+    iwHQ::msgGroupButtonClick(group_id, ctrl_id);
 }

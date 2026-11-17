@@ -17,5 +17,5 @@ struct PlayerInfo : public BasePlayerInfo
     explicit PlayerInfo(Serializer& ser, int basePlayerInfoVersion);
 
     // Serialize complete struct
-    void Serialize(Serializer& ser) const;
+    void serialize(Serializer& ser) const;
 };

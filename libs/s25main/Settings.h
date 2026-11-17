@@ -25,8 +25,8 @@ bool checkPort(int port);
 
 struct PersistentWindowSettings
 {
-    DrawPoint lastPos = DrawPoint::Invalid();
-    DrawPoint restorePos = DrawPoint::Invalid();
+    DrawPoint lastPos = DrawPoint::invalid();
+    DrawPoint restorePos = DrawPoint::invalid();
     bool isOpen = false;
     bool isPinned = false;
     bool isMinimized = false;
@@ -58,15 +58,15 @@ public:
 
     Settings();
 
-    void Load();
-    void Save();
+    void load();
+    void save();
 
 protected:
-    void LoadDefaults();
-    void LoadIngameDefaults();
+    void loadDefaults();
+    void loadIngameDefaults();
 
-    void LoadIngame();
-    void SaveIngame();
+    void loadIngame();
+    void saveIngame();
 
 public:
     struct

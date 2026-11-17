@@ -29,37 +29,37 @@ private:
 
     helpers::EnumArray<bool, ResourceType> resAlreadyFound;
 
-    void GoalReached() override;
-    void Walked() override;
-    void HandleDerivedEvent(unsigned id) override;
+    void goalReached() override;
+    void walked() override;
+    void handleDerivedEvent(unsigned id) override;
 
     /// Kann man an diesem Punkt ein Schild aufstellen?
-    bool IsNodeGood(MapPoint pt) const;
+    bool isNodeGood(MapPoint pt) const;
     /// Sucht im Umkreis von der Flagge neue Punkte wo man graben könnte
-    void LookForNewNodes();
+    void lookForNewNodes();
     /// Checks if the node is valid as a new target
-    inline bool IsValidTargetNode(MapPoint pt) const;
+    inline bool isValidTargetNode(MapPoint pt) const;
     /// Searches for a new point to go to. Returns the direction to walk in if any point was found, else sets node_goal
     /// to invalid
-    helpers::OptionalEnum<Direction> GetNextNode();
+    helpers::OptionalEnum<Direction> getNextNode();
     /// Sucht sich einen neuen Punkt und geht dorthin oder geht wieder nach Hause wenn alle Schilder aufgestellt wurden
     /// oder es keinen Punkt mehr gibt
-    void GoToNextNode();
+    void goToNextNode();
     /// Setzt das Schild, wenn noch was frei ist
-    void SetSign(Resource resources);
+    void setSign(Resource resources);
 
-    bool IsSignInArea(ResourceType type) const;
+    bool isSignInArea(ResourceType type) const;
 
 public:
     nofGeologist(MapPoint pos, unsigned char player, noRoadNode* goal);
     nofGeologist(SerializedGameData& sgd, unsigned obj_id);
 
-    void Serialize(SerializedGameData& sgd) const override;
+    void serialize(SerializedGameData& sgd) const override;
 
-    GO_Type GetGOT() const final { return GO_Type::NofGeologist; }
+    GO_Type getGOT() const final { return GO_Type::NofGeologist; }
 
-    void Draw(DrawPoint drawPt) override;
+    void draw(DrawPoint drawPt) override;
 
     /// Wird aufgerufen, wenn die Flagge abgerissen wurde
-    void LostWork() override;
+    void lostWork() override;
 };

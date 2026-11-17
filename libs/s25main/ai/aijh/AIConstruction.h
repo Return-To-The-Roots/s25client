@@ -35,54 +35,54 @@ public:
     ~AIConstruction();
 
     /// Adds a build job to the queue
-    void AddBuildJob(std::unique_ptr<BuildJob> job, bool front);
+    void addBuildJob(std::unique_ptr<BuildJob> job, bool front);
 
-    std::unique_ptr<BuildJob> GetBuildJob();
-    unsigned GetBuildJobNum() const { return buildJobs.size(); }
-    unsigned GetConnectJobNum() const { return connectJobs.size(); }
+    std::unique_ptr<BuildJob> getBuildJob();
+    unsigned getBuildJobNum() const { return buildJobs.size(); }
+    unsigned getConnectJobNum() const { return connectJobs.size(); }
 
-    void AddConnectFlagJob(const noFlag* flag);
+    void addConnectFlagJob(const noFlag* flag);
 
-    bool BuildJobAvailable() const { return !buildJobs.empty(); }
+    bool buildJobAvailable() const { return !buildJobs.empty(); }
     /// Finds flags in the area around pt
-    std::vector<const noFlag*> FindFlags(MapPoint pt, unsigned short radius);
+    std::vector<const noFlag*> findFlags(MapPoint pt, unsigned short radius);
     /// returns true if the military building should be connected to the roadsystem
-    bool MilitaryBuildingWantsRoad(const nobMilitary& milbld);
+    bool militaryBuildingWantsRoad(const nobMilitary& milbld);
     /// Connects a specific flag to a roadsystem nearby and returns true if succesful. Also returns the route of the
     /// future road.
-    bool ConnectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned maxSearchRadius = 14);
+    bool connectFlagToRoadSytem(const noFlag* flag, std::vector<Direction>& route, unsigned maxSearchRadius = 14);
     /// Builds a street between two roadnodes and sets flags on it, if route is empty, it will be calculated
     bool BuildRoad(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route);
     /// whenever a given route contains 2 segment alternatives these get tested for their buildquality and the one with
     /// the lower bq is picked for the final path
-    bool MinorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route);
+    bool minorRoadImprovements(const noRoadNode* start, const noRoadNode* target, std::vector<Direction>& route);
     /// Checks whether a flag is connected to the road system or not (connected = has path to HQ)
-    bool IsConnectedToRoadSystem(const noFlag* flag) const;
+    bool isConnectedToRoadSystem(const noFlag* flag) const;
 
-    helpers::OptionalEnum<BuildingType> GetSmallestAllowedMilBuilding() const;
-    helpers::OptionalEnum<BuildingType> GetBiggestAllowedMilBuilding() const;
+    helpers::OptionalEnum<BuildingType> getSmallestAllowedMilBuilding() const;
+    helpers::OptionalEnum<BuildingType> getBiggestAllowedMilBuilding() const;
     /// Randomly chooses a military building, preferring bigger buildings if enemy nearby
-    helpers::OptionalEnum<BuildingType> ChooseMilitaryBuilding(MapPoint pt);
+    helpers::OptionalEnum<BuildingType> chooseMilitaryBuilding(MapPoint pt);
     /// Checks whether a building type is wanted atm
-    bool Wanted(BuildingType type) const;
+    bool wanted(BuildingType type) const;
     /// Tries to build a second road to a flag, which is in any way better than the first one
-    bool BuildAlternativeRoad(const noFlag* flag, std::vector<Direction>& route);
+    bool buildAlternativeRoad(const noFlag* flag, std::vector<Direction>& route);
 
-    bool OtherStoreInRadius(MapPoint pt, unsigned radius);
+    bool otherStoreInRadius(MapPoint pt, unsigned radius);
 
-    bool OtherUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt);
+    bool otherUsualBuildingInRadius(MapPoint pt, unsigned radius, BuildingType bt);
 
-    noFlag* FindTargetStoreHouseFlag(MapPoint pt) const;
+    noFlag* findTargetStoreHouseFlag(MapPoint pt) const;
 
-    bool CanStillConstructHere(MapPoint pt) const;
+    bool canStillConstructHere(MapPoint pt) const;
 
-    void ExecuteJobs(unsigned limit);
+    void executeJobs(unsigned limit);
     /// Set flags along the road starting at the given node in the given direction
-    void SetFlagsAlongRoad(const noRoadNode& roadNode, Direction dir);
+    void setFlagsAlongRoad(const noRoadNode& roadNode, Direction dir);
     /// To be called after a new construction site was added
-    void ConstructionOrdered(const BuildJob& job);
+    void constructionOrdered(const BuildJob& job);
     /// To be called when the current pending construction orders were processed (usually on NWF)
-    void ConstructionsExecuted();
+    void constructionsExecuted();
 
 private:
     AIPlayerJH& aijh;

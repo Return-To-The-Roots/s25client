@@ -5,15 +5,15 @@
 #include "noExtension.h"
 #include "SerializedGameData.h"
 
-void noExtension::Serialize(SerializedGameData& sgd) const
+void noExtension::serialize(SerializedGameData& sgd) const
 {
-    noBase::Serialize(sgd);
+    noBase::serialize(sgd);
 
-    sgd.PushObject(base);
+    sgd.pushObject(base);
 }
 
 noExtension::noExtension(SerializedGameData& sgd, const unsigned obj_id)
-    : noBase(sgd, obj_id), base(sgd.PopObject<noBase>())
+    : noBase(sgd, obj_id), base(sgd.popObject<noBase>())
 {}
 
 noExtension::~noExtension() = default;

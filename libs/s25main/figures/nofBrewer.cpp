@@ -17,27 +17,27 @@ nofBrewer::nofBrewer(const MapPoint pos, const unsigned char player, nobUsual* w
 
 nofBrewer::nofBrewer(SerializedGameData& sgd, const unsigned obj_id) : nofWorkman(sgd, obj_id) {}
 
-void nofBrewer::DrawWorking(DrawPoint drawPt)
+void nofBrewer::drawWorking(DrawPoint drawPt)
 {
     static constexpr helpers::EnumArray<DrawPoint, Nation> offsets = {
       {{10, 17}, {10, 17}, {10, 17}, {10, 17}, {10, 17}}};
 
-    unsigned now_id = GAMECLIENT.Interpolate(128, current_ev);
+    unsigned nowId = GAMECLIENT.interpolate(128, current_ev);
 
-    if(now_id < 16)
-        LOADER.GetPlayerImage("rom_bobs", now_id)
-          ->DrawFull(drawPt + offsets[workplace->GetNation()], COLOR_WHITE,
-                     world->GetPlayer(workplace->GetPlayer()).color);
+    if(nowId < 16)
+        LOADER.getPlayerImage("rom_bobs", nowId)
+          ->drawFull(drawPt + offsets[workplace->getNation()], COLOR_WHITE,
+                     world->getPlayer(workplace->getPlayer()).color);
 
-    if(now_id == 5)
+    if(nowId == 5)
     {
-        world->GetSoundMgr().playNOSound(51, *this, 0);
+        world->getSoundMgr().playNOSound(51, *this, 0);
         was_sounding = true;
     }
-    last_id = now_id;
+    last_id = nowId;
 }
 
-helpers::OptionalEnum<GoodType> nofBrewer::ProduceWare()
+helpers::OptionalEnum<GoodType> nofBrewer::produceWare()
 {
     return GoodType::Beer;
 }
