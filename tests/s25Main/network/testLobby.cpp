@@ -37,7 +37,7 @@ struct TestLobbySever : public TestServer, public LobbyMessageInterface
         return result;
     }
 
-    bool OnNMSLobbyLogin(unsigned id, const unsigned /*revision*/, const std::string& user, const std::string& pass,
+    bool onNMSLobbyLogin(unsigned id, const unsigned /*revision*/, const std::string& user, const std::string& pass,
                          const std::string& /*version*/) override
     {
         BOOST_TEST_REQUIRE(user == testUser);
