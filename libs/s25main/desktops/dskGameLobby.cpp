@@ -1103,7 +1103,7 @@ void dskGameLobby::CI_Chat(const unsigned playerId, const ChatDestination /*cd*/
 {
     if((playerId != 0xFFFFFFFF) && !isSinglePlayer())
     {
-        std::string time = s25util::Time::FormatTime("(%H:%i:%s)");
+        std::string time = s25util::Time::formatTime("(%H:%i:%s)");
 
         gameChat->addMessage(time, gameLobby_->getPlayer(playerId).name, gameLobby_->getPlayer(playerId).color, msg,
                              0xFFFFFF00); //-V810

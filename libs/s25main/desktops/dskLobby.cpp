@@ -276,7 +276,7 @@ void dskLobby::LC_Chat(const std::string& player, const std::string& text)
 {
     unsigned playerColor = ctrlChat::calcUniqueColor(player);
 
-    std::string time = s25util::Time::FormatTime("(%H:%i:%s)");
+    std::string time = s25util::Time::formatTime("(%H:%i:%s)");
 
     if(player == "LobbyBot")
     {

@@ -207,7 +207,7 @@ bool GameServer::start(const CreateServerInfo& csi, const MapDescription& map, c
     state = ServerState::Config;
 
     // und das socket in listen-modus schicken
-    if(!serversocket.Listen(config.port, config.ipv6, csi.use_upnp))
+    if(!serversocket.listen(config.port, config.ipv6, csi.use_upnp))
     {
         LOG.write("GameServer::Start: ERROR: Listening on port %d failed!\n") % config.port;
         LOG.writeLastError("Fehler");
@@ -215,7 +215,7 @@ bool GameServer::start(const CreateServerInfo& csi, const MapDescription& map, c
     }
 
     if(config.servertype == ServerType::LAN)
-        lanAnnouncer.Start();
+        lanAnnouncer.start();
     else if(config.servertype == ServerType::Lobby)
     {
         LOBBYCLIENT.AddServer(config.gamename, mapinfo.title, (!config.password.empty()), config.port);
@@ -253,7 +253,7 @@ void GameServer::announceStatusChange()
         info.revision = rttr::version::getRevision();
         Serializer ser;
         info.serialize(ser);
-        lanAnnouncer.SetPayload(ser.getData(), ser.getLength());
+        lanAnnouncer.setPayload(ser.getData(), ser.getLength());
     } else if(config.servertype == ServerType::Lobby)
     {
         if(LOBBYCLIENT.IsIngame())
@@ -311,7 +311,7 @@ void GameServer::run()
     }
     helpers::eraseIf(networkPlayers, [](const auto& player) { return !player.socket.isValid(); });
 
-    lanAnnouncer.Run();
+    lanAnnouncer.run();
 }
 
 void GameServer::runStateConfig()
@@ -405,14 +405,14 @@ void GameServer::stop()
     countdown.stop();
 
     // laden dicht machen
-    serversocket.Close();
+    serversocket.close();
     // clear jump target
     skiptogf = 0;
 
     // clear async logs
     asyncLogs.clear();
 
-    lanAnnouncer.Stop();
+    lanAnnouncer.stop();
 
     if(LOBBYCLIENT.IsLoggedIn()) // steht die Lobbyverbindung noch?
         LOBBYCLIENT.DeleteServer();
@@ -526,7 +526,7 @@ bool GameServer::assignPlayersOfRandomTeams(std::vector<JoinPlayerInfo>& playerI
 
 bool GameServer::startGame()
 {
-    lanAnnouncer.Stop();
+    lanAnnouncer.stop();
 
     // Finalize the team selection for unassigned players.
     if(assignPlayersOfRandomTeams(playerInfos))
@@ -640,18 +640,18 @@ void GameServer::kickPlayer(uint8_t playerId, KickReason cause, uint32_t param)
 void GameServer::clientWatchDog()
 {
     SocketSet set;
-    set.Clear();
+    set.clear();
 
     // sockets zum set hinzufügen
     for(GameServerPlayer& player : networkPlayers)
-        set.Add(player.socket);
+        set.add(player.socket);
 
     // auf fehler prüfen
-    if(set.Select(0, 2) > 0)
+    if(set.select(0, 2) > 0)
     {
         for(const GameServerPlayer& player : networkPlayers)
         {
-            if(set.InSet(player.socket))
+            if(set.inSet(player.socket))
             {
                 LOG.write(_("SERVER: Error on socket of player %1%, bye bye!\n")) % player.playerId;
                 kickPlayer(player.playerId, KickReason::ConnectionLost, __LINE__);
@@ -822,11 +822,11 @@ void GameServer::waitForClients()
 {
     SocketSet set;
 
-    set.Add(serversocket);
-    if(set.Select(0, 0) > 0)
+    set.add(serversocket);
+    if(set.select(0, 0) > 0)
     {
-        RTTR_Assert(set.InSet(serversocket));
-        Socket socket = serversocket.Accept();
+        RTTR_Assert(set.inSet(serversocket));
+        Socket socket = serversocket.accept();
 
         // Verbindung annehmen
         if(!socket.isValid())
@@ -849,7 +849,7 @@ void GameServer::waitForClients()
 
         // war kein platz mehr frei, wenn ja dann verbindung trennen?
         if(newPlayerId == 0xFFFFFFFF)
-            socket.Close();
+            socket.close();
     }
 }
 
@@ -864,16 +864,16 @@ void GameServer::fillPlayerQueues()
     {
         // sockets zum set hinzufügen
         for(const GameServerPlayer& player : networkPlayers)
-            set.Add(player.socket);
+            set.add(player.socket);
 
         msgReceived = false;
 
         // ist eines der Sockets im Set lesbar?
-        if(set.Select(0, 0) > 0)
+        if(set.select(0, 0) > 0)
         {
             for(GameServerPlayer& player : networkPlayers)
             {
-                if(set.InSet(player.socket))
+                if(set.inSet(player.socket))
                 {
                     // nachricht empfangen
                     if(!player.receiveMsgs())
@@ -1537,7 +1537,7 @@ bfs::path GameServer::saveAsyncLog()
     LOG.write(_("There are %1% identical async log entries.\n")) % numIdentical;
 
     bfs::path filePath =
-      RTTRCONFIG.expandPath(s25::folders::logs) / (s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log");
+      RTTRCONFIG.expandPath(s25::folders::logs) / (s25util::Time::formatTime("async_%Y-%m-%d_%H-%i-%s") + "Server.log");
 
     // open async log
     bnw::ofstream file(filePath);

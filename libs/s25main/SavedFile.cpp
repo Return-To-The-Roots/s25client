@@ -38,26 +38,26 @@ void SavedFile::writeFileHeader(BinaryFile& file) const
 {
     // Signature
     const std::string signature = getSignature();
-    file.WriteRawData(signature.c_str(), signature.length());
+    file.writeRawData(signature.c_str(), signature.length());
     // Format version
-    file.WriteUnsignedChar(getLatestMajorVersion());
-    file.WriteUnsignedChar(getLatestMinorVersion());
+    file.writeUnsignedChar(getLatestMajorVersion());
+    file.writeUnsignedChar(getLatestMinorVersion());
 }
 
 void SavedFile::writeExtHeader(BinaryFile& file, const std::string& mapName)
 {
     // Store data in struct
-    saveTime_ = s25util::Time::CurrentTime();
+    saveTime_ = s25util::Time::currentTime();
     mapName_ = mapName;
 
     // Program version
-    file.WriteRawData(revision.data(), revision.size());
+    file.writeRawData(revision.data(), revision.size());
     s25util::time64_t tmpTime = libendian::ConvertEndianess<false>::fromNative(saveTime_);
-    file.WriteRawData(&tmpTime, sizeof(tmpTime));
-    file.WriteShortString(mapName);
-    file.WriteUnsignedInt(playerNames_.size());
+    file.writeRawData(&tmpTime, sizeof(tmpTime));
+    file.writeShortString(mapName);
+    file.writeUnsignedInt(playerNames_.size());
     for(const std::string& name : playerNames_)
-        file.WriteShortString(name);
+        file.writeShortString(name);
 }
 
 bool SavedFile::readFileHeader(BinaryFile& file)
@@ -70,7 +70,7 @@ bool SavedFile::readFileHeader(BinaryFile& file)
         throw std::range_error("Program signature is to long!");
     try
     {
-        file.ReadRawData(read_signature.data(), signature.size());
+        file.readRawData(read_signature.data(), signature.size());
 
         // Signatur überprüfen
         if(!std::equal(signature.begin(), signature.end(), read_signature.begin()))
@@ -80,8 +80,8 @@ bool SavedFile::readFileHeader(BinaryFile& file)
         }
 
         // Version überprüfen
-        majorVersion_ = file.ReadUnsignedChar();
-        minorVersion_ = file.ReadUnsignedChar();
+        majorVersion_ = file.readUnsignedChar();
+        minorVersion_ = file.readUnsignedChar();
         if(majorVersion_ != getLatestMajorVersion() || minorVersion_ > getLatestMinorVersion())
         {
             boost::format fmt =
@@ -105,13 +105,13 @@ bool SavedFile::readFileHeader(BinaryFile& file)
 
 bool SavedFile::readExtHeader(BinaryFile& file)
 {
-    file.ReadRawData(revision.data(), revision.size());
-    file.ReadRawData(&saveTime_, sizeof(saveTime_));
+    file.readRawData(revision.data(), revision.size());
+    file.readRawData(&saveTime_, sizeof(saveTime_));
     saveTime_ = libendian::ConvertEndianess<false>::toNative(saveTime_);
-    mapName_ = file.ReadShortString();
-    playerNames_.resize(file.ReadUnsignedInt());
+    mapName_ = file.readShortString();
+    playerNames_.resize(file.readUnsignedInt());
     for(std::string& name : playerNames_)
-        name = file.ReadShortString();
+        name = file.readShortString();
     return true;
 }
 

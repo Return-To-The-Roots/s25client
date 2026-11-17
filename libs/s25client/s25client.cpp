@@ -249,7 +249,7 @@ void installSignalHandlers()
  */
 void exitHandler()
 {
-    Socket::Shutdown();
+    Socket::shutdown();
 }
 
 void setAppSymbol()
@@ -396,7 +396,7 @@ bool initGame(GameManager& gameManager)
     libsiedler2::setAllocator(new GlAllocator());
 
     // Socketzeug initialisieren
-    if(!Socket::Initialize())
+    if(!Socket::initialize())
     {
         s25util::error("Could not init sockets!");
         s25util::error("Failed to start the game");

@@ -148,7 +148,7 @@ bool captureBacktrace(DebugInfo::stacktrace_t& stacktrace, void*) noexcept(false
 
 DebugInfo::DebugInfo()
 {
-    sock.Connect("debug.rttr.info", 4123, false, SETTINGS.proxy);
+    sock.connect("debug.rttr.info", 4123, false, SETTINGS.proxy);
 
     send("RTTRDBG", 7);
 
@@ -179,7 +179,7 @@ DebugInfo::DebugInfo()
 DebugInfo::~DebugInfo()
 {
     sendString("DONE");
-    sock.Close();
+    sock.close();
 }
 
 DebugInfo::stacktrace_t DebugInfo::getStackTrace(void* ctx) noexcept(false)
@@ -199,7 +199,7 @@ bool DebugInfo::send(const void* buffer, size_t length)
 
     while(length > 0)
     {
-        int res = sock.Send(ptr, length);
+        int res = sock.send(ptr, length);
 
         if(res >= 0)
         {
@@ -285,7 +285,7 @@ bool DebugInfo::sendReplay()
         rpl->close();
 
         BinaryFile f;
-        if(f.Open(replayPath, OpenFileMode::Read))
+        if(f.open(replayPath, OpenFileMode::Read))
         {
             if(!sendString("Replay"))
                 return false;
@@ -306,7 +306,7 @@ bool DebugInfo::sendReplay()
 bool DebugInfo::sendAsyncLog(const boost::filesystem::path& asyncLogFilepath)
 {
     BinaryFile file;
-    if(!file.Open(asyncLogFilepath, OpenFileMode::Read))
+    if(!file.open(asyncLogFilepath, OpenFileMode::Read))
         return false;
 
     if(!sendString("AsyncLog"))
@@ -321,8 +321,8 @@ bool DebugInfo::sendAsyncLog(const boost::filesystem::path& asyncLogFilepath)
 
 bool DebugInfo::sendFile(BinaryFile& file)
 {
-    file.Seek(0, SEEK_END);
-    unsigned fileSize = file.Tell();
+    file.seek(0, SEEK_END);
+    unsigned fileSize = file.tell();
 
     LOG.write("- File size: %u\n") % fileSize;
 
@@ -330,8 +330,8 @@ bool DebugInfo::sendFile(BinaryFile& file)
     unsigned compressed_len = fileSize * 2 + 600;
     auto compressed = std::unique_ptr<char[]>(new char[compressed_len]);
 
-    file.Seek(0, SEEK_SET);
-    file.ReadRawData(fileData.get(), fileSize);
+    file.seek(0, SEEK_SET);
+    file.readRawData(fileData.get(), fileSize);
 
     LOG.write("- Compressing...\n");
     if(BZ2_bzBuffToBuffCompress(compressed.get(), &compressed_len, fileData.get(), fileSize, 9, 0, 250) == BZ_OK)

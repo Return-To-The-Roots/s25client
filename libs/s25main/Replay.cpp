@@ -59,7 +59,7 @@ Replay::~Replay() = default;
 
 void Replay::close()
 {
-    file_.Close();
+    file_.close();
     uncompressedDataFile_.reset();
     isRecording_ = false;
     filepath_.clear();
@@ -70,9 +70,9 @@ bool Replay::stopRecording()
 {
     if(!isRecording_)
         return true;
-    const auto replayDataSize = file_.Tell();
+    const auto replayDataSize = file_.tell();
     isRecording_ = false;
-    file_.Close();
+    file_.close();
 
     // Remove empty replay recordings. They are mostly produced when a game is aborted
     // during startup, for example after an early script error.
@@ -84,42 +84,42 @@ bool Replay::stopRecording()
     }
 
     BinaryFile file;
-    if(!file.Open(filepath_, OpenFileMode::Read))
+    if(!file.open(filepath_, OpenFileMode::Read))
         return false;
     try
     {
         TmpFile tmpReplayFile(".rpl");
-        file.Seek(0, SEEK_SET);
+        file.seek(0, SEEK_SET);
         tmpReplayFile.close();
         BinaryFile compressedReplay;
-        compressedReplay.Open(tmpReplayFile.filePath, OpenFileMode::Write);
+        compressedReplay.open(tmpReplayFile.filePath, OpenFileMode::Write);
 
         // Copy header data uncompressed
         std::vector<char> data(lastGfFilePos_);
-        file.ReadRawData(data.data(), data.size());
-        compressedReplay.WriteRawData(data.data(), data.size());
-        const auto lastGF = file.ReadUnsignedInt();
+        file.readRawData(data.data(), data.size());
+        compressedReplay.writeRawData(data.data(), data.size());
+        const auto lastGF = file.readUnsignedInt();
         RTTR_Assert(lastGF == lastGF_);
-        compressedReplay.WriteUnsignedInt(lastGF);
-        file.ReadUnsignedChar(); // Ignore compressed flag (always zero for the temporary file)
+        compressedReplay.writeUnsignedInt(lastGF);
+        file.readUnsignedChar(); // Ignore compressed flag (always zero for the temporary file)
 
         // Read and compress remaining data
-        const auto uncompressedSize = replayDataSize - file.Tell(); // Always positive as there is always some game data
+        const auto uncompressedSize = replayDataSize - file.tell(); // Always positive as there is always some game data
         data.resize(uncompressedSize);
-        file.ReadRawData(data.data(), data.size());
+        file.readRawData(data.data(), data.size());
         data = CompressedData::compress(data);
         // If the compressed data turns out to be larger than the uncompressed one, bail out
         // This can happen for very short replays
         if(data.size() >= uncompressedSize)
             return true;
-        compressedReplay.WriteUnsignedChar(1); // Compressed flag
-        compressedReplay.WriteUnsignedInt(uncompressedSize);
-        compressedReplay.WriteUnsignedInt(data.size());
-        compressedReplay.WriteRawData(data.data(), data.size());
+        compressedReplay.writeUnsignedChar(1); // Compressed flag
+        compressedReplay.writeUnsignedInt(uncompressedSize);
+        compressedReplay.writeUnsignedInt(data.size());
+        compressedReplay.writeRawData(data.data(), data.size());
 
         // All done. Replace uncompressed replay
-        compressedReplay.Close();
-        file.Close();
+        compressedReplay.close();
+        file.close();
         boost::filesystem::rename(tmpReplayFile.filePath, filepath_);
         return true;
     } catch(const std::exception& e)
@@ -134,7 +134,7 @@ bool Replay::startRecording(const boost::filesystem::path& filepath, const MapIn
     // Deny overwrite, also avoids double-opening by different processes
     if(boost::filesystem::exists(filepath))
         return false;
-    if(!file_.Open(filepath, OpenFileMode::Write))
+    if(!file_.open(filepath, OpenFileMode::Write))
         return false;
     filepath_ = filepath;
 
@@ -145,59 +145,59 @@ bool Replay::startRecording(const boost::filesystem::path& filepath, const MapIn
     randomSeed_ = randomSeed;
 
     writeAllHeaderData(file_, mapInfo.title);
-    file_.WriteUnsignedChar(rttr::enumCast(mapType_));
+    file_.writeUnsignedChar(rttr::enumCast(mapType_));
     // TODO(Replay): Move before mapType
-    file_.WriteUnsignedChar(subVersion_ = currentReplayDataVersion);
+    file_.writeUnsignedChar(subVersion_ = currentReplayDataVersion);
     RTTR_Assert(gc::Deserializer::getCurrentVersion() <= std::numeric_limits<decltype(gcVersion_)>::max());
-    file_.WriteUnsignedChar(gcVersion_ = gc::Deserializer::getCurrentVersion());
+    file_.writeUnsignedChar(gcVersion_ = gc::Deserializer::getCurrentVersion());
 
     // For (savegame) format validation
     if(mapType_ == MapType::Savegame)
         mapInfo.savegame->writeFileHeader(file_);
 
     // store position to update it later
-    lastGfFilePos_ = file_.Tell();
-    file_.WriteUnsignedInt(lastGF_);
-    file_.WriteUnsignedChar(0); // Compressed flag
+    lastGfFilePos_ = file_.tell();
+    file_.writeUnsignedInt(lastGF_);
+    file_.writeUnsignedChar(0); // Compressed flag
 
     writePlayerData(file_);
     writeGGS(file_);
 
     // Game data
-    file_.WriteUnsignedInt(randomSeed_);
-    file_.WriteLongString(mapInfo.filepath.string());
+    file_.writeUnsignedInt(randomSeed_);
+    file_.writeLongString(mapInfo.filepath.string());
 
     switch(mapType_)
     {
         default: return false;
         case MapType::OldMap:
             RTTR_Assert(!mapInfo.savegame);
-            file_.WriteUnsignedInt(mapInfo.mapData.uncompressedLength);
-            file_.WriteUnsignedInt(mapInfo.mapData.data.size());
-            file_.WriteRawData(mapInfo.mapData.data.data(), mapInfo.mapData.data.size());
-            file_.WriteUnsignedInt(mapInfo.luaData.uncompressedLength);
-            file_.WriteUnsignedInt(mapInfo.luaData.data.size());
+            file_.writeUnsignedInt(mapInfo.mapData.uncompressedLength);
+            file_.writeUnsignedInt(mapInfo.mapData.data.size());
+            file_.writeRawData(mapInfo.mapData.data.data(), mapInfo.mapData.data.size());
+            file_.writeUnsignedInt(mapInfo.luaData.uncompressedLength);
+            file_.writeUnsignedInt(mapInfo.luaData.data.size());
             if(!mapInfo.luaData.data.empty())
-                file_.WriteRawData(mapInfo.luaData.data.data(), mapInfo.luaData.data.size());
+                file_.writeRawData(mapInfo.luaData.data.data(), mapInfo.luaData.data.size());
             break;
         case MapType::Savegame: mapInfo.savegame->save(file_, getMapName()); break;
     }
     // Flush now to not loose any information
-    file_.Flush();
+    file_.flush();
 
     return true;
 }
 
 const boost::filesystem::path& Replay::getPath() const
 {
-    RTTR_Assert(file_.IsOpen());
+    RTTR_Assert(file_.isOpen());
     return filepath_;
 }
 
 bool Replay::loadHeader(const boost::filesystem::path& filepath)
 {
     close();
-    if(!file_.Open(filepath, OpenFileMode::Read))
+    if(!file_.open(filepath, OpenFileMode::Read))
     {
         lastErrorMsg = _("File could not be opened.");
         return false;
@@ -210,10 +210,10 @@ bool Replay::loadHeader(const boost::filesystem::path& filepath)
         if(!readAllHeaderData(file_))
             return false;
 
-        mapType_ = static_cast<MapType>(file_.ReadUnsignedChar());
+        mapType_ = static_cast<MapType>(file_.readUnsignedChar());
         // TODO(Replay): Move before mapType to have it as early as possible.
         // Previously mapType was an unsigned short, i.e. in little endian the 2nd byte was always unused/zero
-        subVersion_ = file_.ReadUnsignedChar();
+        subVersion_ = file_.readUnsignedChar();
         if(subVersion_ > currentReplayDataVersion)
         {
             lastErrorMsg =
@@ -223,7 +223,7 @@ bool Replay::loadHeader(const boost::filesystem::path& filepath)
         }
 
         if(subVersion_ >= 1)
-            gcVersion_ = file_.ReadUnsignedChar();
+            gcVersion_ = file_.readUnsignedChar();
         else
             gcVersion_ = 0;
         if(gcVersion_ > gc::Deserializer::getCurrentVersion())
@@ -245,7 +245,7 @@ bool Replay::loadHeader(const boost::filesystem::path& filepath)
             }
         }
 
-        lastGF_ = file_.ReadUnsignedInt();
+        lastGF_ = file_.readUnsignedInt();
     } catch(const std::runtime_error& e)
     {
         lastErrorMsg = e.what();
@@ -259,40 +259,40 @@ bool Replay::loadGameData(MapInfo& mapInfo)
 {
     try
     {
-        const bool isCompressed = file_.ReadUnsignedChar() != 0;
+        const bool isCompressed = file_.readUnsignedChar() != 0;
         if(isCompressed)
         {
-            const auto uncompressedSize = file_.ReadUnsignedInt();
-            const auto compressedSize = file_.ReadUnsignedInt();
+            const auto uncompressedSize = file_.readUnsignedInt();
+            const auto compressedSize = file_.readUnsignedInt();
             CompressedData compressedData(uncompressedSize);
             compressedData.data.resize(compressedSize);
-            file_.ReadRawData(compressedData.data.data(), compressedSize);
+            file_.readRawData(compressedData.data.data(), compressedSize);
             uncompressedDataFile_ = std::make_unique<TmpFile>(".rpl");
             uncompressedDataFile_->close();
             compressedData.decompressToFile(uncompressedDataFile_->filePath);
-            file_.Close();
-            file_.Open(uncompressedDataFile_->filePath, OpenFileMode::Read);
+            file_.close();
+            file_.open(uncompressedDataFile_->filePath, OpenFileMode::Read);
         }
 
         readPlayerData(file_);
         readGGS(file_);
-        randomSeed_ = file_.ReadUnsignedInt();
+        randomSeed_ = file_.readUnsignedInt();
 
         mapInfo.clear();
         mapInfo.type = mapType_;
         mapInfo.title = getMapName();
-        mapInfo.filepath = file_.ReadLongString();
+        mapInfo.filepath = file_.readLongString();
         switch(mapType_)
         {
             default: return false;
             case MapType::OldMap:
-                mapInfo.mapData.uncompressedLength = file_.ReadUnsignedInt();
-                mapInfo.mapData.data.resize(file_.ReadUnsignedInt());
-                file_.ReadRawData(mapInfo.mapData.data.data(), mapInfo.mapData.data.size());
-                mapInfo.luaData.uncompressedLength = file_.ReadUnsignedInt();
-                mapInfo.luaData.data.resize(file_.ReadUnsignedInt());
+                mapInfo.mapData.uncompressedLength = file_.readUnsignedInt();
+                mapInfo.mapData.data.resize(file_.readUnsignedInt());
+                file_.readRawData(mapInfo.mapData.data.data(), mapInfo.mapData.data.size());
+                mapInfo.luaData.uncompressedLength = file_.readUnsignedInt();
+                mapInfo.luaData.data.resize(file_.readUnsignedInt());
                 if(!mapInfo.luaData.data.empty())
-                    file_.ReadRawData(mapInfo.luaData.data.data(), mapInfo.luaData.data.size());
+                    file_.readRawData(mapInfo.luaData.data.data(), mapInfo.luaData.data.size());
                 break;
             case MapType::Savegame:
                 mapInfo.savegame = std::make_unique<Savegame>();
@@ -314,36 +314,36 @@ bool Replay::loadGameData(MapInfo& mapInfo)
 void Replay::addChatCommand(unsigned gf, uint8_t player, ChatDestination dest, const std::string& str)
 {
     RTTR_Assert(isRecording());
-    if(!file_.IsOpen())
+    if(!file_.isOpen())
         return;
 
-    file_.WriteUnsignedInt(gf);
+    file_.writeUnsignedInt(gf);
 
-    file_.WriteUnsignedChar(rttr::enumCast(CommandType::Chat));
-    file_.WriteUnsignedChar(player);
-    file_.WriteUnsignedChar(rttr::enumCast(dest));
-    file_.WriteLongString(str);
+    file_.writeUnsignedChar(rttr::enumCast(CommandType::Chat));
+    file_.writeUnsignedChar(player);
+    file_.writeUnsignedChar(rttr::enumCast(dest));
+    file_.writeLongString(str);
 
     // Prevent loss in case of crash
-    file_.Flush();
+    file_.flush();
 }
 
 void Replay::addGameCommand(unsigned gf, uint8_t player, const PlayerGameCommands& cmds)
 {
     RTTR_Assert(isRecording());
-    if(!file_.IsOpen())
+    if(!file_.isOpen())
         return;
 
-    file_.WriteUnsignedInt(gf);
+    file_.writeUnsignedInt(gf);
 
-    file_.WriteUnsignedChar(rttr::enumCast(CommandType::Game));
+    file_.writeUnsignedChar(rttr::enumCast(CommandType::Game));
     Serializer ser;
     ser.pushUnsignedChar(player);
     cmds.serialize(ser);
     ser.writeToFile(file_);
 
     // Prevent loss in case of crash
-    file_.Flush();
+    file_.flush();
 }
 
 std::optional<unsigned> Replay::readGF()
@@ -351,10 +351,10 @@ std::optional<unsigned> Replay::readGF()
     RTTR_Assert(isReplaying());
     try
     {
-        return file_.ReadUnsignedInt();
+        return file_.readUnsignedInt();
     } catch(const std::runtime_error&)
     {
-        if(file_.IsEndOfFile())
+        if(file_.isEndOfFile())
             return std::nullopt;
         throw;
     }
@@ -363,7 +363,7 @@ std::optional<unsigned> Replay::readGF()
 boost_variant2<Replay::ChatCommand, Replay::GameCommand> Replay::readCommand()
 {
     RTTR_Assert(isReplaying());
-    const auto type = static_cast<CommandType>(file_.ReadUnsignedChar() - (subVersion_ == 0 ? 1 : 0));
+    const auto type = static_cast<CommandType>(file_.readUnsignedChar() - (subVersion_ == 0 ? 1 : 0));
     switch(type)
     {
         case CommandType::Chat: return ChatCommand(file_);
@@ -375,18 +375,18 @@ boost_variant2<Replay::ChatCommand, Replay::GameCommand> Replay::readCommand()
 void Replay::updateLastGF(unsigned last_gf)
 {
     RTTR_Assert(isRecording());
-    if(!file_.IsOpen())
+    if(!file_.isOpen())
         return;
 
-    file_.Seek(lastGfFilePos_, SEEK_SET);
-    file_.WriteUnsignedInt(last_gf);
-    file_.Seek(0, SEEK_END);
+    file_.seek(lastGfFilePos_, SEEK_SET);
+    file_.writeUnsignedInt(last_gf);
+    file_.seek(0, SEEK_END);
     lastGF_ = last_gf;
 }
 
 Replay::ChatCommand::ChatCommand(BinaryFile& file)
-    : player(file.ReadUnsignedChar()), dest(static_cast<ChatDestination>(file.ReadUnsignedChar())),
-      msg(file.ReadLongString())
+    : player(file.readUnsignedChar()), dest(static_cast<ChatDestination>(file.readUnsignedChar())),
+      msg(file.readLongString())
 {}
 
 Replay::GameCommand::GameCommand(BinaryFile& file, const unsigned version)

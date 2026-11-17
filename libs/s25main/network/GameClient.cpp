@@ -121,7 +121,7 @@ bool GameClient::connect(const std::string& server, const std::string& password,
     clientconfig.isHost = host;
 
     // Verbinden
-    if(!mainPlayer.socket.Connect(server, port, use_ipv6, SETTINGS.proxy))
+    if(!mainPlayer.socket.connect(server, port, use_ipv6, SETTINGS.proxy))
     {
         LOG.write("GameClient::Connect: ERROR: Connect failed!\n");
         if(host)
@@ -163,11 +163,11 @@ void GameClient::run()
     SocketSet set;
 
     // erstmal auf Daten überprüfen
-    set.Clear();
+    set.clear();
 
     // zum set hinzufügen
-    set.Add(mainPlayer.socket);
-    if(set.Select(0, 0) > 0)
+    set.add(mainPlayer.socket);
+    if(set.select(0, 0) > 0)
     {
         // nachricht empfangen
         if(!mainPlayer.receiveMsgs())
@@ -178,15 +178,15 @@ void GameClient::run()
     }
 
     // nun auf Fehler prüfen
-    set.Clear();
+    set.clear();
 
     // zum set hinzufügen
-    set.Add(mainPlayer.socket);
+    set.add(mainPlayer.socket);
 
     // auf fehler prüfen
-    if(set.Select(0, 2) > 0)
+    if(set.select(0, 2) > 0)
     {
-        if(set.InSet(mainPlayer.socket))
+        if(set.inSet(mainPlayer.socket))
         {
             // Server ist weg
             LOG.write("Error on socket to server\n");
@@ -857,7 +857,7 @@ bool GameClient::onGameMessage(const GameMessage_Server_Async& msg)
     if(ci)
         ci->CI_Async(checksum_list.str());
 
-    std::string fileName = s25util::Time::FormatTime("async_%Y-%m-%d_%H-%i-%s");
+    std::string fileName = s25util::Time::formatTime("async_%Y-%m-%d_%H-%i-%s");
     fileName += "_" + s25util::toStringClassic(getPlayerId()) + "_";
     fileName += getPlayer(getPlayerId()).name;
 
@@ -1450,7 +1450,7 @@ void GameClient::onGameStart()
 void GameClient::startReplayRecording(const unsigned random_init)
 {
     replayinfo = std::make_unique<ReplayInfo>();
-    replayinfo->filename = s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
+    replayinfo->filename = s25util::Time::formatTime("%Y-%m-%d_%H-%i-%s") + ".rpl";
 
     writePlayerInfo(replayinfo->replay);
     replayinfo->replay.ggs = game->ggs_;

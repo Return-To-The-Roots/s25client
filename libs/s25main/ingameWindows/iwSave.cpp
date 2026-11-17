@@ -108,7 +108,7 @@ void iwSaveLoad::refreshTable()
         }
 
         const auto fileName = saveFile.stem().string();
-        const std::string dateStr = s25util::Time::FormatTime("%d.%m.%Y - %H:%i", save.getSaveTime());
+        const std::string dateStr = s25util::Time::formatTime("%d.%m.%Y - %H:%i", save.getSaveTime());
         const std::string gameTime = GAMECLIENT.formatGFTime(save.start_gf);
 
         table->addRow({fileName, save.getMapName(), dateStr, gameTime, saveFile.string()});

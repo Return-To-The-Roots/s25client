@@ -567,7 +567,7 @@ void WindowManager::takeScreenshot() const
     glReadPixels(0, 0, windowSize.width, windowSize.height, GL_BGRA, GL_UNSIGNED_BYTE, buffer.getPixelPtr());
     flipVertical(buffer);
     const bfs::path outFilepath =
-      RTTRCONFIG.expandPath(s25::folders::screenshots) / (s25util::Time::FormatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
+      RTTRCONFIG.expandPath(s25::folders::screenshots) / (s25util::Time::formatTime("%Y-%m-%d_%H-%i-%s") + ".bmp");
     try
     {
         saveBitmap(buffer, outFilepath);

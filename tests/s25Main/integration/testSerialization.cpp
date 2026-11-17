@@ -337,7 +337,7 @@ BOOST_FIXTURE_TEST_CASE(BaseSaveLoad, RandWorldFixture)
     BOOST_TEST_REQUIRE(tmpFile.isValid());
     tmpFile.close();
 
-    s25util::time64_t saveTime = s25util::Time::CurrentTime();
+    s25util::time64_t saveTime = s25util::Time::currentTime();
     BOOST_TEST_REQUIRE(save.save(tmpFile.filePath, "MapTitle"));
     BOOST_TEST(save.getSaveTime() - saveTime <= 20); // 20s difference max
     const unsigned origObjNum = GameObject::getNumObjs();
@@ -512,7 +512,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithMap, ReplayMapFixture)
     BOOST_TEST(!replay.isReplaying());
 
     bfs::remove(tmpFile.filePath);
-    s25util::time64_t saveTime = s25util::Time::CurrentTime();
+    s25util::time64_t saveTime = s25util::Time::currentTime();
     BOOST_TEST_REQUIRE(replay.startRecording(tmpFile.filePath, map, 42));
     BOOST_TEST(replay.getSaveTime() - saveTime <= 20); // 20s difference max
     BOOST_TEST_REQUIRE(replay.isRecording());
@@ -668,7 +668,7 @@ BOOST_FIXTURE_TEST_CASE(ReplayWithSavegame, RandWorldFixture)
     BOOST_TEST_REQUIRE(tmpFile.isValid());
     tmpFile.close();
     bfs::remove(tmpFile.filePath);
-    s25util::time64_t saveTime = s25util::Time::CurrentTime();
+    s25util::time64_t saveTime = s25util::Time::currentTime();
     BOOST_TEST_REQUIRE(replay.startRecording(tmpFile.filePath, map, 815));
     BOOST_TEST_REQUIRE(replay.getSaveTime() - saveTime <= 20); // 20s difference max
     BOOST_TEST_REQUIRE(replay.isRecording());
