@@ -139,7 +139,7 @@ void dskCampaignMissionSelection::updateMissionPage()
             const bfs::path& mapFilePath = campaign_->getMapFilePath(missionIndex);
 
             libsiedler2::Archiv map;
-            if(int ec = libsiedler2::loader::LoadMAP(mapFilePath, map, true))
+            if(int ec = libsiedler2::loader::loadMAP(mapFilePath, map, true))
             {
                 LOG.write(_("Failed to load map %1%: %2%\n")) % mapFilePath % libsiedler2::getErrorString(ec);
                 continue;

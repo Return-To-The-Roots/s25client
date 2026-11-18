@@ -1066,7 +1066,7 @@ bool GameClient::createLobby()
             libsiedler2::Archiv map;
 
             // Karteninformationen laden
-            if(libsiedler2::loader::LoadMAP(mapinfo.filepath, map, true) != 0)
+            if(libsiedler2::loader::loadMAP(mapinfo.filepath, map, true) != 0)
             {
                 LOG.write("GameClient::OnMapData: ERROR: Map %1%, couldn't load header!\n") % mapinfo.filepath;
                 return false;

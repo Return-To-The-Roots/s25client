@@ -286,7 +286,7 @@ dskGameLobby::dskGameLobby(ServerType serverType, std::shared_ptr<GameLobby> gam
             // Map laden
             libsiedler2::Archiv mapArchiv;
             // Karteninformationen laden
-            if(int ec = libsiedler2::loader::LoadMAP(GAMECLIENT.getMapPath(), mapArchiv))
+            if(int ec = libsiedler2::loader::loadMAP(GAMECLIENT.getMapPath(), mapArchiv))
             {
                 WINDOWMANAGER.showAfterSwitch(
                   std::make_unique<iwMsgbox>(_("Error"), _("Could not load map:\n") + libsiedler2::getErrorString(ec),

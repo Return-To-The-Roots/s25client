@@ -292,7 +292,7 @@ void createRandomMap(const boost::filesystem::path& filePath, const MapSettings&
     loadGameData(worldDesc);
 
     Map map = generateRandomMap(rnd, worldDesc, settings);
-    libsiedler2::Write(filePath, map.createArchiv());
+    libsiedler2::write(filePath, map.createArchiv());
 }
 
 } // namespace rttr::mapGenerator
