@@ -110,6 +110,7 @@ jobs:
           #   Use (compiler) default C++ 17 standard
           #   Use default cmake
           - { compiler: gcc-14,   os: ubuntu-24.04, type: Debug }
+          - { compiler: gcc-15,   os: ubuntu-26.04, type: Debug }
           - { compiler: gcc-16,   os: ubuntu-26.04, type: Debug }
           - { compiler: clang-18, os: ubuntu-24.04, type: Debug, externalSanitizer: true }
           - { compiler: clang-21, os: ubuntu-26.04, type: Debug, init_llvm: true}
