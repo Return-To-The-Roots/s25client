@@ -525,7 +525,7 @@ void Settings::save()
     // }
 
     bfs::path settingsPath = RTTRCONFIG.expandPath(s25::resources::config);
-    if(libsiedler2::Write(settingsPath, settings) == 0)
+    if(libsiedler2::write(settingsPath, settings) == 0)
         bfs::permissions(settingsPath, bfs::owner_read | bfs::owner_write);
 
     saveIngame();
@@ -577,6 +577,6 @@ void Settings::saveIngame()
     }
 
     bfs::path settingsPathIngame = RTTRCONFIG.expandPath(s25::resources::ingameOptions);
-    if(libsiedler2::Write(settingsPathIngame, settingsIngame) == 0)
+    if(libsiedler2::write(settingsPathIngame, settingsIngame) == 0)
         bfs::permissions(settingsPathIngame, bfs::owner_read | bfs::owner_write);
 }

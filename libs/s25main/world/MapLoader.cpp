@@ -76,7 +76,7 @@ bool MapLoader::load(const boost::filesystem::path& mapFilePath)
     libsiedler2::Archiv mapArchiv;
 
     // Karteninformationen laden
-    if(libsiedler2::loader::LoadMAP(mapFilePath, mapArchiv) != 0)
+    if(libsiedler2::loader::loadMAP(mapFilePath, mapArchiv) != 0)
         return false;
 
     const libsiedler2::ArchivItem_Map& map = *static_cast<libsiedler2::ArchivItem_Map*>(mapArchiv[0]);

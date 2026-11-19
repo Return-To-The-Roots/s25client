@@ -56,7 +56,7 @@ private:
     void createTxtArchiveFile(const fs::path& path, const std::initializer_list<const char*>& values)
     {
         libsiedler2::Archiv txt = createTxtArchive(values);
-        BOOST_TEST_REQUIRE(libsiedler2::Write(path, txt) == 0);
+        BOOST_TEST_REQUIRE(libsiedler2::write(path, txt) == 0);
     }
 };
 } // namespace
@@ -155,8 +155,8 @@ BOOST_AUTO_TEST_CASE(BobOverrides)
     bmpRaw->create(buffer);
     libsiedler2::Archiv bmp;
     bmp.push(std::move(bmpRaw));
-    BOOST_TEST_REQUIRE(libsiedler2::Write((bobFile / "0.bmp"), bmp) == 0);
-    BOOST_TEST_REQUIRE(libsiedler2::Write((bobFile / "1.bmp"), bmp) == 0);
+    BOOST_TEST_REQUIRE(libsiedler2::write((bobFile / "0.bmp"), bmp) == 0);
+    BOOST_TEST_REQUIRE(libsiedler2::write((bobFile / "1.bmp"), bmp) == 0);
 
     libsiedler2::ArchivItem_Text txt;
     txt.setText("10 332\n11 334\n"); // mapping file

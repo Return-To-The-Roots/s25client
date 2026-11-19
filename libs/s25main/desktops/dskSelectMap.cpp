@@ -184,7 +184,7 @@ void dskSelectMap::msgOptionGroupChange(const unsigned /*ctrl_id*/, unsigned sel
 static std::unique_ptr<libsiedler2::ArchivItem_Map> loadAndVerifyMap(const std::string& path)
 {
     libsiedler2::Archiv archive;
-    if(int ec = libsiedler2::loader::LoadMAP(path, archive))
+    if(int ec = libsiedler2::loader::loadMAP(path, archive))
         throw std::runtime_error(libsiedler2::getErrorString(ec));
     auto map = boost::dynamic_pointer_cast<libsiedler2::ArchivItem_Map>(archive.release(0));
     if(!map)
@@ -425,7 +425,7 @@ void dskSelectMap::fillTable(const std::vector<bfs::path>& files)
             continue;
         // Karteninformationen laden
         libsiedler2::Archiv map;
-        if(int ec = libsiedler2::loader::LoadMAP(filePath, map, true))
+        if(int ec = libsiedler2::loader::loadMAP(filePath, map, true))
         {
             LOG.write(_("Failed to load map %1%: %2%\n")) % filePath % libsiedler2::getErrorString(ec);
             brokenMapPaths.insert(filePath);

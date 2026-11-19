@@ -232,7 +232,7 @@ void dskCampaignSelection::loadCampaigns()
                 } else
                 {
                     libsiedler2::Archiv map;
-                    if(int ec = libsiedler2::loader::LoadMAP(mapPath, map, true))
+                    if(int ec = libsiedler2::loader::loadMAP(mapPath, map, true))
                     {
                         LOG.write(_("Failed to load map %1%: %2%\n")) % mapPath % libsiedler2::getErrorString(ec);
                         mapsOK = false;
