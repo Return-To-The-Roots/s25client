@@ -17,6 +17,16 @@ unsigned getMaximumHeight(const MapExtent& size);
 unsigned getCoastline(const MapExtent& size);
 unsigned getIslandRadius(const MapExtent& size);
 unsigned getIslandSize(const MapExtent& size);
+unsigned getMaxMountainSize(const MapExtent& size);
+
+/**
+ * Computes the distance to water and mountains up to which land stays free.
+ *
+ * @param mountains desired amount of mountains, deserts and swamps in percent. 50 keeps the mountain distance while
+ * higher values reduce it down to the space required by headquarters.
+ */
+unsigned getMinFreeLand(unsigned mountainDistance, unsigned mountains);
+
 unsigned getSmoothRadius(const MapExtent& size);
 unsigned getSmoothIterations(const MapExtent& size);
 
@@ -32,6 +42,8 @@ private:
 
     std::vector<River> createRivers(MapPoint source = MapPoint::invalid());
     void createFreeIslands(unsigned waterNodes);
+    void fillFreeLand(unsigned mountainLevel);
+    void addTextures(unsigned mountainLevel);
     void createMixedMap();
     void createLandMap();
     void createWaterMap();

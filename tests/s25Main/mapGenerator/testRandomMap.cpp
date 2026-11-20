@@ -5,7 +5,10 @@
 #include "PointOutput.h"
 #include "commonDefines.h"
 #include "lua/GameDataLoader.h"
+#include "mapGenerator/Algorithms.h"
 #include "mapGenerator/RandomMap.h"
+#include "mapGenerator/SpecialObjects.h"
+#include "mapGenerator/TextureHelper.h"
 #include "gameData/MaxPlayers.h"
 #include "libsiedler2/ArchivItem_Map.h"
 #include "libsiedler2/ArchivItem_Map_Header.h"
@@ -142,6 +145,290 @@ BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_map_with_max_players)
 
     Map map = generateRandomMap(rnd, worldDesc, settings);
     validateMap(map, settings.size, settings.numPlayers);
+}
+
+BOOST_AUTO_TEST_CASE(getMaxMountainSize_grows_with_map_size)
+{
+    BOOST_TEST(getMaxMountainSize(MapExtent(64, 64)) < getMaxMountainSize(MapExtent(128, 128)));
+    BOOST_TEST(getMaxMountainSize(MapExtent(128, 128)) < getMaxMountainSize(MapExtent(256, 256)));
+    BOOST_TEST(getMaxMountainSize(MapExtent(256, 256)) < getMaxMountainSize(MapExtent(512, 512)));
+    BOOST_TEST(getMaxMountainSize(MapExtent(512, 512)) < getMaxMountainSize(MapExtent(1024, 1024)));
+}
+
+BOOST_AUTO_TEST_CASE(getMinFreeLand_keeps_mountain_distance_for_medium_amount)
+{
+    BOOST_TEST(getMinFreeLand(15, 50) == 15u);
+}
+
+BOOST_AUTO_TEST_CASE(getMinFreeLand_decreases_with_amount_of_mountains)
+{
+    BOOST_TEST(getMinFreeLand(30, 25) > getMinFreeLand(30, 50));
+    BOOST_TEST(getMinFreeLand(30, 50) > getMinFreeLand(30, 75));
+}
+
+BOOST_AUTO_TEST_CASE(getMinFreeLand_keeps_space_for_headquarters)
+{
+    BOOST_TEST(getMinFreeLand(30, 100) == 4u);
+    BOOST_TEST(getMinFreeLand(5, 90) == 4u);
+    BOOST_TEST(getMinFreeLand(30, 1000) == 4u);
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_more_mountains_for_higher_amount)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(256, 256);
+    settings.style = MapStyle::Mixed;
+
+    const auto countMountainNodes = [&worldDesc, &settings](const unsigned short mountains) {
+        settings.mountains = mountains;
+        RandomUtility rnd(0);
+        const Map map = generateRandomMap(rnd, worldDesc, settings);
+        return selectPoints([&map](const MapPoint& pt) { return map.textureMap.any(pt, isMinableMountain); }, map.size)
+          .size();
+    };
+
+    const auto noMountains = countMountainNodes(0);
+    const auto defaultMountains = countMountainNodes(50);
+    const auto maxMountains = countMountainNodes(100);
+
+    BOOST_TEST(noMountains < defaultMountains);
+    BOOST_TEST(defaultMountains < maxMountains);
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_maps_for_maximum_amount_of_mountains)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(128, 128);
+    settings.mountains = 100;
+
+    for(const unsigned numPlayers : {2u, MAX_PLAYERS})
+    {
+        for(const MapStyle style : {MapStyle::Land, MapStyle::Mixed, MapStyle::Water})
+        {
+            settings.numPlayers = numPlayers;
+            settings.style = style;
+            RandomUtility rnd(1);
+
+            Map map = generateRandomMap(rnd, worldDesc, settings);
+            validateMap(map, settings.size, settings.numPlayers);
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_leaves_no_large_free_land)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    // Smaller maps do not contain enough free land to require additional mountains
+    settings.size = MapExtent(256, 256);
+    settings.mountainDistance = MountainDistance::Close;
+    // The foot of desert hills is buildable and therefore counts as free land
+    settings.mountains = 50;
+    settings.desert = 0;
+    settings.swamp = 0;
+    settings.specialObjects = false;
+
+    // Maximum of the randomized free land to keep plus the transition textures added at the foot of mountains and
+    // desert hills
+    const unsigned amount = settings.mountains + settings.desert + settings.swamp;
+    const unsigned maxFreeLand = getMinFreeLand(static_cast<unsigned>(settings.mountainDistance), amount) + 5 + 3;
+
+    for(const MapStyle style : {MapStyle::Land, MapStyle::Mixed})
+    {
+        settings.style = style;
+        RandomUtility rnd(0);
+
+        const Map map = generateRandomMap(rnd, worldDesc, settings);
+        const auto distances = distancesTo(map.size, [&map](const MapPoint& pt) {
+            return helpers::contains(map.barren, pt) || map.textureMap.any(pt, [](const TerrainDesc& t) {
+                return isWater(t) || isMountainOrSnowOrLava(t);
+            });
+        });
+
+        BOOST_TEST(*std::max_element(distances.begin(), distances.end()) <= maxFreeLand);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_maps_for_all_styles_and_mountain_distances)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(96, 96);
+    settings.numPlayers = 4;
+
+    for(const MapStyle style : {MapStyle::Land, MapStyle::Mixed, MapStyle::Water})
+    {
+        for(const MountainDistance distance : {MountainDistance::Close, MountainDistance::VeryFar})
+        {
+            settings.style = style;
+            settings.mountainDistance = distance;
+            RandomUtility rnd(1);
+
+            Map map = generateRandomMap(rnd, worldDesc, settings);
+            validateMap(map, settings.size, settings.numPlayers);
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_no_deserts_and_swamps_if_disabled)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+    settings.size = MapExtent(256, 256);
+    settings.mountains = 50;
+    settings.desert = 0;
+    settings.swamp = 0;
+    RandomUtility rnd(0);
+
+    const Map map = generateRandomMap(rnd, worldDesc, settings);
+
+    BOOST_TEST(map.barren.empty());
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_deserts_and_swamps_for_all_landscapes)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(256, 256);
+    settings.style = MapStyle::Land;
+    settings.mountainDistance = MountainDistance::Close;
+    settings.desert = 50;
+    settings.swamp = 50;
+
+    for(unsigned landscape = 0; landscape < worldDesc.landscapes.size(); landscape++)
+    {
+        settings.type = DescIdx<LandscapeDesc>(landscape);
+        RandomUtility rnd(0);
+
+        const Map map = generateRandomMap(rnd, worldDesc, settings);
+        validateMap(map, settings.size, settings.numPlayers);
+
+        const auto count = [&map](bool (*predicate)(const TerrainDesc&)) {
+            return helpers::countIf(map.barren, [&](const MapPoint& pt) { return map.textureMap.all(pt, predicate); });
+        };
+        BOOST_TEST_CONTEXT("Landscape " << landscape)
+        {
+            BOOST_TEST(count(isImpassable) > 0);
+            BOOST_TEST(count(isCoastTerrain) > 0);
+            BOOST_TEST(helpers::count(map.objectTypes, 0xC8) > 0);
+            for(const MapPoint& pt : map.barren)
+            {
+                if(!map.textureMap.all(pt, isImpassable))
+                    continue;
+                // Swamps are flat and not used for fishing
+                BOOST_TEST_REQUIRE(map.resources[pt] != libsiedler2::R_Fish, "At point " << pt);
+                for(const MapPoint& neighbor : map.z.getNeighbours(pt))
+                {
+                    if(helpers::contains(map.barren, neighbor))
+                        BOOST_TEST_REQUIRE(map.z[pt] == map.z[neighbor], "At point " << pt);
+                }
+            }
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_maps_with_deserts_and_swamps_for_all_styles)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(128, 128);
+    settings.mountains = 100;
+    settings.desert = 100;
+    settings.swamp = 100;
+
+    for(unsigned landscape = 0; landscape < worldDesc.landscapes.size(); landscape++)
+    {
+        for(const MapStyle style : {MapStyle::Land, MapStyle::Mixed, MapStyle::Water})
+        {
+            for(const unsigned numPlayers : {2u, MAX_PLAYERS})
+            {
+                settings.type = DescIdx<LandscapeDesc>(landscape);
+                settings.style = style;
+                settings.numPlayers = numPlayers;
+                RandomUtility rnd(1);
+
+                Map map = generateRandomMap(rnd, worldDesc, settings);
+                validateMap(map, settings.size, settings.numPlayers);
+            }
+        }
+    }
+}
+
+static unsigned countSpecialObjects(const Map& map)
+{
+    unsigned count = 0;
+    RTTR_FOREACH_PT(MapPoint, map.size)
+    {
+        if(isSpecialObject(map.objectTypes[pt], map.objectInfos[pt]))
+            count++;
+    }
+    return count;
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_no_special_objects_if_disabled)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+    settings.size = MapExtent(128, 128);
+    settings.specialObjects = false;
+    RandomUtility rnd(0);
+
+    const Map map = generateRandomMap(rnd, worldDesc, settings);
+
+    BOOST_TEST(countSpecialObjects(map) == 0u);
+    BOOST_TEST(map.reserved.empty());
+}
+
+BOOST_AUTO_TEST_CASE(GenerateRandomMap_creates_a_few_special_objects_if_enabled)
+{
+    WorldDescription worldDesc;
+    loadGameData(worldDesc);
+    MapSettings settings;
+
+    settings.size = MapExtent(192, 192);
+    settings.numPlayers = 4;
+    settings.specialObjects = true;
+    settings.trees = 100;
+    settings.stonePiles = 20;
+
+    for(unsigned landscape = 0; landscape < worldDesc.landscapes.size(); landscape++)
+    {
+        for(const MapStyle style : {MapStyle::Land, MapStyle::Mixed, MapStyle::Water})
+        {
+            settings.type = DescIdx<LandscapeDesc>(landscape);
+            settings.style = style;
+            RandomUtility rnd(2);
+
+            const Map map = generateRandomMap(rnd, worldDesc, settings);
+            validateMap(map, settings.size, settings.numPlayers);
+
+            BOOST_TEST_CONTEXT("Landscape " << landscape << " style " << static_cast<unsigned>(style))
+            {
+                // The graveyard contains more than one special object
+                BOOST_TEST(countSpecialObjects(map) > 0u);
+                BOOST_TEST(countSpecialObjects(map) <= 16 * getNumSpecialScenes(map.size));
+                BOOST_TEST(map.reserved.size() % 169 == 0u);
+                BOOST_TEST(map.reserved.size() > 0u);
+                BOOST_TEST(map.reserved.size() <= 169 * getNumSpecialScenes(map.size));
+            }
+        }
+    }
 }
 
 BOOST_AUTO_TEST_CASE(GenerateRandomMap_returns_valid_mapfile_with_max_players)

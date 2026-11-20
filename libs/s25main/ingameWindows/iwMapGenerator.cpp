@@ -4,6 +4,7 @@
 
 #include "iwMapGenerator.h"
 #include "Loader.h"
+#include "controls/ctrlCheck.h"
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlProgress.h"
 #include "helpers/containerUtils.h"
@@ -19,7 +20,7 @@
 using namespace rttr::mapGenerator;
 
 iwMapGenerator::iwMapGenerator(MapSettings& settings)
-    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 520), _("Map Generator"),
+    : IngameWindow(CGI_MAP_GENERATOR, IngameWindow::posLastOrCenter, Extent(270, 645), _("Map Generator"),
                    LOADER.getImageN("resource", 41), true, CloseBehavior::Custom),
       mapSettings(settings)
 {
@@ -109,10 +110,22 @@ iwMapGenerator::iwMapGenerator(MapSettings& settings)
     addText(ID_txtTrees, curPos, _("Trees:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     addProgress(ID_pgTrees, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
     curPos.y += 30;
+    addText(ID_txtMountains, curPos, _("Mountains:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addProgress(ID_pgMountains, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    curPos.y += 30;
+    addText(ID_txtDesert, curPos, _("Desert:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addProgress(ID_pgDesert, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    curPos.y += 30;
+    addText(ID_txtSwamp, curPos, _("Swamp:"), COLOR_YELLOW, FontStyle{}, NormalFont);
+    addProgress(ID_pgSwamp, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
+    curPos.y += 30;
     addText(ID_txtStonePiles, curPos, _("Stone piles:"), COLOR_YELLOW, FontStyle{}, NormalFont);
     addProgress(ID_pgStonePiles, DrawPoint(pgrOffset, curPos.y - 5), progressSize, TextureColor::Grey, 139, 138, 100);
 
     curPos.y += 25;
+    addCheckBox(ID_cbSpecialObjects, curPos, comboSize, TextureColor::Grey, _("Special Objects"), NormalFont, false);
+
+    curPos.y += 35;
     addTextButton(ID_btBack, curPos, buttonSize, TextureColor::Red1, _("Back"), NormalFont);
     addTextButton(ID_btApply, DrawPoint(130, curPos.y), buttonSize, TextureColor::Green2, _("Apply"), NormalFont);
 
@@ -140,7 +153,11 @@ void iwMapGenerator::apply()
     mapSettings.ratioGranite = getCtrl<ctrlProgress>(ID_pgGraniteRatio)->getPosition();
     mapSettings.rivers = getCtrl<ctrlProgress>(ID_pgRivers)->getPosition();
     mapSettings.trees = getCtrl<ctrlProgress>(ID_pgTrees)->getPosition();
+    mapSettings.mountains = getCtrl<ctrlProgress>(ID_pgMountains)->getPosition();
+    mapSettings.desert = getCtrl<ctrlProgress>(ID_pgDesert)->getPosition();
+    mapSettings.swamp = getCtrl<ctrlProgress>(ID_pgSwamp)->getPosition();
     mapSettings.stonePiles = getCtrl<ctrlProgress>(ID_pgStonePiles)->getPosition();
+    mapSettings.specialObjects = getCtrl<ctrlCheck>(ID_cbSpecialObjects)->isChecked();
 
     switch(getCtrl<ctrlComboBox>(ID_cbMountainDist)->getSelection().value())
     {
@@ -181,7 +198,11 @@ void iwMapGenerator::reset()
     getCtrl<ctrlProgress>(ID_pgGraniteRatio)->setPosition(mapSettings.ratioGranite);
     getCtrl<ctrlProgress>(ID_pgRivers)->setPosition(mapSettings.rivers);
     getCtrl<ctrlProgress>(ID_pgTrees)->setPosition(mapSettings.trees);
+    getCtrl<ctrlProgress>(ID_pgMountains)->setPosition(mapSettings.mountains);
+    getCtrl<ctrlProgress>(ID_pgDesert)->setPosition(mapSettings.desert);
+    getCtrl<ctrlProgress>(ID_pgSwamp)->setPosition(mapSettings.swamp);
     getCtrl<ctrlProgress>(ID_pgStonePiles)->setPosition(mapSettings.stonePiles);
+    getCtrl<ctrlCheck>(ID_cbSpecialObjects)->setChecked(mapSettings.specialObjects);
 
     auto* combo = getCtrl<ctrlComboBox>(ID_cbMountainDist);
     switch(mapSettings.mountainDistance)

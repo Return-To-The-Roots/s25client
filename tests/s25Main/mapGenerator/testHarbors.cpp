@@ -66,6 +66,34 @@ BOOST_AUTO_TEST_CASE(PlaceHarborPosition_applies_buildable_terrain_around_positi
     }
 }
 
+BOOST_AUTO_TEST_CASE(FindCoastlines_ignores_swamps_made_of_water)
+{
+    // Some landscapes use water textures for swamps which can't be used by ships
+    Map map = createMap(MapExtent(32, 32));
+    map.getTextures().resize(map.size, TexturePair(map.textureMap.find(isBuildableLand)));
+    const auto water = map.textureMap.find(isWater);
+    const MapPoint lake(8, 16);
+    const MapPoint swamp(24, 16);
+    const unsigned radius = 4;
+
+    for(const MapPoint& center : {lake, swamp})
+    {
+        for(const MapPoint& pt : map.z.getPointsInRadiusWithCenter(center, radius))
+            map.textureMap.set(pt, water);
+    }
+    const auto swampNodes = map.z.getPointsInRadiusWithCenter(swamp, radius);
+    map.barren.insert(swampNodes.begin(), swampNodes.end());
+
+    const auto coasts = findCoastlines(map, {});
+
+    BOOST_TEST_REQUIRE(coasts.size() == 1u);
+    BOOST_TEST_REQUIRE(!coasts.front().empty());
+    for(const MapPoint& pt : coasts.front())
+    {
+        BOOST_TEST(map.z.calcDistance(pt, lake) == radius + 1);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(PlaceHarbors_places_no_harbors_on_coast_below_minimum_size)
 {
     Map map = createMap(MapExtent(6, 8));
