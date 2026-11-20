@@ -63,7 +63,7 @@ void MusicPlayer::playNext()
     LOG.write(_("Loading \"%1%\": ")) % song;
 
     // Neues Stück laden
-    if(int ec = libsiedler2::loader::LoadSND(song, sng))
+    if(int ec = libsiedler2::loader::loadSND(song, sng))
     {
         LOG.write(_("Error: %1%\n")) % libsiedler2::getErrorString(ec);
         stop();

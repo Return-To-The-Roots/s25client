@@ -90,9 +90,9 @@ glFont::glFont(const libsiedler2::ArchivItem_Font& font) : maxCharSize(font.getD
     {
         libsiedler2::Archiv items;
         items.pushC(*fontNoOutline);
-        libsiedler2::Write("font" + font.getName() + "_noOutline.bmp", items);
+        libsiedler2::write("font" + font.getName() + "_noOutline.bmp", items);
         items.setC(0, *fontWithOutline);
-        libsiedler2::Write("font" + font.getName() + "_Outline.bmp", items);
+        libsiedler2::write("font" + font.getName() + "_Outline.bmp", items);
     }
 }
 

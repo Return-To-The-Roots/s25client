@@ -83,12 +83,12 @@ libsiedler2::Archiv ArchiveLoader::loadDirectory(const fs::path& filePath,
                                                  const libsiedler2::ArchivItem_Palette* palette) const
 {
     logger_.write(_("Loading directory %s\n")) % filePath;
-    std::vector<libsiedler2::FileEntry> files = libsiedler2::ReadFolderInfo(filePath);
+    std::vector<libsiedler2::FileEntry> files = libsiedler2::readFolderInfo(filePath);
     logger_.write(_("  Loading %1% entries: ")) % files.size();
 
     libsiedler2::Archiv archive;
 
-    if(int ec = libsiedler2::LoadFolder(std::move(files), archive, palette))
+    if(int ec = libsiedler2::loadFolder(std::move(files), archive, palette))
         throw LoadError(libsiedler2::getErrorString(ec));
 
     return archive;

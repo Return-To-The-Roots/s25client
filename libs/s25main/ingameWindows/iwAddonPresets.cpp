@@ -279,7 +279,7 @@ void iwSaveAddonPreset::saveToPath(const bfs::path& filePath)
     libsiedler2::Archiv archive;
     archive.push(std::move(iniItem));
 
-    const int ec = libsiedler2::Write(filePath, archive);
+    const int ec = libsiedler2::write(filePath, archive);
     if(ec == libsiedler2::ErrorCode::NONE)
     {
         close();

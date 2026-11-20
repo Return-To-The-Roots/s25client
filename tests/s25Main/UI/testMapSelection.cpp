@@ -42,7 +42,7 @@ std::unique_ptr<libsiedler2::Archiv> createBitmapWithOneColor(Extent const& size
 
 bool storeBitmap(boost::filesystem::path const& storePath, std::unique_ptr<libsiedler2::Archiv> const& bitmap)
 {
-    return libsiedler2::Write(storePath, *bitmap);
+    return libsiedler2::write(storePath, *bitmap);
 }
 
 libsiedler2::PixelBufferBGRA createMapTestData(Extent const& size)
