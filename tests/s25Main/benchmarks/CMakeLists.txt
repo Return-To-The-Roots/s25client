@@ -1,4 +1,4 @@
-# Copyright (C) 2005 - 2021 Settlers Freaks <sf-team at siedler25.org>
+# Copyright (C) 2005 - 2026 Settlers Freaks <sf-team at siedler25.org>
 #
 # SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -10,7 +10,7 @@ else()
     FetchContent_Declare(
         GoogleBenchmark
         GIT_REPOSITORY https://github.com/google/benchmark.git
-        GIT_TAG v1.6.1
+        GIT_TAG v1.9.5
     )
     set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "")
     set(BENCHMARK_ENABLE_INSTALL  OFF CACHE BOOL "")

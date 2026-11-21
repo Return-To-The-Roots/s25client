@@ -65,8 +65,10 @@ std::string formatClock(std::chrono::milliseconds time)
     const auto h = std::chrono::duration_cast<std::chrono::hours>(time);
     const auto m = std::chrono::duration_cast<std::chrono::minutes>(time % std::chrono::hours(1));
     const auto s = std::chrono::duration_cast<std::chrono::seconds>(time % std::chrono::minutes(1));
-    snprintf(buf, sizeof(buf), "%03ld:%02ld:%02ld", static_cast<long>(h.count()), static_cast<long>(m.count()),
-             static_cast<long>(s.count()));
+    const int ct = snprintf(buf, sizeof(buf), "%03ld:%02ld:%02ld", static_cast<long>(h.count()),
+                            static_cast<long>(m.count()), static_cast<long>(s.count()));
+    if(ct < 0)
+        return "<invalid Time>";
     return buf;
 }
 
