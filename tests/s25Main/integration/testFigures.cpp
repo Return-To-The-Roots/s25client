@@ -10,16 +10,31 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "factories/BuildingFactory.h"
 #include "figures/noFigure.h"
+#include "figures/nofCarrier.h"
 #include "figures/nofGeologist.h"
 #include "figures/nofScout_Free.h"
+
+#include "helpers/Range.h"
 #include "notifications/ResourceNote.h"
+#include "worldFixtures/CreateSeaWorld.h"
 #include "worldFixtures/WorldWithGCExecution.h"
 #include "nodeObjs/noFlag.h"
 #include "nodeObjs/noSign.h"
 #include "gameTypes/GameTypesOutput.h"
-#include "rttr/test/random.hpp"
+#include <rttr/test/random.hpp>
+#include <rttr/test/testHelpers.hpp>
 #include <boost/test/unit_test.hpp>
 #include <vector>
+
+// LCOV_EXCL_START
+namespace boost::test_tools::tt_detail {
+template<>
+struct print_log_value<CarrierState>
+{
+    void operator()(std::ostream& os, const CarrierState type) { os << static_cast<unsigned>(rttr::enumCast(type)); }
+};
+} // namespace boost::test_tools::tt_detail
+// LCOV_EXCL_STOP
 
 BOOST_AUTO_TEST_SUITE(FigureTests)
 
@@ -195,6 +210,88 @@ BOOST_FIXTURE_TEST_CASE(GeologistPlacesSigns, EmptyWorldFixture1P)
         BOOST_TEST_REQUIRE(sign);
         BOOST_TEST(sign->getResource() == note.res);
     }
+}
+
+using BoatCarrierLostWorkWorld = WorldFixture<CreateWaterWorld, 1, 40, 20>;
+BOOST_FIXTURE_TEST_CASE(BoatCarrierLostWork_ShoreWanders_OpenWaterDrowns, BoatCarrierLostWorkWorld)
+{
+    auto& player = world.getPlayer(0);
+    // A boat carrier is a helper plus a boat, so the player owns both for each one
+    player.increaseInventoryJob(Job::Helper, 2);
+    player.increaseInventoryWare(GoodType::Boat, 2);
+
+    // Close enough to shore: Paddle to shore and walk to HQ
+    const MapPoint hqFlagPos = player.getFirstWH()->getFlagPos();
+    MapPoint shorePt = hqFlagPos;
+    // Find shore right of flag
+    for(const auto x : helpers::range<MapCoord>(shorePt.x + 1, world.getSize().x))
+    {
+        shorePt.x = x;
+        if(world.getSeaFromCoastalPoint(shorePt))
+            break;
+    }
+    BOOST_TEST_REQUIRE(world.getSeaFromCoastalPoint(shorePt));
+    // Place a road far in the water
+    const auto halfRoadLen = 10;
+    for(const auto x : helpers::range<MapCoord>(1, halfRoadLen))
+        BOOST_TEST_REQUIRE(world.isWaterPoint(world.makeMapPoint(shorePt + Offset(x, 0))));
+    std::vector<Direction> route(halfRoadLen, Direction::East);
+    route.insert(route.end(), 2, Direction::SouthWest);
+    route.insert(route.end(), halfRoadLen, Direction::West);
+    MapPoint endPt = shorePt;
+    for(const Direction dir : route)
+    {
+        for(const auto pt : world.getPointsInRadiusWithCenter(endPt, 1))
+            world.getNodeWriteable(pt).owner = 1;
+        endPt = world.getNeighbour(endPt, dir);
+    }
+    BOOST_TEST_REQUIRE(world.SetFlag(shorePt, 0));
+    auto& shoreFlag = ensureNonNull(world.getSpecObj<noFlag>(shorePt));
+    enum SubTest
+    {
+        AtFlag,
+        CloseToShore,
+        OpenWater
+    };
+    for(const auto subTest : {AtFlag, CloseToShore, OpenWater})
+        BOOST_TEST_CONTEXT("subTest=" << subTest)
+        {
+            BOOST_TEST_REQUIRE(world.BuildRoad(0, true, shorePt, route).isValid());
+            auto& carrier =
+              world.addFigure(shorePt, std::make_unique<nofCarrier>(CarrierType::Boat, shorePt, 0,
+                                                                    shoreFlag.getRoute(Direction::East), &shoreFlag));
+            shoreFlag.getRoute(Direction::East)->setCarrier(0, &carrier);
+            carrier.actAtFirst();
+            BOOST_TEST_REQUIRE(carrier.getCarrierState() == CarrierState::GotoMiddleOfRoad);
+            BOOST_TEST_REQUIRE(carrier.isMoving());
+            MapPoint carrierPos;
+            if(subTest == AtFlag)
+                carrierPos = shorePt;
+            else
+                carrierPos = world.makeMapPoint(shorePt + Offset(subTest == CloseToShore ? 3 : halfRoadLen, 0));
+            // Put such that it arrives at this pos on the next walk event
+            const auto carrierFromPos = world.getNeighbour(carrierPos, carrier.getCurMoveDir() + 3u);
+            world.addFigure(carrierFromPos, world.removeFigure(carrier.getPos(), carrier));
+            carrier.setPos(carrierFromPos);
+
+            rescheduleWalkEvent(carrier, 1);
+            shoreFlag.DestroyRoad(Direction::East);
+            RTTR_SKIP_GFS(1); // Walking/death decisions happen when arrived at next node
+
+            if(subTest == OpenWater)
+            {
+                // It drowns: removed from the world
+                BOOST_TEST_REQUIRE(!world.hasFigureAt(carrierPos, carrier));
+            } else
+            {
+                // Still alive
+                BOOST_TEST_REQUIRE(world.hasFigureAt(carrierPos, carrier));
+                if(subTest == CloseToShore)
+                    BOOST_TEST(carrier.getCarrierState() == CarrierState::BoatcarrierWanderOnWater);
+                else
+                    BOOST_TEST(carrier.isWandering());
+            }
+        }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

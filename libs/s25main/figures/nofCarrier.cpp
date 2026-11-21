@@ -632,7 +632,7 @@ void nofCarrier::lostWork()
             // Look for the shore
             const unsigned maxNodeDistance = 5;
             const auto coastPoints =
-              world->getMatchingPointsInRadius(tmpPos, maxNodeDistance, IsCoastalAndForFigs(*world));
+              world->getMatchingPointsInRadius(tmpPos, maxNodeDistance, IsCoastalAndForFigs(*world), true);
             shore_path.clear();
             for(const auto& it : coastPoints)
             {
