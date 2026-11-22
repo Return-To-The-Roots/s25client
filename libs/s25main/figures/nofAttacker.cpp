@@ -202,8 +202,7 @@ void nofAttacker::walked()
                 {
                     RTTR_Assert(dynamic_cast<nobMilitary*>(attacked_goal));
                     // We will now have this building as the new home, so inform old home, hunting soldier and ship
-                    if(homeBld)
-                        homeBld->soldierLost(this);
+                    abrogateWorkplace();
                     cancelAtHuntingDefender();
                     if(ship_obj_id)
                         cancelAtShip();
@@ -655,8 +654,7 @@ void nofAttacker::capturingWalking()
     if(pos == attacked_goal->getPos())
     {
         // We switch buildings
-        if(homeBld)
-            homeBld->soldierLost(this);
+        abrogateWorkplace();
         cancelAtHuntingDefender();
         if(ship_obj_id)
             cancelAtShip();
@@ -886,11 +884,10 @@ void nofAttacker::handleStateSeaAttackReturnToShip()
     if(!homeBld)
     {
         // Home destroyed -> start wandering
-        state = SoldierState::FigureWork;
-        startWandering();
-        wander();
-
         cancelAtShip();
+        startWandering();
+        state = SoldierState::FigureWork;
+        wander();
     } else if(pos == shipPos) // Arrived at ship
     {
         for(noBase& figure : world->getFigures(pos))
@@ -904,26 +901,21 @@ void nofAttacker::handleStateSeaAttackReturnToShip()
 
         // Ship is gone, shouldn't happen!
         RTTR_Assert(false);
-        ship_obj_id = 0;
+        abrogateWorkplace();
+        cancelAtShip();
         startWandering();
         state = SoldierState::FigureWork;
         wander();
-    } else
+    } else if(const auto dir = world->findHumanPath(pos, shipPos, MAX_ATTACKING_RUN_DISTANCE))
+        startWalking(*dir);
+    else
     {
-        const auto dir = world->findHumanPath(pos, shipPos, MAX_ATTACKING_RUN_DISTANCE);
-        if(dir)
-            startWalking(*dir);
-        else
-        {
-            // No path -> wander around
-            startWandering();
-            state = SoldierState::FigureWork;
-            wander();
-
-            // Notify home and ship
-            homeBld->soldierLost(this);
-            cancelAtShip();
-        }
+        // No path -> Notify home and ship, and wander around
+        abrogateWorkplace();
+        cancelAtShip();
+        startWandering();
+        state = SoldierState::FigureWork;
+        wander();
     }
 }
 
