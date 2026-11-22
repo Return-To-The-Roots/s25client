@@ -1,4 +1,4 @@
-// Copyright (C) 2005 - 2021 Settlers Freaks (sf-team at siedler25.org)
+// Copyright (C) 2005 - 2026 Settlers Freaks (sf-team at siedler25.org)
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
@@ -17,6 +17,7 @@
 #include "gameData/GoodConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/const_gui_ids.h"
+#include <algorithm>
 
 void iwTransport::fillTransportOrder(const TransportOrders& transport_order)
 {
@@ -113,16 +114,15 @@ void iwTransport::transmitSettings()
     if(settings_changed)
     {
         TransportOrders transmitPendingTransportOrder;
-        unsigned i = 0;
-        for(; i < pendingOrder.size(); i++)
-            transmitPendingTransportOrder[i] = pendingOrder[i];
+        std::copy(pendingOrder.begin(), pendingOrder.end(), transmitPendingTransportOrder.begin());
 
         if(!leatheraddon::isAddonActive(gwv.getWorld()))
         {
-            // This is not an OBB write because pendingOrder does not contain the leather entry
-            // when the addon is inactive. So the pendingOrder list is one entry shorter then
-            // the transmitPendingTransportOrder list. See fillTransportOrder at the top of this file.
-            transmitPendingTransportOrder[i++] = STD_TRANSPORT_PRIO[GoodType::Leather];
+            // pendingOrder does not contain the leather entry when the addon is inactive.
+            // So the pendingOrder list is one entry shorter then the transmitPendingTransportOrder list.
+            // See fillTransportOrder at the top of this file.
+            RTTR_Assert(pendingOrder.size() < transmitPendingTransportOrder.size());
+            transmitPendingTransportOrder[pendingOrder.size()] = STD_TRANSPORT_PRIO[GoodType::Leather];
         }
 
         // Daten übertragen
