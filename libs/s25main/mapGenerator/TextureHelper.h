@@ -14,6 +14,9 @@ bool isWater(const TerrainDesc& terrain);
 
 bool isSwamp(const TerrainDesc& terrain);
 
+/// Terrain which can neither be entered by settlers nor by ships, e.g. swamp
+bool isImpassable(const TerrainDesc& terrain);
+
 bool isLand(const TerrainDesc& terrain);
 
 bool isShipableWater(const TerrainDesc& terrain);

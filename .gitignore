@@ -19,6 +19,7 @@
 opencode.json
 /S2
 /build
+/build-xcode
 /external/boost*
 /win32/*.aps
 /data/RTTR/languages/*.mo
