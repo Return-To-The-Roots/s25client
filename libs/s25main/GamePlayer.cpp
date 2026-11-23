@@ -139,7 +139,6 @@ void GamePlayer::loadStandardDistribution()
       BuildingType::Headquarters); // BuildingType::Headquarters = Baustellen!
     distribution[GoodType::Stones].client_buildings.push_back(BuildingType::Catapult);
     distribution[GoodType::Grapes].client_buildings.push_back(BuildingType::Winery);
-    distribution[GoodType::Wine].client_buildings.push_back(BuildingType::Temple);
     distribution[GoodType::Skins].client_buildings.push_back(BuildingType::Tannery);
     distribution[GoodType::Leather].client_buildings.push_back(BuildingType::LeatherWorks);
 
@@ -205,6 +204,7 @@ void GamePlayer::serialize(SerializedGameData& sgd) const
     helpers::pushContainer(sgd, global_inventory.goods);
     helpers::pushContainer(sgd, global_inventory.people);
     helpers::pushContainer(sgd, global_inventory.armoredSoldiers);
+    helpers::pushContainer(sgd, global_inventory.healedSoldiers);
 
     // für Statistik
     for(const Statistic& curStatistic : statistic)
@@ -297,10 +297,13 @@ void GamePlayer::deserialize(SerializedGameData& sgd)
 
     useCustomBuildOrder_ = sgd.popBool();
 
-    if(sgd.getGameDataVersion() < 12)
+    if(sgd.getGameDataVersion() < 16)
     {
-        auto countOfNotAvailableBuildingsInSaveGame =
-          sgd.getGameDataVersion() < 11 ? numWineAndLeatherAddonBuildings : numLeatherAddonBuildings;
+        unsigned countOfNotAvailableBuildingsInSaveGame = numChurchAddonBuildings;
+        if(sgd.getGameDataVersion() < 12)
+            countOfNotAvailableBuildingsInSaveGame += numLeatherAddonBuildings;
+        if(sgd.getGameDataVersion() < 11)
+            countOfNotAvailableBuildingsInSaveGame += numWineAddonBuildings;
         std::vector<BuildingType> build_order_raw(build_order.size() - countOfNotAvailableBuildingsInSaveGame);
         helpers::popContainer(sgd, build_order_raw, true);
 
@@ -316,8 +319,14 @@ void GamePlayer::deserialize(SerializedGameData& sgd)
                                    {BuildingType::Skinner, BuildingType::Tannery, BuildingType::LeatherWorks});
         }
 
-        std::copy(build_order_raw.begin(), build_order_raw.end(), build_order.begin());
+        build_order_raw.push_back(BuildingType::Church);
 
+        std::copy(build_order_raw.begin(), build_order_raw.end(), build_order.begin());
+    } else
+        helpers::popContainer(sgd, build_order);
+
+    if(sgd.getGameDataVersion() < 12)
+    {
         auto countOfNotAvailableGoodsInSaveGame =
           sgd.getGameDataVersion() < 11 ? numWineAndLeatherAddonGoods : numLeatherAddonGoods;
         std::vector<uint8_t> transportPrio_raw(transportPrio.size() - countOfNotAvailableGoodsInSaveGame);
@@ -327,10 +336,7 @@ void GamePlayer::deserialize(SerializedGameData& sgd)
                        transportPrio.begin(),
                        [](uint8_t& prio) { return prio < transportPrioOfLeatherworks ? prio : prio + 1; });
     } else
-    {
-        helpers::popContainer(sgd, build_order);
         helpers::popContainer(sgd, transportPrio);
-    }
 
     helpers::popContainer(sgd, militarySettings_);
     helpers::popContainer(sgd, toolsSettings_);
@@ -357,11 +363,16 @@ void GamePlayer::deserialize(SerializedGameData& sgd)
                   global_inventory.people.begin());
 
         std::fill(global_inventory.armoredSoldiers.begin(), global_inventory.armoredSoldiers.end(), 0);
+        std::fill(global_inventory.healedSoldiers.begin(), global_inventory.healedSoldiers.end(), 0);
     } else
     {
         helpers::popContainer(sgd, global_inventory.goods);
         helpers::popContainer(sgd, global_inventory.people);
         helpers::popContainer(sgd, global_inventory.armoredSoldiers);
+        if(sgd.getGameDataVersion() >= 16)
+            helpers::popContainer(sgd, global_inventory.healedSoldiers);
+        else
+            std::fill(global_inventory.healedSoldiers.begin(), global_inventory.healedSoldiers.end(), 0);
     }
 
     // Visuelle Einstellungen festlegen

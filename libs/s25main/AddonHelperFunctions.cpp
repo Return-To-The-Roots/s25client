@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "AddonHelperFunctions.h"
+#include "ChurchLoader.h"
 #include "GlobalGameSettings.h"
 #include <LeatherLoader.h>
 #include <WineLoader.h>
@@ -11,10 +12,13 @@
 std::function<bool(const BuildingType type)> makeIsUnusedBuilding(const GlobalGameSettings& ggs)
 {
     const bool wineAddonActive = ggs.isEnabled(AddonId::WINE);
+    const bool churchAddonActive = churchaddon::isAddonActive(ggs);
     const bool charburnerAddonActive = ggs.isEnabled(AddonId::CHARBURNER);
     const bool leatherAddonActive = ggs.isEnabled(AddonId::LEATHER);
 
-    return [wineAddonActive, charburnerAddonActive, leatherAddonActive](BuildingType const& bld) {
+    return [wineAddonActive, churchAddonActive, charburnerAddonActive, leatherAddonActive](BuildingType const& bld) {
+        if(bld == BuildingType::Church)
+            return !churchAddonActive;
         if(!wineAddonActive && wineaddon::isWineAddonBuildingType(bld))
             return true;
         if(!charburnerAddonActive && bld == BuildingType::Charburner)

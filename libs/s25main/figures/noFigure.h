@@ -106,6 +106,7 @@ protected:
        soldier depends on the job id, which is deserialized in noFigure before the goal is deserialized.
     */
     bool hasArmor_;
+    bool hasHealing_;
 
     explicit noFigure(const noFigure&) = default;
 
@@ -162,6 +163,8 @@ public:
 
     bool hasArmor() const { return hasArmor_; };
     void setArmor(bool armor) { hasArmor_ = armor; };
+    bool hasHealing() const { return hasHealing_; };
+    void setHealing(bool healing) { hasHealing_ = healing; };
 
     /// Getter
     bool getRoadDir() const { return rs_dir; }
@@ -191,6 +194,7 @@ public:
     /// Draw the current walk animation for this figure
     void drawWalking(DrawPoint drawPt);
     void drawArmor(DrawPoint drawPt);
+    void drawHealing(DrawPoint drawPt);
     /// Interpoliert die Positon zwischen zwei Knotenpunkten
     DrawPoint calcFigurRelative() const;
     /// Anfangen zu laufen (Event anmelden, Tür aufmachen ggf)

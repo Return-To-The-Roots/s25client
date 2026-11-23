@@ -93,15 +93,18 @@ void UpgradeRoad::execute(GameWorld& world, uint8_t playerId)
 
 ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::ChangeDistribution)
 {
-    if(ser.getDataVersion() >= 2)
+    if(ser.getDataVersion() >= 3)
         helpers::popContainer(ser, data);
     else
     {
         const unsigned wineAddonAdditionalDistributions = 3;
         const unsigned leatherAddonAdditionalDistributions = 3;
+        const unsigned churchAddonAdditionalDistributions = 3;
 
         auto const numNotSavedDistributions =
-          leatherAddonAdditionalDistributions + (ser.getDataVersion() < 1 ? wineAddonAdditionalDistributions : 0);
+          churchAddonAdditionalDistributions
+          + (ser.getDataVersion() < 2 ? leatherAddonAdditionalDistributions : 0)
+          + (ser.getDataVersion() < 1 ? wineAddonAdditionalDistributions : 0);
 
         std::vector<Distributions::value_type> tmpData(std::tuple_size_v<Distributions> - numNotSavedDistributions);
 
@@ -114,12 +117,22 @@ ChangeDistribution::ChangeDistribution(Deserializer& ser) : GameCommand(GCType::
                 std::get<0>(result) |= wineaddon::isWineAddonBuildingType(std::get<BuildingType>(mapping));
             }
 
-            // skip over leather addon buildings and leather addon wares only
-            std::get<0>(result) |= leatheraddon::isLeatherAddonBuildingType(std::get<BuildingType>(mapping));
+            if(ser.getDataVersion() < 2)
+            {
+                // skip over leather addon buildings and leather addon wares only
+                std::get<0>(result) |= leatheraddon::isLeatherAddonBuildingType(std::get<BuildingType>(mapping));
 
-            if(std::get<BuildingType>(mapping) == BuildingType::Slaughterhouse
-               && (std::get<GoodType>(mapping) == GoodType::Ham))
-                result = {true, 8};
+                if(std::get<BuildingType>(mapping) == BuildingType::Slaughterhouse
+                   && (std::get<GoodType>(mapping) == GoodType::Ham))
+                    result = {true, 8};
+            }
+
+            if(ser.getDataVersion() < 3)
+            {
+                if(std::get<BuildingType>(mapping) == BuildingType::Church
+                   || std::get<GoodType>(mapping) == GoodType::Wine)
+                    result = {true, 0};
+            }
             return result;
         };
 
@@ -143,14 +156,17 @@ void ChangeDistribution::execute(GameWorld& world, uint8_t playerId)
 ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
     : GameCommand(GCType::ChangeBuildOrder), useCustomBuildOrder(ser.popBool())
 {
-    if(ser.getDataVersion() >= 2)
+    if(ser.getDataVersion() >= 3)
     {
         for(BuildingType& i : data)
             i = helpers::popEnum<BuildingType>(ser);
     } else
     {
-        auto countOfNotAvailableBuildingsInSaveGame =
-          ser.getDataVersion() < 1 ? numWineAndLeatherAddonBuildings : numLeatherAddonBuildings;
+        auto countOfNotAvailableBuildingsInSaveGame = numChurchAddonBuildings;
+        if(ser.getDataVersion() < 2)
+            countOfNotAvailableBuildingsInSaveGame += numLeatherAddonBuildings;
+        if(ser.getDataVersion() < 1)
+            countOfNotAvailableBuildingsInSaveGame += numWineAddonBuildings;
         std::vector<BuildingType> buildOrder(data.size() - countOfNotAvailableBuildingsInSaveGame);
 
         if(ser.getDataVersion() < 1)
@@ -161,6 +177,8 @@ ChangeBuildOrder::ChangeBuildOrder(Deserializer& ser)
             buildOrder.insert(buildOrder.end(),
                               {BuildingType::Skinner, BuildingType::Tannery, BuildingType::LeatherWorks});
         }
+
+        buildOrder.push_back(BuildingType::Church);
 
         std::generate(buildOrder.begin(), buildOrder.end() - countOfNotAvailableBuildingsInSaveGame,
                       [&]() { return helpers::popEnum<BuildingType>(ser); });

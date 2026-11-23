@@ -92,7 +92,7 @@ BOOST_FIXTURE_TEST_CASE(getBuildingRadius, GameWorldViewFixture)
     // Remaining building types have no relevant radius
     for(const auto bt : {BuildingType::Armory, BuildingType::Bakery, BuildingType::Brewery, BuildingType::DonkeyBreeder,
                          BuildingType::Ironsmelter, BuildingType::LeatherWorks, BuildingType::Metalworks,
-                         BuildingType::Mill, BuildingType::Mint, BuildingType::Nothing9, BuildingType::PigFarm,
+                         BuildingType::Mill, BuildingType::Mint, BuildingType::Church, BuildingType::PigFarm,
                          BuildingType::Sawmill, BuildingType::Shipyard, BuildingType::Slaughterhouse,
                          BuildingType::Storehouse, BuildingType::Tannery, BuildingType::Temple, BuildingType::Winery})
     {

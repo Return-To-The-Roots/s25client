@@ -64,12 +64,12 @@ void nofPassiveSoldier::handleDerivedEvent(const unsigned id)
             if(fs == FigureState::Job)
             {
                 // Dann uns heilen, wenn wir nicht schon gesund sind
-                if(hitpoints < HITPOINTS[getRank()])
+                if(hitpoints < getMaxHitpoints())
                 {
                     ++hitpoints;
 
                     // Sind wir immer noch nicht gesund? Dann neues Event anmelden!
-                    if(hitpoints < HITPOINTS[getRank()])
+                    if(hitpoints < getMaxHitpoints())
                         healing_event =
                           getEvMgr().addEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
                 }
@@ -91,7 +91,7 @@ void nofPassiveSoldier::heal()
 
     // Ist er verletzt?
     // Dann muss er geheilt werden
-    if(hitpoints < HITPOINTS[getRank()])
+    if(hitpoints < getMaxHitpoints())
         healing_event = getEvMgr().addEvent(this, CONVALESCE_TIME + RANDOM_RAND(CONVALESCE_TIME_RANDOM), 1);
 }
 
@@ -120,7 +120,7 @@ void nofPassiveSoldier::upgrade()
 
     // wieder heilen bzw. Hitpoints anpasen
     GamePlayer& owner = world->getPlayer(player);
-    hitpoints = HITPOINTS[getRank()];
+    hitpoints = getMaxHitpoints();
 
     // Inventur entsprechend erhöhen und verringern
     owner.increaseInventoryJob(job_, 1);
@@ -129,6 +129,11 @@ void nofPassiveSoldier::upgrade()
     {
         owner.increaseInventoryJob(jobEnumToAmoredSoldierEnum(job_), 1);
         owner.decreaseInventoryJob(jobEnumToAmoredSoldierEnum(Job(unsigned(job_) - 1)), 1);
+    }
+    if(hasHealing_)
+    {
+        owner.increaseInventoryJob(jobEnumToHealedSoldierEnum(job_), 1);
+        owner.decreaseInventoryJob(jobEnumToHealedSoldierEnum(Job(unsigned(job_) - 1)), 1);
     }
 }
 

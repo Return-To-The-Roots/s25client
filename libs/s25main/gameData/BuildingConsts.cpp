@@ -39,7 +39,7 @@ const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES = {
   gettext_noop("Charburner"),
   gettext_noop("Pig farm"),
   gettext_noop("Storehouse"),
-  "",
+  gettext_noop("Church"),
   gettext_noop("Mill"),
   gettext_noop("Bakery"),
   gettext_noop("Sawmill"),
@@ -263,8 +263,12 @@ const helpers::EnumArray<const char*, BuildingType> BUILDING_HELP_STRINGS = {{
                "choose the relevant icon "
                "followed by the desired "
                "merchandise or job symbol."),
-  // Nothing
-  "",
+  // Church
+  gettext_noop("The church (dome) must be built within 9 tiles of a headquarters or storehouse "
+               "(requires both the church and wine economy addons). "
+               "It produces up to 10 blessings from fish, wine and bread. During periodic services, "
+               "everyone invited gathers inside before the service runs for 100 frames and soldiers receive "
+               "a blessing granting +50% hitpoints. Productivity shows soldiers blessed last service (10 = 100%)."),
   // Mill
   gettext_noop("The grain is ground in the "
                "windmill. The flour from the "

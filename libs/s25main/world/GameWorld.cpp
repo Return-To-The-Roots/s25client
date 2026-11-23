@@ -149,6 +149,9 @@ void GameWorld::SetBuildingSite(const BuildingType type, const MapPoint pt, cons
     if(type == BuildingType::Catapult && !getPlayer(player).canBuildCatapult())
         return;
 
+    if(type == BuildingType::Church && !canBuildChurchAt(pt, player))
+        return;
+
     destroyNO(pt, false);
 
     // Baustelle setzen
@@ -809,14 +812,14 @@ struct CmpSeaAttacker : private T_RankCmp
         // Sort after rank, then armor then distance then objId
         if(lhs.soldier->getRank() == rhs.soldier->getRank())
         {
-            if(lhs.soldier->hasArmor() == rhs.soldier->hasArmor())
-            {
-                if(lhs.distance == rhs.distance)
-                    return (lhs.soldier->getObjId() < rhs.soldier->getObjId()); // tie breaker
-                else
-                    return lhs.distance < rhs.distance;
-            } else
+            if(lhs.soldier->hasArmor() != rhs.soldier->hasArmor())
                 return T_RankCmp::operator()(lhs.soldier->hasArmor() ? 1 : 0, rhs.soldier->hasArmor() ? 1 : 0);
+            if(lhs.soldier->hasHealing() != rhs.soldier->hasHealing())
+                return T_RankCmp::operator()(lhs.soldier->hasHealing() ? 1 : 0, rhs.soldier->hasHealing() ? 1 : 0);
+            if(lhs.distance == rhs.distance)
+                return (lhs.soldier->getObjId() < rhs.soldier->getObjId()); // tie breaker
+            else
+                return lhs.distance < rhs.distance;
         } else
             return T_RankCmp::operator()(lhs.soldier->getRank(), rhs.soldier->getRank());
     }

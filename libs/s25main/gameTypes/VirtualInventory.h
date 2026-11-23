@@ -38,6 +38,12 @@ struct VirtualInventory
         visual.add(soldier, amount);
         real.add(soldier, amount);
     }
+    /// Adds healed figures to both inventories
+    void add(const HealedSoldier soldier, unsigned amount = 1)
+    {
+        visual.add(soldier, amount);
+        real.add(soldier, amount);
+    }
     /// Removes goods from both inventories
     void remove(const GoodType good, unsigned amount = 1)
     {
@@ -58,10 +64,19 @@ struct VirtualInventory
         real.remove(soldier, amount);
     }
 
+    /// Removes healed figures from both inventories
+    void remove(const HealedSoldier soldier, unsigned amount = 1)
+    {
+        visual.remove(soldier, amount);
+        real.remove(soldier, amount);
+    }
+
     /// Returns the real number of people of the given type
     unsigned operator[](Job job) const { return real[job]; }
     /// Returns the real number of wares of the given type
     unsigned operator[](GoodType good) const { return real[good]; }
     /// Returns the real number of armored soldiers of the given type
     unsigned operator[](ArmoredSoldier soldier) const { return real[soldier]; }
+    /// Returns the real number of healed soldiers of the given type
+    unsigned operator[](HealedSoldier soldier) const { return real[soldier]; }
 };

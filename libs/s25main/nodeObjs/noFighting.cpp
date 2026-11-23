@@ -101,6 +101,8 @@ void noFighting::draw(DrawPoint drawPt)
             }
             if(soldiers[turn - 3]->hasArmor())
                 soldiers[turn - 3]->drawArmor(drawPt);
+            if(soldiers[turn - 3]->hasHealing())
+                soldiers[turn - 3]->drawHealing(drawPt);
 
             // Sterbesound abspielen
             if(curAnimFrame == 6)
@@ -121,6 +123,8 @@ void noFighting::draw(DrawPoint drawPt)
                 bmp.draw(drawPt, COLOR_WHITE, owner.color);
                 if(soldiers[i]->hasArmor())
                     soldiers[i]->drawArmor(drawPt);
+                if(soldiers[i]->hasHealing())
+                    soldiers[i]->drawHealing(drawPt);
                 drawPt.x += 2 * xDiff;
             }
         }
@@ -174,6 +178,8 @@ void noFighting::draw(DrawPoint drawPt)
                 }
                 if(soldiers[i]->hasArmor())
                     soldiers[i]->drawArmor(drawPt + DrawPoint(i == 0 ? -12 : 12, 0));
+                if(soldiers[i]->hasHealing())
+                    soldiers[i]->drawHealing(drawPt + DrawPoint(i == 0 ? -12 : 12, 0));
             }
 
             // Angriffssound

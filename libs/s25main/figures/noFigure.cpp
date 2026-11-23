@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "figures/noFigure.h"
+#include "ChurchLoader.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
@@ -51,7 +52,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
     : noMovable(NodalObjectType::Figure, pos), fs(FigureState::GotToGoal), job_(job), player(player), cur_rs(nullptr),
       rs_pos(0), rs_dir(false), on_ship(false), goal_(goal), waiting_for_free_node(false), wander_way(0),
       wander_tryings(0), flagPos_(MapPoint::invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF),
-      hasArmor_(false)
+      hasArmor_(false), hasHealing_(false)
 {
     // If the goal is a storehouse we won't work there but go to the new home
     if(goal && nobBaseWarehouse::isStorehouseGOT(goal->getGOT()))
@@ -62,7 +63,7 @@ noFigure::noFigure(const Job job, const MapPoint pos, const unsigned char player
     : noMovable(NodalObjectType::Figure, pos), fs(FigureState::Job), job_(job), player(player), cur_rs(nullptr),
       rs_pos(0), rs_dir(false), on_ship(false), goal_(nullptr), waiting_for_free_node(false), wander_way(0),
       wander_tryings(0), flagPos_(MapPoint::invalid()), flag_obj_id(0), burned_wh_id(0xFFFFFFFF), last_id(0xFFFFFFFF),
-      hasArmor_(false)
+      hasArmor_(false), hasHealing_(false)
 {}
 
 void noFigure::destroy()
@@ -86,6 +87,7 @@ void noFigure::serialize(SerializedGameData& sgd) const
     sgd.pushBool(rs_dir);
     sgd.pushBool(on_ship);
     sgd.pushBool(hasArmor_);
+    sgd.pushBool(hasHealing_);
 
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         sgd.pushObject(goal_);
@@ -105,7 +107,8 @@ void noFigure::serialize(SerializedGameData& sgd) const
 noFigure::noFigure(SerializedGameData& sgd, const unsigned obj_id)
     : noMovable(sgd, obj_id), fs(sgd.pop<FigureState>()), job_(sgd.pop<Job>()), player(sgd.popUnsignedChar()),
       cur_rs(sgd.popObject<RoadSegment>(GO_Type::Roadsegment)), rs_pos(sgd.popUnsignedShort()), rs_dir(sgd.popBool()),
-      on_ship(sgd.popBool()), last_id(0xFFFFFFFF), hasArmor_(sgd.getGameDataVersion() >= 12 ? sgd.popBool() : false)
+      on_ship(sgd.popBool()), last_id(0xFFFFFFFF), hasArmor_(sgd.getGameDataVersion() >= 12 ? sgd.popBool() : false),
+      hasHealing_(sgd.getGameDataVersion() >= 16 ? sgd.popBool() : false)
 {
     if(fs == FigureState::GotToGoal || fs == FigureState::GoHome)
         goal_ = sgd.popObject<noRoadNode>();
@@ -801,6 +804,8 @@ void noFigure::drawWalkingBobJobs(DrawPoint drawPt, Job job)
 
     if(hasArmor_)
         drawArmor(interpolateWalkDrawPos(drawPt));
+    if(hasHealing_)
+        drawHealing(interpolateWalkDrawPos(drawPt));
 }
 
 void noFigure::drawWalking(DrawPoint drawPt, glArchivItem_Bob* file, unsigned id, bool fat)
@@ -872,6 +877,13 @@ void noFigure::drawArmor(DrawPoint drawPt)
       ->drawFull(drawPt + DrawPoint(0, -22));
 }
 
+void noFigure::drawHealing(DrawPoint drawPt)
+{
+    const int xOffset = hasArmor_ ? -10 : 0;
+    if(auto* bmp = LOADER.getImageN("church", static_cast<unsigned>(churchaddon::SharedSprite::Dove)))
+        bmp->drawFull(drawPt + DrawPoint(xOffset, -22));
+}
+
 void noFigure::die()
 {
     // Weg mit mir
@@ -896,8 +908,13 @@ void noFigure::removeFromInventory()
     } else
     {
         world->getPlayer(player).decreaseInventoryJob(job_, 1);
-        if(::isSoldier(getJobType()) && hasArmor_)
-            world->getPlayer(player).decreaseInventoryJob(jobEnumToAmoredSoldierEnum(getJobType()), 1);
+        if(::isSoldier(getJobType()))
+        {
+            if(hasArmor_)
+                world->getPlayer(player).decreaseInventoryJob(jobEnumToAmoredSoldierEnum(getJobType()), 1);
+            if(hasHealing_)
+                world->getPlayer(player).decreaseInventoryJob(jobEnumToHealedSoldierEnum(getJobType()), 1);
+        }
     }
 }
 

@@ -4,6 +4,7 @@
 
 #include "world/GameWorldBase.h"
 #include "BQCalculator.h"
+#include "ChurchLoader.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "MapGeometry.h"
@@ -11,6 +12,7 @@
 #include "SoundManager.h"
 #include "TradePathCache.h"
 #include "addons/const_addons.h"
+#include "buildings/nobBaseWarehouse.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "figures/nofPassiveSoldier.h"
@@ -217,6 +219,22 @@ bool GameWorldBase::isMilitaryBuildingNearNode(const MapPoint nPt, const unsigne
     // Im Umkreis von 4 Punkten ein Militärgebäude suchen
     return checkPointsInRadius(
       nPt, 4, [this, player](auto pt, auto) { return isMilBldOfOwner(*this, pt, player + 1); }, false);
+}
+
+bool GameWorldBase::canBuildChurchAt(const MapPoint pt, const unsigned char player) const
+{
+    if(!churchaddon::isAddonActive(*this))
+        return false;
+
+    const GamePlayer& owner = getPlayer(player);
+    if(!owner.isBuildingEnabled(BuildingType::Church))
+        return false;
+
+    return helpers::containsIf(owner.getBuildingRegister().getStorehouses(), [this, pt](const nobBaseWarehouse* wh) {
+        const BuildingType bt = wh->getBuildingType();
+        return (bt == BuildingType::Headquarters || bt == BuildingType::Storehouse)
+               && calcDistance(pt, wh->getPos()) <= churchaddon::CHURCH_PLACEMENT_RADIUS;
+    });
 }
 
 bool GameWorldBase::isMilitaryBuildingOnNode(const MapPoint pt, bool attackBldsOnly) const

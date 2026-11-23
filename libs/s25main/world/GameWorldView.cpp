@@ -432,7 +432,8 @@ void GameWorldView::drawProductivity(const noBaseBuilding& no, const DrawPoint& 
 
         unsigned short p = static_cast<const noBuildingSite&>(no).getBuildProgress();
         SmallFont->draw(curPos, (boost::format("(%1% %%)") % p).str(), FontStyle::CENTER | FontStyle::VCENTER, color);
-    } else if(got == GO_Type::NobUsual || got == GO_Type::NobShipyard || got == GO_Type::NobTemple)
+    } else if(got == GO_Type::NobUsual || got == GO_Type::NobShipyard || got == GO_Type::NobTemple
+              || got == GO_Type::NobChurch)
     {
         const auto& n = static_cast<const nobUsual&>(no);
         std::string text;
@@ -754,13 +755,13 @@ unsigned GameWorldView::getBuildingRadius(BuildingType bld) const
         case BuildingType::Armory:
         case BuildingType::Bakery:
         case BuildingType::Brewery:
+        case BuildingType::Church:
         case BuildingType::DonkeyBreeder:
         case BuildingType::Ironsmelter:
         case BuildingType::LeatherWorks:
         case BuildingType::Metalworks:
         case BuildingType::Mill:
         case BuildingType::Mint:
-        case BuildingType::Nothing9:
         case BuildingType::PigFarm:
         case BuildingType::Sawmill:
         case BuildingType::Shipyard:

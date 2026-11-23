@@ -18,6 +18,7 @@ std::function<bool(const Job job)> makeIsUnusedJob(const GlobalGameSettings& ggs
 // Only used for deserialization, can be removed when breaking compatibility (getGameDataVersion)
 constexpr auto numLeatherAddonBuildings = 3u;
 constexpr auto numWineAddonBuildings = 3u;
+constexpr auto numChurchAddonBuildings = 1u;
 constexpr auto numWineAndLeatherAddonBuildings = numWineAddonBuildings + numLeatherAddonBuildings;
 
 constexpr auto numLeatherAddonGoods = 3u;

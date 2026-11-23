@@ -17,7 +17,9 @@
 class nofCarrier;
 class noFigure;
 class Ware;
+class nobChurch;
 class nobMilitary;
+class nofChurchVisitor;
 class TradeRoute;
 
 class RoadSegment;
@@ -70,10 +72,14 @@ protected:
     const GameEvent* store_event;
 
     /// Soldaten-Reserve-Einstellung
-    std::array<unsigned, 5> reserve_soldiers_available;            /// einkassierte Soldaten zur Reserve
-    std::array<unsigned, 5> reserve_soldiers_available_with_armor; /// how many soldiers of the reserve have armor
-    std::array<unsigned, 5> reserve_soldiers_claimed_visual;       /// geforderte Soldaten zur Reserve - visuell
-    std::array<unsigned, 5> reserve_soldiers_claimed_real;         /// geforderte Soldaten zur Reserve - real
+    std::array<unsigned, 5> reserve_soldiers_available;              /// einkassierte Soldaten zur Reserve
+    std::array<unsigned, 5> reserve_soldiers_available_with_armor;   /// how many soldiers of the reserve have armor
+    std::array<unsigned, 5> reserve_soldiers_available_with_healing; /// how many soldiers of the reserve have healing
+    std::array<unsigned, 5> reserve_soldiers_claimed_visual;         /// geforderte Soldaten zur Reserve - visuell
+    std::array<unsigned, 5> reserve_soldiers_claimed_real;           /// geforderte Soldaten zur Reserve - real
+
+    /// Visitors currently out attending a church service
+    std::list<nofChurchVisitor*> churchVisitors_;
 
     /// Inventory of the building, real is the usable amount, visual is the total amount currently in the wh
     VirtualInventory inventory;
@@ -156,9 +162,11 @@ public:
     unsigned getNumRealWares(GoodType type) const { return inventory.real[type]; }
     unsigned getNumRealFigures(Job job) const { return inventory.real[job]; }
     unsigned getNumRealArmoredFigures(ArmoredSoldier job) const { return inventory.real[job]; }
+    unsigned getNumRealHealedFigures(HealedSoldier job) const { return inventory.real[job]; }
     unsigned getNumVisualWares(GoodType type) const { return inventory.visual[type]; }
     unsigned getNumVisualFigures(Job job) const { return inventory.visual[job]; }
     unsigned getNumVisualArmoredFigures(ArmoredSoldier job) const { return inventory.visual[job]; }
+    unsigned getNumVisualHealedFigures(HealedSoldier job) const { return inventory.visual[job]; }
 
     /// Gibt Ein/Auslagerungseinstellungen zurück
     InventorySetting getInventorySettingVisual(Job job) const;
@@ -286,6 +294,10 @@ public:
     {
         return &reserve_soldiers_available_with_armor[rank];
     }
+    const unsigned* getReserveHealedAvailablePointer(unsigned rank) const
+    {
+        return &reserve_soldiers_available_with_healing[rank];
+    }
     const unsigned* getReserveClaimedVisualPointer(unsigned rank) const
     {
         return &reserve_soldiers_claimed_visual[rank];
@@ -302,4 +314,11 @@ public:
 
     /// For debug only
     bool isDependentFigure(const noFigure& fig) const;
+
+    /// Send up to 20% of stationed human figures to attend a church service
+    std::vector<nofChurchVisitor*> sendChurchVisitors(nobChurch& church);
+    /// Notify warehouse that a visitor returned cleanly from church
+    void returnFromChurch(nofChurchVisitor& visitor);
+    /// Notify warehouse that a visitor did not return
+    void churchVisitorLost(nofChurchVisitor& visitor);
 };

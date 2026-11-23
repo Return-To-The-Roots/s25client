@@ -15,6 +15,7 @@
 #include "addons/AddonMaxWaterwayLength.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
+#include "buildings/nobChurch.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobStorehouse.h"
@@ -35,6 +36,7 @@
 #include "ingameWindows/iwBuildingProductivities.h"
 #include "ingameWindows/iwBuildingSite.h"
 #include "ingameWindows/iwBuildings.h"
+#include "ingameWindows/iwChurchBuilding.h"
 #include "ingameWindows/iwDiplomacy.h"
 #include "ingameWindows/iwDistribution.h"
 #include "ingameWindows/iwEconomicProgress.h"
@@ -596,6 +598,9 @@ bool dskGameInterface::contextClick(const MouseCoords& mc)
             else if(bt == BuildingType::Temple)
                 WINDOWMANAGER.show(std::make_unique<iwTempleBuilding>(
                   gwv, GAMECLIENT, worldViewer.getWorldNonConst().getSpecObj<nobTemple>(cSel)));
+            else if(bt == BuildingType::Church)
+                WINDOWMANAGER.show(std::make_unique<iwChurchBuilding>(
+                  gwv, GAMECLIENT, worldViewer.getWorldNonConst().getSpecObj<nobChurch>(cSel)));
             else
                 WINDOWMANAGER.show(std::make_unique<iwBuilding>(
                   gwv, GAMECLIENT, worldViewer.getWorldNonConst().getSpecObj<nobUsual>(cSel)));

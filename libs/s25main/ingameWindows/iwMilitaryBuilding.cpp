@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwMilitaryBuilding.h"
+#include "ChurchLoader.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "LeatherLoader.h"
@@ -180,6 +181,11 @@ void iwMilitaryBuilding::drawContent()
         if(leatheraddon::isAddonActive(gwv.getWorld()) && soldier->hasArmor())
             armorWareIcon->drawFull(curTroopsPos, 0xFFA0A0A0);
         LOADER.getMapTexture(2321 + soldier->getRank())->drawFull(curTroopsPos);
+        if(churchaddon::isAddonActive(gwv.getWorld()) && soldier->hasHealing())
+        {
+            if(ITexture* doveTex = churchaddon::getDoveTex())
+                doveTex->drawFull(curTroopsPos + DrawPoint(6, -6));
+        }
         curTroopsPos.x += 22;
     }
 
@@ -195,7 +201,7 @@ void iwMilitaryBuilding::drawContent()
         for(const auto* soldier : soldiers)
         {
             auto hitpoints = static_cast<int>(soldier->getHitpoints());
-            auto maxHitpoints = static_cast<int>(HITPOINTS[soldier->getRank()]);
+            auto maxHitpoints = static_cast<int>(soldier->getMaxHitpoints());
             unsigned hitpointsColour;
             if(hitpoints <= maxHitpoints / 2)
                 hitpointsColour = COLOR_RED;

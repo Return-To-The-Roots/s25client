@@ -30,6 +30,7 @@
 // 012 MichalLabuda
 // 013 Morgan
 // 014 LittleFox
+// 015 Markus
 
 // Do not forget to add your Addon to GlobalGameSettings::registerAllAddons @ GlobalGameSettings.cpp!
 // Never use a number twice!
@@ -93,7 +94,9 @@ ENUM_WITH_STRING(AddonId, LIMIT_CATAPULTS = 0x00000000, INEXHAUSTIBLE_MINES = 0x
 
                  BUILDING_RADIUS = 0x01300000,
 
-                 FORESTER_HARBOR_AVOIDANCE = 0x1400001)
+                 FORESTER_HARBOR_AVOIDANCE = 0x1400001,
+
+                 CHURCH = 0x01500000)
 //-V:AddonId:801
 
 enum class AddonGroup : unsigned

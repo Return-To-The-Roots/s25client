@@ -54,6 +54,8 @@ void nofSoldier::drawSoldierWaiting(DrawPoint drawPt)
     LOADER.getBobSprite(owner.nation, job_, getCurMoveDir(), 2).drawForPlayer(drawPt, owner.color);
     if(hasArmor_)
         this->drawArmor(drawPt);
+    if(hasHealing_)
+        this->drawHealing(drawPt);
 }
 
 void nofSoldier::abrogateWorkplace()
@@ -73,4 +75,15 @@ unsigned char nofSoldier::getRank() const
 unsigned char nofSoldier::getHitpoints() const
 {
     return hitpoints;
+}
+
+unsigned char nofSoldier::getMaxHitpoints() const
+{
+    return static_cast<unsigned char>(getMaxSoldierHitpoints(getRank(), hasHealing_));
+}
+
+void nofSoldier::grantHealing()
+{
+    hasHealing_ = true;
+    hitpoints = getMaxHitpoints();
 }

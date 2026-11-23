@@ -57,6 +57,8 @@ public:
     void playBirdSounds(unsigned treeCount);
     /// Play the ocean sound effect which depends on the ratio of water currently visible
     void playOceanBrawling(unsigned waterPercent);
+    /// Play church service bell sound if not suppressed by max concurrency or active playback on the same church
+    void playChurchServiceSound(const noBase& obj);
 
     /// Stop all sound effects
     void stopAll();

@@ -105,6 +105,8 @@ public:
     void recalcBQForRoad(MapPoint pt);
     /// Pr�ft, ob sich in unmittelbarer N�he (im Radius von 4) Milit�rgeb�ude befinden
     bool isMilitaryBuildingNearNode(MapPoint nPt, unsigned char player) const;
+    /// Returns true if a Church can be built at `pt` by `player` (within placement radius of own HQ/Storehouse)
+    bool canBuildChurchAt(MapPoint pt, unsigned char player) const;
     /// Return true if there is a military building or building site on the node
     /// If attackBldsOnly is true, then only troop buildings are returned
     /// Otherwise it includes e.g. HQ and harbour which cannot attack itself but hold land

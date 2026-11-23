@@ -5,6 +5,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Loader.h"
+#include "ChurchLoader.h"
 #include "LeatherLoader.h"
 #include "ListDir.h"
 #include "RttrConfig.h"
@@ -153,6 +154,8 @@ glArchivItem_Bitmap* Loader::getNationIcon(Nation nation, BuildingType bld)
 {
     if(bld == BuildingType::Charburner)
         return LOADER.getImageN("charburner", rttr::enumCast(nation) * 8 + 8);
+    else if(bld == BuildingType::Church)
+        return churchaddon::getIconBitmap(nation);
     else
         return convertChecked<glArchivItem_Bitmap*>(nationIcons_[nation]->get(rttr::enumCast(bld)));
 }
@@ -163,7 +166,9 @@ ITexture* Loader::getBuildingTex(Nation nation, BuildingType bld)
     {
         unsigned id = rttr::enumCast(nation) * 8;
         return getImageN("charburner", id + (isWinterGFX_ ? 6 : 1));
-    } else
+    } else if(bld == BuildingType::Church)
+        return getImageN("church", churchaddon::getNationSpriteId(nation, churchaddon::NationSprite::Building));
+    else
         return checkedCast<ITexture*>(getNationImage(nation, 250 + rttr::enumCast(bld) * 5));
     return nullptr;
 }
@@ -453,6 +458,9 @@ void Loader::loadDummySoundFiles()
         auto snd = std::make_unique<glArchivItem_Sound_Wave>();
         archive.set(id, std::move(snd));
     }
+    libsiedler2::Archiv& churchSnd = files_["church_sound"].archive;
+    churchSnd.alloc(1);
+    churchSnd.set(0, std::make_unique<glArchivItem_Sound_Wave>());
 }
 
 namespace {
@@ -532,6 +540,9 @@ bool Loader::loadFilesAtGame(const std::string& mapGfxPath, bool isWinterGFX, co
         return false;
 
     if(!loadResources({"leather_bobs"}))
+        return false;
+
+    if(!loadResources({"church", "church_sound"}))
         return false;
 
     const bfs::path mapGFXFile = config_.expandPath(mapGfxPath);
@@ -653,6 +664,20 @@ void Loader::fillCaches()
                 sprites.skeleton.addShadow(getImageN("charburner", id + 4));
 
                 sprites.door.add(getImageN("charburner", id + (isWinterGFX_ ? 7 : 5)));
+            } else if(type == BuildingType::Church)
+            {
+                sprites.building.add(
+                  getImageN("church", churchaddon::getNationSpriteId(nation, churchaddon::NationSprite::Building)));
+                sprites.building.addShadow(getImageN(
+                  "church", churchaddon::getNationSpriteId(nation, churchaddon::NationSprite::BuildingShadow)));
+
+                sprites.skeleton.add(
+                  getImageN("church", churchaddon::getNationSpriteId(nation, churchaddon::NationSprite::Skeleton)));
+                sprites.skeleton.addShadow(getImageN(
+                  "church", churchaddon::getNationSpriteId(nation, churchaddon::NationSprite::SkeletonShadow)));
+
+                sprites.door.add(
+                  getImageN("church", churchaddon::getNationSpriteId(nation, churchaddon::NationSprite::Door)));
             } else
             {
                 sprites.building.add(getNationImage(nation, 250 + 5 * rttr::enumCast(type)));

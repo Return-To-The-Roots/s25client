@@ -14,10 +14,13 @@
 #include "controls/ctrlComboBox.h"
 #include "controls/ctrlImage.h"
 #include "controls/ctrlList.h"
+#include "helpers/EnumRange.h"
+#include "helpers/containerUtils.h"
 #include "network/GameClient.h"
 #include "world/GameWorldBase.h"
 #include "world/GameWorldViewer.h"
 #include "gameData/BuildingConsts.h"
+#include "gameData/BuildingProperties.h"
 #include "gameData/const_gui_ids.h"
 
 void iwBuildOrder::fillBuildOrder(const BuildOrders& build_order)
@@ -80,25 +83,13 @@ void iwBuildOrder::transmitSettings()
         for(; i < pendingBuildOrder.size(); i++)
             transmitPendingBuildOrder[i] = pendingBuildOrder[i];
 
-        if(!wineaddon::isAddonActive(gwv.getWorld()))
+        auto isUnused = makeIsUnusedBuilding(gwv.getWorld().getGGS());
+        for(const auto bld : helpers::enumRange<BuildingType>())
         {
-            transmitPendingBuildOrder[i++] = BuildingType::Vineyard;
-            transmitPendingBuildOrder[i++] = BuildingType::Winery;
-            transmitPendingBuildOrder[i++] = BuildingType::Temple;
+            if(bld != BuildingType::Headquarters && BuildingProperties::isValid(bld) && isUnused(bld))
+                transmitPendingBuildOrder[i++] = bld;
         }
-
-        // This is not an OBB write because pendingBuildOrder does not contain the leather/wine building
-        // entries when the addon is inactive. So the pendingBuildOrder list is shorter then
-        // the transmitPendingBuildOrder list. See fillBuildOrder at the top of this file.
-        if(!gwv.getWorld().getGGS().isEnabled(AddonId::CHARBURNER))
-            transmitPendingBuildOrder[i++] = BuildingType::Charburner;
-
-        if(!leatheraddon::isAddonActive(gwv.getWorld()))
-        {
-            transmitPendingBuildOrder[i++] = BuildingType::Skinner;
-            transmitPendingBuildOrder[i++] = BuildingType::Tannery;
-            transmitPendingBuildOrder[i++] = BuildingType::LeatherWorks;
-        }
+        RTTR_Assert(i == transmitPendingBuildOrder.size());
 
         if(GAMECLIENT.ChangeBuildOrder(useCustomBuildOrder, transmitPendingBuildOrder))
         {

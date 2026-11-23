@@ -147,6 +147,39 @@ void SoundManager::playOceanBrawling(const unsigned waterPercent)
         AUDIODRIVER.stopEffect(oceanPlayId);
 }
 
+void SoundManager::playChurchServiceSound(const noBase& obj)
+{
+    if(!SETTINGS.sound.effectsEnabled)
+        return;
+
+    constexpr unsigned churchSoundTag = 0x43485243u; // distinct from sound.lst indices
+    unsigned numPlayedCt = 0;
+    for(auto it = noSounds.begin(); it != noSounds.end();)
+    {
+        if(it->soundId == churchSoundTag)
+        {
+            if(!AUDIODRIVER.isEffectPlaying(it->playId))
+            {
+                it = noSounds.erase(it);
+                continue;
+            }
+            if(it->obj == &obj)
+                return;
+            ++numPlayedCt;
+        }
+        ++it;
+    }
+    if(numPlayedCt >= maxPlayCtPerSound)
+        return;
+
+    if(auto* snd = LOADER.getSoundN("church_sound", 0))
+    {
+        EffectPlayId playId = snd->play(255, false);
+        if(playId != EffectPlayId::Invalid)
+            noSounds.push_back(NOSound{churchSoundTag, &obj, 0, playId});
+    }
+}
+
 void SoundManager::stopAll()
 {
     if(oceanPlayId != EffectPlayId::Invalid)
