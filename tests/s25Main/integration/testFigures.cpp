@@ -8,10 +8,12 @@
 #include "RttrForeachPt.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "buildings/nobMilitary.h"
 #include "factories/BuildingFactory.h"
 #include "figures/noFigure.h"
 #include "figures/nofCarrier.h"
 #include "figures/nofGeologist.h"
+#include "figures/nofPassiveSoldier.h"
 #include "figures/nofPassiveWorker.h"
 #include "figures/nofScout_Free.h"
 
@@ -94,8 +96,7 @@ BOOST_FIXTURE_TEST_CASE(StartingToWanderAbrogatesGoal, WorldWithGCExecution1P)
     BOOST_TEST_REQUIRE(flag);
 
     auto& worker =
-      world.addFigure(flag->getPos(),
-                      std::make_unique<nofPassiveWorker>(Job::Helper, flag->getPos(), curPlayer, flag));
+      world.addFigure(flag->getPos(), std::make_unique<nofPassiveWorker>(Job::Helper, flag->getPos(), curPlayer, flag));
     BOOST_TEST_REQUIRE(worker.getGoal() == flag);
 
     worker.startWandering();
@@ -104,6 +105,22 @@ BOOST_FIXTURE_TEST_CASE(StartingToWanderAbrogatesGoal, WorldWithGCExecution1P)
     BOOST_TEST(worker.getGoal() == nullptr);
     // Must be safe after startWandering, i.e. no dangling goal/dependent figure is left behind
     worker.destroy();
+}
+
+using WorldWithGCExecution1PBig = WorldWithGCExecution<1, 22, 20>;
+
+BOOST_FIXTURE_TEST_CASE(PassiveSoldierLeavesBuildingWithoutWarehouse, WorldWithGCExecution1PBig)
+{
+    // A military building whose flag is not connected to any warehouse
+    const MapPoint milPos = hqPos + MapPoint(6, 0);
+    auto* mil = checkedCast<nobMilitary*>(
+      BuildingFactory::createBuilding(world, BuildingType::Barracks, milPos, curPlayer, Nation::Romans));
+
+    auto& soldier = world.addFigure(milPos, std::make_unique<nofPassiveSoldier>(milPos, curPlayer, nullptr, mil, 0));
+    soldier.leaveBuilding();
+
+    BOOST_TEST(soldier.isWandering());
+    BOOST_TEST(soldier.getHomeBld() == nullptr);
 }
 
 BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)
@@ -231,6 +248,62 @@ BOOST_FIXTURE_TEST_CASE(GeologistPlacesSigns, EmptyWorldFixture1P)
         BOOST_TEST_REQUIRE(sign);
         BOOST_TEST(sign->getResource() == note.res);
     }
+}
+
+BOOST_FIXTURE_TEST_CASE(FlagWorkerDestroyedFlagCleansUp, WorldWithGCExecution1PBig)
+{
+    // Build a road that is not connected to any warehouse
+    const MapPoint flagPos = hqPos + MapPoint(6, 0);
+    BOOST_TEST_REQUIRE(world.SetFlag(flagPos, curPlayer));
+    BOOST_TEST_REQUIRE(
+      world.BuildRoad(curPlayer, false, flagPos, std::vector<Direction>(2, Direction::East)).isValid());
+    auto& flag = ensureNonNull(world.getSpecObj<noFlag>(flagPos));
+
+    auto& geologist = world.addFigure(flagPos, std::make_unique<nofGeologist>(flagPos, curPlayer, &flag));
+    // Simulate a geologist standing on the road with a valid route
+    geologist.initializeRoadWalking(flag.getRoute(Direction::East), 0, true);
+    BOOST_TEST_REQUIRE(world.getPlayer(curPlayer).isFlagWorker(&geologist));
+
+    world.getPlayer(curPlayer).flagDestroyed(&flag);
+
+    BOOST_TEST(geologist.isWandering());
+    BOOST_TEST(geologist.getFlag() == nullptr);
+    BOOST_TEST(!world.getPlayer(curPlayer).isFlagWorker(&geologist));
+}
+
+namespace {
+class GeologistWithPublicGoToFlag : public nofGeologist
+{
+public:
+    using nofGeologist::nofGeologist;
+    void goToFlagForTest() { goToFlag(); }
+};
+} // namespace
+
+BOOST_FIXTURE_TEST_CASE(FlagWorkerGoToFlagAtFlagWithoutWarehouseWanders, WorldWithGCExecution1PBig)
+{
+    // Build a road that is not connected to any warehouse
+    const MapPoint flagPos = hqPos + MapPoint(6, 0);
+    BOOST_TEST_REQUIRE(world.SetFlag(flagPos, curPlayer));
+    BOOST_TEST_REQUIRE(
+      world.BuildRoad(curPlayer, false, flagPos, std::vector<Direction>(2, Direction::East)).isValid());
+    auto& flag = ensureNonNull(world.getSpecObj<noFlag>(flagPos));
+    // Premise: no warehouse is reachable from this disconnected road.
+    BOOST_TEST(world.getPlayer(curPlayer).findWarehouse(flag, FW::AcceptsFigure(Job::Geologist), true, false)
+               == nullptr);
+
+    auto geologistPtr = std::make_unique<GeologistWithPublicGoToFlag>(flagPos, curPlayer, &flag);
+    auto& geologist = *geologistPtr;
+    world.addFigure(flagPos, std::move(geologistPtr));
+    BOOST_TEST_REQUIRE(world.getPlayer(curPlayer).isFlagWorker(&geologist));
+
+    // goToFlag() at the flag must detach and fall back to wandering.
+    geologist.goToFlagForTest();
+
+    BOOST_TEST(geologist.isWandering());
+    BOOST_TEST(geologist.getFlag() == nullptr);
+    BOOST_TEST(!world.getPlayer(curPlayer).isFlagWorker(&geologist));
+    geologist.destroy(); // No asserts fire
 }
 
 using BoatCarrierLostWorkWorld = WorldFixture<CreateWaterWorld, 1, 40, 20>;

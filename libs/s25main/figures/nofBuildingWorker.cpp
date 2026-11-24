@@ -239,15 +239,16 @@ void nofBuildingWorker::abrogate()
 
 void nofBuildingWorker::lostWork()
 {
+    // Bisheriges Event abmelden, da die Arbeit unterbrochen wird
     switch(state)
     {
-        default: break;
         case State::FigureWork:
-        {
+            // Workplace might get desotroyed.
+            // Reset it first so we don't notify it when goHome fails to find a path and we start wandering.
+            workplace = nullptr;
             // Auf Wegen nach Hause gehen
             goHome();
-        }
-        break;
+            return;
         case State::Waiting1:
         case State::Waiting2:
         case State::Work:
@@ -258,24 +259,19 @@ void nofBuildingWorker::lostWork()
         case State::HunterWaitingForAnimalReady:
         case State::SkinnerSkinningCarcass:
         case State::CatapultTargetBuilding:
-        case State::CatapultBackoff:
-        {
-            // Bisheriges Event abmelden, da die Arbeit unterbrochen wird
-            getEvMgr().removeEvent(current_ev);
-            startWandering();
-        }
-        break;
-        case State::EnterBuilding:
-        case State::CarryoutWare:
-        case State::WalkToWorkpoint:
-        case State::WalkingHome:
-        case State::HunterChasing:
-        case State::HunterFindingShootingpoint:
-        case State::HunterWalkingToCadaver:
-        case State::SkinnerWalkingToCarcass: startWandering(); break;
+        case State::CatapultBackoff: getEvMgr().removeEvent(current_ev); break;
+        default: break;
     }
 
-    workplace = nullptr;
+    // If the workplace is still valid notify it, then detach before wandering so that
+    // startWandering() -> abrogate() does not notify it a second time.
+    if(workplace)
+    {
+        workAborted();
+        workplace = nullptr;
+    }
+    world->getSoundMgr().stopSounds(*this);
+    startWandering();
 }
 
 void nofBuildingWorker::productionStopped()

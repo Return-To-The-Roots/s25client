@@ -106,9 +106,10 @@ void nofPassiveSoldier::leaveBuilding()
     rs_dir = true;
     rs_pos = 1;
     cur_rs = homeBld->getRoute(Direction::SouthEast);
-    goHome();
-
+    // Detach from the home building before goHome() may fail and start wandering: the soldier is already leaving,
+    // so abrogate() must not notify the (former) home building via soldierLost().
     homeBld = nullptr;
+    goHome();
 }
 
 void nofPassiveSoldier::upgrade()

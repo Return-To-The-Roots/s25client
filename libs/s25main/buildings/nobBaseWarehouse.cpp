@@ -73,8 +73,9 @@ void nobBaseWarehouse::DestroyBuilding()
         // Only send figures home that are not already at this position.
         if(dependentFigure->getPos() == getPos())
         {
+            // Clear the goal before wandering: startWandering() -> abrogate() must not remove us from this
+            // warehouse's dependent_figures while we iterate it.
             dependentFigure->setGoalTonullptr();
-            dependentFigure->cutCurrentRoad();
             dependentFigure->startWandering();
         } else
             dependentFigure->goHome();
