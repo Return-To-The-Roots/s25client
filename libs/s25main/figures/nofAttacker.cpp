@@ -740,13 +740,11 @@ void nofAttacker::switchStateAttackingWaitingForDefender()
 void nofAttacker::handleDerivedEvent(const unsigned /*id*/)
 {
     RTTR_Assert(blocking_event);
-    // If we are still waiting (we could be walking again if building was destroyed)
+    // If we are still waiting (we could be walking again if building was destroyed or a fight started),
     // stop figures walking to this position
     if(state == SoldierState::AttackingWaitingForDefender)
-    {
         world->stopOnRoads(pos);
-        blocking_event = nullptr;
-    }
+    blocking_event = nullptr;
 }
 
 bool nofAttacker::isBlockingRoads() const
