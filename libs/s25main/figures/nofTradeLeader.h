@@ -36,6 +36,8 @@ public:
     nofTradeLeader(SerializedGameData& sgd, unsigned obj_id);
     nofTradeLeader(const nofTradeLeader&) = delete;
 
+    void abrogate() override;
+
     void destroy() override
     {
         RTTR_Assert(!successor);

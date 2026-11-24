@@ -115,6 +115,13 @@ void nofTradeLeader::walked()
 void nofTradeLeader::handleDerivedEvent(const unsigned /*id*/) {}
 void nofTradeLeader::abrogateWorkplace() {}
 
+void nofTradeLeader::abrogate()
+{
+    cancelTradeCaravane();
+    noFigure::abrogate();
+    RTTR_Assert(!successor);
+}
+
 void nofTradeLeader::draw(DrawPoint drawPt)
 {
     drawWalkingBobJobs(drawPt, Job::Scout);

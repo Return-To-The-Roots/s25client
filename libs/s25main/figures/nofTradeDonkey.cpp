@@ -92,6 +92,15 @@ void nofTradeDonkey::walked()
 void nofTradeDonkey::handleDerivedEvent(const unsigned /*id*/) {}
 void nofTradeDonkey::abrogateWorkplace() {}
 
+void nofTradeDonkey::abrogate()
+{
+    cancelTradeCaravane();
+    // The cargo was already removed all inventories when the caravan started so just drop it.
+    gt.reset();
+    noFigure::abrogate();
+    RTTR_Assert(!successor);
+}
+
 void nofTradeDonkey::draw(DrawPoint drawPt)
 {
     if(job_ == Job::PackDonkey)
