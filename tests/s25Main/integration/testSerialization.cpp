@@ -8,6 +8,7 @@
 #include "GlobalGameSettings.h"
 #include "PointOutput.h"
 #include "Replay.h"
+#include "RoadSegment.h"
 #include "RttrForeachPt.h"
 #include "Savegame.h"
 #include "SerializedGameData.h"
@@ -17,6 +18,7 @@
 #include "buildings/nobUsual.h"
 #include "factories/BuildingFactory.h"
 #include "factories/GameCommandFactory.h"
+#include "figures/nofCarrier.h"
 #include "figures/nofHunter.h"
 #include "helpers/OptionalIO.h"
 #include "helpers/format.hpp"
@@ -26,6 +28,7 @@
 #include "worldFixtures/CreateEmptyWorld.h"
 #include "worldFixtures/MockLocalGameState.h"
 #include "worldFixtures/WorldFixture.h"
+#include "worldFixtures/WorldWithGCExecution.h"
 #include "world/MapLoader.h"
 #include "nodeObjs/noAnimal.h"
 #include "nodeObjs/noFire.h"
@@ -49,6 +52,7 @@ BOOST_TEST_DONT_PRINT_LOG_VALUE(nofBuildingWorker::State)
 
 namespace {
 using EmptyWorldFixture1P = WorldFixture<CreateEmptyWorld, 1>;
+using WorldWithGCExecution1PBig = WorldWithGCExecution<1, 22, 20>;
 struct RandWorldFixture : public WorldFixture<CreateEmptyWorld, 4>
 {
     RandWorldFixture()
@@ -765,6 +769,49 @@ BOOST_FIXTURE_TEST_CASE(SerializeHunter, EmptyWorldFixture1P)
     sgd2.makeSnapshot(*game);
     BOOST_CHECK_EQUAL_COLLECTIONS(sgd.getData(), sgd.getData() + sgd.getLength(), sgd2.getData(),
                                   sgd2.getData() + sgd2.getLength());
+}
+
+// A carrier always serializes its workplace.
+// Abrogating before saving must therefore reset those references, otherwise they would be invalid on load and e.g.
+// trigger the assert on destroy.
+BOOST_FIXTURE_TEST_CASE(SerializeWanderingAbrogatedCarrier, WorldWithGCExecution1PBig)
+{
+    // A flag and road not connected to a warehouse: abrogating the carrier must not order a replacement,
+    // keeping the test focused on the wandering carrier itself.
+    const MapPoint flagPos = hqPos + MapPoint(6, 0);
+    BOOST_TEST_REQUIRE(world.SetFlag(flagPos, curPlayer));
+    BOOST_TEST_REQUIRE(
+      world.BuildRoad(curPlayer, false, flagPos, std::vector<Direction>(2, Direction::East)).isValid());
+    auto& flag = ensureNonNull(world.getSpecObj<noFlag>(flagPos));
+    RoadSegment* rs = flag.getRoute(Direction::East);
+    BOOST_TEST_REQUIRE(rs);
+
+    auto& carrier =
+      world.addFigure(flagPos, std::make_unique<nofCarrier>(CarrierType::Normal, flagPos, curPlayer, rs, &flag));
+    rs->setCarrier(0, &carrier);
+    BOOST_TEST_REQUIRE(carrier.getFirstFlag() == &flag);
+
+    carrier.startWandering();
+    BOOST_TEST(carrier.isWandering());
+    BOOST_TEST(carrier.getGoal() == nullptr);
+    BOOST_TEST(carrier.getFirstFlag() == nullptr);
+
+    SerializedGameData sgd;
+    sgd.makeSnapshot(*game);
+
+    MockLocalGameState lgs;
+    em.clear();
+    world.unload();
+    sgd.readSnapshot(*game, lgs);
+
+    auto figures = world.getFigures(flagPos);
+    BOOST_TEST_REQUIRE(figures.size() == 1u);
+    auto* loadedCarrier = dynamic_cast<nofCarrier*>(&figures.front());
+    BOOST_TEST_REQUIRE(loadedCarrier);
+    BOOST_TEST(loadedCarrier->isWandering());
+    BOOST_TEST(loadedCarrier->getFirstFlag() == nullptr);
+    // Must not assert on a stale workplace reference restored by the savegame.
+    loadedCarrier->destroy();
 }
 
 BOOST_AUTO_TEST_CASE(SerializeGameMessageChat)

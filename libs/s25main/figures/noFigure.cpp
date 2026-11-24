@@ -932,7 +932,6 @@ void noFigure::nodeFreed(const MapPoint pt)
 
 void noFigure::abrogate()
 {
-    // Arbeisplatz oder Laghaus Bescheid sagen
     if(fs == FigureState::GoHome && goal_)
         checkedCast<nobBaseWarehouse*>(goal_)->removeDependentFigure(*this);
     goal_ = nullptr;

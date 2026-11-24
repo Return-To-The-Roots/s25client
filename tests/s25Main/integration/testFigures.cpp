@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "FindWhConditions.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "PointOutput.h"
@@ -115,6 +116,10 @@ BOOST_FIXTURE_TEST_CASE(PassiveSoldierLeavesBuildingWithoutWarehouse, WorldWithG
     const MapPoint milPos = hqPos + MapPoint(6, 0);
     auto* mil = checkedCast<nobMilitary*>(
       BuildingFactory::createBuilding(world, BuildingType::Barracks, milPos, curPlayer, Nation::Romans));
+    BOOST_TEST_REQUIRE(mil->getFlag());
+    // Premise: the barracks flag is not connected to any warehouse, so leaveBuilding() has to fall back to wandering.
+    BOOST_TEST(world.getPlayer(curPlayer).findWarehouse(*mil->getFlag(), FW::AcceptsFigure(Job::Private), true, false)
+               == nullptr);
 
     auto& soldier = world.addFigure(milPos, std::make_unique<nofPassiveSoldier>(milPos, curPlayer, nullptr, mil, 0));
     soldier.leaveBuilding();
@@ -258,6 +263,9 @@ BOOST_FIXTURE_TEST_CASE(FlagWorkerDestroyedFlagCleansUp, WorldWithGCExecution1PB
     BOOST_TEST_REQUIRE(
       world.BuildRoad(curPlayer, false, flagPos, std::vector<Direction>(2, Direction::East)).isValid());
     auto& flag = ensureNonNull(world.getSpecObj<noFlag>(flagPos));
+    // Premise: no warehouse is reachable from this disconnected road, so losing the flag falls back to wandering.
+    BOOST_TEST(world.getPlayer(curPlayer).findWarehouse(flag, FW::AcceptsFigure(Job::Geologist), true, false)
+               == nullptr);
 
     auto& geologist = world.addFigure(flagPos, std::make_unique<nofGeologist>(flagPos, curPlayer, &flag));
     // Simulate a geologist standing on the road with a valid route

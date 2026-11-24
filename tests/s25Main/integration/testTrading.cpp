@@ -422,6 +422,10 @@ BOOST_FIXTURE_TEST_CASE(AbrogateTradeCaravanClearsSuccessor, TradeFixture)
     leader.setSuccessor(&donkey);
     donkey.setSuccessor(&secondDonkey);
 
+    // Premise: both donkeys really carry cargo, so the checks after abrogate() are not vacuous.
+    BOOST_TEST_REQUIRE(donkey.getCarriedWare().hasValue());
+    BOOST_TEST_REQUIRE(secondDonkey.getCarriedWare().hasValue());
+
     leader.abrogate();
     donkey.abrogate();
     secondDonkey.abrogate();
@@ -437,6 +441,29 @@ BOOST_FIXTURE_TEST_CASE(AbrogateTradeCaravanClearsSuccessor, TradeFixture)
     BOOST_TEST(!secondDonkey.getCarriedWare().hasValue());
     donkey.destroy();
     secondDonkey.destroy();
+}
+
+BOOST_FIXTURE_TEST_CASE(AbrogateDonkeyClearsOwnSuccessor, TradeFixture)
+{
+    const MapPoint pos = curWh->getFlagPos();
+    auto& first = world.addFigure(pos, std::make_unique<nofTradeDonkey>(pos, curPlayer, GoodType::Boards));
+    auto& second = world.addFigure(pos, std::make_unique<nofTradeDonkey>(pos, curPlayer, GoodType::Boards));
+    first.setSuccessor(&second);
+
+    BOOST_TEST_REQUIRE(first.getCarriedWare().hasValue());
+    BOOST_TEST_REQUIRE(second.getCarriedWare().hasValue());
+    BOOST_TEST_REQUIRE(first.getSuccessor() == &second);
+
+    first.abrogate();
+    BOOST_TEST(first.getSuccessor() == nullptr);
+    BOOST_TEST(!first.getCarriedWare().hasValue());
+
+    second.abrogate();
+    BOOST_TEST(!second.getCarriedWare().hasValue());
+
+    // Just check this doesn't trigger asserts
+    first.destroy();
+    second.destroy();
 }
 
 BOOST_AUTO_TEST_SUITE_END()
