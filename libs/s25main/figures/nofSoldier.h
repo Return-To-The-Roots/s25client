@@ -31,6 +31,8 @@ public:
     nofSoldier(MapPoint pos, unsigned char player, nobBaseMilitary& home, unsigned char rank, bool armor = false);
     nofSoldier(SerializedGameData& sgd, unsigned obj_id);
 
+    void abrogate() override;
+
     void destroy() override
     {
         RTTR_Assert(!getHomeBld());

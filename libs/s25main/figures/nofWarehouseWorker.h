@@ -30,6 +30,7 @@ private:
     void walked() override;
     /// wenn man beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
     void abrogateWorkplace() override;
+    void abrogate() override;
 
     void looseWare();
 

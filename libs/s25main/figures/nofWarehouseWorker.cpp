@@ -139,7 +139,12 @@ void nofWarehouseWorker::walked()
 void nofWarehouseWorker::abrogateWorkplace()
 {
     looseWare();
-    startWandering();
+}
+
+void nofWarehouseWorker::abrogate()
+{
+    noFigure::abrogate();
+    RTTR_Assert(!carried_ware);
 }
 
 void nofWarehouseWorker::looseWare()

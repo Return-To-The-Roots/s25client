@@ -197,7 +197,7 @@ public:
     void startWalking(Direction dir);
     /// Starts walking in a random dir and returns whether this was possible
     bool walkInRandomDir();
-    /// Umherirren starten (frei rumlaufen)
+    /// Start wandering: i.e. walk around search for a flag to go back
     void startWandering(unsigned burned_wh_id = 0xFFFFFFFF);
     /// Auf Straßen(!) nach Hause laufen
     void goHome(noRoadNode* goal = nullptr);
@@ -236,7 +236,9 @@ public:
 
     bool isDoingJobWorks() const { return fs == FigureState::Job; }
 
-    void abrogate(); // beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+    /// Abrogate the current workplace/goal. Total and idempotent: afterwards goal_ is nullptr and
+    /// abrogateWorkplace() has been called.
+    virtual void abrogate();
 
     /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
     void startShipJourney();

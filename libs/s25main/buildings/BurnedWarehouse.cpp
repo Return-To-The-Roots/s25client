@@ -118,8 +118,10 @@ void BurnedWarehouse::handleEvent(const unsigned /*id*/)
                         people[armoredSoldier]--;
                     }
                 }
-                figure.startWandering(getObjId());
+                // Start walking first so startWandering sees us moving and doesn't auto-wander,
+                // preserving the directional distribution of refugees
                 figure.startWalking(curDir);
+                figure.startWandering(getObjId());
             }
         }
     }

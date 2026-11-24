@@ -257,7 +257,6 @@ void dskBenchmark::startTest(Benchmark test)
                     auto& figure = game_->world_.addFigure(
                       flagPt, std::make_unique<nofPassiveWorker>(Job(getJob(rng)), flagPt, i, nullptr));
                     figure.startWandering();
-                    figure.startWalking(Direction(getDir(rng)));
                 }
             }
             break;

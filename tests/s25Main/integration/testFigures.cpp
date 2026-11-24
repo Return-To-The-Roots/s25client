@@ -12,6 +12,7 @@
 #include "figures/noFigure.h"
 #include "figures/nofCarrier.h"
 #include "figures/nofGeologist.h"
+#include "figures/nofPassiveWorker.h"
 #include "figures/nofScout_Free.h"
 
 #include "helpers/Range.h"
@@ -83,6 +84,26 @@ BOOST_AUTO_TEST_CASE(StrandedSoldierReturnSearchVeryLargeEscalatesThroughThreeSt
     BOOST_TEST(getStrandedSoldierReturnSearchRadius(ggs, 7) == 30u);
     BOOST_TEST(getStrandedSoldierReturnSearchRadius(ggs, 6) == 60u);
     BOOST_TEST(getStrandedSoldierReturnSearchRadius(ggs, 1) == 60u);
+}
+
+BOOST_FIXTURE_TEST_CASE(StartingToWanderAbrogatesGoal, WorldWithGCExecution1P)
+{
+    auto* wh = world.getPlayer(curPlayer).getFirstWH();
+    BOOST_TEST_REQUIRE(wh);
+    auto* flag = wh->getFlag();
+    BOOST_TEST_REQUIRE(flag);
+
+    auto& worker =
+      world.addFigure(flag->getPos(),
+                      std::make_unique<nofPassiveWorker>(Job::Helper, flag->getPos(), curPlayer, flag));
+    BOOST_TEST_REQUIRE(worker.getGoal() == flag);
+
+    worker.startWandering();
+
+    BOOST_TEST(worker.isWandering());
+    BOOST_TEST(worker.getGoal() == nullptr);
+    // Must be safe after startWandering, i.e. no dangling goal/dependent figure is left behind
+    worker.destroy();
 }
 
 BOOST_FIXTURE_TEST_CASE(DestroyWHWithFigure, WorldWithGCExecution2P)

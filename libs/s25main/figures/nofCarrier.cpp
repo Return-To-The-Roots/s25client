@@ -606,6 +606,13 @@ struct IsCoastalAndForFigs
 };
 } // namespace
 
+void nofCarrier::abrogate()
+{
+    noFigure::abrogate();
+    state = CarrierState::FigureWork;
+    RTTR_Assert(!workplace && !carried_ware);
+}
+
 void nofCarrier::lostWork()
 {
     workplace = nullptr;
@@ -653,8 +660,6 @@ void nofCarrier::lostWork()
         }
 
         startWandering();
-        if(state == CarrierState::WaitForWare || state == CarrierState::WaitForWareSpace)
-            wander();
     }
     state = CarrierState::FigureWork;
 }
@@ -924,7 +929,6 @@ void nofCarrier::wanderOnWater()
         // Start normal wandering at the land
         state = CarrierState::FigureWork;
         startWandering();
-        wander();
         shore_path.clear();
     } else
     {

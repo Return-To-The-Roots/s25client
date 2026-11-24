@@ -67,6 +67,8 @@ public:
 
     void draw(DrawPoint drawPt) override;
 
+    void abrogate() override;
+
     // Wird von der Baustelle aus aufgerufen, um den Bauarbeiter zu sagen, dass er gehen kann
     void lostWork();
 };

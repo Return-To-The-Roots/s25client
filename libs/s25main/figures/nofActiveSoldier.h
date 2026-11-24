@@ -111,6 +111,8 @@ public:
     /// Draw soldier (for all types of soldiers done by this base class!)
     void draw(DrawPoint drawPt) override;
 
+    void abrogate() override;
+
     /// Inform the different things that we are not coming anymore
     virtual void informTargetsAboutCancelling();
     /// Is called when our home military building was destroyed

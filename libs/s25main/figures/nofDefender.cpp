@@ -10,7 +10,6 @@
 #include "buildings/nobMilitary.h"
 #include "nofAttacker.h"
 #include "nofPassiveSoldier.h"
-#include "random/Random.h"
 #include "world/GameWorld.h"
 #include "nodeObjs/noFighting.h"
 #include "gameData/BuildingProperties.h"
@@ -54,10 +53,7 @@ void nofDefender::walked()
             if(!homeBld)
             {
                 // Home destroyed -> Start wandering around
-                attacker = nullptr;
-                state = SoldierState::FigureWork;
                 startWandering();
-                wander();
             } else
             {
                 // Arrived in building
@@ -86,32 +82,24 @@ void nofDefender::homeDestroyed()
     switch(state)
     {
         case SoldierState::DefendingWaiting:
-            // Handle now as we are not moving
-            attacker = nullptr;
-            state = SoldierState::FigureWork;
-            startWandering();
-            wander();
-            break;
         case SoldierState::DefendingWalkingTo:
-        case SoldierState::DefendingWalkingFrom:
-            attacker = nullptr;
-            startWandering();
-            state = SoldierState::FigureWork;
-            break;
+        case SoldierState::DefendingWalkingFrom: startWandering(); break;
         case SoldierState::Fighting:
             // Just continue fighting if we have already started started
         default: break;
     }
 }
 
+void nofDefender::abrogate()
+{
+    attacker = nullptr;
+    nofActiveSoldier::abrogate();
+}
+
 void nofDefender::homeDestroyedAtBegin()
 {
     homeBld = nullptr;
-
-    state = SoldierState::FigureWork;
-
     startWandering();
-    startWalking(RANDOM_ENUM(Direction));
 }
 
 void nofDefender::wonFighting()
@@ -125,10 +113,7 @@ void nofDefender::wonFighting()
     if(!homeBld)
     {
         // Home destroyed so abort and wander around
-        state = SoldierState::FigureWork;
         startWandering();
-        wander();
-
         return;
     }
 

@@ -70,7 +70,6 @@ void nobBaseMilitary::DestroyBuilding()
         {
             figRef.abrogate();
             figRef.startWandering();
-            figRef.startWalking(RANDOM_ENUM(Direction));
         }
     }
 

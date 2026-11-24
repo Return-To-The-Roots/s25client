@@ -279,6 +279,15 @@ void nofAttacker::walked()
     }
 }
 
+void nofAttacker::abrogate()
+{
+    getEvMgr().removeEvent(blocking_event);
+    RTTR_Assert(!blocking_event);
+    if(ship_obj_id)
+        cancelAtShip();
+    nofActiveSoldier::abrogate();
+}
+
 void nofAttacker::homeDestroyed()
 {
     // If we are waiting, no events will trigger -> Start wandering right now,
@@ -287,14 +296,8 @@ void nofAttacker::homeDestroyed()
     {
         // We are lost now so no valid source or target of attacks
         nobBaseMilitary* curGoal = attacked_goal; // attacked_goal gets reset
-        informTargetsAboutCancelling();
-        if(ship_obj_id)
-            cancelAtShip();
-
         homeBld = nullptr;
-        state = SoldierState::FigureWork;
         startWandering();
-        wander();
 
         // Someone else might take this place
         curGoal->sendSuccessor(pos, radius);
@@ -310,14 +313,7 @@ void nofAttacker::homeDestroyed()
 void nofAttacker::homeDestroyedAtBegin()
 {
     homeBld = nullptr;
-
-    // We are lost now and hence not targetable
-    informTargetsAboutCancelling();
-
-    state = SoldierState::FigureWork;
-
     startWandering();
-    startWalking(RANDOM_ENUM(Direction));
 }
 
 void nofAttacker::wonFighting()
@@ -327,20 +323,10 @@ void nofAttacker::wonFighting()
     // If our home was destroyed then we are lost
     // unless we are currently fighting at the flag so that building can become our new home
     if(!homeBld && state != SoldierState::AttackingFightingVsDefender)
-    {
-        // Lost -> Tell all dependents
-        informTargetsAboutCancelling();
-        if(ship_obj_id)
-            cancelAtShip();
-
-        state = SoldierState::FigureWork;
         startWandering();
-        wander();
-    } else if(!attacked_goal)
-    {
-        // Target is gone -> Go home
-        returnHomeMissionAttacking();
-    } else
+    else if(!attacked_goal)
+        returnHomeMissionAttacking(); // Target is gone -> Go home
+    else
         continueAtFlag();
 }
 
@@ -398,14 +384,7 @@ void nofAttacker::missAttackingWalk()
     // If our home is destroyed we are lost
     if(!homeBld)
     {
-        informTargetsAboutCancelling();
-        if(ship_obj_id)
-            cancelAtShip();
-
-        state = SoldierState::FigureWork;
         startWandering();
-        wander();
-
         return;
     }
 
@@ -697,13 +676,7 @@ void nofAttacker::capturingWalking()
             RTTR_Assert(attackedBld->getPlayer() == player);
             attackedBld->needOccupyingTroops();
         }
-
-        if(ship_obj_id)
-            cancelAtShip();
-
-        state = SoldierState::FigureWork;
         startWandering();
-        wander();
     } else
     {
         // Our home still exists so walk to the flag of the building if possible
@@ -881,14 +854,9 @@ void nofAttacker::cancelAtHuntingDefender()
 
 void nofAttacker::handleStateSeaAttackReturnToShip()
 {
-    if(!homeBld)
-    {
-        // Home destroyed -> start wandering
-        cancelAtShip();
+    if(!homeBld) // Home destroyed -> start wandering
         startWandering();
-        state = SoldierState::FigureWork;
-        wander();
-    } else if(pos == shipPos) // Arrived at ship
+    else if(pos == shipPos) // Arrived at ship
     {
         for(noBase& figure : world->getFigures(pos))
         {
@@ -901,29 +869,17 @@ void nofAttacker::handleStateSeaAttackReturnToShip()
 
         // Ship is gone, shouldn't happen!
         RTTR_Assert(false);
-        abrogateWorkplace();
-        cancelAtShip();
         startWandering();
-        state = SoldierState::FigureWork;
-        wander();
     } else if(const auto dir = world->findHumanPath(pos, shipPos, MAX_ATTACKING_RUN_DISTANCE))
         startWalking(*dir);
-    else
-    {
-        // No path -> Notify home and ship, and wander around
-        abrogateWorkplace();
-        cancelAtShip();
+    else // No path -> wander around
         startWandering();
-        state = SoldierState::FigureWork;
-        wander();
-    }
 }
 
 void nofAttacker::cancelSeaAttack()
 {
-    informTargetsAboutCancelling();
-    RTTR_Assert(!huntingDefender);
     abrogate();
+    RTTR_Assert(!huntingDefender);
 }
 
 nofActiveSoldier::SoldierState nofAttacker::freeFightAborted()

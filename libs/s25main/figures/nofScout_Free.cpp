@@ -75,7 +75,6 @@ void nofScout_Free::lostWork()
         {
             // dann sofort rumirren, wenn wir zur Flagge gehen
             startWandering();
-            state = State::FigureWork;
         }
         break;
     }

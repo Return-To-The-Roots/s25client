@@ -80,6 +80,13 @@ void nofBuilder::abrogateWorkplace()
     }
 }
 
+void nofBuilder::abrogate()
+{
+    state = BuilderState::FigureWork;
+    noFigure::abrogate();
+    RTTR_Assert(!building_site);
+}
+
 void nofBuilder::lostWork()
 {
     building_site = nullptr;
@@ -92,8 +99,6 @@ void nofBuilder::lostWork()
         getEvMgr().removeEvent(current_ev);
 
         startWandering();
-        wander();
-        state = BuilderState::FigureWork;
     }
 }
 
