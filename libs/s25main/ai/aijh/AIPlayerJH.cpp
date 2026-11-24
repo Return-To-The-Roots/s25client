@@ -2022,37 +2022,41 @@ void AIPlayerJH::initDistribution()
     goodSettings[2] = 10; // food iron
     goodSettings[3] = 10; // food gold
     goodSettings[4] = 2;  // food temple
+    goodSettings[5] = 8;  // food church
 
-    goodSettings[5] = 10; // grain mill
-    goodSettings[6] = 10; // grain pigfarm
-    goodSettings[7] = 10; // grain donkeybreeder
-    goodSettings[8] = 10; // grain brewery
-    goodSettings[9] = 10; // grain charburner
+    goodSettings[6] = 10; // grain mill
+    goodSettings[7] = 10; // grain pigfarm
+    goodSettings[8] = 10; // grain donkeybreeder
+    goodSettings[9] = 10; // grain brewery
+    goodSettings[10] = 10; // grain charburner
 
-    goodSettings[10] = 10; // iron armory
-    goodSettings[11] = 10; // iron metalworks
+    goodSettings[11] = 10; // iron armory
+    goodSettings[12] = 10; // iron metalworks
 
-    goodSettings[12] = 10; // coal armory
-    goodSettings[13] = 10; // coal ironsmelter
-    goodSettings[14] = 10; // coal mint
+    goodSettings[13] = 10; // coal armory
+    goodSettings[14] = 10; // coal ironsmelter
+    goodSettings[15] = 10; // coal mint
 
-    goodSettings[15] = 10; // wood sawmill
-    goodSettings[16] = 10; // wood charburner
-    goodSettings[17] = 2;  // wood vineyard
+    goodSettings[16] = 10; // wood sawmill
+    goodSettings[17] = 10; // wood charburner
+    goodSettings[18] = 2;  // wood vineyard
 
-    goodSettings[18] = 10; // boards new buildings
-    goodSettings[19] = 4;  // boards metalworks
-    goodSettings[20] = 2;  // boards shipyard
-    goodSettings[21] = 1;  // boards tannery
+    goodSettings[19] = 10; // boards new buildings
+    goodSettings[20] = 4;  // boards metalworks
+    goodSettings[21] = 2;  // boards shipyard
+    goodSettings[22] = 1;  // boards tannery
 
-    goodSettings[22] = 10; // water bakery
-    goodSettings[23] = 10; // water brewery
-    goodSettings[24] = 10; // water pigfarm
-    goodSettings[25] = 10; // water donkeybreeder
-    goodSettings[26] = 2;  // water vineyard
+    goodSettings[23] = 10; // water bakery
+    goodSettings[24] = 10; // water brewery
+    goodSettings[25] = 10; // water pigfarm
+    goodSettings[26] = 10; // water donkeybreeder
+    goodSettings[27] = 2;  // water vineyard
 
-    goodSettings[27] = 8; // ham slaughterhouse
-    goodSettings[28] = 3; // ham skinner
+    goodSettings[28] = 8; // ham slaughterhouse
+    goodSettings[29] = 3; // ham skinner
+
+    goodSettings[30] = 8; // wine temple
+    goodSettings[31] = 8; // wine church
     aii.ChangeDistribution(goodSettings);
 }
 

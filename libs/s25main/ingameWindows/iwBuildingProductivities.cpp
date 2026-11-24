@@ -17,7 +17,7 @@
 #include "gameData/const_gui_ids.h"
 #include "s25util/colors.h"
 
-const std::array<BuildingType, 30> iwBuildingProductivities::allIcons = {
+const std::array<BuildingType, 31> iwBuildingProductivities::allIcons = {
   // clang-format off
   BuildingType::Woodcutter,    BuildingType::Slaughterhouse,
   BuildingType::Forester,      BuildingType::Metalworks,
@@ -32,8 +32,9 @@ const std::array<BuildingType, 30> iwBuildingProductivities::allIcons = {
   BuildingType::PigFarm,       BuildingType::GraniteMine,
   BuildingType::DonkeyBreeder, BuildingType::Charburner,
   BuildingType::Vineyard,      BuildingType::Winery,
-  BuildingType::Temple,        BuildingType::Skinner,
-  BuildingType::Tannery,       BuildingType::LeatherWorks,
+  BuildingType::Temple,        BuildingType::Church,
+  BuildingType::Skinner,       BuildingType::Tannery,
+  BuildingType::LeatherWorks,
   // clang-format on
 };
 

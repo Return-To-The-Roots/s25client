@@ -22,9 +22,9 @@ public:
     iwBuilding(GameWorldView& gwv, GameCommandFactory& gcFactory, nobUsual* building, Extent extent = Extent(226, 194));
 
 private:
-    void msgPaintBefore() override;
     void msgPaintAfter() override;
 
 protected:
+    void msgPaintBefore() override;
     void msgButtonClick(unsigned ctrl_id) override;
 };

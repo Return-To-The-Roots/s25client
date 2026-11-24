@@ -34,6 +34,10 @@ BurnedWarehouse::BurnedWarehouse(SerializedGameData& sgd, const unsigned obj_id)
         helpers::popContainer(sgd, people.armoredSoldiers);
     else
         std::fill(people.armoredSoldiers.begin(), people.armoredSoldiers.end(), 0);
+    if(sgd.getGameDataVersion() >= 16)
+        helpers::popContainer(sgd, people.healedSoldiers);
+    else
+        std::fill(people.healedSoldiers.begin(), people.healedSoldiers.end(), 0);
 }
 
 BurnedWarehouse::~BurnedWarehouse() = default;
@@ -51,6 +55,7 @@ void BurnedWarehouse::serialize(SerializedGameData& sgd) const
     sgd.pushUnsignedInt(go_out_phase);
     helpers::pushContainer(sgd, people.people);
     helpers::pushContainer(sgd, people.armoredSoldiers);
+    helpers::pushContainer(sgd, people.healedSoldiers);
 }
 
 void BurnedWarehouse::handleEvent(const unsigned /*id*/)
@@ -74,6 +79,8 @@ void BurnedWarehouse::handleEvent(const unsigned /*id*/)
         for(const auto i : helpers::enumRange<Job>())
             currentPlayer.decreaseInventoryJob(i, people[i]);
         for(const auto i : helpers::enumRange<ArmoredSoldier>())
+            currentPlayer.decreaseInventoryJob(i, people[i]);
+        for(const auto i : helpers::enumRange<HealedSoldier>())
             currentPlayer.decreaseInventoryJob(i, people[i]);
 
         return;
@@ -117,6 +124,12 @@ void BurnedWarehouse::handleEvent(const unsigned /*id*/)
                         figure.setArmor(true);
                         people[armoredSoldier]--;
                     }
+                    auto const healedSoldier = jobEnumToHealedSoldierEnum(job);
+                    if(people[healedSoldier] > 0)
+                    {
+                        figure.setHealing(true);
+                        people[healedSoldier]--;
+                    }
                 }
                 figure.startWandering(getObjId());
                 figure.startWalking(curDir);
@@ -134,6 +147,8 @@ void BurnedWarehouse::handleEvent(const unsigned /*id*/)
         for(unsigned int num : people.people)
             RTTR_Assert(num == 0);
         for(unsigned int num : people.armoredSoldiers)
+            RTTR_Assert(num == 0);
+        for(unsigned int num : people.healedSoldiers)
             RTTR_Assert(num == 0);
     } else // Not done yet
         getEvMgr().addEvent(this, PHASE_LENGTH, 0);

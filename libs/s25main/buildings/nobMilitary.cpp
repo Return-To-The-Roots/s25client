@@ -16,8 +16,10 @@
 #include "buildings/nobBaseWarehouse.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofAttacker.h"
+#include "figures/nofChurchVisitor.h"
 #include "figures/nofDefender.h"
 #include "figures/nofPassiveSoldier.h"
+#include "ChurchLoader.h"
 #include "helpers/containerUtils.h"
 #include "helpers/pointerContainerUtils.h"
 #include "helpers/reverse.h"
@@ -83,7 +85,7 @@ nobMilitary::~nobMilitary() = default;
 
 size_t nobMilitary::getTotalSoldiers() const
 {
-    size_t sum = troops.size() + ordered_troops.size() + troops_on_mission.size();
+    size_t sum = troops.size() + ordered_troops.size() + troops_on_mission.size() + churchVisitors_.size();
     if(defender_)
         sum++;
     sum += /* capturing_soldiers*/ +far_away_capturers.size();
@@ -99,6 +101,8 @@ std::array<unsigned, NUM_SOLDIER_RANKS> nobMilitary::getTotalSoldiersByRank() co
         ++counts[troop->getRank()];
     for(const auto& troop : troops_on_mission)
         ++counts[troop->getRank()];
+    for(const auto* visitor : churchVisitors_)
+        ++counts[getSoldierRank(visitor->getJobType())];
     if(defender_)
         ++counts[defender_->getRank()];
     for(const auto& troop : far_away_capturers)
@@ -128,6 +132,10 @@ void nobMilitary::DestroyBuilding()
     for(auto* farAwayCapturer : far_away_capturers)
         farAwayCapturer->attackedGoalDestroyed();
     far_away_capturers.clear();
+
+    for(auto* visitor : churchVisitors_)
+        visitor->originDestroyed();
+    churchVisitors_.clear();
 
     // Events ggf. entfernen
     getEvMgr().removeEvent(gold_order_event);
@@ -171,6 +179,7 @@ void nobMilitary::serialize(SerializedGameData& sgd) const
     sgd.pushEvent(armor_order_event);
     sgd.pushEvent(armor_upgrade_event);
     sgd.pushObjectContainer(ordered_armor, true);
+    sgd.pushObjectContainer(churchVisitors_, true);
 }
 
 nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
@@ -203,6 +212,9 @@ nobMilitary::nobMilitary(SerializedGameData& sgd, const unsigned obj_id)
         armor_order_event = nullptr;
         armor_upgrade_event = nullptr;
     }
+
+    if(sgd.getGameDataVersion() >= 16)
+        sgd.popObjectContainer(churchVisitors_, GO_Type::NofChurchvisitor);
 
     // ins Militärquadrat einfügen
     world->getMilitarySquares().add(this);
@@ -1031,7 +1043,7 @@ unsigned nobMilitary::getSoldiersStrengthForAttack(const MapPoint dest, unsigned
     for(const auto& sld : helpers::reverse(troops))
     {
         if(numRemainingSoldiers--)
-            strength += HITPOINTS[sld->getRank()];
+            strength += sld->getMaxHitpoints();
         else
             break;
     }
@@ -1044,7 +1056,7 @@ unsigned nobMilitary::getSoldiersStrength() const
 {
     unsigned strength = 0;
     for(const auto& troop : troops)
-        strength += HITPOINTS[troop->getRank()];
+        strength += troop->getMaxHitpoints();
 
     return strength;
 }
@@ -1102,6 +1114,10 @@ void nobMilitary::capture(const unsigned char new_owner)
     troops_on_mission.clear();
     aggressive_defenders.clear();
     far_away_capturers.clear();
+
+    for(auto* visitor : churchVisitors_)
+        visitor->originDestroyed();
+    churchVisitors_.clear();
 
     // Alten Besitzer merken
     unsigned char old_player = player;
@@ -1643,4 +1659,66 @@ void nobMilitary::callNextFarAwayCapturer(nofAttacker& attacker)
     }
     if(bestAttacker)
         bestAttacker->attackFlag();
+}
+
+std::vector<nofChurchVisitor*> nobMilitary::sendChurchVisitors(nobChurch& church)
+{
+    std::vector<nofChurchVisitor*> visitors;
+    if(new_built || isBeingCaptured() || isUnderAttack() || troops.size() <= 1)
+        return visitors;
+
+    const unsigned stationed = troops.size();
+    const unsigned toSend =
+      std::min<unsigned>(stationed - 1u, (stationed * churchaddon::CHURCH_ATTENDANCE_PERCENT + 99u) / 100u);
+
+    auto pickAndSend = [&](auto it) {
+        std::unique_ptr<nofPassiveSoldier> soldier = std::move(*it);
+        troops.erase(it);
+
+        auto visitor = std::make_unique<nofChurchVisitor>(soldier->getJobType(), pos, player, &church, this,
+                                                          soldier->getHitpoints(), soldier->hasArmor(),
+                                                          soldier->hasHealing());
+        soldier->leftBuilding();
+        soldier->destroy();
+
+        churchVisitors_.push_back(visitor.get());
+        visitors.push_back(visitor.get());
+        addLeavingFigure(std::move(visitor));
+    };
+
+    // Prioritize unhealed soldiers so Healing benefits soldiers who do not have it yet
+    for(unsigned sent = 0; sent < toSend && troops.size() > 1; ++sent)
+    {
+        auto it = std::find_if(troops.begin(), troops.end(),
+                               [](const OwnedSortedTroops::value_type& troop) { return !troop->hasHealing(); });
+        if(it == troops.end())
+            it = troops.begin();
+        pickAndSend(it);
+    }
+
+    return visitors;
+}
+
+void nobMilitary::returnFromChurch(nofChurchVisitor& visitor, std::unique_ptr<nofPassiveSoldier> soldier)
+{
+    RTTR_Assert(helpers::contains(churchVisitors_, &visitor));
+    churchVisitors_.remove(&visitor);
+
+    if(troops.size() < getMaxTroopsCt())
+    {
+        soldier->heal();
+        addPassiveSoldier(std::move(soldier));
+        regulateTroops();
+    } else
+    {
+        soldier->leaveBuilding();
+        addLeavingFigure(std::move(soldier));
+    }
+}
+
+void nobMilitary::churchVisitorLost(nofChurchVisitor& visitor)
+{
+    RTTR_Assert(helpers::contains(churchVisitors_, &visitor));
+    churchVisitors_.remove(&visitor);
+    regulateTroops();
 }

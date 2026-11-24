@@ -47,6 +47,24 @@ void removeLeatherAddonDistributions(Game& game, unsigned localPlayerId)
     for(auto& player : game.world_.getPlayers())
         player.ChangeDistribution(newDistributions);
 }
+
+void removeChurchAddonDistributions(Game& game, unsigned localPlayerId)
+{
+    VisualSettings settings;
+    game.world_.getPlayer(localPlayerId).fillVisualSettings(settings);
+
+    Distributions newDistributions = settings.distribution;
+    unsigned idx = 0;
+    for(const DistributionMapping& mapping : distributionMap)
+    {
+        if(std::get<1>(mapping) == BuildingType::Church)
+            newDistributions[idx] = 0;
+        idx++;
+    }
+
+    for(auto& player : game.world_.getPlayers())
+        player.ChangeDistribution(newDistributions);
+}
 } // namespace
 
 void setupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGameState, const Replay* replay)
@@ -100,4 +118,6 @@ void setupGameWorld(Game& game, const MapInfo& mapInfo, ILocalGameState& localGa
 
     if(replay && !mapInfo.savegame && replay->getMinorVersion() < 2)
         removeLeatherAddonDistributions(game, localGameState.getPlayerId());
+    if(replay && !mapInfo.savegame && replay->getMinorVersion() < 5)
+        removeChurchAddonDistributions(game, localGameState.getPlayerId());
 }

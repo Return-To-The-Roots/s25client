@@ -40,10 +40,13 @@ public:
 
     unsigned char getRank() const;
     unsigned char getHitpoints() const;
+    unsigned char getMaxHitpoints() const;
+    void setHitpoints(uint8_t hp) { hitpoints = hp; }
+    void grantHealing();
     const nobBaseMilitary* getHomeBld() const { return homeBld; }
 };
 
-/// Comparator to sort soldiers by rank and armor (and ID for ties), weak ones first
+/// Comparator to sort soldiers by rank, armor and healing (and ID for ties), weak ones first
 struct ComparatorSoldiersByRank
 {
     template<typename TSoldierPtr>
@@ -51,10 +54,11 @@ struct ComparatorSoldiersByRank
     {
         if(left->getRank() == right->getRank())
         {
-            if(left->hasArmor() == right->hasArmor())
-                return left->getObjId() < right->getObjId();
-            else
+            if(left->hasArmor() != right->hasArmor())
                 return left->hasArmor() < right->hasArmor();
+            if(left->hasHealing() != right->hasHealing())
+                return left->hasHealing() < right->hasHealing();
+            return left->getObjId() < right->getObjId();
         } else
             return left->getRank() < right->getRank();
     }

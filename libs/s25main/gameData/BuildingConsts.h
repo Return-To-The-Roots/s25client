@@ -16,7 +16,7 @@ extern const helpers::EnumArray<const char*, BuildingType> BUILDING_NAMES;
 constexpr helpers::EnumArray<BuildingCost, BuildingType> BUILDING_COSTS = {
   {{0, 0}, {2, 0}, {2, 3}, {2, 0}, {3, 5}, {4, 4}, {2, 3}, {4, 7}, {2, 2}, {4, 7}, {4, 0}, {4, 0}, {4, 0}, {4, 0},
    {4, 0}, {2, 2}, {4, 2}, {2, 0}, {2, 0}, {2, 0}, {2, 0}, {2, 2}, {2, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {4, 3},
-   {3, 3}, {4, 3}, {0, 0}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}}};
+   {3, 3}, {4, 3}, {8, 14}, {2, 2}, {2, 2}, {2, 2}, {2, 2}, {2, 0}, {2, 3}, {3, 3}, {3, 3}, {4, 6}}};
 
 // Bauqualitäten der Gebäude
 constexpr helpers::EnumArray<BuildingQuality, BuildingType> BUILDING_SIZE = {
@@ -27,7 +27,7 @@ constexpr helpers::EnumArray<BuildingQuality, BuildingType> BUILDING_SIZE = {
    BuildingQuality::House,  BuildingQuality::Hut,    BuildingQuality::Hut,     BuildingQuality::Hut,
    BuildingQuality::Hut,    BuildingQuality::House,  BuildingQuality::Hut,     BuildingQuality::House,
    BuildingQuality::House,  BuildingQuality::House,  BuildingQuality::House,   BuildingQuality::Castle,
-   BuildingQuality::Castle, BuildingQuality::House,  BuildingQuality::Nothing, BuildingQuality::House,
+   BuildingQuality::Castle, BuildingQuality::House,  BuildingQuality::Castle,  BuildingQuality::House,
    BuildingQuality::House,  BuildingQuality::House,  BuildingQuality::House,   BuildingQuality::Hut,
    BuildingQuality::House,  BuildingQuality::Castle, BuildingQuality::Castle,  BuildingQuality::Harbor}};
 
@@ -62,7 +62,7 @@ constexpr helpers::EnumArray<BldWorkDescription, BuildingType> BLD_WORK_DESC = {
   {Job::CharBurner, GoodType::Coal, WaresNeeded(GoodType::Wood, GoodType::Grain)},
   {Job::PigBreeder, GoodType::Ham, WaresNeeded(GoodType::Grain, GoodType::Water)},
   {}, // Storehouse
-  {},
+  {Job::Helper, std::nullopt, WaresNeeded(GoodType::Fish, GoodType::Wine, GoodType::Bread)},
   {Job::Miller, GoodType::Flour, WaresNeeded(GoodType::Grain)},
   {Job::Baker, GoodType::Bread, WaresNeeded(GoodType::Flour, GoodType::Water)},
   {Job::Carpenter, GoodType::Boards, WaresNeeded(GoodType::Wood)},
@@ -83,27 +83,27 @@ constexpr helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_SIGN
    {{{0, 0},    {19, -4},  {19, -3},  {-14, -1}, {23, -19}, {22, -7},  {-8, -10}, {9, -24},   {-16, -10}, {29, -23},
      {-2, -15}, {2, -13},  {-5, -16}, {-5, -15}, {0, 0},    {22, -6},  {0, 0},    {4, -16},   {9, -12},   {7, -10},
      {28, -18}, {-6, -16}, {-3, -15}, {21, -11}, {14, -7},  {-14, -9}, {11, -9},  {-5, -24},  {-18, -34}, {0, 0},
-     {0, 0},    {3, -13},  {13, -13}, {-4, -20}, {7, -14},  {15, -4},  {0, 0},    {-22, -16}, {-14, -8},  {0, 0}}},
+     {14, -18}, {3, -13},  {13, -13}, {-4, -20}, {7, -14},  {15, -4},  {0, 0},    {-22, -16}, {-14, -8},  {0, 0}}},
    // Japaner
    {{{0, 0},    {12, -10}, {13, -10},  {13, -1},  {25, -22}, {-26, -13}, {-8, -8},   {9, -10},   {-6, 2},    {10, -14},
      {20, -2},  {12, -14}, {14, -13},  {13, -14}, {0, 0},    {4, -18},   {0, 0},     {-8, -6},   {0, 0},     {-13, -7},
      {14, -11}, {15, -10}, {-13, -7},  {16, -11}, {21, -3},  {-6, -2},   {14, -14},  {-26, -17}, {30, -25},  {0, 0},
-     {0, 0},    {0, -22},  {-30, -13}, {35, -20}, {13, -34}, {19, -15},  {-22, -10}, {37, -13},  {-15, -36}, {0, 0}}},
+     {14, -18}, {0, -22},  {-30, -13}, {35, -20}, {13, -34}, {19, -15},  {-22, -10}, {37, -13},  {-15, -36}, {0, 0}}},
    // Römer
    {{{0, 0},   {15, -3}, {14, -2},  {13, -7},  {0, 0},    {36, -12}, {-8, -8},  {12, -19},  {-6, -2},   {20, -39},
      {15, -2}, {26, 4},  {21, 4},   {21, 4},   {0, 0},    {-15, -8}, {0, 0},    {-29, -10}, {0, 0},     {-4, 4},
      {7, -20}, {3, -13}, {0, 0},    {22, -8},  {18, -11}, {6, -14},  {23, -10}, {-28, -12}, {35, -27},  {0, 0},
-     {0, 0},   {2, -21}, {15, -13}, {11, -30}, {23, -5},  {10, -9},  {0, -25},  {41, -43},  {-34, -19}, {0, 0}}},
+     {14, -18},{2, -21}, {15, -13}, {11, -30}, {23, -5},  {10, -9},  {0, -25},  {41, -43},  {-34, -19}, {0, 0}}},
    // Wikinger
    {{{0, 0},  {-5, 0},  {-5, 0},   {-7, -4},  {-7, -5},  {-7, -32}, {-10, -1}, {-4, 5},    {-7, 1},   {17, -10},
      {20, 2}, {20, 0},  {20, -2},  {20, 0},   {0, 0},    {-15, -8}, {13, -5},  {15, -6},   {-7, 2},   {17, -8},
      {-5, 0}, {-3, 2},  {-6, 0},   {-7, 0},   {-32, -2}, {-13, -3}, {-8, -2},  {-22, -18}, {-25, -8}, {0, 0},
-     {0, 0},  {-8, -2}, {-17, -4}, {28, -16}, {-1, 0},   {8, -9},   {16, -15}, {-2, -25},  {-29, -9}, {0, 0}}},
+     {14, -18}, {-8, -2}, {-17, -4}, {28, -16}, {-1, 0}, {8, -9},   {16, -15}, {-2, -25},  {-29, -9}, {0, 0}}},
    // Babylonier
    {{{0, 0},    {19, -6},  {19, -20}, {-7, -3},  {5, -15},  {-32, -20}, {4, -16}, {10, -18},  {3, -18},  {20, -10},
      {15, -10}, {15, -10}, {15, -10}, {15, -10}, {0, 0},    {15, -31},  {13, -5}, {-5, -13},  {15, -20}, {15, -1},
      {11, -7},  {1, -22},  {7, -12},  {14, -16}, {21, -18}, {13, -11},  {5, -17}, {-2, -29},  {18, -20}, {0, 0},
-     {0, 0},    {14, -13}, {3, -17},  {0, -18},  {12, -10}, {16, 0},    {4, -16}, {-15, -11}, {-24, -9}, {0, 0}}}}};
+     {14, -18}, {14, -13}, {3, -17},  {0, -18},  {12, -10}, {16, 0},    {4, -16}, {-15, -11}, {-24, -9}, {0, 0}}}}};
 
 /// Offset of the armor stop signs per building
 extern const helpers::MultiEnumArray<DrawPoint, Nation, BuildingType> BUILDING_ARMOR_SIGN_CONSTS;

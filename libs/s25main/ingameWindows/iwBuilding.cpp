@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwBuilding.h"
+#include "iwChurchBuilding.h"
 #include "GamePlayer.h"
 #include "Loader.h"
 #include "WindowManager.h"
@@ -231,6 +232,9 @@ void iwBuilding::msgButtonClick(const unsigned ctrl_id)
                 gwv.moveToMapPt((*it)->getPos());
                 if(building->getBuildingType() == BuildingType::Temple)
                     WINDOWMANAGER.replaceWindow(std::make_unique<iwTempleBuilding>(gwv, gcFactory, *it))
+                      .setPos(getPos());
+                else if(building->getBuildingType() == BuildingType::Church)
+                    WINDOWMANAGER.replaceWindow(std::make_unique<iwChurchBuilding>(gwv, gcFactory, *it))
                       .setPos(getPos());
                 else
                     WINDOWMANAGER.replaceWindow(std::make_unique<iwBuilding>(gwv, gcFactory, *it)).setPos(getPos());

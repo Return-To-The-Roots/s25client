@@ -21,6 +21,7 @@
 #include "figures/nofCarrier.h"
 #include "figures/nofCatapultMan.h"
 #include "figures/nofCharburner.h"
+#include "figures/nofChurchWorker.h"
 #include "figures/nofDonkeybreeder.h"
 #include "figures/nofFarmer.h"
 #include "figures/nofFisher.h"
@@ -76,13 +77,15 @@ std::unique_ptr<noFigure> JobFactory::createJob(const Job jobId, const MapPoint 
         case Job::Metalworker: return std::make_unique<nofMetalworker>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::Baker: return std::make_unique<nofBaker>(pt, player, &checkedCast<nobUsual>(goal));
         case Job::Helper:
-            if(goal.getGOT() == GO_Type::NobUsual)
+            if(goal.getGOT() == GO_Type::NobUsual || goal.getGOT() == GO_Type::NobChurch)
             {
                 auto* goalBld = &checkedCast<nobUsual>(goal);
                 if(goalBld->getBuildingType() == BuildingType::Well)
                     return std::make_unique<nofWellguy>(pt, player, goalBld);
                 else if(goalBld->getBuildingType() == BuildingType::Catapult)
                     return std::make_unique<nofCatapultMan>(pt, player, goalBld);
+                else if(goalBld->getBuildingType() == BuildingType::Church)
+                    return std::make_unique<nofChurchWorker>(pt, player, goalBld);
             }
             throw std::runtime_error("Invalid goal type: " + helpers::toString(goal.getGOT()) + " for job "
                                      + helpers::toString(jobId));

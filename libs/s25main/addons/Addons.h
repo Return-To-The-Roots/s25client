@@ -77,3 +77,4 @@
 #include "addons/AddonBuildingRadius.h"
 
 #include "addons/AddonForesterHarborAvoidance.h"
+#include "addons/AddonChurch.h"

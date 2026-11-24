@@ -16,6 +16,7 @@
 #include "buildings/BurnedWarehouse.h"
 #include "buildings/noBuildingSite.h"
 #include "buildings/nobHQ.h"
+#include "buildings/nobChurch.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
@@ -32,6 +33,8 @@
 #include "figures/nofCarrier.h"
 #include "figures/nofCatapultMan.h"
 #include "figures/nofCharburner.h"
+#include "figures/nofChurchVisitor.h"
+#include "figures/nofChurchWorker.h"
 #include "figures/nofDefender.h"
 #include "figures/nofDonkeybreeder.h"
 #include "figures/nofFarmer.h"
@@ -109,7 +112,8 @@
 /// 13: SeaId & HarborId: World::harborData w/o dummy entry at 0
 /// 14: Remove "age" field in nobBaseMilitary
 /// 15: Add sea to HarborPos::Neighbor
-static const unsigned currentGameDataVersion = 15;
+/// 16: Add Church addon (BuildingType::Church, nobChurch, nofChurchWorker, nofChurchVisitor, healedSoldiers)
+static const unsigned currentGameDataVersion = 16;
 // clang-format on
 
 std::unique_ptr<GameObject> SerializedGameData::createGameObject(const GO_Type got, const unsigned obj_id)
@@ -190,6 +194,9 @@ std::unique_ptr<GameObject> SerializedGameData::createGameObject(const GO_Type g
         RTTR_CREATE_GO(GO_Type::NofSkinner, nofSkinner);
         RTTR_CREATE_GO(GO_Type::NofTanner, nofTanner);
         RTTR_CREATE_GO(GO_Type::NofLeatherWorker, nofLeatherWorker);
+        RTTR_CREATE_GO(GO_Type::NobChurch, nobChurch);
+        RTTR_CREATE_GO(GO_Type::NofChurchworker, nofChurchWorker);
+        RTTR_CREATE_GO(GO_Type::NofChurchvisitor, nofChurchVisitor);
 
         case GO_Type::Nothing: RTTR_Assert(false); break;
 #undef RTTR_CREATE_GO

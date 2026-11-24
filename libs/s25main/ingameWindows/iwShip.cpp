@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "iwShip.h"
+#include "ChurchLoader.h"
 #include "DrawPoint.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
@@ -207,12 +208,18 @@ void iwShip::drawCargo()
     // Count figures by type
     helpers::EnumArray<unsigned short, Job> orderedFigures{};
     helpers::EnumArray<unsigned short, ArmoredSoldier> armoredFigures{};
+    helpers::EnumArray<unsigned short, HealedSoldier> healedFigures{};
     for(const noFigure& figure : ship->getFigures())
     {
         orderedFigures[figure.getJobType()]++;
 
-        if(isSoldier(figure.getJobType()) && figure.hasArmor())
-            armoredFigures[jobEnumToAmoredSoldierEnum(figure.getJobType())]++;
+        if(isSoldier(figure.getJobType()))
+        {
+            if(figure.hasArmor())
+                armoredFigures[jobEnumToAmoredSoldierEnum(figure.getJobType())]++;
+            if(figure.hasHealing())
+                healedFigures[jobEnumToHealedSoldierEnum(figure.getJobType())]++;
+        }
     }
 
     // Count wares by type
@@ -303,6 +310,12 @@ void iwShip::drawCargo()
                     SmallFont->draw(drawPt + DrawPoint(-2, -25), "+", FontStyle::CENTER, COLOR_RED);
                     SmallFont->draw(drawPt + DrawPoint(1, -25), "1", FontStyle::CENTER, COLOR_RED);
                 }
+            }
+            if(isSoldier(job) && healedFigures[jobEnumToHealedSoldierEnum(job)] > 0)
+            {
+                healedFigures[jobEnumToHealedSoldierEnum(job)]--;
+                if(ITexture* doveTex = churchaddon::getDoveTex())
+                    doveTex->drawFull(drawPt + DrawPoint(0, -22));
             }
 
             drawPt.x += xStep;

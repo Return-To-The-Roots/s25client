@@ -45,8 +45,16 @@ void BuildingRegister::deserialize(SerializedGameData& sgd)
             if(sgd.getGameDataVersion() < 12 && leatheraddon::isLeatherAddonBuildingType(bld))
                 continue;
 
+            if(sgd.getGameDataVersion() < 16 && bld == BuildingType::Church)
+                continue;
+
             if(BuildingProperties::isUsual(bld))
-                sgd.popObjectContainer(buildings[bld], GO_Type::NobUsual);
+            {
+                const GO_Type got = bld == BuildingType::Church ? GO_Type::NobChurch :
+                                    bld == BuildingType::Temple ? GO_Type::NobTemple :
+                                                                  GO_Type::NobUsual;
+                sgd.popObjectContainer(buildings[bld], got);
+            }
         }
         sgd.popObjectContainer(building_sites, GO_Type::Buildingsite);
         sgd.popObjectContainer(military_buildings, GO_Type::NobMilitary);
@@ -157,7 +165,7 @@ helpers::EnumArray<uint16_t, BuildingType> BuildingRegister::calcProductivities(
 
 unsigned BuildingRegister::calcAverageProductivity(BuildingType bldType) const
 {
-    if(holds_alternative<std::nullopt_t>(BLD_WORK_DESC[bldType].producedWare))
+    if(holds_alternative<std::nullopt_t>(BLD_WORK_DESC[bldType].producedWare) && bldType != BuildingType::Church)
         return 0;
     unsigned productivity = 0;
     const auto& buildings = getBuildings(bldType);
@@ -177,7 +185,7 @@ unsigned short BuildingRegister::calcAverageProductivity() const
     unsigned numBlds = 0;
     for(const auto bldType : helpers::enumRange<BuildingType>())
     {
-        if(holds_alternative<std::nullopt_t>(BLD_WORK_DESC[bldType].producedWare))
+        if(holds_alternative<std::nullopt_t>(BLD_WORK_DESC[bldType].producedWare) && bldType != BuildingType::Church)
             continue;
 
         const auto& buildings = getBuildings(bldType);

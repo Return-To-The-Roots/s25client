@@ -16,17 +16,24 @@ struct PeopleArray
     /// Subset of the respective soldier job count that have armor
     /// Must always be in the range [0,Maximum number of soldiers of this type]
     helpers::EnumArray<T, ArmoredSoldier> armoredSoldiers = {};
+    /// Subset of the respective soldier job count that have received Church healing
+    /// Must always be in the range [0,Maximum number of soldiers of this type]
+    helpers::EnumArray<T, HealedSoldier> healedSoldiers = {};
 
     const T& operator[](Job job) const { return people[job]; }
     T& operator[](Job job) { return people[job]; }
     T& operator[](ArmoredSoldier soldier) { return armoredSoldiers[soldier]; }
     const T& operator[](ArmoredSoldier soldier) const { return armoredSoldiers[soldier]; }
+    T& operator[](HealedSoldier soldier) { return healedSoldiers[soldier]; }
+    const T& operator[](HealedSoldier soldier) const { return healedSoldiers[soldier]; }
 
-    static PeopleArray make(Job job, T value, ArmoredSoldier armoredType = ArmoredSoldier(0), T armoredValue = 0)
+    static PeopleArray make(Job job, T value, ArmoredSoldier armoredType = ArmoredSoldier(0), T armoredValue = 0,
+                            HealedSoldier healedType = HealedSoldier(0), T healedValue = 0)
     {
         PeopleArray res;
         res[job] = value;
         res[armoredType] = armoredValue;
+        res[healedType] = healedValue;
         return res;
     }
 };

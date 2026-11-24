@@ -38,7 +38,7 @@ enum class BuildingType : uint8_t
     Charburner,     // 27
     PigFarm,        // 28
     Storehouse,     // 29
-    Nothing9,       // 30
+    Church,         // 30
     Mill,           // 31
     Bakery,         // 32
     Sawmill,        // 33
@@ -56,4 +56,4 @@ constexpr auto maxEnumValue(BuildingType)
 }
 
 /// Number of NOTHING entries (currently unused buildings)
-const unsigned NUM_UNUSED_BLD_TYPES = 1;
+const unsigned NUM_UNUSED_BLD_TYPES = 0;

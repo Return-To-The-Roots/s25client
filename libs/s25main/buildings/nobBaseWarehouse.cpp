@@ -4,6 +4,7 @@
 
 #include "nobBaseWarehouse.h"
 #include "BurnedWarehouse.h"
+#include "ChurchLoader.h"
 #include "EventManager.h"
 #include "FindWhConditions.h"
 #include "GamePlayer.h"
@@ -16,6 +17,7 @@
 #include "factories/JobFactory.h"
 #include "figures/nofAggressiveDefender.h"
 #include "figures/nofCarrier.h"
+#include "figures/nofChurchVisitor.h"
 #include "figures/nofDefender.h"
 #include "figures/nofPassiveSoldier.h"
 #include "figures/nofPassiveWorker.h"
@@ -31,6 +33,7 @@
 #include "world/GameWorld.h"
 #include "nodeObjs/noFlag.h"
 #include "gameData/JobConsts.h"
+#include "gameData/MilitaryConsts.h"
 #include "gameData/SettingTypeConv.h"
 #include "gameData/ShieldConsts.h"
 #include "s25util/Log.h"
@@ -59,6 +62,7 @@ nobBaseWarehouse::nobBaseWarehouse(const BuildingType type, const MapPoint pos, 
     // Reserve nullen
     reserve_soldiers_available.fill(0);
     reserve_soldiers_available_with_armor.fill(0);
+    reserve_soldiers_available_with_healing.fill(0);
     reserve_soldiers_claimed_visual.fill(0);
     reserve_soldiers_claimed_real.fill(0);
 }
@@ -111,8 +115,14 @@ void nobBaseWarehouse::DestroyBuilding()
             inventory.real.add(SOLDIER_JOBS[rank], reserve_soldiers_available[rank]);
             inventory.real.add(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[rank]),
                                reserve_soldiers_available_with_armor[rank]);
+            inventory.real.add(jobEnumToHealedSoldierEnum(SOLDIER_JOBS[rank]),
+                               reserve_soldiers_available_with_healing[rank]);
         }
     }
+    for(auto* visitor : churchVisitors_)
+        visitor->originDestroyed();
+    churchVisitors_.clear();
+
     // Objekt, das die flüchtenden Leute nach und nach ausspuckt, erzeugen
     world->addFigure(pos, std::make_unique<BurnedWarehouse>(pos, player, inventory.real.peopleOnly()));
 
@@ -137,6 +147,7 @@ void nobBaseWarehouse::serialize(SerializedGameData& sgd) const
         // Nur das Reale, nicht das visuelle speichern, das wäre sinnlos!, beim Laden ist das visuelle = realem
         sgd.pushUnsignedInt(reserve_soldiers_available[i]);
         sgd.pushUnsignedInt(reserve_soldiers_available_with_armor[i]);
+        sgd.pushUnsignedInt(reserve_soldiers_available_with_healing[i]);
         sgd.pushUnsignedInt(reserve_soldiers_claimed_real[i]);
     }
 
@@ -155,6 +166,9 @@ void nobBaseWarehouse::serialize(SerializedGameData& sgd) const
 
     helpers::pushContainer(sgd, inventory.visual.armoredSoldiers);
     helpers::pushContainer(sgd, inventory.real.armoredSoldiers);
+    helpers::pushContainer(sgd, inventory.visual.healedSoldiers);
+    helpers::pushContainer(sgd, inventory.real.healedSoldiers);
+    sgd.pushObjectContainer(churchVisitors_, true);
 }
 
 nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_id) : nobBaseMilitary(sgd, obj_id)
@@ -170,11 +184,14 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
     store_event = sgd.popEvent();
 
     reserve_soldiers_available_with_armor.fill(0);
+    reserve_soldiers_available_with_healing.fill(0);
     for(unsigned i = 0; i < 5; ++i)
     {
         reserve_soldiers_available[i] = sgd.popUnsignedInt();
         if(sgd.getGameDataVersion() >= 12)
             reserve_soldiers_available_with_armor[i] = sgd.popUnsignedInt();
+        if(sgd.getGameDataVersion() >= 16)
+            reserve_soldiers_available_with_healing[i] = sgd.popUnsignedInt();
 
         reserve_soldiers_claimed_visual[i] = reserve_soldiers_claimed_real[i] = sgd.popUnsignedInt();
     }
@@ -208,6 +225,12 @@ nobBaseWarehouse::nobBaseWarehouse(SerializedGameData& sgd, const unsigned obj_i
         helpers::popContainer(sgd, inventory.visual.armoredSoldiers);
         helpers::popContainer(sgd, inventory.real.armoredSoldiers);
     }
+    if(sgd.getGameDataVersion() >= 16)
+    {
+        helpers::popContainer(sgd, inventory.visual.healedSoldiers);
+        helpers::popContainer(sgd, inventory.real.healedSoldiers);
+        sgd.popObjectContainer(churchVisitors_, GO_Type::NofChurchvisitor);
+    }
 }
 
 void nobBaseWarehouse::clear()
@@ -217,9 +240,11 @@ void nobBaseWarehouse::clear()
     {
         inventory.add(SOLDIER_JOBS[i], reserve_soldiers_available[i]);
         inventory.add(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]), reserve_soldiers_available_with_armor[i]);
+        inventory.add(jobEnumToHealedSoldierEnum(SOLDIER_JOBS[i]), reserve_soldiers_available_with_healing[i]);
     }
     reserve_soldiers_available.fill(0);
     reserve_soldiers_available_with_armor.fill(0);
+    reserve_soldiers_available_with_healing.fill(0);
 
     GamePlayer& owner = world->getPlayer(player);
     for(const auto i : helpers::enumRange<GoodType>())
@@ -229,6 +254,9 @@ void nobBaseWarehouse::clear()
         owner.decreaseInventoryJob(i, inventory[i]);
 
     for(const auto i : helpers::enumRange<ArmoredSoldier>())
+        owner.decreaseInventoryJob(i, inventory[i]);
+
+    for(const auto i : helpers::enumRange<HealedSoldier>())
         owner.decreaseInventoryJob(i, inventory[i]);
 
     inventory.clear();
@@ -282,6 +310,11 @@ bool nobBaseWarehouse::orderJob(const Job job, noRoadNode& goal, const bool allo
         {
             inventory.real.remove(jobEnumToAmoredSoldierEnum(job));
             fig->setArmor(true);
+        }
+        if(inventory.real[jobEnumToHealedSoldierEnum(job)] > 0)
+        {
+            inventory.real.remove(jobEnumToHealedSoldierEnum(job));
+            static_cast<nofSoldier&>(*fig).grantHealing();
         }
     }
 
@@ -475,6 +508,11 @@ void nobBaseWarehouse::handleSendoutEvent()
             {
                 fig->setArmor(true);
                 inventory.real.remove(jobEnumToAmoredSoldierEnum(jobType));
+            }
+            if(isSoldier(jobType) && inventory.real[jobEnumToHealedSoldierEnum(jobType)] > 0)
+            {
+                fig->setHealing(true);
+                inventory.real.remove(jobEnumToHealedSoldierEnum(jobType));
             }
 
             if(wh)
@@ -856,8 +894,13 @@ void nobBaseWarehouse::removeFromVisualInventory(const noFigure& figure)
     } else
     {
         inventory.visual.remove(job);
-        if(isSoldier(job) && figure.hasArmor())
-            inventory.visual.remove(jobEnumToAmoredSoldierEnum(job));
+        if(isSoldier(job))
+        {
+            if(figure.hasArmor())
+                inventory.visual.remove(jobEnumToAmoredSoldierEnum(job));
+            if(figure.hasHealing())
+                inventory.visual.remove(jobEnumToHealedSoldierEnum(job));
+        }
     }
 }
 
@@ -871,8 +914,13 @@ static void addFigureToInventory(Inventory& inventory, const noFigure& figure)
     } else
     {
         inventory.add(job);
-        if(isSoldier(job) && figure.hasArmor())
-            inventory.add(jobEnumToAmoredSoldierEnum(job));
+        if(isSoldier(job))
+        {
+            if(figure.hasArmor())
+                inventory.add(jobEnumToAmoredSoldierEnum(job));
+            if(figure.hasHealing())
+                inventory.add(jobEnumToHealedSoldierEnum(job));
+        }
     }
 }
 
@@ -955,6 +1003,11 @@ void nobBaseWarehouse::orderTroops(nobMilitary& goal, std::array<unsigned, NUM_S
                 inventory.real.remove(jobEnumToAmoredSoldierEnum(curRank));
                 soldier->setArmor(true);
             }
+            if(inventory.real[jobEnumToHealedSoldierEnum(curRank)] > 0)
+            {
+                inventory.real.remove(jobEnumToHealedSoldierEnum(curRank));
+                soldier->grantHealing();
+            }
             goal.gotWorker(curRank, *soldier);
             addLeavingFigure(std::move(soldier));
             --max;
@@ -986,6 +1039,11 @@ nofAggressiveDefender* nobBaseWarehouse::sendAggressiveDefender(nofAttacker& att
         soldier->setArmor(true);
         inventory.real.remove(jobEnumToAmoredSoldierEnum(soldier->getJobType()));
     }
+    if(inventory.real[jobEnumToHealedSoldierEnum(soldier->getJobType())] > 0)
+    {
+        soldier->grantHealing();
+        inventory.real.remove(jobEnumToHealedSoldierEnum(soldier->getJobType()));
+    }
     addLeavingFigure(std::move(soldier));
 
     troops_on_mission.push_back(&soldierRef);
@@ -1006,6 +1064,8 @@ void nobBaseWarehouse::addActiveSoldier(std::unique_ptr<nofActiveSoldier> soldie
     inventory.add(soldier->getJobType());
     if(soldier->hasArmor())
         inventory.add(jobEnumToAmoredSoldierEnum(soldier->getJobType()));
+    if(soldier->hasHealing())
+        inventory.add(jobEnumToHealedSoldierEnum(soldier->getJobType()));
 
     // Evtl. geht der Soldat wieder in die Reserve
     refreshReserve(soldier->getRank());
@@ -1061,6 +1121,11 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::provideDefender(nofAttacker& atta
                         defender->setArmor(true);
                         inventory.real.remove(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]));
                     }
+                    if(inventory.real[jobEnumToHealedSoldierEnum(SOLDIER_JOBS[i])] > 0)
+                    {
+                        defender->grantHealing();
+                        inventory.real.remove(jobEnumToHealedSoldierEnum(SOLDIER_JOBS[i]));
+                    }
                     return defender;
                 }
                 ++r;
@@ -1079,6 +1144,12 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::provideDefender(nofAttacker& atta
                         defender->setArmor(true);
                         --reserve_soldiers_available_with_armor[i];
                         inventory.visual.add(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[i]));
+                    }
+                    if(reserve_soldiers_available_with_healing[i] > 0)
+                    {
+                        defender->grantHealing();
+                        --reserve_soldiers_available_with_healing[i];
+                        inventory.visual.add(jobEnumToHealedSoldierEnum(SOLDIER_JOBS[i]));
                     }
                     return defender;
                 }
@@ -1099,6 +1170,8 @@ std::unique_ptr<nofDefender> nobBaseWarehouse::provideDefender(nofAttacker& atta
 
             auto defender = std::make_unique<nofDefender>(pos, player, *this, soldier->getRank(), attacker);
             defender->setArmor(soldier->hasArmor());
+            if(soldier->hasHealing())
+                defender->grantHealing();
             soldier->destroy();
             return defender;
         }
@@ -1177,6 +1250,13 @@ void nobBaseWarehouse::addToInventory(const PeopleCounts& people, bool addToPlay
                 inventory.add(armoredSoldier, people[armoredSoldier]);
                 if(addToPlayer)
                     owner.increaseInventoryJob(armoredSoldier, people[armoredSoldier]);
+            }
+            const auto healedSoldier = jobEnumToHealedSoldierEnum(i);
+            if(people[healedSoldier])
+            {
+                inventory.add(healedSoldier, people[healedSoldier]);
+                if(addToPlayer)
+                    owner.increaseInventoryJob(healedSoldier, people[healedSoldier]);
             }
         }
         checkJobsForNewFigure(i);
@@ -1379,13 +1459,16 @@ void nobBaseWarehouse::refreshReserve(unsigned rank)
                                     reserve_soldiers_claimed_real[rank] - reserve_soldiers_available[rank]); // nötig
 
             const unsigned armor = std::min(add, inventory[jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[rank])]);
+            const unsigned healed = std::min(add, inventory[jobEnumToHealedSoldierEnum(SOLDIER_JOBS[rank])]);
 
             // Bei der Reserve hinzufügen
             reserve_soldiers_available[rank] += add;
             reserve_soldiers_available_with_armor[rank] += armor;
+            reserve_soldiers_available_with_healing[rank] += healed;
             // vom Warenbestand abziehen
             inventory.remove(SOLDIER_JOBS[rank], add);
             inventory.remove(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[rank]), armor);
+            inventory.remove(jobEnumToHealedSoldierEnum(SOLDIER_JOBS[rank]), healed);
         }
     } else if(reserve_soldiers_available[rank] > reserve_soldiers_claimed_real[rank])
     {
@@ -1394,13 +1477,18 @@ void nobBaseWarehouse::refreshReserve(unsigned rank)
         unsigned subtractArmor = 0u;
         if(reserve_soldiers_available_with_armor[rank] > reserve_soldiers_claimed_real[rank])
             subtractArmor = reserve_soldiers_available_with_armor[rank] - reserve_soldiers_claimed_real[rank];
+        unsigned subtractHealing = 0u;
+        if(reserve_soldiers_available_with_healing[rank] > reserve_soldiers_claimed_real[rank])
+            subtractHealing = reserve_soldiers_available_with_healing[rank] - reserve_soldiers_claimed_real[rank];
 
         // Bei der Reserve abziehen
         reserve_soldiers_available[rank] -= subtract;
         reserve_soldiers_available_with_armor[rank] -= subtractArmor;
+        reserve_soldiers_available_with_healing[rank] -= subtractHealing;
         // beim Warenbestand hinzufügen
         inventory.add(SOLDIER_JOBS[rank], subtract);
         inventory.add(jobEnumToAmoredSoldierEnum(SOLDIER_JOBS[rank]), subtractArmor);
+        inventory.add(jobEnumToHealedSoldierEnum(SOLDIER_JOBS[rank]), subtractHealing);
         // if the rank is supposed to be send away, do it!
         checkOuthousing(SOLDIER_JOBS[rank]);
         // Ggf. Truppen in die Militärgebäude schicken
@@ -1478,6 +1566,12 @@ void nobBaseWarehouse::startTradeCaravane(const boost_variant2<GoodType, Job>& w
                 inventory.real.remove(jobEnumToAmoredSoldierEnum(job), 1);
                 owner.decreaseInventoryJob(jobEnumToAmoredSoldierEnum(job), 1);
             }
+            if(inventory.real[jobEnumToHealedSoldierEnum(job)] > 0)
+            {
+                next->setHealing(true);
+                inventory.real.remove(jobEnumToHealedSoldierEnum(job), 1);
+                owner.decreaseInventoryJob(jobEnumToHealedSoldierEnum(job), 1);
+            }
         }
 
         if(last)
@@ -1509,4 +1603,109 @@ void nobBaseWarehouse::startTradeCaravane(const boost_variant2<GoodType, Job>& w
                 owner.decreaseInventoryJob(Job::PackDonkey, count);
             }),
           what);
+}
+
+std::vector<nofChurchVisitor*> nobBaseWarehouse::sendChurchVisitors(nobChurch& church)
+{
+    std::vector<nofChurchVisitor*> visitors;
+
+    auto isEligibleJob = [](const Job job) { return job != Job::PackDonkey && job != Job::BoatCarrier; };
+
+    unsigned totalPeople = 0;
+    for(const auto job : helpers::enumRange<Job>())
+    {
+        if(isEligibleJob(job))
+            totalPeople += inventory.real[job];
+    }
+    if(totalPeople == 0)
+        return visitors;
+
+    const unsigned targetToSend = (totalPeople * churchaddon::CHURCH_ATTENDANCE_PERCENT + 99u) / 100u;
+    helpers::EnumArray<unsigned, Job> sendCounts{};
+    unsigned assigned = 0;
+
+    // Proportional 20% floor per job
+    for(const auto job : helpers::enumRange<Job>())
+    {
+        if(!isEligibleJob(job))
+            continue;
+        sendCounts[job] = (inventory.real[job] * churchaddon::CHURCH_ATTENDANCE_PERCENT) / 100u;
+        assigned += sendCounts[job];
+    }
+
+    // Remainder pass 1: prioritize unhealed soldiers
+    for(const Job job : SOLDIER_JOBS)
+    {
+        if(assigned >= targetToSend)
+            break;
+        const unsigned remaining = inventory.real[job] - sendCounts[job];
+        const unsigned healed = inventory.real[jobEnumToHealedSoldierEnum(job)];
+        if(remaining > healed)
+        {
+            ++sendCounts[job];
+            ++assigned;
+        }
+    }
+
+    // Remainder pass 2: remaining eligible humans
+    for(const auto job : helpers::enumRange<Job>())
+    {
+        if(assigned >= targetToSend)
+            break;
+        if(!isEligibleJob(job))
+            continue;
+        while(assigned < targetToSend && sendCounts[job] < inventory.real[job])
+        {
+            ++sendCounts[job];
+            ++assigned;
+        }
+    }
+
+    for(const auto job : helpers::enumRange<Job>())
+    {
+        for(unsigned n = 0; n < sendCounts[job]; ++n)
+        {
+            bool armor = false;
+            bool healing = false;
+            uint8_t hp = 0;
+            if(isSoldier(job))
+            {
+                const auto healedEnum = jobEnumToHealedSoldierEnum(job);
+                if(inventory.real[healedEnum] >= inventory.real[job])
+                {
+                    healing = true;
+                    inventory.real.remove(healedEnum);
+                }
+                const auto armoredEnum = jobEnumToAmoredSoldierEnum(job);
+                if(inventory.real[armoredEnum] > 0)
+                {
+                    armor = true;
+                    inventory.real.remove(armoredEnum);
+                }
+                hp = static_cast<uint8_t>(getMaxSoldierHitpoints(getSoldierRank(job), healing));
+            }
+            inventory.real.remove(job);
+
+            auto visitor =
+              std::make_unique<nofChurchVisitor>(job, pos, player, &church, this, hp, armor, healing);
+            churchVisitors_.push_back(visitor.get());
+            visitors.push_back(visitor.get());
+            addLeavingFigure(std::move(visitor));
+        }
+    }
+
+    tryStopRecruiting();
+    return visitors;
+}
+
+void nobBaseWarehouse::returnFromChurch(nofChurchVisitor& visitor)
+{
+    RTTR_Assert(helpers::contains(churchVisitors_, &visitor));
+    churchVisitors_.remove(&visitor);
+}
+
+void nobBaseWarehouse::churchVisitorLost(nofChurchVisitor& visitor)
+{
+    RTTR_Assert(helpers::contains(churchVisitors_, &visitor));
+    churchVisitors_.remove(&visitor);
 }

@@ -135,7 +135,8 @@ BOOST_AUTO_TEST_CASE(AllBuildingTypesWork)
             BLD_TEMPLE,
             BLD_SKINNER,
             BLD_TANNERY,
-            BLD_LEATHERWORKS
+            BLD_LEATHERWORKS,
+            BLD_CHURCH
         )
     )LUA");
     executeLua(R"LUA(

@@ -42,7 +42,8 @@ uint8_t Replay::getLatestMinorVersion() const
     //      startReplay function for detailed description)
     // 8.3  Remove invalid fish for replays started from start (i.e. map instead of savegame)
     // 8.4  Hunter/skinner/AI search for animals in a circle instead of a square (radius-based)
-    return 4;
+    // 8.5  Church addon (3 new values in distribution, 1 new value in custom build order)
+    return 5;
 }
 
 uint8_t Replay::getLatestMajorVersion() const

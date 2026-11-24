@@ -190,6 +190,8 @@ public:
     void decreaseInventoryJob(const Job job, unsigned count) { global_inventory.remove(job, count); }
     void increaseInventoryJob(const ArmoredSoldier job, unsigned count) { global_inventory.add(job, count); }
     void decreaseInventoryJob(const ArmoredSoldier job, unsigned count) { global_inventory.remove(job, count); }
+    void increaseInventoryJob(const HealedSoldier job, unsigned count) { global_inventory.add(job, count); }
+    void decreaseInventoryJob(const HealedSoldier job, unsigned count) { global_inventory.remove(job, count); }
 
     /// Gibt Inventory-Settings zurück
     const Inventory& getInventory() const { return global_inventory; }

@@ -188,6 +188,9 @@ void iwDistribution::createGroups()
                     img = LOADER.getImageN("leather_bobs",
                                            leatheraddon::bobIndex[leatheraddon::BobType::DistributionOfPigsIcon]);
                     break;
+                case GoodType::Wine:
+                    img = LOADER.getImageN("wine_bobs", wineaddon::bobIndex[wineaddon::BobTypes::WINE_WARE_ICON]);
+                    break;
                 default: break;
             }
             if(!img)

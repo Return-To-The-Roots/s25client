@@ -250,4 +250,44 @@ BOOST_FIXTURE_TEST_CASE(AnimalSounds, LoadMockupAudioWithSounds)
     }
 }
 
+BOOST_FIXTURE_TEST_CASE(ChurchServiceSounds, LoadMockupAudio)
+{
+    rttr::test::TmpFolder tmpFolder;
+    const auto churchSoundPath = tmpFolder / boost::filesystem::path("church_sound");
+    boost::filesystem::create_directory(churchSoundPath);
+    {
+        boost::nowide::ofstream f(churchSoundPath / "0.txt");
+        f << "Test";
+    }
+    BOOST_TEST_REQUIRE(LOADER.load(churchSoundPath));
+    libsiedler2::Archiv& sounds = LOADER.getArchive("church_sound");
+    sounds.alloc(1);
+    sounds.set(0, std::make_unique<DummyEffect>());
+    MOCK_EXPECT(audioDriverMock->loadEffect).calls(makeDoLoad(driver::SoundType::Effect));
+    MOCK_EXPECT(audioDriverMock->doUnloadSound).calls(makeUnloadHandle(driver::SoundType::Effect));
+
+    {
+        SoundManager manager;
+        DummyNO church;
+
+        // First service rings at max volume (255)
+        MOCK_EXPECT(audioDriverMock->doPlayEffect).once().with(mock::any, 255, false).returns(0);
+        manager.playChurchServiceSound(church);
+        mock::verify();
+
+        // Suppress duplicate while still playing
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(true);
+        manager.playChurchServiceSound(church);
+        mock::verify();
+
+        // Once playback finishes, subsequent services play the bell sound again
+        MOCK_EXPECT(audioDriverMock->isEffectPlaying).once().returns(false);
+        MOCK_EXPECT(audioDriverMock->doPlayEffect).once().with(mock::any, 255, false).returns(1);
+        manager.playChurchServiceSound(church);
+        mock::verify();
+
+        MOCK_EXPECT(audioDriverMock->doStopEffect).once();
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -27,7 +27,10 @@ private:
     /// wenn man gelaufen ist
     [[noreturn]] void walked() override;
     /// Prüft die Gesundheit des Soldaten und meldet, falls erforderlich, ein Heilungs-Event an
+public:
     void heal();
+
+private:
 
 public:
     nofPassiveSoldier(MapPoint pos, unsigned char player, nobBaseMilitary* goal, nobMilitary* home, unsigned char rank);

@@ -5,6 +5,7 @@
 #include "BuildingFactory.h"
 #include "GamePlayer.h"
 #include "buildings/nobHQ.h"
+#include "buildings/nobChurch.h"
 #include "buildings/nobHarborBuilding.h"
 #include "buildings/nobMilitary.h"
 #include "buildings/nobShipYard.h"
@@ -28,6 +29,7 @@ noBuilding* BuildingFactory::createBuilding(GameWorldBase& world, const Building
         case BuildingType::Fortress: bld = new nobMilitary(type, pt, player, nation); break;
         case BuildingType::Shipyard: bld = new nobShipYard(pt, player, nation); break;
         case BuildingType::Temple: bld = new nobTemple(pt, player, nation); break;
+        case BuildingType::Church: bld = new nobChurch(pt, player, nation); break;
         default: bld = new nobUsual(type, pt, player, nation); break;
     }
     world.setNO(pt, bld);

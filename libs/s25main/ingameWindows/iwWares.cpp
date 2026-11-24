@@ -4,6 +4,7 @@
 
 #include "iwWares.h"
 #include "AddonHelperFunctions.h"
+#include "ChurchLoader.h"
 #include "GamePlayer.h"
 #include "GlobalGameSettings.h"
 #include "LeatherLoader.h"
@@ -212,20 +213,25 @@ void iwWares::msgPaintBefore()
                 text->setText(std::to_string(amount));
                 text->setTextColor((amount == 0) ? COLOR_RED : COLOR_YELLOW);
 
-                if(leatheraddon::isAddonActive(player.getGameWorld()))
+                const bool leatherActive = leatheraddon::isAddonActive(player.getGameWorld());
+                const bool churchActive = churchaddon::isAddonActive(player.getGameWorld());
+                if((leatherActive || churchActive) && peoplePageID == curPage_ && isSoldier(static_cast<Job>(i)))
                 {
-                    if(peoplePageID == curPage_ && isSoldier(static_cast<Job>(i)))
+                    auto* tooltip = group->getCtrl<ctrlBaseTooltip>(100 + i);
+                    std::string toolTip = _(JOB_NAMES[static_cast<Job>(i)]);
+                    if(leatherActive)
                     {
-                        auto* tooltip = group->getCtrl<ctrlBaseTooltip>(100 + i);
-                        std::string toolTip = _(JOB_NAMES[static_cast<Job>(i)]);
-
                         toolTip += std::string(" (")
                                    + std::to_string(inventory[jobEnumToAmoredSoldierEnum(static_cast<Job>(i))])
-                                   + std::string("/") + std::to_string(amount) + std::string(" ")
-                                   + std::string(_("with armor)"));
-
-                        tooltip->setTooltip(toolTip);
+                                   + "/" + std::to_string(amount) + " " + _("with armor)");
                     }
+                    if(churchActive)
+                    {
+                        toolTip += std::string(" (")
+                                   + std::to_string(inventory[jobEnumToHealedSoldierEnum(static_cast<Job>(i))])
+                                   + "/" + std::to_string(amount) + " " + _("blessed)");
+                    }
+                    tooltip->setTooltip(toolTip);
                 }
             }
         }

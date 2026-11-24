@@ -13,12 +13,14 @@ struct Inventory : private GoodsAndPeopleCounts
 {
     using GoodsAndPeopleCounts::armoredSoldiers;
     using GoodsAndPeopleCounts::goods;
+    using GoodsAndPeopleCounts::healedSoldiers;
     using GoodsAndPeopleCounts::people;
     // Write access is only allowed via Add and Remove, or explicitely via underlying arrays
-    // to ensure amounts are non-negative and armored soldier count is valid
+    // to ensure amounts are non-negative and armored/healed soldier counts are valid
     auto operator[](GoodType good) const { return goods[good]; }
     auto operator[](Job job) const { return people[job]; }
     auto operator[](ArmoredSoldier soldier) const { return armoredSoldiers[soldier]; }
+    auto operator[](HealedSoldier soldier) const { return healedSoldiers[soldier]; }
 
     GoodCounts& goodsOnly() { return *this; }
     const GoodCounts& goodsOnly() const { return *this; }
@@ -33,6 +35,11 @@ struct Inventory : private GoodsAndPeopleCounts
     {
         armoredSoldiers[soldier] += amount;
         RTTR_Assert(armoredSoldiers[soldier] <= people[amoredEnumToSoldierEnum(soldier)]);
+    }
+    void add(const HealedSoldier soldier, unsigned amount = 1)
+    {
+        healedSoldiers[soldier] += amount;
+        RTTR_Assert(healedSoldiers[soldier] <= people[healedEnumToSoldierEnum(soldier)]);
     }
     void remove(const GoodType good, unsigned amount = 1)
     {
@@ -49,5 +56,11 @@ struct Inventory : private GoodsAndPeopleCounts
         RTTR_Assert(armoredSoldiers[soldier] >= amount);
         armoredSoldiers[soldier] -= amount;
         RTTR_Assert(armoredSoldiers[soldier] <= people[amoredEnumToSoldierEnum(soldier)]);
+    }
+    void remove(const HealedSoldier soldier, unsigned amount = 1)
+    {
+        RTTR_Assert(healedSoldiers[soldier] >= amount);
+        healedSoldiers[soldier] -= amount;
+        RTTR_Assert(healedSoldiers[soldier] <= people[healedEnumToSoldierEnum(soldier)]);
     }
 };

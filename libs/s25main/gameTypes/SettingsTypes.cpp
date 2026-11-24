@@ -10,6 +10,7 @@ const DistributionMap distributionMap = {{
   DistributionMapping(GoodType::Fish, BuildingType::IronMine, 7),
   DistributionMapping(GoodType::Fish, BuildingType::GoldMine, 10),
   DistributionMapping(GoodType::Fish, BuildingType::Temple, 8),
+  DistributionMapping(GoodType::Fish, BuildingType::Church, 8),
 
   DistributionMapping(GoodType::Grain, BuildingType::Mill, 5),
   DistributionMapping(GoodType::Grain, BuildingType::PigFarm, 3),
@@ -41,4 +42,7 @@ const DistributionMap distributionMap = {{
 
   DistributionMapping(GoodType::Ham, BuildingType::Slaughterhouse, 8),
   DistributionMapping(GoodType::Ham, BuildingType::Skinner, 3),
+
+  DistributionMapping(GoodType::Wine, BuildingType::Temple, 8),
+  DistributionMapping(GoodType::Wine, BuildingType::Church, 8),
 }};

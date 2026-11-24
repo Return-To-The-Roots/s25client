@@ -92,3 +92,28 @@ inline Job amoredEnumToSoldierEnum(const ArmoredSoldier armoredSoldier)
 {
     return Job(SOLDIER_JOBS[static_cast<uint8_t>(armoredSoldier) - static_cast<uint8_t>(ArmoredSoldier::Private)]);
 }
+
+enum class HealedSoldier : uint8_t
+{
+    Private,
+    PrivateFirstClass,
+    Sergeant,
+    Officer,
+    General,
+};
+
+constexpr auto maxEnumValue(HealedSoldier)
+{
+    return HealedSoldier::General;
+}
+
+inline HealedSoldier jobEnumToHealedSoldierEnum(const Job job)
+{
+    RTTR_Assert(isSoldier(job));
+    return static_cast<HealedSoldier>(getSoldierRank(job));
+}
+
+inline Job healedEnumToSoldierEnum(const HealedSoldier healedSoldier)
+{
+    return Job(SOLDIER_JOBS[static_cast<uint8_t>(healedSoldier) - static_cast<uint8_t>(HealedSoldier::Private)]);
+}

@@ -1229,6 +1229,8 @@ void nobHarborBuilding::addSeaAttacker(std::unique_ptr<nofAttacker> attacker)
     inventory.visual.add(attacker->getJobType());
     if(attacker->hasArmor())
         inventory.visual.add(jobEnumToAmoredSoldierEnum(attacker->getJobType()));
+    if(attacker->hasHealing())
+        inventory.visual.add(jobEnumToHealedSoldierEnum(attacker->getJobType()));
     soldiers_for_ships.emplace_back(SoldierForShip{std::move(attacker), world->getHarborPoint(bestHarborPoint)});
 
     orderShip();
@@ -1313,6 +1315,8 @@ std::unique_ptr<nofDefender> nobHarborBuilding::provideDefender(nofAttacker& att
         soldiers_for_ships.pop_front();
         defender = std::make_unique<nofDefender>(pos, player, *this, defender_attacker->getRank(), attacker);
         defender->setArmor(defender_attacker->hasArmor());
+        if(defender_attacker->hasHealing())
+            defender->grantHealing();
         defender_attacker->cancelSeaAttack();
         defender_attacker->destroy();
     }

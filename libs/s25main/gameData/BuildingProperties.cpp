@@ -58,11 +58,7 @@ bool BuildingProperties::isUsual(BuildingType bld)
     return isValid(bld) && !isMilitary(bld) && !isWareHouse(bld);
 }
 
-bool BuildingProperties::isValid(BuildingType bld)
+bool BuildingProperties::isValid(BuildingType /*bld*/)
 {
-    switch(bld)
-    {
-        case BuildingType::Nothing9: return false;
-        default: return true;
-    }
+    return true;
 }

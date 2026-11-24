@@ -76,6 +76,13 @@ constexpr helpers::EnumArray<std::array<DrawPoint, NUM_MILITARY_BLDS>, Nation> B
 constexpr std::array HITPOINTS = {3, 4, 5, 6, 7};
 static_assert(HITPOINTS.size() == NUM_SOLDIER_RANKS);
 
+/// Returns max hitpoints for a soldier rank, boosted by +50% (rounded up) when healed
+constexpr int getMaxSoldierHitpoints(const unsigned rank, const bool hasHealing)
+{
+    const int baseHp = HITPOINTS[rank];
+    return hasHealing ? (baseHp * 3 + 1) / 2 : baseHp;
+}
+
 /// Max distance for an attacker to reach a building and join in capturing
 constexpr unsigned MAX_FAR_AWAY_CAPTURING_DISTANCE = 15;
 

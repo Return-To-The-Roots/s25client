@@ -11,10 +11,12 @@
 #include <vector>
 
 class GameEvent;
+class nobChurch;
 class nobHarborBuilding;
 class nofActiveSoldier;
 class nofAggressiveDefender;
 class nofAttacker;
+class nofChurchVisitor;
 class nofDefender;
 class noFigure;
 class nofPassiveSoldier;
@@ -77,6 +79,8 @@ private:
     /// Soldatenbesatzung
     OwnedSortedTroops troops;
     std::array<uint8_t, NUM_SOLDIER_RANKS> troop_limits;
+    /// Soldiers currently out attending a church service
+    std::list<nofChurchVisitor*> churchVisitors_;
 
     /// Bestellungen (sowohl Truppen als auch Goldmünzen) zurücknehmen
     void cancelOrders();
@@ -252,4 +256,11 @@ public:
     bool isDemolitionAllowed() const;
 
     void unlinkAggressor(nofAttacker& soldier) override;
+
+    /// Send up to 20% of stationed soldiers (always keeping at least 1) to attend a church service
+    std::vector<nofChurchVisitor*> sendChurchVisitors(nobChurch& church);
+    /// Return a soldier back to the building after church service
+    void returnFromChurch(nofChurchVisitor& visitor, std::unique_ptr<nofPassiveSoldier> soldier);
+    /// Detach a visitor that did not return (abrogated road, died, or church destroyed)
+    void churchVisitorLost(nofChurchVisitor& visitor);
 };
