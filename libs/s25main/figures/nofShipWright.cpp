@@ -235,7 +235,6 @@ void nofShipWright::walkHome()
     } else
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
-        abrogateWorkplace();
         startWandering();
     }
 }

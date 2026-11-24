@@ -319,11 +319,9 @@ void noFigure::walkToGoal()
                 abrogate();
                 // Wir gehen jetzt nach Hause
                 goHome();
-                // Evtl wurde kein Lagerhaus gefunden und wir sollen rumirren, dann tun wir das gleich
-                if(fs == FigureState::Wander)
-                    wander();
-                else
-                    walkToGoal(); // Nach Hause laufen...
+                // Start walking if we are not wandering which would have already started the movement
+                if(fs != FigureState::Wander)
+                    walkToGoal(); // Walk home
             }
             // Oder müssen wir das Schiff nehmen?
             else if(route == RoadPathDirection::Ship)
@@ -338,11 +336,9 @@ void noFigure::walkToGoal()
                     abrogate();
                     // Wir gehen jetzt nach Hause
                     goHome();
-                    // Evtl wurde kein Lagerhaus gefunden und wir sollen rumirren, dann tun wir das gleich
-                    if(fs == FigureState::Wander)
-                        wander();
-                    else
-                        walkToGoal(); // Nach Hause laufen...
+                    // Start walking if we are not wandering which would have already started the movement
+                    if(fs != FigureState::Wander)
+                        walkToGoal(); // Walk home
                 } else
                 {
                     // Uns in den Hafen einquartieren

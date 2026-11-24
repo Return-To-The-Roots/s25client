@@ -609,6 +609,7 @@ struct IsCoastalAndForFigs
 void nofCarrier::abrogate()
 {
     noFigure::abrogate();
+    looseWare();
     state = CarrierState::FigureWork;
     RTTR_Assert(!workplace && !carried_ware);
 }
@@ -661,7 +662,6 @@ void nofCarrier::lostWork()
 
         startWandering();
     }
-    state = CarrierState::FigureWork;
 }
 
 void nofCarrier::roadSplitted(RoadSegment* rs1, RoadSegment* rs2)

@@ -762,15 +762,10 @@ void noShip::handleStateTransportDriving()
             // Das Schiff muss einen Notlandeplatz ansteuern
             // LOG.write(("transport goal harbor doesnt exist player %i state %i pos %u,%u \n",player,state,x,y);
             for(auto& figure : figures)
-            {
                 figure->abrogate();
-                figure->setGoalTonullptr();
-            }
 
             for(auto& ware : wares)
-            {
                 ware->notifyGoalAboutLostWare();
-            }
 
             findUnloadGoal(State::TransportDriving);
         }
@@ -1064,10 +1059,7 @@ void noShip::harborDestroyed(nobHarborBuilding* hb)
         case State::TransportUnloading:
             // Tell wares and figures that they won't reach their goal
             for(auto& figure : figures)
-            {
                 figure->abrogate();
-                figure->setGoalTonullptr();
-            }
             for(auto& ware : wares)
             {
                 // Notify goal only, if it is not the destroyed harbor. It already knows about that ;)

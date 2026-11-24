@@ -1142,10 +1142,7 @@ void nobMilitary::capture(const unsigned char new_owner)
             {
                 auto& figure = static_cast<noFigure&>(baseFigure);
                 if(figure.getCurrentRoad() == getRoute(Direction::SouthEast) && figure.getPlayer() != new_owner)
-                {
-                    figure.abrogate();
                     figure.startWandering();
-                }
             }
         }
     }

@@ -177,7 +177,6 @@ void nofActiveSoldier::expelEnemies() const
         if(!owner.isAlly(fig->getPlayer()) && !fig->isSoldier() && fig->isWalkingOnRoad())
         {
             // Then he should start wandering around
-            fig->abrogate();
             fig->startWandering();
         }
     }

@@ -75,10 +75,7 @@ void RoadSegment::destroy()
                 {
                     auto& figure = static_cast<noFigure&>(object);
                     if(figure.getCurrentRoad() == this)
-                    {
-                        figure.abrogate();
                         figure.startWandering();
-                    }
                 }
             }
 

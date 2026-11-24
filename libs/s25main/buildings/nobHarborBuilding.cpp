@@ -116,8 +116,6 @@ void nobHarborBuilding::DestroyBuilding()
     for(auto& figuresForShip : figures_for_ships)
     {
         noFigure& figure = world->addFigure(pos, std::move(figuresForShip.fig));
-
-        figure.abrogate();
         figure.startWandering();
     }
     figures_for_ships.clear();
