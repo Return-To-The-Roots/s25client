@@ -73,8 +73,9 @@ void nobBaseWarehouse::DestroyBuilding()
         // Only send figures home that are not already at this position.
         if(dependentFigure->getPos() == getPos())
         {
+            // Clear the goal before wandering: startWandering() -> abrogate() must not remove us from this
+            // warehouse's dependent_figures while we iterate it.
             dependentFigure->setGoalTonullptr();
-            dependentFigure->cutCurrentRoad();
             dependentFigure->startWandering();
         } else
             dependentFigure->goHome();
@@ -477,10 +478,10 @@ void nobBaseWarehouse::handleSendoutEvent()
                 inventory.real.remove(jobEnumToAmoredSoldierEnum(jobType));
             }
 
+            // If no warehouse found, leave the figure with its default state (GotToGoal with no goal)
+            // When it leaves the building it will start wandering.
             if(wh)
                 fig->goHome(wh);
-            else
-                fig->startWandering();
 
             addLeavingFigure(std::move(fig));
 
@@ -643,8 +644,8 @@ void nobBaseWarehouse::handleLeaveEvent()
         if(fig.isWalkingOnRoad())
             fig.initializeRoadWalking(getRoute(Direction::SouthEast), 0, true);
 
-        fig.actAtFirst();
         figureLeft(fig);
+        fig.actAtFirst();
     } else
     {
         if(getFlag()->hasSpaceForWare())

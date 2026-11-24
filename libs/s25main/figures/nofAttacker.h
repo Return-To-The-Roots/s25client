@@ -93,6 +93,8 @@ public:
     void destroy() override;
     void serialize(SerializedGameData& sgd) const override;
 
+    void abrogate() override;
+
     GO_Type getGOT() const final { return GO_Type::NofAttacker; }
     const nofAggressiveDefender* getHuntingDefender() const { return huntingDefender; }
 

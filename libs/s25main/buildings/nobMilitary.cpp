@@ -120,7 +120,6 @@ void nobMilitary::DestroyBuilding()
         troop->leftBuilding();
         auto& soldier = world->addFigure(pos, std::move(troop));
         soldier.startWandering();
-        soldier.startWalking(RANDOM_ENUM(Direction));
     }
     troops.clear();
 
@@ -1143,10 +1142,7 @@ void nobMilitary::capture(const unsigned char new_owner)
             {
                 auto& figure = static_cast<noFigure&>(baseFigure);
                 if(figure.getCurrentRoad() == getRoute(Direction::SouthEast) && figure.getPlayer() != new_owner)
-                {
-                    figure.abrogate();
                     figure.startWandering();
-                }
             }
         }
     }

@@ -381,8 +381,6 @@ void nofGeologist::goToNextNode()
     if(!flag)
     {
         startWandering();
-        wander();
-        state = State::FigureWork;
         return;
     }
 
@@ -464,7 +462,6 @@ void nofGeologist::lostWork()
         case State::GoToFlag:
             // dann sofort rumirren, wenn wir zur Flagge gehen
             startWandering();
-            state = State::FigureWork;
             break;
     }
 }

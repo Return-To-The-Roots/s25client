@@ -6,6 +6,8 @@
 #include "TradePathCache.h"
 #include "addons/const_addons.h"
 #include "buildings/nobBaseWarehouse.h"
+#include "figures/nofTradeDonkey.h"
+#include "figures/nofTradeLeader.h"
 #include "postSystem/PostBox.h"
 #include "postSystem/PostMsgWithBuilding.h"
 #include "worldFixtures/WorldWithGCExecution.h"
@@ -399,6 +401,69 @@ BOOST_AUTO_TEST_CASE(getWarehousesForTrading)
             BOOST_TEST(cache.size() == 10u);
         }
     }
+}
+
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(TradingSuite)
+
+BOOST_FIXTURE_TEST_CASE(AbrogateTradeCaravanClearsSuccessor, TradeFixture)
+{
+    auto* goalWh = world.getSpecObj<nobBaseWarehouse>(players[0]->getHQPos());
+    BOOST_TEST_REQUIRE(goalWh);
+    const MapPoint pos = curWh->getFlagPos();
+    TradeRoute tr(world, curPlayer, pos, goalWh->getFlagPos());
+
+    auto& leader =
+      world.addFigure(pos, std::make_unique<nofTradeLeader>(pos, curPlayer, tr, curWh->getPos(), goalWh->getPos()));
+    auto& donkey = world.addFigure(pos, std::make_unique<nofTradeDonkey>(pos, curPlayer, GoodType::Boards));
+    auto& secondDonkey = world.addFigure(pos, std::make_unique<nofTradeDonkey>(pos, curPlayer, GoodType::Boards));
+
+    leader.setSuccessor(&donkey);
+    donkey.setSuccessor(&secondDonkey);
+
+    // Premise: both donkeys really carry cargo, so the checks after abrogate() are not vacuous.
+    BOOST_TEST_REQUIRE(donkey.getCarriedWare().hasValue());
+    BOOST_TEST_REQUIRE(secondDonkey.getCarriedWare().hasValue());
+
+    leader.abrogate();
+    donkey.abrogate();
+    secondDonkey.abrogate();
+
+    // Destroying the leader asserts that abrogate() released its successor. It also verifies that the recursive
+    // cancellation reached the rest of the chain.
+    leader.destroy();
+    BOOST_TEST(donkey.getSuccessor() == nullptr);
+    BOOST_TEST(secondDonkey.getSuccessor() == nullptr);
+    // Cargo was already removed from inventory when the caravan started. Abrogation therefore drops it just like
+    // wanderFailedTrade() does instead of returning it to a warehouse.
+    BOOST_TEST(!donkey.getCarriedWare().hasValue());
+    BOOST_TEST(!secondDonkey.getCarriedWare().hasValue());
+    donkey.destroy();
+    secondDonkey.destroy();
+}
+
+BOOST_FIXTURE_TEST_CASE(AbrogateDonkeyClearsOwnSuccessor, TradeFixture)
+{
+    const MapPoint pos = curWh->getFlagPos();
+    auto& first = world.addFigure(pos, std::make_unique<nofTradeDonkey>(pos, curPlayer, GoodType::Boards));
+    auto& second = world.addFigure(pos, std::make_unique<nofTradeDonkey>(pos, curPlayer, GoodType::Boards));
+    first.setSuccessor(&second);
+
+    BOOST_TEST_REQUIRE(first.getCarriedWare().hasValue());
+    BOOST_TEST_REQUIRE(second.getCarriedWare().hasValue());
+    BOOST_TEST_REQUIRE(first.getSuccessor() == &second);
+
+    first.abrogate();
+    BOOST_TEST(first.getSuccessor() == nullptr);
+    BOOST_TEST(!first.getCarriedWare().hasValue());
+
+    second.abrogate();
+    BOOST_TEST(!second.getCarriedWare().hasValue());
+
+    // Just check this doesn't trigger asserts
+    first.destroy();
+    second.destroy();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

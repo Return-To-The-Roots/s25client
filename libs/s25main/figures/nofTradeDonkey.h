@@ -41,6 +41,8 @@ public:
     nofTradeDonkey(MapPoint pos, unsigned char player, const boost_variant2<GoodType, Job>& what);
     nofTradeDonkey(SerializedGameData& sgd, unsigned obj_id);
 
+    void abrogate() override;
+
     void destroy() override
     {
         RTTR_Assert(!successor);

@@ -89,7 +89,7 @@ public:
     /// Überprüft, ob es noch ein Weg zum Ziel gibt
     bool isRouteToGoal();
     /// Tells the ware that it should look for a warehouse to go to and notifies that (if found)
-    /// Sets nextDir to the next direction or invalid of no warehouse found
+    /// Sets nextDir to the next direction or invalid if no warehouse found
     bool findRouteToWarehouse();
     /// Tells a carrier that we want to be carried
     void callCarrier();

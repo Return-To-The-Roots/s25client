@@ -140,6 +140,7 @@ protected:
     /// Herumirren after failed traderoute
     void wanderFailedTrade();
 
+    /// Owner-notification sub-hook of abrogate(): Notify and release the workplace/flag/home
     virtual void abrogateWorkplace() = 0;
 
 public:
@@ -197,7 +198,7 @@ public:
     void startWalking(Direction dir);
     /// Starts walking in a random dir and returns whether this was possible
     bool walkInRandomDir();
-    /// Umherirren starten (frei rumlaufen)
+    /// Start wandering: abrogates the current job, then walks around searching for a flag to go home
     void startWandering(unsigned burned_wh_id = 0xFFFFFFFF);
     /// Auf Straßen(!) nach Hause laufen
     void goHome(noRoadNode* goal = nullptr);
@@ -236,7 +237,9 @@ public:
 
     bool isDoingJobWorks() const { return fs == FigureState::Job; }
 
-    void abrogate(); // beim Arbeitsplatz "kündigen" soll, man das Laufen zum Ziel unterbrechen muss (warum auch immer)
+    /// Abrogate the current job. Total and idempotent:
+    /// Afterwards goal_ and all job-specific references are notified and reset.
+    virtual void abrogate();
 
     /// Informiert die Figur, dass für sie eine Schiffsreise beginnt
     void startShipJourney();

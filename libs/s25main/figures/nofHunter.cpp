@@ -445,9 +445,7 @@ void nofHunter::handleStateWalkingHome()
     } else
     {
         // Kein Weg führt mehr nach Hause--> Rumirren
-        abrogateWorkplace();
         startWandering();
-        wander();
     }
 }
 

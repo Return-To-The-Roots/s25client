@@ -53,8 +53,16 @@ void nofFlagWorker::abrogateWorkplace()
         /// uns entfernen, da wir wieder umdrehen müssen
         world->getPlayer(player).removeFlagWorker(this);
         flag = nullptr;
-    } else
-        RTTR_Assert(!world->getPlayer(player).isFlagWorker(this));
+    }
+    // If flag is already null we might still be registered while GamePlayer::flagDestroyed iterates its list.
+    // That callback removes us after lostWork() returns, so there is nothing to do here.
+}
+
+void nofFlagWorker::abrogate()
+{
+    state = State::FigureWork;
+    noFigure::abrogate();
+    RTTR_Assert(!flag);
 }
 
 /// Geht wieder zurück zur Flagge und dann nach Hause
@@ -65,8 +73,15 @@ void nofFlagWorker::goToFlag()
     // Bin ich an der Fahne?
     if(pos == flag->getPos())
     {
+        noFlag* const currentFlag = flag;
+        // Detach once before goHome()/startWandering(): both may run abrogate() which must not remove us again.
+        world->getPlayer(player).removeFlagWorker(this);
+        state = State::FigureWork;
+        flag = nullptr;
+
         // nach Hause gehen
-        nobBaseWarehouse* wh = world->getPlayer(player).findWarehouse(*flag, FW::AcceptsFigure(job_), true, false);
+        nobBaseWarehouse* wh =
+          world->getPlayer(player).findWarehouse(*currentFlag, FW::AcceptsFigure(job_), true, false);
         if(wh)
         {
             goHome(wh);
@@ -79,14 +94,7 @@ void nofFlagWorker::goToFlag()
         {
             // Weg führt nicht mehr zum Lagerhaus, dann rumirren
             startWandering();
-            wander();
         }
-
-        // Da wir quasi "freiwillig" nach Hause gegangen sind ohne das Abreißen der Flagge, auch manuell wieder
-        // "abmelden"
-        world->getPlayer(player).removeFlagWorker(this);
-        state = State::FigureWork;
-        flag = nullptr;
     } else
     {
         // Weg suchen
@@ -96,13 +104,6 @@ void nofFlagWorker::goToFlag()
         if(dir)
             startWalking(*dir);
         else
-        {
-            abrogate();
             startWandering();
-            wander();
-            state = State::FigureWork;
-
-            flag = nullptr;
-        }
     }
 }

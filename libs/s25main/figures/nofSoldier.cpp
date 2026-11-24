@@ -65,6 +65,12 @@ void nofSoldier::abrogateWorkplace()
     }
 }
 
+void nofSoldier::abrogate()
+{
+    noFigure::abrogate();
+    RTTR_Assert(!homeBld);
+}
+
 unsigned char nofSoldier::getRank() const
 {
     return getSoldierRank(job_);

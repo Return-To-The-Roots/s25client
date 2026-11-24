@@ -67,11 +67,7 @@ void nobBaseMilitary::DestroyBuilding()
         if(figRef.isDoingJobWorks() && dynamic_cast<nofActiveSoldier*>(&figRef))
             static_cast<nofActiveSoldier&>(figRef).homeDestroyedAtBegin();
         else
-        {
-            figRef.abrogate();
             figRef.startWandering();
-            figRef.startWalking(RANDOM_ENUM(Direction));
-        }
     }
 
     leave_house.clear();

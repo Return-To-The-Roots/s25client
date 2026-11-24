@@ -83,6 +83,13 @@ void nofPlaner::abrogateWorkplace()
     }
 }
 
+void nofPlaner::abrogate()
+{
+    state = PlanerState::FigureWork;
+    noFigure::abrogate();
+    RTTR_Assert(!building_site);
+}
+
 void nofPlaner::lostWork()
 {
     building_site = nullptr;
@@ -100,11 +107,6 @@ void nofPlaner::lostWork()
         }
 
         startWandering();
-        // wenn wir schon laufen, nicht nochmal laufen!
-        if(state != PlanerState::Walking)
-            wander();
-
-        state = PlanerState::FigureWork;
     }
 }
 

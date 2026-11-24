@@ -120,6 +120,8 @@ public:
 
     void draw(DrawPoint drawPt) override;
 
+    void abrogate() override;
+
     /// Wird aufgerufen, wenn der Weg des Trägers abgerissen wurde
     void lostWork();
 

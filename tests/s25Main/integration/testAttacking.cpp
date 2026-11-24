@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include "GameEvent.h"
 #include "PointOutput.h"
 #include "Ware.h"
 #include "buildings/nobBaseWarehouse.h"
@@ -1157,6 +1158,43 @@ BOOST_FIXTURE_TEST_CASE(FlagBecomesUnreachableForWaitingAttacker, AttackFixture<
     BOOST_TEST(attacker3.isMoving()); // Not stuck
     RTTR_EXEC_TILL(100, defender.isFightingAtFlag());
     BOOST_TEST(attacker3.getState() == SoldierState::AttackingFightingVsDefender);
+}
+
+BOOST_FIXTURE_TEST_CASE(BlockingEventClearedWhenFightStartsBeforeItFires, AttackFixture<2>)
+{
+    addSoldiers(milBld0Pos, 6, Job::Private);
+    addSoldiers(milBld1Pos, 1, Job::Private);
+
+    this->Attack(milBld1Pos, 1, false);
+    BOOST_TEST_REQUIRE(milBld0->getLeavingFigures().size() == 1u);
+    auto& attacker = dynamic_cast<nofAttacker&>(milBld0->getLeavingFigures().front());
+    RTTR_EXEC_TILL(70, milBld0->getLeavingFigures().empty());
+
+    // Reach the attacked flag to request the defender and register the blocking event.
+    moveObjTo(attacker, milBld1->getFlagPos());
+    rescheduleWalkEvent(attacker, 1);
+    RTTR_SKIP_GFS(1);
+    BOOST_TEST_REQUIRE(attacker.getState() == SoldierState::AttackingWaitingForDefender);
+    constexpr auto blockEvtId = 5u;
+    BOOST_TEST_REQUIRE(em.isEventActive(attacker, blockEvtId));
+
+    // Simulate the fight starting before the block event fires.
+    attacker.fightVsDefenderStarted();
+
+    const GameEvent* blockingEvent = nullptr;
+    for(const GameEvent* ev : em.getObjEvents(attacker))
+    {
+        if(ev->id == blockEvtId)
+            blockingEvent = ev;
+    }
+    BOOST_TEST_REQUIRE(blockingEvent);
+    em.rescheduleEvent(blockingEvent, em.getCurrentGF() + 1);
+    RTTR_SKIP_GFS(1);
+    BOOST_TEST(!em.isEventActive(attacker, blockEvtId));
+
+    // The event has been consumed and must not be dereferenced when we abrogate for wandering.
+    attacker.startWandering();
+    BOOST_TEST(attacker.isWandering());
 }
 
 enum AttackedBldType

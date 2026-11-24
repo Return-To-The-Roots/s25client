@@ -43,6 +43,8 @@ public:
     void destroy() override;
     void serialize(SerializedGameData& sgd) const override;
 
+    void abrogate() override;
+
     /// Wird aufgerufen, wenn die Flagge abgerissen wurde
     virtual void lostWork() = 0;
 
